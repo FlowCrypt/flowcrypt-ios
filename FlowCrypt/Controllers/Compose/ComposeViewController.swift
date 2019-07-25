@@ -5,6 +5,7 @@
 import UIKit
 import MBProgressHUD
 import Promises
+import RealmSwift
 
 class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextViewDelegate {
 
@@ -101,11 +102,14 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
         let subject = isReply ? "Re: \(replyToSubject ?? "(no subject)")" : self.txtSubject.text ?? "(no subject)"
         let from = GoogleApi.instance.getEmail()
         let replyToMimeMsg = replyToMime != nil ? String(data: replyToMime!, encoding: .utf8) : nil
+        let realm = try! Realm()
+        var pubKeys = Array(realm.objects(KeyInfo.self).map { $0.public })
         Promise<Void> { _,_ in
-            let pubkeySearchRes = try await(AttesterApi.lookupEmail(email: email))
-            guard pubkeySearchRes.armored != nil else { return self.showErrAlert(Language.no_pgp) }
+            let recipientPub = try await(AttesterApi.lookupEmail(email: email))
+            guard recipientPub.armored != nil else { return self.showErrAlert(Language.no_pgp) }
+            pubKeys.append(recipientPub.armored!)
             let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: from, subject: subject, replyToMimeMsg: replyToMimeMsg)
-            let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [pubkeySearchRes.armored!]);
+            let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubKeys);
             let _ = try await(EmailProvider.sharedInstance.sendMail(mime: composeRes.mimeEncoded))
             DispatchQueue.main.async {
                 self.hideSpinner()

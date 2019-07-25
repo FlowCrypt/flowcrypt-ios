@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var nv = storyboard.instantiateViewController(withIdentifier: "MainNavigationController") as! UINavigationController
         if GoogleApi.instance.isGoogleSessionValid() == true {
             let realm = try! Realm()
-            let keys = Array(realm.objects(KeyInfo.self))
+            let keys = realm.objects(KeyInfo.self)
             if keys.count > 0 {
                 nv = storyboard.instantiateViewController(withIdentifier: "MenuNavigationController") as! MyNavigationController
                 nv.viewControllers = [storyboard.instantiateViewController(withIdentifier: "InboxViewController") as! InboxViewController]
