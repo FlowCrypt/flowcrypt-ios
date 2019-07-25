@@ -26,9 +26,9 @@
 		32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
 		32DCA583D0C09131947705C8 /* PromiseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4A964004CBABCA2F01C /* PromiseExtension.swift */; };
 		32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */; };
-		32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js */; };
+		32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		32DCA64A309E3C34D8C9039E /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
-		32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js */; };
+		32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntension.swift */; };
 		32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
 		32DCAA4C8C5612784F63F996 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4762A2B08BFF81AB38F /* BaseViewController.swift */; };
@@ -39,7 +39,7 @@
 		32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */; };
-		A350A5CC22E9F0E000427C6C /* flowcrypt-ios-prod.js in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js */; };
+		A350A5CC22E9F0E000427C6C /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
 		A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */; };
 		A3DAD60622E4585800F2C4CD /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
@@ -110,7 +110,7 @@
 		32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchTimeExtension.swift; sourceTree = "<group>"; };
 		32DCAC732B988D9704658812 /* CoreTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTypes.swift; sourceTree = "<group>"; };
 		32DCACB22E895C2500A99350 /* CoreHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreHost.swift; sourceTree = "<group>"; };
-		32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "flowcrypt-ios-prod.js"; sourceTree = "<group>"; };
+		32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "flowcrypt-ios-prod.js.txt"; sourceTree = "<group>"; };
 		32DCAEFF16F5D91A35791730 /* DataExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
 		A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flowcrypt-ios-icon.png"; sourceTree = "<group>"; };
@@ -266,7 +266,7 @@
 			isa = PBXGroup;
 			children = (
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
-				32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js */,
+				32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -478,7 +478,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A350A5CC22E9F0E000427C6C /* flowcrypt-ios-prod.js in Resources */,
+				A350A5CC22E9F0E000427C6C /* flowcrypt-ios-prod.js.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,7 +490,7 @@
 				C132B9EB1EC45B9900763715 /* InboxTableViewCell.xib in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				C132B9B91EC2DBD800763715 /* Main.storyboard in Resources */,
-				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js in Resources */,
+				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -624,7 +624,7 @@
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				32DCA4DE5ED89E8BC8E9887E /* CoreHost.swift in Sources */,
 				32DCA4F8E74975F0393FA29C /* SecPaddingExtension.swift in Sources */,
-				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js in Sources */,
+				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

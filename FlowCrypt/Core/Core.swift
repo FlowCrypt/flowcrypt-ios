@@ -87,7 +87,7 @@ class Core {
             started = true;
             DispatchQueue.global(qos: .default).async {
                 let start = DispatchTime.now()
-                let jsFile = Bundle(for: Core.self).path(forResource: "flowcrypt-ios-prod.js", ofType: nil)!
+                let jsFile = Bundle(for: Core.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil)!
                 let jsFileSrc = try? String(contentsOfFile: jsFile)
                 context = JSContext(virtualMachine: vm)!
                 context?.setObject(CoreHost.self, forKeyedSubscript: "CoreHost" as (NSCopying & NSObjectProtocol))
