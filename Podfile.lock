@@ -1,0 +1,68 @@
+PODS:
+  - GoogleSignIn (4.4.0):
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
+    - GTMSessionFetcher/Core (~> 1.1)
+  - GoogleToolboxForMac/DebugUtils (2.2.1):
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - GoogleToolboxForMac/Defines (2.2.1)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.1)":
+    - GoogleToolboxForMac/DebugUtils (= 2.2.1)
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.1)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.2.1)"
+  - GTMSessionFetcher/Core (1.2.2)
+  - mailcore2-ios (0.6.4)
+  - MBProgressHUD (1.1.0)
+  - PromisesObjC (1.2.8)
+  - PromisesSwift (1.2.8):
+    - PromisesObjC (= 1.2.8)
+  - Realm (3.17.1):
+    - Realm/Headers (= 3.17.1)
+  - Realm/Headers (3.17.1)
+  - RealmSwift (3.17.1):
+    - Realm (= 3.17.1)
+  - SwiftLint (0.33.1)
+  - SwiftyRSA (1.5.0):
+    - SwiftyRSA/ObjC (= 1.5.0)
+  - SwiftyRSA/ObjC (1.5.0)
+
+DEPENDENCIES:
+  - GoogleSignIn
+  - mailcore2-ios
+  - MBProgressHUD
+  - PromisesSwift
+  - RealmSwift
+  - SwiftLint
+  - SwiftyRSA
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - GoogleSignIn
+    - GoogleToolboxForMac
+    - GTMSessionFetcher
+    - mailcore2-ios
+    - MBProgressHUD
+    - PromisesObjC
+    - PromisesSwift
+    - Realm
+    - RealmSwift
+    - SwiftLint
+    - SwiftyRSA
+
+SPEC CHECKSUMS:
+  GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
+  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
+  GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
+  mailcore2-ios: 3ff0be2fa553d4da9c11d39c11d51863c768f24f
+  MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
+  PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
+  PromisesSwift: 37bad6f4daddb02f7c9c531efe91e8b21c13ee2f
+  Realm: c204f1a890f07dea43b14132a6aad118c054b8f2
+  RealmSwift: 4d3c9233544b9cd08a8913e0872b9038eb99b054
+  SwiftLint: 9fc1143bbacec37f94994a7d0d2a85b2154b6294
+  SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
+
+PODFILE CHECKSUM: 3d51c85147d5285ef0436831174eafd77d662a1a
+
+COCOAPODS: 1.7.4
