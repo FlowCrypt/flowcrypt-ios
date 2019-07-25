@@ -19,6 +19,7 @@ struct Constants {
     public static let readMessageTextColor = UIColor.lightGray
     public static let unreadDateTextColor = UIColor(red: 33.0 / 255.0, green: 157.0 / 255.0, blue: 5.0 / 255.0, alpha: 1.0)
     public static let readDateTextColor = UIColor.lightGray
+    public static let green = UIColor(red:0.19, green:0.64, blue:0.09, alpha:1.0)
 }
 
 struct EmailConstant {

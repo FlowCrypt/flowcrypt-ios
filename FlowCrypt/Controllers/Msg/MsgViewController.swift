@@ -20,21 +20,17 @@ class MsgViewController: BaseViewController {
     @IBOutlet var lblSubject: UILabel!
     @IBOutlet var lblTIme: UILabel!
     @IBOutlet var lblBody: UILabel!
+    @IBOutlet var scrollView: UIScrollView!
+    @IBOutlet var scrollViewContent: UIView!
+
     var delegate: MsgViewControllerDelegate!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if objMessage.header.sender.mailbox != nil {
-            self.lblSender.text = objMessage.header.sender.mailbox
-        } else {
-            self.lblSender.text = "Empty"
-        }
-        if objMessage.header.subject != nil {
-            self.lblSubject.text = objMessage.header.subject
-        } else {
-            self.lblSubject.text = "No subject"
-        }
+        self.lblSender.text = objMessage.header.sender.mailbox ?? "(unknown sender)"
+        self.lblSubject.text = objMessage.header.subject ?? "(no subject)"
+        self.lblBody.numberOfLines = 0
 
         self.lblTIme.text = Constants.inboxDateFormatter.string(from: objMessage.header.date)
         self.showSpinner(Language.loading, isUserInteractionEnabled: true)
@@ -47,14 +43,12 @@ class MsgViewController: BaseViewController {
             let decrypted = try Core.parseDecryptMsg(encrypted: mime, keys: keys, msgPwd: nil, isEmail: true)
             DispatchQueue.main.async {
                 let decryptErrBlock = decrypted.blocks.first(where: { $0.decryptErr != nil })
-                guard decryptErrBlock == nil else {
+                if decryptErrBlock == nil {
+                    self.renderMsgBody(decrypted.text, color: Constants.green)
+                } else {
                     let e = decryptErrBlock!.decryptErr!.error
-                    self.lblBody.text = "Dould not decrypt message: \(e.type)\n\n\(e.message)\n\n\(decryptErrBlock!.content)"
-                    self.lblBody.textColor = UIColor.red
-                    return
+                    self.renderMsgBody("Dould not decrypt message:\n\(e.type)\n\n\(e.message)\n\n\(decryptErrBlock!.content)", color: UIColor.red)
                 }
-                self.lblBody.text = decrypted.text;
-                self.lblBody.textColor = UIColor(red:0.19, green:0.64, blue:0.09, alpha:1.0)
                 self.markAsRead()
             }
         }.catch { error in
@@ -62,8 +56,11 @@ class MsgViewController: BaseViewController {
         }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {
+        self.lblBody.text = text
+        self.lblBody.textColor = color
+        self.lblBody.sizeToFit()
+        self.scrollView.contentSize = self.scrollViewContent.frame.size;
     }
 
     @IBAction func btnBackTap(sender: AnyObject) {
