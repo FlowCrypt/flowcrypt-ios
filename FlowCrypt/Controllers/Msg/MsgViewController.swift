@@ -74,43 +74,33 @@ class MsgViewController: BaseViewController {
     }
 
     @IBAction func btnTrashTap(sender: AnyObject) {
-        guard self.path != "[Gmail]/Trash" else {
-            // todo - does not need to be here once trash btn is hidden
+        guard self.path != "[Gmail]/Trash" else { // todo - does not need to be here once trash btn is hidden
             self.showToast("Message is already in trash")
             return
         }
-        self.showSpinner("Moving to Trash")
-        print("trash tapped")
-        self.renderResult(
-            for: Imap.instance.moveMsg(msg: self.objMessage, folder: self.path, destFolder: "[Gmail]/Trash"), 
-            successAlert: Language.moved_to_trash
-        )
+        self.async({
+            let _ = try await(Imap.instance.moveMsg(msg: self.objMessage, folder: self.path, destFolder: "[Gmail]/Trash"))
+        }, then: {
+            self.onMsgUpdateSuccess(toast: Language.moved_to_trash)
+        })
     }
 
     @IBAction func btnArchiveTap(sender: AnyObject) {
-        self.showSpinner("Archiving")
         self.objMessage.flags = MCOMessageFlag.deleted
-        print("archiving")
-        self.renderResult(
-            for: Imap.instance.pushUpdatedMsgFlags(msg: self.objMessage, folder: self.path),
-            successAlert: Language.email_archived
-        )
+        self.async({
+            let _ = try await(Imap.instance.pushUpdatedMsgFlags(msg: self.objMessage, folder: self.path))
+        }, then: {
+            self.onMsgUpdateSuccess(toast: Language.email_archived)
+        })
     }
 
-    func renderResult(for promise: Promise<VOID>, successAlert: String) {
-        print("render result")
-        promise.then(on: .main) { _ in
-            print("promise then")
-            self.hideSpinner()
-            if let d = self.delegate {
-                d.movedOrUpdated(objMessage: self.objMessage)
-            }
-            self.showToast(successAlert)
-            self.btnBackTap(sender: UIBarButtonItem())
-        }.catch { error in
-            print("prom catch")
-            self.showErrAlert("\(Language.action_failed)\n\n\(error)")
+    func onMsgUpdateSuccess(toast: String) {
+        self.hideSpinner()
+        if let d = self.delegate {
+            d.movedOrUpdated(objMessage: self.objMessage)
         }
+        self.showToast(toast)
+        self.btnBackTap(sender: UIBarButtonItem())
     }
 
     @IBAction func btnReplyTap(sender: UIButton) {

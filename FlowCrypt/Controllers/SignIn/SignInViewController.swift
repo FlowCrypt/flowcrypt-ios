@@ -4,6 +4,7 @@
 
 import UIKit
 import GoogleSignIn
+import Promises
 
 class SignInViewController: BaseViewController {
 
@@ -23,13 +24,14 @@ class SignInViewController: BaseViewController {
 
     // MARK: - Events
     @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
-        GoogleApi.instance.signIn(viewController: self)
-            .then(on: .main) { user in self.performSegue(withIdentifier: "RecoverSegue", sender: nil) }
-            .catch { error in self.showErrAlert(String(describing: error))
-        }
+        self.async({ try await(GoogleApi.instance.signIn(viewController: self)) }, then: { user in
+            self.performSegue(withIdentifier: "RecoverSegue", sender: nil)
+        })
     }
 
     @IBAction func signInWithOutlookButtonPressed(_ sender: Any) {
+        self.showToast("Outlook sign in not implemented yet")
+        // below for debugging
         do {
             let start = DispatchTime.now()
             let keys = [PrvKeyInfo(private: TestData.k2rsa2048.prv, longid: TestData.k2rsa2048.longid, passphrase: TestData.k2rsa2048.passphrase)]

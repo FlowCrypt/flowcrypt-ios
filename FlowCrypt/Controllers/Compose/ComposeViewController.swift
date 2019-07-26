@@ -104,21 +104,18 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
         let replyToMimeMsg = replyToMime != nil ? String(data: replyToMime!, encoding: .utf8) : nil
         let realm = try! Realm()
         var pubKeys = Array(realm.objects(KeyInfo.self).map { $0.public })
-        Promise<Void> { _,_ in
+        self.async({
             let recipientPub = try await(AttesterApi.lookupEmail(email: email))
             guard recipientPub.armored != nil else { return self.showErrAlert(Language.no_pgp) }
             pubKeys.append(recipientPub.armored!)
             let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: from, subject: subject, replyToMimeMsg: replyToMimeMsg)
             let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubKeys);
             let _ = try await(Imap.instance.sendMail(mime: composeRes.mimeEncoded))
-            DispatchQueue.main.async {
-                self.hideSpinner()
-                self.showToast(Language.encrypted_reply_sent)
-                self.btnBackTap(sender: UIBarButtonItem())
-            }
-        }.catch { (error: Error) in
-            self.showErrAlert("\(Language.could_not_compose_message)\n\n\(error)")
-        }
+        }, then: {
+            self.hideSpinner()
+            self.showToast(Language.encrypted_reply_sent)
+            self.btnBackTap(sender: UIBarButtonItem())
+        }, fail: Language.could_not_compose_message)
     }
 
 }

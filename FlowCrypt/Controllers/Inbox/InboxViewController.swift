@@ -38,16 +38,13 @@ class InboxViewController: BaseViewController, UITableViewDelegate, UITableViewD
         let spinnerActivity = MBProgressHUD.showAdded(to: self.view, animated: true)
         spinnerActivity.label.text = "Loading"
         spinnerActivity.isUserInteractionEnabled = false
-        Promise<Void> { _,_ in
+        self.async({
             self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
-            DispatchQueue.main.async {
-                spinnerActivity.hide(animated: true)
-                self.lblEmptyMessage.isHidden = self.messages.count > 0
-                self.tableView.reloadData()
-            }
-        }.catch { error in
-            self.showErrAlert("\(Language.failed_to_load_messages)\n\n\(error)")
-        }
+        }, then: {
+            spinnerActivity.hide(animated: true)
+            self.lblEmptyMessage.isHidden = self.messages.count > 0
+            self.tableView.reloadData()
+        }, fail: Language.failed_to_load_messages)
     }
 
     override func viewWillAppear(_ animated: Bool) {
