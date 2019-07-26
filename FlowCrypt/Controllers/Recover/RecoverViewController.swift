@@ -14,7 +14,7 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.searchMessage()
+        self.fetchBackups()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -22,7 +22,7 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
         self.navigationController?.isNavigationBarHidden = true
     }
 
-    func searchMessage() {
+    func fetchBackups() {
         self.showSpinner()
         self.async({ () -> [KeyDetails] in
             let armoredBackupsData = try await(Imap.instance.searchBackups(email: GoogleApi.instance.getEmail()))
@@ -33,7 +33,7 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
             self.encryptedBackups = keyDetails.filter { $0.private != nil }
             if self.encryptedBackups!.count == 0 {
                 let alert = UIAlertController(title: "Notice", message: Language.no_backups, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.searchMessage() })
+                alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.fetchBackups() })
                 alert.addAction(UIAlertAction(title: Language.use_other_account, style: .default) { _ in
                     self.async({ GoogleApi.instance.signOut() }, then: { _ in
                         let signInVc = self.instantiate(viewController: SignInViewController.self)
@@ -47,23 +47,19 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
 
     @IBAction func loadAccountButtonPressed(_ sender: Any) {
         let entered_pass_phrase = self.passPhaseTextField.text!
-        print("pp: '\(entered_pass_phrase)'")
         if entered_pass_phrase.isEmpty {
             self.showErrAlert(Language.enter_pass_phrase) { self.passPhaseTextField.becomeFirstResponder() }
             return
         }
+        self.showSpinner()
         self.async({ () -> [KeyDetails] in
             var matchingBackups = [KeyDetails]()
-            print(self.encryptedBackups)
             for k in self.encryptedBackups! {
-                print(k)
                 let decryptRes = try Core.decryptKey(armoredPrv: k.private!, passphrase: entered_pass_phrase)
-                print(decryptRes)
                 if decryptRes.decryptedKey != nil {
                     matchingBackups.append(k)
                 }
             }
-            print(matchingBackups)
             return matchingBackups
         }, then: { matchingBackups in
             guard matchingBackups.count > 0 else {
