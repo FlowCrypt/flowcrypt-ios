@@ -2,17 +2,16 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "paperclip.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "paperclip@2x.png",
+      "filename" : "icons8-attach-50.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "paperclip@3x.png",
+      "filename" : "icons8-attach-75.png",
       "scale" : "3x"
     }
   ],

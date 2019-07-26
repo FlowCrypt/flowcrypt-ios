@@ -708,7 +708,7 @@
                         </barButtonItem>
                         <rightBarButtonItems>
                             <barButtonItem image="mail" id="5bb-Rw-S4m" userLabel="mail"/>
-                            <barButtonItem image="trash" id="8Kb-DM-P9I" userLabel="delete">
+                            <barButtonItem systemItem="trash" id="8Kb-DM-P9I" userLabel="delete">
                                 <connections>
                                     <action selector="btnTrashTapWithSender:" destination="7qo-Z9-sVQ" id="GDu-3F-ahS"/>
                                 </connections>
@@ -773,9 +773,8 @@
         <image name="paperclip" width="40" height="30"/>
         <image name="reply-all" width="45" height="45"/>
         <image name="search_icn" width="25" height="25"/>
-        <image name="trash" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="4YH-WH-W0S"/>
+        <segue reference="IZs-CK-rtV"/>
     </inferredMetricsTieBreakers>
 </document>
