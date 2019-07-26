@@ -14,10 +14,6 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
     @IBOutlet var lblName: UILabel!
     @IBOutlet var lblEmail: UILabel!
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return UIStatusBarStyle.lightContent
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.lblName.text = String(GoogleApi.instance.getName().split(separator: " ").first!) // show first name, save space

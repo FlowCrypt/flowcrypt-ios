@@ -6,10 +6,6 @@ import UIKit
 
 class MyNavigationController: ENSideMenuNavigationController, ENSideMenuDelegate {
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return UIStatusBarStyle.lightContent
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         let sideMenuVC = self.storyboard?.instantiateViewController(withIdentifier: "MenuTableViewController") as! MyMenuTableViewController
