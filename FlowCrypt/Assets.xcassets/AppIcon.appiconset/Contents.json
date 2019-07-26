@@ -1,48 +1,103 @@
 {
   "images" : [
     {
-      "idiom" : "iphone",
       "size" : "20x20",
+      "idiom" : "iphone",
+      "filename" : "flowcrypt-ios-icon-40px.png",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "size" : "20x20",
       "scale" : "3x"
+    },
+    {
+      "size" : "29x29",
+      "idiom" : "iphone",
+      "filename" : "flowcrypt-ios-icon-58px.png",
+      "scale" : "2x"
     },
     {
       "idiom" : "iphone",
       "size" : "29x29",
+      "scale" : "3x"
+    },
+    {
+      "size" : "40x40",
+      "idiom" : "iphone",
+      "filename" : "flowcrypt-ios-icon-80px.png",
       "scale" : "2x"
     },
     {
       "idiom" : "iphone",
+      "size" : "40x40",
+      "scale" : "3x"
+    },
+    {
+      "size" : "60x60",
+      "idiom" : "iphone",
+      "filename" : "flowcrypt-ios-icon-120px.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "iphone",
+      "size" : "60x60",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "ipad",
+      "size" : "20x20",
+      "scale" : "1x"
+    },
+    {
+      "size" : "20x20",
+      "idiom" : "ipad",
+      "filename" : "flowcrypt-ios-icon-40px-1.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "ipad",
       "size" : "29x29",
-      "scale" : "3x"
+      "scale" : "1x"
     },
     {
-      "idiom" : "iphone",
-      "size" : "40x40",
+      "size" : "29x29",
+      "idiom" : "ipad",
+      "filename" : "flowcrypt-ios-icon-58px-1.png",
       "scale" : "2x"
     },
     {
-      "idiom" : "iphone",
+      "idiom" : "ipad",
       "size" : "40x40",
-      "scale" : "3x"
+      "scale" : "1x"
     },
     {
-      "idiom" : "iphone",
-      "size" : "60x60",
+      "size" : "40x40",
+      "idiom" : "ipad",
+      "filename" : "flowcrypt-ios-icon-80px-1.png",
       "scale" : "2x"
     },
     {
-      "idiom" : "iphone",
-      "size" : "60x60",
-      "scale" : "3x"
+      "idiom" : "ipad",
+      "size" : "76x76",
+      "scale" : "1x"
     },
     {
-      "idiom" : "ios-marketing",
+      "size" : "76x76",
+      "idiom" : "ipad",
+      "filename" : "flowcrypt-ios-icon-152px.png",
+      "scale" : "2x"
+    },
+    {
+      "size" : "83.5x83.5",
+      "idiom" : "ipad",
+      "filename" : "flowcrypt-ios-icon-167px.png",
+      "scale" : "2x"
+    },
+    {
       "size" : "1024x1024",
+      "idiom" : "ios-marketing",
+      "filename" : "flowcrypt-ios-icon-1024px.png",
       "scale" : "1x"
     }
   ],
