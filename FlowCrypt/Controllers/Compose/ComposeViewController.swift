@@ -34,6 +34,7 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
             self.txtSubject.text = "Re: \(self.replyToSubject ?? "(no subject)")"
             self.txtRecipient.text = replyToRecipient?.mailbox ?? ""
         }
+        let _ = Imap.instance.getSmtpSess() // establish session before user taps send, so that sending msg is faster once the user does tap it
     }
 
     func isInputValid() -> Bool {

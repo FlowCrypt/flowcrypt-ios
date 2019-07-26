@@ -10,4 +10,11 @@ extension String {
         return trimmingCharacters(in: .whitespaces).isEmpty == false
     }
 
+    var trimLeadingSlash: String {
+        if self.count > 0 && self[self.startIndex] == "/" {
+            return String(self.dropFirst())
+        }
+        return self
+    }
+
 }

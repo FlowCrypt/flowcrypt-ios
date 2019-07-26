@@ -33,7 +33,7 @@
         <!--Sign In View Controller-->
         <scene sceneID="i4Q-1V-xf3">
             <objects>
-                <viewController id="hBK-2y-ci5" customClass="SignInViewController" customModule="FlowCrypt" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SignInViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="hBK-2y-ci5" customClass="SignInViewController" customModule="FlowCrypt" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="CBM-TQ-Q34"/>
                         <viewControllerLayoutGuide type="bottom" id="8R2-QG-2aw"/>

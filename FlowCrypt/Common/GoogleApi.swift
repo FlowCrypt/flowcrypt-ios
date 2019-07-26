@@ -33,13 +33,13 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
 
     func signOut() -> Promise<VOID> { return Promise<VOID> { resolve, reject in
         GIDSignIn.sharedInstance().disconnect()
-        self.signOutCallback = { error in error != nil ? resolve(VOID()) : reject(error!) }
+        self.signOutCallback = { error in error == nil ? resolve(VOID()) : reject(error!) }
     }}
 
     func signIn(viewController: UIViewController) -> Promise<GIDGoogleUser> { return Promise<GIDGoogleUser> { resolve, reject in
         self.viewController = viewController
         self.signInCallback = { user, error in
-            error != nil ? resolve(user!) : reject(error!)
+            error == nil ? resolve(user!) : reject(error!)
             self.viewController = nil
         }
         GIDSignIn.sharedInstance().uiDelegate = self

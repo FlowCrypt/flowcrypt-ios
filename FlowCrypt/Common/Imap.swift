@@ -71,8 +71,8 @@ class Imap {
                         reject(Errors.valueError("fetchMessagesByNumber messages == nil"))
                     } else {
                         self.messages.append(contentsOf: messages!)
-                        self.messages = self.messages.sorted { $0.header.date > $1.header.date }
-                        resolve(messages!)
+                        self.messages.sort { $0.header.date > $1.header.date }
+                        resolve(self.messages)
                     }
                 }
             }
@@ -111,8 +111,8 @@ class Imap {
             var folders = [MCOIMAPFolder]()
             for f in arr {
                 let folder = f as! MCOIMAPFolder
-                let path = folder.path.replacingOccurrences(of: "[Gmail]", with: "")
-                if path != "" && path != "/" {
+                let path = folder.path.replacingOccurrences(of: "[Gmail]", with: "").trimLeadingSlash
+                if path != "" {
                     menu.append(path)
                     folders.append(folder)
                 }
@@ -179,7 +179,7 @@ class Imap {
             .start(self.finalize("fetchMsgAtt", resolve, reject, retry: { self.fetchMsgAtt(msgUid: msgUid, part: part) }))
     }}
 
-    func searchBackups(email: String) -> Promise<[String]> { return Promise<[String]>.valueReturning {
+    func searchBackups(email: String) -> Promise<Data> { return Promise<Data>.valueReturning {
         var exprSubjects: MCOIMAPSearchExpression? = nil;
         for subject in EmailConstant.recoverAccountSearchSubject {
             let exprSubject = MCOIMAPSearchExpression.searchSubject(subject)
@@ -190,17 +190,14 @@ class Imap {
         let searchRes = try await(self.searchExpression(folder: self.inboxFolder, expression: backupSearchExpr!))
         let requestKind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
         let msgs = try await(self.fetchMsgs(folder: self.inboxFolder, kind: ReqKind(rawValue: requestKind), uids: searchRes))
-        var backups = [String]()
+        var data = Data()
         for msg in msgs {
             for attPart in msg.attachments() as! [MCOIMAPPart] {
-                let attData = try await(self.fetchMsgAtt(msgUid: msg.uid, part: attPart))
-                let attString = String(data: attData, encoding: .utf8) ?? ""
-                if attString.range(of: "----BEGIN PGP PRIVATE KEY----") != nil {
-                    backups.append(attString)
-                }
+                data += try await(self.fetchMsgAtt(msgUid: msg.uid, part: attPart))
+                data += [10] // newline
             }
         }
-        return backups
+        return data
     }}
 
     private func log(_ op: String, error: Error?, res: Any?, start: DispatchTime) {
