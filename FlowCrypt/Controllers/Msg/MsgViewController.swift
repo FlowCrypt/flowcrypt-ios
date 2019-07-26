@@ -51,7 +51,7 @@ class MsgViewController: BaseViewController {
                 let e = decryptErrBlock!.decryptErr!.error
                 self.renderMsgBody("Dould not decrypt message:\n\(e.type)\n\n\(e.message)\n\n\(decryptErrBlock!.content)", color: UIColor.red)
             }
-            self.markAsRead()
+            self.markAsReadIfNotAlreadyMarked()
         }, fail: Language.could_not_open_message)
     }
 
@@ -66,11 +66,11 @@ class MsgViewController: BaseViewController {
         _ = self.navigationController?.popViewController(animated: true)
     }
 
-    func markAsRead() {
-        if self.objMessage.flags.rawValue == 0 {
-            self.objMessage.flags = MCOMessageFlag.seen
+    func markAsReadIfNotAlreadyMarked() {
+        if !self.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) {
+            self.objMessage.flags.formUnion(MCOMessageFlag.seen)
+            let _ = Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async, do not await
         }
-        let _ = Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async, do not await
     }
 
     @IBAction func btnTrashTap(sender: AnyObject) {
