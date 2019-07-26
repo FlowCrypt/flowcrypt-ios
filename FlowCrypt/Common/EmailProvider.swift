@@ -12,31 +12,30 @@ class EmailProvider: NSObject {
     var totalNumberOfInboxMessages: Int32 = 0
     var messages = [MCOIMAPMessage]()
     let inboxFolder = "INBOX"
+    var imapSess: MCOIMAPSession?
 
     struct EmptyError: Error {}
     
-    func imapSession() -> MCOIMAPSession {
-        let s = MCOIMAPSession()
-        s.hostname = "imap.gmail.com"
-        s.port = 993
-        s.connectionType = MCOConnectionType.TLS
-        s.authType = MCOAuthType.xoAuth2
-        s.username = GoogleApi.instance.getEmail()
-        s.password = nil
-        s.oAuth2Token = GoogleApi.instance.getAccessToken()
-        s.authType = MCOAuthType.xoAuth2
-        s.connectionType = MCOConnectionType.TLS
-        s.connectionLogger = { (connectionID, type, data) in
-            if data != nil {
-                if let string = NSString(data: data!, encoding: String.Encoding.utf8.rawValue) {
-                    NSLog("Connectionlogger: \(string)")
-                }
-            }
+    func getImapSess() -> MCOIMAPSession {
+        if imapSess == nil {
+            print("IMAP: creating a new session")
+            let s = MCOIMAPSession()
+            s.hostname = "imap.gmail.com"
+            s.port = 993
+            s.connectionType = MCOConnectionType.TLS
+            s.authType = MCOAuthType.xoAuth2
+            s.username = GoogleApi.instance.getEmail()
+            s.password = nil
+            s.oAuth2Token = GoogleApi.instance.getAccessToken()
+            s.authType = MCOAuthType.xoAuth2
+            s.connectionType = MCOConnectionType.TLS
+            imapSess = s
         }
-        return s
+        return imapSess!
     }
 
-    func smptSession() -> MCOSMTPSession {
+    func getSmtpSess() -> MCOSMTPSession {
+        print("SMTP: creating a new session")
         let s = MCOSMTPSession()
         s.hostname = "smtp.gmail.com"
         s.port = 465
@@ -45,20 +44,13 @@ class EmailProvider: NSObject {
         s.username = GoogleApi.instance.getEmail()
         s.password = nil
         s.oAuth2Token = GoogleApi.instance.getAccessToken()
-        s.connectionLogger = { (connectionID, type, data) in
-            if data != nil {
-                if let string = NSString(data: data!, encoding: String.Encoding.utf8.rawValue) {
-                    NSLog("Connectionlogger: \(string)")
-                }
-            }
-        }
         return s
     }
 
     func fetchLastMessages(nMessage: Int, folderName: String, callback: @escaping ((_ emails: [Any]?, _ error: Error?) -> Void)) {
         self.isLoading = true
         let requestKind = MCOIMAPMessagesRequestKind.headers.rawValue | MCOIMAPMessagesRequestKind.structure.rawValue | MCOIMAPMessagesRequestKind.internalDate.rawValue | MCOIMAPMessagesRequestKind.headerSubject.rawValue | MCOIMAPMessagesRequestKind.flags.rawValue
-        imapSession().folderInfoOperation(folderName)?.start({ (error: Error?, folderInfor: MCOIMAPFolderInfo?) in
+        getImapSess().folderInfoOperation(folderName)?.start({ (error: Error?, folderInfor: MCOIMAPFolderInfo?) in
             if error == nil {
                 let totalNumberOfMessagesDidChange = Int32(self.totalNumberOfInboxMessages) != folderInfor?.messageCount
                 self.totalNumberOfInboxMessages = (folderInfor?.messageCount)!
@@ -78,7 +70,7 @@ class EmailProvider: NSObject {
                 } else { // Else just fetch the last N messages
                     fetchRange = MCORangeMake(UInt64(self.totalNumberOfInboxMessages - (numberOfMessagesToLoad - 1)), (UInt64(numberOfMessagesToLoad - 1)))
                 }
-                let imapMessagesFetchOp = self.imapSession().fetchMessagesByNumberOperation(withFolder: folderName, requestKind: MCOIMAPMessagesRequestKind(rawValue: requestKind), numbers: MCOIndexSet(range: fetchRange))
+                let imapMessagesFetchOp = self.getImapSess().fetchMessagesByNumberOperation(withFolder: folderName, requestKind: MCOIMAPMessagesRequestKind(rawValue: requestKind), numbers: MCOIndexSet(range: fetchRange))
                 imapMessagesFetchOp?.start({ (error: Error?, messages: [Any]?, vanishedMessages: MCOIndexSet?) in
                     self.isLoading = false
                     if error == nil {
@@ -100,7 +92,7 @@ class EmailProvider: NSObject {
     }
 
     func fetchFolder(callback: @escaping ((_ folders: [MCOIMAPFolder]?, _ menuArray: [String]?, _ error: Error?) -> Void)) {
-        imapSession().fetchAllFoldersOperation().start { (error, res) in
+        getImapSess().fetchAllFoldersOperation().start { (error, res) in
             var menuArray = [String]()
             var arrFolder = [MCOIMAPFolder]()
             if res != nil {
@@ -123,32 +115,32 @@ class EmailProvider: NSObject {
     }
 
     func fetchMessageBody(message: MCOIMAPMessage, folder: String) -> Promise<Data> { return Promise { resolve, reject in
-        self.imapSession().fetchMessageOperation(withFolder: folder, uid: message.uid)?.start { error, data in
+        self.getImapSess().fetchMessageOperation(withFolder: folder, uid: message.uid)?.start { error, data in
             // todo - see if I can just pass `data` instead of `MCOMessageParser(data: data).data()`
             data != nil ? resolve(MCOMessageParser(data: data).data()) : reject(error ?? EmptyError())
         }
     }}
 
     func markAsRead(message: MCOIMAPMessage, folder: String) {
-        imapSession().storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: message.flags)?.start({ (error) in })
+        getImapSess().storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: message.flags)?.start({ (error) in })
     }
 
     func markAsTrashMessage(message: MCOIMAPMessage, folder: String, destFolder: String, callback: @escaping ((_ error: Error?) -> Void)) {
-        imapSession().copyMessagesOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), destFolder: destFolder)?.start({ (error, response) in
+        getImapSess().copyMessagesOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), destFolder: destFolder)?.start({ (error, response) in
             callback(error)
         })
     }
 
     func deleteMessage(message: MCOIMAPMessage, folder: String, callback: @escaping ((_ error: Error?) -> Void)) {
-        imapSession().storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: message.flags)?.start(callback)
+        getImapSess().storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: message.flags)?.start(callback)
     }
 
     func sendMail(mime: Data) -> Promise<VOID> { return Promise<VOID> { (resolve: @escaping (VOID) -> Void, reject: @escaping (Error) -> Void) in
-        self.smptSession().sendOperation(with: mime)?.start { e in e != nil ? reject(e!) : resolve(VOID())}
+        self.getSmtpSess().sendOperation(with: mime)?.start { e in e != nil ? reject(e!) : resolve(VOID())}
     }}
 
     func expungeToDelete(folder: String, callback: @escaping ((_ error: Error?) -> Void)) {
-        imapSession().expungeOperation(folder)?.start(callback)
+        getImapSess().expungeOperation(folder)?.start(callback)
     }
 
     func searchBackup(email: String, callback: @escaping ((_ rawArmoredKey: String?, _ error: Error?) -> Void)) {
@@ -160,13 +152,13 @@ class EmailProvider: NSObject {
         }
         let exprFromToMe = MCOIMAPSearchExpression.searchOr(MCOIMAPSearchExpression.search(from: email), other: MCOIMAPSearchExpression.search(to: email))
         let backupSearchExpr = MCOIMAPSearchExpression.searchAnd(exprFromToMe, other: exprSubjects)
-        imapSession().searchExpressionOperation(withFolder: self.inboxFolder, expression: backupSearchExpr)?.start({ (error: Error?, index: MCOIndexSet?) in
+        getImapSess().searchExpressionOperation(withFolder: self.inboxFolder, expression: backupSearchExpr)?.start({ (error: Error?, index: MCOIndexSet?) in
             guard error == nil else {
                 callback(nil, error)
                 return
             }
             let requestKind = MCOIMAPMessagesRequestKind.headers.rawValue | MCOIMAPMessagesRequestKind.structure.rawValue | MCOIMAPMessagesRequestKind.internalDate.rawValue | MCOIMAPMessagesRequestKind.headerSubject.rawValue | MCOIMAPMessagesRequestKind.flags.rawValue
-            let imapMessagesFetchOp = self.imapSession().fetchMessagesOperation(withFolder: self.inboxFolder, requestKind: MCOIMAPMessagesRequestKind(rawValue: requestKind), uids: index)
+            let imapMessagesFetchOp = self.getImapSess().fetchMessagesOperation(withFolder: self.inboxFolder, requestKind: MCOIMAPMessagesRequestKind(rawValue: requestKind), uids: index)
             imapMessagesFetchOp?.start({ (error: Error?, messages: [Any]?, vanishedMessages: MCOIndexSet?) in
                 guard error == nil else {
                     callback(nil, error)
@@ -196,7 +188,7 @@ class EmailProvider: NSObject {
                     $0.header.date > $1.header.date
                 }
                 let part = attachments[0] as! MCOIMAPPart
-                let imapAttachmentFetchOp = self.imapSession().fetchMessageAttachmentOperation(withFolder: self.inboxFolder, uid: message.uid, partID: part.partID, encoding: part.encoding)
+                let imapAttachmentFetchOp = self.getImapSess().fetchMessageAttachmentOperation(withFolder: self.inboxFolder, uid: message.uid, partID: part.partID, encoding: part.encoding)
                 imapAttachmentFetchOp?.start({ (error: Error?, data: Data?) in
                     if data != nil {
                         let decodedString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)

@@ -27,7 +27,7 @@ class MsgViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        let start = DispatchTime.now()
         self.lblSender.text = objMessage.header.sender.mailbox ?? "(unknown sender)"
         self.lblSubject.text = objMessage.header.subject ?? "(no subject)"
         self.lblBody.numberOfLines = 0
@@ -36,6 +36,7 @@ class MsgViewController: BaseViewController {
         self.showSpinner(Language.loading, isUserInteractionEnabled: true)
         Promise<Void> {
             let mime = try await(EmailProvider.sharedInstance.fetchMessageBody(message: self.objMessage, folder: self.path))
+            print("Msg loaded after \(start.millisecondsSince()) ms")
             self.bodyMessage = mime
             self.hideSpinner()
             let realm = try Realm()
@@ -43,6 +44,7 @@ class MsgViewController: BaseViewController {
             let decrypted = try Core.parseDecryptMsg(encrypted: mime, keys: keys, msgPwd: nil, isEmail: true)
             DispatchQueue.main.async {
                 let decryptErrBlock = decrypted.blocks.first(where: { $0.decryptErr != nil })
+                print("Fully rendered after \(start.millisecondsSince()) ms")
                 if decryptErrBlock == nil {
                     self.renderMsgBody(decrypted.text, color: Constants.green)
                 } else {
