@@ -620,7 +620,7 @@
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="21" id="h4p-RU-HOw"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -640,7 +640,7 @@
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="21" id="Rfl-Ep-Hfc"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="15"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -650,7 +650,7 @@
                                                     <constraint firstAttribute="width" constant="80" id="Hko-NK-QQu"/>
                                                     <constraint firstAttribute="height" constant="21" id="aeL-M7-n8K"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="15"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -760,18 +760,18 @@
         </scene>
     </scenes>
     <resources>
-        <image name=" floating_icn" width="42.5" height="42.5"/>
+        <image name=" floating_icn" width="41.333332061767578" height="41.333332061767578"/>
         <image name="android-send" width="25" height="25"/>
-        <image name="archive" width="30" height="30"/>
-        <image name="arrow-left-c" width="30" height="30"/>
+        <image name="archive" width="25" height="25"/>
+        <image name="arrow-left-c" width="25" height="25"/>
         <image name="full-logo" width="600" height="94"/>
         <image name="gmail_icn" width="64" height="64"/>
         <image name="help_icn" width="25" height="25"/>
-        <image name="mail" width="30" height="30"/>
+        <image name="mail" width="25" height="25"/>
         <image name="menu_icn" width="25" height="25"/>
         <image name="outlook_icn" width="64" height="64"/>
-        <image name="paperclip" width="40" height="30"/>
-        <image name="reply-all" width="45" height="45"/>
+        <image name="paperclip" width="25" height="25"/>
+        <image name="reply-all" width="37.5" height="37.5"/>
         <image name="search_icn" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
