@@ -4,7 +4,7 @@
 
 import UIKit
 import MBProgressHUD
-
+import Promises
 
 class InboxViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource, ENSideMenuDelegate, MsgViewControllerDelegate {
 
@@ -21,49 +21,32 @@ class InboxViewController: BaseViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         self.sideMenuController()?.sideMenu?.allowslideGesture = true
-        if iMapFolderName == "" {
-            self.title = "Inbox"
-        } else {
-            self.title = iMapFolderName
-        }
-        self.lblEmptyMessage.text = self.title! + " is empty"
+        self.title = iMapFolderName == "" ? "Inbox" : iMapFolderName
+        self.lblEmptyMessage.text =  "\(self.title!) is empty"
         self.lblEmptyMessage.isHidden = true
         self.tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
         self.tableView.tableFooterView = UIView()
         self.sideMenuController()?.sideMenu?.delegate = self
-
         if self.iMapFolderName == "" {
             self.path = "INBOX"
         }
-        self.fetchEmailByImap()
+        self.fetchAndRenderEmails()
         ToastManager.shared.tapToDismissEnabled = true
     }
 
-    func fetchEmailByImap() {
+    func fetchAndRenderEmails() {
         let spinnerActivity = MBProgressHUD.showAdded(to: self.view, animated: true)
         spinnerActivity.label.text = "Loading"
         spinnerActivity.isUserInteractionEnabled = false
-        EmailProvider.sharedInstance.fetchLastMessages(nMessage: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folderName: self.path) { (messages: [Any]?, error: Error?) in
-            spinnerActivity.hide(animated: true)
-            if error == nil {
-                if messages == nil {
-                    self.lblEmptyMessage.isHidden = false
-                }
-                if let messages = messages as? [MCOIMAPMessage] {
-                    self.messages = messages
-                    self.lblEmptyMessage.isHidden = true
-                    self.tableView.reloadData()
-                }
-            } else {
-                // todo - handle this proactively instead of waiting for failure, based on access token expiration
-                // todo - would this fail on non-english phones? Any other way to catch the right error?
-                // todo - this can cause infinite loop, where is the auth renew handling?
-                if error?.localizedDescription == "Unable to authenticate with the current session's credentials." {
-                    self.fetchEmailByImap()
-                    return
-                }
-                self.showErrAlert(Language.failed_to_load_messages + ": \(error!)", onOk: nil)
+        Promise<Void> { _,_ in
+            self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
+            DispatchQueue.main.async {
+                spinnerActivity.hide(animated: true)
+                self.lblEmptyMessage.isHidden = self.messages.count > 0
+                self.tableView.reloadData()
             }
+        }.catch { error in
+            self.showErrAlert("\(Language.failed_to_load_messages)\n\n\(error)")
         }
     }
 
@@ -76,11 +59,6 @@ class InboxViewController: BaseViewController, UITableViewDelegate, UITableViewD
     override func viewWillDisappear(_ animated: Bool) {
         self.sideMenuController()?.sideMenu?.allowslideGesture = false
         self.tableView.reloadData()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     @IBAction func btnMenuTap(sender: AnyObject) { //To open/close menu
@@ -118,7 +96,7 @@ class InboxViewController: BaseViewController, UITableViewDelegate, UITableViewD
         self.navigationController?.pushViewController(msgVc, animated: true)
     }
 
-    func movedOrDeleted(objMessage: MCOIMAPMessage) {
+    func movedOrUpdated(objMessage: MCOIMAPMessage) {
         let index = self.messages.firstIndex(of: objMessage)
         self.messages.remove(at: index!)
         self.tableView.reloadData()

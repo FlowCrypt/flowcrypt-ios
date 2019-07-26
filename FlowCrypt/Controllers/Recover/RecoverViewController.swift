@@ -10,7 +10,7 @@ import Promises
 class RecoverViewController: BaseViewController, UITextFieldDelegate {
 
     @IBOutlet weak var passPhaseTextField: UITextField!
-    var rawArmoredKey: String = ""
+    var encryptedBackups = [KeyDetails]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,29 +22,24 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
         self.navigationController?.isNavigationBarHidden = true
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     func validatePassPhase() {
         let entered_pass_phrase = self.passPhaseTextField.text!
         Promise<Void> { () -> Void in
-            let keyDetailsRes = try Core.parseKeys(armoredOrBinary: self.rawArmoredKey.data(using: .utf8) ?? Data())
-            guard keyDetailsRes.keyDetails.count > 0 else {
-                return self.showErrAlert(Language.no_backups)
+            var matching = [KeyDetails]()
+            for k in self.encryptedBackups {
+                let decryptRes = try Core.decryptKey(armoredPrv: k.private!, passphrase: entered_pass_phrase)
+                if decryptRes.decryptedKey != nil {
+                    matching.append(k)
+                }
             }
-            let keyDetails = keyDetailsRes.keyDetails[0]
-            guard keyDetails.private != nil else {
-                return self.showErrAlert(Language.no_backups)
-            }
-            let decryptRes = try Core.decryptKey(armoredPrv: keyDetails.private!, passphrase: entered_pass_phrase)
-            guard decryptRes.decryptedKey != nil else {
+            guard matching.count == 0 else {
                 return self.showErrAlert(Language.wrong_pass_phrase_retry, onOk: { self.passPhaseTextField.becomeFirstResponder() })
             }
             let realm = try! Realm()
             try! realm.write {
-                realm.add(KeyInfo(keyDetails, passphrase: entered_pass_phrase, source: "backup"))
+                for k in matching {
+                    realm.add(KeyInfo(k, passphrase: entered_pass_phrase, source: "backup"))    
+                }
             }
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "InboxSegue", sender: nil)
@@ -55,34 +50,22 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
     }
 
     func searchMessage() {
-        let spinnerActivity = MBProgressHUD.showAdded(to: self.view, animated: true)
-        spinnerActivity.label.text = "Loading"
-        spinnerActivity.isUserInteractionEnabled = false
-        EmailProvider.sharedInstance.searchBackup(email: GoogleApi.instance.getEmail()) { (rawArmoredKey: String?, error: Error?) in
-            spinnerActivity.hide(animated: true)
-            if rawArmoredKey != nil {
-                self.rawArmoredKey = rawArmoredKey!
-            } else {
+        self.showSpinner()
+        Promise<Void> { _,_ in
+            self.hideSpinner()
+            let armoredBackups = try await(Imap.instance.searchBackups(email: GoogleApi.instance.getEmail()))
+            let keyDetailsRes = try Core.parseKeys(armoredOrBinary: armoredBackups.joined(separator: "\n").data(using: .utf8) ?? Data())
+            self.encryptedBackups = keyDetailsRes.keyDetails.filter { $0.private != nil }
+            if self.encryptedBackups.count == 0 {
                 let alert = UIAlertController(title: "Notice", message: Language.no_backups, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Retry", style: .default) { action in
-                    self.searchMessage()
+                alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.searchMessage() })
+                alert.addAction(UIAlertAction(title: Language.use_other_account, style: .default) { _ in
+                    GoogleApi.instance.signOut().then(on: .main) { _ in
+                        // todo - go to sign in activity
+                    }.catch { error in self.showErrAlert("\(Language.action_failed)\n\n\(error)", onOk: nil)}
                 })
-                alert.addAction(UIAlertAction(title: Language.use_other_account, style: .default) { action in
-                    GoogleApi.instance.signOut({ (error: Error?) in
-                        if error != nil {
-                            let alert = UIAlertController(title: "Error", message: Language.no_internet, preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "OK", style: .destructive) { action in
-                                self.passPhaseTextField.becomeFirstResponder()
-                            })
-                            self.present(alert, animated: true, completion: nil)
-                        } else {
-                            self.navigationController?.popViewController(animated: true)
-                        }
-                    })
-                })
-                self.present(alert, animated: true, completion: nil)
             }
-        }
+        }.catch { error in self.showErrAlert("\(Language.action_failed)\n\n\(error)", onOk: nil) }
     }
 
     @IBAction func loadAccountButtonPressed(_ sender: Any) {

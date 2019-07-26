@@ -56,4 +56,6 @@ struct Language {
     public static let could_not_configure_google = "Could not configure google services"
     public static let could_not_compose_message = "Could not compose message"
     public static let unhandled_core_err = "Background core service error"
+    public static let action_failed = "Action failed"
+    public static let could_not_fetch_folders = "Could not fetch folders"
 }

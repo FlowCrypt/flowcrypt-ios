@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import Promises
 
 class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -19,29 +20,17 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.fetchImapFolders()
-        self.lblName.text = GoogleApi.instance.getName()
-        self.lblEmail.text = GoogleApi.instance.getEmail()
+        self.lblName.text = String(GoogleApi.instance.getName().split(separator: " ").first!) // show first name, save space
+        self.lblEmail.text = GoogleApi.instance.getEmail().replacingOccurrences(of: "@gmail.com", with: "")
+        self.async({ try await(Imap.instance.fetchFolders()) }, then: { res in
+            self.arrImap = res.folders
+            self.menuArray = res.menu
+            self.menuTable.reloadData()
+        }, fail: Language.could_not_fetch_folders)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.hideSideMenuView()
-    }
-
-    func fetchImapFolders() {
-        EmailProvider.sharedInstance.fetchFolder { (folders, menuarr, error) in
-            if menuarr != nil {
-                self.arrImap = folders! as [MCOIMAPFolder]
-                self.menuArray = menuarr!
-                self.menuTable.reloadData()
-            } else if error != nil {
-                print("Imap folder error", error!)
-                if error?.localizedDescription == "Unable to authenticate with the current session's credentials." {
-                    self.fetchImapFolders()
-                    return
-                }
-            }
-        }
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -63,8 +52,8 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        EmailProvider.sharedInstance.totalNumberOfInboxMessages = 0
-        EmailProvider.sharedInstance.messages.removeAll()
+        Imap.instance.totalNumberOfInboxMsgs = 0
+        Imap.instance.messages.removeAll()
         let inboxVc = self.instantiate(viewController: InboxViewController.self)
         inboxVc.iMapFolderName = self.menuArray[indexPath.row].capitalized
         inboxVc.path = self.arrImap[indexPath.row].path

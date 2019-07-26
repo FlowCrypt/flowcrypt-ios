@@ -110,7 +110,7 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
             pubKeys.append(recipientPub.armored!)
             let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: from, subject: subject, replyToMimeMsg: replyToMimeMsg)
             let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubKeys);
-            let _ = try await(EmailProvider.sharedInstance.sendMail(mime: composeRes.mimeEncoded))
+            let _ = try await(Imap.instance.sendMail(mime: composeRes.mimeEncoded))
             DispatchQueue.main.async {
                 self.hideSpinner()
                 self.showToast(Language.encrypted_reply_sent)

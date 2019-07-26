@@ -4,13 +4,16 @@
 
 import UIKit
 import GoogleSignIn
+import Promises
 
 class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUIDelegate {
 
     static let instance = GoogleApi()
-    var signInCallback: ((_ user: GIDGoogleUser?, _ error: Error?) -> Void)?
-    var signOutCallback: ((_ error: Error?) -> Void)?
-    var viewController: UIViewController?
+
+    private var signInCallback: ((_ user: GIDGoogleUser?, _ error: Error?) -> Void)?
+    private var signOutCallback: ((_ error: Error?) -> Void)?
+    private var signInSilentlyCallback: ((_ accessToken: String?, _ error: Error?) -> Void)?
+    private var viewController: UIViewController?
 
     func setup() {
         GIDSignIn.sharedInstance().delegate = self
@@ -24,21 +27,31 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
         }
     }
 
-    func signOut(_ callback: @escaping ((_ error: Error?) -> Void)) {
-        self.signOutCallback = callback
-        GIDSignIn.sharedInstance().disconnect()
-    }
-
     func isGoogleSessionValid() -> Bool {
         return GIDSignIn.sharedInstance().hasAuthInKeychain()
     }
 
-    func signIn(viewController: UIViewController, callback: @escaping ((_ user: GIDGoogleUser?, _ error: Error?) -> Void)) {
+    func signOut() -> Promise<VOID> { return Promise<VOID> { resolve, reject in
+        GIDSignIn.sharedInstance().disconnect()
+        self.signOutCallback = { error in error != nil ? resolve(VOID()) : reject(error!) }
+    }}
+
+    func signIn(viewController: UIViewController) -> Promise<GIDGoogleUser> { return Promise<GIDGoogleUser> { resolve, reject in
         self.viewController = viewController
-        self.signInCallback = callback
+        self.signInCallback = { user, error in
+            error != nil ? resolve(user!) : reject(error!)
+            self.viewController = nil
+        }
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().signIn()
-    }
+    }}
+
+    func renewAccessToken() -> Promise<String> { return Promise<String> { resolve, reject in
+        self.signInSilentlyCallback = { accessToken, error in
+            error != nil ? resolve(accessToken!) : reject(error!)
+        }
+        GIDSignIn.sharedInstance().signInSilently()
+    }}
 
     func removeGoogleInfo() {
         UserDefaults.standard.removeObject(forKey: "google_email")
@@ -48,24 +61,15 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
     }
 
     func getEmail() -> String {
-        if let email = UserDefaults.standard.value(forKey: "google_email") as? String {
-            return email
-        }
-        return ""
+        return UserDefaults.standard.value(forKey: "google_email") as? String ?? ""
     }
 
     func getName() -> String {
-        if let name = UserDefaults.standard.value(forKey: "google_name") as? String {
-            return name
-        }
-        return ""
+        return UserDefaults.standard.value(forKey: "google_name") as? String ?? ""
     }
 
     func getAccessToken() -> String {
-        if let token = UserDefaults.standard.value(forKey: "google_accessToken") as? String {
-            return token
-        }
-        return ""
+        return UserDefaults.standard.value(forKey: "google_accessToken") as? String ?? ""
     }
 
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
@@ -75,17 +79,16 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
             UserDefaults.standard.set(user.authentication.accessToken, forKey: "google_accessToken")
             UserDefaults.standard.synchronize()
         }
-        if let signinCallback = self.signInCallback {
-            signinCallback(user, error)
-        }
+        self.signInCallback?(user, error)
+        self.signInCallback = nil
+        self.signInSilentlyCallback?(user?.authentication.accessToken, error)
+        self.signInSilentlyCallback = nil
     }
 
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         self.removeGoogleInfo()
-        if let signOutCallback = self.signOutCallback {
-            signOutCallback(error)
-        }
-        self.signOutCallback!(error)
+        self.signOutCallback?(error)
+        self.signOutCallback = nil
     }
 
     func sign(inWillDispatch signIn: GIDSignIn!, error: Error!) {

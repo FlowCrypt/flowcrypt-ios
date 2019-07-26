@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import MBProgressHUD
+import Promises
 
 class BaseViewController: UIViewController {
 
@@ -47,6 +48,21 @@ class BaseViewController: UIViewController {
         let v = UIView(frame: CGRect(x: 0, y: 0, width: 7, height: textField.frame.size.height))
         textField.leftView = v
         textField.leftViewMode = .always
+    }
+
+    func async<T>(_ work: @escaping () throws -> T, then onMain: @escaping (T) throws -> Void, fail alertMsg: String = "Action failed") {
+        Promise<Void> { _, _ in
+            let workResult = try work()
+            DispatchQueue.main.async {
+                do {
+                    try onMain(workResult)
+                } catch {
+                    self.showErrAlert("\(alertMsg)\n\n[then .main] (error)")
+                }
+            }
+        }.catch { error in
+            self.showErrAlert("\(alertMsg)\n\n\(error)")
+        }
     }
 
 }

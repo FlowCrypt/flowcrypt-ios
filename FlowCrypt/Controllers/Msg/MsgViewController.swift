@@ -8,7 +8,7 @@ import RealmSwift
 import Promises
 
 protocol MsgViewControllerDelegate {
-    func movedOrDeleted(objMessage: MCOIMAPMessage)
+    func movedOrUpdated(objMessage: MCOIMAPMessage)
 }
 
 class MsgViewController: BaseViewController {
@@ -27,35 +27,32 @@ class MsgViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let start = DispatchTime.now()
         self.lblSender.text = objMessage.header.sender.mailbox ?? "(unknown sender)"
         self.lblSubject.text = objMessage.header.subject ?? "(no subject)"
         self.lblBody.numberOfLines = 0
-
         self.lblTIme.text = Constants.inboxDateFormatter.string(from: objMessage.header.date)
         self.showSpinner(Language.loading, isUserInteractionEnabled: true)
-        Promise<Void> {
-            let mime = try await(EmailProvider.sharedInstance.fetchMessageBody(message: self.objMessage, folder: self.path))
-            print("Msg loaded after \(start.millisecondsSince()) ms")
+        if self.path == "[Gmail]/Trash" {
+            // self.btnTrash.isHidden = true; // todo - hide the trash btn
+        }
+        self.async({ () -> CoreRes.ParseDecryptMsg in
+            let mime = try await(Imap.instance.fetchMsg(message: self.objMessage, folder: self.path))
             self.bodyMessage = mime
             self.hideSpinner()
             let realm = try Realm()
             let keys = PrvKeyInfo.from(realm: realm.objects(KeyInfo.self))
             let decrypted = try Core.parseDecryptMsg(encrypted: mime, keys: keys, msgPwd: nil, isEmail: true)
-            DispatchQueue.main.async {
-                let decryptErrBlock = decrypted.blocks.first(where: { $0.decryptErr != nil })
-                print("Fully rendered after \(start.millisecondsSince()) ms")
-                if decryptErrBlock == nil {
-                    self.renderMsgBody(decrypted.text, color: Constants.green)
-                } else {
-                    let e = decryptErrBlock!.decryptErr!.error
-                    self.renderMsgBody("Dould not decrypt message:\n\(e.type)\n\n\(e.message)\n\n\(decryptErrBlock!.content)", color: UIColor.red)
-                }
-                self.markAsRead()
+            return decrypted
+        }, then: { decrypted in
+            let decryptErrBlock = decrypted.blocks.first(where: { $0.decryptErr != nil })
+            if decryptErrBlock == nil {
+                self.renderMsgBody(decrypted.text, color: Constants.green)
+            } else {
+                let e = decryptErrBlock!.decryptErr!.error
+                self.renderMsgBody("Dould not decrypt message:\n\(e.type)\n\n\(e.message)\n\n\(decryptErrBlock!.content)", color: UIColor.red)
             }
-        }.catch { error in
-            self.showErrAlert("\(Language.could_not_open_message)\n\n\(error)")
-        }
+            self.markAsRead()
+        }, fail: Language.could_not_open_message)
     }
 
     func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {
@@ -73,57 +70,47 @@ class MsgViewController: BaseViewController {
         if self.objMessage.flags.rawValue == 0 {
             self.objMessage.flags = MCOMessageFlag.seen
         }
-        EmailProvider.sharedInstance.markAsRead(message: self.objMessage, folder: self.path) // async, do not await
+        let _ = Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async, do not await
     }
 
     @IBAction func btnTrashTap(sender: AnyObject) {
-        let spinnerActivity = MBProgressHUD.showAdded(to: self.view, animated: true)
-        spinnerActivity.label.text = "Loading"
-        spinnerActivity.isUserInteractionEnabled = false
-        if self.path != "[Gmail]/Trash" {
-            EmailProvider.sharedInstance.markAsTrashMessage(message: self.objMessage, folder: self.path, destFolder: "[Gmail]/Trash") { (error) in
-                spinnerActivity.hide(animated: true)
-                if error == nil {
-                    if let d = self.delegate {
-                        d.movedOrDeleted(objMessage: self.objMessage)
-                    }
-                    self.successEmailAlert(message: Language.moved_to_trash)
-                }
-            }
-        } else {
-            self.objMessage.flags = MCOMessageFlag.deleted
-            EmailProvider.sharedInstance.deleteMessage(message: self.objMessage, folder: self.path, callback: { (error) in
-                if error == nil {
-                    if let d = self.delegate {
-                        d.movedOrDeleted(objMessage: self.objMessage)
-                    }
-                    EmailProvider.sharedInstance.expungeToDelete(folder: self.path, callback: { (error1) in
-                        if error1 == nil {
-                            spinnerActivity.hide(animated: true)
-                            self.successEmailAlert(message: Language.email_deleted)
-                        }
-                    })
-                } else {
-                    spinnerActivity.hide(animated: true)
-                }
-            })
+        guard self.path != "[Gmail]/Trash" else {
+            // todo - does not need to be here once trash btn is hidden
+            self.showToast("Message is already in trash")
+            return
         }
+        self.showSpinner("Moving to Trash")
+        print("trash tapped")
+        self.renderResult(
+            for: Imap.instance.moveMsg(msg: self.objMessage, folder: self.path, destFolder: "[Gmail]/Trash"), 
+            successAlert: Language.moved_to_trash
+        )
     }
 
     @IBAction func btnArchiveTap(sender: AnyObject) {
-        let spinnerActivity = MBProgressHUD.showAdded(to: self.view, animated: true)
-        spinnerActivity.label.text = "Loading"
-        spinnerActivity.isUserInteractionEnabled = false
+        self.showSpinner("Archiving")
         self.objMessage.flags = MCOMessageFlag.deleted
-        EmailProvider.sharedInstance.deleteMessage(message: self.objMessage, folder: self.path, callback: { (error) in
-            spinnerActivity.hide(animated: true)
-            if error == nil {
-                if let d = self.delegate {
-                    d.movedOrDeleted(objMessage: self.objMessage)
-                }
-                self.successEmailAlert(message: Language.email_archived)
+        print("archiving")
+        self.renderResult(
+            for: Imap.instance.pushUpdatedMsgFlags(msg: self.objMessage, folder: self.path),
+            successAlert: Language.email_archived
+        )
+    }
+
+    func renderResult(for promise: Promise<VOID>, successAlert: String) {
+        print("render result")
+        promise.then(on: .main) { _ in
+            print("promise then")
+            self.hideSpinner()
+            if let d = self.delegate {
+                d.movedOrUpdated(objMessage: self.objMessage)
             }
-        })
+            self.showToast(successAlert)
+            self.btnBackTap(sender: UIBarButtonItem())
+        }.catch { error in
+            print("prom catch")
+            self.showErrAlert("\(Language.action_failed)\n\n\(error)")
+        }
     }
 
     @IBAction func btnReplyTap(sender: UIButton) {
@@ -135,8 +122,4 @@ class MsgViewController: BaseViewController {
         self.navigationController?.pushViewController(replyVc, animated: true)
     }
 
-    func successEmailAlert(message: String!) {
-        UIApplication.shared.keyWindow?.rootViewController?.view.makeToast(message)
-        self.btnBackTap(sender: UIBarButtonItem())
-    }
 }

@@ -12,7 +12,6 @@ class SignInViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.signInWithGmailButton.setViewBorder(1.0, borderColor: UIColor.lightGray, cornerRadius: 5.0)
         self.signInWithOutlookButton.setViewBorder(1.0, borderColor: UIColor.lightGray, cornerRadius: 5.0)
     }
@@ -22,22 +21,11 @@ class SignInViewController: BaseViewController {
         self.navigationController?.isNavigationBarHidden = true
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     // MARK: - Events
     @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
-        GoogleApi.instance.signIn(viewController: self) { (user: GIDGoogleUser?, error: Error?) in
-            if (error == nil) {
-                self.performSegue(withIdentifier: "RecoverSegue", sender: nil)
-            } else {
-                let alert = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Ok", style: .destructive) { action in
-                })
-                self.present(alert, animated: true, completion: nil)
-            }
+        GoogleApi.instance.signIn(viewController: self)
+            .then(on: .main) { user in self.performSegue(withIdentifier: "RecoverSegue", sender: nil) }
+            .catch { error in self.showErrAlert(String(describing: error))
         }
     }
 
