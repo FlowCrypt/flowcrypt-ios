@@ -48,7 +48,7 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
 
     func renewAccessToken() -> Promise<String> { return Promise<String> { resolve, reject in
         self.signInSilentlyCallback = { accessToken, error in
-            error != nil ? resolve(accessToken!) : reject(error!)
+            error == nil ? resolve(accessToken!) : reject(error!)
         }
         GIDSignIn.sharedInstance().signInSilently()
     }}
