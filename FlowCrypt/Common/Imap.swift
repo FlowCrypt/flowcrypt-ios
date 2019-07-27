@@ -19,6 +19,7 @@ class Imap {
     private var lastErr: MCOErrorCode?;
     
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession {
+        Imap.debug(201, "getImapSess newAccessToken=", value: newAccessToken)
         if imapSess == nil || newAccessToken != nil {
             print("IMAP: creating a new session")
             imapSess = MCOIMAPSession()
@@ -31,6 +32,7 @@ class Imap {
             imapSess!.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
             imapSess!.authType = MCOAuthType.xoAuth2
             imapSess!.connectionType = MCOConnectionType.TLS
+            Imap.debug(202, "getImapSess created with oAuth2Token", value: imapSess!.oAuth2Token)
         }
         return imapSess!
     }
@@ -246,29 +248,46 @@ class Imap {
 
     // must be always called with `guard retryAuthErrorNotNeeded else { return }`
     private func retryAuthErrorNotNeeded<T>(_ err: Error?, _ resolve: @escaping (T) -> Void, _ reject: @escaping (Error) -> Void, retry promise: @escaping () -> Promise<T>) -> Bool {
+        let debugId = Int.random(in: 1...Int.max)
         if err == nil {
             self.lastErr = nil;
+            Imap.debug(0, "(\(debugId)) err=nil therefore set lastErr=nil, return=true (no need to retry)")
             return true // no need to retry
         } else {
+            Imap.debug(1, "(\(debugId)) new err retryAuthErrorNotNeeded, err=", value: err)
+            Imap.debug(2, "(\(debugId)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr)
             if (err! as NSError).code == MCOErrorCode.authentication.rawValue && self.lastErr != MCOErrorCode.authentication { // avoiding infinite retry loop
+                Imap.debug(3, "(\(debugId)) it's a retriable auth err, will call renewAccessToken")
                 let start = DispatchTime.now()
                 GoogleApi.instance.renewAccessToken().then { accessToken in
+                    Imap.debug(4, "(\(debugId)) got renewed access token: ", value: accessToken)
                     let _ = self.getImapSess(newAccessToken: accessToken) // use the new token
                     let _ = self.getSmtpSess(newAccessToken: accessToken) // use the new token
-                    self.log("renewAccessToken (next will retry original req)", error: nil, res: "<accessToken>", start: start)
+                    Imap.debug(5, "(\(debugId)) forced session refreshes")
+                    self.log("(\(debugId))renewAccessToken (next will retry original req)", error: nil, res: "<accessToken>", start: start)
                     promise().then(resolve).catch(reject)
                 }.catch { error in
-                    self.log("renewAccessToken", error: error, res: nil, start: start)
+                    Imap.debug(6, "(\(debugId)) error refreshing token", value: err)
+                    self.log("(\(debugId))renewAccessToken", error: error, res: nil, start: start)
                     reject(error)
                 }
                 self.lastErr = MCOErrorCode(rawValue: (err! as NSError).code)
+                Imap.debug(7, "(\(debugId)) just set lastErr to ", value: self.lastErr)
+                Imap.debug(11, "(\(debugId)) return=true (need to retry)")
                 return false; // need to retry
             } else {
+                Imap.debug(8, "(\(debugId)) err not retriable, rejecting ", value: err)
                 reject(err!)
                 self.lastErr = MCOErrorCode(rawValue: (err! as NSError).code)
+                Imap.debug(9, "(\(debugId)) just set lastErr to ", value: self.lastErr)
+                Imap.debug(12, "(\(debugId)) return=true (no need to retry)")
                 return true // no need to retry
             }
         }
+    }
+
+    public static func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
+        print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
     }
 
     struct FetchFoldersRes {

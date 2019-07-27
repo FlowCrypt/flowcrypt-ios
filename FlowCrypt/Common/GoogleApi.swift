@@ -10,12 +10,13 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
 
     static let instance = GoogleApi()
 
-    private var signInCallback: ((_ user: GIDGoogleUser?, _ error: Error?) -> Void)?
+    fileprivate var signInCallback: ((_ user: GIDGoogleUser?, _ error: Error?) -> Void)?
     private var signOutCallback: ((_ error: Error?) -> Void)?
     private var signInSilentlyCallback: ((_ accessToken: String?, _ error: Error?) -> Void)?
     private var viewController: UIViewController?
 
     func setup() {
+        Imap.debug(100, "GoogleApi.setup()")
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
         GIDSignIn.sharedInstance().scopes = [
@@ -23,7 +24,9 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
             "https://mail.google.com/"
         ]
         if GIDSignIn.sharedInstance().hasAuthInKeychain() == true {
+            Imap.debug(101, "GoogleApi calling signInSilently")
             GIDSignIn.sharedInstance().signInSilently()
+            Imap.debug(102, "GoogleApi calling signInSilently done")
         }
     }
 
@@ -32,14 +35,21 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
     }
 
     func signOut() -> Promise<VOID> { return Promise<VOID> { resolve, reject in
+        Imap.debug(103, "GoogleApi.signOut()")
         GIDSignIn.sharedInstance().disconnect()
-        self.signOutCallback = { error in error == nil ? resolve(VOID()) : reject(error!) }
+        self.signOutCallback = { error in
+            Imap.debug(104, "GoogleApi.signOut() callback with err?=", value: error)
+            error == nil ? resolve(VOID()) : reject(error!)
+            Imap.debug(105, "GoogleApi.signOut resolved/rejected")
+        }
     }}
 
     func signIn(viewController: UIViewController) -> Promise<GIDGoogleUser> { return Promise<GIDGoogleUser> { resolve, reject in
+        Imap.debug(106, "GoogleApi.signIn")
         self.viewController = viewController
-        self.signInCallback = { user, error in
-            error == nil ? resolve(user!) : reject(error!)
+        self.signInCallback = { user, err in
+            Imap.debug(107, "GoogleApi.signIn callback - resolving with err?=", value: err)
+            err == nil ? resolve(user!) : reject(err!)
             self.viewController = nil
         }
         GIDSignIn.sharedInstance().uiDelegate = self
@@ -47,8 +57,12 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
     }}
 
     func renewAccessToken() -> Promise<String> { return Promise<String> { resolve, reject in
-        self.signInSilentlyCallback = { accessToken, error in
-            error == nil ? resolve(accessToken!) : reject(error!)
+        Imap.debug(108, "GoogleApi.renewAccessToken()")
+        self.signInSilentlyCallback = { accessToken, err in
+            Imap.debug(120, "GoogleApi.renewAccessToken - callback with accessToken?=", value: accessToken)
+            Imap.debug(109, "GoogleApi.renewAccessToken - callback with err?=", value: err)
+            err == nil ? resolve(accessToken!) : reject(err!)
+            Imap.debug(110, "GoogleApi.renewAccessToken resolved/rejected")
         }
         GIDSignIn.sharedInstance().signInSilently()
     }}
@@ -69,16 +83,21 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
     }
 
     func getAccessToken() -> String {
-        return UserDefaults.standard.value(forKey: "google_accessToken") as? String ?? ""
+        let at = UserDefaults.standard.value(forKey: "google_accessToken") as? String ?? ""
+        Imap.debug(111, "GoogleApi.getAccessToken from storage", value: at)
+        return at
     }
 
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        Imap.debug(112, "GoogleApi.sign.didSignInFor error?=", value: error)
         if error == nil {
+            Imap.debug(113, "GoogleApi.sign.didSignInFor err=nil, accessToken?=", value: user.authentication.accessToken)
             UserDefaults.standard.set(user.profile.email, forKey: "google_email")
             UserDefaults.standard.set(user.profile.name, forKey: "google_name")
             UserDefaults.standard.set(user.authentication.accessToken, forKey: "google_accessToken")
             UserDefaults.standard.synchronize()
         }
+        Imap.debug(114, "GoogleApi.sign.didSignInFor calling callbacks")
         self.signInCallback?(user, error)
         self.signInCallback = nil
         self.signInSilentlyCallback?(user?.authentication.accessToken, error)
@@ -86,7 +105,9 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
     }
 
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
+        Imap.debug(115, "GoogleApi.sign.didDisconnectWith err=nil, error?=", value: error)
         self.removeGoogleInfo()
+        Imap.debug(116, "GoogleApi.sign.didDisconnectWith calling callbacks")
         self.signOutCallback?(error)
         self.signOutCallback = nil
     }
@@ -95,10 +116,12 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
     }
 
     func sign(_ signIn: GIDSignIn!, present viewController: UIViewController!) {
+        Imap.debug(117, "GoogleApi present vc")
         self.viewController?.present(viewController, animated: true, completion: nil)
     }
 
     func sign(_ signIn: GIDSignIn!, dismiss viewController: UIViewController!) {
+        Imap.debug(118, "GoogleApi dismiss vc")
         self.viewController?.dismiss(animated: true, completion: nil)
     }
 }
