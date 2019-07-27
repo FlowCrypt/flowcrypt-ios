@@ -11,8 +11,11 @@ import Security
     func decryptRsaNoPadding(_ rsaPrvDerBase64: String, _ encryptedBase64: String) -> String
     func getSecureRandomByteNumberArray(_ byteCount: Int) -> [UInt8]?
     func log(_ text: String) -> Void
-    static func getInstance() -> CoreHost
+    func setTimeout(_ callback : JSValue,_ ms : Double) -> String
+    func clearTimeout(_ identifier: String)
 }
+
+var timers = [String: Timer]()
 
 class CoreHost: NSObject, CoreHostExports {
 
@@ -43,8 +46,25 @@ class CoreHost: NSObject, CoreHostExports {
         return nil; // is checked for in JavaScript
     }
 
-    class func getInstance() -> CoreHost {
-        return CoreHost()
+    func clearTimeout(_ id: String) {
+        let timer = timers.removeValue(forKey: id)
+        timer?.invalidate()
+    }
+
+    func setTimeout(_ cb: JSValue, _ ms: Double) -> String {
+        let interval = ms/1000.0
+        let uuid = NSUUID().uuidString
+        DispatchQueue.main.async { // queue all in the same executable queue, JS calls are getting lost if the queue is not specified
+            let timer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.callJsCb), userInfo: cb, repeats: false)
+            timers[uuid] = timer
+        }
+        return uuid
+    }
+
+    @objc func callJsCb(_ timer: Timer) {
+        let callback = (timer.userInfo as! JSValue)
+        callback.call(withArguments: nil)
+        // todo - remove from timers by uuid, could cause possible memory leak
     }
 
 }

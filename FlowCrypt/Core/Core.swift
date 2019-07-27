@@ -69,13 +69,14 @@ class Core {
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
     }
 
+    //    public func parseDateStr() throws -> CoreVersionRes {
+//    }
+
 //    public func encryptKey() throws -> CoreVersionRes {
 //    }
 //    public func encryptFile() throws -> CoreVersionRes {
 //    }
 //    public func decryptFile() throws -> CoreVersionRes {
-//    }
-//    public func parseDateStr() throws -> CoreVersionRes {
 //    }
 //    public func zxcvbnStrengthBar() throws -> CoreVersionRes {
 //    }
@@ -90,17 +91,13 @@ class Core {
                 let jsFile = Bundle(for: Core.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil)!
                 let jsFileSrc = try? String(contentsOfFile: jsFile)
                 context = JSContext(virtualMachine: vm)!
-                context?.setObject(CoreHost.self, forKeyedSubscript: "CoreHost" as (NSCopying & NSObjectProtocol))
-                context!.exceptionHandler = { context, exception in
-                    print("Js.exception: \(exception?.description ?? "unknown error")")
-                }
+                context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
+                context!.exceptionHandler = { context, exception in print("Js.exception: \(String(describing: exception))") }
                 context!.evaluateScript("const APP_VERSION = 'iOS 0.2';")
                 context!.evaluateScript(jsFileSrc)
                 jsEndpointListener = context!.objectForKeyedSubscript("handleRequestFromHost")
                 cb_catcher = context!.objectForKeyedSubscript("engine_host_cb_value_formatter")
-                let cb_last_value_filler: @convention(block) ([NSObject]) -> Void = { values in
-                    self.cb_last_value = values
-                }
+                let cb_last_value_filler: @convention(block) ([NSObject]) -> Void = { values in self.cb_last_value = values }
                 context!.setObject(unsafeBitCast(cb_last_value_filler, to: AnyObject.self), forKeyedSubscript: "engine_host_cb_catcher" as (NSCopying & NSObjectProtocol)?)
                 ready = true
                 print("JsContext took \(start.millisecondsSince())ms to start")
