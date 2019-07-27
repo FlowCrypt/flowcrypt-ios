@@ -46,7 +46,7 @@ class MsgViewController: BaseViewController {
         }, then: { decrypted in
             let decryptErrBlock = decrypted.blocks.first(where: { $0.decryptErr != nil })
             if decryptErrBlock == nil {
-                self.renderMsgBody(decrypted.text, color: Constants.green)
+                self.renderMsgBody(decrypted.text, color: decrypted.replyType == CoreRes.ReplyType.encrypted ? Constants.green : UIColor.black)
             } else {
                 let e = decryptErrBlock!.decryptErr!.error
                 self.renderMsgBody("Dould not decrypt message:\n\(e.type)\n\n\(e.message)\n\n\(decryptErrBlock!.content)", color: UIColor.red)
