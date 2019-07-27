@@ -114,7 +114,7 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
             let _ = try await(Imap.instance.sendMail(mime: composeRes.mimeEncoded))
         }, then: {
             self.hideSpinner()
-            self.showToast(isReply ? Language.encrypted_reply_sent : Language.encrypted_message_sent)
+            self.showToast(self.isReply ? Language.encrypted_reply_sent : Language.encrypted_message_sent)
             self.btnBackTap(sender: UIBarButtonItem())
         }, fail: Language.could_not_compose_message)
     }
