@@ -32,17 +32,23 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
             self.hideSpinner()
             self.encryptedBackups = keyDetails.filter { $0.private != nil }
             if self.encryptedBackups!.count == 0 {
-                let alert = UIAlertController(title: "Notice", message: Language.no_backups, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.fetchBackups() })
-                alert.addAction(UIAlertAction(title: Language.use_other_account, style: .default) { _ in
-                    self.async({ GoogleApi.instance.signOut() }, then: { _ in
-                        let signInVc = self.instantiate(viewController: SignInViewController.self)
-                        self.navigationController?.pushViewController(signInVc, animated: true)
-                    })
-                })
-                self.present(alert, animated: true, completion: nil)
+                self.showRetryFetchBackupsOrChangeAcctAlert(msg: Language.no_backups)
             }
+        }, fail: { error in
+            self.showRetryFetchBackupsOrChangeAcctAlert(msg: "\(Language.action_failed)\n\n\(error)")
         })
+    }
+
+    func showRetryFetchBackupsOrChangeAcctAlert(msg: String) {
+        let alert = UIAlertController(title: "Notice", message: msg, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.fetchBackups() })
+        alert.addAction(UIAlertAction(title: Language.use_other_account, style: .default) { _ in
+            self.async({ try await(GoogleApi.instance.signOut()) }, then: { _ in
+                let signInVc = self.instantiate(viewController: SignInViewController.self)
+                self.navigationController?.pushViewController(signInVc, animated: true)
+            })
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 
     @IBAction func loadAccountButtonPressed(_ sender: Any) {

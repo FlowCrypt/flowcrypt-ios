@@ -31,7 +31,7 @@ class BaseViewController: UIViewController {
 
     func showErrAlert(_ message: String, onOk: (() -> Void)? = nil) {
         DispatchQueue.main.async {
-            self.hideSpinner()
+            self.spinner?.hide(animated: true) // safe on main thread
             let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .destructive) { action in onOk?() })
             self.present(alert, animated: true, completion: nil)
@@ -50,19 +50,27 @@ class BaseViewController: UIViewController {
         textField.leftViewMode = .always
     }
 
-    func async<T>(_ work: @escaping () throws -> T, then onMain: @escaping (T) throws -> Void, fail alertMsg: String = "Action failed") {
+    func async<T>(_ work: @escaping () throws -> T, then thenOnMain: @escaping (T) throws -> Void, fail errHandlerOnMain: @escaping (Error) -> Void) {
         Promise<Void> { _, _ in
             let workResult = try work()
             DispatchQueue.main.async {
                 do {
-                    try onMain(workResult)
+                    try thenOnMain(workResult)
                 } catch {
-                    self.showErrAlert("\(alertMsg)\n\n[then .main] (error)")
+                    self.spinner?.hide(animated: true) // safe on main thread
+                    errHandlerOnMain(error)
                 }
             }
         }.catch { error in
-            self.showErrAlert("\(alertMsg)\n\n\(error)")
+            DispatchQueue.main.async {
+                self.spinner?.hide(animated: true) // safe on main thread
+                errHandlerOnMain(error)
+            }
         }
+    }
+
+    func async<T>(_ work: @escaping () throws -> T, then: @escaping (T) throws -> Void, fail alertMsg: String = "Action failed") {
+        self.async(work, then: then, fail: { error in self.showErrAlert("\(alertMsg)\n\n \(error)") })
     }
 
 }
