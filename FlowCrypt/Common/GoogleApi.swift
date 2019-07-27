@@ -25,7 +25,11 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
         ]
         if GIDSignIn.sharedInstance().hasAuthInKeychain() == true {
             Imap.debug(101, "GoogleApi calling signInSilently")
-            GIDSignIn.sharedInstance().signInSilently()
+            // from docs: Attempts to sign in a previously authenticated user without interaction.  The delegate will be
+            // from docs: called at the end of this process indicating success or failure.
+            GIDSignIn.sharedInstance().signInSilently() // todo - we are not waiting for the delegate to be called here. This cauess imap calls to fail and transparently retry
+            // if we could force Imap calls to wait until this refresh is done, then imap calls would not have to needlessly retry
+            // "sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!)" - here is where it gets called back
             Imap.debug(102, "GoogleApi calling signInSilently done")
         }
     }
@@ -59,7 +63,6 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
     func renewAccessToken() -> Promise<String> { return Promise<String> { resolve, reject in
         Imap.debug(108, "GoogleApi.renewAccessToken()")
         self.signInSilentlyCallback = { accessToken, err in
-            Imap.debug(120, "GoogleApi.renewAccessToken - callback with accessToken?=", value: accessToken)
             Imap.debug(109, "GoogleApi.renewAccessToken - callback with err?=", value: err)
             err == nil ? resolve(accessToken!) : reject(err!)
             Imap.debug(110, "GoogleApi.renewAccessToken resolved/rejected")
@@ -84,14 +87,13 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
 
     func getAccessToken() -> String {
         let at = UserDefaults.standard.value(forKey: "google_accessToken") as? String ?? ""
-        Imap.debug(111, "GoogleApi.getAccessToken from storage", value: at)
+        Imap.debug(111, "GoogleApi.getAccessToken from storage")
         return at
     }
 
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        Imap.debug(112, "GoogleApi.sign.didSignInFor error?=", value: error)
+        // NOTE - setup() calls this callback for silent login which we are not checking in that scenario, could be improved to tie the result back
         if error == nil {
-            Imap.debug(113, "GoogleApi.sign.didSignInFor err=nil, accessToken?=", value: user.authentication.accessToken)
             UserDefaults.standard.set(user.profile.email, forKey: "google_email")
             UserDefaults.standard.set(user.profile.name, forKey: "google_name")
             UserDefaults.standard.set(user.authentication.accessToken, forKey: "google_accessToken")
