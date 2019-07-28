@@ -10,12 +10,14 @@ target 'FlowCrypt' do
   pod 'SwiftLint' # todo - add linting rules
   pod 'PromisesSwift'
   pod 'SwiftyRSA'
+  pod 'IDZSwiftCommonCrypto'
 end
 
-target 'FlowCryptUITests' do
+target 'FlowCryptTests' do
   use_frameworks!
   pod 'PromisesSwift'
   pod 'SwiftyRSA'
   pod 'RealmSwift'
+  pod 'IDZSwiftCommonCrypto'
   inherit! :search_paths
 end

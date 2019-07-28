@@ -34,10 +34,11 @@ class SignInViewController: BaseViewController {
         // below for debugging
         do {
             let start = DispatchTime.now()
-            let keys = [PrvKeyInfo(private: TestData.k2rsa2048.prv, longid: TestData.k2rsa2048.longid, passphrase: TestData.k2rsa2048.passphrase)]
+//            let decrypted = try Core.decryptKey(armoredPrv: TestData.k3rsa4096.prv, passphrase: TestData.k3rsa4096.passphrase)
+            let keys = [PrvKeyInfo(private: TestData.k3rsa4096.prv, longid: TestData.k3rsa4096.longid, passphrase: TestData.k3rsa4096.passphrase)]
             let decrypted = try Core.parseDecryptMsg(encrypted: TestData.matchingEncryptedMsg.data(using: .utf8)!, keys: keys, msgPwd: nil, isEmail: false)
-            print("decrypted \(start.millisecondsSince())")
             print(decrypted)
+            print("decrypted \(start.millisecondsSince())")
             print("text: \(decrypted.text)")
         } catch Core.Error.exception {
             print("catch exception")
