@@ -45,6 +45,7 @@
 		A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
 		A3A680EC22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */; };
 		A3A680ED22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */; };
+		A3A680EE22EEF03600905813 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAA865E9EC19756776544 /* Errors.swift */; };
 		A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */; };
 		A3DAD60622E4585800F2C4CD /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
@@ -123,6 +124,7 @@
 		A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flowcrypt-ios-icon.png"; sourceTree = "<group>"; };
 		A33BAA8822EDBF1A00CC1B5C /* gmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
 		A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libgmp-6.1.2-iPhoneOS-arm64.a"; sourceTree = "<group>"; };
+		A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCryptTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		A3DAD5FB22E4574A00F2C4CD /* FlowCryptTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCryptCoreTests.swift; sourceTree = "<group>"; };
 		A3DAD5FF22E4574B00F2C4CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -284,6 +286,7 @@
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
 				A3DAD5FF22E4574B00F2C4CD /* Info.plist */,
 				A3DAD60722E4588800F2C4CD /* TestData.swift */,
+				A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */,
 			);
 			path = FlowCryptTests;
 			sourceTree = "<group>";
@@ -645,6 +648,7 @@
 				A3DAD60B22E458C300F2C4CD /* DataExtension.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				A3DAD60A22E458C100F2C4CD /* CodableExntension.swift in Sources */,
+				A3A680EE22EEF03600905813 /* Errors.swift in Sources */,
 				32DCACFD1193878BEB48C24D /* PromiseExtension.swift in Sources */,
 				32DCA009F3149806AA1103B1 /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
@@ -750,7 +754,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = flowcrypt.FlowCryptTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "FlowCryptTests/FlowCryptTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = FlowCrypt;
@@ -782,7 +786,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = flowcrypt.FlowCryptTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "FlowCryptTests/FlowCryptTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = FlowCrypt;
