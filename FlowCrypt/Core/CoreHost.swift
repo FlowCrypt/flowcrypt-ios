@@ -67,12 +67,13 @@ class CoreHost: NSObject, CoreHostExports {
         return String(cString: c_gmp_mod_pow(base, exponent, modulo))
     }
 
-    // todo - check openpgp s2k spec for supported algos
-    func hashDigest(algo: String, data: Data) throws -> [UInt8] {
-        if algo == "sha256" {
-            return self.sha256digest(data)
+    func hashDigest(name: String, data: Data) throws -> [UInt8] {
+        let algo = try self.getHashAlgo(name: name)
+        var hash = [UInt8](repeating: 0, count: Int(algo.length))
+        data.withUnsafeBytes {
+            _ = algo.digest($0.baseAddress, CC_LONG(data.count), &hash)
         }
-        throw Errors.valueError("Unsupported iterated s2k hash algo: \(algo). Please contact us to add support.")
+        return hash
     }
 
     // this could be further optimised. Takes about 150ms per key
@@ -93,16 +94,7 @@ class CoreHost: NSObject, CoreHostExports {
         }
         let subArr = isp[0..<prefix.count + count]; // free
         let hashable = Data(subArr) // takes 18 ms just recreating data, could be shaved off by passing ArraySlice to hash
-        let digested = try! self.hashDigest(algo: algo, data: hashable); // takes 30 ms for sha256 16mb
-        return digested
-    }
-
-    func sha256digest(_ bytes: Data) -> [UInt8] {
-        var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
-        bytes.withUnsafeBytes {
-            _ = CC_SHA256($0.baseAddress, CC_LONG(bytes.count), &hash)
-        }
-        return hash
+        return try! self.hashDigest(name: algo, data: hashable); // takes 30 ms for sha256 16mb
     }
 
     // JavaScriptCore does not come with a RNG, use one from Swift
@@ -136,4 +128,20 @@ class CoreHost: NSObject, CoreHostExports {
         // todo - remove from timers by uuid, could cause possible memory leak
     }
 
+    internal func getHashAlgo(name: String) throws -> HashAlgo {
+        switch name {
+            case "md5": return HashAlgo(digest: CC_MD5, length: CC_MD5_DIGEST_LENGTH)
+            case "sha1": return HashAlgo(digest: CC_SHA1, length: CC_SHA1_DIGEST_LENGTH)
+            case "sha224": return HashAlgo(digest: CC_SHA224, length: CC_SHA224_DIGEST_LENGTH)
+            case "sha384": return HashAlgo(digest: CC_SHA384, length: CC_SHA384_DIGEST_LENGTH)
+            case "sha256": return HashAlgo(digest: CC_SHA256, length: CC_SHA256_DIGEST_LENGTH)
+            case "sha512": return HashAlgo(digest: CC_SHA512, length: CC_SHA512_DIGEST_LENGTH)
+            default: throw Errors.valueError("Unsupported iterated s2k hash algo: \(name). Please contact us to add support.") // ripemd
+        }
+    }
+
+    internal struct HashAlgo {
+        let digest: (_ data: UnsafeRawPointer?, _ len: CC_LONG, _ md: UnsafeMutablePointer<UInt8>?) -> UnsafeMutablePointer<UInt8>?
+        let length: Int32
+    }
 }
