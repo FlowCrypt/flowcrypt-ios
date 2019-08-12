@@ -21,6 +21,11 @@ class SignInViewController: BaseViewController {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = true
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false
+    }
 
     // MARK: - Events
     @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
