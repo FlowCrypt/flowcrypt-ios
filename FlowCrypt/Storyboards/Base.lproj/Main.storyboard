@@ -305,7 +305,7 @@
                     <navigationItem key="navigationItem" id="Ge7-ku-rGP"/>
                     <connections>
                         <outlet property="passPhaseTextField" destination="hCk-l6-78X" id="ZSh-3X-kmV"/>
-                        <segue destination="q3n-1L-2n6" kind="show" identifier="InboxSegue" id="4YH-WH-W0S"/>
+                        <segue destination="Kb6-Ov-pwM" kind="show" identifier="InboxSegue" id="u48-KL-mDr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a8a-jX-2ip" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -774,7 +774,4 @@
         <image name="reply-all" width="37.5" height="37.5"/>
         <image name="search_icn" width="25" height="25"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="IZs-CK-rtV"/>
-    </inferredMetricsTieBreakers>
 </document>
