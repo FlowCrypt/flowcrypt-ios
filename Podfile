@@ -10,6 +10,7 @@ target 'FlowCrypt' do
   pod 'SwiftLint' # todo - add linting rules
   pod 'PromisesSwift'
   pod 'SwiftyRSA'
+  pod 'IQKeyboardManagerSwift'
   pod 'IDZSwiftCommonCrypto'
 end
 

@@ -48,6 +48,7 @@ struct Language {
     public static let failed_to_load_messages = "Failed to load messages"
     public static let no_pgp = "Recipient doesn't seem to have encryption set up"
     public static let your_message = "Your message"
+    public static let message_placeholder = "Compose Secure Message"
     public static let your_reply = "Your reply"
     public static let wrong_pass_phrase_retry = "Wrong pass phrase, please try again"
     public static let no_backups = "No backups found on this account"

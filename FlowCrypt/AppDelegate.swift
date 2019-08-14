@@ -6,6 +6,7 @@
 import UIKit
 import GoogleSignIn
 import RealmSwift
+import IQKeyboardManagerSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

@@ -52,47 +52,6 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
         scrollView.scrollIndicatorInsets = .zero
     }
     
-//    func registerForKeyboardNotifications() {
-//        NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardAppear(_:)), name: UIResponder.keyboardDidShowNotification, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardDisappear(_:)), name: UIResponder.keyboardDidHideNotification, object: nil)
-//    }
-//
-//    // Don't forget to unregister when done
-//    deinit {
-//        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
-//        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
-//    }
-//
-//    @objc func onKeyboardAppear(_ notification: NSNotification) {
-//        let info = notification.userInfo!
-//        let rect: CGRect = info[UIResponder.keyboardFrameBeginUserInfoKey] as! CGRect
-//        let kbSize = rect.size
-//
-//        let insets = UIEdgeInsets(top: 0, left: 0, bottom: kbSize.height, right: 0)
-//        scrollView.contentInset = insets
-//        scrollView.scrollIndicatorInsets = insets
-//
-//        // If active text field is hidden by keyboard, scroll it so it's visible
-//        // Your application might not need or want this behavior.
-//        var aRect = self.view.frame;
-//        aRect.size.height -= kbSize.height;
-//
-//        if let activeField = passPhaseTextField {
-//            if aRect.contains(activeField.frame.origin) {
-//                let scrollPoint = CGPoint(x: 0, y: (activeField.frame.origin.y-kbSize.height) + 1)
-//                scrollView.setContentOffset(scrollPoint, animated: true)
-//            }
-//        }
-//    }
-//
-//    @objc func onKeyboardDisappear(_ notification: NSNotification) {
-//        UIView.animate(withDuration: 0.2, animations: {
-//            self.scrollView.contentInset = UIEdgeInsets.zero
-//            self.scrollView.scrollIndicatorInsets = UIEdgeInsets.zero
-//        })
-//
-//    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = true

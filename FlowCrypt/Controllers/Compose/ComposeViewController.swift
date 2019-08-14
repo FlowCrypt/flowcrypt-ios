@@ -15,7 +15,8 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
     @IBOutlet var btnCompose: UIBarButtonItem!
     @IBOutlet var btnAttach: UIBarButtonItem!
     @IBOutlet var btnInfo: UIBarButtonItem!
-
+    @IBOutlet weak var cnstrTextViewBottom: NSLayoutConstraint!
+    
     var isReply = false;
     var replyToRecipient: MCOAddress?
     var replyToSubject: String?
@@ -25,6 +26,8 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
         super.viewDidLoad()
         self.setPadding(textField: txtRecipient)
         self.setPadding(textField: txtSubject)
+        self.txtMessage.delegate = self
+        self.txtMessage.keyboardDismissMode = .onDrag
         self.txtRecipient.addTarget(self, action: #selector(ComposeViewController.convertStringToLowercase(textField:)), for: UIControl.Event.editingChanged)
         self.txtMessage.textColor = UIColor.lightGray
         btnCompose.imageInsets = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
@@ -52,7 +55,12 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
         }
         return true
     }
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        registerKeyboardNotifications()
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == self.txtRecipient {
             self.txtSubject.becomeFirstResponder()
@@ -65,7 +73,7 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
     }
 
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == Language.your_message {
+        if textView.text == Language.your_message || textView.text == Language.message_placeholder {
             self.txtMessage.textColor = .black
             self.txtMessage.text = ""
         }
@@ -75,6 +83,85 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
         if textView.text == "" || textView.text == "\n" {
             self.txtMessage.textColor = UIColor.lightGray
             self.txtMessage.text = Language.your_message
+        }
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+//        var line: CGRect? = nil
+//        if let start = textView.selectedTextRange?.start {
+//            line = textView.caretRect(for: start)
+//        }
+//        let overflow = (line?.origin.y ?? 0.0) + (line?.size.height ?? 0.0) - (textView.contentOffset.y + textView.bounds.size.height - textView.contentInset.bottom - textView.contentInset.top)
+//        if overflow > 0 {
+//            // We are at the bottom of the visible text and introduced a line feed, scroll down (iOS 7 does not do it)
+//            // Scroll caret to visible area
+//            var offset = textView.contentOffset
+//            offset.y += overflow + 7 // leave 7 pixels margin
+//            // Cannot animate with setContentOffset:animated: or caret will not appear
+//            UIView.animate(withDuration: 0.2, animations: {
+//                textView.contentOffset = offset
+//            })
+//        }
+    }
+
+    func registerKeyboardNotifications() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShow(notification:)),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillHide(notification:)),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        txtMessage.resignFirstResponder()
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc func keyboardWillShow(notification: NSNotification) {
+//        updateKeyboard(notification: notification)
+
+
+        let keyboardSize = (notification.userInfo?  [UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+
+        let keyboardHeight = keyboardSize?.height
+
+        if #available(iOS 11.0, *){
+
+            self.cnstrTextViewBottom.constant = keyboardHeight! - view.safeAreaInsets.bottom
+        }
+        else {
+            self.cnstrTextViewBottom.constant = view.safeAreaInsets.bottom
+        }
+
+        UIView.animate(withDuration: 0.5){
+
+            self.view.layoutIfNeeded()
+
+        }
+    }
+
+    var oldFrame: CGRect!
+    func updateKeyboard(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0 {
+                self.oldFrame = self.view.frame
+                self.view.frame = CGRect(x: self.view.frame.minX, y: self.view.frame.minY, width: self.view.frame.width, height: self.view.frame.height - keyboardSize.height - view.safeAreaInsets.bottom)
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+//        UIView.animate(withDuration: 0.5, animations: {
+//            self.view.frame = self.oldFrame
+//        })
+
+        self.cnstrTextViewBottom.constant =  0
+        UIView.animate(withDuration: 0.5) {
+            self.view.layoutIfNeeded()
         }
     }
 
