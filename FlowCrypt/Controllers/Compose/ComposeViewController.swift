@@ -82,12 +82,7 @@ class ComposeViewController: BaseViewController {
     
     func registerKeyboardNotifications() {
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(adjustForKeyboard),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
+        notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
     
@@ -125,7 +120,6 @@ class ComposeViewController: BaseViewController {
         btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnBack)
-        
     }
     
     @objc
