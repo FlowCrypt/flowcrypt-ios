@@ -29,8 +29,8 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
         self.setPadding(textField: txtRecipient)
         self.setPadding(textField: txtSubject)
         self.txtMessage.delegate = self
-        self.txtMessage.keyboardDismissMode = .onDrag
-        self.scrollView.keyboardDismissMode = .onDrag
+        scrollView.delegate = self
+        scrollView.keyboardDismissMode = .interactive
         self.txtRecipient.addTarget(self, action: #selector(ComposeViewController.convertStringToLowercase(textField:)), for: UIControl.Event.editingChanged)
         self.txtMessage.textColor = UIColor.lightGray
         btnCompose.imageInsets = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
@@ -41,7 +41,6 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
             self.txtRecipient.text = replyToRecipient?.mailbox ?? ""
         }
         let _ = Imap.instance.getSmtpSess() // establish session before user taps send, so that sending msg is faster once the user does tap it
-
     }
     
     func isInputValid() -> Bool {
@@ -60,10 +59,10 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
         return true
     }
     
-        override func viewDidAppear(_ animated: Bool) {
-            super.viewDidAppear(animated)
-            registerKeyboardNotifications()
-        }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        registerKeyboardNotifications()
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == self.txtRecipient {
@@ -90,113 +89,42 @@ class ComposeViewController: BaseViewController, UITextFieldDelegate, UITextView
         }
     }
     
-    func textViewDidChange(_ textView: UITextView) {
-//        let height = txtMessage.sizeThatFits(CGSize(width: txtMessage.frame.size.width, height: CGFloat.infinity)).height
-//        if height > 700 {
-//            cnstrTextViewHeight.constant = height
-//        }
-        
-        
-
-//        cnstrTextViewHeight.constant = textView.contentSize.height
-        
-//        var line: CGRect? = nil
-//        if let start = textView.selectedTextRange?.start {
-//            line = textView.caretRect(for: start)
-//        }
-//        let overflow = (line?.origin.y ?? 0.0) + (line?.size.height ?? 0.0) - (textView.contentOffset.y + textView.bounds.size.height - textView.contentInset.bottom - textView.contentInset.top)
-//        if overflow > 0 {
-//            // We are at the bottom of the visible text and introduced a line feed, scroll down (iOS 7 does not do it)
-//            // Scroll caret to visible area
-//            var offset = textView.contentOffset
-//            offset.y += overflow + 7 // leave 7 pixels margin
-//            // Cannot animate with setContentOffset:animated: or caret will not appear
-//            UIView.animate(withDuration: 0.2, animations: {
-//                self.scrollView.contentOffset = offset
-//            })
-//        }
-    }
-    var rect: CGRect!
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if let selectedRange = textView.selectedTextRange {
-
-            var rect = textView.caretRect(for: selectedRange.end)
-            print("\(rect)")
-            print("\(scrollView.contentOffset.y)")
-            var offset = UIScreen.main.bounds.height
-            if let keyboardHeight = self.keyboardHeight {
-                offset -= keyboardHeight - view.safeAreaInsets.bottom
-            }
-            var x = rect.origin.y + 102 + 44 + 22
-            if x > offset {
-                scrollView.contentOffset = CGPoint(x: 0, y: x)
-//                scrollView.setContentOffset(CGPoint(x: 0, y: offset - rect.maxY - 102 - 44), animated: true)
-            }
-        }
-        return true
+    func registerKeyboardNotifications() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(adjustForKeyboard),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
     
-    
-        func registerKeyboardNotifications() {
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(keyboardWillShow(notification:)),
-                                                   name: UIResponder.keyboardWillShowNotification,
-                                                   object: nil)
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(keyboardWillHide(notification:)),
-                                                   name: UIResponder.keyboardWillHideNotification,
-                                                   object: nil)
+    @objc
+    private func adjustForKeyboard(notification: Notification) {
+        let userInfo = notification.userInfo!
+        
+        let keyboardScreenEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
+        
+        if notification.name == UIResponder.keyboardWillHideNotification {
+            scrollView.contentInset = UIEdgeInsets.zero
+        } else {
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardViewEndFrame.height, right: 0)
         }
+        
+        scrollView.scrollIndicatorInsets = txtMessage.contentInset
+        
+        guard let selectedRange = txtMessage.selectedTextRange else { return }
+        let rect = txtMessage.caretRect(for: selectedRange.start)
+        scrollView.scrollRectToVisible(rect, animated: true)
+    }
     
-        override func viewWillDisappear(_ animated: Bool) {
-            super.viewWillDisappear(animated)
-            txtMessage.resignFirstResponder()
-            NotificationCenter.default.removeObserver(self)
-        }
-    var keyboardHeight: CGFloat?
-        @objc func keyboardWillShow(notification: NSNotification) {
-    //        updateKeyboard(notification: notification)
-    
-    
-            let keyboardSize = (notification.userInfo?  [UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-
-            keyboardHeight = keyboardSize?.height
-
-//            if #available(iOS 11.0, *){
-//
-//                self.cnstrTextViewBottom.constant = keyboardHeight! - view.safeAreaInsets.bottom
-//            }
-//            else {
-//                self.cnstrTextViewBottom.constant = view.safeAreaInsets.bottom
-//            }
-//
-//            UIView.animate(withDuration: 0.5){
-//
-//                self.view.layoutIfNeeded()
-//
-//            }
-        }
-    
-//        var oldFrame: CGRect!
-//        func updateKeyboard(notification: NSNotification) {
-//            if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-//                if self.view.frame.origin.y == 0 {
-//                    self.oldFrame = self.view.frame
-//                    self.view.frame = CGRect(x: self.view.frame.minX, y: self.view.frame.minY, width: self.view.frame.width, height: self.view.frame.height - keyboardSize.height - view.safeAreaInsets.bottom)
-//                }
-//            }
-//        }
-    
-        @objc func keyboardWillHide(notification: NSNotification) {
-    //        UIView.animate(withDuration: 0.5, animations: {
-    //            self.view.frame = self.oldFrame
-    //        })
-    
-//            self.cnstrTextViewBottom.constant =  0
-//            UIView.animate(withDuration: 0.5) {
-//                self.view.layoutIfNeeded()
-//            }
-        }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        txtMessage.resignFirstResponder()
+        NotificationCenter.default.removeObserver(self)
+    }
     
     @objc func convertStringToLowercase(textField: UITextField) {
         self.txtRecipient.text = self.txtRecipient.text?.lowercased()

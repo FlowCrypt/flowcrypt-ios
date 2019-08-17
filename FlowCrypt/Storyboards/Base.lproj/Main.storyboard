@@ -402,7 +402,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inK-fw-Y4c">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="801"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="685"/>
                                         <subviews>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Add Recipient" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="JpB-hk-psY">
                                                 <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
@@ -443,10 +443,10 @@
                                                 </constraints>
                                             </view>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="Compose Secure Message" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="mZ6-Az-tGx">
-                                                <rect key="frame" x="0.0" y="101" width="375" height="700"/>
+                                                <rect key="frame" x="0.0" y="101" width="375" height="584"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="700" id="vfb-i0-H1U"/>
+                                                    <constraint firstAttribute="height" priority="250" constant="1000" id="vfb-i0-H1U"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -478,20 +478,20 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="inK-fw-Y4c" secondAttribute="trailing" id="6lh-sb-EVa"/>
-                                    <constraint firstItem="inK-fw-Y4c" firstAttribute="width" secondItem="eYP-4e-ypc" secondAttribute="width" id="ZPO-ur-dpU"/>
                                     <constraint firstAttribute="bottom" secondItem="inK-fw-Y4c" secondAttribute="bottom" id="exy-5M-OtQ"/>
                                     <constraint firstItem="inK-fw-Y4c" firstAttribute="leading" secondItem="eYP-4e-ypc" secondAttribute="leading" id="fRd-S5-FCK"/>
                                     <constraint firstItem="inK-fw-Y4c" firstAttribute="top" secondItem="eYP-4e-ypc" secondAttribute="top" id="gmJ-Qt-IsD"/>
-                                    <constraint firstItem="inK-fw-Y4c" firstAttribute="height" secondItem="eYP-4e-ypc" secondAttribute="height" priority="250" id="oC5-qI-HIW"/>
                                 </constraints>
                             </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="eYP-4e-ypc" firstAttribute="top" secondItem="Zcz-cs-KbN" secondAttribute="top" id="E5w-tq-WAD"/>
+                            <constraint firstItem="inK-fw-Y4c" firstAttribute="height" secondItem="WJ5-Tg-q4k" secondAttribute="height" priority="250" id="TQv-ug-xXP"/>
                             <constraint firstAttribute="bottom" secondItem="eYP-4e-ypc" secondAttribute="bottom" id="W9b-LW-lY8"/>
                             <constraint firstAttribute="trailing" secondItem="eYP-4e-ypc" secondAttribute="trailing" id="Y0a-1k-azh"/>
                             <constraint firstItem="eYP-4e-ypc" firstAttribute="leading" secondItem="Zcz-cs-KbN" secondAttribute="leading" id="nDz-x1-1as"/>
+                            <constraint firstItem="inK-fw-Y4c" firstAttribute="width" secondItem="WJ5-Tg-q4k" secondAttribute="width" id="zdh-vr-R6J"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="WJ5-Tg-q4k"/>
                     </view>

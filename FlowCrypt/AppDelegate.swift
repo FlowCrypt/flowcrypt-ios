@@ -35,8 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         self.window?.rootViewController = nv
         self.window?.makeKeyAndVisible()
-//        IQKeyboardManager.shared.enable = true
-//        IQKeyboardManager.shared.enableAutoToolbar = false
+
         return true
     }
     
