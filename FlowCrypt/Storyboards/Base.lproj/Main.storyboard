@@ -369,18 +369,7 @@
                         <viewLayoutGuide key="safeArea" id="1Sd-8V-evu"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" id="Lg6-ay-DVb">
-                        <barButtonItem key="leftBarButtonItem" image="menu_icn" id="lwE-5u-fnN">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <action selector="btnMenuTapWithSender:" destination="q3n-1L-2n6" id="zgJ-MD-h8R"/>
-                            </connections>
-                        </barButtonItem>
-                        <rightBarButtonItems>
-                            <barButtonItem image="search_icn" id="ubC-9d-iV9"/>
-                            <barButtonItem image="help_icn" id="6Zw-Q4-QDw"/>
-                        </rightBarButtonItems>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="Lg6-ay-DVb"/>
                     <connections>
                         <outlet property="lblEmptyMessage" destination="vZW-Bc-7Jq" id="xjJ-kd-yWw"/>
                         <outlet property="tableView" destination="B6j-ip-jK4" id="eFt-Wu-rOX"/>
@@ -496,33 +485,8 @@
                         <viewLayoutGuide key="safeArea" id="WJ5-Tg-q4k"/>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Secure Compose" id="iBC-5p-RJE">
-                        <barButtonItem key="leftBarButtonItem" image="arrow-left-c" id="VL1-Df-mOb">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <action selector="btnBackTapWithSender:" destination="8rk-Bb-d56" id="fqn-AQ-o80"/>
-                            </connections>
-                        </barButtonItem>
-                        <rightBarButtonItems>
-                            <barButtonItem image="android-send" id="IKI-ej-6s1">
-                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <connections>
-                                    <action selector="btnComposeTapWithSender:" destination="8rk-Bb-d56" id="KHj-Gg-pRc"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem image="paperclip" id="ggC-1Y-H17">
-                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </barButtonItem>
-                            <barButtonItem image="help_icn" id="WGu-Ad-JOe">
-                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </barButtonItem>
-                        </rightBarButtonItems>
-                    </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="btnAttach" destination="ggC-1Y-H17" id="qjt-3E-VNc"/>
-                        <outlet property="btnCompose" destination="IKI-ej-6s1" id="V1l-h7-eex"/>
-                        <outlet property="btnInfo" destination="WGu-Ad-JOe" id="CL0-R0-LyR"/>
                         <outlet property="cnstrTextViewBottom" destination="kxI-1q-qd3" id="X53-QS-Hd8"/>
                         <outlet property="cnstrTextViewHeight" destination="vfb-i0-H1U" id="Pfi-A7-tzE"/>
                         <outlet property="scrollView" destination="eYP-4e-ypc" id="ujE-cg-vAn"/>
@@ -726,27 +690,6 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="JbI-nl-UDF"/>
                     </view>
-                    <navigationItem key="navigationItem" id="rN3-Hi-1Da">
-                        <barButtonItem key="leftBarButtonItem" image="arrow-left-c" id="xub-aX-lA2">
-                            <connections>
-                                <action selector="btnBackTapWithSender:" destination="7qo-Z9-sVQ" id="dH6-3e-DJB"/>
-                            </connections>
-                        </barButtonItem>
-                        <rightBarButtonItems>
-                            <barButtonItem image="mail" id="5bb-Rw-S4m" userLabel="mail"/>
-                            <barButtonItem systemItem="trash" id="8Kb-DM-P9I" userLabel="delete">
-                                <connections>
-                                    <action selector="btnTrashTapWithSender:" destination="7qo-Z9-sVQ" id="GDu-3F-ahS"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem image="archive" id="936-ae-TUI" userLabel="archive">
-                                <connections>
-                                    <action selector="btnArchiveTapWithSender:" destination="7qo-Z9-sVQ" id="5mQ-ER-CFz"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem image="help_icn" id="YWQ-1X-ojV" userLabel="info"/>
-                        </rightBarButtonItems>
-                    </navigationItem>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="lblBody" destination="hPy-Wu-CX6" id="81n-Vw-lgK"/>
@@ -786,19 +729,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="android-send" width="29" height="29"/>
-        <image name="archive" width="29" height="29"/>
-        <image name="arrow-left-c" width="29" height="29"/>
         <image name="floating_icn" width="29" height="29"/>
         <image name="full-logo" width="600" height="94"/>
         <image name="gmail_icn" width="29" height="29"/>
-        <image name="help_icn" width="29" height="29"/>
-        <image name="mail" width="29" height="29"/>
-        <image name="menu_icn" width="29" height="29"/>
         <image name="outlook_icn" width="29" height="29"/>
-        <image name="paperclip" width="29" height="29"/>
         <image name="reply-all" width="29" height="29"/>
-        <image name="search_icn" width="29" height="29"/>
         <namedColor name="additionalInfoLabelColor">
             <color red="0.22352941176470589" green="0.22352941176470589" blue="0.22352941176470589" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

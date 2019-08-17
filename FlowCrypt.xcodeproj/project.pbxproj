@@ -345,9 +345,9 @@
 		C132B9C51EC2DCAB00763715 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				04B472911ECE29F600B8266F /* SideMenu */,
 				D952B71B1ED0CB0100E5C02B /* Msg */,
 				04B4728F1ECE29F600B8266F /* Compose */,
-				04B472911ECE29F600B8266F /* SideMenu */,
 				C192421D1EC48B5600C3D251 /* Recover */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				32DCA4762A2B08BFF81AB38F /* BaseViewController.swift */,

@@ -20,6 +20,11 @@ struct Constants {
     public static let unreadDateTextColor = UIColor(red: 33.0 / 255.0, green: 157.0 / 255.0, blue: 5.0 / 255.0, alpha: 1.0)
     public static let readDateTextColor = UIColor.lightGray
     public static let green = UIColor(red:0.19, green:0.64, blue:0.09, alpha:1.0)
+    
+    public static let uiBarButtonItemFrame = CGRect(x: 0, y: 0, width: 44, height: 44)
+    public static let rightUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+    
+    public static let leftUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: -25, bottom: 2, right: 0)
 }
 
 struct EmailConstant {

@@ -12,29 +12,39 @@ protocol MsgViewControllerDelegate {
 }
 
 class MsgViewController: BaseViewController {
-
-    var objMessage = MCOIMAPMessage()
-    var bodyMessage: Data?
-    var path = ""
+    
     @IBOutlet var lblSender: UILabel!
     @IBOutlet var lblSubject: UILabel!
     @IBOutlet var lblTIme: UILabel!
     @IBOutlet var lblBody: UILabel!
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var scrollViewContent: UIView!
-
+    
+    var btnInfo: UIButton!
+    var btnArchive: UIButton!
+    var btnTrash: UIButton!
+    var btnMail: UIButton!
+    var btnBack: UIButton!
+    
+    var objMessage = MCOIMAPMessage()
+    var bodyMessage: Data?
+    var path = ""
+    
     var delegate: MsgViewControllerDelegate!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.lblSender.text = objMessage.header.sender.mailbox ?? "(unknown sender)"
+        
         self.lblSubject.text = objMessage.header.subject ?? "(no subject)"
+        
         self.lblBody.numberOfLines = 0
+        
         self.lblTIme.text = Constants.inboxDateFormatter.string(from: objMessage.header.date)
+        
         self.showSpinner(Language.loading, isUserInteractionEnabled: true)
-        if self.path == "[Gmail]/Trash" {
-            // self.btnTrash.isHidden = true; // todo - hide the trash btn
-        }
+        
         self.async({ () -> CoreRes.ParseDecryptMsg in
             let mime = try await(Imap.instance.fetchMsg(message: self.objMessage, folder: self.path))
             self.bodyMessage = mime
@@ -53,39 +63,94 @@ class MsgViewController: BaseViewController {
             }
             self.markAsReadIfNotAlreadyMarked()
         }, fail: Language.could_not_open_message)
+        
+        self.configureNavigationBar()
     }
+    
+    private func configureNavigationBar() {
+        
+        btnInfo = UIButton(type: .system)
+        btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
+        btnInfo.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
+        btnInfo.frame = Constants.uiBarButtonItemFrame
+        btnInfo.addTarget(self, action: #selector(btnInfoTap), for: .touchUpInside)
+        
+        btnArchive = UIButton(type: .system)
+        btnArchive.setImage(UIImage(named: "archive")!, for: .normal)
+        btnArchive.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
+        btnArchive.frame = Constants.uiBarButtonItemFrame
+        btnArchive.addTarget(self, action: #selector(btnArchiveTap), for: .touchUpInside)
 
+        
+        btnTrash = UIButton(type: .system)
+        btnTrash.setImage(UIImage(named: "trash")!, for: .normal)
+        btnTrash.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
+        btnTrash.frame = Constants.uiBarButtonItemFrame
+        btnArchive.addTarget(self, action: #selector(btnTrashTap), for: .touchUpInside)
+        
+        btnMail = UIButton(type: .system)
+        btnMail.setImage(UIImage(named: "mail")!, for: .normal)
+        btnMail.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
+        btnMail.frame = Constants.uiBarButtonItemFrame
+        btnMail.addTarget(self, action: #selector(btnMailTap), for: .touchUpInside)
+        
+        let stackView = UIStackView(arrangedSubviews: [btnInfo, btnArchive, btnTrash, btnMail])
+        stackView.distribution = .equalSpacing
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 15
+        
+        if self.path == "[Gmail]/Trash" {
+            btnTrash.isHidden = true
+        }
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
+        
+        btnBack = UIButton(type: .system)
+        btnBack.setImage(UIImage(named: "arrow-left-c"), for: .normal)
+        btnBack.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
+        btnBack.frame = Constants.uiBarButtonItemFrame
+        btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnBack)
+        
+    }
+    
     func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {
         self.lblBody.text = text
         self.lblBody.textColor = color
         self.lblBody.sizeToFit()
         self.scrollView.contentSize = self.scrollViewContent.frame.size;
     }
-
-    @IBAction func btnBackTap(sender: AnyObject) {
-        _ = self.navigationController?.popViewController(animated: true)
-    }
-
+    
     func markAsReadIfNotAlreadyMarked() {
         if !self.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) {
             self.objMessage.flags.formUnion(MCOMessageFlag.seen)
             let _ = Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async, do not await
         }
     }
-
-    @IBAction func btnTrashTap(sender: AnyObject) {
-        guard self.path != "[Gmail]/Trash" else { // todo - does not need to be here once trash btn is hidden
-            self.showToast("Message is already in trash")
-            return
-        }
+    
+    @objc
+    private func btnInfoTap() {
+        #warning("ToDo")
+    }
+    
+    @objc
+    private func btnMailTap() {
+        #warning("ToDo")
+    }
+    
+    @objc
+    private func btnTrashTap() {
         self.async({
             let _ = try await(Imap.instance.moveMsg(msg: self.objMessage, folder: self.path, destFolder: "[Gmail]/Trash"))
         }, then: {
             self.onMsgUpdateSuccess(toast: Language.moved_to_trash)
         })
     }
-
-    @IBAction func btnArchiveTap(sender: AnyObject) {
+    
+    @objc
+    private func btnArchiveTap() {
         self.objMessage.flags = MCOMessageFlag.deleted
         self.async({
             let _ = try await(Imap.instance.pushUpdatedMsgFlags(msg: self.objMessage, folder: self.path))
@@ -93,23 +158,29 @@ class MsgViewController: BaseViewController {
             self.onMsgUpdateSuccess(toast: Language.email_archived)
         })
     }
-
+    
     func onMsgUpdateSuccess(toast: String) {
         self.hideSpinner()
         if let d = self.delegate {
             d.movedOrUpdated(objMessage: self.objMessage)
         }
         self.showToast(toast)
-        self.btnBackTap(sender: UIBarButtonItem())
+        self.btnBackTap()
     }
-
+    
+    @objc
+    private func btnBackTap() {
+        _ = self.navigationController?.popViewController(animated: true)
+    }
+    
     @IBAction func btnReplyTap(sender: UIButton) {
         let replyVc = self.instantiate(viewController: ComposeViewController.self)
         replyVc.isReply = true
         replyVc.replyToSubject = self.objMessage.header.subject
         replyVc.replyToRecipient = self.objMessage.header.from
         replyVc.replyToMime = self.bodyMessage
+        
         self.navigationController?.pushViewController(replyVc, animated: true)
     }
-
+    
 }
