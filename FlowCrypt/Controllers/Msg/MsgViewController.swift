@@ -34,17 +34,11 @@ class MsgViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.lblSender.text = objMessage.header.sender.mailbox ?? "(unknown sender)"
-        
         self.lblSubject.text = objMessage.header.subject ?? "(no subject)"
-        
         self.lblBody.numberOfLines = 0
-        
         self.lblTIme.text = Constants.inboxDateFormatter.string(from: objMessage.header.date)
-        
         self.showSpinner(Language.loading, isUserInteractionEnabled: true)
-        
         self.async({ () -> CoreRes.ParseDecryptMsg in
             let mime = try await(Imap.instance.fetchMsg(message: self.objMessage, folder: self.path))
             self.bodyMessage = mime
@@ -63,7 +57,6 @@ class MsgViewController: BaseViewController {
             }
             self.markAsReadIfNotAlreadyMarked()
         }, fail: Language.could_not_open_message)
-        
         self.configureNavigationBar()
     }
     
@@ -81,7 +74,6 @@ class MsgViewController: BaseViewController {
         btnArchive.frame = Constants.uiBarButtonItemFrame
         btnArchive.addTarget(self, action: #selector(btnArchiveTap), for: .touchUpInside)
 
-        
         btnTrash = UIButton(type: .system)
         btnTrash.setImage(UIImage(named: "trash")!, for: .normal)
         btnTrash.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
@@ -113,7 +105,6 @@ class MsgViewController: BaseViewController {
         btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnBack)
-        
     }
     
     func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {
