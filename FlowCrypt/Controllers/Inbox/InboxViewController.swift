@@ -58,8 +58,8 @@ class InboxViewController: BaseViewController, ENSideMenuDelegate, MsgViewContro
     }
 
     func movedOrUpdated(objMessage: MCOIMAPMessage) {
-        let index = self.messages.firstIndex(of: objMessage)
-        self.messages.remove(at: index!)
+        guard let index = self.messages.firstIndex(of: objMessage) else { return }
+        self.messages.remove(at: index)
         self.tableView.reloadData()
     }
     
