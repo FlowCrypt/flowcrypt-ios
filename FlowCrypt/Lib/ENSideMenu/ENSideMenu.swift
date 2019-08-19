@@ -204,8 +204,16 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(ENSideMenu.hideSideMenu))
         outterView.addGestureRecognizer(tapRecognizer)
         outterView.isUserInteractionEnabled = false
+        NotificationCenter.default.addObserver(self, selector: #selector(rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
         sourceView.addSubview(outterView)
 
+    }
+    
+    @objc
+    private func rotated() {
+        outterView.frame = CGRect(x: sideMenuContainerView.frame.width, y: 0,
+                                  width: sourceView.frame.width - sideMenuContainerView.frame.width,
+                                  height: sourceView.frame.height)
     }
     /**
      Initializes an instance of a `ENSideMenu` object.

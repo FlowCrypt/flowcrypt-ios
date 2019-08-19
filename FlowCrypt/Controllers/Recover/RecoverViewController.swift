@@ -10,18 +10,65 @@ import Promises
 class RecoverViewController: BaseViewController, UITextFieldDelegate {
 
     @IBOutlet weak var passPhaseTextField: UITextField!
+    @IBOutlet weak var btnLoadAccount: UIButton!
+    @IBOutlet weak var scrollView: UIScrollView!
+    
     var encryptedBackups: [KeyDetails]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.fetchBackups()
+        self.setupTapGesture()
+        passPhaseTextField.delegate = self
+        registerKeyboardNotifications()
     }
-
+    
+    func registerKeyboardNotifications() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShow(notification:)),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillHide(notification:)),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        let userInfo: NSDictionary = notification.userInfo! as NSDictionary
+        let keyboardInfo = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue
+        let keyboardSize = keyboardInfo.cgRectValue.size
+        let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height + 5, right: 0)
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        scrollView.contentInset = .zero
+        scrollView.scrollIndicatorInsets = .zero
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = true
+        btnLoadAccount.layer.cornerRadius = 5
+    }
+    
+    private func setupTapGesture() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(endEditing))
+        tap.cancelsTouchesInView = false
+        self.view.addGestureRecognizer(tap)
     }
 
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return true
+    }
+    
     func fetchBackups() {
         self.showSpinner()
         self.async({ () -> [KeyDetails] in
@@ -81,10 +128,10 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
             self.performSegue(withIdentifier: "InboxSegue", sender: nil)
         })
     }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    
+    @objc
+    private func endEditing() {
         self.view.endEditing(true)
-        return true
     }
-
+    
 }
