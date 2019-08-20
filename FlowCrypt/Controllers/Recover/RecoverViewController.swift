@@ -13,12 +13,13 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
     @IBOutlet weak var btnLoadAccount: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     
-    var encryptedBackups: [KeyDetails]?
+    private var encryptedBackups: [KeyDetails]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.fetchBackups()
-        self.setupTapGesture()
+
+        fetchBackups()
+        setupTapGesture()
         passPhaseTextField.delegate = self
         registerKeyboardNotifications()
     }

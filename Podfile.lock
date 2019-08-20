@@ -1,4 +1,5 @@
 PODS:
+  - ENSwiftSideMenu (0.1.4)
   - GoogleSignIn (4.4.0):
     - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
     - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
@@ -28,8 +29,10 @@ PODS:
   - SwiftyRSA (1.5.0):
     - SwiftyRSA/ObjC (= 1.5.0)
   - SwiftyRSA/ObjC (1.5.0)
+  - Toast (4.0.0)
 
 DEPENDENCIES:
+  - ENSwiftSideMenu (~> 0.1.4)
   - GoogleSignIn
   - IDZSwiftCommonCrypto
   - IQKeyboardManagerSwift
@@ -39,9 +42,11 @@ DEPENDENCIES:
   - RealmSwift
   - SwiftLint
   - SwiftyRSA
+  - Toast (~> 4.0.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - ENSwiftSideMenu
     - GoogleSignIn
     - GoogleToolboxForMac
     - GTMSessionFetcher
@@ -55,8 +60,10 @@ SPEC REPOS:
     - RealmSwift
     - SwiftLint
     - SwiftyRSA
+    - Toast
 
 SPEC CHECKSUMS:
+  ENSwiftSideMenu: 21e755dae28f09bbf453aa83b3d05f2e5f92ca39
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
@@ -70,7 +77,8 @@ SPEC CHECKSUMS:
   RealmSwift: 4d3c9233544b9cd08a8913e0872b9038eb99b054
   SwiftLint: 9fc1143bbacec37f94994a7d0d2a85b2154b6294
   SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
+  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: ec2540a3dc60f58c4dd782814e2ccbde6ca8df51
+PODFILE CHECKSUM: 0dcca281ba78328c84bd78a6cf836292823e6cb0
 
 COCOAPODS: 1.7.5
