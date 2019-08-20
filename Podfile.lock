@@ -28,6 +28,7 @@ PODS:
   - SwiftyRSA (1.5.0):
     - SwiftyRSA/ObjC (= 1.5.0)
   - SwiftyRSA/ObjC (1.5.0)
+  - Toast (4.0.0)
 
 DEPENDENCIES:
   - GoogleSignIn
@@ -39,6 +40,7 @@ DEPENDENCIES:
   - RealmSwift
   - SwiftLint
   - SwiftyRSA
+  - Toast (~> 4.0.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -55,6 +57,7 @@ SPEC REPOS:
     - RealmSwift
     - SwiftLint
     - SwiftyRSA
+    - Toast
 
 SPEC CHECKSUMS:
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
@@ -70,7 +73,8 @@ SPEC CHECKSUMS:
   RealmSwift: 4d3c9233544b9cd08a8913e0872b9038eb99b054
   SwiftLint: 9fc1143bbacec37f94994a7d0d2a85b2154b6294
   SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
+  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: ec2540a3dc60f58c4dd782814e2ccbde6ca8df51
+PODFILE CHECKSUM: b991101dc4aa5751e9978d70f58dceefbe8f62df
 
 COCOAPODS: 1.7.5

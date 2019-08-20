@@ -5,6 +5,7 @@
 import UIKit
 import MBProgressHUD
 import Promises
+import Toast
 
 class InboxViewController: BaseViewController, ENSideMenuDelegate, MsgViewControllerDelegate {
 
@@ -42,8 +43,6 @@ class InboxViewController: BaseViewController, ENSideMenuDelegate, MsgViewContro
         
         self.fetchAndRenderEmails()
         self.configureNavigationBar()
-
-        ToastManager.shared.tapToDismissEnabled = true
     }
 
     override func viewWillAppear(_ animated: Bool) {

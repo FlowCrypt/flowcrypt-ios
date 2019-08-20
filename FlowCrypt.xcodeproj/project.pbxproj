@@ -41,6 +41,7 @@
 		32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
+		9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */; };
 		A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */; };
 		A350A5CC22E9F0E000427C6C /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
@@ -64,7 +65,6 @@
 		C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* RecoverViewController.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
-		D9E42F251ED4756100DFBB97 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E42F241ED4756100DFBB97 /* Toast.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +123,7 @@
 		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flowcrypt-ios-icon.png"; sourceTree = "<group>"; };
 		A33BAA8822EDBF1A00CC1B5C /* gmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
 		A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libgmp-6.1.2-iPhoneOS-arm64.a"; sourceTree = "<group>"; };
@@ -146,7 +147,6 @@
 		C132B9EA1EC45B9900763715 /* InboxTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InboxTableViewCell.xib; sourceTree = "<group>"; };
 		C192421E1EC48B6900C3D251 /* RecoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecoverViewController.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MsgViewController.swift; sourceTree = "<group>"; };
-		D9E42F241ED4756100DFBB97 /* Toast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -175,7 +175,6 @@
 		04B472541ECE29B200B8266F /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				D9E42F231ED4756100DFBB97 /* ToastMessage */,
 				04B472551ECE29B200B8266F /* ENSideMenu */,
 				32DCA80385928233C1774C59 /* Bignum */,
 			);
@@ -269,6 +268,7 @@
 				32DCA4A964004CBABCA2F01C /* PromiseExtension.swift */,
 				32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */,
 				32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */,
+				9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -400,14 +400,6 @@
 				D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */,
 			);
 			path = Msg;
-			sourceTree = "<group>";
-		};
-		D9E42F231ED4756100DFBB97 /* ToastMessage */ = {
-			isa = PBXGroup;
-			children = (
-				D9E42F241ED4756100DFBB97 /* Toast.swift */,
-			);
-			path = ToastMessage;
 			sourceTree = "<group>";
 		};
 		E48A4865C8E7B2B971F5FC18 /* Frameworks */ = {
@@ -668,7 +660,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */,
-				D9E42F251ED4756100DFBB97 /* Toast.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* MyNavigationController.swift in Sources */,
 				04B472721ECE29B200B8266F /* ENSideMenu.swift in Sources */,
@@ -688,6 +679,7 @@
 				32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */,
 				32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */,
 				32DCAA4C8C5612784F63F996 /* BaseViewController.swift in Sources */,
+				9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */,
 				32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */,
 				32DCA583D0C09131947705C8 /* PromiseExtension.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,

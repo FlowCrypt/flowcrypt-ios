@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import MBProgressHUD
 import Promises
+import Toast
 
 class BaseViewController: UIViewController {
 
@@ -35,12 +36,6 @@ class BaseViewController: UIViewController {
             let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .destructive) { action in onOk?() })
             self.present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    func showToast(_ message: String) {
-        DispatchQueue.main.async {
-            UIApplication.shared.keyWindow?.rootViewController?.view.makeToast(message)
         }
     }
 

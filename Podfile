@@ -12,6 +12,7 @@ target 'FlowCrypt' do
   pod 'SwiftyRSA'
   pod 'IQKeyboardManagerSwift'
   pod 'IDZSwiftCommonCrypto'
+  pod 'Toast', '~> 4.0.0'
 end
 
 target 'FlowCryptTests' do
