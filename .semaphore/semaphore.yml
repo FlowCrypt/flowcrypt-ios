@@ -9,7 +9,6 @@ agent:
 blocks:
   - name: Run tests
     task:
-      env_vars:
       prologue:
         commands:
           - checkout
