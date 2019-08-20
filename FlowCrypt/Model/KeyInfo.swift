@@ -14,7 +14,11 @@ class KeyInfo: Object {
 
     convenience init(_ keyDetails: KeyDetails, passphrase: String, source: String) {
         self.init()
-        self.private = keyDetails.private! // crash the app if someone tries to pass a public key - that would be a programming error
+        guard let privateKey = keyDetails.private else {
+            assertionFailure("someone tries to pass a public key - that would be a programming error")
+            keyDetails.private!
+        }
+        self.private = privateKey
         self.public = keyDetails.public
         self.longid = keyDetails.ids[0].longid
         self.passphrase = passphrase

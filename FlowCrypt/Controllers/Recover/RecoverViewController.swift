@@ -39,8 +39,10 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        let userInfo: NSDictionary = notification.userInfo! as NSDictionary
-        let keyboardInfo = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue
+        guard let userInfo: NSDictionary = notification.userInfo? as NSDictionary,
+            let keyboardInfo = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue
+        else { assertionFailure("Check user info"); return }
+
         let keyboardSize = keyboardInfo.cgRectValue.size
         let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height + 5, right: 0)
         scrollView.contentInset = contentInsets
@@ -105,10 +107,15 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
             return
         }
         self.showSpinner()
-        self.async({ () -> [KeyDetails] in
+        self.async({ [weak self] () -> [KeyDetails] in
+            guard let self = self, let backups = self.encryptedBackups else { return }
+
             var matchingBackups = [KeyDetails]()
-            for k in self.encryptedBackups! {
-                let decryptRes = try Core.decryptKey(armoredPrv: k.private!, passphrase: entered_pass_phrase)
+
+            for k in backups {
+                guard let key = k.private else { assertionFailure(); return }
+
+                let decryptRes = try Core.decryptKey(armoredPrv: key, passphrase: entered_pass_phrase)
                 if decryptRes.decryptedKey != nil {
                     matchingBackups.append(k)
                 }

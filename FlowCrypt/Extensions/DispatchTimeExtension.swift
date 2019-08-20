@@ -7,7 +7,7 @@ import Foundation
 extension DispatchTime {
 
     public func millisecondsSince() -> UInt64 {
-        return (DispatchTime.now().uptimeNanoseconds - self.uptimeNanoseconds) / 1_000_000
+        return (.now().uptimeNanoseconds - uptimeNanoseconds) / 1_000_000
     }
 
 }

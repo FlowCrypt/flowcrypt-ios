@@ -8,8 +8,11 @@ class MyNavigationController: ENSideMenuNavigationController, ENSideMenuDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let sideMenuVC = self.storyboard?.instantiateViewController(withIdentifier: "MenuTableViewController") as! MyMenuTableViewController
-        sideMenu = ENSideMenu(sourceView: self.view, menuViewController: sideMenuVC, menuPosition: .left)
+
+        guard let sideMenuVC = self.storyboard?.instantiateViewController(withIdentifier: "MenuTableViewController") as?  MyMenuTableViewController else {
+            assertionFailure("Couldn't instantiate ViewController")
+        }
+        sideMenu = ENSideMenu(sourceView: view, menuViewController: sideMenuVC, menuPosition: .left)
         sideMenu?.bouncingEnabled = false
         sideMenu?.menuWidth = UIScreen.main.bounds.size.width - 80
     }
@@ -29,9 +32,4 @@ class MyNavigationController: ENSideMenuNavigationController, ENSideMenuDelegate
     func sideMenuDidOpen() {
         print("sideMenuDidOpen")
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
 }

@@ -4,31 +4,35 @@
 
 import UIKit
 
-struct Constants {
-    public static let NUMBER_OF_MESSAGES_TO_LOAD = 10
-    public static let inboxDateFormatter: DateFormatter = {
+enum Constants {
+    enum Global {
+        static let generalError = -1
+    }
+    // TODO: Anton - Use Themes instead of Constants
+    static let NUMBER_OF_MESSAGES_TO_LOAD = 10
+    static let inboxDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "h:mm a"
         return formatter
     }()
-    public static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
-    public static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
-    public static let unreadDateFont = UIFont.boldSystemFont(ofSize: 17.0)
-    public static let readDateFont = UIFont.systemFont(ofSize: 17.0)
-    public static let unreadMessageTextColor = UIColor.black
-    public static let readMessageTextColor = UIColor.lightGray
-    public static let unreadDateTextColor = UIColor(red: 33.0 / 255.0, green: 157.0 / 255.0, blue: 5.0 / 255.0, alpha: 1.0)
-    public static let readDateTextColor = UIColor.lightGray
-    public static let green = UIColor(red:0.19, green:0.64, blue:0.09, alpha:1.0)
+    static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
+    static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
+    static let unreadDateFont = UIFont.boldSystemFont(ofSize: 17.0)
+    static let readDateFont = UIFont.systemFont(ofSize: 17.0)
+    static let unreadMessageTextColor = UIColor.black
+    static let readMessageTextColor = UIColor.lightGray
+    static let unreadDateTextColor = UIColor(red: 33.0 / 255.0, green: 157.0 / 255.0, blue: 5.0 / 255.0, alpha: 1.0)
+    static let readDateTextColor = UIColor.lightGray
+    static let green = UIColor(red:0.19, green:0.64, blue:0.09, alpha:1.0)
     
-    public static let uiBarButtonItemFrame = CGRect(x: 0, y: 0, width: 44, height: 44)
-    public static let rightUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+    static let uiBarButtonItemFrame = CGRect(x: 0, y: 0, width: 44, height: 44)
+    static let rightUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
-    public static let leftUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: -25, bottom: 2, right: 0)
+    static let leftUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: -25, bottom: 2, right: 0)
 }
 
 struct EmailConstant {
-    public static let recoverAccountSearchSubject = [
+    static let recoverAccountSearchSubject = [
         "Your FlowCrypt Backup",
         "Your CryptUp Backup",
         "Your CryptUP Backup",
@@ -38,30 +42,30 @@ struct EmailConstant {
 }
 
 struct Language {
-    public static let loading = "Loading"
-    public static let sending = "Sending"
-    public static let enter_recipient = "Enter recipient"
-    public static let enter_subject = "Enter subject"
-    public static let enter_message = "Enter secure message"
-    public static let enter_pass_phrase = "Enter pass phrase"
-    public static let encrypted_message_sent = "Encrypted message sent"
-    public static let moved_to_trash = "Email moved to Trash"
-    public static let email_deleted = "Email deleted"
-    public static let email_archived = "Email archived"
-    public static let encrypted_reply_sent = "Reply successfully sent"
-    public static let could_not_open_message = "Could not open message"
-    public static let failed_to_load_messages = "Failed to load messages"
-    public static let no_pgp = "Recipient doesn't seem to have encryption set up"
-    public static let your_message = "Your message"
-    public static let message_placeholder = "Compose Secure Message"
-    public static let your_reply = "Your reply"
-    public static let wrong_pass_phrase_retry = "Wrong pass phrase, please try again"
-    public static let no_backups = "No backups found on this account"
-    public static let no_internet = "No internet connection"
-    public static let use_other_account = "Use other account"
-    public static let could_not_configure_google = "Could not configure google services"
-    public static let could_not_compose_message = "Could not compose message"
-    public static let unhandled_core_err = "Background core service error"
-    public static let action_failed = "Action failed"
-    public static let could_not_fetch_folders = "Could not fetch folders"
+    static let loading = "Loading"
+    static let sending = "Sending"
+    static let enter_recipient = "Enter recipient"
+    static let enter_subject = "Enter subject"
+    static let enter_message = "Enter secure message"
+    static let enter_pass_phrase = "Enter pass phrase"
+    static let encrypted_message_sent = "Encrypted message sent"
+    static let moved_to_trash = "Email moved to Trash"
+    static let email_deleted = "Email deleted"
+    static let email_archived = "Email archived"
+    static let encrypted_reply_sent = "Reply successfully sent"
+    static let could_not_open_message = "Could not open message"
+    static let failed_to_load_messages = "Failed to load messages"
+    static let no_pgp = "Recipient doesn't seem to have encryption set up"
+    static let your_message = "Your message"
+    static let message_placeholder = "Compose Secure Message"
+    static let your_reply = "Your reply"
+    static let wrong_pass_phrase_retry = "Wrong pass phrase, please try again"
+    static let no_backups = "No backups found on this account"
+    static let no_internet = "No internet connection"
+    static let use_other_account = "Use other account"
+    static let could_not_configure_google = "Could not configure google services"
+    static let could_not_compose_message = "Could not compose message"
+    static let unhandled_core_err = "Background core service error"
+    static let action_failed = "Action failed"
+    static let could_not_fetch_folders = "Could not fetch folders"
 }
