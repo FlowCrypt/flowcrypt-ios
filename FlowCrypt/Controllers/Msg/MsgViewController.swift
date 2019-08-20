@@ -82,7 +82,7 @@ class MsgViewController: BaseViewController {
         btnTrash.setImage(UIImage(named: "trash")!, for: .normal)
         btnTrash.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
         btnTrash.frame = Constants.uiBarButtonItemFrame
-        btnArchive.addTarget(self, action: #selector(btnTrashTap), for: .touchUpInside)
+        btnTrash.addTarget(self, action: #selector(btnTrashTap), for: .touchUpInside)
         
         btnMail = UIButton(type: .system)
         btnMail.setImage(UIImage(named: "mail")!, for: .normal)

@@ -3,18 +3,25 @@
 //
 
 import UIKit
+import ENSwiftSideMenu
 
-class MyNavigationController: ENSideMenuNavigationController, ENSideMenuDelegate {
+final class MyNavigationController: ENSideMenuNavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        guard let sideMenuVC = self.storyboard?.instantiateViewController(withIdentifier: "MenuTableViewController") as?  MyMenuTableViewController else {
-            assertionFailure("Couldn't instantiate ViewController")
+        guard let sideMenuVC = self.storyboard?.instantiateViewController(withIdentifier: "MenuTableViewController") as? MyMenuTableViewController else {
+            assertionFailure("Can't find view controller with identifier")
+            return
         }
         sideMenu = ENSideMenu(sourceView: view, menuViewController: sideMenuVC, menuPosition: .left)
         sideMenu?.bouncingEnabled = false
         sideMenu?.menuWidth = UIScreen.main.bounds.size.width - 80
+    }
+}
+
+extension MyNavigationController: ENSideMenuDelegate {
+    func sideMenuShouldOpenSideMenu() -> Bool {
+        return true
     }
 
     func sideMenuWillOpen() {
