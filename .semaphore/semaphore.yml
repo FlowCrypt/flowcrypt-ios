@@ -10,15 +10,16 @@ blocks:
   - name: Run tests
     task:
       env_vars:
-        - name: LANG
-          value: en_US.UTF-8
       prologue:
         commands:
           - checkout
           - cache restore
           - bundle install --path vendor/bundle
-          - pod install
           - cache store
+          - cache restore pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock),pods-master
+          - pod install
+          - cache store pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock) Pods
+
       jobs:
         - name: Fastlane test
           commands:
@@ -27,21 +28,3 @@ blocks:
             # See https://docs.fastlane.tools/actions/scan/
             - bundle exec fastlane test
 
-#  - name: Build app
-#    task:
-#      env_vars:
-#        - name: LANG
-#          value: en_US.UTF-8
-#      prologue:
-#        commands:
-#          - checkout
-#          - cache restore
-#          - bundle install --path vendor/bundle
-#          - cache store
-#      jobs:
-#        - name: Fastlane build
-#          commands:
-#            - bundle exec xcversion select 10.2.1
-#            # Gym builds and packages iOS apps.
-#            # See https://docs.fastlane.tools/actions/build_app/
-#            - bundle exec fastlane build
