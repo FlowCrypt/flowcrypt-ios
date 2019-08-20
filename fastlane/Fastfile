@@ -10,7 +10,11 @@ platform :ios do
 
   desc "Run Tests"
   lane :test do
-    scan
+    #scan
+    scan(
+      scheme: "FlowCryptTests"
+    )
+
   end
 
   desc "Build"
