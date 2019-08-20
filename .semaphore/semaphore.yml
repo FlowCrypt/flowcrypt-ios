@@ -7,7 +7,7 @@ agent:
     os_image: macos-mojave
 
 blocks:
-  - name: Run tests
+  - name: iOS Tests
     task:
       env_vars:
         - name: LANG
@@ -23,7 +23,7 @@ blocks:
           - cache store pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock) Pods
 
       jobs:
-        - name: Fastlane test
+        - name: FlowCryptTests
           commands:
             - bundle exec xcversion select 10.3
             # Run tests of iOS and Mac app on a simulator or connected device
