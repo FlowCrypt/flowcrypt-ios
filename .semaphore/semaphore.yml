@@ -17,6 +17,7 @@ blocks:
           - checkout
           - cache restore
           - bundle install --path vendor/bundle
+          - pod install
           - cache store
       jobs:
         - name: Fastlane test
