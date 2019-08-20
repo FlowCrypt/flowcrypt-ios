@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		04B472721ECE29B200B8266F /* ENSideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472561ECE29B200B8266F /* ENSideMenu.swift */; };
-		04B472731ECE29B200B8266F /* ENSideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472571ECE29B200B8266F /* ENSideMenuNavigationController.swift */; };
 		04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */; };
 		04B472961ECE29F600B8266F /* MyNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* MyNavigationController.swift */; };
@@ -92,8 +90,6 @@
 
 /* Begin PBXFileReference section */
 		02A9A9F6DCFB9B2E407559A8 /* Pods-FlowCrypt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.release.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.release.xcconfig"; sourceTree = "<group>"; };
-		04B472561ECE29B200B8266F /* ENSideMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENSideMenu.swift; sourceTree = "<group>"; };
-		04B472571ECE29B200B8266F /* ENSideMenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENSideMenuNavigationController.swift; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyInfo.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuTableViewController.swift; sourceTree = "<group>"; };
 		04B472931ECE29F600B8266F /* MyNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyNavigationController.swift; sourceTree = "<group>"; };
@@ -175,19 +171,9 @@
 		04B472541ECE29B200B8266F /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				04B472551ECE29B200B8266F /* ENSideMenu */,
 				32DCA80385928233C1774C59 /* Bignum */,
 			);
 			path = Lib;
-			sourceTree = "<group>";
-		};
-		04B472551ECE29B200B8266F /* ENSideMenu */ = {
-			isa = PBXGroup;
-			children = (
-				04B472561ECE29B200B8266F /* ENSideMenu.swift */,
-				04B472571ECE29B200B8266F /* ENSideMenuNavigationController.swift */,
-			);
-			path = ENSideMenu;
 			sourceTree = "<group>";
 		};
 		04B4728A1ECE29D200B8266F /* Model */ = {
@@ -662,14 +648,12 @@
 				04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* MyNavigationController.swift in Sources */,
-				04B472721ECE29B200B8266F /* ENSideMenu.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* Constants.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
 				C132B9E91EC4484B00763715 /* InboxTableViewCell.swift in Sources */,
 				04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */,
-				04B472731ECE29B200B8266F /* ENSideMenuNavigationController.swift in Sources */,
 				32DCA1339D6857686ABD3FC4 /* UIVIewExtension.swift in Sources */,
 				32DCA5577770FF2394018FA9 /* AttesterApi.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,

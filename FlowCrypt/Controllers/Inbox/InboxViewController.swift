@@ -6,8 +6,9 @@ import UIKit
 import MBProgressHUD
 import Promises
 import Toast
+import ENSwiftSideMenu
 
-class InboxViewController: BaseViewController, ENSideMenuDelegate, MsgViewControllerDelegate {
+final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
@@ -26,40 +27,40 @@ class InboxViewController: BaseViewController, ENSideMenuDelegate, MsgViewContro
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.sideMenuController()?.sideMenu?.allowslideGesture = true
-        self.sideMenuController()?.sideMenu?.delegate = self
 
-        self.title = iMapFolderName == "" ? "Inbox" : iMapFolderName
-        if self.iMapFolderName == "" {
-            self.path = "INBOX"
+        // TODO: - Fix this.
+        sideMenuController()?.sideMenu?.allowPanGesture = true
+
+        title = iMapFolderName == "" ? "Inbox" : iMapFolderName
+        if iMapFolderName == "" {
+            path = "INBOX"
         }
         
-        self.lblEmptyMessage.text =  "\(self.title!) is empty"
-        self.lblEmptyMessage.isHidden = true
+        lblEmptyMessage.text =  "\(self.title!) is empty"
+        lblEmptyMessage.isHidden = true
         
-        self.tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
-        self.tableView.tableFooterView = UIView()
+        tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
+        tableView.tableFooterView = UIView()
         
-        self.fetchAndRenderEmails()
-        self.configureNavigationBar()
+        fetchAndRenderEmails()
+        configureNavigationBar()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.isNavigationBarHidden = false
-        self.sideMenuController()?.sideMenu?.allowslideGesture = true
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        sideMenuController()?.sideMenu?.allowPanGesture = true
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        self.sideMenuController()?.sideMenu?.allowslideGesture = false
-        self.tableView.reloadData()
+        sideMenuController()?.sideMenu?.allowPanGesture = false
+        tableView.reloadData()
     }
 
     func movedOrUpdated(objMessage: MCOIMAPMessage) {
         guard let index = self.messages.firstIndex(of: objMessage) else { return }
-        self.messages.remove(at: index)
-        self.tableView.reloadData()
+        messages.remove(at: index)
+        tableView.reloadData()
     }
     
     func fetchAndRenderEmails() {
@@ -117,7 +118,7 @@ class InboxViewController: BaseViewController, ENSideMenuDelegate, MsgViewContro
     }
     
     @objc
-    private func btnMenuTap() { //To open/close menu
+    private func btnMenuTap() {
         toggleSideMenuView()
     }
     
@@ -149,9 +150,9 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let msgVc = self.instantiate(viewController: MsgViewController.self)
-        msgVc.objMessage = self.messages[indexPath.row]
-        msgVc.path = self.path
+        let msgVc = instantiate(viewController: MsgViewController.self)
+        msgVc.objMessage = messages[indexPath.row]
+        msgVc.path = path
         msgVc.delegate = self
         self.navigationController?.pushViewController(msgVc, animated: true)
     }

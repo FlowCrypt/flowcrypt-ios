@@ -30,13 +30,13 @@ extension UIViewController {
     /// - Parameters:
     ///   - message: Message to be shown
     ///   - title: Title for the toast
-    ///   - duration: Default value 0.3
+    ///   - duration: Toast presented duration
     ///   - position: Bottom by default. Can be top, center, bottom.
     ///   - completion: Notify when toast dissapeared
     func showToast(
         _ message: String,
-        title: String = "",
-        duration: TimeInterval = 0.3,
+        title: String? = nil,
+        duration: TimeInterval = 0.5,
         position: ToastPosition = .bottom,
         completion: ShowToastCompletion? = nil
     ) {
@@ -52,7 +52,7 @@ extension UIViewController {
                 duration: duration,
                 position: position.value,
                 title: title,
-                image: UIImage(),
+                image: nil,
                 style: CSToastStyle.init(defaultStyle: ()),
                 completion: completion
             )

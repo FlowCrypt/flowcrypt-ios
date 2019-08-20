@@ -13,6 +13,7 @@ target 'FlowCrypt' do
   pod 'IQKeyboardManagerSwift'
   pod 'IDZSwiftCommonCrypto'
   pod 'Toast', '~> 4.0.0'
+  pod 'ENSwiftSideMenu', '~> 0.1.4'
 end
 
 target 'FlowCryptTests' do
