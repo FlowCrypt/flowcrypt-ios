@@ -4,8 +4,6 @@ Pods/
 
 *.xcuserstate
 
-*.xcscheme
-
 xcschememanagement.plist
 
 *.xcbkptlist
