@@ -28,7 +28,7 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // TODO: - Fix this.
+        // TODO: closing side menu won't work, to be fixed in https://github.com/FlowCrypt/flowcrypt-ios/issues/38
         sideMenuController()?.sideMenu?.allowPanGesture = true
 
         title = iMapFolderName == "" ? "Inbox" : iMapFolderName
