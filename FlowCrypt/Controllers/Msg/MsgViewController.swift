@@ -19,7 +19,8 @@ class MsgViewController: BaseViewController {
     @IBOutlet var lblBody: UILabel!
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var scrollViewContent: UIView!
-    
+
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     var btnInfo: UIButton!
     var btnArchive: UIButton!
     var btnTrash: UIButton!
@@ -29,7 +30,8 @@ class MsgViewController: BaseViewController {
     var objMessage = MCOIMAPMessage()
     var bodyMessage: Data?
     var path = ""
-    
+
+    // TODO: - Should be weak to avoid memory leaks(investigate)
     var delegate: MsgViewControllerDelegate!
     
     override func viewDidLoad() {
@@ -37,7 +39,7 @@ class MsgViewController: BaseViewController {
         self.lblSender.text = objMessage.header.sender.mailbox ?? "(unknown sender)"
         self.lblSubject.text = objMessage.header.subject ?? "(no subject)"
         self.lblBody.numberOfLines = 0
-        self.lblTIme.text = Constants.inboxDateFormatter.string(from: objMessage.header.date)
+        self.lblTIme.text = Constants.convertDate(date: objMessage.header.date)
         self.showSpinner(Language.loading, isUserInteractionEnabled: true)
         self.async({ () -> CoreRes.ParseDecryptMsg in
             let mime = try await(Imap.instance.fetchMsg(message: self.objMessage, folder: self.path))
@@ -51,17 +53,19 @@ class MsgViewController: BaseViewController {
             let decryptErrBlock = decrypted.blocks.first(where: { $0.decryptErr != nil })
             if decryptErrBlock == nil {
                 self.renderMsgBody(decrypted.text, color: decrypted.replyType == CoreRes.ReplyType.encrypted ? Constants.green : UIColor.black)
-            } else {
-                let e = decryptErrBlock!.decryptErr!.error
-                self.renderMsgBody("Dould not decrypt message:\n\(e.type)\n\n\(e.message)\n\n\(decryptErrBlock!.content)", color: UIColor.red)
+            } else if let e = decryptErrBlock?.decryptErr?.error {
+                self.renderMsgBody(
+                    "Dould not decrypt message:\n\(e.type)\n\n\(e.message)\n\n\(decryptErrBlock!.content)",
+                    color: .red
+                )
             }
             self.markAsReadIfNotAlreadyMarked()
         }, fail: Language.could_not_open_message)
         self.configureNavigationBar()
     }
-    
+
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     private func configureNavigationBar() {
-        
         btnInfo = UIButton(type: .system)
         btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
         btnInfo.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
@@ -115,9 +119,9 @@ class MsgViewController: BaseViewController {
     }
     
     func markAsReadIfNotAlreadyMarked() {
-        if !self.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) {
+        if !objMessage.flags.isSuperset(of: MCOMessageFlag.seen) {
             self.objMessage.flags.formUnion(MCOMessageFlag.seen)
-            let _ = Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async, do not await
+            Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async call not awaited on purpose
         }
     }
     

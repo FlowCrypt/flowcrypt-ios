@@ -19,8 +19,8 @@ class BaseViewController: UIViewController {
     func showSpinner(_ message: String = Language.loading, isUserInteractionEnabled: Bool = false) {
         DispatchQueue.main.async {
             self.spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
-            self.spinner!.label.text = message
-            self.spinner!.isUserInteractionEnabled = isUserInteractionEnabled
+            self.spinner?.label.text = message
+            self.spinner?.isUserInteractionEnabled = isUserInteractionEnabled
         }
     }
 

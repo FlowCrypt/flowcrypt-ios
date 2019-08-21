@@ -85,7 +85,8 @@ class ComposeViewController: BaseViewController {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
-    
+
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     private func configureNavigationBar() {
         btnInfo = UIButton(type: .system)
         btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
@@ -134,22 +135,41 @@ class ComposeViewController: BaseViewController {
     
     @objc
     private func btnComposeTap() {
-        self.dismissKeyBoard()
-        guard self.isInputValid() else { return }
-        self.showSpinner(Language.sending)
-        let email = self.txtRecipient.text!
-        let text = self.txtMessage.text!
-        let subject = isReply ? "Re: \(replyToSubject ?? "(no subject)")" : self.txtSubject.text ?? "(no subject)"
+        dismissKeyBoard()
+        guard isInputValid() else { return }
+        showSpinner(Language.sending)
+
+        guard let email = self.txtRecipient.text,
+            let text = self.txtMessage.text
+        else { return }
+
+        let subject = isReply
+            ? "Re: \(replyToSubject ?? "(no subject)")"
+            : txtSubject.text ?? "(no subject)"
+
         let from = GoogleApi.instance.getEmail()
-        let replyToMimeMsg = replyToMime != nil ? String(data: replyToMime!, encoding: .utf8) : nil
+        let replyToMimeMsg = replyToMime.flatMap { String(data: $0, encoding: .utf8) }
+
         let realm = try! Realm()
-        var pubKeys = Array(realm.objects(KeyInfo.self).map { $0.public })
-        self.async({
+        var pubKeys = Array(realm.objects(KeyInfo.self)
+            .map { $0.public })
+
+        // TODO: Refactor memory leaks https://github.com/FlowCrypt/flowcrypt-ios/issues/40
+        async({
             let recipientPub = try await(AttesterApi.lookupEmail(email: email))
-            guard recipientPub.armored != nil else { return self.showErrAlert(Language.no_pgp) }
-            pubKeys.append(recipientPub.armored!)
-            let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: from, subject: subject, replyToMimeMsg: replyToMimeMsg)
-            let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubKeys);
+            guard let armored = recipientPub.armored else { return self.showErrAlert(Language.no_pgp) }
+
+            pubKeys.append(armored)
+            let msg = SendableMsg(
+                text: text,
+                to: [email],
+                cc: [],
+                bcc: [],
+                from: from,
+                subject: subject,
+                replyToMimeMsg: replyToMimeMsg
+            )
+            let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubKeys)
             let _ = try await(Imap.instance.sendMail(mime: composeRes.mimeEncoded))
         }, then: {
             self.hideSpinner()
@@ -158,16 +178,16 @@ class ComposeViewController: BaseViewController {
         }, fail: Language.could_not_compose_message)
     }
     
-    @objc
-    private func btnInfoTap() {
+    @objc private func btnInfoTap() {
         #warning("ToDo")
     }
     
-    @objc
-    private func adjustForKeyboard(notification: Notification) {
-        let userInfo = notification.userInfo!
+    @objc private func adjustForKeyboard(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+            let keyboardScreenEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        else { assertionFailure("Check user info"); return }
         
-        let keyboardScreenEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+
         let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
         
         if notification.name == UIResponder.keyboardWillHideNotification {
@@ -184,11 +204,9 @@ class ComposeViewController: BaseViewController {
         scrollView.scrollRectToVisible(rect, animated: true)
     }
     
-    @objc
-    private func convertStringToLowercase(textField: UITextField) {
+    @objc private func convertStringToLowercase(textField: UITextField) {
         self.txtRecipient.text = self.txtRecipient.text?.lowercased()
     }
-    
 }
 
 extension ComposeViewController: UITextViewDelegate {
