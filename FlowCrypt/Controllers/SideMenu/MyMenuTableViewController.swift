@@ -8,21 +8,38 @@ import Promises
 class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet var menuTable: UITableView!
-    var menuArray = [String]()
-    var subMenuArray = NSMutableArray()
-    var arrImap = [MCOIMAPFolder]()
     @IBOutlet var lblName: UILabel!
     @IBOutlet var lblEmail: UILabel!
 
+    var menuArray = [String]()
+    var subMenuArray = NSMutableArray()
+    var arrImap = [MCOIMAPFolder]()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.lblName.text = String(GoogleApi.instance.getName().split(separator: " ").first!) // show first name, save space
-        self.lblEmail.text = GoogleApi.instance.getEmail().replacingOccurrences(of: "@gmail.com", with: "")
-        self.async({ try await(Imap.instance.fetchFolders()) }, then: { res in
+
+        setupUI()
+        async({ try await(Imap.instance.fetchFolders()) }, then: { res in
             self.arrImap = res.folders
             self.menuArray = res.menu
             self.menuTable.reloadData()
         }, fail: Language.could_not_fetch_folders)
+    }
+
+    private func setupUI() {
+         // show first name, save space
+        let name = GoogleApi.instance
+            .getName()
+            .split(separator: " ")
+            .first
+            .map(String.init) ?? ""
+
+        let email = GoogleApi.instance
+            .getEmail()
+            .replacingOccurrences(of: "@gmail.com", with: "")
+
+        lblName.text = name
+        lblEmail.text = email
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
