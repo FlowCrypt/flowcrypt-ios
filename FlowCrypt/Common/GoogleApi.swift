@@ -57,7 +57,6 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
         self.viewController = viewController
         self.signInCallback = { user, err in
             Imap.debug(107, "GoogleApi.signIn callback - resolving with err?=", value: err)
-
             if let user = user {
                 resolve(user)
             } else {
@@ -73,7 +72,6 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
         Imap.debug(108, "GoogleApi.renewAccessToken()")
         self.signInSilentlyCallback = { accessToken, err in
             Imap.debug(109, "GoogleApi.renewAccessToken - callback with err?=", value: err)
-
             if let accessToken = accessToken {
                 resolve(accessToken)
             } else {
