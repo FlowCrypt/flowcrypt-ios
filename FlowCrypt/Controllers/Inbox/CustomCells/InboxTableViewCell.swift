@@ -9,6 +9,7 @@ class InboxTableViewCell: UITableViewCell {
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var messageLabel: UILabel!
+    
     var message: MCOIMAPMessage! {
         didSet {
             if message.header.sender.mailbox != nil {

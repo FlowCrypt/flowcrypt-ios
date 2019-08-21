@@ -5,7 +5,7 @@
 import UIKit
 
 struct Constants {
-    public static let NUMBER_OF_MESSAGES_TO_LOAD = 10
+    public static let NUMBER_OF_MESSAGES_TO_LOAD = 20
     public static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
     public static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
     public static let unreadDateFont = UIFont.boldSystemFont(ofSize: 17.0)
