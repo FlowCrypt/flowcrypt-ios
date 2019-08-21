@@ -22,6 +22,8 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
             self.arrImap = res.folders
             self.menuArray = res.menu
             self.menuTable.reloadData()
+            let cell = self.menuTable.cellForRow(at: IndexPath(row: 0, section: 0))
+            cell?.isSelected = true
         }, fail: Language.could_not_fetch_folders)
     }
 
@@ -46,14 +48,22 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
         cell.lblName.text = self.menuArray[indexPath.row]
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        deselectAllItemsInTableView(tableView)
         Imap.instance.totalNumberOfInboxMsgs = 0
         Imap.instance.messages.removeAll()
         let inboxVc = self.instantiate(viewController: InboxViewController.self)
         inboxVc.iMapFolderName = self.menuArray[indexPath.row].capitalized
         inboxVc.path = self.arrImap[indexPath.row].path
         self.sideMenuController()?.setContentViewController(inboxVc)
+    }
+    
+    var firstStart = true
+    func deselectAllItemsInTableView(_ tableView: UITableView) {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)), firstStart else { return }
+        firstStart = false
+        cell.isSelected = false
     }
 
     override func didReceiveMemoryWarning() {
