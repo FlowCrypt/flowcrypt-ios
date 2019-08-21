@@ -21,7 +21,7 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
         self.lblEmail.text = GoogleApi.instance.getEmail().replacingOccurrences(of: "@gmail.com", with: "")
         self.async({ try await(Imap.instance.fetchFolders()) }, then: { res in
             self.arrImap = res.folders
-            self.menuArray = res.menu.map({ $0.capitalized })
+            self.menuArray = res.menu
             self.menuTable.reloadData()
         }, fail: Language.could_not_fetch_folders)
     }
