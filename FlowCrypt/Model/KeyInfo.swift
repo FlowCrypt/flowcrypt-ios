@@ -16,7 +16,10 @@ class KeyInfo: Object {
         self.init()
         guard let privateKey = keyDetails.private else {
             assertionFailure("someone tries to pass a public key - that would be a programming error")
-            keyDetails.private!
+            // TODO: - Maybe better to show some alert or message to user without app crashing.
+            // Or crash it with some logs to crashlytic or loger.
+            _ = keyDetails.private! // crash the app
+            return
         }
         self.private = privateKey
         self.public = keyDetails.public

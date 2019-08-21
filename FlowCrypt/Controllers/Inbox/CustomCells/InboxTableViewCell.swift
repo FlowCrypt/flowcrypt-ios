@@ -12,8 +12,9 @@ class InboxTableViewCell: UITableViewCell {
 
     // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
 
-    var message: MCOIMAPMessage {
+    var message: MCOIMAPMessage? {
         didSet {
+            guard let message = message else { return }
             emailLabel.text = message.header.sender.mailbox ?? "Empty"
             messageLabel.text = message.header.subject ?? "No subject"
 

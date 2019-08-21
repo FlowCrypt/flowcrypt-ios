@@ -148,7 +148,7 @@ class ComposeViewController: BaseViewController {
             : txtSubject.text ?? "(no subject)"
 
         let from = GoogleApi.instance.getEmail()
-        let replyToMimeMsg = replyToMime.map { String(data: $0, encoding: .utf8) }
+        let replyToMimeMsg = replyToMime.flatMap { String(data: $0, encoding: .utf8) }
 
         let realm = try! Realm()
         var pubKeys = Array(realm.objects(KeyInfo.self)
@@ -184,8 +184,8 @@ class ComposeViewController: BaseViewController {
     
     @objc private func adjustForKeyboard(notification: Notification) {
         guard let userInfo = notification.userInfo,
-            let keyboardScreenEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue).cgRectValue
-            else { assertionFailure("Check user info"); return }
+            let keyboardScreenEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        else { assertionFailure("Check user info"); return }
         
 
         let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)

@@ -143,8 +143,8 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell: InboxTableViewCell = tableView.dequeueReusableCell(withIdentifier: "InboxTableViewCell", for: indexPath) as? InboxTableViewCell
         else {
-            assertionFailure("Couldn't deque cell")
-            return
+            assertionFailure("Couldn't dequeueReusableCell cell \(self.debugDescription)")
+            return UITableViewCell()
         }
         cell.message = messages[indexPath.row]
         return cell

@@ -186,7 +186,7 @@ class Imap {
     }}
 
     func searchBackups(email: String) -> Promise<Data> { return Promise<Data>.valueReturning {
-        var exprSubjects: MCOIMAPSearchExpression? = nil;
+        var exprSubjects: MCOIMAPSearchExpression? = nil
         for subject in EmailConstant.recoverAccountSearchSubject {
             let exprSubject = MCOIMAPSearchExpression.searchSubject(subject)
             exprSubjects = exprSubjects == nil ? exprSubject : MCOIMAPSearchExpression.searchOr(exprSubjects, other: exprSubject)

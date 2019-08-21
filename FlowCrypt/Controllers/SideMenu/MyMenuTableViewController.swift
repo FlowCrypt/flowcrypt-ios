@@ -31,8 +31,8 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
         let name = GoogleApi.instance
             .getName()
             .split(separator: " ")
-            .first ?? ""
-            .map(String.init)
+            .first
+            .map(String.init) ?? ""
 
         let email = GoogleApi.instance
             .getEmail()

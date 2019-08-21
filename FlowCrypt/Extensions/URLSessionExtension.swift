@@ -28,11 +28,13 @@ extension URLSession {
                 print("URLSession.call status:\(status) ms:\(start.millisecondsSince()) \(urlRequest.url?.absoluteString ?? "??")")
 
                 let validStatusCode = 200...299
-                let isCodeVaild = validStatusCode ~= status || tolerateStatus?.contains(status)
+
+                let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
+                let isCodeVaild = validStatusCode ~= status || isInToleranceStatusCodes
                 let isValidResonse = error == nil && isCodeVaild
 
                 if let data = data, isValidResonse {
-                    resolve(HttpRes(status: status, data: data!))
+                    resolve(HttpRes(status: status, data: data))
                 } else {
                     reject(HttpErr(status: status, data: data, error: error))
                 }

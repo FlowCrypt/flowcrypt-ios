@@ -40,7 +40,7 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        guard let userInfo: NSDictionary = notification.userInfo? as NSDictionary,
+        guard let userInfo = notification.userInfo,
             let keyboardInfo = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue
         else { assertionFailure("Check user info"); return }
 
@@ -109,12 +109,12 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
         }
         self.showSpinner()
         self.async({ [weak self] () -> [KeyDetails] in
-            guard let self = self, let backups = self.encryptedBackups else { return }
+            guard let self = self, let backups = self.encryptedBackups else { return [] }
 
             var matchingBackups = [KeyDetails]()
 
             for k in backups {
-                guard let key = k.private else { assertionFailure(); return }
+                guard let key = k.private else { assertionFailure(); return [] }
 
                 let decryptRes = try Core.decryptKey(armoredPrv: key, passphrase: entered_pass_phrase)
                 if decryptRes.decryptedKey != nil {
