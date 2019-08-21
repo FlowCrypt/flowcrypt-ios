@@ -17,9 +17,7 @@ class InboxTableViewCell: UITableViewCell {
             guard let message = message else { return }
             emailLabel.text = message.header.sender.mailbox ?? "Empty"
             messageLabel.text = message.header.subject ?? "No subject"
-
-            dateLabel.text = Constants.inboxDateFormatter.string(from: message.header.date)
-
+            dateLabel.text = Constants.convertDate(date: message.header.date)
             if message.flags.rawValue == 0 {
                 emailLabel.font = Constants.unreadMessageFont
                 emailLabel.textColor = Constants.unreadMessageTextColor

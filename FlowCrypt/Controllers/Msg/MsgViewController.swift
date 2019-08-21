@@ -39,7 +39,7 @@ class MsgViewController: BaseViewController {
         self.lblSender.text = objMessage.header.sender.mailbox ?? "(unknown sender)"
         self.lblSubject.text = objMessage.header.subject ?? "(no subject)"
         self.lblBody.numberOfLines = 0
-        self.lblTIme.text = Constants.inboxDateFormatter.string(from: objMessage.header.date)
+        self.lblTIme.text = Constants.convertDate(date: objMessage.header.date)
         self.showSpinner(Language.loading, isUserInteractionEnabled: true)
         self.async({ () -> CoreRes.ParseDecryptMsg in
             let mime = try await(Imap.instance.fetchMsg(message: self.objMessage, folder: self.path))
