@@ -4,9 +4,12 @@
 
 import JavaScriptCore
 
-typealias GlobalError = Error
+enum CoreError: Error {
+    case exception(String)
+    case notReady(String)
+}
 
-class Core {
+final class Core {
 
     private static var jsEndpointListener: JSValue?;
     private static var cb_catcher: JSValue?
@@ -100,23 +103,20 @@ class Core {
                 let cb_last_value_filler: @convention(block) ([NSObject]) -> Void = { values in self.cb_last_value = values }
                 context!.setObject(unsafeBitCast(cb_last_value_filler, to: AnyObject.self), forKeyedSubscript: "engine_host_cb_catcher" as (NSCopying & NSObjectProtocol)?)
                 ready = true
-                print("JsContext took \(start.millisecondsSince())ms to start")
+                print("JsContext took \(start.millisecondsSince)ms to start")
             }
         }
     }
 
-    enum Error: GlobalError {
-        case exception(String)
-        case notReady(String)
-    }
+
 
     public static func blockUntilReadyOrThrow() throws -> Void {
         // This will block the thread for up to 1000ms if the app was just started and Core method was called before JSContext is ready
         // It should only affect the user if Core method was called within 500-800ms of starting the app
         let start = DispatchTime.now()
         while !ready {
-            if start.millisecondsSince() > 1000 { // already waited for 1000 ms, give up
-                throw Error.notReady("App Core not ready yet")
+            if start.millisecondsSince > 1000 { // already waited for 1000 ms, give up
+                throw CoreError.notReady("App Core not ready yet")
             }
             usleep(50_000) // 50ms
         }
@@ -144,7 +144,7 @@ class Core {
         if(error != nil) {
             let errMsg = "------ js err -------\nCore \(endpoint):\n\(error!.error.message)\n\(error!.error.stack ?? "no stack")\n------- end js err -----";
             print(errMsg)
-            throw Error.exception(errMsg)
+            throw CoreError.exception(errMsg)
         }
         return RawRes(json: resJsonData, data: Data(rawResponse[(separatorIndex + 1)...]))
     }
@@ -153,5 +153,4 @@ class Core {
         let json: Data;
         let data: Data;
     }
-
 }

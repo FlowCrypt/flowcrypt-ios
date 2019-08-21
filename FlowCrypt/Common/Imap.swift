@@ -9,8 +9,11 @@ enum ImapError: Error {
     case general
 }
 
-class Imap {
+final class Imap {
+    private init()
+
     static let instance = Imap()
+    
     var totalNumberOfInboxMsgs: Int32 = 0
     var messages = [MCOIMAPMessage]()
     let inboxFolder = "INBOX"
@@ -109,7 +112,7 @@ class Imap {
         return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
     }}
 
-    func fetchFolders() -> Promise<FetchFoldersRes> { return Promise<FetchFoldersRes> { resolve, reject in
+    func fetchFolders() -> Promise<FoldersContext> { return Promise<FoldersContext> { resolve, reject in
         let start = DispatchTime.now()
         self.getImapSess()?.fetchAllFoldersOperation().start { (error, res) in
             self.log("fetchMsgs", error: error, res: res, start: start)
@@ -129,7 +132,7 @@ class Imap {
                     folders.append(folder)
                 }
             }
-            resolve(FetchFoldersRes(folders: folders, menu: menu))
+            resolve(FoldersContext(folders: folders, menu: menu))
         }
     }}
 
@@ -232,10 +235,10 @@ class Imap {
             resStr = "Data[\(res != nil ? (data.count < 1204 ? "\(data.count)" : "\(data.count / 1024)k") : "-")]"
         } else if let res = res as? NSArray {
             resStr = "Array[\(res.count)]"
-        } else if let res = res as? FetchFoldersRes {
+        } else if let res = res as? FoldersContext {
             resStr = "FetchFoldersRes[\(res.folders.count)]"
         }
-        print("IMAP \(op) -> \(errStr) \(resStr) \(start.millisecondsSince())ms")
+        print("IMAP \(op) -> \(errStr) \(resStr) \(start.millisecondsSince)ms")
     }
 
     private func finalize<T>(_ op: String, _ resolve: @escaping (T) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<T>) -> (Error?, T?) -> Void {
@@ -323,9 +326,9 @@ class Imap {
 //        print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
     }
 
-    struct FetchFoldersRes {
-        let folders: [MCOIMAPFolder]
-        let menu: [String]
-    }
+}
 
+struct FoldersContext {
+    let folders: [MCOIMAPFolder]
+    let menu: [String]
 }

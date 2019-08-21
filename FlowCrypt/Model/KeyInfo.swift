@@ -4,7 +4,7 @@
 
 import RealmSwift
 
-class KeyInfo: Object {
+final class KeyInfo: Object {
 
     @objc dynamic var `private`: String = ""
     @objc dynamic var `public`: String = ""

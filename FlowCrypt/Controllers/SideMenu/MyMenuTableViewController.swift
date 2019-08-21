@@ -5,27 +5,20 @@
 import UIKit
 import Promises
 
-class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource {
+final class MyMenuTableViewController: BaseViewController {
 
-    @IBOutlet var menuTable: UITableView!
+    @IBOutlet var tableView: UITableView!
     @IBOutlet var lblName: UILabel!
     @IBOutlet var lblEmail: UILabel!
 
-    var menuArray = [String]()
-    var subMenuArray = NSMutableArray()
-    var arrImap = [MCOIMAPFolder]()
+    private var context: FoldersContext? { didSet { tableView.reloadData()} }
+    private let imap = Imap.instance
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupUI()
-        async({ try await(Imap.instance.fetchFolders()) }, then: { res in
-            self.arrImap = res.folders
-            self.menuArray = res.menu
-            self.menuTable.reloadData()
-            let cell = self.menuTable.cellForRow(at: IndexPath(row: 0, section: 0))
-            cell?.isSelected = true
-        }, fail: Language.could_not_fetch_folders)
+        fetchFolders()
     }
 
     private func setupUI() {
@@ -44,16 +37,30 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
         lblEmail.text = email
     }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.hideSideMenuView()
+    private func fetchFolders() {
+        imap.fetchFolders()
+            .then(on: .main) { [weak self] res in
+                self?.handleFolders(with: res)
+            }
+            .catch { [weak self] error in
+                self?.showAlert(error: error, message: Language.could_not_fetch_folders)
+            }
     }
 
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+    private func handleFolders(with result: FoldersContext) {
+        context = result
+        tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isSelected = true
     }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        hideSideMenuView()
+    }
+}
+
+extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.menuArray.count
+        return context?.menu.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -61,44 +68,39 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: ProfileCell = self.menuTable.dequeueReusableCell(withIdentifier: "ProfileCell") as! ProfileCell
-        cell.lblName.text = self.menuArray[indexPath.row]
+        // TODO: - Add safe subscript
+        guard let cell: MenuCell = self.tableView.dequeueReusableCell(withIdentifier: "MenuCell") as? MenuCell,
+            let title = context?.menu[indexPath.row]
+        else {
+            assertionFailure()
+            return UITableViewCell()
+        }
+        cell.lblName.text = title
+
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        deselectAllItemsInTableView(tableView)
-        Imap.instance.totalNumberOfInboxMsgs = 0
-        Imap.instance.messages.removeAll()
-        let inboxVc = self.instantiate(viewController: InboxViewController.self)
-        inboxVc.iMapFolderName = self.menuArray[indexPath.row].capitalized
-        inboxVc.path = self.arrImap[indexPath.row].path
-        self.sideMenuController()?.setContentViewController(inboxVc)
-    }
-    
-    var firstStart = true
-    func deselectAllItemsInTableView(_ tableView: UITableView) {
-        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)), firstStart else { return }
-        firstStart = false
-        cell.isSelected = false
-    }
+        guard let context = context else { return }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+        imap.totalNumberOfInboxMsgs = 0
+        imap.messages.removeAll()
 
+        // TODO: - Add safe subscript
+        let input = InboxViewModel(
+            folderName: context.menu[indexPath.row].capitalized,
+            path: context.folders[indexPath.row].path
+        )
+        let inboxVc = InboxViewController.instance(with: input)
+        sideMenuController()?.setContentViewController(inboxVc)
+    }
 }
 
-class ProfileCell: UITableViewCell {
-    @IBOutlet var profileImage: UIImageView!
+final class MenuCell: UITableViewCell {
     @IBOutlet var lblName: UILabel!
-    @IBOutlet var lblEmail: UILabel!
 
     override func awakeFromNib() {
+        selectionStyle = .none
     }
 }
 
-class textCell: UITableViewCell {
-    @IBOutlet var lblText: UILabel!
-}

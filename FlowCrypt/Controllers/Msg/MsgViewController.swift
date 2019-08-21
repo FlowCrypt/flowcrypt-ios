@@ -11,7 +11,7 @@ protocol MsgViewControllerDelegate {
     func movedOrUpdated(objMessage: MCOIMAPMessage)
 }
 
-class MsgViewController: BaseViewController {
+final class MsgViewController: BaseViewController {
     
     @IBOutlet var lblSender: UILabel!
     @IBOutlet var lblSubject: UILabel!

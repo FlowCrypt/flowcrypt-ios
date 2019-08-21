@@ -8,6 +8,7 @@ import MBProgressHUD
 import Promises
 import Toast
 
+// TODO: - Refactor. Replace usage of BaseViewController. Prefferable composition over inheritance.
 class BaseViewController: UIViewController {
 
     var spinner: MBProgressHUD?
@@ -68,4 +69,21 @@ class BaseViewController: UIViewController {
         self.async(work, then: then, fail: { error in self.showErrAlert("\(alertMsg)\n\n \(error)") })
     }
 
+}
+
+
+extension UIViewController {
+    func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
+        let message = "\(message)\n\n \(error)"
+        showAlert(message: message, onOk: onOk)
+    }
+
+    func showAlert(message: String, onOk: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            self.view.hideAllToasts()
+            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .destructive) { action in onOk?() })
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
 }

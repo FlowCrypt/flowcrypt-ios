@@ -6,7 +6,7 @@ import UIKit
 import GoogleSignIn
 import Promises
 
-class SignInViewController: BaseViewController {
+final class SignInViewController: BaseViewController {
 
     @IBOutlet weak var signInWithGmailButton: UIButton!
     @IBOutlet weak var signInWithOutlookButton: UIButton!
@@ -53,9 +53,9 @@ class SignInViewController: BaseViewController {
                 isEmail: false
             )
             print(decrypted)
-            print("decrypted \(start.millisecondsSince())")
+            print("decrypted \(start.millisecondsSince)")
 //            print("text: \(decrypted.text)")
-        } catch Core.Error.exception {
+        } catch CoreError.exception {
             print("catch exception")
 //            print(msg)
         } catch {

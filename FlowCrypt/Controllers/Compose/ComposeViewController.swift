@@ -7,7 +7,7 @@ import MBProgressHUD
 import Promises
 import RealmSwift
 
-class ComposeViewController: BaseViewController {
+final class ComposeViewController: BaseViewController {
     
     @IBOutlet var txtRecipient: UITextField!
     @IBOutlet var txtSubject: UITextField!

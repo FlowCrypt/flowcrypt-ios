@@ -6,7 +6,7 @@ import UIKit
 import GoogleSignIn
 import Promises
 
-class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUIDelegate {
+final class GoogleApi: NSObject, GIDSignInDelegate, GIDSignInUIDelegate {
 
     static let instance = GoogleApi()
 

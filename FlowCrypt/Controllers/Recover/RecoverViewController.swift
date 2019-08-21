@@ -7,7 +7,7 @@ import MBProgressHUD
 import RealmSwift
 import Promises
 
-class RecoverViewController: BaseViewController, UITextFieldDelegate {
+final class RecoverViewController: BaseViewController, UITextFieldDelegate {
 
     @IBOutlet weak var passPhaseTextField: UITextField!
     @IBOutlet weak var btnLoadAccount: UIButton!

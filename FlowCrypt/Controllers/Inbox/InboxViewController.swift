@@ -5,21 +5,27 @@
 import UIKit
 import MBProgressHUD
 import Promises
-import Toast
 import ENSwiftSideMenu
+
+extension InboxViewController {
+    static func instance(with input: InboxViewModel) -> InboxViewController {
+        let vc = UIStoryboard.main.instantiate(InboxViewController.self)
+        vc.viewModel = input
+        return vc
+    }
+}
 
 final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
-    
-    var btnInfo: UIButton!
-    var btnSearch: UIButton!
-    var btnMenu: UIButton!
-    
-    var messages = [MCOIMAPMessage]()
-    var iMapFolderName = ""
-    var path = ""
+
+    private var messages = [MCOIMAPMessage]()
+    private var viewModel = InboxViewModel.empty
+
+    private var btnInfo: UIButton!
+    private var btnSearch: UIButton!
+    private var btnMenu: UIButton!
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -28,15 +34,10 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // TODO: closing side menu won't work, to be fixed in https://github.com/FlowCrypt/flowcrypt-ios/issues/38
-        sideMenuController()?.sideMenu?.allowPanGesture = true
-
-        title = iMapFolderName == "" ? "Inbox" : iMapFolderName
-        if iMapFolderName == "" {
-            path = "INBOX"
-        }
+        let titleText = viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
+        title = titleText
         
-        lblEmptyMessage.text =  "\(self.title!) is empty"
+        lblEmptyMessage.text = "\(titleText) is empty"
         lblEmptyMessage.isHidden = true
         
         tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
@@ -68,7 +69,7 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         spinnerActivity.label.text = "Loading"
         spinnerActivity.isUserInteractionEnabled = false
         self.async({
-            self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
+            self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.viewModel.path))
         }, then: {
             spinnerActivity.hide(animated: true)
             self.lblEmptyMessage.isHidden = self.messages.count > 0
@@ -108,18 +109,15 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         
     }
     
-    @objc
-    private func btnInfoTap() {
+    @objc private func btnInfoTap() {
         #warning("ToDo")
     }
     
-    @objc
-    private func btnSearchTap() {
+    @objc private func btnSearchTap() {
         #warning("ToDo")
     }
     
-    @objc
-    private func btnMenuTap() {
+    @objc private func btnMenuTap() {
         toggleSideMenuView()
     }
     
@@ -131,11 +129,7 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
 
 
 extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
-    
-    func numberOfSections(in tableView: UITableView) -> Int { // Table view data source
-        return 1
-    }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.messages.count
     }
@@ -157,7 +151,7 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let msgVc = instantiate(viewController: MsgViewController.self)
         msgVc.objMessage = messages[indexPath.row]
-        msgVc.path = path
+        msgVc.path = viewModel.path
         msgVc.delegate = self
         self.navigationController?.pushViewController(msgVc, animated: true)
     }
