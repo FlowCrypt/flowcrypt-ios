@@ -6,11 +6,6 @@ import UIKit
 
 struct Constants {
     public static let NUMBER_OF_MESSAGES_TO_LOAD = 10
-    public static let inboxDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter
-    }()
     public static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
     public static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
     public static let unreadDateFont = UIFont.boldSystemFont(ofSize: 17.0)
@@ -25,6 +20,17 @@ struct Constants {
     public static let rightUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     
     public static let leftUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: -25, bottom: 2, right: 0)
+    
+    public static func convertDate(date: Date) -> String {
+        let dateFormater = DateFormatter()
+        if Calendar.current.isDateInToday(date) {
+            dateFormater.dateFormat = "h:mm a"
+        }
+        else {
+            dateFormater.dateFormat = "dd MMM"
+        }
+        return dateFormater.string(from: date)
+    }
 }
 
 struct EmailConstant {
