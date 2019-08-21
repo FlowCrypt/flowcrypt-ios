@@ -24,16 +24,24 @@ class Imap {
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession? {
         if imapSess == nil || newAccessToken != nil {
             print("IMAP: creating a new session")
-            imapSess = MCOIMAPSession()
-            imapSess?.hostname = "imap.gmail.com"
-            imapSess?.port = 993
-            imapSess?.connectionType = MCOConnectionType.TLS
-            imapSess?.authType = MCOAuthType.xoAuth2
-            imapSess?.username = GoogleApi.instance.getEmail()
-            imapSess?.password = nil
-            imapSess?.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
-            imapSess?.authType = MCOAuthType.xoAuth2
-            imapSess?.connectionType = MCOConnectionType.TLS
+            let imapSess = MCOIMAPSession()
+            imapSess.hostname = "imap.gmail.com"
+            imapSess.port = 993
+            imapSess.connectionType = MCOConnectionType.TLS
+            imapSess.authType = MCOAuthType.xoAuth2
+            imapSess.username = GoogleApi.instance.getEmail()
+            imapSess.password = nil
+            imapSess.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
+            imapSess.authType = MCOAuthType.xoAuth2
+            imapSess.connectionType = MCOConnectionType.TLS
+            self.imapSess = imapSess
+//            imapSess!.connectionLogger = {(connectionID, type, data) in
+//                if data != nil {
+//                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
+//                        print("IMAP:\(type):\(string)")
+//                    }
+//                }
+//            }
         }
         return imapSess
     }
@@ -41,14 +49,15 @@ class Imap {
     func getSmtpSess(newAccessToken: String? = nil) -> MCOSMTPSession? {
         if smtpSess == nil || newAccessToken != nil {
             print("SMTP: creating a new session")
-            smtpSess = MCOSMTPSession()
-            smtpSess?.hostname = "smtp.gmail.com"
-            smtpSess?.port = 465
-            smtpSess?.connectionType = MCOConnectionType.TLS
-            smtpSess?.authType = MCOAuthType.xoAuth2
-            smtpSess?.username = GoogleApi.instance.getEmail()
-            smtpSess?.password = nil
-            smtpSess?.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
+            let smtpSess = MCOSMTPSession()
+            smtpSess.hostname = "smtp.gmail.com"
+            smtpSess.port = 465
+            smtpSess.connectionType = MCOConnectionType.TLS
+            smtpSess.authType = MCOAuthType.xoAuth2
+            smtpSess.username = GoogleApi.instance.getEmail()
+            smtpSess.password = nil
+            smtpSess.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
+            self.smtpSess = smtpSess
         }
         return smtpSess
     }
@@ -133,6 +142,11 @@ class Imap {
 
     private func fetchMsgs(folder: String, kind: ReqKind, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> { return Promise { resolve, reject in
         let start = DispatchTime.now()
+        guard uids.count() > 0 else {
+            self.log("fetchMsgs_empty", error: nil, res: [], start: start)
+            resolve([]) // attempting to fetch an empty set of uids would cause IMAP error
+            return
+        }
         self.getImapSess()?
             .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)
             .start { error, msgs, vanished in

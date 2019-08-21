@@ -1,0 +1,32 @@
+# fastlane/Fastfile
+default_platform(:ios)
+
+platform :ios do
+
+  before_all do
+    # installed via the semaphore plugin with `fastlane add_plugin semaphore`
+    setup_semaphore
+  end
+
+  desc "Run Tests"
+  lane :test do
+    #scan
+    scan(
+      scheme: "FlowCryptTests"
+    )
+
+  end
+
+  desc "Build"
+  desc "Build without code sign. Just to see if the build is working"
+  lane :build do |options|
+    gym(
+      scheme: "HelloWorld",
+      skip_package_ipa: true,
+      skip_archive: true,
+      silent: true,
+      clean: true
+    )
+  end
+end
+
