@@ -30,13 +30,13 @@ extension UIViewController {
     /// - Parameters:
     ///   - message: Message to be shown
     ///   - title: Title for the toast
-    ///   - duration: Toast presented duration
+    ///   - duration: Toast presented duration. Default is 3.0
     ///   - position: Bottom by default. Can be top, center, bottom.
     ///   - completion: Notify when toast dissapeared
     func showToast(
         _ message: String,
         title: String? = nil,
-        duration: TimeInterval = 0.5,
+        duration: TimeInterval = 3.0,
         position: ToastPosition = .bottom,
         completion: ShowToastCompletion? = nil
     ) {
