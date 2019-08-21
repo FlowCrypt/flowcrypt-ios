@@ -18,19 +18,29 @@ struct HttpErr: Error {
 
 extension URLSession {
 
-    func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> { return Promise { resolve, reject in
-        let start = DispatchTime.now()
-        self.dataTask(with: urlRequest) { data, response, error in
-            let res = response as? HTTPURLResponse
-            let status = res?.statusCode ?? -1
-            print("URLSession.call status:\(status) ms:\(start.millisecondsSince()) \(urlRequest.url?.absoluteString ?? "??")")
-            if error == nil && data != nil && (200...299 ~= status || tolerateStatus?.firstIndex(of: status) != nil) {
-                resolve(HttpRes(status: status, data: data!))
-            } else {
-                reject(HttpErr(status: status, data: data, error: error))
-            }
-        }.resume()
-    }}
+    func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
+        return Promise { resolve, reject in
+            let start = DispatchTime.now()
+            self.dataTask(with: urlRequest) { data, response, error in
+                let res = response as? HTTPURLResponse
+                let status = res?.statusCode ?? Constants.Global.generalError
+
+                print("URLSession.call status:\(status) ms:\(start.millisecondsSince()) \(urlRequest.url?.absoluteString ?? "??")")
+
+                let validStatusCode = 200...299
+
+                let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
+                let isCodeVaild = validStatusCode ~= status || isInToleranceStatusCodes
+                let isValidResonse = error == nil && isCodeVaild
+
+                if let data = data, isValidResonse {
+                    resolve(HttpRes(status: status, data: data))
+                } else {
+                    reject(HttpErr(status: status, data: data, error: error))
+                }
+            }.resume()
+        }
+    }
 
     func call(_ urlStr: String, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
         return Promise<HttpRes>.valueReturning {

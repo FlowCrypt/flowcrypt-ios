@@ -43,7 +43,11 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
         GIDSignIn.sharedInstance().disconnect()
         self.signOutCallback = { error in
             Imap.debug(104, "GoogleApi.signOut() callback with err?=", value: error)
-            error == nil ? resolve(VOID()) : reject(error!)
+            if let error = error {
+                reject(error)
+            } else {
+                resolve(VOID())
+            }
             Imap.debug(105, "GoogleApi.signOut resolved/rejected")
         }
     }}
@@ -53,7 +57,11 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
         self.viewController = viewController
         self.signInCallback = { user, err in
             Imap.debug(107, "GoogleApi.signIn callback - resolving with err?=", value: err)
-            err == nil ? resolve(user!) : reject(err!)
+            if let user = user {
+                resolve(user)
+            } else {
+                reject(err ?? ImapError.general)
+            }
             self.viewController = nil
         }
         GIDSignIn.sharedInstance().uiDelegate = self
@@ -64,7 +72,11 @@ class GoogleApi: NSObject, UIApplicationDelegate, GIDSignInDelegate, GIDSignInUI
         Imap.debug(108, "GoogleApi.renewAccessToken()")
         self.signInSilentlyCallback = { accessToken, err in
             Imap.debug(109, "GoogleApi.renewAccessToken - callback with err?=", value: err)
-            err == nil ? resolve(accessToken!) : reject(err!)
+            if let accessToken = accessToken {
+                resolve(accessToken)
+            } else {
+                reject(err ?? ImapError.general)
+            }
             Imap.debug(110, "GoogleApi.renewAccessToken resolved/rejected")
         }
         GIDSignIn.sharedInstance().signInSilently()

@@ -11,7 +11,7 @@ extension String {
     }
 
     var trimLeadingSlash: String {
-        if self.count > 0 && self[self.startIndex] == "/" {
+        if count > 0 && self[self.startIndex] == "/" {
             return String(self.dropFirst())
         }
         return self

@@ -96,7 +96,8 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
             self.tableView.reloadData()
         }, fail: Language.failed_to_load_messages)
     }
-    
+
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     private func configureNavigationBar() {
         btnInfo = UIButton(type: .system)
         btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
@@ -161,8 +162,12 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: InboxTableViewCell = tableView.dequeueReusableCell(withIdentifier: "InboxTableViewCell", for: indexPath) as! InboxTableViewCell
-        cell.message = self.messages[indexPath.row]
+        guard let cell: InboxTableViewCell = tableView.dequeueReusableCell(withIdentifier: "InboxTableViewCell", for: indexPath) as? InboxTableViewCell
+        else {
+            assertionFailure("Couldn't dequeueReusableCell cell \(self.debugDescription)")
+            return UITableViewCell()
+        }
+        cell.message = messages[indexPath.row]
         return cell
     }
     
