@@ -82,7 +82,6 @@ class Imap {
                         reject(Errors.valueError("fetchMessagesByNumber messages == nil"))
                         return
                     }
-
                     self.messages.append(contentsOf: messages)
                     self.messages.sort { $0.header.date > $1.header.date }
                     resolve(self.messages)
@@ -206,21 +205,16 @@ class Imap {
             exprSubjects = exprSubjects == nil ? exprSubject : MCOIMAPSearchExpression.searchOr(exprSubjects, other: exprSubject)
         }
         let exprFromToMe = MCOIMAPSearchExpression.searchOr(MCOIMAPSearchExpression.search(from: email), other: MCOIMAPSearchExpression.search(to: email))
-
         guard let backupSearchExpr = MCOIMAPSearchExpression.searchAnd(exprFromToMe, other: exprSubjects) else {
             assertionFailure()
             return Data()
         }
-
         let searchRes = try await(self.searchExpression(folder: self.inboxFolder, expression: backupSearchExpr))
         let requestKind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
         let msgs = try await(self.fetchMsgs(folder: self.inboxFolder, kind: ReqKind(rawValue: requestKind), uids: searchRes))
         var data = Data()
-
-
         for msg in msgs {
             guard let attachments = msg.attachments() as? [MCOIMAPPart] else { assertionFailure(); return Data() }
-
             for attPart in attachments {
                 data += try await(self.fetchMsgAtt(msgUid: msg.uid, part: attPart))
                 data += [10] // newline
@@ -231,7 +225,6 @@ class Imap {
 
     private func log(_ op: String, error: Error?, res: Any?, start: DispatchTime) {
         let errStr = error.map { "\($0)" } ?? ""
-
         var resStr = "Unknown"
         if res == nil {
             resStr = "nil" 
@@ -263,7 +256,6 @@ class Imap {
         return { (error) in
             self.log(op, error: error, res: nil, start: start)
             guard self.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) else { return }
-
             if let error = error {
                 reject(error)
             } else {
@@ -277,7 +269,6 @@ class Imap {
         return { (error, discardable) in
             self.log(op, error: error, res: nil, start: start)
             guard self.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) else { return }
-
             if let error = error {
                 reject(error)
             } else {
