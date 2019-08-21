@@ -10,7 +10,7 @@ enum ImapError: Error {
 }
 
 final class Imap {
-    private init()
+    private init() { }
 
     static let instance = Imap()
     
