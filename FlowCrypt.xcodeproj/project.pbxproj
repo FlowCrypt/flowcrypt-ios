@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */; };
-		04B472961ECE29F600B8266F /* MyNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* MyNavigationController.swift */; };
+		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		32DCA009F3149806AA1103B1 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		32DCA1339D6857686ABD3FC4 /* UIVIewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIVIewExtension.swift */; };
@@ -94,7 +94,7 @@
 		02A9A9F6DCFB9B2E407559A8 /* Pods-FlowCrypt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.release.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.release.xcconfig"; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyInfo.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuTableViewController.swift; sourceTree = "<group>"; };
-		04B472931ECE29F600B8266F /* MyNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyNavigationController.swift; sourceTree = "<group>"; };
+		04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideMenuNavigationController.swift; sourceTree = "<group>"; };
 		069059B887A8580765029BF9 /* Pods_FlowCrypt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCrypt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
@@ -200,7 +200,7 @@
 			isa = PBXGroup;
 			children = (
 				04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */,
-				04B472931ECE29F600B8266F /* MyNavigationController.swift */,
+				04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */,
 			);
 			path = SideMenu;
 			sourceTree = "<group>";
@@ -653,7 +653,7 @@
 			files = (
 				04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
-				04B472961ECE29F600B8266F /* MyNavigationController.swift in Sources */,
+				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* Constants.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */,

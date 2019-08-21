@@ -5,7 +5,7 @@
 import UIKit
 import Promises
 
-final class MyMenuTableViewController: BaseViewController {
+final class MyMenuTableViewController: UIViewController {
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var lblName: UILabel!
@@ -35,6 +35,12 @@ final class MyMenuTableViewController: BaseViewController {
 
         lblName.text = name
         lblEmail.text = email
+
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
+    }
+
+    @objc private func hideMenu() {
+        hideSideMenuView()
     }
 
     private func fetchFolders() {
@@ -50,10 +56,6 @@ final class MyMenuTableViewController: BaseViewController {
     private func handleFolders(with result: FoldersContext) {
         context = result
         tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isSelected = true
-    }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        hideSideMenuView()
     }
 }
 
@@ -103,4 +105,5 @@ final class MenuCell: UITableViewCell {
         selectionStyle = .none
     }
 }
+
 
