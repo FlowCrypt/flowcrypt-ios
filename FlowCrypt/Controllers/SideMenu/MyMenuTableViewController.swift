@@ -8,11 +8,12 @@ import Promises
 class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet var menuTable: UITableView!
+    @IBOutlet var lblName: UILabel!
+    @IBOutlet var lblEmail: UILabel!
+    
     var menuArray = [String]()
     var subMenuArray = NSMutableArray()
     var arrImap = [MCOIMAPFolder]()
-    @IBOutlet var lblName: UILabel!
-    @IBOutlet var lblEmail: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,7 +21,7 @@ class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITabl
         self.lblEmail.text = GoogleApi.instance.getEmail().replacingOccurrences(of: "@gmail.com", with: "")
         self.async({ try await(Imap.instance.fetchFolders()) }, then: { res in
             self.arrImap = res.folders
-            self.menuArray = res.menu
+            self.menuArray = res.menu.map({ $0.capitalized })
             self.menuTable.reloadData()
         }, fail: Language.could_not_fetch_folders)
     }
