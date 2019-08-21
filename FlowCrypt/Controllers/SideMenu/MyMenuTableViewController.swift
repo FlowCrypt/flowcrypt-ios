@@ -8,11 +8,12 @@ import Promises
 class MyMenuTableViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet var menuTable: UITableView!
+    @IBOutlet var lblName: UILabel!
+    @IBOutlet var lblEmail: UILabel!
+    
     var menuArray = [String]()
     var subMenuArray = NSMutableArray()
     var arrImap = [MCOIMAPFolder]()
-    @IBOutlet var lblName: UILabel!
-    @IBOutlet var lblEmail: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
