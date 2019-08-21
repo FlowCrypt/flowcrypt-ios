@@ -130,6 +130,7 @@ class ComposeViewController: BaseViewController {
     @objc
     private func btnAttachTap() {
         #warning("ToDo")
+        showToast("Attachments not implemented yet", duration: 0.7)
     }
     
     @objc
