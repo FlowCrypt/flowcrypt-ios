@@ -31,6 +31,13 @@ class Imap {
             imapSess!.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
             imapSess!.authType = MCOAuthType.xoAuth2
             imapSess!.connectionType = MCOConnectionType.TLS
+//            imapSess!.connectionLogger = {(connectionID, type, data) in
+//                if data != nil {
+//                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
+//                        print("IMAP:\(type):\(string)")
+//                    }
+//                }
+//            }
         }
         return imapSess!
     }
@@ -129,6 +136,11 @@ class Imap {
 
     private func fetchMsgs(folder: String, kind: ReqKind, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> { return Promise { resolve, reject in
         let start = DispatchTime.now()
+        guard uids.count() > 0 else {
+            self.log("fetchMsgs_empty", error: nil, res: [], start: start)
+            resolve([]) // attempting to fetch an empty set of uids would cause IMAP error
+            return
+        }
         self.getImapSess()
             .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)
             .start { error, msgs, vanished in
