@@ -86,7 +86,7 @@ class Imap {
                     self.messages.sort { $0.header.date > $1.header.date }
                     resolve(self.messages)
                 }
-        }
+            }
     }}
 
     func fetchLastMsgs(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> { return Promise<[MCOIMAPMessage]>.valueReturning {
