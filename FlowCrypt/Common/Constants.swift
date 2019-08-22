@@ -11,7 +11,6 @@ enum Constants {
     // TODO: Anton - Use Themes instead of Constants
     static let NUMBER_OF_MESSAGES_TO_LOAD = 20
 
-  
     static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
     static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
     static let unreadDateFont = UIFont.boldSystemFont(ofSize: 17.0)
