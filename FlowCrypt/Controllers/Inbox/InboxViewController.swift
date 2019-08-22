@@ -12,7 +12,7 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
-    
+
     var refreshControl: UIRefreshControl!
     var btnInfo: UIButton!
     var btnSearch: UIButton!
@@ -21,17 +21,17 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     var messages = [MCOIMAPMessage]()
     var iMapFolderName = ""
     var path = ""
-    
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // TODO: closing side menu won't work, to be fixed in https://github.com/FlowCrypt/flowcrypt-ios/issues/38
         sideMenuController()?.sideMenu?.allowPanGesture = true
-        
+
         title = iMapFolderName == "" ? "Inbox" : iMapFolderName
         if iMapFolderName == "" {
             path = "INBOX"
@@ -59,12 +59,12 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         navigationController?.setNavigationBarHidden(false, animated: animated)
         sideMenuController()?.sideMenu?.allowPanGesture = true
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         sideMenuController()?.sideMenu?.allowPanGesture = false
         tableView.reloadData()
     }
-    
+
     func movedOrUpdated(objMessage: MCOIMAPMessage) {
         guard let index = self.messages.firstIndex(of: objMessage) else { return }
         messages.remove(at: index)
