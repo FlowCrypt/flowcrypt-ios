@@ -8,6 +8,16 @@ enum Constants {
     enum Global {
         static let generalError = -1
     }
+
+    // TODO: update texts on failed archive/delete operation.
+    // Also better to add localization for application ASAP.
+    enum ErrorTexts {
+        enum Message {
+            static let delete = "Unable to delete message"
+            static let archive = "Unable to archive message"
+        }
+    }
+    
     // TODO: Anton - Use Themes instead of Constants
     static let NUMBER_OF_MESSAGES_TO_LOAD = 10
 

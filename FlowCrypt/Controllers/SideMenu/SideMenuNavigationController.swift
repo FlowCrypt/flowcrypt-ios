@@ -22,8 +22,6 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         sideMenu?.bouncingEnabled = false
         sideMenu?.menuWidth = UIScreen.main.bounds.size.width - Constants.menuOffset
         sideMenu?.delegate = self
-
-        // TODO: closing side menu won't work, to be fixed in https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     }
 }
 

@@ -39,10 +39,6 @@ final class MyMenuTableViewController: UIViewController {
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
     }
 
-    @objc private func hideMenu() {
-        hideSideMenuView()
-    }
-
     private func fetchFolders() {
         imap.fetchFolders()
             .then(on: .main) { [weak self] res in
@@ -56,6 +52,10 @@ final class MyMenuTableViewController: UIViewController {
     private func handleFolders(with result: FoldersContext) {
         context = result
         tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isSelected = true
+    }
+
+    @objc private func hideMenu() {
+        hideSideMenuView()
     }
 }
 

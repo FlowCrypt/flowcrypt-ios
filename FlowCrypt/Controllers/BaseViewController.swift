@@ -17,20 +17,6 @@ class BaseViewController: UIViewController {
         return self.storyboard?.instantiateViewController(withIdentifier: String(describing: vcType.self)) as! T
     }
 
-    func showSpinner(_ message: String = Language.loading, isUserInteractionEnabled: Bool = false) {
-        DispatchQueue.main.async {
-            self.spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
-            self.spinner?.label.text = message
-            self.spinner?.isUserInteractionEnabled = isUserInteractionEnabled
-        }
-    }
-
-    func hideSpinner() {
-        DispatchQueue.main.async {
-            self.spinner?.hide(animated: true)
-        }
-    }
-
     func showErrAlert(_ message: String, onOk: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             self.spinner?.hide(animated: true) // safe on main thread
@@ -84,6 +70,22 @@ extension UIViewController {
             let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .destructive) { action in onOk?() })
             self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    func showSpinner(_ message: String = Language.loading, isUserInteractionEnabled: Bool = false) {
+        DispatchQueue.main.async {
+            let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
+            spinner.label.text = message
+            spinner.isUserInteractionEnabled = isUserInteractionEnabled
+        }
+    }
+
+    func hideSpinner() {
+        DispatchQueue.main.async {
+            self.view.subviews
+                .compactMap { $0 as? MBProgressHUD }
+                .forEach { $0.hide(animated: true) }
         }
     }
 }
