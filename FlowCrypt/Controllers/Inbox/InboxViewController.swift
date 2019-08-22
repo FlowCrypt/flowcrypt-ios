@@ -110,11 +110,13 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     @objc
     private func btnInfoTap() {
         #warning("ToDo")
+        showToast("Info not implemented yet")
     }
     
     @objc
     private func btnSearchTap() {
         #warning("ToDo")
+        showToast("Search not implemented yet")
     }
     
     @objc
