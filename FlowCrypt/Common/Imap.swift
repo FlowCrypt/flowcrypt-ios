@@ -298,10 +298,10 @@ class Imap {
                     Imap.debug(5, "(\(debugId)|\(op)) forced session refreshes")
                     self.log("renewAccessToken for \(op) (next will retry \(op))", error: nil, res: "<accessToken>", start: start)
                     promise().then(resolve).catch(reject)
-                    }.catch { error in
-                        Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: err)
-                        self.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
-                        reject(error)
+                }.catch { error in
+                    Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: err)
+                    self.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
+                    reject(error)
                 }
                 self.lastErr[op] = MCOErrorCode(rawValue: err.code)
                 Imap.debug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
