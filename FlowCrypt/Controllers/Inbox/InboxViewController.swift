@@ -138,9 +138,9 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         self.async({ [weak self] in
             guard let `self` = self else { return }
             self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
-            }, then: { _ in
-                self.refreshControl.endRefreshing()
-                self.tableView.reloadData()
+        }, then: { _ in
+            self.refreshControl.endRefreshing()
+            self.tableView.reloadData()
         }, fail: { _ in
             self.refreshControl.endRefreshing()
         })
