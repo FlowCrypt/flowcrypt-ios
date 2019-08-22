@@ -141,7 +141,8 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         }, then: { _ in
             self.refreshControl.endRefreshing()
             self.tableView.reloadData()
-        }, fail: { _ in
+        }, fail: { error in
+            self.showErrAlert("Failed to refresh message list\n\n \(error)")
             self.refreshControl.endRefreshing()
         })
     }
