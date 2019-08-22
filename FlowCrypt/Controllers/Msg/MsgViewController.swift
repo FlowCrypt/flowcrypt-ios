@@ -130,11 +130,13 @@ class MsgViewController: BaseViewController {
     @objc
     private func btnInfoTap() {
         #warning("ToDo")
+        showToast("Info not implemented yet")
     }
     
     @objc
     private func btnMailTap() {
         #warning("ToDo")
+        showToast("Not implemented yet")
     }
     
     @objc
