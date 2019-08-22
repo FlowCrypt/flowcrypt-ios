@@ -16,7 +16,7 @@ class Imap {
     let inboxFolder = "INBOX"
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
-
+    
     struct EmptyError: Error {}
     private typealias ReqKind = MCOIMAPMessagesRequestKind
     private var lastErr = [String: MCOErrorCode]();
@@ -61,13 +61,14 @@ class Imap {
         }
         return smtpSess
     }
-
+    
     private func fetchFolderInfo(_ folder: String) -> Promise<MCOIMAPFolderInfo> { return Promise<MCOIMAPFolderInfo> { resolve, reject in
         self.getImapSess()?
             .folderInfoOperation(folder)
             .start(self.finalize("fetchFolderInfo", resolve, reject, retry: { self.fetchFolderInfo(folder) }))
-    }}
-
+        }
+    }
+    
     private func fetchMsgsByNumber(_ folder: String, kind: MCOIMAPMessagesRequestKind, range: MCORange) -> Promise<[MCOIMAPMessage]> { return Promise<[MCOIMAPMessage]> { resolve, reject in
         let start = DispatchTime.now()
         self.getImapSess()?
@@ -86,18 +87,18 @@ class Imap {
                     self.messages.sort { $0.header.date > $1.header.date }
                     resolve(self.messages)
                 }
-            }
-    }}
-
+        }
+        }
+    }
+    
     func fetchLastMsgs(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> { return Promise<[MCOIMAPMessage]>.valueReturning {
         let kind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
         let folderInfo = try await(self.fetchFolderInfo(folder))
         let didTotalNumberOfMsgsChange = Int32(self.totalNumberOfInboxMsgs) != folderInfo.messageCount
+        self.messages.removeAll()
         self.totalNumberOfInboxMsgs = folderInfo.messageCount
         var numberOfMsgsToLoad = min(self.totalNumberOfInboxMsgs, Int32(count))
-        if numberOfMsgsToLoad == 0 {
-            return []
-        }
+        guard numberOfMsgsToLoad != 0 else { return [] }
         let fetchRange: MCORange
         if (!didTotalNumberOfMsgsChange && self.messages.count > 0) {
             // if total number of messages did not change since last fetch, assume nothing was deleted since our last fetch and fetch what we don't have
@@ -107,8 +108,10 @@ class Imap {
             fetchRange = MCORangeMake(UInt64(self.totalNumberOfInboxMsgs - (numberOfMsgsToLoad - 1)), (UInt64(numberOfMsgsToLoad - 1)))
         }
         return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
-    }}
-
+        }
+        
+    }
+    
     func fetchFolders() -> Promise<FetchFoldersRes> { return Promise<FetchFoldersRes> { resolve, reject in
         let start = DispatchTime.now()
         self.getImapSess()?.fetchAllFoldersOperation().start { (error, res) in
@@ -131,14 +134,16 @@ class Imap {
             }
             resolve(FetchFoldersRes(folders: folders, menu: menu))
         }
-    }}
-
+        }
+    }
+    
     func fetchMsg(message: MCOIMAPMessage, folder: String) -> Promise<Data> { return Promise { resolve, reject in
         self.getImapSess()?
             .fetchMessageOperation(withFolder: folder, uid: message.uid)
             .start(self.finalize("fetchMsg", resolve, reject, retry: { self.fetchMsg(message: message, folder: folder) }))
-    }}
-
+        }
+    }
+    
     private func fetchMsgs(folder: String, kind: ReqKind, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> { return Promise { resolve, reject in
         let start = DispatchTime.now()
         guard uids.count() > 0 else {
@@ -166,38 +171,44 @@ class Imap {
         self.getImapSess()?
             .storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: message.flags)
             .start(self.finalizeVoid("markAsRead", resolve, reject, retry: { self.markAsRead(message: message, folder: folder) }))
-    }}
-
+        }
+    }
+    
     func moveMsg(msg: MCOIMAPMessage, folder: String, destFolder: String) -> Promise<VOID> { return Promise<VOID> { resolve, reject in
         self.getImapSess()?
             .copyMessagesOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(msg.uid)), destFolder: destFolder)
             .start(self.finalizeAsVoid("moveMsg", resolve, reject, retry: { self.moveMsg(msg: msg, folder: folder, destFolder: destFolder) }))
-    }}
-
+        }
+    }
+    
     func pushUpdatedMsgFlags(msg: MCOIMAPMessage, folder: String) -> Promise<VOID> { return Promise<VOID> { resolve, reject in
         self.getImapSess()?
             .storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(msg.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: msg.flags)
             .start(self.finalizeVoid("updateMsgFlags", resolve, reject, retry: { self.pushUpdatedMsgFlags(msg: msg, folder: folder) }))
-    }}
-
+        }
+    }
+    
     func sendMail(mime: Data) -> Promise<VOID> { return Promise<VOID> { resolve, reject in
         self.getSmtpSess()?
             .sendOperation(with: mime)
             .start(self.finalizeVoid("send", resolve, reject, retry: { self.sendMail(mime: mime) }))
-    }}
-
+        }
+    }
+    
     private func searchExpression(folder: String, expression: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> { return Promise<MCOIndexSet> { resolve, reject in
         self.getImapSess()?
             .searchExpressionOperation(withFolder: folder, expression: expression)
             .start(self.finalize("searchExpression", resolve, reject, retry: { self.searchExpression(folder: folder, expression: expression) }))
-    }}
-
+        }
+    }
+    
     private func fetchMsgAtt(msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> { return Promise<Data> { resolve, reject in
         self.getImapSess()?
             .fetchMessageAttachmentOperation(withFolder: self.inboxFolder, uid: msgUid, partID: part.partID, encoding: part.encoding)
             .start(self.finalize("fetchMsgAtt", resolve, reject, retry: { self.fetchMsgAtt(msgUid: msgUid, part: part) }))
-    }}
-
+        }
+    }
+    
     func searchBackups(email: String) -> Promise<Data> { return Promise<Data>.valueReturning {
         var exprSubjects: MCOIMAPSearchExpression? = nil
         for subject in EmailConstant.recoverAccountSearchSubject {
@@ -221,8 +232,9 @@ class Imap {
             }
         }
         return data
-    }}
-
+        }
+    }
+    
     private func log(_ op: String, error: Error?, res: Any?, start: DispatchTime) {
         let errStr = error.map { "\($0)" } ?? ""
         var resStr = "Unknown"
@@ -237,7 +249,7 @@ class Imap {
         }
         print("IMAP \(op) -> \(errStr) \(resStr) \(start.millisecondsSince())ms")
     }
-
+    
     private func finalize<T>(_ op: String, _ resolve: @escaping (T) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<T>) -> (Error?, T?) -> Void {
         let start = DispatchTime.now()
         return { (error, res) in
@@ -250,7 +262,7 @@ class Imap {
             }
         }
     }
-
+    
     private func finalizeVoid(_ op: String, _ resolve: @escaping (VOID) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<VOID>) -> (Error?) -> Void {
         let start = DispatchTime.now()
         return { (error) in
@@ -263,7 +275,7 @@ class Imap {
             }
         }
     }
-
+    
     private func finalizeAsVoid(_ op: String, _ resolve: @escaping (VOID) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<VOID>) -> (Error?, Any?) -> Void {
         let start = DispatchTime.now()
         return { (error, discardable) in
@@ -276,7 +288,7 @@ class Imap {
             }
         }
     }
-
+    
     // must be always called with `guard retryAuthErrorNotNeeded else { return }`
     private func retryAuthErrorNotNeeded<T>(_ op: String, _ err: Error?, _ resolve: @escaping (T) -> Void, _ reject: @escaping (Error) -> Void, retry promise: @escaping () -> Promise<T>) -> Bool {
         if err == nil {
@@ -299,10 +311,10 @@ class Imap {
                     Imap.debug(5, "(\(debugId)|\(op)) forced session refreshes")
                     self.log("renewAccessToken for \(op) (next will retry \(op))", error: nil, res: "<accessToken>", start: start)
                     promise().then(resolve).catch(reject)
-                }.catch { error in
-                    Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: err)
-                    self.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
-                    reject(error)
+                    }.catch { error in
+                        Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: err)
+                        self.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
+                        reject(error)
                 }
                 self.lastErr[op] = MCOErrorCode(rawValue: err.code)
                 Imap.debug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
@@ -318,14 +330,14 @@ class Imap {
             }
         }
     }
-
+    
     public static func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
-//        print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
+        //        print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
     }
-
+    
     struct FetchFoldersRes {
         let folders: [MCOIMAPFolder]
         let menu: [String]
     }
-
+    
 }

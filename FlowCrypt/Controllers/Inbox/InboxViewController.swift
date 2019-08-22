@@ -9,10 +9,11 @@ import Toast
 import ENSwiftSideMenu
 
 final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
-
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
     
+    var refreshControl: UIRefreshControl!
     var btnInfo: UIButton!
     var btnSearch: UIButton!
     var btnMenu: UIButton!
@@ -20,17 +21,17 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     var messages = [MCOIMAPMessage]()
     var iMapFolderName = ""
     var path = ""
-
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // TODO: closing side menu won't work, to be fixed in https://github.com/FlowCrypt/flowcrypt-ios/issues/38
         sideMenuController()?.sideMenu?.allowPanGesture = true
-
+        
         title = iMapFolderName == "" ? "Inbox" : iMapFolderName
         if iMapFolderName == "" {
             path = "INBOX"
@@ -44,19 +45,26 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         
         fetchAndRenderEmails()
         configureNavigationBar()
+        configureRefreshControl()
     }
-
+    
+    func configureRefreshControl() {
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        tableView.addSubview(refreshControl)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
         sideMenuController()?.sideMenu?.allowPanGesture = true
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         sideMenuController()?.sideMenu?.allowPanGesture = false
         tableView.reloadData()
     }
-
+    
     func movedOrUpdated(objMessage: MCOIMAPMessage) {
         guard let index = self.messages.firstIndex(of: objMessage) else { return }
         messages.remove(at: index)
@@ -123,6 +131,19 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     @objc
     private func btnMenuTap() {
         toggleSideMenuView()
+    }
+    
+    @objc
+    private func refresh() {
+        self.async({ [weak self] in
+            guard let `self` = self else { return }
+            self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
+            }, then: { _ in
+                self.refreshControl.endRefreshing()
+                self.tableView.reloadData()
+        }, fail: { _ in
+            self.refreshControl.endRefreshing()
+        })
     }
     
     @IBAction func btnComposeTap(sender: AnyObject) {

@@ -9,13 +9,8 @@ enum Constants {
         static let generalError = -1
     }
     // TODO: Anton - Use Themes instead of Constants
-    static let NUMBER_OF_MESSAGES_TO_LOAD = 10
+    static let NUMBER_OF_MESSAGES_TO_LOAD = 20
 
-    static let inboxDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter
-    }()
   
     static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
     static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
