@@ -9,7 +9,7 @@ import Toast
 import ENSwiftSideMenu
 
 final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
-    
+
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
 
