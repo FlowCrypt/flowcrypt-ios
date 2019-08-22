@@ -35,8 +35,6 @@ final class MyMenuTableViewController: UIViewController {
 
         lblName.text = name
         lblEmail.text = email
-
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
     }
 
     private func fetchFolders() {
@@ -53,10 +51,7 @@ final class MyMenuTableViewController: UIViewController {
         context = result
         tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isSelected = true
     }
-
-    @objc private func hideMenu() {
-        hideSideMenuView()
-    }
+ 
 }
 
 extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource {
