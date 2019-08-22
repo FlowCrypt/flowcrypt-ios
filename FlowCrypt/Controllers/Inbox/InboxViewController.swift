@@ -54,19 +54,6 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         tableView.addSubview(refreshControl)
     }
     
-    @objc
-    private func refresh() {
-        self.async({ [weak self] in
-            guard let `self` = self else { return }
-            self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
-            }, then: { _ in
-                self.refreshControl.endRefreshing()
-                self.tableView.reloadData()
-        }, fail: { _ in
-            self.refreshControl.endRefreshing()
-        })
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
@@ -142,6 +129,19 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     @objc
     private func btnMenuTap() {
         toggleSideMenuView()
+    }
+    
+    @objc
+    private func refresh() {
+        self.async({ [weak self] in
+            guard let `self` = self else { return }
+            self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
+            }, then: { _ in
+                self.refreshControl.endRefreshing()
+                self.tableView.reloadData()
+        }, fail: { _ in
+            self.refreshControl.endRefreshing()
+        })
     }
     
     @IBAction func btnComposeTap(sender: AnyObject) {
