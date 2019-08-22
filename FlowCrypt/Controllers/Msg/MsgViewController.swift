@@ -121,7 +121,9 @@ class MsgViewController: BaseViewController {
     func markAsReadIfNotAlreadyMarked() {
         if !objMessage.flags.isSuperset(of: MCOMessageFlag.seen) {
             self.objMessage.flags.formUnion(MCOMessageFlag.seen)
-            Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async call not awaited on purpose
+            let _ = Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async, do not await
+            guard let delegate = self.delegate else { return }
+            delegate.movedOrUpdated(objMessage: self.objMessage)            
         }
     }
     

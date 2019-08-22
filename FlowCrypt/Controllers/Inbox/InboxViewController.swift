@@ -12,7 +12,8 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
-    
+
+    var refreshControl: UIRefreshControl!
     var btnInfo: UIButton!
     var btnSearch: UIButton!
     var btnMenu: UIButton!
@@ -44,8 +45,15 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         
         fetchAndRenderEmails()
         configureNavigationBar()
+        configureRefreshControl()
     }
-
+    
+    func configureRefreshControl() {
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        tableView.addSubview(refreshControl)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
@@ -123,6 +131,20 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     @objc
     private func btnMenuTap() {
         toggleSideMenuView()
+    }
+    
+    @objc
+    private func refresh() {
+        self.async({ [weak self] in
+            guard let `self` = self else { return }
+            self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
+        }, then: { _ in
+            self.refreshControl.endRefreshing()
+            self.tableView.reloadData()
+        }, fail: { error in
+            self.showErrAlert("Failed to refresh message list\n\n \(error)")
+            self.refreshControl.endRefreshing()
+        })
     }
     
     @IBAction func btnComposeTap(sender: AnyObject) {
