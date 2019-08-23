@@ -12,22 +12,22 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
+    @IBOutlet weak var btnCompose: UIButton!
     
-    var refreshControl: UIRefreshControl!
-    var btnInfo: UIButton!
-    var btnSearch: UIButton!
-    var btnMenu: UIButton!
+    private var refreshControl: UIRefreshControl!
+    private var btnInfo: UIButton!
+    private var btnSearch: UIButton!
+    private var btnMenu: UIButton!
+    private var loadMoreActivityIndicator: UIActivityIndicatorView!
+    
+    // Infiniti scroll variables
+    private var loadMoreInPosition = false
+    private var countData = 0
+    private var canLoadMore = true
     
     var messages = [MCOIMAPMessage]()
     var iMapFolderName = ""
     var path = ""
-    
-    private var loadMoreInPosition = false
-    private var countData = 0
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,17 +44,16 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         lblEmptyMessage.isHidden = true
         
         tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
-        tableView.tableFooterView = UIView()
+        view.bringSubviewToFront(btnCompose)
         
         fetchAndRenderEmails()
         configureNavigationBar()
         configureRefreshControl()
+        configureLoadMoreIndicator()
     }
     
-    func configureRefreshControl() {
-        refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        tableView.addSubview(refreshControl)
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,12 +82,21 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         }, then: {
             spinnerActivity.hide(animated: true)
             self.lblEmptyMessage.isHidden = self.messages.count > 0
-            self.tableView.performBatchUpdates({
-                
-                self.tableView.insertRows(at: (self.countData..<self.messages.count).map({ IndexPath(row: $0, section: 0) }), with: .automatic)
-                self.countData = self.messages.count
-            })
+            self.updateTableView()
         }, fail: Language.failed_to_load_messages)
+    }
+    
+    private func configureRefreshControl() {
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        tableView.addSubview(refreshControl)
+    }
+    
+    private func updateTableView() {
+        self.tableView.performBatchUpdates({
+            self.tableView.insertRows(at: (self.countData..<self.messages.count).map({ IndexPath(row: $0, section: 0) }), with: .none)
+            self.countData = self.messages.count
+        })
     }
     
     // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
@@ -123,6 +131,13 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         
     }
     
+    private func configureLoadMoreIndicator() {
+        loadMoreActivityIndicator = UIActivityIndicatorView(style: .gray)
+        loadMoreActivityIndicator.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: self.tableView.bounds.width, height: CGFloat(50))
+        tableView.tableFooterView = loadMoreActivityIndicator
+        tableView.tableFooterView?.isHidden = true
+    }
+    
     @objc
     private func btnInfoTap() {
         #warning("ToDo")
@@ -147,11 +162,7 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
             self.messages = try await(Imap.instance.fetchLastMsgs(count: self.messages.count, folder: self.path))
         }, then: { _ in
             self.refreshControl.endRefreshing()
-            self.tableView.performBatchUpdates({
-                
-                self.tableView.insertRows(at: (self.countData..<self.messages.count).map({ IndexPath(row: $0, section: 0) }), with: .automatic)
-                self.countData = self.messages.count
-            })
+            self.updateTableView()
         }, fail: { _ in
             self.refreshControl.endRefreshing()
         })
@@ -161,7 +172,6 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         let composeVc = self.instantiate(viewController: ComposeViewController.self)
         self.navigationController?.pushViewController(composeVc, animated: true)
     }
-    var flag = true
 }
 
 
@@ -186,11 +196,11 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90.0
+        return Constants.inboxCellHeight
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90.0
+        return Constants.inboxCellHeight
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -225,27 +235,19 @@ extension InboxViewController: UIScrollViewDelegate {
     
     func loadMore() {
         self.async({
-            self.flag = false
+            self.canLoadMore = false
             DispatchQueue.main.async {
-                let spinner = UIActivityIndicatorView(style: .gray)
-                spinner.startAnimating()
-                spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: self.tableView.bounds.width, height: CGFloat(44))
-                
-                self.tableView.tableFooterView = spinner
                 self.tableView.tableFooterView?.isHidden = false
+                self.loadMoreActivityIndicator.startAnimating()
             }
-
             self.messages = try await(Imap.instance.fetchMoreMessages(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
-            
         }, then: { _ in
-            self.flag = true
+            self.canLoadMore = true
             self.tableView.tableFooterView?.isHidden = true
-            self.tableView.performBatchUpdates({
-                self.tableView.insertRows(at: (self.countData..<self.messages.count).map({ IndexPath(row: $0, section: 0) }), with: .none)
-                self.countData = self.messages.count
-            })
+            self.updateTableView()
         }, fail: { _ in
-            self.flag = true
+            self.canLoadMore = true
+            self.tableView.tableFooterView?.isHidden = true
             self.refreshControl.endRefreshing()
         })
     }

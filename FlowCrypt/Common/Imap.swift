@@ -20,7 +20,7 @@ class Imap {
     struct EmptyError: Error {}
     private typealias ReqKind = MCOIMAPMessagesRequestKind
     private var lastErr = [String: MCOErrorCode]();
-
+    
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession? {
         if imapSess == nil || newAccessToken != nil {
             print("IMAP: creating a new session")
@@ -35,17 +35,17 @@ class Imap {
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.connectionType = MCOConnectionType.TLS
             self.imapSess = imapSess
-//            imapSess!.connectionLogger = {(connectionID, type, data) in
-//                if data != nil {
-//                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
-//                        print("IMAP:\(type):\(string)")
-//                    }
-//                }
-//            }
+            //            imapSess!.connectionLogger = {(connectionID, type, data) in
+            //                if data != nil {
+            //                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
+            //                        print("IMAP:\(type):\(string)")
+            //                    }
+            //                }
+            //            }
         }
         return imapSess
     }
-
+    
     func getSmtpSess(newAccessToken: String? = nil) -> MCOSMTPSession? {
         if smtpSess == nil || newAccessToken != nil {
             print("SMTP: creating a new session")
@@ -110,19 +110,17 @@ class Imap {
         return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
         }}
     
-    func fetchMoreMessages(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> {
-        return Promise<[MCOIMAPMessage]>.valueReturning {
-            let kind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
-            let folderInfo = try await(self.fetchFolderInfo(folder))
-            self.totalNumberOfInboxMsgs = folderInfo.messageCount
-            let positionOfLastLoadedMsg = self.totalNumberOfInboxMsgs - Int32(self.messages.count)
-            let numberOfMsgsToLoad = min(positionOfLastLoadedMsg, Int32(count))
-            guard numberOfMsgsToLoad > 0 else { return self.messages }
-            let fetchRange: MCORange = MCORangeMake(UInt64(positionOfLastLoadedMsg), UInt64(numberOfMsgsToLoad - 1))
-            
-            return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
-        }
-    }
+    func fetchMoreMessages(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> { return Promise<[MCOIMAPMessage]>.valueReturning {
+        let kind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
+        let folderInfo = try await(self.fetchFolderInfo(folder))
+        self.totalNumberOfInboxMsgs = folderInfo.messageCount
+        let positionOfLastLoadedMsg = self.totalNumberOfInboxMsgs - Int32(self.messages.count)
+        let numberOfMsgsToLoad = min(positionOfLastLoadedMsg, Int32(count))
+        guard numberOfMsgsToLoad > 0 else { return self.messages }
+        let fetchRange: MCORange = MCORangeMake(UInt64(positionOfLastLoadedMsg), UInt64(numberOfMsgsToLoad - 1))
+        
+        return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
+        }}
     
     func fetchFolders() -> Promise<FetchFoldersRes> { return Promise<FetchFoldersRes> { resolve, reject in
         let start = DispatchTime.now()
@@ -137,7 +135,7 @@ class Imap {
             var folders = [MCOIMAPFolder]()
             for f in arr {
                 guard let folder = f as? MCOIMAPFolder else { return }
-
+                
                 let path = folder.path.replacingOccurrences(of: "[Gmail]", with: "").trimLeadingSlash
                 if !path.isEmpty {
                     menu.append(path)
@@ -169,15 +167,15 @@ class Imap {
                 self.log("fetchMsgs", error: error, res: nil, start: start)
                 guard self.retryAuthErrorNotNeeded("fetchMsgs", error, resolve, reject, retry: { self.fetchMsgs(folder: folder, kind: kind, uids: uids) }) else { return }
                 let messages = msgs as? [MCOIMAPMessage]
-
+                
                 if let messages = messages {
                     resolve(messages)
                 } else {
                     reject(Errors.valueError("fetchMsgs messages == nil"))
                 }
-            }
-    }}
-
+        }
+        }}
+    
     @discardableResult
     func markAsRead(message: MCOIMAPMessage, folder: String) -> Promise<VOID> { return Promise<VOID> { resolve, reject in
         self.getImapSess()?
@@ -314,7 +312,7 @@ class Imap {
                 err.code == MCOErrorCode.authentication.rawValue,
                 self.lastErr[op] != MCOErrorCode.authentication { // avoiding infinite retry loop
                 Imap.debug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
-
+                
                 let start = DispatchTime.now()
                 GoogleApi.instance.renewAccessToken().then { accessToken in
                     Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
