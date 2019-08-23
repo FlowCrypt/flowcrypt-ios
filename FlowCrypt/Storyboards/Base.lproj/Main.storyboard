@@ -367,16 +367,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="B6j-ip-jK4">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="q3n-1L-2n6" id="ldG-4s-pSw"/>
-                                    <outlet property="delegate" destination="q3n-1L-2n6" id="GXG-Xx-iK7"/>
-                                </connections>
-                            </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Inbox is empty" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vZW-Bc-7Jq">
-                                <rect key="frame" x="60" y="150" width="255" height="45"/>
+                                <rect key="frame" x="122" y="235" width="131.5" height="45"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="BhH-kZ-xeu"/>
                                 </constraints>
@@ -395,16 +387,25 @@
                                     <action selector="btnComposeTapWithSender:" destination="q3n-1L-2n6" eventType="touchUpInside" id="xRL-lZ-OwQ"/>
                                 </connections>
                             </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" estimatedRowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="B6j-ip-jK4">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="q3n-1L-2n6" id="ldG-4s-pSw"/>
+                                    <outlet property="delegate" destination="q3n-1L-2n6" id="GXG-Xx-iK7"/>
+                                </connections>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="1Sd-8V-evu" firstAttribute="trailing" secondItem="B6j-ip-jK4" secondAttribute="trailing" id="BLE-EJ-fNp"/>
                             <constraint firstItem="B6j-ip-jK4" firstAttribute="centerX" secondItem="vZW-Bc-7Jq" secondAttribute="centerX" id="Cxh-gP-Kae"/>
-                            <constraint firstItem="vZW-Bc-7Jq" firstAttribute="top" secondItem="1Sd-8V-evu" secondAttribute="top" constant="150" id="ETz-CP-dn4"/>
+                            <constraint firstItem="vZW-Bc-7Jq" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1Sd-8V-evu" secondAttribute="leading" constant="20" id="FHB-ff-vLT"/>
                             <constraint firstAttribute="trailingMargin" secondItem="zYy-2H-XWn" secondAttribute="trailing" constant="-1" id="L20-se-Gqj"/>
-                            <constraint firstItem="vZW-Bc-7Jq" firstAttribute="leading" secondItem="bEF-lb-llU" secondAttribute="leadingMargin" constant="44" id="bRh-nK-o5E"/>
                             <constraint firstItem="B6j-ip-jK4" firstAttribute="bottom" secondItem="1Sd-8V-evu" secondAttribute="bottom" id="hjd-2g-gog"/>
                             <constraint firstItem="B6j-ip-jK4" firstAttribute="leading" secondItem="1Sd-8V-evu" secondAttribute="leading" id="i06-Ic-b45"/>
+                            <constraint firstItem="vZW-Bc-7Jq" firstAttribute="centerY" secondItem="B6j-ip-jK4" secondAttribute="centerY" constant="-44" id="mc2-8E-rEI"/>
+                            <constraint firstItem="1Sd-8V-evu" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="vZW-Bc-7Jq" secondAttribute="trailing" constant="20" id="ogZ-sx-tpp"/>
                             <constraint firstItem="1Sd-8V-evu" firstAttribute="bottom" secondItem="zYy-2H-XWn" secondAttribute="bottom" constant="15" id="qOe-NV-YzS"/>
                             <constraint firstItem="B6j-ip-jK4" firstAttribute="top" secondItem="1Sd-8V-evu" secondAttribute="top" id="qzd-2z-Ek4"/>
                         </constraints>

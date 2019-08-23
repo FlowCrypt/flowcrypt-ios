@@ -98,7 +98,7 @@ class Imap {
         self.messages.removeAll()
         self.totalNumberOfInboxMsgs = folderInfo.messageCount
         var numberOfMsgsToLoad = min(self.totalNumberOfInboxMsgs, Int32(count))
-        guard numberOfMsgsToLoad != 0 else { return [] }
+        guard numberOfMsgsToLoad > 0 else { return [] }
         let fetchRange: MCORange
         if (!didTotalNumberOfMsgsChange && self.messages.count > 0) {
             // if total number of messages did not change since last fetch, assume nothing was deleted since our last fetch and fetch what we don't have
@@ -108,8 +108,20 @@ class Imap {
             fetchRange = MCORangeMake(UInt64(self.totalNumberOfInboxMsgs - (numberOfMsgsToLoad - 1)), (UInt64(numberOfMsgsToLoad - 1)))
         }
         return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
+        }}
+    
+    func fetchMoreMessages(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> {
+        return Promise<[MCOIMAPMessage]>.valueReturning {
+            let kind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
+            let folderInfo = try await(self.fetchFolderInfo(folder))
+            self.totalNumberOfInboxMsgs = folderInfo.messageCount
+            let positionOfLastLoadedMsg = self.totalNumberOfInboxMsgs - Int32(self.messages.count)
+            let numberOfMsgsToLoad = min(positionOfLastLoadedMsg, Int32(count))
+            guard numberOfMsgsToLoad > 0 else { return self.messages }
+            let fetchRange: MCORange = MCORangeMake(UInt64(positionOfLastLoadedMsg), UInt64(numberOfMsgsToLoad - 1))
+            
+            return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
         }
-        
     }
     
     func fetchFolders() -> Promise<FetchFoldersRes> { return Promise<FetchFoldersRes> { resolve, reject in
