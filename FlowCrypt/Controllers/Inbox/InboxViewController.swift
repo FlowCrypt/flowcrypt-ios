@@ -30,6 +30,7 @@ final class InboxViewController: UIViewController {
         didSet {
             lblEmptyMessage.isHidden = messages.count > 0
             refreshControl.endRefreshing()
+            hideSpinner()
             tableView.reloadData()
         }
     }
@@ -52,7 +53,7 @@ final class InboxViewController: UIViewController {
         tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
         tableView.tableFooterView = UIView()
         
-        fetchAndRenderEmails()
+        fetchAndRenderEmails(withSpinner: true)
         configureNavigationBar()
         configureRefreshControl()
     }
@@ -86,13 +87,16 @@ final class InboxViewController: UIViewController {
         }
     }
 
-    private func fetchAndRenderEmails() {
-        showSpinner()
+    private func fetchAndRenderEmails(withSpinner isSpinnerShown: Bool) {
+        if isSpinnerShown {
+            showSpinner()
+        } else if !refreshControl.isRefreshing {
+            refreshControl.beginRefreshing()
+        }
 
         imap.fetchLastMsgs(count: Constants.numberOfMessagesToLoad, folder: viewModel.path)
             .then(on: .main) { [weak self] messages in
                 guard let self = self else { return }
-                self.hideSpinner()
                 self.messages = messages
             }
             .catch(on: .main) { [weak self] error in
@@ -123,7 +127,7 @@ extension InboxViewController {
     }
     
     @objc private func refresh() {
-        fetchAndRenderEmails()
+        fetchAndRenderEmails(withSpinner: false)
     }
 
     @IBAction func btnComposeTap(sender: AnyObject) {
