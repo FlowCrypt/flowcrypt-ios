@@ -6,7 +6,9 @@ import UIKit
 import GoogleSignIn
 import Promises
 
-final class SignInViewController: BaseViewController {
+final class SignInViewController: UIViewController {
+    // TODO: Inject as a dependency
+    let googleAPI = GoogleApi.instance
 
     @IBOutlet weak var signInWithGmailButton: UIButton!
     @IBOutlet weak var signInWithOutlookButton: UIButton!
@@ -19,19 +21,22 @@ final class SignInViewController: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.isNavigationBarHidden = false
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
     // MARK: - Events
     @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
-        async({ try await(GoogleApi.instance.signIn(viewController: self)) }, then: { [weak self] user in
-            self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
-        })
+        showSpinner()
+        googleAPI.signIn(viewController: self)
+            .then(on: .main) { [weak self] _ in
+                self?.hideSpinner()
+                self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
+            }
     }
 
     @IBAction func signInWithOutlookButtonPressed(_ sender: Any) {
