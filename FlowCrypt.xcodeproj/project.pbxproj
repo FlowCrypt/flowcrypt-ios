@@ -231,6 +231,7 @@
 		32DCA376D595968F13A3347A /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				9FD22A16230F2E5B005067A6 /* Core Services */,
 				32DCAC732B988D9704658812 /* CoreTypes.swift */,
 				32DCA0C3D34A69851A238E87 /* Core.swift */,
 				32DCACB22E895C2500A99350 /* CoreHost.swift */,
@@ -293,6 +294,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		9FD22A20230FF9BC005067A6 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		A3D328BF22E1C640002888F4 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
@@ -345,16 +354,15 @@
 		C132B9B21EC2DBD800763715 /* FlowCrypt */ = {
 			isa = PBXGroup;
 			children = (
-				9FD22A16230F2E5B005067A6 /* Core Services */,
 				32DCA376D595968F13A3347A /* Core */,
 				A3D328BF22E1C640002888F4 /* Storyboards */,
-				A3DAD60C22E469E400F2C4CD /* Resources */,
-				32DCAEF9FEEF84D4F0D4A516 /* Extensions */,
-				04B4728A1ECE29D200B8266F /* Model */,
-				04B472541ECE29B200B8266F /* Lib */,
-				9FD22A1D230FEEC8005067A6 /* Views */,
 				C132B9C51EC2DCAB00763715 /* Controllers */,
+				04B4728A1ECE29D200B8266F /* Model */,
+				9FD22A1D230FEEC8005067A6 /* Views */,
+				32DCAEF9FEEF84D4F0D4A516 /* Extensions */,
 				C132B9C61EC2DCC000763715 /* Common */,
+				A3DAD60C22E469E400F2C4CD /* Resources */,
+				04B472541ECE29B200B8266F /* Lib */,
 				C132B9B31EC2DBD800763715 /* AppDelegate.swift */,
 				C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */,
 				C132B9BA1EC2DBD800763715 /* Assets.xcassets */,
@@ -367,12 +375,12 @@
 		C132B9C51EC2DCAB00763715 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				32DCA4762A2B08BFF81AB38F /* BaseViewController.swift */,
 				04B472911ECE29F600B8266F /* SideMenu */,
 				D952B71B1ED0CB0100E5C02B /* Msg */,
 				04B4728F1ECE29F600B8266F /* Compose */,
 				C192421D1EC48B5600C3D251 /* Recover */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
-				32DCA4762A2B08BFF81AB38F /* BaseViewController.swift */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 			);
 			path = Controllers;
@@ -393,8 +401,8 @@
 		C132B9D71EC30E0B00763715 /* Inbox */ = {
 			isa = PBXGroup;
 			children = (
-				9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */,
 				C132B9D81EC30E1D00763715 /* InboxViewController.swift */,
+				9FD22A20230FF9BC005067A6 /* Model */,
 				C132B9E71EC4476500763715 /* Views */,
 			);
 			path = Inbox;

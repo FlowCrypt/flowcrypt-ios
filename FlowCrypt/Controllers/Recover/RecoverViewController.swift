@@ -8,7 +8,10 @@ import RealmSwift
 import Promises
 
 final class RecoverViewController: BaseViewController, UITextFieldDelegate {
-
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/37
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/40
+    
     @IBOutlet weak var passPhaseTextField: UITextField!
     @IBOutlet weak var btnLoadAccount: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!

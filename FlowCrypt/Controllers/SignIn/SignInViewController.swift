@@ -37,6 +37,9 @@ final class SignInViewController: UIViewController {
                 self?.hideSpinner()
                 self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
             }
+            .catch(on: .main) { [weak self] _ in
+                self?.hideSpinner()
+            }
     }
 
     @IBAction func signInWithOutlookButtonPressed(_ sender: Any) {

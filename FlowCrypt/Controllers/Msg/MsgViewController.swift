@@ -20,7 +20,7 @@ extension MsgViewController {
     }
 }
 
-final class MsgViewController: BaseViewController {
+final class MsgViewController: UIViewController {
     struct Input {
         var objMessage = MCOIMAPMessage()
         var bodyMessage: Data?
@@ -217,7 +217,8 @@ extension MsgViewController {
 
     @IBAction private func handleReplyTap(_ sender: UIButton) {
         guard let input = input else { return }
-        let replyVc = instantiate(viewController: ComposeViewController.self)
+
+        let replyVc = UIStoryboard.main.instantiate(ComposeViewController.self)
         replyVc.isReply = true
         replyVc.replyToSubject = input.objMessage.header.subject
         replyVc.replyToRecipient = input.objMessage.header.from

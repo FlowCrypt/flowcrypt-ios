@@ -39,6 +39,7 @@ final class MyMenuTableViewController: UIViewController {
     }
 
     private func fetchFolders() {
+        showSpinner()
         imap.fetchFolders()
             .then(on: .main) { [weak self] res in
                 self?.handleFolders(with: res)
@@ -49,6 +50,7 @@ final class MyMenuTableViewController: UIViewController {
     }
 
     private func handleFolders(with result: FoldersContext) {
+        hideSpinner()
         context = result
         tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isSelected = true
     }

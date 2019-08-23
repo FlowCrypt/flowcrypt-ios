@@ -8,7 +8,10 @@ import Promises
 import RealmSwift
 
 final class ComposeViewController: BaseViewController {
-    
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/37
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/40
+
     @IBOutlet var txtRecipient: UITextField!
     @IBOutlet var txtSubject: UITextField!
     @IBOutlet var txtMessage: UITextView!
@@ -86,7 +89,6 @@ final class ComposeViewController: BaseViewController {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
 
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     private func configureNavigationBar() {
         btnInfo = UIButton(type: .system)
         btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
