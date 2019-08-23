@@ -201,20 +201,6 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
         self.navigationController?.pushViewController(msgVc, animated: true)
     }
     
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        let lastSectionIndex = tableView.numberOfSections - 1
-//        let lastRowIndex = tableView.numberOfRows(inSection: lastSectionIndex) - 1
-//        if indexPath.section ==  lastSectionIndex && indexPath.row == lastRowIndex {
-//            // print("this is the last cell")
-//            let spinner = UIActivityIndicatorView(style: .gray)
-//            spinner.startAnimating()
-//            spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: tableView.bounds.width, height: CGFloat(44))
-//            
-//            self.tableView.tableFooterView = spinner
-//            self.tableView.tableFooterView?.isHidden = false
-//        }
-//    }
-    
 }
 
 extension InboxViewController: UIScrollViewDelegate {
@@ -239,7 +225,6 @@ extension InboxViewController: UIScrollViewDelegate {
     
     func loadMore() {
         self.async({
-            //            self.loadMoreActivityIndicator.startAnimating()
             self.flag = false
             DispatchQueue.main.async {
                 let spinner = UIActivityIndicatorView(style: .gray)
@@ -253,11 +238,9 @@ extension InboxViewController: UIScrollViewDelegate {
             self.messages = try await(Imap.instance.fetchMoreMessages(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.path))
             
         }, then: { _ in
-            //            self.loadMoreActivityIndicator.stopAnimating()
             self.flag = true
-           // self.tableView.tableFooterView = nil
+            self.tableView.tableFooterView?.isHidden = true
             self.tableView.performBatchUpdates({
-                
                 self.tableView.insertRows(at: (self.countData..<self.messages.count).map({ IndexPath(row: $0, section: 0) }), with: .none)
                 self.countData = self.messages.count
             })
