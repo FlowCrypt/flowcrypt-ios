@@ -580,7 +580,7 @@
                                     </constraints>
                                 </view>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MenuCell" id="keb-G4-Sk5" customClass="MenuCell" customModule="FlowCrypt" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MenuCell" id="keb-G4-Sk5" customClass="MenuCell" customModule="FlowCrypt" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="121" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="keb-G4-Sk5" id="iby-YC-jk1">
@@ -664,7 +664,7 @@
                                                 <color key="tintColor" red="0.12941176469999999" green="0.61568627450000002" blue="0.019607843140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <state key="normal" image="reply-all"/>
                                                 <connections>
-                                                    <action selector="btnReplyTapWithSender:" destination="7qo-Z9-sVQ" eventType="touchUpInside" id="XNV-Yf-CWT"/>
+                                                    <action selector="handleReplyTap:" destination="7qo-Z9-sVQ" eventType="touchUpInside" id="Iyv-eb-HmA"/>
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="(no sujbect)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7ku-7Z-j5a">

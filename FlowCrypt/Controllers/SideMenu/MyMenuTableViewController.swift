@@ -6,13 +6,14 @@ import UIKit
 import Promises
 
 final class MyMenuTableViewController: UIViewController {
+    // TODO: Inject as a dependency
+    private let imap = Imap.instance
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var lblName: UILabel!
     @IBOutlet var lblEmail: UILabel!
 
     private var context: FoldersContext? { didSet { tableView.reloadData()} }
-    private let imap = Imap.instance
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +52,7 @@ final class MyMenuTableViewController: UIViewController {
         context = result
         tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isSelected = true
     }
- 
+
 }
 
 extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource {

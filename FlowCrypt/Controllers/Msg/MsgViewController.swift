@@ -11,7 +11,22 @@ protocol MsgViewControllerDelegate: class {
     func movedOrUpdated(objMessage: MCOIMAPMessage)
 }
 
+extension MsgViewController {
+    static func instance(with input: MsgViewController.Input, delegate: MsgViewControllerDelegate?) -> MsgViewController {
+        let vc = UIStoryboard.main.instantiate(MsgViewController.self)
+        vc.input = input
+        vc.delegate = delegate
+        return vc
+    }
+}
+
 final class MsgViewController: BaseViewController {
+    struct Input {
+        var objMessage = MCOIMAPMessage()
+        var bodyMessage: Data?
+        var path = ""
+    }
+
     private enum MessageAction {
         case delete, archive
 
@@ -29,6 +44,7 @@ final class MsgViewController: BaseViewController {
             }
         }
     }
+
     @IBOutlet var lblSender: UILabel!
     @IBOutlet var lblSubject: UILabel!
     @IBOutlet var lblTIme: UILabel!
@@ -36,20 +52,10 @@ final class MsgViewController: BaseViewController {
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var scrollViewContent: UIView!
 
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
-    private var btnInfo: UIButton!
-    private var btnArchive: UIButton!
-    private var btnTrash: UIButton!
-    private var btnMail: UIButton!
-    private var btnBack: UIButton!
-
     // TODO: Inject as a dependency
     private let imap = Imap.instance
     private let db: DataBaseService = RealmDataBaseService.shared
-
-    var objMessage = MCOIMAPMessage()
-    var bodyMessage: Data?
-    var path = ""
+    private var input: MsgViewController.Input?
 
     weak var delegate: MsgViewControllerDelegate?
     
@@ -62,56 +68,44 @@ final class MsgViewController: BaseViewController {
     }
 
     private func setupUI() {
-        lblSender.text = objMessage.header.sender.mailbox ?? "(unknown sender)"
-        lblSubject.text = objMessage.header.subject ?? "(no subject)"
+        lblSender.text = input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
+        lblSubject.text = input?.objMessage.header.subject ?? "(no subject)"
         lblBody.numberOfLines = 0
-        lblTIme.text = Constants.convertDate(date: objMessage.header.date)
+        lblTIme.text = ""
+        if let date = input?.objMessage.header.date {
+            lblTIme.text = Constants.convertDate(date: date)
+        }
     }
 
     private func setupNavigationBar() {
-        btnInfo = UIButton(type: .system)
-        btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
-        btnInfo.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnInfo.frame = Constants.uiBarButtonItemFrame
-        btnInfo.addTarget(self, action: #selector(btnInfoTap), for: .touchUpInside)
-        
-        btnArchive = UIButton(type: .system)
-        btnArchive.setImage(UIImage(named: "archive")!, for: .normal)
-        btnArchive.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnArchive.frame = Constants.uiBarButtonItemFrame
-        btnArchive.addTarget(self, action: #selector(btnArchiveTap), for: .touchUpInside)
+        let infoInput = NavigationBarItemsView.Input(
+            image: UIImage(named: "help_icn"),
+            action: (self, #selector(handleInfoTap))
+        )
 
-        btnTrash = UIButton(type: .system)
-        btnTrash.setImage(UIImage(named: "trash")!, for: .normal)
-        btnTrash.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnTrash.frame = Constants.uiBarButtonItemFrame
-        btnTrash.addTarget(self, action: #selector(btnTrashTap), for: .touchUpInside)
-        
-        btnMail = UIButton(type: .system)
-        btnMail.setImage(UIImage(named: "mail")!, for: .normal)
-        btnMail.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnMail.frame = Constants.uiBarButtonItemFrame
-        btnMail.addTarget(self, action: #selector(btnMailTap), for: .touchUpInside)
-        
-        let stackView = UIStackView(arrangedSubviews: [btnInfo, btnArchive, btnTrash, btnMail])
-        stackView.distribution = .equalSpacing
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 15
-        
-        if self.path == MailDestination.Gmail.trash.path {
-            btnTrash.isHidden = true
+        let archiveInput = NavigationBarItemsView.Input(
+            image: UIImage(named: "archive"),
+            action: (self, #selector(handleArchiveTap))
+        )
+
+        let trashInput = NavigationBarItemsView.Input(
+            image: UIImage(named: "trash"),
+            action: (self, #selector(handleTrashTap))
+        )
+
+        let mailInput = NavigationBarItemsView.Input(
+            image: UIImage(named: "mail"),
+            action: (self, #selector(handleMailTap))
+        )
+
+        let buttons = input?.path == MailDestination.Gmail.trash.path
+            ? [infoInput, archiveInput, mailInput]
+            : [infoInput, archiveInput, trashInput, mailInput]
+
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
+        navigationItem.leftBarButtonItem = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
         }
-        
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
-        
-        btnBack = UIButton(type: .system)
-        btnBack.setImage(UIImage(named: "arrow-left-c"), for: .normal)
-        btnBack.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
-        btnBack.frame = Constants.uiBarButtonItemFrame
-        btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
-        
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnBack)
     }
     
     private func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {
@@ -125,10 +119,11 @@ final class MsgViewController: BaseViewController {
 // MARK: - Message
 extension MsgViewController {
     private func fetchMessage() {
-        imap.fetchMsg(message: objMessage, folder: path)
+        guard let input = input else { return }
+        imap.fetchMsg(message: input.objMessage, folder: input.path)
             .then { [weak self] data -> Promise<CoreRes.ParseDecryptMsg> in
                 guard let self = self else { return Promise(ImapError.general) }
-                self.bodyMessage = data
+                self.input?.bodyMessage = data
                 return self.db.save(message: data, isEmail: true)
             }
             .then(on: .main) { [weak self] message in
@@ -161,15 +156,17 @@ extension MsgViewController {
     }
 
     private func markAsReadIfNotAlreadyMarked() {
-        if !objMessage.flags.isSuperset(of: MCOMessageFlag.seen) {
-            self.objMessage.flags.formUnion(MCOMessageFlag.seen)
-            Imap.instance.markAsRead(message: self.objMessage, folder: self.path) // async call not awaited on purpose
-        }
+        guard let input = input else { return }
+        guard input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return }
+
+        input.objMessage.flags.formUnion(MCOMessageFlag.seen)
+        imap.markAsRead(message: input.objMessage, folder: input.path) // async call not awaited on purpose
     }
 
     private func handleSuccesMessage(operation: MessageAction) {
+        guard let input = input else { return }
         hideSpinner()
-        delegate?.movedOrUpdated(objMessage: objMessage)
+        delegate?.movedOrUpdated(objMessage: input.objMessage)
         showToast(operation.text)
         navigationController?.popViewController(animated: true)
     }
@@ -182,17 +179,20 @@ extension MsgViewController {
 
 // MARK: - Handle Actions
 extension MsgViewController {
-    @objc private func btnInfoTap() {
+    @objc private func handleInfoTap() {
+        print("Info tap has not implemented yet")
         #warning("ToDo")
     }
 
-    @objc private func btnMailTap() {
+    @objc private func handleMailTap() {
+        print("Has not implemented yet")
         #warning("ToDo")
     }
 
-    @objc private func btnTrashTap() {
+    @objc private func handleTrashTap() {
+        guard let input = input else { return }
         showSpinner()
-        imap.moveMsg(msg: objMessage, folder: path, destFolder: MailDestination.Gmail.trash.path)
+        imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path)
             .then(on: .main) { [weak self] _ in
                 self?.handleSuccesMessage(operation: .delete)
             }
@@ -201,11 +201,12 @@ extension MsgViewController {
             }
     }
 
-    @objc private func btnArchiveTap() {
+    @objc private func handleArchiveTap() {
+        guard let input = input else { return }
         showSpinner()
-        objMessage.flags = MCOMessageFlag.deleted
+        input.objMessage.flags = MCOMessageFlag.deleted
 
-        imap.pushUpdatedMsgFlags(msg: objMessage, folder: path)
+        imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] _ in
                 self?.handleSuccesMessage(operation: .archive)
             }
@@ -214,16 +215,13 @@ extension MsgViewController {
             }
     }
 
-    @objc private func btnBackTap() {
-        navigationController?.popViewController(animated: true)
-    }
-
-    @IBAction private func btnReplyTap(sender: UIButton) {
+    @IBAction private func handleReplyTap(_ sender: UIButton) {
+        guard let input = input else { return }
         let replyVc = instantiate(viewController: ComposeViewController.self)
         replyVc.isReply = true
-        replyVc.replyToSubject = objMessage.header.subject
-        replyVc.replyToRecipient = objMessage.header.from
-        replyVc.replyToMime = bodyMessage
+        replyVc.replyToSubject = input.objMessage.header.subject
+        replyVc.replyToRecipient = input.objMessage.header.from
+        replyVc.replyToMime = input.bodyMessage
 
         navigationController?.pushViewController(replyVc, animated: true)
     }

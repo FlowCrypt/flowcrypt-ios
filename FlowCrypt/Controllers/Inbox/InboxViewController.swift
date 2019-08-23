@@ -15,17 +15,24 @@ extension InboxViewController {
     }
 }
 
-final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
+final class InboxViewController: UIViewController {
+    private enum Constants {
+        static let numberOfMessagesToLoad = 10
+    }
+
+    // TODO: Inject as a dependency
+    private let imap = Imap.instance
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
 
-    private var messages = [MCOIMAPMessage]()
+    private var messages = [MCOIMAPMessage]() {
+        didSet {
+            lblEmptyMessage.isHidden = messages.count > 0
+            tableView.reloadData()
+        }
+    }
     private var viewModel = InboxViewModel.empty
-
-    private var btnInfo: UIButton!
-    private var btnSearch: UIButton!
-    private var btnMenu: UIButton!
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -58,75 +65,57 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         tableView.reloadData()
     }
 
+    private func configureNavigationBar() {
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(
+            with: [
+                NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
+                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
+            ]
+        )
+
+        navigationItem.leftBarButtonItem = NavigationBarActionButton(UIImage(named: "menu_icn")) { [weak self] in
+            self?.toggleSideMenuView()
+        }
+    }
+
+    private func fetchAndRenderEmails() {
+        showSpinner()
+
+        imap.fetchLastMsgs(count: Constants.numberOfMessagesToLoad, folder: viewModel.path)
+            .then(on: .main) { [weak self] messages in
+                guard let self = self else { return }
+                self.hideSpinner()
+                self.messages = messages
+            }
+            .catch(on: .main) { [weak self] error in
+                guard let self = self else { return }
+                self.showAlert(error: error, message: Language.failedToLoadMessages)
+            }
+    }
+}
+
+extension InboxViewController: MsgViewControllerDelegate {
     func movedOrUpdated(objMessage: MCOIMAPMessage) {
         guard let index = self.messages.firstIndex(of: objMessage) else { return }
         messages.remove(at: index)
         tableView.reloadData()
     }
-    
-    func fetchAndRenderEmails() {
-        let spinnerActivity = MBProgressHUD.showAdded(to: self.view, animated: true)
-        spinnerActivity.label.text = "Loading"
-        spinnerActivity.isUserInteractionEnabled = false
-        self.async({
-            self.messages = try await(Imap.instance.fetchLastMsgs(count: Constants.NUMBER_OF_MESSAGES_TO_LOAD, folder: self.viewModel.path))
-        }, then: {
-            spinnerActivity.hide(animated: true)
-            self.lblEmptyMessage.isHidden = self.messages.count > 0
-            self.tableView.reloadData()
-        }, fail: Language.failed_to_load_messages)
-    }
-
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
-    private func configureNavigationBar() {
-        btnInfo = UIButton(type: .system)
-        btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
-        btnInfo.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnInfo.frame = Constants.uiBarButtonItemFrame
-        btnInfo.addTarget(self, action: #selector(btnInfoTap), for: .touchUpInside)
-        
-        btnSearch = UIButton(type: .system)
-        btnSearch.setImage(UIImage(named: "search_icn")!, for: .normal)
-        btnSearch.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnSearch.frame = Constants.uiBarButtonItemFrame
-        btnSearch.addTarget(self, action: #selector(btnSearchTap), for: .touchUpInside)
-        
-        let stackView = UIStackView(arrangedSubviews: [btnInfo, btnSearch])
-        stackView.distribution = .equalSpacing
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 15
-        
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
-        
-        btnMenu = UIButton(type: .system)
-        btnMenu.setImage(UIImage(named: "menu_icn")!, for: .normal)
-        btnMenu.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
-        btnMenu.frame = Constants.uiBarButtonItemFrame
-        btnMenu.addTarget(self, action: #selector(btnMenuTap), for: .touchUpInside)
-        
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnMenu)
-        
-    }
-    
-    @objc private func btnInfoTap() {
-        #warning("ToDo")
-    }
-    
-    @objc private func btnSearchTap() {
-        #warning("ToDo")
-    }
-    
-    @objc private func btnMenuTap() {
-        toggleSideMenuView()
-    }
-    
-    @IBAction func btnComposeTap(sender: AnyObject) {
-        let composeVc = self.instantiate(viewController: ComposeViewController.self)
-        self.navigationController?.pushViewController(composeVc, animated: true)
-    }
 }
 
+extension InboxViewController {
+    @objc private func handleInfoTap() {
+        #warning("ToDo")
+    }
+
+    @objc private func handleSearchTap() {
+        #warning("ToDo")
+    }
+
+    @IBAction func btnComposeTap(sender: AnyObject) {
+        let composeVc = UIStoryboard.main.instantiate(ComposeViewController.self)
+        navigationController?.pushViewController(composeVc, animated: true)
+    }
+}
 
 extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
 
@@ -149,11 +138,13 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let msgVc = instantiate(viewController: MsgViewController.self)
-        msgVc.objMessage = messages[indexPath.row]
-        msgVc.path = viewModel.path
-        msgVc.delegate = self
-        self.navigationController?.pushViewController(msgVc, animated: true)
+        let messageInput = MsgViewController.Input(
+            objMessage: messages[indexPath.row],
+            bodyMessage: nil,
+            path: viewModel.path
+        )
+        let msgVc = MsgViewController.instance(with: messageInput, delegate: self)
+        navigationController?.pushViewController(msgVc, animated: true)
     }
     
 }
