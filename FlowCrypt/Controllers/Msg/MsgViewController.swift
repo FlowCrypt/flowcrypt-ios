@@ -63,7 +63,6 @@ final class MsgViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
-        showSpinner(Language.loading, isUserInteractionEnabled: true)
         fetchMessage()
     }
 
@@ -107,7 +106,7 @@ final class MsgViewController: UIViewController {
             self?.navigationController?.popViewController(animated: true)
         }
     }
-    
+
     private func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {
         lblBody.text = text
         lblBody.textColor = color
@@ -120,6 +119,7 @@ final class MsgViewController: UIViewController {
 extension MsgViewController {
     private func fetchMessage() {
         guard let input = input else { return }
+        showSpinner(Language.loading, isUserInteractionEnabled: true)
         imap.fetchMsg(message: input.objMessage, folder: input.path)
             .then { [weak self] data -> Promise<CoreRes.ParseDecryptMsg> in
                 guard let self = self else { return Promise(ImapError.general) }
@@ -180,13 +180,13 @@ extension MsgViewController {
 // MARK: - Handle Actions
 extension MsgViewController {
     @objc private func handleInfoTap() {
-        print("Info tap has not implemented yet")
         #warning("ToDo")
+        showToast("Info not implemented yet")
     }
 
     @objc private func handleMailTap() {
-        print("Has not implemented yet")
         #warning("ToDo")
+        showToast("Not implemented yet")
     }
 
     @objc private func handleTrashTap() {

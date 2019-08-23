@@ -29,10 +29,12 @@ final class InboxViewController: UIViewController {
     private var messages = [MCOIMAPMessage]() {
         didSet {
             lblEmptyMessage.isHidden = messages.count > 0
+            refreshControl.endRefreshing()
             tableView.reloadData()
         }
     }
     private var viewModel = InboxViewModel.empty
+    private let refreshControl = UIRefreshControl()
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -52,8 +54,14 @@ final class InboxViewController: UIViewController {
         
         fetchAndRenderEmails()
         configureNavigationBar()
+        configureRefreshControl()
     }
-
+    
+    private func configureRefreshControl() {
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        tableView.refreshControl = refreshControl
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
@@ -89,6 +97,7 @@ final class InboxViewController: UIViewController {
             }
             .catch(on: .main) { [weak self] error in
                 guard let self = self else { return }
+                self.refreshControl.endRefreshing()
                 self.showAlert(error: error, message: Language.failedToLoadMessages)
             }
     }
@@ -105,10 +114,16 @@ extension InboxViewController: MsgViewControllerDelegate {
 extension InboxViewController {
     @objc private func handleInfoTap() {
         #warning("ToDo")
+        showToast("Info not implemented yet")
     }
 
     @objc private func handleSearchTap() {
         #warning("ToDo")
+        showToast("Search not implemented yet")
+    }
+    
+    @objc private func refresh() {
+        fetchAndRenderEmails()
     }
 
     @IBAction func btnComposeTap(sender: AnyObject) {

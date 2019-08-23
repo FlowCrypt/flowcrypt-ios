@@ -133,6 +133,7 @@ final class ComposeViewController: BaseViewController {
     @objc
     private func btnAttachTap() {
         #warning("ToDo")
+        showToast("Attachments not implemented yet")
     }
     
     @objc
@@ -182,6 +183,7 @@ final class ComposeViewController: BaseViewController {
     
     @objc private func btnInfoTap() {
         #warning("ToDo")
+        showToast("Info not implemented yet")
     }
     
     @objc private func adjustForKeyboard(notification: Notification) {

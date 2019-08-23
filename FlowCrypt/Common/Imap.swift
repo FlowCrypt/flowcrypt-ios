@@ -96,11 +96,10 @@ final class Imap {
         let kind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
         let folderInfo = try await(self.fetchFolderInfo(folder))
         let didTotalNumberOfMsgsChange = Int32(self.totalNumberOfInboxMsgs) != folderInfo.messageCount
+        self.messages.removeAll()
         self.totalNumberOfInboxMsgs = folderInfo.messageCount
         var numberOfMsgsToLoad = min(self.totalNumberOfInboxMsgs, Int32(count))
-        if numberOfMsgsToLoad == 0 {
-            return []
-        }
+        guard numberOfMsgsToLoad != 0 else { return [] }
         let fetchRange: MCORange
         if (!didTotalNumberOfMsgsChange && self.messages.count > 0) {
             // if total number of messages did not change since last fetch, assume nothing was deleted since our last fetch and fetch what we don't have
@@ -323,7 +322,7 @@ final class Imap {
     }
 
     public static func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
-//        print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
+        // print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
     }
 
 }
