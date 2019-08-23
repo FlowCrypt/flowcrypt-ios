@@ -86,9 +86,9 @@ class Imap {
                     self.messages.sort { $0.header.date > $1.header.date }
                     resolve(self.messages)
                 }
-        }
+            }
     }}
-    
+
     func fetchLastMsgs(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> { return Promise<[MCOIMAPMessage]>.valueReturning {
         let kind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
         let folderInfo = try await(self.fetchFolderInfo(folder))
@@ -116,7 +116,6 @@ class Imap {
         let numberOfMsgsToLoad = min(positionOfLastLoadedMsg, Int32(count))
         guard numberOfMsgsToLoad > 0 else { return self.messages }
         let fetchRange: MCORange = MCORangeMake(UInt64(positionOfLastLoadedMsg), UInt64(numberOfMsgsToLoad - 1))
-        
         return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
     }}
     
@@ -133,7 +132,6 @@ class Imap {
             var folders = [MCOIMAPFolder]()
             for f in arr {
                 guard let folder = f as? MCOIMAPFolder else { return }
-                
                 let path = folder.path.replacingOccurrences(of: "[Gmail]", with: "").trimLeadingSlash
                 if !path.isEmpty {
                     menu.append(path)
