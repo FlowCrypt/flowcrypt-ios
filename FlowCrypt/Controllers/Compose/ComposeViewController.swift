@@ -88,38 +88,45 @@ class ComposeViewController: BaseViewController {
 
     // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     private func configureNavigationBar() {
+        
         btnInfo = UIButton(type: .system)
         btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
         btnInfo.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnInfo.frame = Constants.uiBarButtonItemFrame
         btnInfo.addTarget(self, action: #selector(btnInfoTap), for: .touchUpInside)
         
         btnAttach = UIButton(type: .system)
         btnAttach.setImage(UIImage(named: "paperclip")!, for: .normal)
         btnAttach.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnAttach.frame = Constants.uiBarButtonItemFrame
         btnAttach.addTarget(self, action: #selector(btnAttachTap), for: .touchUpInside)
         
         btnCompose = UIButton(type: .system)
         btnCompose.setImage(UIImage(named: "android-send")!, for: .normal)
         btnCompose.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnCompose.frame = Constants.uiBarButtonItemFrame
         btnCompose.addTarget(self, action: #selector(btnComposeTap), for: .touchUpInside)
+        
+        btnBack = UIButton(type: .system)
+        btnBack.setImage(UIImage(named: "arrow-left-c"), for: .normal)
+        btnBack.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
+        btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
+        
+        let navigationBarButtons = [btnInfo, btnAttach, btnCompose, btnBack]
+
+        for button in navigationBarButtons {
+            NSLayoutConstraint.activate(
+                [
+                    (button?.widthAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!,
+                    (button?.heightAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!
+                ]
+            )
+        }
         
         let stackView = UIStackView(arrangedSubviews: [btnInfo, btnAttach, btnCompose])
         stackView.distribution = .equalSpacing
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = 15
+        stackView.spacing = Constants.navigationBarInteritemSpacing
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
-        
-        btnBack = UIButton(type: .system)
-        btnBack.setImage(UIImage(named: "arrow-left-c"), for: .normal)
-        btnBack.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
-        btnBack.frame = Constants.uiBarButtonItemFrame
-        btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
-        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnBack)
     }
     

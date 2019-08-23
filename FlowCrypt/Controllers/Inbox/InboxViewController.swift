@@ -93,42 +93,55 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
     }
     
     private func updateTableView() {
-        self.tableView.performBatchUpdates({
-            self.tableView.insertRows(at: (self.countData..<self.messages.count).map({ IndexPath(row: $0, section: 0) }), with: .none)
+        if countData == 0 {
             self.countData = self.messages.count
-        })
+            tableView.reloadData()
+        }
+        else {
+            self.tableView.performBatchUpdates({
+                self.tableView.insertRows(at: (self.countData..<self.messages.count).map({ IndexPath(row: $0, section: 0) }), with: .none)
+                self.countData = self.messages.count
+            })
+        }
     }
     
     // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     private func configureNavigationBar() {
+        
         btnInfo = UIButton(type: .system)
         btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
         btnInfo.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnInfo.frame = Constants.uiBarButtonItemFrame
         btnInfo.addTarget(self, action: #selector(btnInfoTap), for: .touchUpInside)
         
         btnSearch = UIButton(type: .system)
         btnSearch.setImage(UIImage(named: "search_icn")!, for: .normal)
         btnSearch.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnSearch.frame = Constants.uiBarButtonItemFrame
         btnSearch.addTarget(self, action: #selector(btnSearchTap), for: .touchUpInside)
+        
+        btnMenu = UIButton(type: .system)
+        btnMenu.setImage(UIImage(named: "menu_icn")!, for: .normal)
+        btnMenu.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
+        btnMenu.addTarget(self, action: #selector(btnMenuTap), for: .touchUpInside)
+        
+        let navigationBarButtons = [btnInfo, btnSearch, btnMenu]
+        
+        for button in navigationBarButtons {
+            NSLayoutConstraint.activate(
+                [
+                    (button?.widthAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!,
+                    (button?.heightAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!
+                ]
+            )
+        }
         
         let stackView = UIStackView(arrangedSubviews: [btnInfo, btnSearch])
         stackView.distribution = .equalSpacing
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = 15
+        stackView.spacing = Constants.navigationBarInteritemSpacing
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
-        
-        btnMenu = UIButton(type: .system)
-        btnMenu.setImage(UIImage(named: "menu_icn")!, for: .normal)
-        btnMenu.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
-        btnMenu.frame = Constants.uiBarButtonItemFrame
-        btnMenu.addTarget(self, action: #selector(btnMenuTap), for: .touchUpInside)
-        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnMenu)
-        
     }
     
     private func configureLoadMoreIndicator() {
@@ -160,9 +173,9 @@ final class InboxViewController: BaseViewController, MsgViewControllerDelegate {
         self.async({ [weak self] in
             guard let `self` = self else { return }
             self.messages = try await(Imap.instance.fetchLastMsgs(count: self.messages.count, folder: self.path))
-        }, then: { _ in
-            self.refreshControl.endRefreshing()
-            self.updateTableView()
+            }, then: { _ in
+                self.refreshControl.endRefreshing()
+                self.updateTableView()
         }, fail: { _ in
             self.refreshControl.endRefreshing()
         })
@@ -187,9 +200,9 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell: InboxTableViewCell = tableView.dequeueReusableCell(withIdentifier: "InboxTableViewCell", for: indexPath) as? InboxTableViewCell
-        else {
-            assertionFailure("Couldn't dequeueReusableCell cell \(self.debugDescription)")
-            return UITableViewCell()
+            else {
+                assertionFailure("Couldn't dequeueReusableCell cell \(self.debugDescription)")
+                return UITableViewCell()
         }
         cell.message = messages[indexPath.row]
         return cell
@@ -216,7 +229,7 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
 extension InboxViewController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
+        
         let y = scrollView.contentOffset.y
         let height = scrollView.contentSize.height - scrollView.bounds.height - 300
         

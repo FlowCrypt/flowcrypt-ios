@@ -66,48 +66,54 @@ class MsgViewController: BaseViewController {
 
     // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     private func configureNavigationBar() {
+        
         btnInfo = UIButton(type: .system)
         btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
         btnInfo.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnInfo.frame = Constants.uiBarButtonItemFrame
         btnInfo.addTarget(self, action: #selector(btnInfoTap), for: .touchUpInside)
         
         btnArchive = UIButton(type: .system)
         btnArchive.setImage(UIImage(named: "archive")!, for: .normal)
         btnArchive.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnArchive.frame = Constants.uiBarButtonItemFrame
         btnArchive.addTarget(self, action: #selector(btnArchiveTap), for: .touchUpInside)
 
         btnTrash = UIButton(type: .system)
         btnTrash.setImage(UIImage(named: "trash")!, for: .normal)
         btnTrash.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnTrash.frame = Constants.uiBarButtonItemFrame
         btnTrash.addTarget(self, action: #selector(btnTrashTap), for: .touchUpInside)
         
         btnMail = UIButton(type: .system)
         btnMail.setImage(UIImage(named: "mail")!, for: .normal)
         btnMail.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnMail.frame = Constants.uiBarButtonItemFrame
         btnMail.addTarget(self, action: #selector(btnMailTap), for: .touchUpInside)
+        
+        btnBack = UIButton(type: .system)
+        btnBack.setImage(UIImage(named: "arrow-left-c"), for: .normal)
+        btnBack.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
+        btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
+        
+        let navigationBarButtons = [btnInfo, btnArchive, btnTrash, btnMail, btnBack]
+        
+        for button in navigationBarButtons {
+            NSLayoutConstraint.activate(
+                [
+                    (button?.widthAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!,
+                    (button?.heightAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!
+                ]
+            )
+        }
         
         let stackView = UIStackView(arrangedSubviews: [btnInfo, btnArchive, btnTrash, btnMail])
         stackView.distribution = .equalSpacing
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = 15
+        stackView.spacing = Constants.navigationBarInteritemSpacing
         
         if self.path == "[Gmail]/Trash" {
             btnTrash.isHidden = true
         }
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
-        
-        btnBack = UIButton(type: .system)
-        btnBack.setImage(UIImage(named: "arrow-left-c"), for: .normal)
-        btnBack.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
-        btnBack.frame = Constants.uiBarButtonItemFrame
-        btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
-        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnBack)
     }
     
