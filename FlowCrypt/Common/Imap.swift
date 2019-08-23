@@ -342,7 +342,7 @@ class Imap {
     }
     
     public static func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
-        //        print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
+        // print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
     }
     
     struct FetchFoldersRes {
