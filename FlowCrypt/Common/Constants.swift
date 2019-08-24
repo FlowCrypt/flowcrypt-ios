@@ -16,13 +16,7 @@ enum Constants {
             static let delete = "Unable to delete message"
             static let archive = "Unable to archive message"
         }
-    }
-
-    static let inboxDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter
-    }()
+    } 
   
     static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
     static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
