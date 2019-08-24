@@ -30,7 +30,7 @@ final class Core {
     }
 
     public static func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey {
-        let r = try self.call("decryptKey", jsonDict: ["armored": armoredPrv, "passphrases": [passphrase]], data: nil)
+        let r = try call("decryptKey", jsonDict: ["armored": armoredPrv, "passphrases": [passphrase]], data: nil)
         return try r.json.decodeJson(as: CoreRes.DecryptKey.self)
     }
 
