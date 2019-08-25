@@ -31,7 +31,8 @@ class FlowCryptCoreTests: XCTestCase {
     func testGenerateKey() throws {
         let r = try Core.generateKey(passphrase: "some pass phrase test", variant: KeyVariant.curve25519, userIds: [UserId(email: "first@domain.com", name: "First")])
         XCTAssertNotNil(r.key.private);
-        XCTAssertEqual(r.key.isDecrypted, false);
+        XCTAssertEqual(r.key.isFullyDecrypted, false);
+        XCTAssertEqual(r.key.isFullyEncrypted, true);
         XCTAssertNotNil(r.key.private!.range(of: "-----BEGIN PGP PRIVATE KEY BLOCK-----"))
         XCTAssertNotNil(r.key.public.range(of: "-----BEGIN PGP PUBLIC KEY BLOCK-----"))
         XCTAssertEqual(r.key.ids.count, 2)
@@ -44,12 +45,14 @@ class FlowCryptCoreTests: XCTestCase {
         // k0 k is public
         let k0 = r.keyDetails[0]
         XCTAssertNil(k0.private);
-        XCTAssertNil(k0.isDecrypted);
+        XCTAssertNil(k0.isFullyDecrypted);
+        XCTAssertNil(k0.isFullyEncrypted);
         XCTAssertEqual(k0.ids[0].longid, TestData.k0.longid)
         // k1 is private
         let k1 = r.keyDetails[1]
         XCTAssertNotNil(k1.private);
-        XCTAssertEqual(k1.isDecrypted, false);
+        XCTAssertEqual(k1.isFullyDecrypted, false);
+        XCTAssertEqual(k1.isFullyEncrypted, true);
         XCTAssertEqual(k1.ids[0].longid, TestData.k1.longid)
         // todo - could test user ids
     }
@@ -59,7 +62,8 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertNotNil(decryptKeyRes.decryptedKey)
         // make sure indeed decrypted
         let parseKeyRes = try Core.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey!.data(using: .utf8)!)
-        XCTAssertEqual(parseKeyRes.keyDetails[0].isDecrypted, true)
+        XCTAssertEqual(parseKeyRes.keyDetails[0].isFullyDecrypted, true)
+        XCTAssertEqual(parseKeyRes.keyDetails[0].isFullyEncrypted, false)
     }
 
     func testDecryptKeyWithWrongPassPhrase() throws {

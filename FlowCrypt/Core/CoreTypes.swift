@@ -164,8 +164,9 @@ struct KeyId: Decodable {
 
 struct KeyDetails: Decodable {
     let `public`: String
-    let `private`: String?
-    let isDecrypted: Bool?
+    let `private`: String? // ony if this is prv
+    let isFullyDecrypted: Bool? // only if this is prv
+    let isFullyEncrypted: Bool? // only if this is prv
     let ids: [KeyId]
     // todo
     //    let users: [String]
