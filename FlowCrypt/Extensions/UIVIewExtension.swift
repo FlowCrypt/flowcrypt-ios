@@ -5,9 +5,10 @@
 import UIKit
 
 extension UIView {
+    // TODO: Anton - replace this
     func setViewBorder(_ borderWidth: CGFloat, borderColor: UIColor, cornerRadius: CGFloat) {
-        self.layer.borderWidth = borderWidth
-        self.layer.borderColor = borderColor.cgColor
-        self.layer.cornerRadius = cornerRadius
+        layer.borderWidth = borderWidth
+        layer.borderColor = borderColor.cgColor
+        layer.cornerRadius = cornerRadius
     }
 }

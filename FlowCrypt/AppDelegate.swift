@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let realm = try! Realm()
             let keys = realm.objects(KeyInfo.self)
             if keys.count > 0 {
-                nv = storyboard.instantiateViewController(withIdentifier: "MenuNavigationController") as! MyNavigationController
+                nv = storyboard.instantiateViewController(withIdentifier: "MenuNavigationController") as! SideMenuNavigationController
                 nv.viewControllers = [storyboard.instantiateViewController(withIdentifier: "InboxViewController") as! InboxViewController]
             } else {
                 nv.viewControllers = [storyboard.instantiateViewController(withIdentifier: "RecoverViewController") as! RecoverViewController]

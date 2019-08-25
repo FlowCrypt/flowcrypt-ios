@@ -4,7 +4,7 @@
 
 import RealmSwift
 
-class KeyInfo: Object {
+final class KeyInfo: Object {
 
     @objc dynamic var `private`: String = ""
     @objc dynamic var `public`: String = ""
@@ -12,14 +12,15 @@ class KeyInfo: Object {
     @objc dynamic var passphrase: String = ""
     @objc dynamic var source: String = ""
 
-    convenience init(_ keyDetails: KeyDetails, passphrase: String, source: String) {
+    convenience init(_ keyDetails: KeyDetails, passphrase: String, source: String) throws {
         self.init()
         guard let privateKey = keyDetails.private else {
-            assertionFailure("someone tries to pass a public key - that would be a programming error")
-            // TODO: - Maybe better to show some alert or message to user without app crashing.
-            // Or crash it with some logs to crashlytic or loger.
-            _ = keyDetails.private! // crash the app
-            return
+            assertionFailure("storing pubkey as private") // crash tests
+            throw Errors.programmingError("storing pubkey as private")
+        }
+        guard keyDetails.isFullyEncrypted! else { // already checked private above, must be set, else crash
+            assertionFailure("Will not store Private Key that is not fully encrypted") // crash tests
+            throw Errors.valueError("Will not store Private Key that is not fully encrypted")
         }
         self.private = privateKey
         self.public = keyDetails.public

@@ -7,8 +7,11 @@ import MBProgressHUD
 import RealmSwift
 import Promises
 
-class RecoverViewController: BaseViewController, UITextFieldDelegate {
-
+final class RecoverViewController: BaseViewController, UITextFieldDelegate {
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/37
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/40
+    
     @IBOutlet weak var passPhaseTextField: UITextField!
     @IBOutlet weak var btnLoadAccount: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
@@ -130,7 +133,7 @@ class RecoverViewController: BaseViewController, UITextFieldDelegate {
             let realm = try! Realm()
             try! realm.write {
                 for k in matchingBackups {
-                    realm.add(KeyInfo(k, passphrase: entered_pass_phrase, source: "backup"))
+                    realm.add(try! KeyInfo(k, passphrase: entered_pass_phrase, source: "backup"))
                 }
             }
             self.performSegue(withIdentifier: "InboxSegue", sender: nil)

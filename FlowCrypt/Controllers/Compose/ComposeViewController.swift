@@ -7,8 +7,11 @@ import MBProgressHUD
 import Promises
 import RealmSwift
 
-class ComposeViewController: BaseViewController {
-    
+final class ComposeViewController: BaseViewController {
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/37
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
+    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/40
+
     @IBOutlet var txtRecipient: UITextField!
     @IBOutlet var txtSubject: UITextField!
     @IBOutlet var txtMessage: UITextView!
@@ -86,7 +89,6 @@ class ComposeViewController: BaseViewController {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
 
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
     private func configureNavigationBar() {
         
         btnInfo = UIButton(type: .system)
@@ -111,21 +113,21 @@ class ComposeViewController: BaseViewController {
         
         let navigationBarButtons = [btnInfo, btnAttach, btnCompose, btnBack]
 
-        for button in navigationBarButtons {
-            NSLayoutConstraint.activate(
-                [
-                    (button?.widthAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!,
-                    (button?.heightAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!
-                ]
-            )
-        }
-        
+//        for button in navigationBarButtons {
+//            NSLayoutConstraint.activate(
+//                [
+//                    (button?.widthAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!,
+//                    (button?.heightAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!
+//                ]
+//            )
+//        }
+
         let stackView = UIStackView(arrangedSubviews: [btnInfo, btnAttach, btnCompose])
         stackView.distribution = .equalSpacing
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = Constants.navigationBarInteritemSpacing
-        
+//        stackView.spacing = Constants.navigationBarInteritemSpacing
+
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnBack)
     }

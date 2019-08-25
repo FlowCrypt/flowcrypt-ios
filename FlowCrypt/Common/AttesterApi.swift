@@ -9,7 +9,7 @@ struct PubkeySearchResult {
     let armored: String?
 }
 
-class AttesterApi {
+final class AttesterApi {
 
     private static let url = "https://flowcrypt.com/attester/"
 
