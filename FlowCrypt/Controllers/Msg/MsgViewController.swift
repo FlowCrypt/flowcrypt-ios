@@ -141,18 +141,18 @@ extension MsgViewController {
     }
 
     private func handleDecryptedMsg(_ decrypted: CoreRes.ParseDecryptMsg) {
-        let errorBlocks = decrypted.blocks.compactMap { $0.decryptErr }
-
-        if errorBlocks.isEmpty {
+        let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
+        if let decryptErrBlock = decryptErrBlocks.first {
+            let rawMsg = decryptErrBlock.content
+            let err = decryptErrBlock.decryptErr?.error
+            renderMsgBody(
+                "Dould not decrypt message:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)",
+                color: .red
+            )
+        } else {
             renderMsgBody(
                 decrypted.text,
                 color: decrypted.replyType == CoreRes.ReplyType.encrypted ? Constants.green : UIColor.black
-            )
-        } else if let error = errorBlocks.first?.error {
-            let text = decrypted.blocks.first?.content ?? ""
-            renderMsgBody(
-                "Dould not decrypt message:\n\(error.type)\n\n\(error.message)\n\n\(text)",
-                color: .red
             )
         }
         markAsReadIfNotAlreadyMarked()
