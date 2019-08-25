@@ -6,7 +6,7 @@ import UIKit
 import GoogleSignIn
 import Promises
 
-final class SignInViewController: UIViewController {
+final class SignInViewController: BaseViewController {
     // TODO: Inject as a dependency
     private let googleAPI = GoogleApi.instance
 
@@ -37,8 +37,9 @@ final class SignInViewController: UIViewController {
                 self?.hideSpinner()
                 self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
             }
-            .catch(on: .main) { [weak self] _ in
+            .catch(on: .main) { [weak self] error in
                 self?.hideSpinner()
+                self?.showErrAlert("Failed to sign in\n\n\(error)")
             }
     }
 
