@@ -30,7 +30,6 @@ final class InboxViewController: UIViewController {
     @IBOutlet weak var lblEmptyMessage: UILabel!
     @IBOutlet weak var btnCompose: UIButton!
 
-
     private var messages = [MCOIMAPMessage]() {
         didSet {
             lblEmptyMessage.isHidden = messages.count > 0
@@ -39,9 +38,9 @@ final class InboxViewController: UIViewController {
         }
     }
     private var viewModel = InboxViewModel.empty
+
     private let refreshControl = UIRefreshControl()
     private let loadMoreActivityIndicator = UIActivityIndicatorView(style: .gray)
-
     private var loadMoreInPosition = false
     private var canLoadMore = true {
         didSet {
@@ -64,12 +63,6 @@ final class InboxViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        sideMenuController()?.sideMenu?.allowPanGesture = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        sideMenuController()?.sideMenu?.allowPanGesture = false
-        tableView.reloadData()
     }
 }
 
@@ -100,10 +93,6 @@ extension InboxViewController {
                 NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
             ]
         )
-
-        navigationItem.leftBarButtonItem = NavigationBarActionButton(UIImage(named: "menu_icn")) { [weak self] in
-            self?.toggleSideMenuView()
-        }
     }
 }
 

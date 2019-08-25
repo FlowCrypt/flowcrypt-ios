@@ -18,16 +18,24 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
             assertionFailure("Can't find view controller with identifier")
             return
         }
-        sideMenu = ENSideMenu(sourceView: view, menuViewController: sideMenuVC, menuPosition: .left)
-        sideMenu?.bouncingEnabled = false
-        sideMenu?.menuWidth = UIScreen.main.bounds.size.width - Constants.menuOffset
-        sideMenu?.delegate = self
+        sideMenu = ENSideMenu(sourceView: view, menuViewController: sideMenuVC, menuPosition: .left).then {
+            $0.bouncingEnabled = false
+            $0.menuWidth = UIScreen.main.bounds.size.width - Constants.menuOffset
+            $0.delegate = self
+        }
+
+        navigationItem.backBarButtonItem = UIBarButtonItem()
+            .then { $0.title = "" }
+
+        interactivePopGestureRecognizer?.delegate = self
+        delegate = self
     }
 }
 
 extension SideMenuNavigationController: ENSideMenuDelegate {
     func sideMenuShouldOpenSideMenu() -> Bool {
-        return true
+        guard let top = topViewController else { return false }
+        return viewControllers.firstIndex(of: top) == 0
     }
 
     func sideMenuWillOpen() {
@@ -70,5 +78,44 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
 
     @objc private func hideMenu() {
         hideSideMenuView()
+    }
+}
+
+extension SideMenuNavigationController: UINavigationControllerDelegate {
+
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        viewController.navigationItem.hidesBackButton = true
+    }
+
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        let navigationButton: UIBarButtonItem
+        switch viewControllers.firstIndex(of: viewController) {
+        case 0:
+            sideMenu?.allowPanGesture = true
+            sideMenu?.allowLeftSwipe = true
+            interactivePopGestureRecognizer?.isEnabled = false
+            navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn")) { [weak self] in
+                self?.toggleSideMenuView()
+            }
+        default:
+            sideMenu?.allowPanGesture = false
+            sideMenu?.allowLeftSwipe = false
+            interactivePopGestureRecognizer?.isEnabled = true
+            navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
+                self?.popViewController(animated: true)
+            }
+        }
+
+        viewController.navigationItem.leftBarButtonItem = navigationButton
+    }
+}
+
+extension SideMenuNavigationController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == interactivePopGestureRecognizer {
+            guard let top = topViewController else { return false }
+            return viewControllers.firstIndex(of: top) != 0
+        }
+        return true
     }
 }

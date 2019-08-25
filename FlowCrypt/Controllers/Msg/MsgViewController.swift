@@ -101,9 +101,6 @@ final class MsgViewController: UIViewController {
             : [infoInput, archiveInput, trashInput, mailInput]
 
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
-        navigationItem.leftBarButtonItem = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
     }
 
     private func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {

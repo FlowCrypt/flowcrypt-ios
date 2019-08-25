@@ -220,7 +220,18 @@ final class ComposeViewController: BaseViewController {
     }
 }
 
-extension ComposeViewController: UITextViewDelegate {
+// MARK - Handle actions
+extension ComposeViewController {
+
+}
+
+// MARK - Setup UI
+extension ComposeViewController {
+
+}
+
+// MARK - UITextViewDelegate, UITextFieldDelegate
+extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == Language.your_message || textView.text == Language.message_placeholder {
@@ -235,9 +246,6 @@ extension ComposeViewController: UITextViewDelegate {
             self.txtMessage.text = Language.your_message
         }
     }
-}
-
-extension ComposeViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == self.txtRecipient {
