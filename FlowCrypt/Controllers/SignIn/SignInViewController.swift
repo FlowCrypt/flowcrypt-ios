@@ -6,7 +6,9 @@ import UIKit
 import GoogleSignIn
 import Promises
 
-class SignInViewController: BaseViewController {
+final class SignInViewController: BaseViewController {
+    // TODO: Inject as a dependency
+    private let googleAPI = GoogleApi.instance
 
     @IBOutlet weak var signInWithGmailButton: UIButton!
     @IBOutlet weak var signInWithOutlookButton: UIButton!
@@ -19,19 +21,26 @@ class SignInViewController: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.isNavigationBarHidden = false
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
     // MARK: - Events
     @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
-        async({ try await(GoogleApi.instance.signIn(viewController: self)) }, then: { [weak self] user in
-            self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
-        })
+        showSpinner()
+        googleAPI.signIn(viewController: self)
+            .then(on: .main) { [weak self] _ in
+                self?.hideSpinner()
+                self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.hideSpinner()
+                self?.showErrAlert("Failed to sign in\n\n\(error)")
+            }
     }
 
     @IBAction func signInWithOutlookButtonPressed(_ sender: Any) {
@@ -53,9 +62,9 @@ class SignInViewController: BaseViewController {
                 isEmail: false
             )
             print(decrypted)
-            print("decrypted \(start.millisecondsSince())")
+            print("decrypted \(start.millisecondsSince)")
 //            print("text: \(decrypted.text)")
-        } catch Core.Error.exception {
+        } catch CoreError.exception {
             print("catch exception")
 //            print(msg)
         } catch {

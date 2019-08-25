@@ -4,7 +4,7 @@
 
 import UIKit
 
-class InboxTableViewCell: UITableViewCell {
+final class InboxTableViewCell: UITableViewCell {
 
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!

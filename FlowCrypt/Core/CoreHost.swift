@@ -27,7 +27,7 @@ import CommonCrypto // for hashing
 
 var timers = [String: Timer]()
 
-class CoreHost: NSObject, CoreHostExports {
+final class CoreHost: NSObject, CoreHostExports {
 
     // todo - things to look at for optimisation:
     //  -> a) reading rsa4096 prv key (just openpgp.key.readArmored(...)) takes 70ms. It should take about 10 ms. Could dearmor it in swift, return bytes
@@ -128,7 +128,7 @@ class CoreHost: NSObject, CoreHostExports {
         // todo - remove from timers by uuid, could cause possible memory leak
     }
 
-    internal func getHashAlgo(name: String) throws -> HashAlgo {
+    func getHashAlgo(name: String) throws -> HashAlgo {
         switch name {
             case "md5": return HashAlgo(digest: CC_MD5, length: CC_MD5_DIGEST_LENGTH)
             case "sha1": return HashAlgo(digest: CC_SHA1, length: CC_SHA1_DIGEST_LENGTH)
@@ -140,7 +140,7 @@ class CoreHost: NSObject, CoreHostExports {
         }
     }
 
-    internal struct HashAlgo {
+    struct HashAlgo {
         let digest: (_ data: UnsafeRawPointer?, _ len: CC_LONG, _ md: UnsafeMutablePointer<UInt8>?) -> UnsafeMutablePointer<UInt8>?
         let length: Int32
     }

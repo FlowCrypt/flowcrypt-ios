@@ -25,7 +25,7 @@ extension URLSession {
                 let res = response as? HTTPURLResponse
                 let status = res?.statusCode ?? Constants.Global.generalError
 
-                print("URLSession.call status:\(status) ms:\(start.millisecondsSince()) \(urlRequest.url?.absoluteString ?? "??")")
+                print("URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlRequest.url?.absoluteString ?? "??")")
 
                 let validStatusCode = 200...299
 

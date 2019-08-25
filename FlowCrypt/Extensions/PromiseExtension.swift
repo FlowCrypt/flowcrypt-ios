@@ -13,7 +13,7 @@ struct VOID {
 extension Promise {
     
     // this helps us to do a tiny bit less type defining when using promises
-    public static func valueReturning<T>(_ work: @escaping () throws -> T) -> Promise<T> {
+    static func valueReturning<T>(_ work: @escaping () throws -> T) -> Promise<T> {
         return Promise<T> { () -> T in
             return try work()
         }

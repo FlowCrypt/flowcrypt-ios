@@ -27,7 +27,7 @@ struct CoreRes {
     }
 
     struct ParseKeys: Decodable {
-        internal enum Format: String, Decodable {
+        enum Format: String, Decodable {
             case binary;
             case armored; case unknown;
         }
@@ -44,14 +44,14 @@ struct CoreRes {
     }
 
     struct Error: Decodable {
-        internal struct ErrorWithOptionalStack: Decodable {
+        struct ErrorWithOptionalStack: Decodable {
             let message: String
             let stack: String?
         }
         let error: ErrorWithOptionalStack
     }
 
-    internal enum ReplyType: String, Decodable {
+    enum ReplyType: String, Decodable {
         case encrypted;
         case plain;
     }
@@ -110,25 +110,25 @@ struct MsgBlock: Decodable {
 
     // let signature: String? // possibly not neded in Swift
 
-    internal struct DecryptErr: Decodable {
+    struct DecryptErr: Decodable {
         let error: Error
         let longids: Longids
         let content: String?
         let isEncrypted: Bool?
 
-        internal struct Error: Decodable {
+        struct Error: Decodable {
             let type: ErrorType
             let message: String
         }
 
-        internal struct Longids: Decodable {
+        struct Longids: Decodable {
             let message: [String]
             let matching: [String]
             let chosen: [String]
             let needPassphrase: [String]
         }
 
-        internal enum ErrorType: String, Decodable {
+        enum ErrorType: String, Decodable {
             case keyMismatch = "key_mismatch"
             case usePassword = "use_password"
             case wrongPwd = "wrong_password"
@@ -140,7 +140,7 @@ struct MsgBlock: Decodable {
         }
     }
 
-    internal enum BlockType: String, Decodable {
+    enum BlockType: String, Decodable {
         case plainHtml; // all content blocks, regardless if encrypted or not, formatted as a plainHtml (todo - rename this one day to formattedHtml)
         case publicKey;
         case privateKey;
@@ -155,7 +155,7 @@ struct MsgBlock: Decodable {
     }
 }
 
-internal struct KeyId: Decodable {
+struct KeyId: Decodable {
     let shortid: String;
     let longid: String;
     let fingerprint: String;

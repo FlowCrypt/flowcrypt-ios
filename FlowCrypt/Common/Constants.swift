@@ -8,9 +8,16 @@ enum Constants {
     enum Global {
         static let generalError = -1
     }
-    // TODO: Anton - Use Themes instead of Constants
-    static let NUMBER_OF_MESSAGES_TO_LOAD = 20
 
+    // TODO: update texts on failed archive/delete operation.
+    // Also better to add localization for application ASAP.
+    enum ErrorTexts {
+        enum Message {
+            static let delete = "Unable to delete message"
+            static let archive = "Unable to archive message"
+        }
+    } 
+  
     static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
     static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
     static let unreadDateFont = UIFont.boldSystemFont(ofSize: 17.0)
@@ -60,7 +67,7 @@ struct Language {
     static let email_archived = "Email archived"
     static let encrypted_reply_sent = "Reply successfully sent"
     static let could_not_open_message = "Could not open message"
-    static let failed_to_load_messages = "Failed to load messages"
+    static let failedToLoadMessages = "Failed to load messages"
     static let no_pgp = "Recipient doesn't seem to have encryption set up"
     static let your_message = "Your message"
     static let message_placeholder = "Compose Secure Message"
