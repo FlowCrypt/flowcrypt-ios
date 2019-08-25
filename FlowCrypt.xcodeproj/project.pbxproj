@@ -39,7 +39,6 @@
 		32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
-		9FD22A15230F295B005067A6 /* DataBaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A14230F295B005067A6 /* DataBaseService.swift */; };
 		9FD22A18230F2E95005067A6 /* MailDestinations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A17230F2E95005067A6 /* MailDestinations.swift */; };
 		9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
 		9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
@@ -126,7 +125,6 @@
 		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		9FD22A14230F295B005067A6 /* DataBaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseService.swift; sourceTree = "<group>"; };
 		9FD22A17230F2E95005067A6 /* MailDestinations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailDestinations.swift; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
@@ -279,7 +277,6 @@
 		9FD22A16230F2E5B005067A6 /* Core Services */ = {
 			isa = PBXGroup;
 			children = (
-				9FD22A14230F295B005067A6 /* DataBaseService.swift */,
 				9FD22A17230F2E95005067A6 /* MailDestinations.swift */,
 			);
 			path = "Core Services";
@@ -698,7 +695,6 @@
 				C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
 				C132B9E91EC4484B00763715 /* InboxTableViewCell.swift in Sources */,
-				9FD22A15230F295B005067A6 /* DataBaseService.swift in Sources */,
 				04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */,
 				32DCA1339D6857686ABD3FC4 /* UIVIewExtension.swift in Sources */,
 				32DCA5577770FF2394018FA9 /* AttesterApi.swift in Sources */,

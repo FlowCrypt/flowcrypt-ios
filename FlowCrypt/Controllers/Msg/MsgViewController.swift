@@ -54,7 +54,6 @@ final class MsgViewController: UIViewController {
 
     // TODO: Inject as a dependency
     private let imap = Imap.instance
-    private let db: DataBaseService = RealmDataBaseService.shared
     private var input: MsgViewController.Input?
 
     weak var delegate: MsgViewControllerDelegate?
@@ -121,14 +120,19 @@ extension MsgViewController {
         guard let input = input else { return }
         showSpinner(Language.loading, isUserInteractionEnabled: true)
         imap.fetchMsg(message: input.objMessage, folder: input.path)
-            .then { [weak self] data -> Promise<CoreRes.ParseDecryptMsg> in
-                guard let self = self else { return Promise(ImapError.general) }
+            .then { [weak self] data in
+                guard let self = self else { throw ImapError.general }
                 self.input?.bodyMessage = data
-                return self.db.save(message: data, isEmail: true)
-            }
-            .then(on: .main) { [weak self] message in
-                guard let self = self else { return }
-                self.handleDecryptedMessage(message)
+                let realm = try Realm()
+                let decrypted = try Core.parseDecryptMsg(
+                    encrypted: data,
+                    keys: PrvKeyInfo.from(realm: realm.objects(KeyInfo.self)),
+                    msgPwd: nil,
+                    isEmail: true
+                )
+                DispatchQueue.main.async {
+                    self.handleDecryptedMsg(decrypted)
+                }
             }
             .catch(on: .main) { [weak self] error in
                 self?.hideSpinner()
@@ -136,7 +140,7 @@ extension MsgViewController {
             }
     }
 
-    private func handleDecryptedMessage(_ decrypted: CoreRes.ParseDecryptMsg) {
+    private func handleDecryptedMsg(_ decrypted: CoreRes.ParseDecryptMsg) {
         let errorBlocks = decrypted.blocks.compactMap { $0.decryptErr }
 
         if errorBlocks.isEmpty {
@@ -180,12 +184,10 @@ extension MsgViewController {
 // MARK: - Handle Actions
 extension MsgViewController {
     @objc private func handleInfoTap() {
-        #warning("ToDo")
         showToast("Info not implemented yet")
     }
 
     @objc private func handleMailTap() {
-        #warning("ToDo")
         showToast("Not implemented yet")
     }
 
