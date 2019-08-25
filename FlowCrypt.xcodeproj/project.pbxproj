@@ -39,7 +39,6 @@
 		32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
-		9FD22A18230F2E95005067A6 /* MailDestinations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A17230F2E95005067A6 /* MailDestinations.swift */; };
 		9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
 		9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */; };
@@ -125,7 +124,6 @@
 		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		9FD22A17230F2E95005067A6 /* MailDestinations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailDestinations.swift; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
@@ -229,7 +227,6 @@
 		32DCA376D595968F13A3347A /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				9FD22A16230F2E5B005067A6 /* Core Services */,
 				32DCAC732B988D9704658812 /* CoreTypes.swift */,
 				32DCA0C3D34A69851A238E87 /* Core.swift */,
 				32DCACB22E895C2500A99350 /* CoreHost.swift */,
@@ -272,14 +269,6 @@
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		9FD22A16230F2E5B005067A6 /* Core Services */ = {
-			isa = PBXGroup;
-			children = (
-				9FD22A17230F2E95005067A6 /* MailDestinations.swift */,
-			);
-			path = "Core Services";
 			sourceTree = "<group>";
 		};
 		9FD22A1D230FEEC8005067A6 /* Views */ = {
@@ -716,7 +705,6 @@
 				32DCA64A309E3C34D8C9039E /* DispatchTimeExtension.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */,
-				9FD22A18230F2E95005067A6 /* MailDestinations.swift in Sources */,
 				32DCAAD97FDEB229EA327DB5 /* SecPaddingExtension.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
