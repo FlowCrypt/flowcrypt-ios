@@ -133,7 +133,7 @@ final class RecoverViewController: BaseViewController, UITextFieldDelegate {
             let realm = try! Realm()
             try! realm.write {
                 for k in matchingBackups {
-                    realm.add(KeyInfo(k, passphrase: entered_pass_phrase, source: "backup"))
+                    realm.add(try! KeyInfo(k, passphrase: entered_pass_phrase, source: "backup"))
                 }
             }
             self.performSegue(withIdentifier: "InboxSegue", sender: nil)
