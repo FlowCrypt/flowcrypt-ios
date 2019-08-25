@@ -161,10 +161,12 @@ extension MsgViewController {
 
     private func markAsReadIfNotAlreadyMarked() {
         guard let input = input else { return }
-        guard input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return }
-
+        guard !input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return } // only proceed if not already marked as read
         input.objMessage.flags.formUnion(MCOMessageFlag.seen)
-        imap.markAsRead(message: input.objMessage, folder: input.path) // async call not awaited on purpose
+        imap.markAsRead(message: input.objMessage, folder: input.path)
+            .catch(on: .main) { [weak self] error in
+                self?.showToast("Could not mark message as read: \(error)")
+            }
     }
 
     private func handleSuccesMessage(operation: MessageAction) {
