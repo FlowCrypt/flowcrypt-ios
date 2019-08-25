@@ -331,3 +331,15 @@ struct FoldersContext {
     let folders: [MCOIMAPFolder]
     let menu: [String]
 }
+
+enum MailDestination {
+    enum Gmail {
+        case trash
+
+        var path: String {
+            switch self {
+            case .trash: return "[Gmail]/Trash"
+            }
+        }
+    }
+}
