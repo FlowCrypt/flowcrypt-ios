@@ -25,6 +25,16 @@ PODS:
   - Realm/Headers (3.17.1)
   - RealmSwift (3.17.1):
     - Realm (= 3.17.1)
+  - RxBlocking (5.0.0):
+    - RxSwift (~> 5)
+  - RxCocoa (5.0.0):
+    - RxRelay (~> 5)
+    - RxSwift (~> 5)
+  - RxRelay (5.0.0):
+    - RxSwift (~> 5)
+  - RxSwift (5.0.0)
+  - RxTest (5.0.0):
+    - RxSwift (~> 5)
   - SwiftLint (0.33.1)
   - SwiftyRSA (1.5.0):
     - SwiftyRSA/ObjC (= 1.5.0)
@@ -40,6 +50,10 @@ DEPENDENCIES:
   - MBProgressHUD
   - PromisesSwift
   - RealmSwift
+  - RxBlocking (~> 5)
+  - RxCocoa (~> 5)
+  - RxSwift (~> 5)
+  - RxTest (~> 5)
   - SwiftLint
   - SwiftyRSA
   - Toast (~> 4.0.0)
@@ -58,6 +72,11 @@ SPEC REPOS:
     - PromisesSwift
     - Realm
     - RealmSwift
+    - RxBlocking
+    - RxCocoa
+    - RxRelay
+    - RxSwift
+    - RxTest
     - SwiftLint
     - SwiftyRSA
     - Toast
@@ -75,10 +94,15 @@ SPEC CHECKSUMS:
   PromisesSwift: 37bad6f4daddb02f7c9c531efe91e8b21c13ee2f
   Realm: c204f1a890f07dea43b14132a6aad118c054b8f2
   RealmSwift: 4d3c9233544b9cd08a8913e0872b9038eb99b054
+  RxBlocking: c67185d26498ea3cbe3e121917c3c16739e43123
+  RxCocoa: fcf32050ac00d801f34a7f71d5e8e7f23026dcd8
+  RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
+  RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
+  RxTest: 4349afe98f564e0a9bc19063368904622d17d49a
   SwiftLint: 9fc1143bbacec37f94994a7d0d2a85b2154b6294
   SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: 0dcca281ba78328c84bd78a6cf836292823e6cb0
+PODFILE CHECKSUM: 1a7c36a1160cde91699c15d1850966f87e4313a1
 
 COCOAPODS: 1.7.5
