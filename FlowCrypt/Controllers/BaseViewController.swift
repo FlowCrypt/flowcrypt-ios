@@ -26,11 +26,7 @@ class BaseViewController: UIViewController {
         }
     }
 
-    func setPadding(textField: UITextField) {
-        let v = UIView(frame: CGRect(x: 0, y: 0, width: 7, height: textField.frame.size.height))
-        textField.leftView = v
-        textField.leftViewMode = .always
-    }
+
 
     func async<T>(_ work: @escaping () throws -> T, then thenOnMain: @escaping (T) throws -> Void, fail errHandlerOnMain: @escaping (Error) -> Void) {
         Promise<Void> { _, _ in
@@ -56,8 +52,7 @@ class BaseViewController: UIViewController {
     }
 
 }
-
-
+ 
 extension UIViewController {
     func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
         let message = "\(message)\n\n \(error)"

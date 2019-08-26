@@ -8,7 +8,7 @@ import Promises
 
 final class SignInViewController: BaseViewController {
     // TODO: Inject as a dependency
-    private let googleAPI = GoogleApi.instance
+    private let googleAPI = GoogleApi.shared
 
     @IBOutlet weak var signInWithGmailButton: UIButton!
     @IBOutlet weak var signInWithOutlookButton: UIButton!

@@ -10,9 +10,7 @@ enum ImapError: Error {
 }
 
 final class Imap {
-    private init() { }
-
-    static let instance = Imap()
+    static let instance = Imap(googleApi: GoogleApi.shared)
     
     var totalNumberOfInboxMsgs: Int32 = 0
     var messages = [MCOIMAPMessage]()
@@ -20,10 +18,14 @@ final class Imap {
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
 
-    struct EmptyError: Error {}
     private typealias ReqKind = MCOIMAPMessagesRequestKind
     private typealias Err = MCOErrorCode
     private var lastErr: [String: Err] = [:]
+    private let googleApi: GoogleApi
+
+    private init(googleApi: GoogleApi) {
+        self.googleApi = googleApi
+    }
 
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession? {
         if imapSess == nil || newAccessToken != nil {
@@ -33,9 +35,9 @@ final class Imap {
             imapSess.port = 993
             imapSess.connectionType = MCOConnectionType.TLS
             imapSess.authType = MCOAuthType.xoAuth2
-            imapSess.username = GoogleApi.instance.getEmail()
+            imapSess.username = googleApi.getEmail()
             imapSess.password = nil
-            imapSess.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
+            imapSess.oAuth2Token = newAccessToken ?? googleApi.getAccessToken()
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.connectionType = MCOConnectionType.TLS
             self.imapSess = imapSess
@@ -50,6 +52,7 @@ final class Imap {
         return imapSess
     }
 
+    @discardableResult
     func getSmtpSess(newAccessToken: String? = nil) -> MCOSMTPSession? {
         if smtpSess == nil || newAccessToken != nil {
             print("SMTP: creating a new session")
@@ -58,9 +61,9 @@ final class Imap {
             smtpSess.port = 465
             smtpSess.connectionType = MCOConnectionType.TLS
             smtpSess.authType = MCOAuthType.xoAuth2
-            smtpSess.username = GoogleApi.instance.getEmail()
+            smtpSess.username = googleApi.getEmail()
             smtpSess.password = nil
-            smtpSess.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
+            smtpSess.oAuth2Token = newAccessToken ?? googleApi.getAccessToken()
             self.smtpSess = smtpSess
         }
         return smtpSess
@@ -100,7 +103,7 @@ final class Imap {
         self.messages.removeAll()
         self.totalNumberOfInboxMsgs = folderInfo.messageCount
         var numberOfMsgsToLoad = min(self.totalNumberOfInboxMsgs, Int32(count))
-        guard numberOfMsgsToLoad != 0 else { return [] }
+        guard numberOfMsgsToLoad > 0 else { return [] }
         let fetchRange: MCORange
         if (!didTotalNumberOfMsgsChange && self.messages.count > 0) {
             // if total number of messages did not change since last fetch, assume nothing was deleted since our last fetch and fetch what we don't have
@@ -109,6 +112,24 @@ final class Imap {
         } else { // else fetch the last N messages
             fetchRange = MCORangeMake(UInt64(self.totalNumberOfInboxMsgs - (numberOfMsgsToLoad - 1)), (UInt64(numberOfMsgsToLoad - 1)))
         }
+        return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
+    }}
+
+    func fetchMoreMessages(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> {
+        return Promise<[MCOIMAPMessage]>.valueReturning { [weak self] in
+            guard let self = self else { return [] }
+            let kind = ReqKind.headers.rawValue
+                | ReqKind.structure.rawValue
+                | ReqKind.internalDate.rawValue
+                | ReqKind.headerSubject.rawValue
+                | ReqKind.flags.rawValue
+
+        let folderInfo = try await(self.fetchFolderInfo(folder))
+        self.totalNumberOfInboxMsgs = folderInfo.messageCount
+        let positionOfLastLoadedMsg = self.totalNumberOfInboxMsgs - Int32(self.messages.count)
+        let numberOfMsgsToLoad = min(positionOfLastLoadedMsg, Int32(count))
+        guard numberOfMsgsToLoad > 0 else { return self.messages }
+        let fetchRange: MCORange = MCORangeMake(UInt64(positionOfLastLoadedMsg), UInt64(numberOfMsgsToLoad - 1))
         return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
     }}
 
@@ -125,7 +146,6 @@ final class Imap {
             var folders = [MCOIMAPFolder]()
             for f in arr {
                 guard let folder = f as? MCOIMAPFolder else { return }
-
                 let path = folder.path.replacingOccurrences(of: "[Gmail]", with: "").trimLeadingSlash
                 if !path.isEmpty {
                     menu.append(path)
@@ -155,7 +175,7 @@ final class Imap {
                 self.log("fetchMsgs", error: error, res: nil, start: start)
                 guard self.retryAuthErrorNotNeeded("fetchMsgs", error, resolve, reject, retry: { self.fetchMsgs(folder: folder, kind: kind, uids: uids) }) else { return }
                 let messages = msgs as? [MCOIMAPMessage]
-
+                
                 if let messages = messages {
                     resolve(messages)
                 } else {
@@ -293,7 +313,7 @@ final class Imap {
             // also checking against lastErr below to avoid infinite retry loop
             if let e = err as NSError?, e.code == Err.authentication.rawValue, self.lastErr[op] != Err.authentication {
                 Imap.debug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
-                GoogleApi.instance.renewAccessToken().then { accessToken in
+                self.googleApi.renewAccessToken().then { accessToken in
                     Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
                     let _ = self.getImapSess(newAccessToken: accessToken) // use the new token
                     let _ = self.getSmtpSess(newAccessToken: accessToken) // use the new token

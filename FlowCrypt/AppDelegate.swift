@@ -10,7 +10,9 @@ import IQKeyboardManagerSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
+
+    private let googleApi = GoogleApi.shared
+
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -20,10 +22,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Core.startInBackgroundIfNotAlreadyRunning()
 
         self.window = UIWindow(frame: UIScreen.main.bounds)
-        GoogleApi.instance.setup()
+        googleApi.setup()
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         var nv = storyboard.instantiateViewController(withIdentifier: "MainNavigationController") as! UINavigationController
-        if GoogleApi.instance.isGoogleSessionValid() == true {
+        if googleApi.isGoogleSessionValid() == true {
             let realm = try! Realm()
             let keys = realm.objects(KeyInfo.self)
             if keys.count > 0 {

@@ -8,7 +8,7 @@ enum Constants {
     enum Global {
         static let generalError = -1
     }
-
+    
     // TODO: update texts on failed archive/delete operation.
     // Also better to add localization for application ASAP.
     enum ErrorTexts {
@@ -17,7 +17,7 @@ enum Constants {
             static let archive = "Unable to archive message"
         }
     } 
-  
+
     static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
     static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
     static let unreadDateFont = UIFont.boldSystemFont(ofSize: 17.0)
@@ -27,10 +27,10 @@ enum Constants {
     static let unreadDateTextColor = UIColor(red: 33.0 / 255.0, green: 157.0 / 255.0, blue: 5.0 / 255.0, alpha: 1.0)
     static let readDateTextColor = UIColor.lightGray
     static let green = UIColor(red:0.19, green:0.64, blue:0.09, alpha:1.0)    
-    static let uiBarButtonItemFrame = CGRect(x: 0, y: 0, width: 44, height: 44)
-    static let rightUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
-    
-    static let leftUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: -25, bottom: 2, right: 0)
+
+
+    static let rightUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: -25)
+    static let leftUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: -25, bottom: 2, right: 0)    
     
     static func convertDate(date: Date) -> String {
         let dateFormater = DateFormatter()
@@ -56,19 +56,12 @@ struct EmailConstant {
 
 struct Language {
     static let loading = "Loading"
-    static let sending = "Sending"
-    static let enter_recipient = "Enter recipient"
-    static let enter_subject = "Enter subject"
-    static let enter_message = "Enter secure message"
     static let enter_pass_phrase = "Enter pass phrase"
-    static let encrypted_message_sent = "Encrypted message sent"
     static let moved_to_trash = "Email moved to Trash"
     static let email_deleted = "Email deleted"
     static let email_archived = "Email archived"
-    static let encrypted_reply_sent = "Reply successfully sent"
     static let could_not_open_message = "Could not open message"
     static let failedToLoadMessages = "Failed to load messages"
-    static let no_pgp = "Recipient doesn't seem to have encryption set up"
     static let your_message = "Your message"
     static let message_placeholder = "Compose Secure Message"
     static let your_reply = "Your reply"
@@ -77,7 +70,6 @@ struct Language {
     static let no_internet = "No internet connection"
     static let use_other_account = "Use other account"
     static let could_not_configure_google = "Could not configure google services"
-    static let could_not_compose_message = "Could not compose message"
     static let unhandled_core_err = "Background core service error"
     static let action_failed = "Action failed"
     static let could_not_fetch_folders = "Could not fetch folders"
