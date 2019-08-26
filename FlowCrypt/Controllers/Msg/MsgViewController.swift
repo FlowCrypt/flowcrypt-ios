@@ -101,9 +101,6 @@ final class MsgViewController: UIViewController {
             : [infoInput, archiveInput, trashInput, mailInput]
 
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
-        navigationItem.leftBarButtonItem = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
     }
 
     private func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {
@@ -119,8 +116,9 @@ extension MsgViewController {
     private func fetchMessage() {
         guard let input = input else { return }
         showSpinner(Language.loading, isUserInteractionEnabled: true)
+
         imap.fetchMsg(message: input.objMessage, folder: input.path)
-            .then { [weak self] data in
+            .then(on: .main) { [weak self] data in
                 guard let self = self else { throw ImapError.general }
                 self.input?.bodyMessage = data
                 let realm = try Realm()
@@ -130,15 +128,14 @@ extension MsgViewController {
                     msgPwd: nil,
                     isEmail: true
                 )
-                DispatchQueue.main.async {
-                    self.handleDecryptedMsg(decrypted)
-                }
+                self.handleDecryptedMsg(decrypted)
             }
             .catch(on: .main) { [weak self] error in
                 self?.hideSpinner()
                 self?.showAlert(error: error, message: Language.could_not_open_message)
             }
     }
+
 
     private func handleDecryptedMsg(_ decrypted: CoreRes.ParseDecryptMsg) {
         let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
@@ -222,11 +219,13 @@ extension MsgViewController {
     @IBAction private func handleReplyTap(_ sender: UIButton) {
         guard let input = input else { return }
 
-        let replyVc = UIStoryboard.main.instantiate(ComposeViewController.self)
-        replyVc.isReply = true
-        replyVc.replyToSubject = input.objMessage.header.subject
-        replyVc.replyToRecipient = input.objMessage.header.from
-        replyVc.replyToMime = input.bodyMessage
+        let viewModel = ComposeViewController.Input(
+            isReply: true,
+            replyToRecipient: input.objMessage.header.from,
+            replyToSubject: input.objMessage.header.subject,
+            replyToMime: input.bodyMessage
+        )
+        let replyVc = ComposeViewController.instance(with: viewModel)
 
         navigationController?.pushViewController(replyVc, animated: true)
     }

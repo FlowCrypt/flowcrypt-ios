@@ -8,12 +8,14 @@ import Promises
 
 final class GoogleApi: NSObject, GIDSignInDelegate, GIDSignInUIDelegate {
 
-    static let instance = GoogleApi()
+    static let shared = GoogleApi()
 
     fileprivate var signInCallback: ((_ user: GIDGoogleUser?, _ error: Error?) -> Void)?
     private var signOutCallback: ((_ error: Error?) -> Void)?
     private var signInSilentlyCallback: ((_ accessToken: String?, _ error: Error?) -> Void)?
     private var viewController: UIViewController?
+
+    private override init() { super.init() }
 
     func setup() {
         Imap.debug(100, "GoogleApi.setup()")

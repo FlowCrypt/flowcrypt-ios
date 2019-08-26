@@ -78,7 +78,7 @@ final class RecoverViewController: BaseViewController, UITextFieldDelegate {
     func fetchBackups() {
         self.showSpinner()
         self.async({ () -> [KeyDetails] in
-            let armoredBackupsData = try await(Imap.instance.searchBackups(email: GoogleApi.instance.getEmail()))
+            let armoredBackupsData = try await(Imap.instance.searchBackups(email: GoogleApi.shared.getEmail()))
             let keyDetailsRes = try Core.parseKeys(armoredOrBinary: armoredBackupsData)
             return keyDetailsRes.keyDetails
         }, then: { keyDetails in
@@ -96,7 +96,7 @@ final class RecoverViewController: BaseViewController, UITextFieldDelegate {
         let alert = UIAlertController(title: "Notice", message: msg, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.fetchBackups() })
         alert.addAction(UIAlertAction(title: Language.use_other_account, style: .default) { _ in
-            self.async({ try await(GoogleApi.instance.signOut()) }, then: { _ in
+            self.async({ try await(GoogleApi.shared.signOut()) }, then: { _ in
                 let signInVc = self.instantiate(viewController: SignInViewController.self)
                 self.navigationController?.pushViewController(signInVc, animated: true)
             })

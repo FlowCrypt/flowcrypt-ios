@@ -7,6 +7,7 @@ import MBProgressHUD
 import Promises
 import ENSwiftSideMenu
 
+
 extension InboxViewController {
     static func instance(with input: InboxViewModel) -> InboxViewController {
         let vc = UIStoryboard.main.instantiate(InboxViewController.self)
@@ -18,6 +19,8 @@ extension InboxViewController {
 final class InboxViewController: UIViewController {
     private enum Constants {
         static let numberOfMessagesToLoad = 10
+        static let inboxCellHeight: CGFloat = 90.0
+        static let loadMoreTreshold: CGFloat = 300
     }
 
     // TODO: Inject as a dependency
@@ -25,17 +28,25 @@ final class InboxViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
+    @IBOutlet weak var btnCompose: UIButton!
 
     private var messages = [MCOIMAPMessage]() {
         didSet {
             lblEmptyMessage.isHidden = messages.count > 0
             refreshControl.endRefreshing()
             hideSpinner()
-            tableView.reloadData()
         }
     }
     private var viewModel = InboxViewModel.empty
+
     private let refreshControl = UIRefreshControl()
+    private let loadMoreActivityIndicator = UIActivityIndicatorView(style: .gray)
+    private var loadMoreInPosition = false
+    private var canLoadMore = true {
+        didSet {
+            tableView.tableFooterView?.isHidden = canLoadMore
+        }
+    }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -44,49 +55,56 @@ final class InboxViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let titleText = viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
-        title = titleText
-        
-        lblEmptyMessage.text = "\(titleText) is empty"
-        lblEmptyMessage.isHidden = true
-        
-        tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
-        tableView.tableFooterView = UIView()
-        
+        setupUI()
+        setupNavigationBar()
         fetchAndRenderEmails(withSpinner: true)
-        configureNavigationBar()
-        configureRefreshControl()
     }
-    
-    private func configureRefreshControl() {
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        tableView.refreshControl = refreshControl
-    }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        sideMenuController()?.sideMenu?.allowPanGesture = true
+    }
+}
+
+extension InboxViewController {
+    private func setupUI() {
+        let titleText = viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
+        title = titleText
+
+        lblEmptyMessage.text = "\(titleText) is empty"
+        lblEmptyMessage.isHidden = true
+
+
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        tableView.refreshControl = refreshControl
+        tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
+
+        view.bringSubviewToFront(btnCompose)
+
+        loadMoreActivityIndicator.frame = CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50)
+        tableView.tableFooterView = loadMoreActivityIndicator
+        tableView.tableFooterView?.isHidden = true
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        sideMenuController()?.sideMenu?.allowPanGesture = false
-        tableView.reloadData()
-    }
-
-    private func configureNavigationBar() {
+    private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
                 NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
             ]
         )
-
-        navigationItem.leftBarButtonItem = NavigationBarActionButton(UIImage(named: "menu_icn")) { [weak self] in
-            self?.toggleSideMenuView()
-        }
     }
+}
 
+extension InboxViewController: MsgViewControllerDelegate {
+    func movedOrUpdated(objMessage: MCOIMAPMessage) {
+        guard let index = self.messages.firstIndex(of: objMessage) else { return }
+        messages.remove(at: index)
+        tableView.reloadData()
+    }
+}
+
+extension InboxViewController {
     private func fetchAndRenderEmails(withSpinner isSpinnerShown: Bool) {
         if isSpinnerShown {
             showSpinner()
@@ -98,20 +116,45 @@ final class InboxViewController: UIViewController {
             .then(on: .main) { [weak self] messages in
                 guard let self = self else { return }
                 self.messages = messages
+                self.tableView.reloadData()
             }
             .catch(on: .main) { [weak self] error in
                 guard let self = self else { return }
                 self.refreshControl.endRefreshing()
                 self.showAlert(error: error, message: Language.failedToLoadMessages)
-            }
+        }
     }
-}
 
-extension InboxViewController: MsgViewControllerDelegate {
-    func movedOrUpdated(objMessage: MCOIMAPMessage) {
-        guard let index = self.messages.firstIndex(of: objMessage) else { return }
-        messages.remove(at: index)
-        tableView.reloadData()
+    private func loadMore() {
+        canLoadMore = false
+        loadMoreActivityIndicator.startAnimating()
+
+        imap.fetchMoreMessages(count: Constants.numberOfMessagesToLoad, folder: viewModel.path)
+            .then(on: .main) { [weak self] msgs in
+                guard let self = self else { return }
+                self.handleNew(messages: msgs)
+            }
+            .catch(on: .main) { [weak self] error in
+                guard let self = self else { return }
+                self.canLoadMore = true
+                self.refreshControl.endRefreshing()
+        }
+    }
+
+    private func handleNew(messages msgs: [MCOIMAPMessage]) {
+        let count = messages.count - 1
+        let indexesToUpdate = msgs.enumerated()
+            .map { (index, value) -> Int in
+                let indexInTableView = index + count
+                return indexInTableView
+            }
+            .map { IndexPath(row: $0, section: 0)}
+        print(indexesToUpdate)
+
+        messages.append(contentsOf: msgs)
+        tableView.insertRows(at: indexesToUpdate, with: .none)
+        canLoadMore = true
+        refreshControl.endRefreshing()
     }
 }
 
@@ -125,7 +168,7 @@ extension InboxViewController {
         #warning("ToDo")
         showToast("Search not implemented yet")
     }
-    
+
     @objc private func refresh() {
         fetchAndRenderEmails(withSpinner: false)
     }
@@ -139,24 +182,29 @@ extension InboxViewController {
 extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.messages.count
+        return messages.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell: InboxTableViewCell = tableView.dequeueReusableCell(withIdentifier: "InboxTableViewCell", for: indexPath) as? InboxTableViewCell
-        else {
-            assertionFailure("Couldn't dequeueReusableCell cell \(self.debugDescription)")
-            return UITableViewCell()
+            else {
+                assertionFailure("Couldn't dequeueReusableCell cell \(self.debugDescription)")
+                return UITableViewCell()
         }
         cell.message = messages[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90.0
+        return Constants.inboxCellHeight
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return Constants.inboxCellHeight
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         let messageInput = MsgViewController.Input(
             objMessage: messages[indexPath.row],
             bodyMessage: nil,
@@ -167,3 +215,23 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
 }
+
+extension InboxViewController: UIScrollViewDelegate {
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let y = scrollView.contentOffset.y
+        let height = scrollView.contentSize.height - scrollView.bounds.height - Constants.loadMoreTreshold
+        
+        if scrollView.contentSize.height > scrollView.bounds.height {
+            if y > height {
+                if !loadMoreInPosition {
+                    loadMore()
+                }
+                loadMoreInPosition = true
+            }
+            else {
+                loadMoreInPosition = false
+            }
+        }
+    }
+} 

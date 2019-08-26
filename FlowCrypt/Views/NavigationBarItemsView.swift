@@ -9,10 +9,13 @@
 import UIKit
 
 final class NavigationBarItemsView: UIBarButtonItem {
+    private enum Constants {
+        static let buttonSize = CGSize(width: 44, height: 44)
+        static let interItemSpacing: CGFloat = 5
+    }
+
     struct Input {
         let image: UIImage?
-        let insents: UIEdgeInsets? = Constants.rightUiBarButtonItemImageInsets
-        let prefferableFrame: CGRect? = Constants.uiBarButtonItemFrame
         let action: (target: Any?, selector: Selector)?
     }
 
@@ -22,11 +25,11 @@ final class NavigationBarItemsView: UIBarButtonItem {
         let buttons = input.map { (input: Input) -> UIButton in
             let button = UIButton(type: .system)
             button.setImage(input.image, for: .normal)
-            button.imageEdgeInsets = input.insents ?? .zero
-            button.frame = input.prefferableFrame ?? .zero
             if let action = input.action {
                 button.addTarget(action.target, action: action.selector, for: .touchUpInside)
             }
+
+            button.frame.size = Constants.buttonSize
 
             return button
         }
@@ -36,7 +39,7 @@ final class NavigationBarItemsView: UIBarButtonItem {
                 $0.distribution = .equalSpacing
                 $0.axis = .horizontal
                 $0.alignment = .center
-                $0.spacing = 15
+                $0.spacing = Constants.interItemSpacing
             }
     }
 

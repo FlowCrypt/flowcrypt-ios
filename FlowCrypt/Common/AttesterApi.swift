@@ -11,17 +11,26 @@ struct PubkeySearchResult {
 
 final class AttesterApi {
 
-    private static let url = "https://flowcrypt.com/attester/"
+    static let shared: AttesterApi = AttesterApi()
 
-    static func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
-        return Promise<PubkeySearchResult>.valueReturning {
-            let lookupUrl = AttesterApi.url + "pub/\(AttesterApi.normalize(email))"
+    private let url = "https://flowcrypt.com/attester/"
+
+    private init() { }
+
+    func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
+        return Promise<PubkeySearchResult> { [weak self] (resolve, reject) in
+            guard let self = self else { reject(CoreError.undefined); return }
+            let lookupUrl = self.url + "pub/\(self.normalize(email))"
             let res = try await(URLSession.shared.call(lookupUrl, tolerateStatus: [404]))
-            return PubkeySearchResult(armored: res.status == 200 ? String(data: res.data, encoding: .utf8) : nil)
+
+            guard res.status == 200 else { reject(CoreError.undefined); return }
+
+            let searchResult = PubkeySearchResult(armored:  String(data: res.data, encoding: .utf8))
+            resolve(searchResult)
         }
     }
 
-    private static func normalize(_ email: String) -> String {
+    private func normalize(_ email: String) -> String {
         return email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
     

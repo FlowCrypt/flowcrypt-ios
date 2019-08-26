@@ -10,6 +10,10 @@ import UIKit
 
 final class NavigationBarActionButton: UIBarButtonItem {
 
+    private enum Constants {
+        static let buttonSize = CGSize(width: 44, height: 44)
+    }
+
     private var onAction: (() -> Void)?
 
     convenience init(_ image: UIImage?, block: (() -> Void)?) {
@@ -17,8 +21,7 @@ final class NavigationBarActionButton: UIBarButtonItem {
         onAction = block
         customView = UIButton(type: .system).with {
             $0.setImage(image, for: .normal)
-            $0.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
-            $0.frame = Constants.uiBarButtonItemFrame
+            $0.frame.size = Constants.buttonSize
             $0.addTarget(self, action: #selector(tap), for: .touchUpInside)
         }
     }
