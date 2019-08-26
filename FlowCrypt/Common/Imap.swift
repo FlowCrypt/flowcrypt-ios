@@ -23,7 +23,7 @@ final class Imap {
     struct EmptyError: Error {}
     private typealias ReqKind = MCOIMAPMessagesRequestKind
     private typealias Err = MCOErrorCode
-    private var lastErr: [String: Err] = []
+    private var lastErr: [String: Err] = [:]
 
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession? {
         if imapSess == nil || newAccessToken != nil {
