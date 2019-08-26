@@ -12,11 +12,11 @@ const char* c_gmp_mod_pow(const char* base, const char* exponent, const char* mo
         return "";
     }
     if (mpz_set_str (mpz_exponent, exponent, 10) != 0) {
-        printf("Invalid base bigint");
+        printf("Invalid exponent bigint");
         return "";
     }
     if (mpz_set_str (mpz_modulo, modulo, 10) != 0) {
-        printf("Invalid base bigint");
+        printf("Invalid modulo bigint");
         return "";
     }
     // mpz_result = mpz_base ^ mpz_exponent mod mpz_modulo
