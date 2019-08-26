@@ -7,255 +7,278 @@ import MBProgressHUD
 import Promises
 import RealmSwift
 
-final class ComposeViewController: BaseViewController {
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/37
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/40
+extension ComposeViewController {
+    static func instance(with input: ComposeViewController.Input) -> ComposeViewController {
+        let vc = UIStoryboard.main.instantiate(ComposeViewController.self)
+        vc.viewModel = input
+        return vc
+    }
+}
 
-    @IBOutlet var txtRecipient: UITextField!
-    @IBOutlet var txtSubject: UITextField!
-    @IBOutlet var txtMessage: UITextView!
-    @IBOutlet weak var cnstrTextViewBottom: NSLayoutConstraint!
-    @IBOutlet weak var cnstrTextViewHeight: NSLayoutConstraint!
+final class ComposeViewController: UIViewController {
+    struct Input {
+        let isReply: Bool
+        let replyToRecipient: MCOAddress?
+        let replyToSubject: String?
+        let replyToMime: Data?
+    }
+
+    private enum Constants {
+        static let yourMessage = "Your message"
+        static let sending = "Sending"
+        static let enterRecipient = "Enter recipient"
+        static let noPgp = "Recipient doesn't seem to have encryption set up"
+        static let composeError = "Could not compose message"
+        static let replySent = "Reply successfully sent"
+        static let messageSent = "Encrypted message sent"
+        static let enterSubject = "Enter subject"
+        static let enterMessage = "Enter secure message"
+    }
+
+    @IBOutlet weak var txtRecipient: UITextField!
+    @IBOutlet weak var txtSubject: UITextField!
+    @IBOutlet weak var txtMessage: UITextView!
     @IBOutlet weak var scrollView: UIScrollView!
-    
-    var btnInfo: UIButton!
-    var btnAttach: UIButton!
-    var btnCompose: UIButton!
-    var btnBack: UIButton!
-    var lblTitle: UILabel!
-    
-    var isReply = false;
-    var replyToRecipient: MCOAddress?
-    var replyToSubject: String?
-    var replyToMime: Data?
-    
+
+    // TODO: Inject as a dependency
+    private let imap = Imap.instance
+    private let notificationCenter = NotificationCenter.default
+    private let googleApi = GoogleApi.shared
+    private let attesterApi = AttesterApi.shared
+
+    private var viewModel: Input?
+    private var isReply: Bool {
+        return viewModel?.isReply ?? false
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setPadding(textField: txtRecipient)
-        self.setPadding(textField: txtSubject)
-        self.txtMessage.delegate = self
-        scrollView.delegate = self
-        scrollView.keyboardDismissMode = .interactive
-        self.txtRecipient.addTarget(self, action: #selector(ComposeViewController.convertStringToLowercase(textField:)), for: UIControl.Event.editingChanged)
-        self.txtMessage.textColor = UIColor.lightGray
-        if isReply {
-            self.txtSubject.text = "Re: \(self.replyToSubject ?? "(no subject)")"
-            self.txtRecipient.text = replyToRecipient?.mailbox ?? ""
-        }
-        let _ = Imap.instance.getSmtpSess() // establish session before user taps send, so that sending msg is faster once the user does tap it
-        
-        self.configureNavigationBar()
+
+        setupNavigationBar()
+        setupUI()
+        registerKeyboardNotifications()
+
+        // establish session before user taps send, so that sending msg is faster once the user does tap it
+        imap.getSmtpSess()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         txtMessage.resignFirstResponder()
-        NotificationCenter.default.removeObserver(self)
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        registerKeyboardNotifications()
+
+    deinit {
+        notificationCenter.removeObserver(self)
     }
-    
-    func isInputValid() -> Bool {
-        guard self.txtRecipient.text!.hasContent else {
-            self.showErrAlert(Language.enter_recipient)
-            return false
-        }
-        guard isReply || self.txtSubject.text!.hasContent else {
-            self.showErrAlert(Language.enter_subject)
-            return false
-        }
-        guard self.txtMessage.text.hasContent else {
-            self.showErrAlert(Language.enter_message)
-            return false
-        }
-        return true
+}
+
+// MARK - Setup UI
+extension ComposeViewController {
+    private func setupNavigationBar() {
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(
+            with: [
+                NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
+                NavigationBarItemsView.Input(image: UIImage(named: "paperclip"), action: (self, #selector(handleAttachTap))),
+                NavigationBarItemsView.Input(image: UIImage(named: "android-send"), action: (self, #selector(handleSendTap)))
+            ]
+        )
     }
-    
-    func dismissKeyBoard() {
-        self.txtMessage.resignFirstResponder()
-        if isReply {
-            self.txtSubject.resignFirstResponder()
+
+    private func setupUI() {
+        [txtSubject, txtRecipient]
+            .forEach { $0.setTextInset() }
+
+        scrollView.delegate = self
+        scrollView.keyboardDismissMode = .interactive
+
+        txtRecipient.addTarget(
+            self,
+            action: #selector(ComposeViewController.convertStringToLowercase(textField:)),
+            for: UIControl.Event.editingChanged
+        )
+
+        txtMessage.delegate = self
+        txtMessage.textColor = UIColor.lightGray
+
+        if let viewModel = viewModel, viewModel.isReply {
+            txtSubject.text = "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+            txtRecipient.text = viewModel.replyToRecipient?.mailbox ?? ""
         }
-        self.txtRecipient.resignFirstResponder()
     }
-    
-    func registerKeyboardNotifications() {
-        let notificationCenter = NotificationCenter.default
+}
+
+// MARK - Keyboard
+extension ComposeViewController {
+    private func registerKeyboardNotifications() {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
 
-    private func configureNavigationBar() {
-        
-        btnInfo = UIButton(type: .system)
-        btnInfo.setImage(UIImage(named: "help_icn")!, for: .normal)
-        btnInfo.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnInfo.addTarget(self, action: #selector(btnInfoTap), for: .touchUpInside)
-        
-        btnAttach = UIButton(type: .system)
-        btnAttach.setImage(UIImage(named: "paperclip")!, for: .normal)
-        btnAttach.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnAttach.addTarget(self, action: #selector(btnAttachTap), for: .touchUpInside)
-        
-        btnCompose = UIButton(type: .system)
-        btnCompose.setImage(UIImage(named: "android-send")!, for: .normal)
-        btnCompose.imageEdgeInsets = Constants.rightUiBarButtonItemImageInsets
-        btnCompose.addTarget(self, action: #selector(btnComposeTap), for: .touchUpInside)
-        
-        btnBack = UIButton(type: .system)
-        btnBack.setImage(UIImage(named: "arrow-left-c"), for: .normal)
-        btnBack.imageEdgeInsets = Constants.leftUiBarButtonItemImageInsets
-        btnBack.addTarget(self, action: #selector(btnBackTap), for: .touchUpInside)
-        
-        let navigationBarButtons = [btnInfo, btnAttach, btnCompose, btnBack]
-
-//        for button in navigationBarButtons {
-//            NSLayoutConstraint.activate(
-//                [
-//                    (button?.widthAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!,
-//                    (button?.heightAnchor.constraint(equalToConstant: Constants.uiBarButtonItemSize))!
-//                ]
-//            )
-//        }
-
-        let stackView = UIStackView(arrangedSubviews: [btnInfo, btnAttach, btnCompose])
-        stackView.distribution = .equalSpacing
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-//        stackView.spacing = Constants.navigationBarInteritemSpacing
-
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: btnBack)
-    }
-    
-    @objc
-    private func btnBackTap() {
-        let _ = self.navigationController?.popViewController(animated: true)
-    }
-    
-    @objc
-    private func btnAttachTap() {
-        #warning("ToDo")
-        showToast("Attachments not implemented yet")
-    }
-    
-    @objc
-    private func btnComposeTap() {
-        dismissKeyBoard()
-        guard isInputValid() else { return }
-        showSpinner(Language.sending)
-
-        guard let email = self.txtRecipient.text,
-            let text = self.txtMessage.text
-        else { return }
-
-        let subject = isReply
-            ? "Re: \(replyToSubject ?? "(no subject)")"
-            : txtSubject.text ?? "(no subject)"
-
-        let from = GoogleApi.instance.getEmail()
-        let replyToMimeMsg = replyToMime.flatMap { String(data: $0, encoding: .utf8) }
-
-        let realm = try! Realm()
-        var pubKeys = Array(realm.objects(KeyInfo.self)
-            .map { $0.public })
-
-        // TODO: Refactor memory leaks https://github.com/FlowCrypt/flowcrypt-ios/issues/40
-        async({
-            let recipientPub = try await(AttesterApi.lookupEmail(email: email))
-            guard let armored = recipientPub.armored else { return self.showErrAlert(Language.no_pgp) }
-
-            pubKeys.append(armored)
-            let msg = SendableMsg(
-                text: text,
-                to: [email],
-                cc: [],
-                bcc: [],
-                from: from,
-                subject: subject,
-                replyToMimeMsg: replyToMimeMsg
-            )
-            let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubKeys)
-            let _ = try await(Imap.instance.sendMail(mime: composeRes.mimeEncoded))
-        }, then: {
-            self.hideSpinner()
-            self.showToast(self.isReply ? Language.encrypted_reply_sent : Language.encrypted_message_sent)
-            self.btnBackTap()
-        }, fail: Language.could_not_compose_message)
-    }
-    
-    @objc private func btnInfoTap() {
-        #warning("ToDo")
-        showToast("Info not implemented yet")
-    }
-    
     @objc private func adjustForKeyboard(notification: Notification) {
         guard let userInfo = notification.userInfo,
             let keyboardScreenEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-        else { assertionFailure("Check user info"); return }
-        
+            else { assertionFailure("Check user info"); return }
+
 
         let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
-        
+
         if notification.name == UIResponder.keyboardWillHideNotification {
             scrollView.contentInset = UIEdgeInsets.zero
         } else {
             scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardViewEndFrame.height, right: 0)
         }
-        
+
         guard txtMessage.isFirstResponder else { return }
         scrollView.scrollIndicatorInsets = txtMessage.contentInset
-        
+
         guard let selectedRange = txtMessage.selectedTextRange else { return }
         let rect = txtMessage.caretRect(for: selectedRange.start)
         scrollView.scrollRectToVisible(rect, animated: true)
-    }
-    
-    @objc private func convertStringToLowercase(textField: UITextField) {
-        self.txtRecipient.text = self.txtRecipient.text?.lowercased()
     }
 }
 
 // MARK - Handle actions
 extension ComposeViewController {
+    @objc private func handleInfoTap() {
+        #warning("ToDo")
+        showToast("Info not implemented yet")
+    }
 
+    @objc private func handleAttachTap() {
+        #warning("ToDo")
+        showToast("Attachments not implemented yet")
+    }
+
+    @objc private func handleSendTap() {
+        sendMessage()
+    }
+
+    private func isInputValid() -> Bool {
+        guard txtRecipient.text?.hasContent ?? false else {
+            showAlert(message: Constants.enterRecipient)
+            return false
+        }
+        guard isReply || txtSubject.text?.hasContent ?? false else {
+            showAlert(message: Constants.enterSubject)
+            return false
+        }
+        guard txtMessage.text?.hasContent ?? false else {
+            showAlert(message: Constants.enterMessage)
+            return false
+        }
+        return true
+    }
+
+    private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
+    @objc private func convertStringToLowercase(textField: UITextField) {
+        txtRecipient.text = txtRecipient.text?.lowercased()
+    }
 }
 
-// MARK - Setup UI
 extension ComposeViewController {
+    private func sendMessage() {
+        dismissKeyboard()
 
+        guard isInputValid(),
+            let email = txtRecipient.text,
+            let text = txtMessage.text
+        else { return }
+
+        showSpinner(Constants.sending)
+
+        attesterApi.lookupEmail(email: email)
+            .then(on: .main) { [weak self] recipientPub in
+                self?.handleLookupEmail(result: recipientPub, message: text, email: email)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.handleSend(error: error)
+            }
+    }
+
+    private func handleLookupEmail(result: PubkeySearchResult, message: String, email: String) {
+        guard let armored = result.armored, let viewModel = viewModel else {
+            return showAlert(message: Constants.noPgp)
+        }
+
+        let subject = isReply
+            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+            : txtSubject.text ?? "(no subject)"
+
+        let replyToMimeMsg = viewModel.replyToMime
+            .flatMap { String(data: $0, encoding: .utf8) }
+
+        do {
+            // TODO: Anton - Refactor to use db service
+            let realm = try! Realm()
+            var pubKeys = Array(realm.objects(KeyInfo.self)
+                .map { $0.public })
+
+            pubKeys.append(armored)
+
+            let msg = SendableMsg(
+                text: message,
+                to: [email],
+                cc: [],
+                bcc: [],
+                from: googleApi.getEmail(),
+                subject: subject,
+                replyToMimeMsg: replyToMimeMsg
+            )
+
+            let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubKeys)
+
+            sendMessage(with: composeRes)
+        } catch let error {
+            handleSend(error: error)
+        }
+    }
+
+    private func sendMessage(with composeEmail: CoreRes.ComposeEmail) {
+        imap.sendMail(mime: composeEmail.mimeEncoded)
+            .then(on: .main) { [weak self] _ in
+                guard let self = self else { return }
+                self.hideSpinner()
+                self.showToast(self.isReply ? Constants.replySent : Constants.messageSent)
+                self.navigationController?.popViewController(animated: true)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.handleSend(error: error)
+            }
+    }
+
+    private func handleSend(error: Error) {
+        hideSpinner()
+        showAlert(message: Constants.composeError)
+    }
 }
 
 // MARK - UITextViewDelegate, UITextFieldDelegate
 extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
-    
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == Language.your_message || textView.text == Language.message_placeholder {
-            self.txtMessage.textColor = .black
-            self.txtMessage.text = ""
+        if textView.text == Constants.yourMessage || textView.text == Language.message_placeholder {
+            txtMessage.textColor = .black
+            txtMessage.text = ""
         }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text == "" || textView.text == "\n" {
-            self.txtMessage.textColor = UIColor.lightGray
-            self.txtMessage.text = Language.your_message
+            txtMessage.textColor = UIColor.lightGray
+            txtMessage.text = Constants.yourMessage
         }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == self.txtRecipient {
-            self.txtSubject.becomeFirstResponder()
+            txtSubject.becomeFirstResponder()
         }
         if !isReply && textField == self.txtSubject {
-            self.txtMessage.becomeFirstResponder()
+            txtMessage.becomeFirstResponder()
             return false
         }
         return true
     }
-    
 }

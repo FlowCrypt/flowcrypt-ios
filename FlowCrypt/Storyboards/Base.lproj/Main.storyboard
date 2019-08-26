@@ -531,8 +531,6 @@
                     <toolbarItems/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="cnstrTextViewBottom" destination="kxI-1q-qd3" id="X53-QS-Hd8"/>
-                        <outlet property="cnstrTextViewHeight" destination="vfb-i0-H1U" id="Pfi-A7-tzE"/>
                         <outlet property="scrollView" destination="eYP-4e-ypc" id="ujE-cg-vAn"/>
                         <outlet property="txtMessage" destination="mZ6-Az-tGx" id="Cg5-a5-ois"/>
                         <outlet property="txtRecipient" destination="JpB-hk-psY" id="SMd-eB-fkX"/>
@@ -559,13 +557,13 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BA5-NZ-YFn">
-                                            <rect key="frame" x="14" y="32" width="606" height="21"/>
+                                            <rect key="frame" x="14" y="32" width="381" height="21"/>
                                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fHE-qC-2tf">
-                                            <rect key="frame" x="14" y="60" width="620" height="21"/>
+                                            <rect key="frame" x="14" y="60" width="395" height="21"/>
                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="17"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
@@ -582,7 +580,7 @@
                                     </constraints>
                                 </view>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MenuCell" id="keb-G4-Sk5" customClass="MenuCell" customModule="FlowCrypt" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MenuCell" id="keb-G4-Sk5" customClass="MenuCell" customModule="FlowCrypt" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="121" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="keb-G4-Sk5" id="iby-YC-jk1">

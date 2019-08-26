@@ -85,6 +85,19 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         viewController.navigationItem.hidesBackButton = true
+        let navigationButton: UIBarButtonItem
+        switch viewControllers.firstIndex(of: viewController) {
+        case 0:
+            navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn")) { [weak self] in
+                self?.toggleSideMenuView()
+            }
+        default: 
+            navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
+                self?.popViewController(animated: true)
+            }
+        }
+
+        viewController.navigationItem.leftBarButtonItem = navigationButton
     }
 
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {

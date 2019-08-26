@@ -10,9 +10,7 @@ enum ImapError: Error {
 }
 
 final class Imap {
-    private init() { }
-
-    static let instance = Imap()
+    static let instance = Imap(googleApi: GoogleApi.shared)
     
     var totalNumberOfInboxMsgs: Int32 = 0
     var messages = [MCOIMAPMessage]()
@@ -20,9 +18,13 @@ final class Imap {
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
 
-    struct EmptyError: Error {}
     private typealias ReqKind = MCOIMAPMessagesRequestKind
     private var lastErr = [String: MCOErrorCode]();
+    private let googleApi: GoogleApi
+
+    private init(googleApi: GoogleApi) {
+        self.googleApi = googleApi
+    }
 
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession? {
         if imapSess == nil || newAccessToken != nil {
@@ -32,9 +34,9 @@ final class Imap {
             imapSess.port = 993
             imapSess.connectionType = MCOConnectionType.TLS
             imapSess.authType = MCOAuthType.xoAuth2
-            imapSess.username = GoogleApi.instance.getEmail()
+            imapSess.username = googleApi.getEmail()
             imapSess.password = nil
-            imapSess.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
+            imapSess.oAuth2Token = newAccessToken ?? googleApi.getAccessToken()
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.connectionType = MCOConnectionType.TLS
             self.imapSess = imapSess
@@ -49,6 +51,7 @@ final class Imap {
         return imapSess
     }
 
+    @discardableResult
     func getSmtpSess(newAccessToken: String? = nil) -> MCOSMTPSession? {
         if smtpSess == nil || newAccessToken != nil {
             print("SMTP: creating a new session")
@@ -57,9 +60,9 @@ final class Imap {
             smtpSess.port = 465
             smtpSess.connectionType = MCOConnectionType.TLS
             smtpSess.authType = MCOAuthType.xoAuth2
-            smtpSess.username = GoogleApi.instance.getEmail()
+            smtpSess.username = googleApi.getEmail()
             smtpSess.password = nil
-            smtpSess.oAuth2Token = newAccessToken ?? GoogleApi.instance.getAccessToken()
+            smtpSess.oAuth2Token = newAccessToken ?? googleApi.getAccessToken()
             self.smtpSess = smtpSess
         }
         return smtpSess
@@ -311,7 +314,7 @@ final class Imap {
                 Imap.debug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
                 
                 let start = DispatchTime.now()
-                GoogleApi.instance.renewAccessToken().then { accessToken in
+                self.googleApi.renewAccessToken().then { accessToken in
                     Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
                     let _ = self.getImapSess(newAccessToken: accessToken) // use the new token
                     let _ = self.getSmtpSess(newAccessToken: accessToken) // use the new token

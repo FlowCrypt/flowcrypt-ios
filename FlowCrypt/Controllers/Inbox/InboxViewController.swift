@@ -204,6 +204,7 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         let messageInput = MsgViewController.Input(
             objMessage: messages[indexPath.row],
             bodyMessage: nil,
@@ -218,7 +219,6 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
 extension InboxViewController: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
         let y = scrollView.contentOffset.y
         let height = scrollView.contentSize.height - scrollView.bounds.height - Constants.loadMoreTreshold
         
@@ -234,4 +234,4 @@ extension InboxViewController: UIScrollViewDelegate {
             }
         }
     }
-}
+} 

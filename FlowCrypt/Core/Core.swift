@@ -7,10 +7,11 @@ import JavaScriptCore
 enum CoreError: Error {
     case exception(String)
     case notReady(String)
+    case undefined
 }
 
 final class Core {
-
+    // TODO: - Warning. Refactor not to use static func
     private static var jsEndpointListener: JSValue?;
     private static var cb_catcher: JSValue?
     private static var cb_last_value: [Any]?
