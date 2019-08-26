@@ -19,7 +19,7 @@ final class Imap {
     var smtpSess: MCOSMTPSession?
 
     private typealias ReqKind = MCOIMAPMessagesRequestKind
-    private typealias Err = MCOErrorCode
+    typealias Err = MCOErrorCode
     private var lastErr: [String: Err] = [:]
     private let googleApi: GoogleApi
 
@@ -41,7 +41,7 @@ final class Imap {
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.connectionType = MCOConnectionType.TLS
             self.imapSess = imapSess
-//            imapSess!.connectionLogger = {(connectionID, type, data) in
+//            imapSess.connectionLogger = {(connectionID, type, data) in
 //                if data != nil {
 //                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
 //                        print("IMAP:\(type):\(string)")
@@ -351,7 +351,7 @@ final class Imap {
     }
 
     public static func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
-        // print("[Imap token debug \(id) - \(msg)] \(String(describing: value))")
+//         print("[Imap debug \(id) - \(msg)] \(String(describing: value))")
     }
 
 }
