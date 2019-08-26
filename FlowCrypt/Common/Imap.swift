@@ -19,7 +19,8 @@ final class Imap {
     var smtpSess: MCOSMTPSession?
 
     private typealias ReqKind = MCOIMAPMessagesRequestKind
-    private var lastErr = [String: MCOErrorCode]();
+    private typealias Err = MCOErrorCode
+    private var lastErr: [String: Err] = [:]
     private let googleApi: GoogleApi
 
     private init(googleApi: GoogleApi) {
@@ -300,7 +301,7 @@ final class Imap {
     }
 
     // must be always called with `guard retryAuthErrorNotNeeded else { return }`
-    private func retryAuthErrorNotNeeded<T>(_ op: String, _ err: Error?, _ resolve: @escaping (T) -> Void, _ reject: @escaping (Error) -> Void, retry promise: @escaping () -> Promise<T>) -> Bool {
+    private func retryAuthErrorNotNeeded<T>(_ op: String, _ err: Error?, _ resolve: @escaping (T) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<T>) -> Bool {
         if err == nil {
             self.lastErr.removeValue(forKey: op)
             return true // no need to retry
@@ -308,32 +309,40 @@ final class Imap {
             let debugId = Int.random(in: 1...Int.max)
             Imap.debug(1, "(\(debugId)|\(op)) new err retryAuthErrorNotNeeded, err=", value: err)
             Imap.debug(2, "(\(debugId)|\(op)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr[op])
-            if let err = err as NSError?,
-                err.code == MCOErrorCode.authentication.rawValue,
-                self.lastErr[op] != MCOErrorCode.authentication { // avoiding infinite retry loop
+            let start = DispatchTime.now()
+            // also checking against lastErr below to avoid infinite retry loop
+            if let e = err as NSError?, e.code == Err.authentication.rawValue, self.lastErr[op] != Err.authentication {
                 Imap.debug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
-                
-                let start = DispatchTime.now()
                 self.googleApi.renewAccessToken().then { accessToken in
                     Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
                     let _ = self.getImapSess(newAccessToken: accessToken) // use the new token
                     let _ = self.getSmtpSess(newAccessToken: accessToken) // use the new token
                     Imap.debug(5, "(\(debugId)|\(op)) forced session refreshes")
-                    self.log("renewAccessToken for \(op) (next will retry \(op))", error: nil, res: "<accessToken>", start: start)
-                    promise().then(resolve).catch(reject)
+                    self.log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
+                    retry().then(resolve).catch(reject)
                 }.catch { error in
-                    Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: err)
+                    Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: e)
                     self.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
                     reject(error)
                 }
-                self.lastErr[op] = MCOErrorCode(rawValue: err.code)
+                self.lastErr[op] = Err(rawValue: e.code)
                 Imap.debug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
                 Imap.debug(11, "(\(debugId)|\(op)) return=true (need to retry)")
+                return false; // need to retry
+            } else if let e = err as NSError?, e.code == Err.connection.rawValue, self.lastErr[op] != Err.connection {
+                Imap.debug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
+                self.imapSess = nil; // the connection has dropped, so it's probably ok to not officially "close" it
+                self.smtpSess = nil; // but maybe there could be a cleaner way to dispose of the connection?
+                self.lastErr[op] = Err(rawValue: e.code)
+                Imap.debug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                self.log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
+                retry().then(resolve).catch(reject)
+                Imap.debug(15, "(\(debugId)|\(op)) return=true (need to retry)")
                 return false; // need to retry
             } else {
                 Imap.debug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
                 reject(err ?? ImapError.general)
-                self.lastErr[op] = MCOErrorCode(rawValue: (err as NSError?)?.code ?? Constants.Global.generalError)
+                self.lastErr[op] = Err(rawValue: (err as NSError?)?.code ?? Constants.Global.generalError)
                 Imap.debug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
                 Imap.debug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
                 return true // no need to retry
