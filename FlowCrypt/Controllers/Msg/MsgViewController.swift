@@ -132,7 +132,15 @@ extension MsgViewController {
             }
             .catch(on: .main) { [weak self] error in
                 self?.hideSpinner()
-                self?.showAlert(error: error, message: Language.could_not_open_message)
+                if let e = error as NSError?, e.code == Imap.Err.fetch.rawValue {
+                    // todo - the missing msg should be removed from the list in inbox view
+                    // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
+                    self?.showToast("Message not found in folder: \(input.path)")
+                } else {
+                    // todo - this should be a retry / cancel alert
+                    self?.showAlert(error: error, message: Language.could_not_open_message + "\n\n\(error)")
+                }
+                self?.navigationController?.popViewController(animated: true)
             }
     }
 
