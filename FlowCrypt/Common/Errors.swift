@@ -5,8 +5,10 @@
 import Foundation
 
 enum Errors: Error {
-
     case programmingError(String)
     case valueError(String)
+}
 
+enum ImapError: Error {
+    case general
 }

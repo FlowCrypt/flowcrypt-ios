@@ -7,142 +7,155 @@ import MBProgressHUD
 import RealmSwift
 import Promises
 
-final class RecoverViewController: BaseViewController, UITextFieldDelegate {
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/37
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/38
-    // TODO: Refactor due to https://github.com/FlowCrypt/flowcrypt-ios/issues/40
-    
+final class RecoverViewController: UIViewController {
+    private enum Constants {
+        static let noBackups = "No backups found on this account"
+        static let actionFailed = "Action failed"
+        static let useOtherAccount = "Use other account"
+        static let enterPassPhrase = "Enter pass phrase"
+        static let wrongPassPhraseRetry = "Wrong pass phrase, please try again"
+    }
+    // TODO: Inject as a dependency
+    private let imap = Imap.instance
+    private let googleApi = GoogleApi.shared
+
     @IBOutlet weak var passPhaseTextField: UITextField!
     @IBOutlet weak var btnLoadAccount: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     
-    private var encryptedBackups: [KeyDetails]?
+    private var encryptedBackups: [KeyDetails] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupUI()
         fetchBackups()
-        setupTapGesture()
-        passPhaseTextField.delegate = self
-        registerKeyboardNotifications()
-    }
-    
-    func registerKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillShow(notification:)),
-                                               name: UIResponder.keyboardWillShowNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillHide(notification:)),
-                                               name: UIResponder.keyboardWillHideNotification,
-                                               object: nil)
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    @objc func keyboardWillShow(notification: NSNotification) {
-        guard let userInfo = notification.userInfo,
-            let keyboardInfo = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue
-        else { assertionFailure("Check user info"); return }
 
-        let keyboardSize = keyboardInfo.cgRectValue.size
-        let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height + 5, right: 0)
-        scrollView.contentInset = contentInsets
-        scrollView.scrollIndicatorInsets = contentInsets
     }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        scrollView.contentInset = .zero
-        scrollView.scrollIndicatorInsets = .zero
-    }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.isNavigationBarHidden = true
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         btnLoadAccount.layer.cornerRadius = 5
     }
-    
-    private func setupTapGesture() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(endEditing))
-        tap.cancelsTouchesInView = false
-        self.view.addGestureRecognizer(tap)
+}
+
+extension RecoverViewController {
+    private func observeKeyboardNotifications() {
+        _ = keyboardHeight
+            .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 5, right: 0) }
+            .subscribe(onNext: { [weak self] inset in
+                self?.scrollView.contentInset = inset
+                self?.scrollView.scrollIndicatorInsets = inset
+            })
     }
 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.view.endEditing(true)
-        return true
+    private func setupUI() {
+        UITapGestureRecognizer(target: self, action: #selector(endEditing)).do {
+            $0.cancelsTouchesInView = false
+            self.view.addGestureRecognizer($0)
+        }
+        passPhaseTextField.delegate = self
+
+        observeKeyboardNotifications()
     }
-    
-    func fetchBackups() {
-        self.showSpinner()
-        self.async({ () -> [KeyDetails] in
-            let armoredBackupsData = try await(Imap.instance.searchBackups(email: GoogleApi.shared.getEmail()))
-            let keyDetailsRes = try Core.parseKeys(armoredOrBinary: armoredBackupsData)
-            return keyDetailsRes.keyDetails
-        }, then: { keyDetails in
-            self.hideSpinner()
-            self.encryptedBackups = keyDetails.filter { $0.private != nil }
-            if self.encryptedBackups!.count == 0 {
-                self.showRetryFetchBackupsOrChangeAcctAlert(msg: Language.no_backups)
+
+    private func fetchBackups() {
+        showSpinner()
+
+        imap.searchBackups(email: googleApi.getEmail())
+            .then { data -> [KeyDetails] in
+                let keyDetailsRes = try Core.parseKeys(armoredOrBinary: data)
+                return keyDetailsRes.keyDetails
             }
-        }, fail: { error in
-            self.showRetryFetchBackupsOrChangeAcctAlert(msg: "\(Language.action_failed)\n\n\(error)")
-        })
+            .then(on: .main) { [weak self] keyDetails in
+                guard let self = self else { return }
+                self.hideSpinner()
+                let encryptedBackups = keyDetails.filter { $0.private != nil }
+                self.encryptedBackups = encryptedBackups
+                if encryptedBackups.isEmpty {
+                    self.showRetryFetchBackupsOrChangeAcctAlert(msg: Constants.noBackups)
+                }
+            }
+            .catch(on: .main) { [weak self] in
+                let message = "\(Constants.actionFailed)\n\n\($0)"
+                self?.showRetryFetchBackupsOrChangeAcctAlert(msg: message)
+            }
     }
 
-    func showRetryFetchBackupsOrChangeAcctAlert(msg: String) {
+    private func showRetryFetchBackupsOrChangeAcctAlert(msg: String) {
         let alert = UIAlertController(title: "Notice", message: msg, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.fetchBackups() })
-        alert.addAction(UIAlertAction(title: Language.use_other_account, style: .default) { _ in
-            self.async({ try await(GoogleApi.shared.signOut()) }, then: { _ in
-                let signInVc = self.instantiate(viewController: SignInViewController.self)
-                self.navigationController?.pushViewController(signInVc, animated: true)
-            })
+        alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
+            self?.handleForOtherAccount()
         })
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func handleForOtherAccount() {
+        googleApi.signOut()
+            .then(on: .main) { [weak self] _ in
+                let signInVc = UIStoryboard.main.instantiate(SignInViewController.self)
+                self?.navigationController?.pushViewController(signInVc, animated: true)
+            }
+            .catch {
+                self.showAlert(error: $0, message: "")
+            }
+    }
+}
+
+extension RecoverViewController {
+    @objc private func endEditing() {
+        view.endEditing(true)
     }
 
     @IBAction func loadAccountButtonPressed(_ sender: Any) {
-        let entered_pass_phrase = self.passPhaseTextField.text!
-        if entered_pass_phrase.isEmpty {
-            self.showErrAlert(Language.enter_pass_phrase) { self.passPhaseTextField.becomeFirstResponder() }
+        guard let passPrase = passPhaseTextField.text, passPrase.isEmpty else {
+            showAlert(message: Constants.enterPassPhrase)
             return
         }
-        self.showSpinner()
-        self.async({ [weak self] () -> [KeyDetails] in
-            guard let self = self, let backups = self.encryptedBackups else { return [] }
 
-            var matchingBackups = [KeyDetails]()
+        showSpinner()
 
-            for k in backups {
-                guard let key = k.private else { assertionFailure(); return [] }
 
-                let decryptRes = try Core.decryptKey(armoredPrv: key, passphrase: entered_pass_phrase)
-                if decryptRes.decryptedKey != nil {
-                    matchingBackups.append(k)
+        let matchingBackups: [KeyDetails] = encryptedBackups
+            .compactMap { (key) -> KeyDetails? in
+                guard let privateKey = key.private else { return nil }
+                do {
+                    let decryptRes = try Core.decryptKey(armoredPrv: privateKey, passphrase: passPrase)
+                    if decryptRes.decryptedKey != nil {
+                        return key
+                    }
+                    return nil
+                } catch {
+                    return nil
                 }
             }
-            return matchingBackups
-        }, then: { matchingBackups in
-            guard matchingBackups.count > 0 else {
-                self.showErrAlert(Language.wrong_pass_phrase_retry) { self.passPhaseTextField.becomeFirstResponder() }
-                return
+
+        guard matchingBackups.count > 0 else {
+            showAlert(message: Constants.wrongPassPhraseRetry)
+            return
+        }
+
+        // TODO: - Refactor with realm service
+        let realm = try! Realm()
+        try! realm.write {
+            for k in matchingBackups {
+                realm.add(try! KeyInfo(k, passphrase: Constants.enterPassPhrase, source: .backup))
             }
-            let realm = try! Realm()
-            try! realm.write {
-                for k in matchingBackups {
-                    realm.add(try! KeyInfo(k, passphrase: entered_pass_phrase, source: "backup"))
-                }
-            }
-            self.performSegue(withIdentifier: "InboxSegue", sender: nil)
-        })
+        }
+
+        performSegue(withIdentifier: "InboxSegue", sender: nil)
     }
-    
-    @objc
-    private func endEditing() {
-        self.view.endEditing(true)
+}
+
+extension RecoverViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        view.endEditing(true)
+        return true
     }
-    
 }

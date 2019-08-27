@@ -8,6 +8,9 @@
 
 import UIKit
 import Toast
+import RxSwift
+import RxCocoa
+import MBProgressHUD
 
 enum ToastPosition: String {
     case bottom, top, center
@@ -58,6 +61,59 @@ extension UIViewController {
             )
 
             CSToastManager.setTapToDismissEnabled(true)
+        }
+    }
+}
+
+extension UIViewController {
+    /// Observable keyboard height from willShow and willHide notifications
+    /// deliver signals on main queue.
+    var keyboardHeight: Observable<CGFloat> {
+        let willShowNotification = NotificationCenter.default.rx
+            .notification(UIResponder.keyboardWillShowNotification)
+            .map { notification in
+                (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
+        }
+        let willHideNotification = NotificationCenter.default.rx
+            .notification(UIResponder.keyboardWillHideNotification)
+            .map { _ in return CGFloat(0) }
+
+        return Observable.from([willShowNotification, willHideNotification])
+            .merge()
+            .observeOn(MainScheduler.instance)
+            .takeUntil(rx.deallocated)
+    }
+}
+
+extension UIViewController {
+    func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
+        let message = "\(message)\n\n \(error)"
+        showAlert(message: message, onOk: onOk)
+    }
+
+    func showAlert(message: String, onOk: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            self.view.hideAllToasts()
+            self.hideSpinner()
+            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .destructive) { action in onOk?() })
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    func showSpinner(_ message: String = Language.loading, isUserInteractionEnabled: Bool = false) {
+        DispatchQueue.main.async {
+            let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
+            spinner.label.text = message
+            spinner.isUserInteractionEnabled = isUserInteractionEnabled
+        }
+    }
+
+    func hideSpinner() {
+        DispatchQueue.main.async {
+            self.view.subviews
+                .compactMap { $0 as? MBProgressHUD }
+                .forEach { $0.hide(animated: true) }
         }
     }
 }
