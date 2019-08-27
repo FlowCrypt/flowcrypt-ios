@@ -6,7 +6,7 @@ import UIKit
 import GoogleSignIn
 import Promises
 
-final class SignInViewController: BaseViewController {
+final class SignInViewController: UIViewController {
     // TODO: Inject as a dependency
     private let googleAPI = GoogleApi.shared
 
@@ -28,8 +28,10 @@ final class SignInViewController: BaseViewController {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
+}
 
-    // MARK: - Events
+// MARK: - Events
+extension SignInViewController {
     @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
         showSpinner()
         googleAPI.signIn(viewController: self)
@@ -39,7 +41,7 @@ final class SignInViewController: BaseViewController {
             }
             .catch(on: .main) { [weak self] error in
                 self?.hideSpinner()
-                self?.showErrAlert("Failed to sign in\n\n\(error)")
+                self?.showAlert(error: error, message: "Failed to sign in")
             }
     }
 
@@ -48,7 +50,7 @@ final class SignInViewController: BaseViewController {
         // below for debugging
         do {
             let start = DispatchTime.now()
-//            let decrypted = try Core.decryptKey(armoredPrv: TestData.k3rsa4096.prv, passphrase: TestData.k3rsa4096.passphrase)
+            //            let decrypted = try Core.decryptKey(armoredPrv: TestData.k3rsa4096.prv, passphrase: TestData.k3rsa4096.passphrase)
             let keys = [PrvKeyInfo(private: TestData.k3rsa4096.prv, longid: TestData.k3rsa4096.longid, passphrase: TestData.k3rsa4096.passphrase)]
 
             guard let encrypted = TestData.matchingEncryptedMsg.data(using: .utf8) else {
@@ -63,10 +65,10 @@ final class SignInViewController: BaseViewController {
             )
             print(decrypted)
             print("decrypted \(start.millisecondsSince)")
-//            print("text: \(decrypted.text)")
+            //            print("text: \(decrypted.text)")
         } catch CoreError.exception {
             print("catch exception")
-//            print(msg)
+            //            print(msg)
         } catch {
             print("catch generic")
             print(error)

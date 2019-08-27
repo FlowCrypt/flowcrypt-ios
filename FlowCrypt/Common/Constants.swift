@@ -56,7 +56,6 @@ struct EmailConstant {
 
 struct Language {
     static let loading = "Loading"
-    static let enter_pass_phrase = "Enter pass phrase"
     static let moved_to_trash = "Email moved to Trash"
     static let email_deleted = "Email deleted"
     static let email_archived = "Email archived"
@@ -65,12 +64,8 @@ struct Language {
     static let your_message = "Your message"
     static let message_placeholder = "Compose Secure Message"
     static let your_reply = "Your reply"
-    static let wrong_pass_phrase_retry = "Wrong pass phrase, please try again"
-    static let no_backups = "No backups found on this account"
     static let no_internet = "No internet connection"
-    static let use_other_account = "Use other account"
     static let could_not_configure_google = "Could not configure google services"
     static let unhandled_core_err = "Background core service error"
-    static let action_failed = "Action failed"
     static let could_not_fetch_folders = "Could not fetch folders"
 }

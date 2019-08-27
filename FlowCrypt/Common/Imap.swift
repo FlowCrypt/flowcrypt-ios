@@ -5,10 +5,6 @@
 import UIKit
 import Promises
 
-enum ImapError: Error {
-    case general
-}
-
 final class Imap {
     static let instance = Imap(googleApi: GoogleApi.shared)
     
