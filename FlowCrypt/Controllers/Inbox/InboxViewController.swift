@@ -18,18 +18,7 @@ final class InboxViewController: UIViewController {
     private enum Constants {
         static let numberOfMessagesToLoad = 10
         static let inboxCellHeight: CGFloat = 90.0
-        static let loadMoreTreshold: CGFloat = 300
-
-        static func convertDate(date: Date) -> String {
-            let dateFormater = DateFormatter()
-            if Calendar.current.isDateInToday(date) {
-                dateFormater.dateFormat = "h:mm a"
-            }
-            else {
-                dateFormater.dateFormat = "dd MMM yyyy"
-            }
-            return dateFormater.string(from: date)
-        }
+        static let loadMoreTreshold: CGFloat = 300 
     }
 
     private let messageProvider: MessageProvider = DefaultMessageProvider()

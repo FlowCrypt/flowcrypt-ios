@@ -81,10 +81,7 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let context = context else { return }
-
-        imap.totalNumberOfInboxMsgs = 0
-        imap.messages.removeAll()
-
+        
         // TODO: - Add safe subscript
         let input = InboxViewModel(
             folderName: context.menu[indexPath.row].capitalized,

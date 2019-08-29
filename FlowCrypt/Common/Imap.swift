@@ -10,8 +10,7 @@ import RxSwift
 final class Imap {
     static let instance = Imap()
     
-    var totalNumberOfInboxMsgs: Int32 = 0
-    var messages = [MCOIMAPMessage]()
+
     let inboxFolder = "INBOX"
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
@@ -317,5 +316,21 @@ enum MailDestination {
             case .trash: return "[Gmail]/Trash"
             }
         }
+    }
+}
+
+
+enum FCError: Error {
+    case general
+    case authentication
+    case operation(Error)
+}
+
+extension FCError {
+    init(_ error: Error) {
+        if (error as NSError).code == Imap.Err.authentication.rawValue {
+            self = .authentication
+        }
+        self = .operation(error)
     }
 }

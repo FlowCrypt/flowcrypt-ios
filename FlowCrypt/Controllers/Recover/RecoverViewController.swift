@@ -63,9 +63,12 @@ extension RecoverViewController {
         passPhaseTextField.delegate = self
         observeKeyboardNotifications()
 
-        userService.onLogOut.subscribe(onNext: { [weak self] _ in
-            self?.navigationController?.popViewController(animated: true)
-        }).disposed(by: disposeBag)
+        userService
+            .onLogOut
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            }).disposed(by: disposeBag)
     }
 
     private func fetchBackups() {

@@ -26,6 +26,7 @@ final class SignInViewController: UIViewController {
 
         userService.onLogin
             .observeOn(MainScheduler.instance)
+            .take(1) // can be replaced based on navigation architecture
             .subscribe(onNext: { [weak self] _ in
                 self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
             })

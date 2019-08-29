@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import GoogleSignIn
 import RealmSwift
 import IQKeyboardManagerSwift
 
@@ -19,14 +18,14 @@ protocol AppAssembley {
 
 struct RootAssembley: AppAssembley {
     private let userService: UserService
-    private let assembleys: [Assembley]
+    private let assemblies: [Assembley]
 
     init(
         userService: UserService = .shared,
-        assembleys: [Assembley] = AssembleyFactory.assembleys()
+        assemblies: [Assembley] = AssembleyFactory.assemblies()
     ) {
         self.userService = userService
-        self.assembleys = assembleys
+        self.assemblies = assemblies
     }
 
     func assemble() {
@@ -70,7 +69,7 @@ struct RootAssembley: AppAssembley {
     }
 
     func startFlow() -> Bool {
-        assembleys.forEach { $0.assemble() }
+        assemblies.forEach { $0.assemble() }
         return true
     }
 }
@@ -78,24 +77,11 @@ struct RootAssembley: AppAssembley {
 struct AssembleyFactory {
     private init() {}
     
-    static func assembleys() -> [Assembley] {
+    static func assemblies() -> [Assembley] {
         return [AuthAssembley()]
     }
 }
 
 protocol Assembley {
     func assemble()
-}
-
-struct AuthAssembley: Assembley {
-    private let service = UserService.shared
-
-    func assemble() {
-        GIDSignIn.sharedInstance().clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
-        GIDSignIn.sharedInstance().scopes = [
-            "https://www.googleapis.com/auth/userinfo.profile",
-            "https://mail.google.com/"
-        ]
-        service.setup()
-    }
 }
