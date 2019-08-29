@@ -7,72 +7,120 @@
 //
 
 import Foundation
+import RxSwift
 
+struct MessageContext {
+    let messages: [MCOIMAPMessage]
+    let totalMessages: Int
+}
 
-// TODO: - Draft
-// Implement retryable
+protocol MessageProvider {
+    func fetchMessages(for folder: String, count: Int, from: Int?) -> Observable<MessageContext>
+}
 
-func shouldRetry(on error: Error?, title: String?) -> Bool {
-    guard let error = error else { return false }
+struct DefaultMessageProvider: MessageProvider {
+    private let sessionProvider: Imap
+    private let logger: Logger
+    private let messageProvider: MessageKindProvider
 
-    let debugId = UUID()
-
-    let title = title ?? ""
-    Logger.debug(1, "(\(debugId)|\(title)) on error = ", value: error)
-
-    let flowCryptEroor = FCError(error)
-    Logger.debug(2, "(\(debugId)|\(title)) error type =", value: flowCryptEroor)
-
-    switch flowCryptEroor {
-    case .authentication: break
-    case .general: break
-    case .operation: break
+    var session: MCOIMAPSession {
+        #warning("Should be fixed")
+        return sessionProvider.getImapSess()!
     }
-    return false
+
+    init(
+        sessionProvider: Imap = .instance,
+        logger: Logger = Logger(),
+        messageProvider: MessageKindProvider = DefaultMessageKindProvider()
+    ) {
+        self.sessionProvider = sessionProvider
+        self.logger = logger
+        self.messageProvider = messageProvider
+    }
+
+    func fetchMessages(for folder: String, count: Int, from: Int? = 0) -> Observable<MessageContext> {
+        var totalCount = 0
+        return folderInfo(for: folder)
+            .map {
+                let total = Int($0.messageCount)
+                totalCount = total
+                return total
+            }
+            .map {
+                self.createSet(for: count, total: $0, from: (from ?? 0))
+            }
+            .flatMap { (set: MCOIndexSet) -> Observable<[MCOIMAPMessage]> in
+                let kind = self.messageProvider.imapMessagesRequestKind
+                return self.fetchMessagesByNumberOperation(for: folder, kind: kind, set: set)
+            }
+            .map {
+                MessageContext(messages: $0, totalMessages: totalCount)
+            }
+            .retry(3)
+    }
 }
 
-func handleAuthError() {
+extension DefaultMessageProvider {
+    private func folderInfo(for path: String) -> Observable<MCOIMAPFolderInfo> {
+        return Observable.create { observer in
+            self.session
+                .folderInfoOperation(path)
+                .start { error, folder in
+                    if let error = error {
+                        observer.onError(FCError(error))
+                    }
+                    if let folder = folder {
+                        observer.onNext(folder)
+                        observer.onCompleted()
+                    }
+                    else {
+                        observer.onError(FCError.general)
+                    }
+            }
+            return Disposables.create()
+        }
+    }
 
-    // GoogleApi.shared.renewAccessToken()
+    private func createSet(for numberOfMessages: Int, total: Int, from: Int) -> MCOIndexSet {
+        var lenght = numberOfMessages - 1
+        if lenght < 0 {
+            lenght = 0
+        }
 
-//    self.googleApi.renewAccessToken().then { accessToken in
-//        Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
-//        let _ = self.getImapSess(newAccessToken: accessToken) // use the new token
-//        let _ = self.getSmtpSess(newAccessToken: accessToken) // use the new token
-//        Imap.debug(5, "(\(debugId)|\(op)) forced session refreshes")
-//        self.logger.log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
-//        retry().then(resolve).catch(reject)
-//        }.catch { error in
-//            Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: e)
-//            self.logger.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
-//            reject(error)
-//    }
-//    self.lastErr[op] = Err(rawValue: e.code)
-//    Imap.debug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-//    Imap.debug(11, "(\(debugId)|\(op)) return=true (need to retry)")
-//    return false; // need to retry
+        var diff = total - lenght - from
+        if diff < 0 {
+            diff = 1
+        }
+
+        let range = MCORange(location: UInt64(diff), length: UInt64(lenght))
+
+        return MCOIndexSet(range: range)
+    }
+
+    private func fetchMessagesByNumberOperation(
+        for folder: String,
+        kind: MCOIMAPMessagesRequestKind,
+        set: MCOIndexSet
+        ) -> Observable<[MCOIMAPMessage]> {
+        return Observable.create { observer in
+            self.session
+                .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: set)
+                .start { error, messages, set in
+                    if let error = error {
+                        observer.onError(FCError(error))
+                    }
+                    if let messages = messages as? [MCOIMAPMessage]  {
+                        observer.onNext(messages)
+                        observer.onCompleted()
+                    }
+                    else {
+                        observer.onError(FCError.general)
+                    }
+            }
+
+            return Disposables.create()
+        }
+    }
 }
-//
-//        let start = DispatchTime.now()
-//        // also checking against lastErr below to avoid infinite retry loop
-//        if let e = err as NSError?, e.code == Err.authentication.rawValue, self.lastErr[op] != Err.authentication {
-//
-//        } else if let e = err as NSError?, e.code == Err.connection.rawValue, self.lastErr[op] != Err.connection {
-//            Imap.debug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
-//            self.imapSess = nil; // the connection has dropped, so it's probably ok to not officially "close" it
-//            self.smtpSess = nil; // but maybe there could be a cleaner way to dispose of the connection?
-//            self.lastErr[op] = Err(rawValue: e.code)
-//            Imap.debug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-//            self.logger.log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
-//            retry().then(resolve).catch(reject)
-//            Imap.debug(15, "(\(debugId)|\(op)) return=true (need to retry)")
-//            return false; // need to retry
-//        } else {
-//            Imap.debug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
-//            reject(err ?? ImapError.general)
-//            self.lastErr[op] = Err(rawValue: (err as NSError?)?.code ?? Constants.Global.generalError)
-//            Imap.debug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-//            Imap.debug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
-//            return true // no need to retry
-//        }
-//}
+
+
