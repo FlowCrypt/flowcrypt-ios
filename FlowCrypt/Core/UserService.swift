@@ -39,14 +39,7 @@ final class UserService: NSObject {
         Logger.debug(100, "GoogleApi.setup()")
         GIDSignIn.sharedInstance().delegate = self
         if let user = dataManager.currentUser() {
-            _onLogin.onNext(user)
-//            Logger.debug(101, "GoogleApi calling signInSilently")
-//            // from docs: Attempts to sign in a previously authenticated user without interaction.  The delegate will be
-//            // from docs: called at the end of this process indicating success or failure.
-//            GIDSignIn.sharedInstance().signInSilently() // todo - we are not waiting for the delegate to be called here. This cauess imap calls to fail and transparently retry
-//            // if we could force Imap calls to wait until this refresh is done, then imap calls would not have to needlessly retry
-//            // "sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!)" - here is where it gets called back
-//            Logger.debug(102, "GoogleApi calling signInSilently done")
+            _onLogin.onNext(user) 
         }
     }
 
