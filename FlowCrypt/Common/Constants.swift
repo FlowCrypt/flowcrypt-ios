@@ -38,7 +38,7 @@ enum Constants {
             dateFormater.dateFormat = "h:mm a"
         }
         else {
-            dateFormater.dateFormat = "dd MMM"
+            dateFormater.dateFormat = "dd MMM yyyy"
         }
         return dateFormater.string(from: date)
     }

@@ -8,7 +8,7 @@ import Promises
 final class MyMenuTableViewController: UIViewController {
     // TODO: Inject as a dependency
     private let imap = Imap.instance
-    private let googleApi = GoogleApi.shared
+    private let dataManager = DataManager.shared
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var lblName: UILabel!
@@ -25,14 +25,12 @@ final class MyMenuTableViewController: UIViewController {
 
     private func setupUI() {
          // show first name, save space
-        let name = googleApi
-            .getName()
+        let name = dataManager.currentUser()?.name
             .split(separator: " ")
             .first
             .map(String.init) ?? ""
 
-        let email = googleApi
-            .getEmail()
+        let email = dataManager.currentUser()?.email
             .replacingOccurrences(of: "@gmail.com", with: "")
 
         lblName.text = name

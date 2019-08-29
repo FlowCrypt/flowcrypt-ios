@@ -43,7 +43,7 @@ final class ComposeViewController: UIViewController {
     // TODO: Inject as a dependency
     private let imap = Imap.instance
     private let notificationCenter = NotificationCenter.default
-    private let googleApi = GoogleApi.shared
+    private let dataManager = DataManager.shared
     private let attesterApi = AttesterApi.shared
 
     private var viewModel: Input?
@@ -223,7 +223,7 @@ extension ComposeViewController {
                 to: [email],
                 cc: [],
                 bcc: [],
-                from: googleApi.getEmail(),
+                from: dataManager.currentUser()?.email ?? "",
                 subject: subject,
                 replyToMimeMsg: replyToMimeMsg
             )

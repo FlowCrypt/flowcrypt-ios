@@ -11,7 +11,6 @@ import IQKeyboardManagerSwift
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    private let googleApi = GoogleApi.shared
     private let assembley = RootAssembley()
     private lazy var appUrlHandler = AppUrlHandler(googleApi: GIDSignIn.sharedInstance())
 

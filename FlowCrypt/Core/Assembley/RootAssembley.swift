@@ -18,19 +18,21 @@ protocol AppAssembley {
 }
 
 struct RootAssembley: AppAssembley {
+    private let userService: UserService
+    private let assembleys: [Assembley]
 
-    private let googleApi: GoogleApi
-
-    init(googleApi: GoogleApi = .shared) {
-        self.googleApi = googleApi
+    init(
+        userService: UserService = .shared,
+        assembleys: [Assembley] = AssembleyFactory.assembleys()
+    ) {
+        self.userService = userService
+        self.assembleys = assembleys
     }
 
     func assemble() {
         DispatchQueue.promises = .global() // this helps prevent Promise deadlocks
 
         Core.startInBackgroundIfNotAlreadyRunning()
-
-        googleApi.setup()
     }
 
     func setup(window: UIWindow?) {
@@ -39,7 +41,7 @@ struct RootAssembley: AppAssembley {
         guard var nv = storyboard.instantiateViewController(withIdentifier: "MainNavigationController") as? UINavigationController
             else { assert(); return }
 
-        guard isValidSession() else {
+        guard userService.isSessionValid() else {
             window?.rootViewController = nv
             window?.makeKeyAndVisible()
             return
@@ -67,11 +69,33 @@ struct RootAssembley: AppAssembley {
         assertionFailure("Couldn't instantiate main controller")
     }
 
-    private func isValidSession() -> Bool {
-        return googleApi.isGoogleSessionValid()
-    }
-
     func startFlow() -> Bool {
+        assembleys.forEach { $0.assemble() }
         return true
+    }
+}
+
+struct AssembleyFactory {
+    private init() {}
+    
+    static func assembleys() -> [Assembley] {
+        return [AuthAssembley()]
+    }
+}
+
+protocol Assembley {
+    func assemble()
+}
+
+struct AuthAssembley: Assembley {
+    private let service = UserService.shared
+
+    func assemble() {
+        GIDSignIn.sharedInstance().clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
+        GIDSignIn.sharedInstance().scopes = [
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://mail.google.com/"
+        ]
+        service.setup()
     }
 }

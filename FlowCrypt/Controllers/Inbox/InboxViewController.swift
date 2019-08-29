@@ -3,10 +3,8 @@
 //
 
 import UIKit
-import MBProgressHUD
 import Promises
-import ENSwiftSideMenu
-
+import RxSwift
 
 extension InboxViewController {
     static func instance(with input: InboxViewModel) -> InboxViewController {
@@ -21,10 +19,21 @@ final class InboxViewController: UIViewController {
         static let numberOfMessagesToLoad = 10
         static let inboxCellHeight: CGFloat = 90.0
         static let loadMoreTreshold: CGFloat = 300
+
+        static func convertDate(date: Date) -> String {
+            let dateFormater = DateFormatter()
+            if Calendar.current.isDateInToday(date) {
+                dateFormater.dateFormat = "h:mm a"
+            }
+            else {
+                dateFormater.dateFormat = "dd MMM yyyy"
+            }
+            return dateFormater.string(from: date)
+        }
     }
 
-    // TODO: Inject as a dependency
-    private let imap = Imap.instance
+    private let messageProvider: MessageProvider = DefaultMessageProvider()
+    private let disposeBag = DisposeBag()
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblEmptyMessage: UILabel!
@@ -44,9 +53,10 @@ final class InboxViewController: UIViewController {
     private var loadMoreInPosition = false
     private var canLoadMore = true {
         didSet {
-            tableView.tableFooterView?.isHidden = canLoadMore
+            tableView.tableFooterView?.isHidden = !canLoadMore
         }
     }
+    private var totalNumberOfMessages = 0
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -112,38 +122,49 @@ extension InboxViewController {
             refreshControl.beginRefreshing()
         }
 
-        imap.fetchLastMsgs(count: Constants.numberOfMessagesToLoad, folder: viewModel.path)
-            .then(on: .main) { [weak self] messages in
-                guard let self = self else { return }
-                self.messages = messages
-                self.tableView.reloadData()
-            }
-            .catch(on: .main) { [weak self] error in
-                guard let self = self else { return }
-                self.refreshControl.endRefreshing()
-                self.showAlert(error: error, message: Language.failedToLoadMessages)
-        }
+        messageProvider
+            .fetchMessages(for: viewModel.path, count: Constants.numberOfMessagesToLoad, from: 0)
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onNext: { [weak self] context in
+                    guard let self = self else { return }
+                    self.messages = context.messages.sorted(by: { $0.header.date > $1.header.date })
+                    self.canLoadMore = self.messages.count < context.totalMessages
+                    self.totalNumberOfMessages = context.totalMessages
+                    self.tableView.reloadData()
+                },
+                onError: { [weak self] error in
+                    self?.refreshControl.endRefreshing()
+                    self?.showAlert(error: error, message: Language.failedToLoadMessages)
+                })
+            .disposed(by: disposeBag)
     }
 
     private func loadMore() {
-        canLoadMore = false
+        guard canLoadMore else { return }
         loadMoreActivityIndicator.startAnimating()
 
-        imap.fetchMoreMessages(count: Constants.numberOfMessagesToLoad, folder: viewModel.path)
-            .then(on: .main) { [weak self] msgs in
-                guard let self = self else { return }
-                self.handleNew(messages: msgs)
-            }
-            .catch(on: .main) { [weak self] error in
-                guard let self = self else { return }
-                self.canLoadMore = true
-                self.refreshControl.endRefreshing()
-        }
+
+        let from = messages.count
+        let diff = min(Constants.numberOfMessagesToLoad, totalNumberOfMessages - from)
+
+        messageProvider
+            .fetchMessages(for: viewModel.path, count: diff, from: from)
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onNext: { [weak self] context in
+                    self?.handleNew(messages: context)
+                },
+                onError: { [weak self] error in
+                    self?.canLoadMore = true
+                    self?.refreshControl.endRefreshing()
+                })
+            .disposed(by: disposeBag)
     }
 
-    private func handleNew(messages msgs: [MCOIMAPMessage]) {
+    private func handleNew(messages context: MessageContext) {
         let count = messages.count - 1
-        let indexesToUpdate = msgs.enumerated()
+        let indexesToUpdate = context.messages.enumerated()
             .map { (index, value) -> Int in
                 let indexInTableView = index + count
                 return indexInTableView
@@ -151,9 +172,10 @@ extension InboxViewController {
             .map { IndexPath(row: $0, section: 0)}
         print(indexesToUpdate)
 
-        messages.append(contentsOf: msgs)
+        messages.append(contentsOf: context.messages)
         tableView.insertRows(at: indexesToUpdate, with: .none)
-        canLoadMore = true
+        canLoadMore = messages.count < context.totalMessages
+        totalNumberOfMessages = context.totalMessages
         refreshControl.endRefreshing()
     }
 }
@@ -213,7 +235,6 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
         let msgVc = MsgViewController.instance(with: messageInput, delegate: self)
         navigationController?.pushViewController(msgVc, animated: true)
     }
-    
 }
 
 extension InboxViewController: UIScrollViewDelegate {

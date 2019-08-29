@@ -6,6 +6,7 @@ import UIKit
 import MBProgressHUD
 import RealmSwift
 import Promises
+import RxSwift
 
 final class RecoverViewController: UIViewController {
     private enum Constants {
@@ -17,20 +18,20 @@ final class RecoverViewController: UIViewController {
     }
     // TODO: Inject as a dependency
     private let imap = Imap.instance
-    private let googleApi = GoogleApi.shared
+    private let userService = UserService.shared
 
     @IBOutlet weak var passPhaseTextField: UITextField!
     @IBOutlet weak var btnLoadAccount: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
-    
+
     private var encryptedBackups: [KeyDetails] = []
+    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupUI()
         fetchBackups()
-
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -60,14 +61,17 @@ extension RecoverViewController {
             self.view.addGestureRecognizer($0)
         }
         passPhaseTextField.delegate = self
-
         observeKeyboardNotifications()
+
+        userService.onLogOut.subscribe(onNext: { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        }).disposed(by: disposeBag)
     }
 
     private func fetchBackups() {
         showSpinner()
 
-        imap.searchBackups(email: googleApi.getEmail())
+        imap.searchBackups(email: DataManager.shared.currentUser()?.email ?? "")
             .then { data -> [KeyDetails] in
                 let keyDetailsRes = try Core.parseKeys(armoredOrBinary: data)
                 return keyDetailsRes.keyDetails
@@ -89,22 +93,20 @@ extension RecoverViewController {
 
     private func showRetryFetchBackupsOrChangeAcctAlert(msg: String) {
         let alert = UIAlertController(title: "Notice", message: msg, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.fetchBackups() })
+        alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in
+            self.fetchBackups()
+        })
         alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
             self?.handleForOtherAccount()
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive) { [weak self] _ in
+            self?.hideSpinner()
         })
         present(alert, animated: true, completion: nil)
     }
 
     private func handleForOtherAccount() {
-        googleApi.signOut()
-            .then(on: .main) { [weak self] _ in
-                let signInVc = UIStoryboard.main.instantiate(SignInViewController.self)
-                self?.navigationController?.pushViewController(signInVc, animated: true)
-            }
-            .catch {
-                self.showAlert(error: $0, message: "")
-            }
+        userService.signOut()
     }
 }
 
@@ -114,13 +116,12 @@ extension RecoverViewController {
     }
 
     @IBAction func loadAccountButtonPressed(_ sender: Any) {
-        guard let passPrase = passPhaseTextField.text, passPrase.isEmpty else {
+        endEditing()
+        guard let passPrase = passPhaseTextField.text, !passPrase.isEmpty else {
             showAlert(message: Constants.enterPassPhrase)
             return
         }
-
         showSpinner()
-
 
         let matchingBackups: [KeyDetails] = encryptedBackups
             .compactMap { (key) -> KeyDetails? in
