@@ -252,12 +252,12 @@ final class Imap {
             return true // no need to retry
         } else {
             let debugId = Int.random(in: 1...Int.max)
-            Imap.debug(1, "(\(debugId)|\(op)) new err retryAuthErrorNotNeeded, err=", value: err)
-            Imap.debug(2, "(\(debugId)|\(op)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr[op])
+            logger.debug(1, "(\(debugId)|\(op)) new err retryAuthErrorNotNeeded, err=", value: err)
+            logger.debug(2, "(\(debugId)|\(op)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr[op])
             let start = DispatchTime.now()
             // also checking against lastErr below to avoid infinite retry loop
             if let e = err as NSError?, e.code == Err.authentication.rawValue, self.lastErr[op] != Err.authentication {
-                Imap.debug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
+                logger.debug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
                 self.userService.renewAccessToken()
 //                    .then { accessToken in
 //                    Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
@@ -276,28 +276,24 @@ final class Imap {
 //                Imap.debug(11, "(\(debugId)|\(op)) return=true (need to retry)")
                 return false; // need to retry
             } else if let e = err as NSError?, e.code == Err.connection.rawValue, self.lastErr[op] != Err.connection {
-                Imap.debug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
+                logger.debug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
                 self.imapSess = nil; // the connection has dropped, so it's probably ok to not officially "close" it
                 self.smtpSess = nil; // but maybe there could be a cleaner way to dispose of the connection?
                 self.lastErr[op] = Err(rawValue: e.code)
-                Imap.debug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                logger.debug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
                 self.logger.log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
                 retry().then(resolve).catch(reject)
-                Imap.debug(15, "(\(debugId)|\(op)) return=true (need to retry)")
+                logger.debug(15, "(\(debugId)|\(op)) return=true (need to retry)")
                 return false; // need to retry
             } else {
-                Imap.debug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
+                logger.debug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
                 reject(err ?? FCError.general)
                 self.lastErr[op] = Err(rawValue: (err as NSError?)?.code ?? Constants.Global.generalError)
-                Imap.debug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-                Imap.debug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
+                logger.debug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                logger.debug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
                 return true // no need to retry
             }
         }
-    }
-
-    public static func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
-//         print("[Imap debug \(id) - \(msg)] \(String(describing: value))")
     }
 
 }

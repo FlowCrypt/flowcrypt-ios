@@ -11,26 +11,26 @@ import Foundation
 // TODO: - Draft
 // Implement retryable
 
-func shouldRetry(on error: Error?, title: String?) -> Bool {
-    guard let error = error else { return false }
+//func shouldRetry(on error: Error?, title: String?) -> Bool {
+//    guard let error = error else { return false }
+//
+//    let debugId = UUID()
+//
+//    let title = title ?? ""
+//    Logger.debug(1, "(\(debugId)|\(title)) on error = ", value: error)
+//
+//    let flowCryptEroor = FCError(error)
+//    Logger.debug(2, "(\(debugId)|\(title)) error type =", value: flowCryptEroor)
+//
+//    switch flowCryptEroor {
+//    case .authentication: break
+//    case .general: break
+//    case .operation: break
+//    }
+//    return false
+//}
 
-    let debugId = UUID()
-
-    let title = title ?? ""
-    Logger.debug(1, "(\(debugId)|\(title)) on error = ", value: error)
-
-    let flowCryptEroor = FCError(error)
-    Logger.debug(2, "(\(debugId)|\(title)) error type =", value: flowCryptEroor)
-
-    switch flowCryptEroor {
-    case .authentication: break
-    case .general: break
-    case .operation: break
-    }
-    return false
-}
-
-func handleAuthError() {
+//func handleAuthError() {
 
     // GoogleApi.shared.renewAccessToken()
 
@@ -50,7 +50,7 @@ func handleAuthError() {
     //    Imap.debug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
     //    Imap.debug(11, "(\(debugId)|\(op)) return=true (need to retry)")
     //    return false; // need to retry
-}
+//}
 //
 //        let start = DispatchTime.now()
 //        // also checking against lastErr below to avoid infinite retry loop
