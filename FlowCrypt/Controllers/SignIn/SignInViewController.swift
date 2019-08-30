@@ -52,7 +52,7 @@ final class SignInViewController: UIViewController {
 // MARK: - Events
 extension SignInViewController {
     @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
-        Logger().debug(106, "GoogleApi.signIn")
+        logDebug(106, "GoogleApi.signIn")
         userService.signIn()
     }
 
@@ -90,12 +90,12 @@ extension SignInViewController {
 
 extension SignInViewController: GIDSignInUIDelegate {
     func sign(_ signIn: GIDSignIn!, present viewController: UIViewController!) {
-        Logger().debug(117, "GoogleApi present vc")
+        logDebug(117, "GoogleApi present vc")
         present(viewController, animated: true, completion: nil)
     }
 
     func sign(_ signIn: GIDSignIn!, dismiss viewController: UIViewController!) {
-        Logger().debug(118, "GoogleApi dismiss vc")
+        logDebug(118, "GoogleApi dismiss vc")
         dismiss(animated: true, completion: nil)
     }
 }

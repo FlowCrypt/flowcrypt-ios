@@ -36,7 +36,7 @@ final class UserService: NSObject {
     }
 
     func setup() {
-        Logger().debug(100, "GoogleApi.setup()")
+        logDebug(100, "GoogleApi.setup()")
         GIDSignIn.sharedInstance().delegate = self
         if let user = dataManager.currentUser() {
             _onLogin.onNext(user) 

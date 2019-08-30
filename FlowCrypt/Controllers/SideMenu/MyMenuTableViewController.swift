@@ -51,7 +51,6 @@ final class MyMenuTableViewController: UIViewController {
     private func handleFolders(with result: FoldersContext) {
         hideSpinner()
         context = result
-        tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isSelected = true
     }
 
 }

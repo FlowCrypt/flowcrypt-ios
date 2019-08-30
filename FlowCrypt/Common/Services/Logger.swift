@@ -8,7 +8,16 @@
 
 import Foundation
 
-struct Logger {
+func log(_ message: String, error: Error?, res: Any?, start: DispatchTime) {
+    Logger().log(message, error: error, res: res, start: start)
+}
+
+func logDebug(_ id: Int, _ msg: String, value: Any? = nil) {
+    Logger().debug(id, msg, value: value)
+
+}
+
+private struct Logger {
     func log(_ message: String, error: Error?, res: Any?, start: DispatchTime) {
         let errStr = error.map { "\($0)" } ?? ""
         var resStr = "Unknown"

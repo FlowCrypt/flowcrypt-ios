@@ -20,7 +20,6 @@ protocol MessageProvider {
 
 struct DefaultMessageProvider: MessageProvider {
     private let sessionProvider: Imap
-    private let logger: Logger
     private let messageProvider: MessageKindProvider
 
     var session: MCOIMAPSession {
@@ -30,11 +29,9 @@ struct DefaultMessageProvider: MessageProvider {
 
     init(
         sessionProvider: Imap = .instance,
-        logger: Logger = Logger(),
         messageProvider: MessageKindProvider = DefaultMessageKindProvider()
     ) {
         self.sessionProvider = sessionProvider
-        self.logger = logger
         self.messageProvider = messageProvider
     }
 

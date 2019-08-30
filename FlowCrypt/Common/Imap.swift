@@ -18,7 +18,6 @@ final class Imap {
     private typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
     private var lastErr: [String: Err] = [:]
-    private let logger = Logger()
     private let userService: UserService
     private let dataManager: DataManager
     private let disposeBag = DisposeBag()
@@ -89,7 +88,7 @@ final class Imap {
     func fetchFolders() -> Promise<FoldersContext> { return Promise<FoldersContext> { resolve, reject in
         let start = DispatchTime.now()
         self.getImapSess()?.fetchAllFoldersOperation().start { (error, res) in
-            self.logger.log("fetchMsgs", error: error, res: res, start: start)
+            log("fetchMsgs", error: error, res: res, start: start)
             guard self.retryAuthErrorNotNeeded("fetchLastMsgs", error, resolve, reject, retry: { self.fetchFolders() }) else { return }
             guard let arr = res as NSArray? else {
                 reject(Errors.valueError("Response from fetchFolders not a NSArray, instead got \(String(describing: res))"))
@@ -118,14 +117,14 @@ final class Imap {
     private func fetchMsgs(folder: String, kind: ReqKind, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> { return Promise { resolve, reject in
         let start = DispatchTime.now()
         guard uids.count() > 0 else {
-            self.logger.log("fetchMsgs_empty", error: nil, res: [], start: start)
+            log("fetchMsgs_empty", error: nil, res: [], start: start)
             resolve([]) // attempting to fetch an empty set of uids would cause IMAP error
             return
         }
         self.getImapSess()?
             .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)
             .start { error, msgs, vanished in
-                self.logger.log("fetchMsgs", error: error, res: nil, start: start)
+                log("fetchMsgs", error: error, res: nil, start: start)
                 guard self.retryAuthErrorNotNeeded("fetchMsgs", error, resolve, reject, retry: { self.fetchMsgs(folder: folder, kind: kind, uids: uids) }) else { return }
                 let messages = msgs as? [MCOIMAPMessage]
                 
@@ -209,7 +208,7 @@ final class Imap {
     private func finalize<T>(_ op: String, _ resolve: @escaping (T) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<T>) -> (Error?, T?) -> Void {
         let start = DispatchTime.now()
         return { (error, res) in
-            self.logger.log(op, error: error, res: res, start: start)
+            log(op, error: error, res: res, start: start)
             guard self.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) else { return }
             if let res = res {
                 resolve(res)
@@ -222,7 +221,7 @@ final class Imap {
     private func finalizeVoid(_ op: String, _ resolve: @escaping (VOID) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<VOID>) -> (Error?) -> Void {
         let start = DispatchTime.now()
         return { (error) in
-            self.logger.log(op, error: error, res: nil, start: start)
+            log(op, error: error, res: nil, start: start)
             guard self.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) else { return }
             if let error = error {
                 reject(error)
@@ -235,7 +234,7 @@ final class Imap {
     private func finalizeAsVoid(_ op: String, _ resolve: @escaping (VOID) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<VOID>) -> (Error?, Any?) -> Void {
         let start = DispatchTime.now()
         return { (error, discardable) in
-            self.logger.log(op, error: error, res: nil, start: start)
+            log(op, error: error, res: nil, start: start)
             guard self.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) else { return }
             if let error = error {
                 reject(error)
@@ -252,12 +251,12 @@ final class Imap {
             return true // no need to retry
         } else {
             let debugId = Int.random(in: 1...Int.max)
-            logger.debug(1, "(\(debugId)|\(op)) new err retryAuthErrorNotNeeded, err=", value: err)
-            logger.debug(2, "(\(debugId)|\(op)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr[op])
+            logDebug(1, "(\(debugId)|\(op)) new err retryAuthErrorNotNeeded, err=", value: err)
+            logDebug(2, "(\(debugId)|\(op)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr[op])
             let start = DispatchTime.now()
             // also checking against lastErr below to avoid infinite retry loop
             if let e = err as NSError?, e.code == Err.authentication.rawValue, self.lastErr[op] != Err.authentication {
-                logger.debug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
+                logDebug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
                 self.userService.renewAccessToken()
 //                    .then { accessToken in
 //                    Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
@@ -276,21 +275,21 @@ final class Imap {
 //                Imap.debug(11, "(\(debugId)|\(op)) return=true (need to retry)")
                 return false; // need to retry
             } else if let e = err as NSError?, e.code == Err.connection.rawValue, self.lastErr[op] != Err.connection {
-                logger.debug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
+                logDebug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
                 self.imapSess = nil; // the connection has dropped, so it's probably ok to not officially "close" it
                 self.smtpSess = nil; // but maybe there could be a cleaner way to dispose of the connection?
                 self.lastErr[op] = Err(rawValue: e.code)
-                logger.debug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-                self.logger.log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
+                logDebug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
                 retry().then(resolve).catch(reject)
-                logger.debug(15, "(\(debugId)|\(op)) return=true (need to retry)")
+                logDebug(15, "(\(debugId)|\(op)) return=true (need to retry)")
                 return false; // need to retry
             } else {
-                logger.debug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
+                logDebug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
                 reject(err ?? FCError.general)
                 self.lastErr[op] = Err(rawValue: (err as NSError?)?.code ?? Constants.Global.generalError)
-                logger.debug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-                logger.debug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
+                logDebug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                logDebug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
                 return true // no need to retry
             }
         }
