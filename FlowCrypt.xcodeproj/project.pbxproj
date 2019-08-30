@@ -10,7 +10,6 @@
 		04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
-		32DCA009F3149806AA1103B1 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		32DCA1339D6857686ABD3FC4 /* UIVIewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIVIewExtension.swift */; };
 		32DCA1414EEA727B86C337D5 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
@@ -19,7 +18,6 @@
 		32DCA1FE33A44B4B18F1404B /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAA865E9EC19756776544 /* Errors.swift */; };
 		32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */; };
 		32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA377D22F4D67A8FA05EB /* Imap.swift */; };
-		32DCA4DE5ED89E8BC8E9887E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
 		32DCA4F8E74975F0393FA29C /* SecPaddingExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */; };
 		32DCA5577770FF2394018FA9 /* AttesterApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9F692BEE170EBBA4EE7 /* AttesterApi.swift */; };
 		32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
@@ -47,6 +45,7 @@
 		9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProvider.swift */; };
 		9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1B23186A5700299985 /* AuthAssembley.swift */; };
 		9F0C3C1E23186FEA00299985 /* Temporarry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1D23186FEA00299985 /* Temporarry.swift */; };
+		9F0C3C2023191F6B00299985 /* Imap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA377D22F4D67A8FA05EB /* Imap.swift */; };
 		9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
 		9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */; };
@@ -60,7 +59,6 @@
 		A3A680ED22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */; };
 		A3A680EE22EEF03600905813 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAA865E9EC19756776544 /* Errors.swift */; };
 		A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */; };
-		A3DAD60622E4585800F2C4CD /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
 		A3DAD60A22E458C100F2C4CD /* CodableExntension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntension.swift */; };
 		A3DAD60B22E458C300F2C4CD /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtension.swift */; };
@@ -244,15 +242,9 @@
 		32DCA376D595968F13A3347A /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				9F0C3C0C2316DD3200299985 /* Common */,
-				9F0C3C0D2316DD4100299985 /* Assembley */,
-				9F0C3C0E2316DD4B00299985 /* Handlers */,
-				9F0C3C0F2316DD5B00299985 /* UserService.swift */,
-				9F0C3C112316DDA500299985 /* DataManager.swift */,
-				9F0C3C17231819B200299985 /* Logger.swift */,
-				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
-				9F0C3C082315A30900299985 /* MessagesProvider.swift */,
-				9F0C3C1D23186FEA00299985 /* Temporarry.swift */,
+				32DCAC732B988D9704658812 /* CoreTypes.swift */,
+				32DCA0C3D34A69851A238E87 /* Core.swift */,
+				32DCACB22E895C2500A99350 /* CoreHost.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -294,16 +286,6 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		9F0C3C0C2316DD3200299985 /* Common */ = {
-			isa = PBXGroup;
-			children = (
-				32DCAC732B988D9704658812 /* CoreTypes.swift */,
-				32DCA0C3D34A69851A238E87 /* Core.swift */,
-				32DCACB22E895C2500A99350 /* CoreHost.swift */,
-			);
-			path = Common;
-			sourceTree = "<group>";
-		};
 		9F0C3C0D2316DD4100299985 /* Assembley */ = {
 			isa = PBXGroup;
 			children = (
@@ -319,6 +301,19 @@
 				9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */,
 			);
 			path = Handlers;
+			sourceTree = "<group>";
+		};
+		9F0C3C1F23191F2000299985 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				9F0C3C0F2316DD5B00299985 /* UserService.swift */,
+				9F0C3C112316DDA500299985 /* DataManager.swift */,
+				9F0C3C082315A30900299985 /* MessagesProvider.swift */,
+				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
+				9F0C3C17231819B200299985 /* Logger.swift */,
+				9F0C3C1D23186FEA00299985 /* Temporarry.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		9FD22A1D230FEEC8005067A6 /* Views */ = {
@@ -424,6 +419,9 @@
 		C132B9C61EC2DCC000763715 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				9F0C3C0D2316DD4100299985 /* Assembley */,
+				9F0C3C0E2316DD4B00299985 /* Handlers */,
+				9F0C3C1F23191F2000299985 /* Services */,
 				C132B9CA1EC2DE6400763715 /* Constants.swift */,
 				32DCA9F692BEE170EBBA4EE7 /* AttesterApi.swift */,
 				32DCA377D22F4D67A8FA05EB /* Imap.swift */,
@@ -704,16 +702,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
-				A3DAD60622E4585800F2C4CD /* CoreTypes.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
 				A3DAD60B22E458C300F2C4CD /* DataExtension.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				A3DAD60A22E458C100F2C4CD /* CodableExntension.swift in Sources */,
 				A3A680EE22EEF03600905813 /* Errors.swift in Sources */,
 				32DCACFD1193878BEB48C24D /* PromiseExtension.swift in Sources */,
-				32DCA009F3149806AA1103B1 /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
-				32DCA4DE5ED89E8BC8E9887E /* CoreHost.swift in Sources */,
+				9F0C3C2023191F6B00299985 /* Imap.swift in Sources */,
 				32DCA4F8E74975F0393FA29C /* SecPaddingExtension.swift in Sources */,
 				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */,
 				32DCA17B0294558E2ADA998D /* bignum.c in Sources */,

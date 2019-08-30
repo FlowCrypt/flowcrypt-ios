@@ -224,6 +224,7 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
         let msgVc = MsgViewController.instance(with: messageInput, delegate: self)
         navigationController?.pushViewController(msgVc, animated: true)
     }
+    
 }
 
 extension InboxViewController: UIScrollViewDelegate {
@@ -241,7 +242,7 @@ extension InboxViewController: UIScrollViewDelegate {
             }
             else {
                 loadMoreInPosition = false
-            }
+            } 
         }
     }
 } 

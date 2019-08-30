@@ -316,17 +316,4 @@ enum MailDestination {
 }
 
 
-enum FCError: Error {
-    case general
-    case authentication
-    case operation(Error)
-}
 
-extension FCError {
-    init(_ error: Error) {
-        if (error as NSError).code == Imap.Err.authentication.rawValue {
-            self = .authentication
-        }
-        self = .operation(error)
-    }
-}
