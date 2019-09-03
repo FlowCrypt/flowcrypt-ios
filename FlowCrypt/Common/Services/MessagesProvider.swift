@@ -37,6 +37,8 @@ struct DefaultMessageProvider: MessageProvider {
 
     func fetchMessages(for folder: String, count: Int, from: Int? = 0) -> Observable<MessageContext> {
         var totalCount = 0
+        let kind = self.messageProvider.imapMessagesRequestKind
+
         return folderInfo(for: folder)
             .map {
                 let total = Int($0.messageCount)
@@ -47,13 +49,12 @@ struct DefaultMessageProvider: MessageProvider {
                 self.createSet(for: count, total: $0, from: (from ?? 0))
             }
             .flatMap { (set: MCOIndexSet) -> Observable<[MCOIMAPMessage]> in
-                let kind = self.messageProvider.imapMessagesRequestKind
                 return self.fetchMessagesByNumberOperation(for: folder, kind: kind, set: set)
             }
             .map {
                 MessageContext(messages: $0, totalMessages: totalCount)
             }
-            .retry(3)
+            .retryWhenToken()
     }
 }
 
@@ -98,7 +99,7 @@ extension DefaultMessageProvider {
         for folder: String,
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet
-        ) -> Observable<[MCOIMAPMessage]> {
+    ) -> Observable<[MCOIMAPMessage]> {
         return Observable.create { observer in
             self.session
                 .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: set)
@@ -119,5 +120,4 @@ extension DefaultMessageProvider {
         }
     }
 }
-
 

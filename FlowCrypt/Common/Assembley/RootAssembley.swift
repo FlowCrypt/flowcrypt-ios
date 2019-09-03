@@ -17,11 +17,11 @@ protocol AppAssembley {
 }
 
 struct RootAssembley: AppAssembley {
-    private let userService: UserService
+    private let userService: UserServiceType
     private let assemblies: [Assembley]
 
     init(
-        userService: UserService = .shared,
+        userService: UserServiceType = UserService.shared,
         assemblies: [Assembley] = AssembleyFactory.assemblies()
     ) {
         self.userService = userService

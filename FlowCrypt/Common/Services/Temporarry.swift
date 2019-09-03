@@ -11,24 +11,24 @@ import Foundation
 // TODO: - Draft
 // Implement retryable
 
-//func shouldRetry(on error: Error?, title: String?) -> Bool {
-//    guard let error = error else { return false }
-//
-//    let debugId = UUID()
-//
-//    let title = title ?? ""
+func shouldRetry(on error: Error?, title: String?) -> Bool {
+    guard let error = error else { return false }
+
+    let debugId = UUID()
+
+    let title = title ?? ""
 //    Logger.debug(1, "(\(debugId)|\(title)) on error = ", value: error)
-//
-//    let flowCryptEroor = FCError(error)
+
+    let flowCryptEroor = FCError(error)
 //    Logger.debug(2, "(\(debugId)|\(title)) error type =", value: flowCryptEroor)
-//
-//    switch flowCryptEroor {
-//    case .authentication: break
-//    case .general: break
-//    case .operation: break
-//    }
-//    return false
-//}
+
+    switch flowCryptEroor {
+    case .authentication: break
+    case .general: break
+    case .operation: break
+    }
+    return false
+}
 
 //func handleAuthError() {
 

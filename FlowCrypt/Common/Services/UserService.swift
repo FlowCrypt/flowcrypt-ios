@@ -10,8 +10,19 @@ import Foundation
 import GoogleSignIn
 import RxSwift
 
+protocol UserServiceType {
+    var onLogin: Observable<User> { get }
+    var onLogOut: Observable<Void> { get }
+    var onError: Observable<FCError> { get }
 
-final class UserService: NSObject {
+    func setup()
+    func signIn()
+    func signOut()
+    func renewAccessToken()
+    func isSessionValid() -> Bool
+}
+
+final class UserService: NSObject, UserServiceType {
     static let shared = UserService()
 
     var onLogin: Observable<User> { return _onLogin.asObservable() }
@@ -66,6 +77,7 @@ extension UserService: GIDSignInDelegate {
         if error == nil {
             let newUser = User(user)
             dataManager.saveToken(with: user.authentication.accessToken)
+            DataManager.shared.a = 1
             if dataManager.saveCurrent(user: newUser) {
                 _onLogin.onNext(newUser)
             } else {

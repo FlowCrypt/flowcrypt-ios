@@ -15,11 +15,17 @@ struct InboxViewModel {
     init(folderName: String, path: String) {
         self.folderName = folderName
         if folderName.isEmpty {
-            self.path = "INBOX"
+            self.path = "Inbox"
         } else {
             self.path = path
         }
     }
 
     static var empty = InboxViewModel(folderName: "", path: "")
+}
+
+extension InboxViewModel {
+    init(_ folder: FolderViewModel) {
+        self.init(folderName: folder.name, path: folder.path)
+    }
 }

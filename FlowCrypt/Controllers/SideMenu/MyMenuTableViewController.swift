@@ -3,18 +3,25 @@
 //
 
 import UIKit
-import Promises
+import RxSwift
 
 final class MyMenuTableViewController: UIViewController {
+    private enum Constants {
+        static let allMail = "All Mail"
+        static let inbox = "Inbox"
+        static let cellHeight: CGFloat = 60
+    }
+
     // TODO: Inject as a dependency
-    private let imap = Imap.instance
+    private let foldersProvider: FoldersProvider = DefaultFoldersProvider()
     private let dataManager = DataManager.shared
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var lblName: UILabel!
     @IBOutlet var lblEmail: UILabel!
 
-    private var context: FoldersContext? { didSet { tableView.reloadData()} }
+    private var folders: [FolderViewModel] = []
+    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,26 +46,39 @@ final class MyMenuTableViewController: UIViewController {
 
     private func fetchFolders() {
         showSpinner()
-        imap.fetchFolders()
-            .then(on: .main) { [weak self] res in
-                self?.handleFolders(with: res)
-            }
-            .catch { [weak self] error in
-                self?.showAlert(error: error, message: Language.could_not_fetch_folders)
-            }
+        foldersProvider.fetchFolders()
+            .retryWhenToken()
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onNext: { [weak self] folders in
+                    self?.handleFolders(with: folders)
+                },
+                onError: { [weak self] error in
+                    self?.showAlert(error: error, message: Language.could_not_fetch_folders)
+                }
+            )
+            .disposed(by: disposeBag)
     }
 
     private func handleFolders(with result: FoldersContext) {
         hideSpinner()
-        context = result
+        folders = result.folders
+            .compactMap(FolderViewModel.init)
+            .sorted(by: { (left, right) in
+                if left.path.caseInsensitiveCompare(Constants.inbox) == .orderedSame {
+                    return true
+                } else if left.path.caseInsensitiveCompare(Constants.allMail) == .orderedSame {
+                    return true
+                }
+                return false
+            })
+        tableView.reloadData()
     }
-
 }
 
 extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return context?.menu.count ?? 0
+        return folders.count
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -66,26 +86,16 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // TODO: - Add safe subscript
-        guard let cell: MenuCell = self.tableView.dequeueReusableCell(withIdentifier: "MenuCell") as? MenuCell,
-            let title = context?.menu[indexPath.row]
-        else {
-            assertionFailure()
-            return UITableViewCell()
-        }
-        cell.lblName.text = title
+        let cell = tableView.dequeueReusableCell(ofType: MenuCell.self, at: indexPath)
+        let folder = folders[indexPath.row]
+        cell.lblName.text = folder.name
 
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let context = context else { return }
-        
-        // TODO: - Add safe subscript
-        let input = InboxViewModel(
-            folderName: context.menu[indexPath.row].capitalized,
-            path: context.folders[indexPath.row].path
-        )
+        guard let folder = folders[safe: indexPath.row] else { return }
+        let input = InboxViewModel(folder)
         let inboxVc = InboxViewController.instance(with: input)
         sideMenuController()?.setContentViewController(inboxVc)
     }
@@ -98,5 +108,6 @@ final class MenuCell: UITableViewCell {
         selectionStyle = .none
     }
 }
+
 
 

@@ -8,6 +8,9 @@ import RxSwift
 
 @available(*, deprecated, message: "Try to avoid using imap service in current implementation. Need to be refactored due to memory leaks mutating states, storing all datas. Refactor god object. Things to refactor narked as // TODO: - IMAP.")
 final class Imap {
+    var onNewSession = PublishSubject<MCOIMAPSession>()
+
+
     static let instance = Imap()
     
 
@@ -18,7 +21,7 @@ final class Imap {
     private typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
     private var lastErr: [String: Err] = [:]
-    private let userService: UserService
+    private let userService: UserServiceType
     private let dataManager: DataManager
     private let disposeBag = DisposeBag()
 
@@ -32,7 +35,9 @@ final class Imap {
         return dataManager.currentToken() ?? ""
     }
 
-    private init(userService: UserService = .shared, dataManager: DataManager = .shared) {
+    var a = 0
+
+    private init(userService: UserServiceType = UserService.shared, dataManager: DataManager = .shared) {
         self.userService = userService
         self.dataManager = dataManager
 
@@ -53,9 +58,14 @@ final class Imap {
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.username = email
             imapSess.password = nil
-            imapSess.oAuth2Token = newAccessToken ?? DataManager.shared.currentToken() ?? ""
+            imapSess.oAuth2Token = a == 0
+                ? ""
+                :newAccessToken ?? DataManager.shared.currentToken() ?? ""
+            a += 1
+
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.connectionType = MCOConnectionType.TLS
+            onNewSession.onNext(imapSess)
             self.imapSess = imapSess
 //            imapSess.connectionLogger = {(connectionID, type, data) in
 //                if data != nil {
@@ -84,29 +94,6 @@ final class Imap {
         }
         return smtpSess
     }
-
-    func fetchFolders() -> Promise<FoldersContext> { return Promise<FoldersContext> { resolve, reject in
-        let start = DispatchTime.now()
-        self.getImapSess()?.fetchAllFoldersOperation().start { (error, res) in
-            log("fetchMsgs", error: error, res: res, start: start)
-            guard self.retryAuthErrorNotNeeded("fetchLastMsgs", error, resolve, reject, retry: { self.fetchFolders() }) else { return }
-            guard let arr = res as NSArray? else {
-                reject(Errors.valueError("Response from fetchFolders not a NSArray, instead got \(String(describing: res))"))
-                return;
-            }
-            var menu = [String]()
-            var folders = [MCOIMAPFolder]()
-            for f in arr {
-                guard let folder = f as? MCOIMAPFolder else { return }
-                let path = folder.path.replacingOccurrences(of: "[Gmail]", with: "").trimLeadingSlash
-                if !path.isEmpty {
-                    menu.append(path)
-                    folders.append(folder)
-                }
-            }
-            resolve(FoldersContext(folders: folders, menu: menu))
-        }
-    }}
 
     func fetchMsg(message: MCOIMAPMessage, folder: String) -> Promise<Data> { return Promise { resolve, reject in
         self.getImapSess()?
@@ -295,11 +282,6 @@ final class Imap {
         }
     }
 
-}
-
-struct FoldersContext {
-    let folders: [MCOIMAPFolder]
-    let menu: [String]
 }
 
 enum MailDestination {

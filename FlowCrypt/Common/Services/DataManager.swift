@@ -10,12 +10,14 @@ import Foundation
 
 struct DataManager {
     // TODO: - safe in keychain
-    static let shared = DataManager()
+    static var shared = DataManager()
 
     private enum Constants {
         static let userKey = "keyCurrentUser"
         static let tokenKey = "keyCurrentToken"
     }
+
+    var a = 0
 
     private let userDefaults: UserDefaults
 
@@ -28,6 +30,9 @@ struct DataManager {
     }
 
     func currentToken() -> String? {
+//        if a == 0 { 
+//            return "asfff"
+//        }
         return userDefaults.string(forKey: Constants.tokenKey)
     }
 
