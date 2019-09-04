@@ -15,9 +15,11 @@
 		32DCA1414EEA727B86C337D5 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		32DCA17B0294558E2ADA998D /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEB2BF97371D3A68E329 /* bignum.c */; };
 		32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA7E0AFE19FACB0F233ED /* URLSessionExtension.swift */; };
+		32DCA1D6067D3A5B9AF03635 /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
 		32DCA1FE33A44B4B18F1404B /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAA865E9EC19756776544 /* Errors.swift */; };
 		32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */; };
 		32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA377D22F4D67A8FA05EB /* Imap.swift */; };
+		32DCA3847AFB3D05608CB191 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		32DCA4F8E74975F0393FA29C /* SecPaddingExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */; };
 		32DCA5577770FF2394018FA9 /* AttesterApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9F692BEE170EBBA4EE7 /* AttesterApi.swift */; };
 		32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
@@ -29,7 +31,9 @@
 		32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntension.swift */; };
 		32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEB2BF97371D3A68E329 /* bignum.c */; };
 		32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
+		32DCAA2C7248D6CCC5504AF4 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAA865E9EC19756776544 /* Errors.swift */; };
 		32DCAAD97FDEB229EA327DB5 /* SecPaddingExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */; };
+		32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtension.swift */; };
 		32DCACFD1193878BEB48C24D /* PromiseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4A964004CBABCA2F01C /* PromiseExtension.swift */; };
 		32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
@@ -714,9 +718,15 @@
 				32DCACFD1193878BEB48C24D /* PromiseExtension.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
+				32DCACFD1193878BEB48C24D /* PromiseExtension.swift in Sources */,
+				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				32DCA4F8E74975F0393FA29C /* SecPaddingExtension.swift in Sources */,
 				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */,
 				32DCA17B0294558E2ADA998D /* bignum.c in Sources */,
+				32DCA3847AFB3D05608CB191 /* Core.swift in Sources */,
+				32DCA1D6067D3A5B9AF03635 /* CoreHost.swift in Sources */,
+				32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */,
+				32DCAA2C7248D6CCC5504AF4 /* Errors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

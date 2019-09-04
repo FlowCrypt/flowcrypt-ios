@@ -3,3 +3,4 @@
 //
 
 #import "bignum.h"
+#import <MailCore/MailCore.h>
