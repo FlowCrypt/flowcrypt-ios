@@ -16,6 +16,7 @@ extension ComposeViewController {
 }
 
 final class ComposeViewController: UIViewController {
+
     struct Input {
         let isReply: Bool
         let replyToRecipient: MCOAddress?
@@ -45,11 +46,7 @@ final class ComposeViewController: UIViewController {
     private let notificationCenter = NotificationCenter.default
     private let dataManager = DataManager.shared
     private let attesterApi = AttesterApi.shared
-
-    private var viewModel: Input?
-    private var isReply: Bool {
-        return viewModel?.isReply ?? false
-    }
+    private var viewModel = Input(isReply: false, replyToRecipient: nil, replyToSubject: nil, replyToMime: nil)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,7 +97,7 @@ extension ComposeViewController {
         txtMessage.delegate = self
         txtMessage.textColor = UIColor.lightGray
 
-        if let viewModel = viewModel, viewModel.isReply {
+        if viewModel.isReply {
             txtSubject.text = "Re: \(viewModel.replyToSubject ?? "(no subject)")"
             txtRecipient.text = viewModel.replyToRecipient?.mailbox ?? ""
         }
@@ -158,7 +155,7 @@ extension ComposeViewController {
             showAlert(message: Constants.enterRecipient)
             return false
         }
-        guard isReply || txtSubject.text?.hasContent ?? false else {
+        guard viewModel.isReply || txtSubject.text?.hasContent ?? false else {
             showAlert(message: Constants.enterSubject)
             return false
         }
@@ -199,11 +196,9 @@ extension ComposeViewController {
     }
 
     private func handleLookupEmail(result: PubkeySearchResult, message: String, email: String) {
-        guard let armored = result.armored, let viewModel = viewModel else {
-            return showAlert(message: Constants.noPgp)
-        }
+        guard let armored = result.armored else { return showAlert(message: Constants.noPgp) }
 
-        let subject = isReply
+        let subject = viewModel.isReply
             ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
             : txtSubject.text ?? "(no subject)"
 
@@ -241,7 +236,7 @@ extension ComposeViewController {
             .then(on: .main) { [weak self] _ in
                 guard let self = self else { return }
                 self.hideSpinner()
-                self.showToast(self.isReply ? Constants.replySent : Constants.messageSent)
+                self.showToast(self.viewModel.isReply ? Constants.replySent : Constants.messageSent)
                 self.navigationController?.popViewController(animated: true)
             }
             .catch(on: .main) { [weak self] error in
@@ -275,7 +270,7 @@ extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
         if textField == self.txtRecipient {
             txtSubject.becomeFirstResponder()
         }
-        if !isReply && textField == self.txtSubject {
+        if !viewModel.isReply && textField == self.txtSubject {
             txtMessage.becomeFirstResponder()
             return false
         }
