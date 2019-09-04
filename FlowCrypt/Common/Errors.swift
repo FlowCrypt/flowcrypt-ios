@@ -11,6 +11,7 @@ enum Errors: Error {
 }
 
 enum FCError: Error {
+    fileprivate static let authErrorCode = 5 // MCOErrorAuthentication
     case general
     case authentication
     case operation(Error)
@@ -18,7 +19,7 @@ enum FCError: Error {
 
 extension FCError {
     init(_ error: Error) {
-        if (error as NSError).code == Imap.Err.authentication.rawValue {
+        if (error as NSError).code == FCError.authErrorCode {
             self = .authentication
         }
         self = .operation(error)
