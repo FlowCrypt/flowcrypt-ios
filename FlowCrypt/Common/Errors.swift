@@ -2,13 +2,27 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
+@available(*, deprecated, message: "Use FCError")
 enum Errors: Error {
     case programmingError(String)
     case valueError(String)
 }
 
-enum ImapError: Error {
+enum FCError: Error {
+    fileprivate static let authErrorCode = 5 // MCOErrorAuthentication
     case general
+    case authentication
+    case operation(Error)
+}
+
+extension FCError {
+    init(_ error: Error) {
+        if (error as NSError).code == MCOErrorCode.authentication.rawValue {
+            // Using MCOErrorCode instead of Imap.Err so that we don't have to include Imap in all Targets
+            self = .authentication
+        }
+        self = .operation(error)
+    }
 }

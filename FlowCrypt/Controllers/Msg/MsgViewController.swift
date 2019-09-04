@@ -114,12 +114,13 @@ final class MsgViewController: UIViewController {
 // MARK: - Message
 extension MsgViewController {
     private func fetchMessage() {
+
         guard let input = input else { return }
         showSpinner(Language.loading, isUserInteractionEnabled: true)
 
         imap.fetchMsg(message: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] data in
-                guard let self = self else { throw ImapError.general }
+                guard let self = self else { throw FCError.general }
                 self.input?.bodyMessage = data
                 let realm = try Realm()
                 let decrypted = try Core.parseDecryptMsg(
@@ -131,19 +132,23 @@ extension MsgViewController {
                 self.handleDecryptedMsg(decrypted)
             }
             .catch(on: .main) { [weak self] error in
-                self?.hideSpinner()
-                if let e = error as NSError?, e.code == Imap.Err.fetch.rawValue {
-                    // todo - the missing msg should be removed from the list in inbox view
-                    // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
-                    self?.showToast("Message not found in folder: \(input.path)")
-                } else {
-                    // todo - this should be a retry / cancel alert
-                    self?.showAlert(error: error, message: Language.could_not_open_message + "\n\n\(error)")
-                }
-                self?.navigationController?.popViewController(animated: true)
+                self?.handleMessageFetching(with: error, and: input.path)
             }
     }
 
+    private func handleMessageFetching(with error: Error, and path: String) {
+        hideSpinner()
+
+        if let e = error as NSError?, e.code == Imap.Err.fetch.rawValue {
+            // todo - the missing msg should be removed from the list in inbox view
+            // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
+            showToast("Message not found in folder: \(path)")
+        } else {
+            // todo - this should be a retry / cancel alert
+            showAlert(error: error, message: Language.could_not_open_message + "\n\n\(error)")
+        }
+        navigationController?.popViewController(animated: true)
+    }
 
     private func handleDecryptedMsg(_ decrypted: CoreRes.ParseDecryptMsg) {
         let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }

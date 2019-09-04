@@ -6,6 +6,7 @@ import UIKit
 import MBProgressHUD
 import RealmSwift
 import Promises
+import RxSwift
 
 final class RecoverViewController: UIViewController {
     private enum Constants {
@@ -17,20 +18,20 @@ final class RecoverViewController: UIViewController {
     }
     // TODO: Inject as a dependency
     private let imap = Imap.instance
-    private let googleApi = GoogleApi.shared
+    private let userService = UserService.shared
 
     @IBOutlet weak var passPhaseTextField: UITextField!
     @IBOutlet weak var btnLoadAccount: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
-    
+
     private var encryptedBackups: [KeyDetails] = []
+    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupUI()
         fetchBackups()
-
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -60,14 +61,20 @@ extension RecoverViewController {
             self.view.addGestureRecognizer($0)
         }
         passPhaseTextField.delegate = self
-
         observeKeyboardNotifications()
+
+        userService
+            .onLogOut
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            }).disposed(by: disposeBag)
     }
 
     private func fetchBackups() {
         showSpinner()
 
-        imap.searchBackups(email: googleApi.getEmail())
+        imap.searchBackups(email: DataManager.shared.currentUser()?.email ?? "")
             .then { data -> [KeyDetails] in
                 let keyDetailsRes = try Core.parseKeys(armoredOrBinary: data)
                 return keyDetailsRes.keyDetails
@@ -89,22 +96,20 @@ extension RecoverViewController {
 
     private func showRetryFetchBackupsOrChangeAcctAlert(msg: String) {
         let alert = UIAlertController(title: "Notice", message: msg, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in self.fetchBackups() })
+        alert.addAction(UIAlertAction(title: "Retry", style: .default) { _ in
+            self.fetchBackups()
+        })
         alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
             self?.handleForOtherAccount()
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive) { [weak self] _ in
+            self?.hideSpinner()
         })
         present(alert, animated: true, completion: nil)
     }
 
     private func handleForOtherAccount() {
-        googleApi.signOut()
-            .then(on: .main) { [weak self] _ in
-                let signInVc = UIStoryboard.main.instantiate(SignInViewController.self)
-                self?.navigationController?.pushViewController(signInVc, animated: true)
-            }
-            .catch {
-                self.showAlert(error: $0, message: "")
-            }
+        userService.signOut()
     }
 }
 
@@ -114,41 +119,30 @@ extension RecoverViewController {
     }
 
     @IBAction func loadAccountButtonPressed(_ sender: Any) {
-        guard let passPrase = passPhaseTextField.text, passPrase.isEmpty else {
+        endEditing()
+        guard let passPhrase = passPhaseTextField.text, !passPhrase.isEmpty else {
             showAlert(message: Constants.enterPassPhrase)
             return
         }
-
         showSpinner()
-
-
         let matchingBackups: [KeyDetails] = encryptedBackups
             .compactMap { (key) -> KeyDetails? in
-                guard let privateKey = key.private else { return nil }
-                do {
-                    let decryptRes = try Core.decryptKey(armoredPrv: privateKey, passphrase: passPrase)
-                    if decryptRes.decryptedKey != nil {
-                        return key
-                    }
-                    return nil
-                } catch {
-                    return nil
-                }
+                guard let prv = key.private else { return nil }
+                guard let r = try? Core.decryptKey(armoredPrv: prv, passphrase: passPhrase), r.decryptedKey != nil else { return nil }
+                return key
             }
 
         guard matchingBackups.count > 0 else {
             showAlert(message: Constants.wrongPassPhraseRetry)
             return
         }
-
         // TODO: - Refactor with realm service
         let realm = try! Realm()
         try! realm.write {
             for k in matchingBackups {
-                realm.add(try! KeyInfo(k, passphrase: Constants.enterPassPhrase, source: .backup))
+                realm.add(try! KeyInfo(k, passphrase: passPhrase, source: .backup))
             }
         }
-
         performSegue(withIdentifier: "InboxSegue", sender: nil)
     }
 }
