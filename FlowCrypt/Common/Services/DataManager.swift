@@ -43,10 +43,8 @@ struct DataManager {
     }
 
     func currentUser() -> User? {
-        return try? PropertyListDecoder().decode(
-            User.self,
-            from: userDefaults.object(forKey: Constants.userKey) as! Data
-        )
+        guard let user = userDefaults.object(forKey: Constants.userKey) as? Data else { return nil; }
+        return try? PropertyListDecoder().decode(User.self, from: user)
     }
 
     func logOut() {
