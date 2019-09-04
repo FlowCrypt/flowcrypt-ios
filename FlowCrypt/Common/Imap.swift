@@ -4,12 +4,13 @@
 
 import UIKit
 import Promises
+import RxSwift
 
+@available(*, deprecated, message: "Try to avoid using imap service in current implementation. Need to be refactored due to memory leaks mutating states, storing all datas. Refactor god object. Things to refactor narked as // TODO: - IMAP.")
 final class Imap {
-    static let instance = Imap(googleApi: GoogleApi.shared)
+    static let instance = Imap()
     
-    var totalNumberOfInboxMsgs: Int32 = 0
-    var messages = [MCOIMAPMessage]()
+
     let inboxFolder = "INBOX"
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
@@ -17,12 +18,31 @@ final class Imap {
     private typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
     private var lastErr: [String: Err] = [:]
-    private let googleApi: GoogleApi
+    private let userService: UserService
+    private let dataManager: DataManager
+    private let disposeBag = DisposeBag()
 
-    private init(googleApi: GoogleApi) {
-        self.googleApi = googleApi
+    var email: String {
+        return dataManager.currentUser()?.email ?? ""
+    }
+    var name: String {
+        return dataManager.currentUser()?.name ?? ""
+    }
+    var token: String {
+        return dataManager.currentToken() ?? ""
     }
 
+    private init(userService: UserService = .shared, dataManager: DataManager = .shared) {
+        self.userService = userService
+        self.dataManager = dataManager
+
+        userService.onLogin.observeOn(MainScheduler.instance).subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            self.getImapSess(newAccessToken: self.token)
+        }).disposed(by: disposeBag)
+    }
+
+    @discardableResult
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession? {
         if imapSess == nil || newAccessToken != nil {
             print("IMAP: creating a new session")
@@ -31,9 +51,9 @@ final class Imap {
             imapSess.port = 993
             imapSess.connectionType = MCOConnectionType.TLS
             imapSess.authType = MCOAuthType.xoAuth2
-            imapSess.username = googleApi.getEmail()
+            imapSess.username = email
             imapSess.password = nil
-            imapSess.oAuth2Token = newAccessToken ?? googleApi.getAccessToken()
+            imapSess.oAuth2Token = newAccessToken ?? DataManager.shared.currentToken() ?? ""
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.connectionType = MCOConnectionType.TLS
             self.imapSess = imapSess
@@ -57,82 +77,18 @@ final class Imap {
             smtpSess.port = 465
             smtpSess.connectionType = MCOConnectionType.TLS
             smtpSess.authType = MCOAuthType.xoAuth2
-            smtpSess.username = googleApi.getEmail()
+            smtpSess.username = email
             smtpSess.password = nil
-            smtpSess.oAuth2Token = newAccessToken ?? googleApi.getAccessToken()
+            smtpSess.oAuth2Token = token
             self.smtpSess = smtpSess
         }
         return smtpSess
     }
 
-    private func fetchFolderInfo(_ folder: String) -> Promise<MCOIMAPFolderInfo> { return Promise<MCOIMAPFolderInfo> { resolve, reject in
-        self.getImapSess()?
-            .folderInfoOperation(folder)
-            .start(self.finalize("fetchFolderInfo", resolve, reject, retry: { self.fetchFolderInfo(folder) }))
-    }}
-
-    private func fetchMsgsByNumber(_ folder: String, kind: MCOIMAPMessagesRequestKind, range: MCORange) -> Promise<[MCOIMAPMessage]> { return Promise<[MCOIMAPMessage]> { resolve, reject in
-        let start = DispatchTime.now()
-        self.getImapSess()?
-            .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: MCOIndexSet(range: range))
-            .start { error, msgs, vanishedMsgs in
-                self.log("fetchMsgsByNumber", error: error, res: nil, start: start)
-                guard self.retryAuthErrorNotNeeded("fetchMsgsByNumber", error, resolve, reject, retry: { self.fetchMsgsByNumber(folder, kind: kind, range: range) }) else { return }
-                if let error = error {
-                    reject(error)
-                } else {
-                    guard let messages = msgs as? [MCOIMAPMessage] else {
-                        reject(Errors.valueError("fetchMessagesByNumber messages == nil"))
-                        return
-                    }
-                    self.messages.append(contentsOf: messages)
-                    self.messages.sort { $0.header.date > $1.header.date }
-                    resolve(self.messages)
-                }
-            }
-    }}
-
-    func fetchLastMsgs(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> { return Promise<[MCOIMAPMessage]>.valueReturning {
-        let kind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
-        let folderInfo = try await(self.fetchFolderInfo(folder))
-        let didTotalNumberOfMsgsChange = Int32(self.totalNumberOfInboxMsgs) != folderInfo.messageCount
-        self.messages.removeAll()
-        self.totalNumberOfInboxMsgs = folderInfo.messageCount
-        var numberOfMsgsToLoad = min(self.totalNumberOfInboxMsgs, Int32(count))
-        guard numberOfMsgsToLoad > 0 else { return [] }
-        let fetchRange: MCORange
-        if (!didTotalNumberOfMsgsChange && self.messages.count > 0) {
-            // if total number of messages did not change since last fetch, assume nothing was deleted since our last fetch and fetch what we don't have
-            numberOfMsgsToLoad -= Int32(self.messages.count)
-            fetchRange = MCORangeMake(UInt64(self.totalNumberOfInboxMsgs - Int32(self.messages.count) - (numberOfMsgsToLoad - 1)), UInt64(numberOfMsgsToLoad - 1))
-        } else { // else fetch the last N messages
-            fetchRange = MCORangeMake(UInt64(self.totalNumberOfInboxMsgs - (numberOfMsgsToLoad - 1)), (UInt64(numberOfMsgsToLoad - 1)))
-        }
-        return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
-    }}
-
-    func fetchMoreMessages(count: Int, folder: String) -> Promise<[MCOIMAPMessage]> {
-        return Promise<[MCOIMAPMessage]>.valueReturning { [weak self] in
-            guard let self = self else { return [] }
-            let kind = ReqKind.headers.rawValue
-                | ReqKind.structure.rawValue
-                | ReqKind.internalDate.rawValue
-                | ReqKind.headerSubject.rawValue
-                | ReqKind.flags.rawValue
-
-        let folderInfo = try await(self.fetchFolderInfo(folder))
-        self.totalNumberOfInboxMsgs = folderInfo.messageCount
-        let positionOfLastLoadedMsg = self.totalNumberOfInboxMsgs - Int32(self.messages.count)
-        let numberOfMsgsToLoad = min(positionOfLastLoadedMsg, Int32(count))
-        guard numberOfMsgsToLoad > 0 else { return self.messages }
-        let fetchRange: MCORange = MCORangeMake(UInt64(positionOfLastLoadedMsg), UInt64(numberOfMsgsToLoad - 1))
-        return try await(self.fetchMsgsByNumber(folder, kind: ReqKind(rawValue: kind), range: fetchRange))
-    }}
-
     func fetchFolders() -> Promise<FoldersContext> { return Promise<FoldersContext> { resolve, reject in
         let start = DispatchTime.now()
         self.getImapSess()?.fetchAllFoldersOperation().start { (error, res) in
-            self.log("fetchMsgs", error: error, res: res, start: start)
+            log("fetchMsgs", error: error, res: res, start: start)
             guard self.retryAuthErrorNotNeeded("fetchLastMsgs", error, resolve, reject, retry: { self.fetchFolders() }) else { return }
             guard let arr = res as NSArray? else {
                 reject(Errors.valueError("Response from fetchFolders not a NSArray, instead got \(String(describing: res))"))
@@ -161,14 +117,14 @@ final class Imap {
     private func fetchMsgs(folder: String, kind: ReqKind, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> { return Promise { resolve, reject in
         let start = DispatchTime.now()
         guard uids.count() > 0 else {
-            self.log("fetchMsgs_empty", error: nil, res: [], start: start)
+            log("fetchMsgs_empty", error: nil, res: [], start: start)
             resolve([]) // attempting to fetch an empty set of uids would cause IMAP error
             return
         }
         self.getImapSess()?
             .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)
             .start { error, msgs, vanished in
-                self.log("fetchMsgs", error: error, res: nil, start: start)
+                log("fetchMsgs", error: error, res: nil, start: start)
                 guard self.retryAuthErrorNotNeeded("fetchMsgs", error, resolve, reject, retry: { self.fetchMsgs(folder: folder, kind: kind, uids: uids) }) else { return }
                 let messages = msgs as? [MCOIMAPMessage]
                 
@@ -229,7 +185,12 @@ final class Imap {
             return Data()
         }
         let searchRes = try await(self.searchExpression(folder: self.inboxFolder, expression: backupSearchExpr))
-        let requestKind = ReqKind.headers.rawValue | ReqKind.structure.rawValue | ReqKind.internalDate.rawValue | ReqKind.headerSubject.rawValue | ReqKind.flags.rawValue
+        let requestKind = ReqKind.headers.rawValue
+            | ReqKind.structure.rawValue
+            | ReqKind.internalDate.rawValue
+            | ReqKind.headerSubject.rawValue
+            | ReqKind.flags.rawValue
+
         let msgs = try await(self.fetchMsgs(folder: self.inboxFolder, kind: ReqKind(rawValue: requestKind), uids: searchRes))
         var data = Data()
         for msg in msgs {
@@ -242,30 +203,17 @@ final class Imap {
         return data
     }}
 
-    private func log(_ op: String, error: Error?, res: Any?, start: DispatchTime) {
-        let errStr = error.map { "\($0)" } ?? ""
-        var resStr = "Unknown"
-        if res == nil {
-            resStr = "nil" 
-        } else if let data = res as? Data {
-            resStr = "Data[\(res != nil ? (data.count < 1204 ? "\(data.count)" : "\(data.count / 1024)k") : "-")]"
-        } else if let res = res as? NSArray {
-            resStr = "Array[\(res.count)]"
-        } else if let res = res as? FoldersContext {
-            resStr = "FetchFoldersRes[\(res.folders.count)]"
-        }
-        print("IMAP \(op) -> \(errStr) \(resStr) \(start.millisecondsSince)ms")
-    }
+
 
     private func finalize<T>(_ op: String, _ resolve: @escaping (T) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<T>) -> (Error?, T?) -> Void {
         let start = DispatchTime.now()
         return { (error, res) in
-            self.log(op, error: error, res: res, start: start)
+            log(op, error: error, res: res, start: start)
             guard self.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) else { return }
             if let res = res {
                 resolve(res)
             } else {
-                reject(error ?? ImapError.general)
+                reject(error ?? FCError.general)
             }
         }
     }
@@ -273,7 +221,7 @@ final class Imap {
     private func finalizeVoid(_ op: String, _ resolve: @escaping (VOID) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<VOID>) -> (Error?) -> Void {
         let start = DispatchTime.now()
         return { (error) in
-            self.log(op, error: error, res: nil, start: start)
+            log(op, error: error, res: nil, start: start)
             guard self.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) else { return }
             if let error = error {
                 reject(error)
@@ -286,7 +234,7 @@ final class Imap {
     private func finalizeAsVoid(_ op: String, _ resolve: @escaping (VOID) -> Void, _ reject: @escaping (Error) -> Void, retry: @escaping () -> Promise<VOID>) -> (Error?, Any?) -> Void {
         let start = DispatchTime.now()
         return { (error, discardable) in
-            self.log(op, error: error, res: nil, start: start)
+            log(op, error: error, res: nil, start: start)
             guard self.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) else { return }
             if let error = error {
                 reject(error)
@@ -303,51 +251,48 @@ final class Imap {
             return true // no need to retry
         } else {
             let debugId = Int.random(in: 1...Int.max)
-            Imap.debug(1, "(\(debugId)|\(op)) new err retryAuthErrorNotNeeded, err=", value: err)
-            Imap.debug(2, "(\(debugId)|\(op)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr[op])
+            logDebug(1, "(\(debugId)|\(op)) new err retryAuthErrorNotNeeded, err=", value: err)
+            logDebug(2, "(\(debugId)|\(op)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr[op])
             let start = DispatchTime.now()
             // also checking against lastErr below to avoid infinite retry loop
             if let e = err as NSError?, e.code == Err.authentication.rawValue, self.lastErr[op] != Err.authentication {
-                Imap.debug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
-                self.googleApi.renewAccessToken().then { accessToken in
-                    Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
-                    let _ = self.getImapSess(newAccessToken: accessToken) // use the new token
-                    let _ = self.getSmtpSess(newAccessToken: accessToken) // use the new token
-                    Imap.debug(5, "(\(debugId)|\(op)) forced session refreshes")
-                    self.log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
-                    retry().then(resolve).catch(reject)
-                }.catch { error in
-                    Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: e)
-                    self.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
-                    reject(error)
-                }
-                self.lastErr[op] = Err(rawValue: e.code)
-                Imap.debug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-                Imap.debug(11, "(\(debugId)|\(op)) return=true (need to retry)")
+                logDebug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
+                self.userService.renewAccessToken()
+//                    .then { accessToken in
+//                    Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
+//                    let _ = self.getImapSess(newAccessToken: accessToken) // use the new token
+//                    let _ = self.getSmtpSess(newAccessToken: accessToken) // use the new token
+//                    Imap.debug(5, "(\(debugId)|\(op)) forced session refreshes")
+//                    self.logger.log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
+//                    retry().then(resolve).catch(reject)
+//                }.catch { error in
+//                    Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: e)
+//                    self.logger.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
+//                    reject(error)
+//                }
+//                self.lastErr[op] = Err(rawValue: e.code)
+//                Imap.debug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+//                Imap.debug(11, "(\(debugId)|\(op)) return=true (need to retry)")
                 return false; // need to retry
             } else if let e = err as NSError?, e.code == Err.connection.rawValue, self.lastErr[op] != Err.connection {
-                Imap.debug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
+                logDebug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
                 self.imapSess = nil; // the connection has dropped, so it's probably ok to not officially "close" it
                 self.smtpSess = nil; // but maybe there could be a cleaner way to dispose of the connection?
                 self.lastErr[op] = Err(rawValue: e.code)
-                Imap.debug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-                self.log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
+                logDebug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
                 retry().then(resolve).catch(reject)
-                Imap.debug(15, "(\(debugId)|\(op)) return=true (need to retry)")
+                logDebug(15, "(\(debugId)|\(op)) return=true (need to retry)")
                 return false; // need to retry
             } else {
-                Imap.debug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
-                reject(err ?? ImapError.general)
+                logDebug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
+                reject(err ?? FCError.general)
                 self.lastErr[op] = Err(rawValue: (err as NSError?)?.code ?? Constants.Global.generalError)
-                Imap.debug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-                Imap.debug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
+                logDebug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                logDebug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
                 return true // no need to retry
             }
         }
-    }
-
-    public static func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
-//         print("[Imap debug \(id) - \(msg)] \(String(describing: value))")
     }
 
 }
@@ -368,3 +313,6 @@ enum MailDestination {
         }
     }
 }
+
+
+

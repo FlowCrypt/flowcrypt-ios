@@ -11,8 +11,8 @@ import IQKeyboardManagerSwift
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    private let googleApi = GoogleApi.shared
     private let assembley = RootAssembley()
+    private lazy var appUrlHandler = AppUrlHandler(googleApi: GIDSignIn.sharedInstance())
 
     var window: UIWindow?
 
@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        return GIDSignIn.sharedInstance().handle(url, sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplication.OpenURLOptionsKey.annotation])
+        return appUrlHandler.handle(app, open: url, options: options)
     }
 }
 

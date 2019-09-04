@@ -69,3 +69,4 @@ struct Language {
     static let unhandled_core_err = "Background core service error"
     static let could_not_fetch_folders = "Could not fetch folders"
 }
+

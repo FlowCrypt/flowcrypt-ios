@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import GoogleSignIn
 import RealmSwift
 import IQKeyboardManagerSwift
 
@@ -18,19 +17,21 @@ protocol AppAssembley {
 }
 
 struct RootAssembley: AppAssembley {
+    private let userService: UserService
+    private let assemblies: [Assembley]
 
-    private let googleApi: GoogleApi
-
-    init(googleApi: GoogleApi = .shared) {
-        self.googleApi = googleApi
+    init(
+        userService: UserService = .shared,
+        assemblies: [Assembley] = AssembleyFactory.assemblies()
+    ) {
+        self.userService = userService
+        self.assemblies = assemblies
     }
 
     func assemble() {
         DispatchQueue.promises = .global() // this helps prevent Promise deadlocks
 
         Core.startInBackgroundIfNotAlreadyRunning()
-
-        googleApi.setup()
     }
 
     func setup(window: UIWindow?) {
@@ -39,7 +40,7 @@ struct RootAssembley: AppAssembley {
         guard var nv = storyboard.instantiateViewController(withIdentifier: "MainNavigationController") as? UINavigationController
             else { assert(); return }
 
-        guard isValidSession() else {
+        guard userService.isSessionValid() else {
             window?.rootViewController = nv
             window?.makeKeyAndVisible()
             return
@@ -67,11 +68,20 @@ struct RootAssembley: AppAssembley {
         assertionFailure("Couldn't instantiate main controller")
     }
 
-    private func isValidSession() -> Bool {
-        return googleApi.isGoogleSessionValid()
-    }
-
     func startFlow() -> Bool {
+        assemblies.forEach { $0.assemble() }
         return true
     }
+}
+
+struct AssembleyFactory {
+    private init() {}
+    
+    static func assemblies() -> [Assembley] {
+        return [AuthAssembley()]
+    }
+}
+
+protocol Assembley {
+    func assemble()
 }
