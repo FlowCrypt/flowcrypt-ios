@@ -159,8 +159,6 @@ extension InboxViewController {
                 return indexInTableView
             }
             .map { IndexPath(row: $0, section: 0)}
-        print(indexesToUpdate)
-
         messages.append(contentsOf: context.messages)
         tableView.insertRows(at: indexesToUpdate, with: .none)
         canLoadMore = messages.count < context.totalMessages
