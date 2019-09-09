@@ -25,17 +25,11 @@ struct DefaultFoldersProvider: FoldersProvider {
         return sessionProvider.getImapSess()!
     }
 
-    init(
-        sessionProvider: Imap = .instance
-    ) {
+    init(sessionProvider: Imap = .instance) {
         self.sessionProvider = sessionProvider
     }
 
-    func fetchFolders -> Observable<FoldersContext> {
-        get().re
-    }
-
-    private func get() {
+    func fetchFolders() -> Observable<FoldersContext> {
         return Observable.create { observer in
             self.session
                 .fetchAllFoldersOperation()?
@@ -48,9 +42,8 @@ struct DefaultFoldersProvider: FoldersProvider {
                     } else {
                         observer.onError(FCError.general)
                     }
-            }
-
+                }
             return Disposables.create()
-        }
+            }
     }
 }

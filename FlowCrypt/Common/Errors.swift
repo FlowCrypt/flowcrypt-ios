@@ -13,14 +13,22 @@ enum Errors: Error {
 enum FCError: Error {
     case general
     case authentication
+    case connection
     case operation(Error)
 }
 
 extension FCError {
     init(_ error: Error) {
-        if (error as NSError).code == Imap.Err.authentication.rawValue {
+        let code = (error as NSError).code
+        switch code {
+        case MCOErrorCode.authentication.rawValue:
             self = .authentication
+        case MCOErrorCode.connection.rawValue,
+             MCOErrorCode.tlsNotAvailable.rawValue,
+             MCOErrorCode.connection.rawValue:
+            self = .connection
+        default:
+            self = .operation(error)
         }
-        self = .operation(error)
     }
 }

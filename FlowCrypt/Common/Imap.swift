@@ -10,7 +10,6 @@ import RxSwift
 final class Imap {
     var onNewSession = PublishSubject<MCOIMAPSession>()
 
-
     static let instance = Imap()
     
 
@@ -41,10 +40,18 @@ final class Imap {
         self.userService = userService
         self.dataManager = dataManager
 
-        userService.onLogin.observeOn(MainScheduler.instance).subscribe(onNext: { [weak self] _ in
-            guard let self = self else { return }
-            self.getImapSess(newAccessToken: self.token)
-        }).disposed(by: disposeBag)
+        subscribeForUserLogin()
+    }
+
+    private func subscribeForUserLogin() {
+        // update imap session for new user
+        userService.onLogin
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                let newToken = DataManager.shared.currentToken()
+                self?.getImapSess(newAccessToken: newToken)
+            })
+            .disposed(by: disposeBag)
     }
 
     @discardableResult
@@ -65,8 +72,8 @@ final class Imap {
 
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.connectionType = MCOConnectionType.TLS
-            onNewSession.onNext(imapSess)
             self.imapSess = imapSess
+            onNewSession.onNext(imapSess)
 //            imapSess.connectionLogger = {(connectionID, type, data) in
 //                if data != nil {
 //                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
@@ -242,25 +249,25 @@ final class Imap {
             logDebug(2, "(\(debugId)|\(op)) last err in retryAuthErrorNotNeeded lastErr=", value: self.lastErr[op])
             let start = DispatchTime.now()
             // also checking against lastErr below to avoid infinite retry loop
-            if let e = err as NSError?, e.code == Err.authentication.rawValue, self.lastErr[op] != Err.authentication {
+            if let e = err as NSError?, e.code == Err.authentication.rawValue {
                 logDebug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
-                self.userService.renewAccessToken()
-//                    .then { accessToken in
-//                    Imap.debug(4, "(\(debugId)|\(op)) got renewed access token")
-//                    let _ = self.getImapSess(newAccessToken: accessToken) // use the new token
-//                    let _ = self.getSmtpSess(newAccessToken: accessToken) // use the new token
-//                    Imap.debug(5, "(\(debugId)|\(op)) forced session refreshes")
-//                    self.logger.log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
-//                    retry().then(resolve).catch(reject)
-//                }.catch { error in
-//                    Imap.debug(6, "(\(debugId)|\(op)) error refreshing token", value: e)
-//                    self.logger.log("renewAccessToken for \(op)", error: error, res: nil, start: start)
-//                    reject(error)
-//                }
-//                self.lastErr[op] = Err(rawValue: e.code)
-//                Imap.debug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
-//                Imap.debug(11, "(\(debugId)|\(op)) return=true (need to retry)")
-                return false; // need to retry
+                userService.renewAccessToken()
+
+                if !onNewSession.isDisposed {
+                    onNewSession.dispose()
+                }
+
+                onNewSession.subscribe(
+                    onNext: { accessToken in
+                        logDebug(4, "(\(debugId)|\(op)) got renewed access token \(accessToken)")
+                        retry().then(resolve).catch(reject)
+                    },
+                    onError: { error in
+                        logDebug(6, "(\(debugId)|\(op)) error refreshing token \(error)")
+                        reject(error)
+                    })
+                    .disposed(by: disposeBag)
+                return false
             } else if let e = err as NSError?, e.code == Err.connection.rawValue, self.lastErr[op] != Err.connection {
                 logDebug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
                 self.imapSess = nil; // the connection has dropped, so it's probably ok to not officially "close" it
@@ -281,7 +288,6 @@ final class Imap {
             }
         }
     }
-
 }
 
 enum MailDestination {

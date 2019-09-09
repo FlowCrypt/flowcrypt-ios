@@ -15,15 +15,23 @@ struct FolderViewModel {
 
 extension FolderViewModel {
     init?(_ folder: MCOIMAPFolder) {
-        guard folder.path.isEmpty else { return nil }
-        self.name = {
-            let gmailPath = "[Gmail]"
-            if folder.path.contains(gmailPath) {
-                return folder.path.replacingOccurrences(of: gmailPath, with: "").trimLeadingSlash
-            } else {
-                return folder.path
-            }
-        }()
-        self.path = folder.path
+        guard !folder.path.isEmpty else { return nil }
+
+        let gmailPath = Constants.Global.gmailPath
+        if folder.path.isEmpty || folder.path == gmailPath {
+            return nil
+        } else {
+            self.name = {
+                if folder.path.contains(gmailPath) {
+                    return folder.path.replacingOccurrences(of: gmailPath, with: "")
+                        .trimLeadingSlash
+                        .capitalized
+                } else  {
+                    return folder.path
+                        .capitalized
+                }
+            }()
+            self.path = folder.path
+        }
     }
 }

@@ -17,8 +17,6 @@ struct DataManager {
         static let tokenKey = "keyCurrentToken"
     }
 
-    var a = 0
-
     private let userDefaults: UserDefaults
 
     private init(userDefaults: UserDefaults = .standard) {
@@ -29,10 +27,7 @@ struct DataManager {
         userDefaults.set(string, forKey: Constants.tokenKey)
     }
 
-    func currentToken() -> String? {
-//        if a == 0 { 
-//            return "asfff"
-//        }
+    func currentToken() -> String? { 
         return userDefaults.string(forKey: Constants.tokenKey)
     }
 
@@ -48,16 +43,12 @@ struct DataManager {
     }
 
     func currentUser() -> User? {
-        return try? PropertyListDecoder().decode(
-            User.self,
-            from: userDefaults.object(forKey: Constants.userKey) as! Data
-        )
+        guard let data = userDefaults.object(forKey: Constants.userKey) as? Data else { return nil }
+        return try? PropertyListDecoder().decode(User.self, from: data)
     }
 
     func logOut() {
         [Constants.tokenKey, Constants.userKey]
-            .forEach {
-                userDefaults.removeObject(forKey: $0)
-        }
+            .forEach { userDefaults.removeObject(forKey: $0) }
     }
 }

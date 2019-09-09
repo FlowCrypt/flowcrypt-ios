@@ -14,15 +14,15 @@ extension ObservableType  {
         return retryWhen { error in
             return error.flatMap { (someError: Error) -> Observable<Element> in
                 switch FCError(someError) {
-                case .authentication:
+                case .authentication, .connection:
                     UserService.shared.renewAccessToken()
                     return Imap.instance
                         .onNewSession
                         .flatMap { _ -> Observable<Element> in
                             return self.share().retry(attemtCount)
-                    }
+                        }
                 default:
-                    return Observable.error(someError)
+                    return self.share().retry(1)
                 }
             }
 

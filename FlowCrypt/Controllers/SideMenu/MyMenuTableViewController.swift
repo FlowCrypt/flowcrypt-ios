@@ -51,7 +51,7 @@ final class MyMenuTableViewController: UIViewController {
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onNext: { [weak self] folders in
-                    self?.handleFolders(with: folders)
+                    self?.handleNewFolders(with: folders)
                 },
                 onError: { [weak self] error in
                     self?.showAlert(error: error, message: Language.could_not_fetch_folders)
@@ -60,7 +60,7 @@ final class MyMenuTableViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 
-    private func handleFolders(with result: FoldersContext) {
+    private func handleNewFolders(with result: FoldersContext) {
         hideSpinner()
         folders = result.folders
             .compactMap(FolderViewModel.init)
@@ -86,11 +86,8 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(ofType: MenuCell.self, at: indexPath)
-        let folder = folders[indexPath.row]
-        cell.lblName.text = folder.name
-
-        return cell
+        return tableView.dequeueReusableCell(ofType: MenuCell.self, at: indexPath)
+            .setup(with: folders[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -104,8 +101,10 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
 final class MenuCell: UITableViewCell {
     @IBOutlet var lblName: UILabel!
 
-    override func awakeFromNib() {
+    func setup(with viewModel: FolderViewModel) -> Self {
         selectionStyle = .none
+        lblName.text = viewModel.name
+        return self
     }
 }
 

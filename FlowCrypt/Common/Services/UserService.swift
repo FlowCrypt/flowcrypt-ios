@@ -77,7 +77,6 @@ extension UserService: GIDSignInDelegate {
         if error == nil {
             let newUser = User(user)
             dataManager.saveToken(with: user.authentication.accessToken)
-            DataManager.shared.a = 1
             if dataManager.saveCurrent(user: newUser) {
                 _onLogin.onNext(newUser)
             } else {
