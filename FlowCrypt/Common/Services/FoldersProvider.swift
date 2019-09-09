@@ -44,6 +44,6 @@ struct DefaultFoldersProvider: FoldersProvider {
                     }
                 }
             return Disposables.create()
-            }
+        }
     }
 }
