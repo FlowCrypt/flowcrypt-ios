@@ -48,12 +48,11 @@
 		9F0C3C18231819B200299985 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C17231819B200299985 /* Logger.swift */; };
 		9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProvider.swift */; };
 		9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1B23186A5700299985 /* AuthAssembley.swift */; };
-		9F0C3C2023191F6B00299985 /* Imap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA377D22F4D67A8FA05EB /* Imap.swift */; };
+		9F0C3C1E23186FEA00299985 /* Temporarry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1D23186FEA00299985 /* Temporarry.swift */; };
 		9F0C3C242319331800299985 /* FoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C232319331800299985 /* FoldersProvider.swift */; };
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		9F0C3C2A23196D1D00299985 /* Retryable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2923196D1D00299985 /* Retryable.swift */; };
-		9F0C3C1E23186FEA00299985 /* Temporarry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1D23186FEA00299985 /* Temporarry.swift */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
@@ -148,11 +147,11 @@
 		9F0C3C17231819B200299985 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9F0C3C19231819C500299985 /* MessageKindProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageKindProvider.swift; sourceTree = "<group>"; };
 		9F0C3C1B23186A5700299985 /* AuthAssembley.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAssembley.swift; sourceTree = "<group>"; };
+		9F0C3C1D23186FEA00299985 /* Temporarry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temporarry.swift; sourceTree = "<group>"; };
 		9F0C3C232319331800299985 /* FoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersProvider.swift; sourceTree = "<group>"; };
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
 		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9F0C3C2923196D1D00299985 /* Retryable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Retryable.swift; sourceTree = "<group>"; };
-		9F0C3C1D23186FEA00299985 /* Temporarry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temporarry.swift; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
@@ -325,10 +324,7 @@
 			children = (
 				9F0C3C0F2316DD5B00299985 /* UserService.swift */,
 				9F0C3C112316DDA500299985 /* DataManager.swift */,
-				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
-				9F0C3C082315A30900299985 /* MessagesProvider.swift */,
 				9F0C3C232319331800299985 /* FoldersProvider.swift */,
-				9F0C3C17231819B200299985 /* Logger.swift */,
 				9F0C3C2923196D1D00299985 /* Retryable.swift */,
 				9F0C3C082315A30900299985 /* MessagesProvider.swift */,
 				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
@@ -736,7 +732,6 @@
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
 				32DCACFD1193878BEB48C24D /* PromiseExtension.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
-				9F0C3C2023191F6B00299985 /* Imap.swift in Sources */,
 				32DCA4F8E74975F0393FA29C /* SecPaddingExtension.swift in Sources */,
 				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */,
 				32DCA17B0294558E2ADA998D /* bignum.c in Sources */,
