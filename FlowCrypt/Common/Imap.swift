@@ -65,11 +65,7 @@ final class Imap {
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.username = email
             imapSess.password = nil
-            imapSess.oAuth2Token = a == 0
-                ? ""
-                :newAccessToken ?? DataManager.shared.currentToken() ?? ""
-            a += 1
-
+            imapSess.oAuth2Token = newAccessToken ?? DataManager.shared.currentToken() ?? ""
             imapSess.authType = MCOAuthType.xoAuth2
             imapSess.connectionType = MCOConnectionType.TLS
             self.imapSess = imapSess

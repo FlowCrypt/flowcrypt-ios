@@ -24,6 +24,7 @@ target 'FlowCryptTests' do
   pod 'SwiftyRSA'
   pod 'RealmSwift'
   pod 'IDZSwiftCommonCrypto'
+  pod 'mailcore2-ios'
   pod 'RxBlocking', '~> 5'
   pod 'RxTest', '~> 5'
   inherit! :search_paths

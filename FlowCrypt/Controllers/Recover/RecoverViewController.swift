@@ -120,39 +120,29 @@ extension RecoverViewController {
 
     @IBAction func loadAccountButtonPressed(_ sender: Any) {
         endEditing()
-        guard let passPrase = passPhaseTextField.text, !passPrase.isEmpty else {
+        guard let passPhrase = passPhaseTextField.text, !passPhrase.isEmpty else {
             showAlert(message: Constants.enterPassPhrase)
             return
         }
         showSpinner()
-
         let matchingBackups: [KeyDetails] = encryptedBackups
             .compactMap { (key) -> KeyDetails? in
-                guard let privateKey = key.private else { return nil }
-                do {
-                    let decryptRes = try Core.decryptKey(armoredPrv: privateKey, passphrase: passPrase)
-                    if decryptRes.decryptedKey != nil {
-                        return key
-                    }
-                    return nil
-                } catch {
-                    return nil
-                }
+                guard let prv = key.private else { return nil }
+                guard let r = try? Core.decryptKey(armoredPrv: prv, passphrase: passPhrase), r.decryptedKey != nil else { return nil }
+                return key
             }
 
         guard matchingBackups.count > 0 else {
             showAlert(message: Constants.wrongPassPhraseRetry)
             return
         }
-
         // TODO: - Refactor with realm service
         let realm = try! Realm()
         try! realm.write {
             for k in matchingBackups {
-                realm.add(try! KeyInfo(k, passphrase: Constants.enterPassPhrase, source: .backup))
+                realm.add(try! KeyInfo(k, passphrase: passPhrase, source: .backup))
             }
         }
-
         performSegue(withIdentifier: "InboxSegue", sender: nil)
     }
 }
