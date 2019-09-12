@@ -18,6 +18,7 @@ protocol MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Observable<MessageContext>
 }
 
+@available(*, deprecated, message: "Refactor using Promises instead of rx")
 struct DefaultMessageProvider: MessageProvider {
     private let sessionProvider: Imap
     private let messageProvider: MessageKindProvider

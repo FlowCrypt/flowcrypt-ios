@@ -6,7 +6,6 @@ import UIKit
 import MBProgressHUD
 import RealmSwift
 import Promises
-import RxSwift
 
 final class RecoverViewController: UIViewController {
     private enum Constants {
@@ -25,7 +24,6 @@ final class RecoverViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
 
     private var encryptedBackups: [KeyDetails] = []
-    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,13 +60,6 @@ extension RecoverViewController {
         }
         passPhaseTextField.delegate = self
         observeKeyboardNotifications()
-
-        userService
-            .onLogOut
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
-            }).disposed(by: disposeBag)
     }
 
     private func fetchBackups() {
@@ -110,6 +101,9 @@ extension RecoverViewController {
 
     private func handleForOtherAccount() {
         userService.signOut()
+            .then(on: .main) { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            }
     }
 }
 

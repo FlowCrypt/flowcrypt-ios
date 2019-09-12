@@ -17,6 +17,18 @@ enum FCError: Error {
     case operation(Error)
 }
 
+extension FCError: Equatable {
+    static func == (lhs: FCError, rhs: FCError) -> Bool {
+        switch (lhs, rhs) {
+        case (.general, .general): return true
+        case (.authentication, .authentication): return true
+        case (.connection, .connection): return true
+        case (.operation, .operation): return true
+        default: return false
+        }
+    }
+}
+
 extension FCError {
     init(_ error: Error) {
         let code = (error as NSError).code

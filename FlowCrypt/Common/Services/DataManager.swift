@@ -13,8 +13,8 @@ struct DataManager {
     static let shared = DataManager()
 
     private enum Constants {
-        static let userKey = "keyCurrentUser"
-        static let tokenKey = "keyCurrentToken"
+        static let userKey = "keyCurrentUser_"
+        static let tokenKey = "keyCurrentToken_"
     }
 
     private let userDefaults: UserDefaults

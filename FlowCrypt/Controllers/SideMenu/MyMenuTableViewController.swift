@@ -3,7 +3,7 @@
 //
 
 import UIKit
-import RxSwift
+import Promises
 
 final class MyMenuTableViewController: UIViewController {
     private enum Constants {
@@ -13,15 +13,14 @@ final class MyMenuTableViewController: UIViewController {
     }
 
     // TODO: Inject as a dependency
-    private let foldersProvider: FoldersProvider = DefaultFoldersProvider()
-    private let dataManager = DataManager.shared
+    private let foldersProvider: FoldersProvider = Imap.instance
+    private var dataManager = DataManager.shared
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var lblName: UILabel!
     @IBOutlet var lblEmail: UILabel!
 
     private var folders: [FolderViewModel] = []
-    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,17 +46,12 @@ final class MyMenuTableViewController: UIViewController {
     private func fetchFolders() {
         showSpinner()
         foldersProvider.fetchFolders()
-            .retryWhenToken()
-            .observeOn(MainScheduler.instance)
-            .subscribe(
-                onNext: { [weak self] folders in
-                    self?.handleNewFolders(with: folders)
-                },
-                onError: { [weak self] error in
-                    self?.showAlert(error: error, message: Language.could_not_fetch_folders)
-                }
-            )
-            .disposed(by: disposeBag)
+            .then(on: .main) { [weak self] folders in
+                self?.handleNewFolders(with: folders)
+            }
+            .catch { [weak self] error in
+                self?.showAlert(error: error, message: Language.could_not_fetch_folders)
+            }
     }
 
     private func handleNewFolders(with result: FoldersContext) {
@@ -94,6 +88,7 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         guard let folder = folders[safe: indexPath.row] else { return }
         let input = InboxViewModel(folder)
         let inboxVc = InboxViewController.instance(with: input)
+        dataManager.saveToken(with: "a")
         sideMenuController()?.setContentViewController(inboxVc)
     }
 }

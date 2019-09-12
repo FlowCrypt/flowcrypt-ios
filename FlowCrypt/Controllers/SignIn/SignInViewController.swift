@@ -4,7 +4,6 @@
 
 import UIKit
 import GoogleSignIn
-import RxSwift
 
 final class SignInViewController: UIViewController {
     // TODO: Inject as a dependency
@@ -12,7 +11,6 @@ final class SignInViewController: UIViewController {
 
     @IBOutlet weak var signInWithGmailButton: UIButton!
     @IBOutlet weak var signInWithOutlookButton: UIButton!
-    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,19 +21,6 @@ final class SignInViewController: UIViewController {
         signInWithGmailButton.setViewBorder(1.0, borderColor: UIColor.lightGray, cornerRadius: 5.0)
         signInWithOutlookButton.setViewBorder(1.0, borderColor: UIColor.lightGray, cornerRadius: 5.0)
         GIDSignIn.sharedInstance().uiDelegate = self
-
-        userService.onLogin
-            .observeOn(MainScheduler.instance)
-            .take(1) // can be replaced based on navigation architecture
-            .subscribe(onNext: { [weak self] _ in
-                self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
-            })
-            .disposed(by: disposeBag)
-        userService.onError
-            .subscribe(onNext: { [weak self] error in
-                self?.showAlert(error: error, message: "Failed to sign in")
-            })
-            .disposed(by: disposeBag)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -54,6 +39,12 @@ extension SignInViewController {
     @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
         logDebug(106, "GoogleApi.signIn")
         userService.signIn()
+            .then(on: .main) { [weak self] _ in
+                self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.showAlert(error: error, message: "Failed to sign in")
+            }
     }
 
     @IBAction func signInWithOutlookButtonPressed(_ sender: Any) {
