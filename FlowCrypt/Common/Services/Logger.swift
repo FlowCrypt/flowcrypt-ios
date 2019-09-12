@@ -12,9 +12,20 @@ func log(_ message: String, error: Error?, res: Any?, start: DispatchTime) {
     Logger().log(message, error: error, res: res, start: start)
 }
 
-func logDebug(_ id: Int, _ msg: String, value: Any? = nil) {
-    Logger().debug(id, msg, value: value)
-
+func logDebug(
+    _ id: Int?,
+    _ msg: String? = nil,
+    value: Any? = nil,
+    fileName: String = #file,
+    functionName: String = #function,
+    lineNumber: Int = #line,
+    columnNumber: Int = #column
+) {
+    if let message = msg, let id = id {
+        Logger().debug(id, message, value: value)
+    } else {
+        print("•••• \(fileName) - \(functionName) at line \(lineNumber)[\(columnNumber)]")
+    }
 }
 
 private struct Logger {

@@ -44,14 +44,11 @@ struct DataManager {
 
     func currentUser() -> User? {
         guard let data = userDefaults.object(forKey: Constants.userKey) as? Data else { return nil }
-
         return try? PropertyListDecoder().decode(User.self, from: data)
     }
 
     func logOut() {
         [Constants.tokenKey, Constants.userKey]
-            .forEach {
-                userDefaults.removeObject(forKey: $0)
-        }
+            .forEach { userDefaults.removeObject(forKey: $0) }
     }
 }

@@ -48,7 +48,12 @@
 		9F0C3C18231819B200299985 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C17231819B200299985 /* Logger.swift */; };
 		9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProvider.swift */; };
 		9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1B23186A5700299985 /* AuthAssembley.swift */; };
-		9F0C3C1E23186FEA00299985 /* Temporarry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1D23186FEA00299985 /* Temporarry.swift */; };
+		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
+		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
+		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
+		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
+		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
+		9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+backup.swift */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
@@ -143,7 +148,12 @@
 		9F0C3C17231819B200299985 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9F0C3C19231819C500299985 /* MessageKindProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageKindProvider.swift; sourceTree = "<group>"; };
 		9F0C3C1B23186A5700299985 /* AuthAssembley.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAssembley.swift; sourceTree = "<group>"; };
-		9F0C3C1D23186FEA00299985 /* Temporarry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temporarry.swift; sourceTree = "<group>"; };
+		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
+		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+retry.swift"; sourceTree = "<group>"; };
+		9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+folders.swift"; sourceTree = "<group>"; };
+		9F31AB90232993F500CF87EA /* Imap+session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+session.swift"; sourceTree = "<group>"; };
+		9F31AB922329950800CF87EA /* Imap+backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+backup.swift"; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
@@ -227,6 +237,7 @@
 			isa = PBXGroup;
 			children = (
 				04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */,
+				9F0C3C2523194E0A00299985 /* FolderViewModel.swift */,
 				04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */,
 			);
 			path = SideMenu;
@@ -288,6 +299,7 @@
 				9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */,
 				9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
+				9F0C3C2723194E8500299985 /* Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -317,9 +329,20 @@
 				9F0C3C082315A30900299985 /* MessagesProvider.swift */,
 				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
 				9F0C3C17231819B200299985 /* Logger.swift */,
-				9F0C3C1D23186FEA00299985 /* Temporarry.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		9F31AB8F232993AC00CF87EA /* Imap */ = {
+			isa = PBXGroup;
+			children = (
+				32DCA377D22F4D67A8FA05EB /* Imap.swift */,
+				9F31AB90232993F500CF87EA /* Imap+session.swift */,
+				9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */,
+				9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */,
+				9F31AB922329950800CF87EA /* Imap+backup.swift */,
+			);
+			path = Imap;
 			sourceTree = "<group>";
 		};
 		9FD22A1D230FEEC8005067A6 /* Views */ = {
@@ -428,9 +451,9 @@
 				9F0C3C0D2316DD4100299985 /* Assembley */,
 				9F0C3C0E2316DD4B00299985 /* Handlers */,
 				9F0C3C1F23191F2000299985 /* Services */,
+				9F31AB8F232993AC00CF87EA /* Imap */,
 				C132B9CA1EC2DE6400763715 /* Constants.swift */,
 				32DCA9F692BEE170EBBA4EE7 /* AttesterApi.swift */,
-				32DCA377D22F4D67A8FA05EB /* Imap.swift */,
 				32DCAA865E9EC19756776544 /* Errors.swift */,
 			);
 			path = Common;
@@ -737,9 +760,12 @@
 				04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
+				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* Constants.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */,
+				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
+				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
 				C132B9E91EC4484B00763715 /* InboxTableViewCell.swift in Sources */,
 				9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */,
@@ -756,21 +782,23 @@
 				9F0C3C18231819B200299985 /* Logger.swift in Sources */,
 				32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */,
 				9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */,
+				9F0C3C2823194E8500299985 /* Extensions.swift in Sources */,
 				9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */,
 				32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */,
 				32DCA583D0C09131947705C8 /* PromiseExtension.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
 				32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */,
 				9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */,
+				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				9FEED1D0230DA9FF00700F8E /* UIStoyboardExtension.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
 				32DCA64A309E3C34D8C9039E /* DispatchTimeExtension.swift in Sources */,
-				9F0C3C1E23186FEA00299985 /* Temporarry.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */,
 				9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */,
 				32DCAAD97FDEB229EA327DB5 /* SecPaddingExtension.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* UserService.swift in Sources */,
+				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
 				32DCA1FE33A44B4B18F1404B /* Errors.swift in Sources */,

@@ -11,18 +11,36 @@ enum Errors: Error {
 }
 
 enum FCError: Error {
-    fileprivate static let authErrorCode = 5 // MCOErrorAuthentication
     case general
     case authentication
+    case connection
     case operation(Error)
+}
+
+extension FCError: Equatable {
+    static func == (lhs: FCError, rhs: FCError) -> Bool {
+        switch (lhs, rhs) {
+        case (.general, .general): return true
+        case (.authentication, .authentication): return true
+        case (.connection, .connection): return true
+        case (.operation, .operation): return true
+        default: return false
+        }
+    }
 }
 
 extension FCError {
     init(_ error: Error) {
-        if (error as NSError).code == MCOErrorCode.authentication.rawValue {
-            // Using MCOErrorCode instead of Imap.Err so that we don't have to include Imap in all Targets
+        let code = (error as NSError).code
+        switch code {
+        case MCOErrorCode.authentication.rawValue:
             self = .authentication
+        case MCOErrorCode.connection.rawValue,
+             MCOErrorCode.tlsNotAvailable.rawValue,
+             MCOErrorCode.connection.rawValue:
+            self = .connection
+        default:
+            self = .operation(error)
         }
-        self = .operation(error)
     }
 }

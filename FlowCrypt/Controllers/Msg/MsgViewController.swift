@@ -20,6 +20,18 @@ extension MsgViewController {
     }
 }
 
+enum MailDestination {
+    enum Gmail {
+        case trash
+
+        var path: String {
+            switch self {
+            case .trash: return "[Gmail]/Trash"
+            }
+        }
+    }
+}
+
 final class MsgViewController: UIViewController {
     struct Input {
         var objMessage = MCOIMAPMessage()

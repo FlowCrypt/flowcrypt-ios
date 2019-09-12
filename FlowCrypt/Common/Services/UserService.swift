@@ -8,26 +8,29 @@
 
 import Foundation
 import GoogleSignIn
-import RxSwift
+import Promises
 
+protocol UserServiceType {
+    func setup()
+    func signOut() -> Promise<VOID>
+    func signIn() -> Promise<VOID>
+    func renewAccessToken() -> Promise<String>
+    func isSessionValid() -> Bool
+}
 
-final class UserService: NSObject {
+final class UserService: NSObject, UserServiceType {
     static let shared = UserService()
 
-    var onLogin: Observable<User> { return _onLogin.asObservable() }
-    private let _onLogin = PublishSubject<User>()
+    private var onLogin: ((User) -> Void)?
+    private var onError: ((FCError) -> Void)?
+    private var onNewToken: ((String) -> Void)?
+    private var onLogOut: (() -> Void)?
 
-    var onLogOut: Observable<Void> { return _onLogOut.asObservable() }
-    private let _onLogOut = PublishSubject<Void>()
-
-    var onError: Observable<FCError> { return _onError.asObservable() }
-    private let _onError = PublishSubject<FCError>()
-
-    private let googleManager: GIDSignIn?
-    private let dataManager: DataManager
+    private let googleManager: GIDSignIn
+    private var dataManager: DataManager
 
     private init(
-        googleManager: GIDSignIn? = GIDSignIn.sharedInstance(),
+        googleManager: GIDSignIn = GIDSignIn.sharedInstance(),
         dataManager: DataManager = .shared
     ) {
         self.googleManager = googleManager
@@ -38,21 +41,63 @@ final class UserService: NSObject {
     func setup() {
         logDebug(100, "GoogleApi.setup()")
         GIDSignIn.sharedInstance().delegate = self
-        if let user = dataManager.currentUser() {
-            _onLogin.onNext(user) 
+        if let token = dataManager.currentToken() {
+            onNewToken?(token)
         }
     }
 
-    func renewAccessToken() {
-        googleManager?.signInSilently()
+    func renewAccessToken() -> Promise<String> {
+        return Promise<String> { [weak self] reslove, reject in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                self.googleManager.signInSilently()
+            }
+
+            self.onNewToken = { token in
+                reslove(token)
+            }
+
+            self.onError = { error in
+                reject(error)
+            }
+        }
     }
 
-    func signIn() {
-        googleManager?.signIn()
+    func signIn() -> Promise<VOID> {
+        return Promise<VOID> { [weak self] reslove, reject in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                self.googleManager.signIn()
+            }
+
+            self.onLogin = { token in
+                reslove(VOID())
+            }
+
+            self.onError = { error in
+                reject(FCError(error))
+            }
+        }
     }
 
-    func signOut() {
-        googleManager?.signOut()
+    func signOut() -> Promise<VOID> {
+        return Promise<VOID> { [weak self] reslove, reject in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                self.googleManager.signOut()
+            }
+
+            self.onLogOut = {
+                reslove(VOID())
+            }
+
+            self.onError = { error in
+                reject(FCError(error))
+            }
+        }
     }
 
     func isSessionValid() -> Bool {
@@ -65,18 +110,19 @@ extension UserService: GIDSignInDelegate {
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if error == nil {
             let newUser = User(user)
-            dataManager.saveToken(with: user.authentication.accessToken)
-            if dataManager.saveCurrent(user: newUser) {
-                _onLogin.onNext(newUser)
+            if dataManager.saveCurrent(user: newUser), let token = user.authentication.accessToken {
+                dataManager.saveToken(with: token)
+                onNewToken?(token)
+                onLogin?(newUser)
             } else {
-                _onError.onNext(FCError.general)
+                onError?(FCError.general)
             }
         } else {
-            _onError.onNext(FCError(error))
+            onError?(FCError(error))
         }
     }
 
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
-        _onLogOut.onNext(())
+        onLogOut?()
     }
 }
