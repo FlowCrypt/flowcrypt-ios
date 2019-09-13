@@ -18,6 +18,7 @@ final class RecoverViewController: UIViewController {
     // TODO: Inject as a dependency
     private let imap = Imap.instance
     private let userService = UserService.shared
+    private let router = GlobalRouter()
 
     @IBOutlet weak var passPhaseTextField: UITextField!
     @IBOutlet weak var btnLoadAccount: UIButton!
@@ -138,6 +139,12 @@ extension RecoverViewController {
             }
         }
         performSegue(withIdentifier: "InboxSegue", sender: nil)
+    }
+
+    @IBAction func useOtherAccount(_ sender: Any) {
+        userService.signOut().then(on: .main) { [weak self] _ in
+            self?.router.proceedAfterLogOut()
+        }
     }
 }
 

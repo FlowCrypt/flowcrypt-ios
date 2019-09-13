@@ -14,10 +14,8 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let sideMenuVC = self.storyboard?.instantiateViewController(withIdentifier: "MenuTableViewController") as? MyMenuTableViewController else {
-            assertionFailure("Can't find view controller with identifier")
-            return
-        }
+
+        let sideMenuVC = MyMenuTableViewController()
         sideMenu = ENSideMenu(sourceView: view, menuViewController: sideMenuVC, menuPosition: .left).then {
             $0.bouncingEnabled = false
             $0.menuWidth = UIScreen.main.bounds.size.width - Constants.menuOffset
