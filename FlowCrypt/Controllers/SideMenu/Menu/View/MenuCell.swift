@@ -54,12 +54,13 @@ final class MenuCell: UITableViewCell {
 
         let y: CGFloat = 8
         let textSize = titleLabel.attributedText?.size() ?? .zero
+        let textY = bounds.size.height / 2 - textSize.height / 2
 
         if menuImageView.image == nil {
             menuImageView.frame = .zero
             titleLabel.frame = CGRect(
                 x: 16,
-                y: y,
+                y: textY,
                 width: textSize.width,
                 height: textSize.height
             )
@@ -73,7 +74,7 @@ final class MenuCell: UITableViewCell {
 
             titleLabel.frame = CGRect(
                 x: menuImageView.frame.maxX + 8,
-                y: y,
+                y: textY,
                 width: textSize.width,
                 height: textSize.height
             )
