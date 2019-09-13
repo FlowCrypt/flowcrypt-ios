@@ -20,6 +20,7 @@ struct DefaultMessageKindProvider: MessageKindProvider {
             | MCOIMAPMessagesRequestKind.internalDate.rawValue
             | MCOIMAPMessagesRequestKind.headerSubject.rawValue
             | MCOIMAPMessagesRequestKind.flags.rawValue
+            | MCOIMAPMessagesRequestKind.size.rawValue
     }
 
     var imapMessagesRequestKind: MCOIMAPMessagesRequestKind {
