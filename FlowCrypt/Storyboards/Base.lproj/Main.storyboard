@@ -74,6 +74,9 @@
                                                 <state key="normal" title="Terms">
                                                     <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="calibratedWhite"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="termsPressed:" destination="hBK-2y-ci5" eventType="touchUpInside" id="GTL-vt-6qH"/>
+                                                </connections>
                                             </button>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="full-logo" translatesAutoresizingMaskIntoConstraints="NO" id="Bbq-hF-HN9">
                                                 <rect key="frame" x="20" y="92" width="374" height="179"/>
@@ -87,6 +90,9 @@
                                                 <state key="normal" title="Security">
                                                     <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="calibratedWhite"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="securityPressed:" destination="hBK-2y-ci5" eventType="touchUpInside" id="XKl-ec-1H9"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8pF-mJ-6zr">
                                                 <rect key="frame" x="20" y="423" width="374" height="50"/>
@@ -125,6 +131,9 @@
                                                 <state key="normal" title="Privacy">
                                                     <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="calibratedWhite"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="privacyPressed:" destination="hBK-2y-ci5" eventType="touchUpInside" id="jAl-at-RXa"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

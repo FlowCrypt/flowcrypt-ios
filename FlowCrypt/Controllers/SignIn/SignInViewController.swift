@@ -77,6 +77,21 @@ extension SignInViewController {
         }
 
     }
+
+    @IBAction func privacyPressed(_ sender: Any) {
+        guard let url = URL(string: "https://flowcrypt.com/privacy") else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+
+    @IBAction func termsPressed(_ sender: Any) {
+        guard let url = URL(string: "https://flowcrypt.com/license") else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+
+    @IBAction func securityPressed(_ sender: Any) {
+        guard let url = URL(string: "https://flowcrypt.com/docs/technical/security.html") else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
 }
 
 extension SignInViewController: GIDSignInUIDelegate {
