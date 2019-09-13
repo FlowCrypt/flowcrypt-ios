@@ -92,8 +92,6 @@ extension SignInViewController {
         guard let url = URL(string: "https://flowcrypt.com/docs/technical/security.html") else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
-
-
 }
 
 extension SignInViewController: GIDSignInUIDelegate {
