@@ -10,8 +10,8 @@ import UIKit
 
 final class NavigationBarItemsView: UIBarButtonItem {
     private enum Constants {
-        static let buttonSize = CGSize(width: 44, height: 44)
-        static let interItemSpacing: CGFloat = 5
+        static let buttonSize = CGSize(width: 30, height: 30)
+        static let interItemSpacing: CGFloat = 8
     }
 
     struct Input {
@@ -23,20 +23,19 @@ final class NavigationBarItemsView: UIBarButtonItem {
         super.init()
 
         let buttons = input.map { (input: Input) -> UIButton in
-            let button = UIButton(type: .system)
-            button.setImage(input.image, for: .normal)
-            if let action = input.action {
-                button.addTarget(action.target, action: action.selector, for: .touchUpInside)
+            UIButton(type: .system).then {
+                $0.frame.size = Constants.buttonSize
+                $0.imageView?.frame.size = Constants.buttonSize
+                $0.setImage(input.image, for: .normal)
+                if let action = input.action {
+                    $0.addTarget(action.target, action: action.selector, for: .touchUpInside)
+                }
             }
-
-            button.frame.size = Constants.buttonSize
-
-            return button
         }
 
         customView = UIStackView(arrangedSubviews: buttons)
             .with {
-                $0.distribution = .equalSpacing
+                $0.distribution = .fillProportionally
                 $0.axis = .horizontal
                 $0.alignment = .center
                 $0.spacing = Constants.interItemSpacing
