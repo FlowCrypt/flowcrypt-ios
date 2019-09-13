@@ -44,8 +44,13 @@ extension UIView {
             ])
     }
 
-    func constrainToEdges(_ subview: UIView, insets: UIEdgeInsets = .zero) {
+    func constraintSize(_ size: CGSize) {
+        translatesAutoresizingMaskIntoConstraints = false
+        heightAnchor.constraint(equalToConstant: size.height)
+        widthAnchor.constraint(equalToConstant: size.width)
+    }
 
+    func constrainToEdges(_ subview: UIView, insets: UIEdgeInsets = .zero) {
         subview.translatesAutoresizingMaskIntoConstraints = false
 
         let topContraint = NSLayoutConstraint(
@@ -89,6 +94,14 @@ extension UIView {
             bottomConstraint,
             leadingContraint,
             trailingContraint])
+    }
+
+    func constrainToBorders(_ subview: UIView, insets: UIEdgeInsets = .zero) {
+        subview.translatesAutoresizingMaskIntoConstraints = false
+        subview.leftAnchor.constraint(equalTo: leftAnchor, constant: insets.left)
+        subview.rightAnchor.constraint(equalTo: rightAnchor, constant: -insets.right)
+        subview.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
+        subview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom)
     }
 }
 

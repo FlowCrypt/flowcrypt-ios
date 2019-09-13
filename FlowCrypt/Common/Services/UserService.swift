@@ -9,6 +9,7 @@
 import Foundation
 import GoogleSignIn
 import Promises
+import RealmSwift
 
 protocol UserServiceType {
     func setup()
@@ -88,6 +89,7 @@ final class UserService: NSObject, UserServiceType {
 
             DispatchQueue.main.async {
                 self.googleManager.signOut()
+                self.googleManager.disconnect()
             }
 
             self.onLogOut = {
@@ -123,6 +125,17 @@ extension UserService: GIDSignInDelegate {
     }
 
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
+        dataManager.logOut()
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                realm.deleteAll()
+            }
+        } catch {
+            onError?(FCError.general)
+        }
+
         onLogOut?()
     }
 }
