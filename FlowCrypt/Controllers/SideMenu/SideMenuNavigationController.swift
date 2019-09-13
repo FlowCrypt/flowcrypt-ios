@@ -95,6 +95,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             }
         }
 
+        navigationItem.hidesBackButton = true
         viewController.navigationItem.leftBarButtonItem = navigationButton
     }
 

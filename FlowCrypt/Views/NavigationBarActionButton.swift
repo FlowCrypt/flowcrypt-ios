@@ -19,7 +19,7 @@ final class NavigationBarActionButton: UIBarButtonItem {
     convenience init(_ image: UIImage?, block: (() -> Void)?) {
         self.init()
         onAction = block
-        customView = UIButton(type: .system).with {
+        customView = LeftAlignedIconButton(type: .system).with {
             $0.setImage(image, for: .normal)
             $0.frame.size = Constants.buttonSize
             $0.addTarget(self, action: #selector(tap), for: .touchUpInside)
@@ -28,5 +28,15 @@ final class NavigationBarActionButton: UIBarButtonItem {
 
     @objc private func tap() {
         onAction?()
+    }
+}
+
+fileprivate final class LeftAlignedIconButton: UIButton {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentHorizontalAlignment = .left
+        let availableSpace = bounds.inset(by: contentEdgeInsets)
+        let availableWidth = availableSpace.width - imageEdgeInsets.right - (imageView?.frame.width ?? 0) - (titleLabel?.frame.width ?? 0)
+        titleEdgeInsets = UIEdgeInsets(top: 0, left: availableWidth / 2, bottom: 0, right: 0)
     }
 }
