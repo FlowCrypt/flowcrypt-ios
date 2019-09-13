@@ -18,7 +18,8 @@ final class InboxViewController: UIViewController {
     private enum Constants {
         static let numberOfMessagesToLoad = 10
         static let inboxCellHeight: CGFloat = 90.0
-        static let loadMoreTreshold: CGFloat = 300 
+        static let loadMoreTreshold: CGFloat = 300
+        static let messageSizeLimit: Int = 5_000_000
     }
 
     private let messageProvider: MessageProvider = DefaultMessageProvider()
@@ -214,6 +215,13 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        guard let message = messages[safe: indexPath.row] else { return }
+
+
+        if Int(message.size) > Constants.messageSizeLimit {
+            showToast("Messages larger than 5MB are not supported yet")
+            return
+        }
         let messageInput = MsgViewController.Input(
             objMessage: messages[indexPath.row],
             bodyMessage: nil,
