@@ -12,7 +12,7 @@ import IQKeyboardManagerSwift
 
 protocol AppAssembley {
     func assemble()
-    func setup(window: UIWindow?)
+    func setupWindow() -> UIWindow
     func startFlow() -> Bool
 }
 
@@ -34,16 +34,17 @@ struct RootAssembley: AppAssembley {
         Core.startInBackgroundIfNotAlreadyRunning()
     }
 
-    func setup(window: UIWindow?) {
+    func setupWindow() -> UIWindow {
+        let window = UIWindow(frame: UIScreen.main.bounds)
         let storyboard = UIStoryboard.main
 
         guard var nv = storyboard.instantiateViewController(withIdentifier: "MainNavigationController") as? UINavigationController
-            else { assert(); return }
+            else { assert(); return UIWindow() }
 
         guard userService.isSessionValid() else {
-            window?.rootViewController = nv
-            window?.makeKeyAndVisible()
-            return
+            window.rootViewController = nv
+            window.makeKeyAndVisible()
+            return window
         }
 
         // TODO: - Refactor with realm service
@@ -60,8 +61,10 @@ struct RootAssembley: AppAssembley {
             nv.viewControllers = [vc]
         }
 
-        window?.rootViewController = nv
-        window?.makeKeyAndVisible()
+        window.rootViewController = nv
+        window.makeKeyAndVisible()
+
+        return window
     }
 
     private func assert() {

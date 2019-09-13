@@ -11,15 +11,14 @@ import IQKeyboardManagerSwift
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    private let assembley = RootAssembley()
+    let assembley = RootAssembley()
     private lazy var appUrlHandler = AppUrlHandler(googleApi: GIDSignIn.sharedInstance())
 
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         assembley.assemble()
-        window = UIWindow(frame: UIScreen.main.bounds)
-        assembley.setup(window: window)
+        window = assembley.setupWindow()
         return assembley.startFlow()
     }
 

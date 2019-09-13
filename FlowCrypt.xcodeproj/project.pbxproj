@@ -54,6 +54,11 @@
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
 		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
 		9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+backup.swift */; };
+		9F31AB95232BA27F00CF87EA /* MenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB94232BA27F00CF87EA /* MenuCell.swift */; };
+		9F31AB97232BF03D00CF87EA /* MenuHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB96232BF03D00CF87EA /* MenuHeaderViewModel.swift */; };
+		9F31AB99232BF05100CF87EA /* HeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB98232BF05100CF87EA /* HeaderCell.swift */; };
+		9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
+		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
@@ -154,6 +159,11 @@
 		9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+folders.swift"; sourceTree = "<group>"; };
 		9F31AB90232993F500CF87EA /* Imap+session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+session.swift"; sourceTree = "<group>"; };
 		9F31AB922329950800CF87EA /* Imap+backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+backup.swift"; sourceTree = "<group>"; };
+		9F31AB94232BA27F00CF87EA /* MenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCell.swift; sourceTree = "<group>"; };
+		9F31AB96232BF03D00CF87EA /* MenuHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeaderViewModel.swift; sourceTree = "<group>"; };
+		9F31AB98232BF05100CF87EA /* HeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderCell.swift; sourceTree = "<group>"; };
+		9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
+		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
@@ -236,8 +246,7 @@
 		04B472911ECE29F600B8266F /* SideMenu */ = {
 			isa = PBXGroup;
 			children = (
-				04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */,
-				9F0C3C2523194E0A00299985 /* FolderViewModel.swift */,
+				9F31AB9A232BF08600CF87EA /* Menu */,
 				04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */,
 			);
 			path = SideMenu;
@@ -300,6 +309,7 @@
 				9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				9F0C3C2723194E8500299985 /* Extensions.swift */,
+				9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -329,6 +339,7 @@
 				9F0C3C082315A30900299985 /* MessagesProvider.swift */,
 				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
 				9F0C3C17231819B200299985 /* Logger.swift */,
+				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -343,6 +354,34 @@
 				9F31AB922329950800CF87EA /* Imap+backup.swift */,
 			);
 			path = Imap;
+			sourceTree = "<group>";
+		};
+		9F31AB9A232BF08600CF87EA /* Menu */ = {
+			isa = PBXGroup;
+			children = (
+				04B472921ECE29F600B8266F /* MyMenuTableViewController.swift */,
+				9F31AB9B232BF09100CF87EA /* View */,
+				9F31AB9C232BF0A100CF87EA /* Models */,
+			);
+			path = Menu;
+			sourceTree = "<group>";
+		};
+		9F31AB9B232BF09100CF87EA /* View */ = {
+			isa = PBXGroup;
+			children = (
+				9F31AB94232BA27F00CF87EA /* MenuCell.swift */,
+				9F31AB98232BF05100CF87EA /* HeaderCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		9F31AB9C232BF0A100CF87EA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9F31AB96232BF03D00CF87EA /* MenuHeaderViewModel.swift */,
+				9F0C3C2523194E0A00299985 /* FolderViewModel.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		9FD22A1D230FEEC8005067A6 /* Views */ = {
@@ -757,6 +796,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F31AB95232BA27F00CF87EA /* MenuCell.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
@@ -775,6 +815,7 @@
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
+				9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				9F0C3C092315A30900299985 /* MessagesProvider.swift in Sources */,
 				32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */,
@@ -785,6 +826,7 @@
 				9F0C3C2823194E8500299985 /* Extensions.swift in Sources */,
 				9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */,
 				32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */,
+				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
 				32DCA583D0C09131947705C8 /* PromiseExtension.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
 				32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */,
@@ -792,6 +834,7 @@
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				9FEED1D0230DA9FF00700F8E /* UIStoyboardExtension.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
+				9F31AB97232BF03D00CF87EA /* MenuHeaderViewModel.swift in Sources */,
 				32DCA64A309E3C34D8C9039E /* DispatchTimeExtension.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */,
@@ -804,6 +847,7 @@
 				32DCA1FE33A44B4B18F1404B /* Errors.swift in Sources */,
 				32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */,
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
+				9F31AB99232BF05100CF87EA /* HeaderCell.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

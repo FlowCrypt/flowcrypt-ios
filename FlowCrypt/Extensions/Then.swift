@@ -54,6 +54,12 @@ extension Then where Self: AnyObject {
 
 }
 
+extension Then where Self: AnyObject {
+    func setup(_ block: (Self) -> Void) {
+        _ = self.then(block)
+    }
+}
+
 extension NSObject: Then {}
 extension CGPoint: Then {}
 extension CGRect: Then {}
