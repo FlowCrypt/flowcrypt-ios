@@ -16,9 +16,9 @@ final class NavigationBarActionButton: UIBarButtonItem {
 
     private var onAction: (() -> Void)?
 
-    convenience init(_ image: UIImage?, block: (() -> Void)?) {
+    convenience init(_ image: UIImage?, action: (() -> Void)?) {
         self.init()
-        onAction = block
+        onAction = action
         customView = LeftAlignedIconButton(type: .system).with {
             $0.setImage(image, for: .normal)
             $0.frame.size = Constants.buttonSize
