@@ -38,6 +38,7 @@
 		32DCACFD1193878BEB48C24D /* PromiseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4A964004CBABCA2F01C /* PromiseExtension.swift */; };
 		32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
+		470E79285E76FE700D12A2F2 /* MailDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470E74FC52C5C2073ED39A6C /* MailDestination.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
@@ -141,6 +142,7 @@
 		32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "flowcrypt-ios-prod.js.txt"; sourceTree = "<group>"; };
 		32DCAEB2BF97371D3A68E329 /* bignum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bignum.c; sourceTree = "<group>"; };
 		32DCAEFF16F5D91A35791730 /* DataExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
+		470E74FC52C5C2073ED39A6C /* MailDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailDestination.swift; sourceTree = "<group>"; };
 		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -529,6 +531,7 @@
 			isa = PBXGroup;
 			children = (
 				D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */,
+				470E74FC52C5C2073ED39A6C /* MailDestination.swift */,
 			);
 			path = Msg;
 			sourceTree = "<group>";
@@ -849,6 +852,7 @@
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
 				9F31AB99232BF05100CF87EA /* HeaderCell.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
+				470E79285E76FE700D12A2F2 /* MailDestination.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

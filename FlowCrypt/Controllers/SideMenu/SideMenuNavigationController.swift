@@ -5,6 +5,10 @@
 import UIKit
 import ENSwiftSideMenu
 
+protocol NavigationChildController {
+    func handleBackButtonTap()
+}
+
 final class SideMenuNavigationController: ENSideMenuNavigationController {
     private enum Constants {
         static let menuOffset: CGFloat = 80
@@ -86,13 +90,9 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
         let navigationButton: UIBarButtonItem
         switch viewControllers.firstIndex(of: viewController) {
         case 0:
-            navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn")) { [weak self] in
-                self?.toggleSideMenuView()
-            }
+            navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn"), action: nil)
         default: 
-            navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
-                self?.popViewController(animated: true)
-            }
+            navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c"), action: nil)
         }
 
         navigationItem.hidesBackButton = true
@@ -114,7 +114,12 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             sideMenu?.allowLeftSwipe = false
             interactivePopGestureRecognizer?.isEnabled = true
             navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
-                self?.popViewController(animated: true)
+                guard let self = self else { return }
+                if let viewController = self.viewControllers.compactMap ({ $0 as? NavigationChildController }).last {
+                    viewController.handleBackButtonTap()
+                } else {
+                    self.popViewController(animated: true)
+                }
             }
         }
 

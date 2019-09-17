@@ -29,7 +29,7 @@ final class InboxViewController: UIViewController {
     @IBOutlet weak var lblEmptyMessage: UILabel!
     @IBOutlet weak var btnCompose: UIButton!
 
-    private var messages = [MCOIMAPMessage]() {
+    private var messages: [MCOIMAPMessage] = [] {
         didSet {
             lblEmptyMessage.isHidden = messages.count > 0
             refreshControl.endRefreshing()
@@ -93,14 +93,6 @@ extension InboxViewController {
                 NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
             ]
         )
-    }
-}
-
-extension InboxViewController: MsgViewControllerDelegate {
-    func movedOrUpdated(objMessage: MCOIMAPMessage) {
-        guard let index = self.messages.firstIndex(of: objMessage) else { return }
-        messages.remove(at: index)
-        tableView.reloadData()
     }
 }
 
@@ -189,6 +181,52 @@ extension InboxViewController {
     }
 }
 
+extension InboxViewController {
+    private func openMessageIfPossible(with message: MCOIMAPMessage) {
+        if Int(message.size) > Constants.messageSizeLimit {
+            showToast("Messages larger than 5MB are not supported yet")
+        } else {
+            let messageInput = MsgViewController.Input(
+                objMessage: message,
+                bodyMessage: nil,
+                path: viewModel.path
+            )
+            let msgVc = MsgViewController.instance(with: messageInput) { [weak self] operation, message in
+                self?.handleMessage(operation: operation, message: message)
+            }
+            navigationController?.pushViewController(msgVc, animated: true)
+        }
+    }
+
+    private func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
+        guard let index = messages.firstIndex(of: message) else { return }
+        switch operation {
+        case .markAsRead: markAsRead(message: message, at: index)
+        case .delete, .archive: delete(message: message, at: index)
+        }
+    }
+
+    private func delete(message: MCOIMAPMessage, at index: Int) {
+        messages.remove(at: index)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+            guard let self = self else { return }
+            self.tableView.beginUpdates()
+            self.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+            self.tableView.endUpdates()
+        }
+    }
+
+    private func markAsRead(message: MCOIMAPMessage, at index: Int) {
+        messages[index] = message
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+            guard let self = self else { return }
+            self.tableView.beginUpdates()
+            self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+            self.tableView.endUpdates()
+        }
+    }
+}
+
 extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -217,20 +255,8 @@ extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         guard let message = messages[safe: indexPath.row] else { return }
 
-
-        if Int(message.size) > Constants.messageSizeLimit {
-            showToast("Messages larger than 5MB are not supported yet")
-            return
-        }
-        let messageInput = MsgViewController.Input(
-            objMessage: messages[indexPath.row],
-            bodyMessage: nil,
-            path: viewModel.path
-        )
-        let msgVc = MsgViewController.instance(with: messageInput, delegate: self)
-        navigationController?.pushViewController(msgVc, animated: true)
+        openMessageIfPossible(with: message)
     }
-    
 }
 
 extension InboxViewController: UIScrollViewDelegate {
@@ -251,4 +277,4 @@ extension InboxViewController: UIScrollViewDelegate {
             } 
         }
     }
-} 
+}

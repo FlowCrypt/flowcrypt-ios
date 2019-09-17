@@ -7,28 +7,13 @@ import MBProgressHUD
 import RealmSwift
 import Promises
 
-protocol MsgViewControllerDelegate: class {
-    func movedOrUpdated(objMessage: MCOIMAPMessage)
-}
 
 extension MsgViewController {
-    static func instance(with input: MsgViewController.Input, delegate: MsgViewControllerDelegate?) -> MsgViewController {
+    static func instance(with input: MsgViewController.Input, completion: MsgViewControllerCompletion?) -> MsgViewController {
         let vc = UIStoryboard.main.instantiate(MsgViewController.self)
+        vc.updateCompletion = completion
         vc.input = input
-        vc.delegate = delegate
         return vc
-    }
-}
-
-enum MailDestination {
-    enum Gmail {
-        case trash
-
-        var path: String {
-            switch self {
-            case .trash: return "[Gmail]/Trash"
-            }
-        }
     }
 }
 
@@ -39,23 +24,28 @@ final class MsgViewController: UIViewController {
         var path = ""
     }
 
-    private enum MessageAction {
-        case delete, archive
+    enum MessageAction {
+        case delete, archive, markAsRead
 
-        var text: String {
+        var text: String? {
             switch self {
             case .delete: return Language.moved_to_trash
             case .archive: return Language.email_archived
+            case .markAsRead: return nil
             }
         }
 
-        var error: String {
+        var error: String? {
             switch self {
             case .delete: return Constants.ErrorTexts.Message.delete
             case .archive: return Constants.ErrorTexts.Message.archive
+            case .markAsRead: return nil
             }
         }
     }
+
+    typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
+    private var updateCompletion: MsgViewControllerCompletion?
 
     @IBOutlet var lblSender: UILabel!
     @IBOutlet var lblSubject: UILabel!
@@ -67,8 +57,6 @@ final class MsgViewController: UIViewController {
     // TODO: Inject as a dependency
     private let imap = Imap.instance
     private var input: MsgViewController.Input?
-
-    weak var delegate: MsgViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -194,14 +182,14 @@ extension MsgViewController {
     private func handleSuccesMessage(operation: MessageAction) {
         guard let input = input else { return }
         hideSpinner()
-        delegate?.movedOrUpdated(objMessage: input.objMessage)
-        showToast(operation.text)
+        operation.text.flatMap { showToast($0) }
+        updateCompletion?(operation, input.objMessage)
         navigationController?.popViewController(animated: true)
     }
 
     private func handleErrorOnMessage(operation: MessageAction) {
         hideSpinner()
-        showToast(operation.error)
+        operation.error.flatMap { showToast($0) }
     }
 }
 
@@ -253,5 +241,13 @@ extension MsgViewController {
         let replyVc = ComposeViewController.instance(with: viewModel)
 
         navigationController?.pushViewController(replyVc, animated: true)
+    }
+}
+
+extension MsgViewController: NavigationChildController {
+    func handleBackButtonTap() {
+        guard let message = input?.objMessage else { return }
+        updateCompletion?(MessageAction.markAsRead, message)
+        navigationController?.popViewController(animated: true)
     }
 }
