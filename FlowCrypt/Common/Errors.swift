@@ -15,6 +15,7 @@ enum FCError: Error {
     case authentication
     case connection
     case operation(Error)
+    case message(String)
 }
 
 extension FCError: Equatable {

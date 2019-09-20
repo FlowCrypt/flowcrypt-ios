@@ -9,7 +9,17 @@ enum Constants {
         static let generalError = -1
         static let gmailPath = "[Gmail]"
     }
-    
+
+    enum EmailConstant {
+        static let recoverAccountSearchSubject = [
+            "Your FlowCrypt Backup",
+            "Your CryptUp Backup",
+            "Your CryptUP Backup",
+            "CryptUP Account Backup",
+            "All you need to know about CryptUP (contains a backup)"
+        ]
+    }
+
     // TODO: update texts on failed archive/delete operation.
     // Also better to add localization for application ASAP.
     enum ErrorTexts {
@@ -45,15 +55,7 @@ enum Constants {
     }
 }
 
-struct EmailConstant {
-    static let recoverAccountSearchSubject = [
-        "Your FlowCrypt Backup",
-        "Your CryptUp Backup",
-        "Your CryptUP Backup",
-        "CryptUP Account Backup",
-        "All you need to know about CryptUP (contains a backup)"
-    ]
-}
+
 
 struct Language {
     static let loading = "Loading"
