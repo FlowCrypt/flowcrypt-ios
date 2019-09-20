@@ -51,6 +51,7 @@
 		9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1B23186A5700299985 /* AuthAssembley.swift */; };
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
+		9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */; };
 		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
 		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
@@ -157,6 +158,7 @@
 		9F0C3C1B23186A5700299985 /* AuthAssembley.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAssembley.swift; sourceTree = "<group>"; };
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
 		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
 		9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+retry.swift"; sourceTree = "<group>"; };
 		9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+folders.swift"; sourceTree = "<group>"; };
 		9F31AB90232993F500CF87EA /* Imap+session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+session.swift"; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 			children = (
 				9F31AB9A232BF08600CF87EA /* Menu */,
 				04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */,
+				9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */,
 			);
 			path = SideMenu;
 			sourceTree = "<group>";
@@ -852,6 +855,7 @@
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
 				9F31AB99232BF05100CF87EA /* HeaderCell.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
+				9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */,
 				470E79285E76FE700D12A2F2 /* MailDestination.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
