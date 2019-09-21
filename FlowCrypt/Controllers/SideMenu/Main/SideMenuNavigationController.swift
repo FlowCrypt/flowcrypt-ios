@@ -12,18 +12,25 @@ protocol NavigationChildController {
 final class SideMenuNavigationController: ENSideMenuNavigationController {
     private enum Constants {
         static let menuOffset: CGFloat = 80
+        static let sideOffset: CGFloat = 100
+        static let animationDuration: TimeInterval = 0.3
     }
 
-    private let gestureView = UIView()
+    private lazy var gestureView = SideMenuOptionalView() { [weak self] in
+        self?.hideMenu()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setup()
+    }
 
+    private func setup() {
         let sideMenuVC = MyMenuTableViewController()
         sideMenu = ENSideMenu(sourceView: view, menuViewController: sideMenuVC, menuPosition: .left).then {
             $0.bouncingEnabled = false
-            $0.menuWidth = UIScreen.main.bounds.size.width - Constants.menuOffset
             $0.delegate = self
+            $0.animationDuration = Constants.animationDuration
         }
 
         navigationItem.backBarButtonItem = UIBarButtonItem()
@@ -31,6 +38,23 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
         interactivePopGestureRecognizer?.delegate = self
         delegate = self
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        updateSideMenuSize()
+    }
+
+    private func updateSideMenuSize() {
+        sideMenu?.menuWidth =
+            min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
+            - Constants.menuOffset
+        fixSideMenuSize()
+
+        if gestureView.superview != nil {
+            gestureView.frame = view.frame
+        }
     }
 }
 
@@ -42,39 +66,45 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
 
     func sideMenuWillOpen() {
         addGestureView()
+        gestureView.animate(to: .oppened, with: Constants.animationDuration)
+        updateNavigationItems(isShown: false)
     }
 
     func sideMenuWillClose() {
-        gestureView.frame = CGRect(
-            x: 0,
-            y: 0,
-            width: view.frame.size.width,
-            height: view.frame.size.height
-        )
+        gestureView.animate(to: .closed, with: Constants.animationDuration)
     }
 
     func sideMenuDidClose() {
         gestureView.removeFromSuperview()
+        updateNavigationItems(isShown: true)
     }
 
     func sideMenuDidOpen() {
-        gestureView.frame = CGRect(
-            x: UIScreen.main.bounds.size.width - Constants.menuOffset,
-            y: 0,
-            width: Constants.menuOffset,
-            height: view.frame.size.height
-        )
+        gestureView.frame = view.frame
+    }
+}
+
+extension SideMenuNavigationController {
+    private func addGestureView() {
+        topViewController?.view.addSubview(gestureView)
+        gestureView.frame = view.frame
     }
 
-    private func addGestureView() {
-        view.addSubview(gestureView)
-        gestureView.backgroundColor = .clear
-        gestureView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
-        gestureView.frame = CGRect(
-            x: UIScreen.main.bounds.size.width - Constants.menuOffset,
-            y: 0,
-            width: Constants.menuOffset,
-            height: view.frame.size.height
+    private func updateNavigationItems(isShown: Bool) {
+        guard let items = topViewController?.navigationItem.rightBarButtonItems else { return }
+        items.forEach {
+            $0.isEnabled = isShown
+        }
+
+        UIView.animate(
+            withDuration: Constants.animationDuration,
+            delay: 0,
+            options: [.beginFromCurrentState],
+            animations: {
+                items.forEach {
+                    $0.customView?.alpha = isShown ? 1.0 : 0.3
+                }
+            }, completion: nil
         )
     }
 
