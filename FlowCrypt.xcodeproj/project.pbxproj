@@ -251,8 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				9F31AB9A232BF08600CF87EA /* Menu */,
-				04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */,
-				9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */,
+				9F2A939F23363D2400014A92 /* Main */,
 			);
 			path = SideMenu;
 			sourceTree = "<group>";
@@ -347,6 +346,23 @@
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		9F2A939F23363D2400014A92 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */,
+				9F2A93A023363D4400014A92 /* View */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		9F2A93A023363D4400014A92 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		9F31AB8F232993AC00CF87EA /* Imap */ = {

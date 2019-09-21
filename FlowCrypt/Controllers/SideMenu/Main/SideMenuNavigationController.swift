@@ -29,7 +29,6 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         let sideMenuVC = MyMenuTableViewController()
         sideMenu = ENSideMenu(sourceView: view, menuViewController: sideMenuVC, menuPosition: .left).then {
             $0.bouncingEnabled = false
-            $0.menuWidth = UIScreen.main.bounds.size.width - Constants.menuOffset
             $0.delegate = self
             $0.animationDuration = Constants.animationDuration
         }
@@ -39,7 +38,23 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
         interactivePopGestureRecognizer?.delegate = self
         delegate = self
+    }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        updateSideMenuSize()
+    }
+
+    private func updateSideMenuSize() {
+        sideMenu?.menuWidth =
+            min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
+            - Constants.menuOffset
+        fixSideMenuSize()
+
+        if gestureView.superview != nil {
+            gestureView.frame = view.frame
+        }
     }
 }
 
@@ -52,6 +67,7 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
     func sideMenuWillOpen() {
         addGestureView()
         gestureView.animate(to: .oppened, with: Constants.animationDuration)
+        updateNavigationItems(isShown: false)
     }
 
     func sideMenuWillClose() {
@@ -60,15 +76,36 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
 
     func sideMenuDidClose() {
         gestureView.removeFromSuperview()
+        updateNavigationItems(isShown: true)
     }
 
     func sideMenuDidOpen() {
         gestureView.frame = view.frame
     }
+}
 
+extension SideMenuNavigationController {
     private func addGestureView() {
         topViewController?.view.addSubview(gestureView)
         gestureView.frame = view.frame
+    }
+
+    private func updateNavigationItems(isShown: Bool) {
+        guard let items = topViewController?.navigationItem.rightBarButtonItems else { return }
+        items.forEach {
+            $0.isEnabled = isShown
+        }
+
+        UIView.animate(
+            withDuration: Constants.animationDuration,
+            delay: 0,
+            options: [.beginFromCurrentState],
+            animations: {
+                items.forEach {
+                    $0.customView?.alpha = isShown ? 1.0 : 0.3
+                }
+            }, completion: nil
+        )
     }
 
     @objc private func hideMenu() {

@@ -9,7 +9,7 @@
 import UIKit
 
 final class SideMenuOptionalView: UIView {
-    private let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
+    private let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
     typealias Action = () -> Void
     private var onAction: Action?
 
@@ -43,7 +43,7 @@ final class SideMenuOptionalView: UIView {
     func animate(to state: State, with duration: TimeInterval) {
         let alpha: CGFloat = {
             switch state {
-            case .oppened: return 0.7
+            case .oppened: return 0.8
             case .closed: return 0.0
             }
         }()
