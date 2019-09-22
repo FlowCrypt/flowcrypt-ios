@@ -89,7 +89,7 @@ extension Imap {
                     logDebug(5, "(\(debugId)|\(op)) forced session refreshes")
                     log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
                     retry().then(resolve).catch(reject)
-                }
+                }.catch(reject)
                 logDebug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
                 logDebug(11, "(\(debugId)|\(op)) return=true (need to retry)")
 
