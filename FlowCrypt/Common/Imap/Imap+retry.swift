@@ -23,7 +23,7 @@ extension Imap {
             if let res = res {
                 resolve(res)
             } else {
-                reject(error ?? FCError.general)
+                reject(error ?? AppErr.unexpected("Error is empty, but no result"))
             }
         }
     }
@@ -74,7 +74,7 @@ extension Imap {
         retry: @escaping () -> Promise<T>
     ) -> Bool {
         if let err = err {
-            let error = FCError(err)
+            let error = AppErr(err)
             let debugId = Int.random(in: 1...Int.max)
             let start = DispatchTime.now()
 

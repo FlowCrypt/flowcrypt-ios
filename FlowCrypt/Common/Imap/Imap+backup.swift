@@ -17,7 +17,7 @@ extension Imap: BackupProvider {
 
     func searchBackups(email: String) -> Promise<Data> {
         return Promise { [weak self] () -> Data in
-            guard let self = self else { throw FCError.missingWeakRef }
+            guard let self = self else { throw AppErr.nilSelf }
             let searchExpr = self.createSearchBackupExpression()
             var folderPaths = try await(self.fetchFolders()).folders
                 .compactMap { $0.path }
@@ -46,7 +46,7 @@ extension Imap: BackupProvider {
     // todo - should be moved to a general Imap class or extension
     private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
         return Promise<Data> { [weak self] resolve, reject in
-            guard let self = self else { return reject(FCError.general) }
+            guard let self = self else { return reject(AppErr.nilSelf) }
             self.getImapSess()?
                 .fetchMessageAttachmentOperation(withFolder: folder, uid: msgUid, partID: part.partID, encoding: part.encoding)
                 .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
@@ -58,7 +58,7 @@ extension Imap: BackupProvider {
     // todo - should be moved to a general Imap class or extension
     private func fetchMessagesIn(folder: String, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> {
         return Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(FCError.general) }
+            guard let self = self else { return reject(AppErr.nilSelf) }
 
             let start = DispatchTime.now()
             let kind = DefaultMessageKindProvider().imapMessagesRequestKind
@@ -77,7 +77,7 @@ extension Imap: BackupProvider {
     // todo - should be moved to a general Imap class or extension
     private func fetchMessage(in folder: String, kind: MCOIMAPMessagesRequestKind, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> {
         return Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(FCError.general) }
+            guard let self = self else { return reject(AppErr.nilSelf) }
 
             self.getImapSess()?
                 .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
@@ -89,7 +89,7 @@ extension Imap: BackupProvider {
                     if let messages = msgs as? [MCOIMAPMessage] {
                         return resolve(messages)
                     } else {
-                        reject(FCError.message("fetchMsgs messages == nil"))
+                        reject(AppErr.cast("msgs as? [MCOIMAPMessage]"))
                     }
                 }
         }

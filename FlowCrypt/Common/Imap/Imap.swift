@@ -15,7 +15,7 @@ final class Imap {
     typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
 
-    var lastErr: [String: FCError] = [:]
+    var lastErr: [String: AppErr] = [:]
 
     let userService: UserService
     let dataManager: DataManager

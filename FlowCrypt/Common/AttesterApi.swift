@@ -27,7 +27,8 @@ final class AttesterApi {
             if res.status == 404 {
                 return PubkeySearchResult(armored: nil)
             }
-            throw FCError.message("Status \(res.status) when looking up pubkey for \(email)")
+            // programming error because should never happen
+            throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
         }
     }
 

@@ -136,7 +136,7 @@ final class CoreHost: NSObject, CoreHostExports {
             case "sha384": return HashAlgo(digest: CC_SHA384, length: CC_SHA384_DIGEST_LENGTH)
             case "sha256": return HashAlgo(digest: CC_SHA256, length: CC_SHA256_DIGEST_LENGTH)
             case "sha512": return HashAlgo(digest: CC_SHA512, length: CC_SHA512_DIGEST_LENGTH)
-            default: throw Errors.valueError("Unsupported iterated s2k hash algo: \(name). Please contact us to add support.") // ripemd
+            default: throw AppErr.value("Unsupported iterated s2k hash algo: \(name). Please contact us to add support.") // ripemd
         }
     }
 

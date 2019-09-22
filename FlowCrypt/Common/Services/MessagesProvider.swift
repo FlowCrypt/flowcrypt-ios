@@ -65,14 +65,14 @@ extension DefaultMessageProvider {
                 .folderInfoOperation(path)
                 .start { error, folder in
                     if let error = error {
-                        observer.onError(FCError(error))
+                        observer.onError(AppErr(error))
                     }
                     if let folder = folder {
                         observer.onNext(folder)
                         observer.onCompleted()
                     }
                     else {
-                        observer.onError(FCError.general)
+                        observer.onError(AppErr.general("folderInfo: no folder?"))
                     }
             }
             return Disposables.create()
@@ -105,14 +105,14 @@ extension DefaultMessageProvider {
                 .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: set)
                 .start { error, messages, set in
                     if let error = error {
-                        observer.onError(FCError(error))
+                        observer.onError(AppErr(error))
                     }
                     if let messages = messages as? [MCOIMAPMessage]  {
                         observer.onNext(messages)
                         observer.onCompleted()
                     }
                     else {
-                        observer.onError(FCError.general)
+                        observer.onError(AppErr.cast("messages as? [MCOIMAPMessage]"))
                     }
             }
 

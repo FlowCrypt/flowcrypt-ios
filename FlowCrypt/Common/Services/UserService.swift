@@ -23,7 +23,7 @@ final class UserService: NSObject, UserServiceType {
     static let shared = UserService()
 
     private var onLogin: ((User) -> Void)?
-    private var onError: ((FCError) -> Void)?
+    private var onError: ((AppErr) -> Void)?
     private var onNewToken: ((String) -> Void)?
     private var onLogOut: (() -> Void)?
 
@@ -78,7 +78,7 @@ final class UserService: NSObject, UserServiceType {
             }
 
             self.onError = { error in
-                reject(FCError(error))
+                reject(AppErr(error))
             }
         }
     }
@@ -97,7 +97,7 @@ final class UserService: NSObject, UserServiceType {
             }
 
             self.onError = { error in
-                reject(FCError(error))
+                reject(AppErr(error))
             }
         }
     }
@@ -117,10 +117,10 @@ extension UserService: GIDSignInDelegate {
                 onNewToken?(token)
                 onLogin?(newUser)
             } else {
-                onError?(FCError.general)
+                onError?(AppErr.general("could not save user or retrieve token"))
             }
         } else {
-            onError?(FCError(error))
+            onError?(AppErr(error))
         }
     }
 
@@ -134,7 +134,7 @@ extension UserService: GIDSignInDelegate {
                 realm.deleteAll()
             }
         } catch {
-            onError?(FCError.message("Could not properly finish signing out"))
+            onError?(AppErr.general("Could not properly finish signing out"))
         }
 
         onLogOut?()
