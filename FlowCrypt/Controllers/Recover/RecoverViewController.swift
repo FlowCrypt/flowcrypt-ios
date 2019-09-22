@@ -9,7 +9,7 @@ import Promises
 
 final class RecoverViewController: UIViewController {
     private enum Constants {
-        static let noBackups = "No backups found on this account"
+        static let noBackups = "No backups found on account: \n"
         static let actionFailed = "Action failed"
         static let useOtherAccount = "Use other account"
         static let enterPassPhrase = "Enter pass phrase"
@@ -65,25 +65,20 @@ extension RecoverViewController {
 
     private func fetchBackups() {
         showSpinner()
-
-        imap.searchBackups(email: DataManager.shared.currentUser()?.email ?? "")
-            .then { data -> [KeyDetails] in
-                let keyDetailsRes = try Core.parseKeys(armoredOrBinary: data)
-                return keyDetailsRes.keyDetails
+        Promise<Void> { [weak self] in
+            guard let self = self else { return }
+            guard let email = DataManager.shared.currentUser()?.email else { throw Errors.programmingError("Missing account email") }
+            let backupData = try await(self.imap.searchBackups(email: email))
+            let parsed = try Core.parseKeys(armoredOrBinary: backupData)
+            self.encryptedBackups = parsed.keyDetails.filter { $0.private != nil }
+        }.then(on: .main) {
+            self.hideSpinner()
+            if self.encryptedBackups.isEmpty {
+                self.showRetryFetchBackupsOrChangeAcctAlert(msg: Constants.noBackups + (DataManager.shared.currentUser()?.email ?? "(unknown)"))
             }
-            .then(on: .main) { [weak self] keyDetails in
-                guard let self = self else { return }
-                self.hideSpinner()
-                let encryptedBackups = keyDetails.filter { $0.private != nil }
-                self.encryptedBackups = encryptedBackups
-                if encryptedBackups.isEmpty {
-                    self.showRetryFetchBackupsOrChangeAcctAlert(msg: Constants.noBackups)
-                }
-            }
-            .catch(on: .main) { [weak self] in
-                let message = "\(Constants.actionFailed)\n\n\($0)"
-                self?.showRetryFetchBackupsOrChangeAcctAlert(msg: message)
-            }
+        }.catch(on: .main) { [weak self] error in
+            self?.showRetryFetchBackupsOrChangeAcctAlert(msg: "\(Constants.actionFailed)\n\n\(error)")
+        }
     }
 
     private func showRetryFetchBackupsOrChangeAcctAlert(msg: String) {
@@ -92,20 +87,17 @@ extension RecoverViewController {
             self.fetchBackups()
         })
         alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
-            self?.handleForOtherAccount()
-        })
-        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive) { [weak self] _ in
-            self?.hideSpinner()
+            self?.userService.signOut().then(on: .main) { [weak self] in
+                if self?.navigationController?.popViewController(animated: true) == nil {
+                    self?.router.proceedAfterLogOut() // in case app got restarted and no view to pop
+                }
+            }.catch(on: .main) { [weak self] error in
+                self?.showAlert(error: error, message: "Could not sign out")
+            }
         })
         present(alert, animated: true, completion: nil)
     }
 
-    private func handleForOtherAccount() {
-        userService.signOut()
-            .then(on: .main) { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
-            }
-    }
 }
 
 extension RecoverViewController {
@@ -144,6 +136,8 @@ extension RecoverViewController {
     @IBAction func useOtherAccount(_ sender: Any) {
         userService.signOut().then(on: .main) { [weak self] _ in
             self?.router.proceedAfterLogOut()
+        }.catch(on: .main) { [weak self] error in
+            self?.showAlert(error: error, message: "Could not switch accounts")
         }
     }
 }

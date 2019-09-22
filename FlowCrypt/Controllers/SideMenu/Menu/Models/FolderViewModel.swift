@@ -22,26 +22,15 @@ struct FolderViewModel {
 
 extension FolderViewModel {
     init?(_ folder: MCOIMAPFolder, image: UIImage? = nil, itemType: ItemType = .folder) {
+        let gmailRootPath = Constants.Global.gmailRootPath
         guard !folder.path.isEmpty else { return nil }
-
-        let gmailPath = Constants.Global.gmailPath
-        if folder.path.isEmpty || folder.path == gmailPath {
-            return nil
-        } else {
-            self.name = {
-                if folder.path.contains(gmailPath) {
-                    return folder.path.replacingOccurrences(of: gmailPath, with: "")
-                        .trimLeadingSlash
-                        .capitalized
-                } else  {
-                    return folder.path
-                        .capitalized
-                }
-            }()
-            self.path = folder.path
-            self.image = image
-            self.itemType = itemType
-        }
+        guard folder.path != gmailRootPath else { return nil }
+        self.name = folder.path.contains(gmailRootPath)
+            ? folder.path.replacingOccurrences(of: gmailRootPath, with: "").trimLeadingSlash.capitalized
+            : folder.path.capitalized
+        self.path = folder.path
+        self.image = image
+        self.itemType = itemType
     }
 }
 

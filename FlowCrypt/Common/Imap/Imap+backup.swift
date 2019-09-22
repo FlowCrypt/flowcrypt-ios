@@ -14,76 +14,36 @@ protocol BackupProvider {
 }
 
 extension Imap: BackupProvider {
+
     func searchBackups(email: String) -> Promise<Data> {
-        return Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(FCError.general) }
-
-            guard let backupSearchExpr = self.createSearchBackubExpression() else {
-                return reject(FCError.general)
+        return Promise { [weak self] () -> Data in
+            guard let self = self else { throw FCError.missingWeakRef }
+            let searchExpr = self.createSearchBackupExpression()
+            var folderPaths = try await(self.fetchFolders()).folders
+                .compactMap { $0.path }
+                .compactMap { (path: String) -> String? in path.isEmpty || path == Constants.Global.gmailRootPath ? nil : path }
+            if folderPaths.contains(Constants.Global.gmailAllMailPath) {
+                folderPaths = [Constants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
             }
-
-            let folderContext = try await(self.fetchFolders())
-            let folderPathes = folderContext.folders.compactMap { $0.path }
-                .compactMap { (path: String) -> String? in
-                    let gmailPath = Constants.Global.gmailPath
-                    if path.isEmpty || path == gmailPath {
-                        return nil
-                    } else {
-                        return path
-                    }
-
+            let dataArr = try folderPaths
+                .compactMap { folder in UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr)))}
+                .filter { $0.uids.count() > 0 }
+                .flatMap { uidsContext -> [MsgContext] in
+                    let msgs = try await(self.fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
+                    return msgs.map { msg in MsgContext(path: uidsContext.path, msg: msg) }
                 }
-
-            // search uid and related folders
-            typealias SearchContext = (set: MCOIndexSet, folder: String)
-            let searchContext = try folderPathes
-                .compactMap { folder -> SearchContext in
-                    return (try await(self.fetchUID(folder: folder, expression: backupSearchExpr)), folder)
+                .flatMap { msgContext -> [AttContext] in
+                    guard let parts = msgContext.msg.attachments() as? [MCOIMAPPart] else { assertionFailure(); return [] }
+                    return parts.map { part in AttContext(path: msgContext.path, msg: msgContext.msg, part: part) }
                 }
-                .filter { $0.set.count() > 0 }
-
-            // array of message and related folder
-            typealias MessageContext = (set: MCOIMAPMessage, folder: String)
-            let messagesContext: [MessageContext] = try searchContext
-                .compactMap {
-                    try (await(self.fetchMessagesIn(folder: $0.1, uids: $0.0)), $0.1)
+                .map { attContext -> Data in
+                    try await(self.fetchMsgAttribute(in: attContext.path, msgUid: attContext.msg.uid, part: attContext.part)) + [10] // newline
                 }
-                .compactMap { messages, folder in
-                    messages.compactMap {
-                        return ($0, folder)
-                    }
-                }
-                .flatMap { $0 }
-
-
-            typealias AttachmentsContext = (attachment: [MCOIMAPPart], message: MCOIMAPMessage, folder: String)
-            typealias AttachmentContext = (attachment: MCOIMAPPart, message: MCOIMAPMessage, folder: String)
-            let attachmentContext = messagesContext
-                .compactMap { context -> AttachmentsContext? in
-                    guard let attachments = context.0.attachments() as? [MCOIMAPPart] else { assertionFailure();
-                        return nil
-                    }
-
-                    return (attachments, context.0, context.1)
-                }
-                .compactMap { context -> [AttachmentContext] in
-                    context.attachment.compactMap {
-                        return ($0, context.message, context.folder)
-                    }
-                }
-                .flatMap { $0 }
-
-            var data = Data()
-
-            try attachmentContext.forEach { context in
-                data += try await(self.fetchMsgAttribute(in: context.folder, msgUid: context.message.uid, part: context.attachment))
-                data += [10] // newline
-            }
-
-            return resolve(data)
+            return Data.joined(dataArr)
         }
     }
 
+    // todo - should be moved to a general Imap class or extension
     private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
         return Promise<Data> { [weak self] resolve, reject in
             guard let self = self else { return reject(FCError.general) }
@@ -95,6 +55,7 @@ extension Imap: BackupProvider {
             }
     }
 
+    // todo - should be moved to a general Imap class or extension
     private func fetchMessagesIn(folder: String, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(FCError.general) }
@@ -113,6 +74,7 @@ extension Imap: BackupProvider {
         }
     }
 
+    // todo - should be moved to a general Imap class or extension
     private func fetchMessage(in folder: String, kind: MCOIMAPMessagesRequestKind, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(FCError.general) }
@@ -133,54 +95,50 @@ extension Imap: BackupProvider {
         }
     }
 
-    private func fetchUID(folder: String, expression: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
+    // todo - should be moved to a general Imap class or extension
+    private func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
         return Promise<MCOIndexSet> { resolve, reject in
             self.getImapSess()?
-                .searchExpressionOperation(withFolder: folder, expression: expression)
-                .start(self.finalize("searchExpression", resolve, reject, retry: { self.fetchUID(folder: folder, expression: expression)
-                }))
+                .searchExpressionOperation(withFolder: folder, expression: expr)
+                .start(self.finalize("searchExpression", resolve, reject, retry: { self.fetchUids(folder: folder, expr: expr) }))
         }
     }
 
-    private func createSearchExpression(from expressions: [String]) -> MCOIMAPSearchExpression? {
-        let array = expressions.compactMap { MCOIMAPSearchExpression.searchSubject($0) }
-        guard array.count > 0 else { return nil }
-
-        var resultArray: [MCOIMAPSearchExpression] = array
-        while resultArray.count != 1 {
-            let array = resultArray
+    private func subjectsExpr() -> MCOIMAPSearchExpression {
+        var resultArray = Constants.EmailConstant.recoverAccountSearchSubject.compactMap { MCOIMAPSearchExpression.searchSubject($0) }
+        while resultArray.count > 1 {
+            resultArray = resultArray
                 .chunked(2)
                 .compactMap { (chunk) -> MCOIMAPSearchExpression? in
-                    if let firstSearchExp = chunk.first {
-                        if let secondSearchExp = chunk[safe: 1] {
-                            return MCOIMAPSearchExpression.searchOr(firstSearchExp, other: secondSearchExp)
-                        } else {
-                            return firstSearchExp
-                        }
-                    } else {
-                        return nil
-                    }
+                    guard let firstSearchExp = chunk.first else { return nil }
+                    guard let secondSearchExp = chunk[safe: 1] else { return firstSearchExp }
+                    return MCOIMAPSearchExpression.searchOr(firstSearchExp, other: secondSearchExp)
                 }
-            resultArray = array
         }
-
-        return resultArray.first
+        return resultArray.first! // app should crash if we got this wrong
     }
 
-    private func createSearchBackubExpression() -> MCOIMAPSearchExpression? {
-        guard let searchExpression = createSearchExpression(from: Constants.EmailConstant.recoverAccountSearchSubject) else {
-            return nil
-        }
-
-        let expression = MCOIMAPSearchExpression.searchOr(
+    private func createSearchBackupExpression() -> MCOIMAPSearchExpression {
+        let fromToExpr = MCOIMAPSearchExpression.searchAnd(
             MCOIMAPSearchExpression.search(from: email),
             other: MCOIMAPSearchExpression.search(to: email)
         )
-
-        guard let backupSearchExpr = MCOIMAPSearchExpression.searchAnd(expression, other: searchExpression) else {
-            return searchExpression
-        }
-
-        return backupSearchExpr
+        return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: subjectsExpr())
     }
+}
+
+fileprivate struct UidsContext {
+    let path: String
+    let uids: MCOIndexSet
+}
+
+fileprivate struct MsgContext {
+    let path: String
+    let msg: MCOIMAPMessage
+}
+
+fileprivate struct AttContext {
+    let path: String
+    let msg: MCOIMAPMessage
+    let part: MCOIMAPPart
 }

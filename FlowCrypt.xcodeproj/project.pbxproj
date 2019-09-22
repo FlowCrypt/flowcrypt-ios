@@ -37,7 +37,9 @@
 		32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtension.swift */; };
 		32DCACFD1193878BEB48C24D /* PromiseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4A964004CBABCA2F01C /* PromiseExtension.swift */; };
 		32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
+		32DCAF683D87EA6221F71335 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
+		32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */; };
 		470E79285E76FE700D12A2F2 /* MailDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470E74FC52C5C2073ED39A6C /* MailDestination.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
@@ -124,6 +126,7 @@
 		04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideMenuNavigationController.swift; sourceTree = "<group>"; };
 		069059B887A8580765029BF9 /* Pods_FlowCrypt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCrypt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
+		32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecPaddingExtension.swift; sourceTree = "<group>"; };
@@ -314,6 +317,7 @@
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				9F0C3C2723194E8500299985 /* Extensions.swift */,
 				9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */,
+				32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -811,6 +815,7 @@
 				32DCA1D6067D3A5B9AF03635 /* CoreHost.swift in Sources */,
 				32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */,
 				32DCAA2C7248D6CCC5504AF4 /* Errors.swift in Sources */,
+				32DCAF683D87EA6221F71335 /* SequenceExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -873,6 +878,7 @@
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
 				9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */,
 				470E79285E76FE700D12A2F2 /* MailDestination.swift in Sources */,
+				32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

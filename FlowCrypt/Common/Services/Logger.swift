@@ -40,6 +40,8 @@ private struct Logger {
             resStr = "Array[\(res.count)]"
         } else if let res = res as? FoldersContext {
             resStr = "FetchFoldersRes[\(res.folders.count)]"
+        } else if let res = res as? MCOIndexSet {
+            resStr = "IndexSet[\(res.count())]"
         }
         print("IMAP \(message) -> \(errStr) \(resStr) \(start.millisecondsSince)ms")
     }
