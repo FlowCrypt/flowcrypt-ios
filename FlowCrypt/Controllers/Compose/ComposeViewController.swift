@@ -29,6 +29,7 @@ final class ComposeViewController: UIViewController {
         static let sending = "Sending"
         static let enterRecipient = "Enter recipient"
         static let noPgp = "Recipient doesn't seem to have encryption set up"
+        static let noSenderPgp = "Missing sender public key. Is FlowCrypt iOS app well set up?"
         static let composeError = "Could not compose message"
         static let replySent = "Reply successfully sent"
         static let messageSent = "Encrypted message sent"
@@ -147,7 +148,63 @@ extension ComposeViewController {
     }
 
     @objc private func handleSendTap() {
-        sendMessage()
+        sendMsgTapHandler()
+    }
+
+    private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
+    @objc private func convertStringToLowercase(textField: UITextField) {
+        txtRecipient.text = txtRecipient.text?.lowercased()
+    }
+}
+
+extension ComposeViewController {
+
+    private func sendMsgTapHandler() {
+        dismissKeyboard()
+
+        guard isInputValid(),
+            let email = txtRecipient.text,
+            let text = txtMessage.text
+        else { return }
+
+        showSpinner(Constants.sending)
+
+        Promise<Void> { [weak self] in
+            guard let self = self else { return }
+            let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
+            guard let recipientPubkey = lookupRes.armored else { return self.showAlert(message: Constants.noPgp) }
+            let realm = try Realm() // TODO: Anton - Refactor to use db service
+            guard let myPubkey = realm.objects(KeyInfo.self).map( { $0.public }).first else { return self.showAlert(message: Constants.noSenderPgp) }
+            let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], message: text, email: email)
+            try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
+        }.then(on: .main) { [weak self] in
+            self?.hideSpinner()
+            self?.showToast(self?.viewModel.isReply ?? false ? Constants.replySent : Constants.messageSent)
+            self?.navigationController?.popViewController(animated: true)
+        }.catch(on: .main) { [weak self] error in
+            self?.showAlert(error: error, message: Constants.composeError)
+        }
+    }
+
+    private func encryptMsg(pubkeys: [String], message: String, email: String) -> CoreRes.ComposeEmail {
+        let subject = viewModel.isReply
+            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+            : txtSubject.text ?? "(no subject)"
+        let replyToMimeMsg = viewModel.replyToMime
+            .flatMap { String(data: $0, encoding: .utf8) }
+        let msg = SendableMsg(
+            text: message,
+            to: [email],
+            cc: [],
+            bcc: [],
+            from: dataManager.currentUser()?.email ?? "",
+            subject: subject,
+            replyToMimeMsg: replyToMimeMsg
+        )
+        return try! Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
     }
 
     private func isInputValid() -> Bool {
@@ -166,88 +223,6 @@ extension ComposeViewController {
         return true
     }
 
-    private func dismissKeyboard() {
-        view.endEditing(true)
-    }
-
-    @objc private func convertStringToLowercase(textField: UITextField) {
-        txtRecipient.text = txtRecipient.text?.lowercased()
-    }
-}
-
-extension ComposeViewController {
-    private func sendMessage() {
-        dismissKeyboard()
-
-        guard isInputValid(),
-            let email = txtRecipient.text,
-            let text = txtMessage.text
-        else { return }
-
-        showSpinner(Constants.sending)
-
-        attesterApi.lookupEmail(email: email)
-            .then(on: .main) { [weak self] recipientPub in
-                self?.handleLookupEmail(result: recipientPub, message: text, email: email)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handleSend(error: error)
-            }
-    }
-
-    private func handleLookupEmail(result: PubkeySearchResult, message: String, email: String) {
-        guard let armored = result.armored else { return showAlert(message: Constants.noPgp) }
-
-        let subject = viewModel.isReply
-            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
-            : txtSubject.text ?? "(no subject)"
-
-        let replyToMimeMsg = viewModel.replyToMime
-            .flatMap { String(data: $0, encoding: .utf8) }
-
-        do {
-            // TODO: Anton - Refactor to use db service
-            let realm = try! Realm()
-            var pubKeys = Array(realm.objects(KeyInfo.self)
-                .map { $0.public })
-
-            pubKeys.append(armored)
-
-            let msg = SendableMsg(
-                text: message,
-                to: [email],
-                cc: [],
-                bcc: [],
-                from: dataManager.currentUser()?.email ?? "",
-                subject: subject,
-                replyToMimeMsg: replyToMimeMsg
-            )
-
-            let composeRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubKeys)
-
-            sendMessage(with: composeRes)
-        } catch let error {
-            handleSend(error: error)
-        }
-    }
-
-    private func sendMessage(with composeEmail: CoreRes.ComposeEmail) {
-        imap.sendMail(mime: composeEmail.mimeEncoded)
-            .then(on: .main) { [weak self] _ in
-                guard let self = self else { return }
-                self.hideSpinner()
-                self.showToast(self.viewModel.isReply ? Constants.replySent : Constants.messageSent)
-                self.navigationController?.popViewController(animated: true)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handleSend(error: error)
-            }
-    }
-
-    private func handleSend(error: Error) {
-        hideSpinner()
-        showAlert(message: Constants.composeError)
-    }
 }
 
 // MARK - UITextViewDelegate, UITextFieldDelegate

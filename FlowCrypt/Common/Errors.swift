@@ -15,7 +15,7 @@ enum FCError: Error {
     case authentication
     case connection
     case operation(Error)
-    case message(String)
+    case message(String) // todo tom: should be renamed to something more meaningful, eg programmingError or valueError
 }
 
 extension FCError: Equatable {
