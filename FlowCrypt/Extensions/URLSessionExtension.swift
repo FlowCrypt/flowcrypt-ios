@@ -43,7 +43,7 @@ extension URLSession {
     }
 
     func call(_ urlStr: String, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
-        return Promise<HttpRes>.valueReturning {
+        return Promise { () -> HttpRes in
             let url = URL(string: urlStr)
             guard url != nil else {
                 throw HttpErr(status: -2, data: Data(), error: Errors.valueError("Invalid url: \(urlStr)"))

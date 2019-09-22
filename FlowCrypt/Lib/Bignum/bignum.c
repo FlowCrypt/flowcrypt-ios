@@ -23,7 +23,7 @@ const char* c_gmp_mod_pow(const char* base, const char* exponent, const char* mo
     mpz_powm (mpz_result, mpz_base, mpz_exponent, mpz_modulo);
     return mpz_get_str (NULL, 10, mpz_result);
 #else
-    printf("c_gmp_mod_pow is not supported on this architecture");
+    printf("c_gmp_mod_pow is not supported on this architecture\n");
     return "";
 #endif
 }

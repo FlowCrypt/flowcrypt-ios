@@ -7,7 +7,6 @@ import JavaScriptCore
 enum CoreError: Error {
     case exception(String)
     case notReady(String)
-    case undefined
 }
 
 final class Core {

@@ -43,7 +43,7 @@ final class Imap {
     }
 }
 
-@available(*, deprecated, message: "Need to be refactored")
+@available(*, deprecated, message: "Remaining Imap methods should be moved out")
 extension Imap {
     func fetchMsg(message: MCOIMAPMessage, folder: String) -> Promise<Data> { return Promise { resolve, reject in
         self.getImapSess()?
@@ -70,7 +70,7 @@ extension Imap {
             .start(self.finalizeVoid("updateMsgFlags", resolve, reject, retry: { self.pushUpdatedMsgFlags(msg: msg, folder: folder) }))
         }}
 
-    func sendMail(mime: Data) -> Promise<VOID> { return Promise<VOID> { resolve, reject in
+    func sendMail(mime: Data) -> Promise<VOID> { return Promise { resolve, reject in
         self.getSmtpSess()?
             .sendOperation(with: mime)
             .start(self.finalizeVoid("send", resolve, reject, retry: { self.sendMail(mime: mime) }))

@@ -13,24 +13,25 @@ final class AttesterApi {
 
     static let shared: AttesterApi = AttesterApi()
 
-    private let url = "https://flowcrypt.com/attester/"
+    private static let url = "https://flowcrypt.com/attester/"
 
     private init() { }
 
     func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
-        return Promise<PubkeySearchResult> { [weak self] (resolve, reject) in
-            guard let self = self else { reject(CoreError.undefined); return }
-            let lookupUrl = self.url + "pub/\(self.normalize(email))"
+        return Promise { () -> PubkeySearchResult in
+            let lookupUrl = AttesterApi.url + "pub/\(AttesterApi.normalize(email))"
             let res = try await(URLSession.shared.call(lookupUrl, tolerateStatus: [404]))
-
-            guard res.status == 200 else { reject(CoreError.undefined); return }
-
-            let searchResult = PubkeySearchResult(armored:  String(data: res.data, encoding: .utf8))
-            resolve(searchResult)
+            if res.status >= 200 && res.status <= 299 {
+                return PubkeySearchResult(armored: String(data: res.data, encoding: .utf8))
+            }
+            if res.status == 404 {
+                return PubkeySearchResult(armored: nil)
+            }
+            throw FCError.message("Status \(res.status) when looking up pubkey for \(email)")
         }
     }
 
-    private func normalize(_ email: String) -> String {
+    private static func normalize(_ email: String) -> String {
         return email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
