@@ -65,25 +65,20 @@ extension RecoverViewController {
 
     private func fetchBackups() {
         showSpinner()
-
-        imap.searchBackups(email: DataManager.shared.currentUser()?.email ?? "")
-            .then { data -> [KeyDetails] in
-                let keyDetailsRes = try Core.parseKeys(armoredOrBinary: data)
-                return keyDetailsRes.keyDetails
+        Promise<Void> { [weak self] in
+            guard let self = self else { return }
+            guard let email = DataManager.shared.currentUser()?.email else { throw Errors.programmingError("Missing account email") }
+            let backupData = try await(self.imap.searchBackups(email: email))
+            let parsed = try Core.parseKeys(armoredOrBinary: backupData)
+            self.encryptedBackups = parsed.keyDetails.filter { $0.private != nil }
+        }.then(on: .main) {
+            self.hideSpinner()
+            if self.encryptedBackups.isEmpty {
+                self.showRetryFetchBackupsOrChangeAcctAlert(msg: Constants.noBackups)
             }
-            .then(on: .main) { [weak self] keyDetails in
-                guard let self = self else { return }
-                self.hideSpinner()
-                let encryptedBackups = keyDetails.filter { $0.private != nil }
-                self.encryptedBackups = encryptedBackups
-                if encryptedBackups.isEmpty {
-                    self.showRetryFetchBackupsOrChangeAcctAlert(msg: Constants.noBackups)
-                }
-            }
-            .catch(on: .main) { [weak self] in
-                let message = "\(Constants.actionFailed)\n\n\($0)"
-                self?.showRetryFetchBackupsOrChangeAcctAlert(msg: message)
-            }
+        }.catch(on: .main) { [weak self] error in
+            self?.showRetryFetchBackupsOrChangeAcctAlert(msg: "\(Constants.actionFailed)\n\n\(error)")
+        }
     }
 
     private func showRetryFetchBackupsOrChangeAcctAlert(msg: String) {
@@ -92,7 +87,11 @@ extension RecoverViewController {
             self.fetchBackups()
         })
         alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
-            self?.handleForOtherAccount()
+            self?.userService.signOut().then(on: .main) { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }.catch(on: .main) { [weak self] error in
+                self?.showAlert(error: error, message: "Could not sign out")
+            }
         })
         alert.addAction(UIAlertAction(title: "Cancel", style: .destructive) { [weak self] _ in
             self?.hideSpinner()
@@ -100,12 +99,6 @@ extension RecoverViewController {
         present(alert, animated: true, completion: nil)
     }
 
-    private func handleForOtherAccount() {
-        userService.signOut()
-            .then(on: .main) { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
-            }
-    }
 }
 
 extension RecoverViewController {

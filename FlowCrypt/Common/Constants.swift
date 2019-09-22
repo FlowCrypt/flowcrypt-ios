@@ -7,7 +7,8 @@ import UIKit
 enum Constants {
     enum Global {
         static let generalError = -1
-        static let gmailPath = "[Gmail]"
+        static let gmailRootPath = "[Gmail]"
+        static let gmailAllMailPath = "[Gmail]/All Mail"
     }
 
     enum EmailConstant {

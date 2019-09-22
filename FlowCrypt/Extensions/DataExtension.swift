@@ -10,4 +10,12 @@ extension Data {
         return try JSONDecoder().decode(T.self, from: self)
     }
 
+    static func joined(_ dataArray: [Data]) -> Data {
+        var data = Data()
+        for d in dataArray {
+            data += d
+        }
+        return data
+    }
+
 }

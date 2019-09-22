@@ -13,8 +13,8 @@ import RealmSwift
 
 protocol UserServiceType {
     func setup()
-    func signOut() -> Promise<VOID>
-    func signIn() -> Promise<VOID>
+    func signOut() -> Promise<Void>
+    func signIn() -> Promise<Void>
     func renewAccessToken() -> Promise<String>
     func isSessionValid() -> Bool
 }
@@ -48,7 +48,7 @@ final class UserService: NSObject, UserServiceType {
     }
 
     func renewAccessToken() -> Promise<String> {
-        return Promise<String> { [weak self] reslove, reject in
+        return Promise<String> { [weak self] resolve, reject in
             guard let self = self else { return }
 
             DispatchQueue.main.async {
@@ -56,7 +56,7 @@ final class UserService: NSObject, UserServiceType {
             }
 
             self.onNewToken = { token in
-                reslove(token)
+                resolve(token)
             }
 
             self.onError = { error in
@@ -65,8 +65,8 @@ final class UserService: NSObject, UserServiceType {
         }
     }
 
-    func signIn() -> Promise<VOID> {
-        return Promise<VOID> { [weak self] reslove, reject in
+    func signIn() -> Promise<Void> {
+        return Promise { [weak self] resolve, reject in
             guard let self = self else { return }
 
             DispatchQueue.main.async {
@@ -74,7 +74,7 @@ final class UserService: NSObject, UserServiceType {
             }
 
             self.onLogin = { token in
-                reslove(VOID())
+                resolve(())
             }
 
             self.onError = { error in
@@ -83,8 +83,8 @@ final class UserService: NSObject, UserServiceType {
         }
     }
 
-    func signOut() -> Promise<VOID> {
-        return Promise<VOID> { [weak self] reslove, reject in
+    func signOut() -> Promise<Void> {
+        return Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { return }
 
             DispatchQueue.main.async {
@@ -93,7 +93,7 @@ final class UserService: NSObject, UserServiceType {
             }
 
             self.onLogOut = {
-                reslove(VOID())
+                resolve(())
             }
 
             self.onError = { error in
