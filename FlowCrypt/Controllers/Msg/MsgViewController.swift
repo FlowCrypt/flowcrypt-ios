@@ -196,11 +196,11 @@ extension MsgViewController {
 // MARK: - Handle Actions
 extension MsgViewController {
     @objc private func handleInfoTap() {
-        showToast("Info not implemented yet")
+        showToast("Email us at human@flowcrypt.com")
     }
 
     @objc private func handleMailTap() {
-        showToast("Not implemented yet")
+        showToast("Marking as unread will be implemented soon")
     }
 
     @objc private func handleTrashTap() {

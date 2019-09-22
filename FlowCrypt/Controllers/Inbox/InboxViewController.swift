@@ -163,7 +163,7 @@ extension InboxViewController {
 extension InboxViewController {
     @objc private func handleInfoTap() {
         #warning("ToDo")
-        showToast("Info not implemented yet")
+        showToast("Email us at human@flowcrypt.com")
     }
 
     @objc private func handleSearchTap() {
