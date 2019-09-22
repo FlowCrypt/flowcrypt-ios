@@ -155,18 +155,19 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
             userService.signOut()
                 .then(on: .main) { [weak self] _ in
                     self?.router.proceedAfterLogOut()
-                } 
+                }.catch(on: .main) { [weak self] error in
+                    self?.showAlert(error: error, message: "Could not log out")
+                }
         }
 
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return UIView()
-            .then {
-                let divider = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 16, height: 1))
-                $0.addSubview(divider)
-                $0.backgroundColor = .clear
-                divider.backgroundColor = UIColor(white: 0, alpha: 0.1)
+        return UIView().then {
+            let divider = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 16, height: 1))
+            $0.addSubview(divider)
+            $0.backgroundColor = .clear
+            divider.backgroundColor = UIColor(white: 0, alpha: 0.1)
         }
     }
 
