@@ -128,12 +128,13 @@ extension UserService: GIDSignInDelegate {
         dataManager.logOut()
 
         do {
+            Imap.instance.disconnect() // will not wait until disconnected. errors ignored
             let realm = try Realm()
             try realm.write {
                 realm.deleteAll()
             }
         } catch {
-            onError?(FCError.general)
+            onError?(FCError.message("Could not properly finish signing out"))
         }
 
         onLogOut?()

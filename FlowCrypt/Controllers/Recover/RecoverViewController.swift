@@ -9,7 +9,7 @@ import Promises
 
 final class RecoverViewController: UIViewController {
     private enum Constants {
-        static let noBackups = "No backups found on this account"
+        static let noBackups = "No backups found on account: \n"
         static let actionFailed = "Action failed"
         static let useOtherAccount = "Use other account"
         static let enterPassPhrase = "Enter pass phrase"
@@ -74,7 +74,7 @@ extension RecoverViewController {
         }.then(on: .main) {
             self.hideSpinner()
             if self.encryptedBackups.isEmpty {
-                self.showRetryFetchBackupsOrChangeAcctAlert(msg: Constants.noBackups)
+                self.showRetryFetchBackupsOrChangeAcctAlert(msg: Constants.noBackups + (DataManager.shared.currentUser()?.email ?? "(unknown)"))
             }
         }.catch(on: .main) { [weak self] error in
             self?.showRetryFetchBackupsOrChangeAcctAlert(msg: "\(Constants.actionFailed)\n\n\(error)")
@@ -88,13 +88,12 @@ extension RecoverViewController {
         })
         alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
             self?.userService.signOut().then(on: .main) { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                if self?.navigationController?.popViewController(animated: true) == nil {
+                    self?.router.proceedAfterLogOut() // in case app got restarted and no view to pop
+                }
             }.catch(on: .main) { [weak self] error in
                 self?.showAlert(error: error, message: "Could not sign out")
             }
-        })
-        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive) { [weak self] _ in
-            self?.hideSpinner()
         })
         present(alert, animated: true, completion: nil)
     }
@@ -137,6 +136,8 @@ extension RecoverViewController {
     @IBAction func useOtherAccount(_ sender: Any) {
         userService.signOut().then(on: .main) { [weak self] _ in
             self?.router.proceedAfterLogOut()
+        }.catch(on: .main) { [weak self] error in
+            self?.showAlert(error: error, message: "Could not switch accounts")
         }
     }
 }
