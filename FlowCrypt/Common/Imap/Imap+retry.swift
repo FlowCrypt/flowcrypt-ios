@@ -10,6 +10,7 @@ import Foundation
 import Promises
 
 extension Imap {
+
     func finalize<T>(
         _ op: String,
         _ resolve: @escaping (T) -> Void,
@@ -30,9 +31,9 @@ extension Imap {
 
     func finalizeVoid(
         _ op: String,
-        _ resolve: @escaping (VOID) -> Void,
+        _ resolve: @escaping (Void) -> Void, // needed for Swift4 Promises compatibility
         _ reject: @escaping (Error) -> Void,
-        retry: @escaping () -> Promise<VOID>
+        retry: @escaping () -> Promise<Void>
     ) -> (Error?) -> Void {
         let start = DispatchTime.now()
         return { [weak self] error in
@@ -42,16 +43,16 @@ extension Imap {
             if let error = error {
                 reject(error)
             } else {
-                resolve(VOID())
+                resolve(())
             }
         }
     }
 
     func finalizeAsVoid(
         _ op: String,
-        _ resolve: @escaping (VOID) -> Void,
+        _ resolve: @escaping (Void) -> Void, // needed for Swift4 Promises compatibility
         _ reject: @escaping (Error) -> Void,
-        retry: @escaping () -> Promise<VOID>
+        retry: @escaping () -> Promise<Void>
     ) -> (Error?, Any?) -> Void {
         let start = DispatchTime.now()
         return { [weak self] (error, discardable) in
@@ -60,7 +61,7 @@ extension Imap {
             if let error = error {
                 reject(error)
             } else {
-                resolve(VOID())
+                resolve(())
             }
         }
     }
