@@ -12,7 +12,7 @@ class FlowCryptCoreTests: XCTestCase {
     
     override class func setUp() { // Called once before any tests are run
         super.setUp()
-        DispatchQueue.promises = .global() // this helps prevent Promise deadlocks
+        // DispatchQueue.promises = .global() // this helps prevent Promise deadlocks - but currently Promises are not in use by tests
         Core.startInBackgroundIfNotAlreadyRunning()
         do {
             try Core.blockUntilReadyOrThrow()
