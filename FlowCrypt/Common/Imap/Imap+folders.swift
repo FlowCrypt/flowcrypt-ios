@@ -23,16 +23,16 @@ extension Imap: FoldersProvider {
             self?.getImapSess()?
                 .fetchAllFoldersOperation()?
                 .start { [weak self] error, value in
-                    guard let self = self else { return reject(FCError.general) }
+                    guard let self = self else { return reject(AppErr.nilSelf) }
                     guard self.retryAuthErrorNotNeeded("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
                         return
                     }
                     if let error = error {
-                        reject(FCError(error))
+                        reject(AppErr(error))
                     } else if let folders = value as? [MCOIMAPFolder] {
                         resolve(FoldersContext(folders: folders))
                     } else {
-                        reject(FCError.general)
+                        reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
                     }
                 }
         }

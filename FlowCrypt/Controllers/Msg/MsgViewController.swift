@@ -120,7 +120,7 @@ extension MsgViewController {
 
         imap.fetchMsg(message: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] data in
-                guard let self = self else { throw FCError.general }
+                guard let self = self else { throw AppErr.nilSelf }
                 self.input?.bodyMessage = data
                 let realm = try Realm()
                 let decrypted = try Core.parseDecryptMsg(

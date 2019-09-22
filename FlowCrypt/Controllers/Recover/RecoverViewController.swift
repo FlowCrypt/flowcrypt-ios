@@ -67,7 +67,7 @@ extension RecoverViewController {
         showSpinner()
         Promise<Void> { [weak self] in
             guard let self = self else { return }
-            guard let email = DataManager.shared.currentUser()?.email else { throw Errors.programmingError("Missing account email") }
+            guard let email = DataManager.shared.currentUser()?.email else { throw AppErr.unexpected("Missing account email") }
             let backupData = try await(self.imap.searchBackups(email: email))
             let parsed = try Core.parseKeys(armoredOrBinary: backupData)
             self.encryptedBackups = parsed.keyDetails.filter { $0.private != nil }
