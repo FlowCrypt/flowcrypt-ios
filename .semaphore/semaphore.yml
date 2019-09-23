@@ -25,7 +25,7 @@ blocks:
       jobs:
         - name: FlowCryptTests
           commands:
-            - bundle exec xcversion select 10.3
+            - bundle exec xcversion select 11.0
             # Run tests of iOS and Mac app on a simulator or connected device
             # See https://docs.fastlane.tools/actions/scan/
             - bundle exec fastlane test
