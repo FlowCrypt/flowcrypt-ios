@@ -28,5 +28,6 @@ blocks:
             - bundle exec xcversion select 11.0
             # Run tests of iOS and Mac app on a simulator or connected device
             # See https://docs.fastlane.tools/actions/scan/
+#            - bundle update fastlane
             - bundle exec fastlane test
 
