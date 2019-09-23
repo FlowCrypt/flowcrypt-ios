@@ -29,17 +29,17 @@ final class MsgViewController: UIViewController {
 
         var text: String? {
             switch self {
-            case .delete: return Language.moved_to_trash
-            case .archive: return Language.email_archived
-            case .markAsRead: return nil
+                case .delete: return Language.moved_to_trash
+                case .archive: return Language.email_archived
+                case .markAsRead: return nil
             }
         }
 
         var error: String? {
             switch self {
-            case .delete: return Constants.ErrorTexts.Message.delete
-            case .archive: return Constants.ErrorTexts.Message.archive
-            case .markAsRead: return nil
+                case .delete: return Constants.ErrorTexts.Message.delete
+                case .archive: return Constants.ErrorTexts.Message.archive
+                case .markAsRead: return nil
             }
         }
     }
@@ -62,7 +62,7 @@ final class MsgViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
-        fetchMessage()
+        fetchDecryptAndRenderMsg()
     }
 
     private func setupUI() {
@@ -76,34 +76,17 @@ final class MsgViewController: UIViewController {
     }
 
     private func setupNavigationBar() {
-        let infoInput = NavigationBarItemsView.Input(
-            image: UIImage(named: "help_icn"),
-            action: (self, #selector(handleInfoTap))
-        )
-
-        let archiveInput = NavigationBarItemsView.Input(
-            image: UIImage(named: "archive"),
-            action: (self, #selector(handleArchiveTap))
-        )
-
-        let trashInput = NavigationBarItemsView.Input(
-            image: UIImage(named: "trash"),
-            action: (self, #selector(handleTrashTap))
-        )
-
-        let mailInput = NavigationBarItemsView.Input(
-            image: UIImage(named: "mail"),
-            action: (self, #selector(handleMailTap))
-        )
-
+        let infoInput = NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap)))
+        let archiveInput = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
+        let trashInput = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
+        let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
         let buttons = input?.path == MailDestination.Gmail.trash.path
             ? [infoInput, archiveInput, mailInput]
             : [infoInput, archiveInput, trashInput, mailInput]
-
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
 
-    private func renderMsgBody(_ text: String, color: UIColor = UIColor.black) {
+    private func renderBody(_ text: String, color: UIColor = UIColor.black) {
         lblBody.text = text
         lblBody.textColor = color
         lblBody.sizeToFit()
@@ -113,32 +96,31 @@ final class MsgViewController: UIViewController {
 
 // MARK: - Message
 extension MsgViewController {
-    private func fetchMessage() {
 
+    private func fetchDecryptAndRenderMsg() {
         guard let input = input else { return }
         showSpinner(Language.loading, isUserInteractionEnabled: true)
-
-        imap.fetchMsg(message: input.objMessage, folder: input.path)
-            .then(on: .main) { [weak self] data in
-                guard let self = self else { throw AppErr.nilSelf }
-                self.input?.bodyMessage = data
-                let realm = try Realm()
-                let decrypted = try Core.parseDecryptMsg(
-                    encrypted: data,
-                    keys: PrvKeyInfo.from(realm: realm.objects(KeyInfo.self)),
-                    msgPwd: nil,
-                    isEmail: true
-                )
-                self.handleDecryptedMsg(decrypted)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handleMessageFetching(with: error, and: input.path)
-            }
+        Promise { [weak self] in
+            guard let self = self else { return }
+            let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
+            self.input?.bodyMessage = rawMimeData
+            let decrypted = try Core.parseDecryptMsg(
+                encrypted: rawMimeData,
+                keys: PrvKeyInfo.from(realm: try Realm().objects(KeyInfo.self)),
+                msgPwd: nil,
+                isEmail: true
+            )
+            self.renderMsgOnMain(decrypted)
+            self.asyncMarkAsReadIfNotAlreadyMarked()
+        }.then(on: .main) { [weak self] in
+            self?.hideSpinner()
+        }.catch(on: .main) { [weak self] error in
+            self?.hideSpinner()
+            self?.handleError(error, path: input.path)
+        }
     }
 
-    private func handleMessageFetching(with error: Error, and path: String) {
-        hideSpinner()
-
+    private func handleError(_ error: Error, path: String) {
         if let e = error as NSError?, e.code == Imap.Err.fetch.rawValue {
             // todo - the missing msg should be removed from the list in inbox view
             // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
@@ -150,26 +132,20 @@ extension MsgViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    private func handleDecryptedMsg(_ decrypted: CoreRes.ParseDecryptMsg) {
-        let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
-        if let decryptErrBlock = decryptErrBlocks.first {
-            let rawMsg = decryptErrBlock.content
-            let err = decryptErrBlock.decryptErr?.error
-            renderMsgBody(
-                "Dould not decrypt message:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)",
-                color: .red
-            )
-        } else {
-            renderMsgBody(
-                decrypted.text,
-                color: decrypted.replyType == CoreRes.ReplyType.encrypted ? Constants.green : UIColor.black
-            )
+    private func renderMsgOnMain(_ msg: CoreRes.ParseDecryptMsg) {
+        DispatchQueue.main.async { [weak self] in
+            let decryptErrBlocks = msg.blocks.filter { $0.decryptErr != nil }
+            if let decryptErrBlock = decryptErrBlocks.first {
+                let rawMsg = decryptErrBlock.content
+                let err = decryptErrBlock.decryptErr?.error
+                self?.renderBody("Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)", color: .red)
+            } else {
+                self?.renderBody(msg.text, color: msg.replyType == CoreRes.ReplyType.encrypted ? Constants.green : UIColor.black)
+            }
         }
-        markAsReadIfNotAlreadyMarked()
-        hideSpinner()
     }
 
-    private func markAsReadIfNotAlreadyMarked() {
+    private func asyncMarkAsReadIfNotAlreadyMarked() {
         guard let input = input else { return }
         guard !input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return } // only proceed if not already marked as read
         input.objMessage.flags.formUnion(MCOMessageFlag.seen)
@@ -219,7 +195,6 @@ extension MsgViewController {
         guard let input = input else { return }
         showSpinner()
         input.objMessage.flags = MCOMessageFlag.deleted
-
         imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] _ in
                 self?.handleSuccesMessage(operation: .archive)
@@ -231,7 +206,6 @@ extension MsgViewController {
 
     @IBAction private func handleReplyTap(_ sender: UIButton) {
         guard let input = input else { return }
-
         let viewModel = ComposeViewController.Input(
             isReply: true,
             replyToRecipient: input.objMessage.header.from,
@@ -239,7 +213,6 @@ extension MsgViewController {
             replyToMime: input.bodyMessage
         )
         let replyVc = ComposeViewController.instance(with: viewModel)
-
         navigationController?.pushViewController(replyVc, animated: true)
     }
 }
