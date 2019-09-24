@@ -1257,6 +1257,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/FlowCrypt/Lib/Bignum",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.debug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
