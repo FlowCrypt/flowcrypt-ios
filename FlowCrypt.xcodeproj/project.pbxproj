@@ -91,7 +91,7 @@
 		C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9D81EC30E1D00763715 /* InboxViewController.swift */; };
 		C132B9E91EC4484B00763715 /* InboxTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9E81EC4484B00763715 /* InboxTableViewCell.swift */; };
 		C132B9EB1EC45B9900763715 /* InboxTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C132B9EA1EC45B9900763715 /* InboxTableViewCell.xib */; };
-		C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* RecoverViewController.swift */; };
+		C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupViewController.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
 /* End PBXBuildFile section */
@@ -201,7 +201,7 @@
 		C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		C132B9E81EC4484B00763715 /* InboxTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxTableViewCell.swift; sourceTree = "<group>"; };
 		C132B9EA1EC45B9900763715 /* InboxTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InboxTableViewCell.xib; sourceTree = "<group>"; };
-		C192421E1EC48B6900C3D251 /* RecoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecoverViewController.swift; sourceTree = "<group>"; };
+		C192421E1EC48B6900C3D251 /* SetupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MsgViewController.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -508,7 +508,7 @@
 				04B472911ECE29F600B8266F /* SideMenu */,
 				D952B71B1ED0CB0100E5C02B /* Msg */,
 				04B4728F1ECE29F600B8266F /* Compose */,
-				C192421D1EC48B5600C3D251 /* Recover */,
+				C192421D1EC48B5600C3D251 /* Setup */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 			);
@@ -548,12 +548,12 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		C192421D1EC48B5600C3D251 /* Recover */ = {
+		C192421D1EC48B5600C3D251 /* Setup */ = {
 			isa = PBXGroup;
 			children = (
-				C192421E1EC48B6900C3D251 /* RecoverViewController.swift */,
+				C192421E1EC48B6900C3D251 /* SetupViewController.swift */,
 			);
-			path = Recover;
+			path = Setup;
 			sourceTree = "<group>";
 		};
 		D952B71B1ED0CB0100E5C02B /* Msg */ = {
@@ -834,7 +834,7 @@
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* Constants.swift in Sources */,
-				C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */,
+				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,

@@ -226,7 +226,7 @@
         <!--Recover View Controller-->
         <scene sceneID="ItE-4i-liD">
             <objects>
-                <viewController storyboardIdentifier="RecoverViewController" id="rhx-os-B3W" customClass="RecoverViewController" customModule="FlowCrypt" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SetupViewController" id="rhx-os-B3W" customClass="SetupViewController" customModule="FlowCrypt" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="qB7-SV-YZk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

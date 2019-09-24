@@ -7,7 +7,8 @@ import MBProgressHUD
 import RealmSwift
 import Promises
 
-final class RecoverViewController: UIViewController {
+final class SetupViewController: UIViewController {
+
     private enum Constants {
         static let noBackups = "No backups found on account: \n"
         static let actionFailed = "Action failed"
@@ -24,7 +25,7 @@ final class RecoverViewController: UIViewController {
     @IBOutlet weak var btnLoadAccount: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
 
-    private var encryptedBackups: [KeyDetails] = []
+    private var fetchedEncryptedBackups: [KeyDetails] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +45,8 @@ final class RecoverViewController: UIViewController {
     }
 }
 
-extension RecoverViewController {
+extension SetupViewController {
+
     private func observeKeyboardNotifications() {
         _ = keyboardHeight
             .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 5, right: 0) }
@@ -70,10 +72,10 @@ extension RecoverViewController {
             guard let email = DataManager.shared.currentUser()?.email else { throw AppErr.unexpected("Missing account email") }
             let backupData = try await(self.imap.searchBackups(email: email))
             let parsed = try Core.parseKeys(armoredOrBinary: backupData)
-            self.encryptedBackups = parsed.keyDetails.filter { $0.private != nil }
+            self.fetchedEncryptedBackups = parsed.keyDetails.filter { $0.private != nil }
         }.then(on: .main) {
             self.hideSpinner()
-            if self.encryptedBackups.isEmpty {
+            if self.fetchedEncryptedBackups.isEmpty {
                 self.showRetryFetchBackupsOrChangeAcctAlert(msg: Constants.noBackups + (DataManager.shared.currentUser()?.email ?? "(unknown)"))
             }
         }.catch(on: .main) { [weak self] error in
@@ -100,7 +102,8 @@ extension RecoverViewController {
 
 }
 
-extension RecoverViewController {
+extension SetupViewController {
+
     @objc private func endEditing() {
         view.endEditing(true)
     }
@@ -112,7 +115,7 @@ extension RecoverViewController {
             return
         }
         showSpinner()
-        let matchingBackups: [KeyDetails] = encryptedBackups
+        let matchingBackups: [KeyDetails] = fetchedEncryptedBackups
             .compactMap { (key) -> KeyDetails? in
                 guard let prv = key.private else { return nil }
                 guard let r = try? Core.decryptKey(armoredPrv: prv, passphrase: passPhrase), r.decryptedKey != nil else { return nil }
@@ -140,11 +143,14 @@ extension RecoverViewController {
             self?.showAlert(error: error, message: "Could not switch accounts")
         }
     }
+
 }
 
-extension RecoverViewController: UITextFieldDelegate {
+extension SetupViewController: UITextFieldDelegate {
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
         return true
     }
+
 }
