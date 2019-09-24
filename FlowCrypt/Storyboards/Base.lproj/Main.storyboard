@@ -294,7 +294,7 @@
                                                     <attributedString key="attributedTitle">
                                                         <fragment content="Use Another Account">
                                                             <attributes>
-                                                                <font key="NSFont" size="15" name=".SFNSText"/>
+                                                                <font key="NSFont" metaFont="system" size="15"/>
                                                             </attributes>
                                                         </fragment>
                                                     </attributedString>
@@ -385,70 +385,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a8a-jX-2ip" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-28" y="57.635467980295566"/>
-        </scene>
-        <!--Inbox View Controller-->
-        <scene sceneID="veH-oN-5Yn">
-            <objects>
-                <viewController storyboardIdentifier="InboxViewController" id="q3n-1L-2n6" customClass="InboxViewController" customModule="FlowCrypt" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="bEF-lb-llU">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" estimatedRowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="B6j-ip-jK4">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="774"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="q3n-1L-2n6" id="ldG-4s-pSw"/>
-                                    <outlet property="delegate" destination="q3n-1L-2n6" id="GXG-Xx-iK7"/>
-                                </connections>
-                            </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Inbox is empty" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vZW-Bc-7Jq">
-                                <rect key="frame" x="141.5" y="320.5" width="131.5" height="45"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="45" id="BhH-kZ-xeu"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="21"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zYy-2H-XWn">
-                                <rect key="frame" x="334" y="694" width="60" height="60"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="YYw-kS-bKS"/>
-                                    <constraint firstAttribute="width" constant="60" id="rfh-EQ-ol6"/>
-                                </constraints>
-                                <state key="normal" backgroundImage="floating_icn"/>
-                                <connections>
-                                    <action selector="btnComposeTapWithSender:" destination="q3n-1L-2n6" eventType="touchUpInside" id="xRL-lZ-OwQ"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="1Sd-8V-evu" firstAttribute="trailing" secondItem="zYy-2H-XWn" secondAttribute="trailing" constant="20" id="10S-HY-yeb"/>
-                            <constraint firstItem="1Sd-8V-evu" firstAttribute="trailing" secondItem="B6j-ip-jK4" secondAttribute="trailing" id="BLE-EJ-fNp"/>
-                            <constraint firstItem="B6j-ip-jK4" firstAttribute="centerX" secondItem="vZW-Bc-7Jq" secondAttribute="centerX" id="Cxh-gP-Kae"/>
-                            <constraint firstItem="vZW-Bc-7Jq" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1Sd-8V-evu" secondAttribute="leading" constant="20" id="FHB-ff-vLT"/>
-                            <constraint firstItem="B6j-ip-jK4" firstAttribute="bottom" secondItem="1Sd-8V-evu" secondAttribute="bottom" id="hjd-2g-gog"/>
-                            <constraint firstItem="B6j-ip-jK4" firstAttribute="leading" secondItem="1Sd-8V-evu" secondAttribute="leading" id="i06-Ic-b45"/>
-                            <constraint firstItem="vZW-Bc-7Jq" firstAttribute="centerY" secondItem="B6j-ip-jK4" secondAttribute="centerY" constant="-44" id="mc2-8E-rEI"/>
-                            <constraint firstItem="1Sd-8V-evu" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="vZW-Bc-7Jq" secondAttribute="trailing" constant="20" id="ogZ-sx-tpp"/>
-                            <constraint firstItem="B6j-ip-jK4" firstAttribute="top" secondItem="1Sd-8V-evu" secondAttribute="top" id="qzd-2z-Ek4"/>
-                            <constraint firstItem="1Sd-8V-evu" firstAttribute="bottom" secondItem="zYy-2H-XWn" secondAttribute="bottom" constant="20" id="rWf-2M-YQA"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="1Sd-8V-evu"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" id="Lg6-ay-DVb"/>
-                    <connections>
-                        <outlet property="btnCompose" destination="zYy-2H-XWn" id="3Il-Wf-4qW"/>
-                        <outlet property="lblEmptyMessage" destination="vZW-Bc-7Jq" id="xjJ-kd-yWw"/>
-                        <outlet property="tableView" destination="B6j-ip-jK4" id="eFt-Wu-rOX"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="GoD-tZ-PQE" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1620" y="79.610194902548713"/>
         </scene>
         <!--Compose View Controller-->
         <scene sceneID="nr6-JW-dN9">
@@ -696,9 +632,6 @@
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="q3n-1L-2n6" kind="relationship" relationship="rootViewController" id="IZs-CK-rtV"/>
-                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="h89-HX-AZ3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -706,7 +639,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="floating_icn" width="29" height="29"/>
         <image name="full-logo" width="600" height="94"/>
         <image name="gmail_icn" width="29" height="29"/>
         <image name="outlook_icn" width="29" height="29"/>

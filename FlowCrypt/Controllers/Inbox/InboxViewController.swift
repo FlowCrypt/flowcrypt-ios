@@ -5,16 +5,9 @@
 import UIKit
 import Promises
 import RxSwift
+import AsyncDisplayKit
 
-extension InboxViewController {
-    static func instance(with input: InboxViewModel) -> InboxViewController {
-        let vc = UIStoryboard.main.instantiate(InboxViewController.self)
-        vc.viewModel = input
-        return vc
-    }
-}
-
-final class InboxViewController: UIViewController {
+final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
         static let numberOfMessagesToLoad = 10
         static let inboxCellHeight: CGFloat = 90.0
@@ -25,25 +18,30 @@ final class InboxViewController: UIViewController {
     private let messageProvider: MessageProvider = DefaultMessageProvider()
     private let disposeBag = DisposeBag()
 
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var lblEmptyMessage: UILabel!
-    @IBOutlet weak var btnCompose: UIButton!
+    private var tableNode: ASTableNode
+    private lazy var composeButton = ComposeButtonNode() { [weak self] in
+        self?.btnComposeTap()
+    }
+
+//    @IBOutlet weak var tableView: UITableView!
+//    @IBOutlet weak var lblEmptyMessage: UILabel!
+//    @IBOutlet weak var btnCompose: UIButton!
 
     private var messages: [MCOIMAPMessage] = [] {
         didSet {
-            lblEmptyMessage.isHidden = messages.count > 0
+//            lblEmptyMessage.isHidden = messages.count > 0
             refreshControl.endRefreshing()
             hideSpinner()
         }
     }
-    private var viewModel = InboxViewModel.empty
+    private var viewModel: InboxViewModel
 
     private let refreshControl = UIRefreshControl()
     private let loadMoreActivityIndicator = UIActivityIndicatorView(style: .gray)
     private var loadMoreInPosition = false
     private var canLoadMore = true {
         didSet {
-            tableView.tableFooterView?.isHidden = !canLoadMore
+//            tableView.tableFooterView?.isHidden = !canLoadMore
         }
     }
     private var totalNumberOfMessages = 0
@@ -51,7 +49,20 @@ final class InboxViewController: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    
+
+    init(_ viewModel: InboxViewModel = .empty) {
+        self.viewModel = viewModel
+        self.tableNode = ASTableNode(style: .plain)
+        super.init(node: ASDisplayNode())
+
+        tableNode.delegate = self
+        tableNode.dataSource = self
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -64,6 +75,21 @@ final class InboxViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let offset: CGFloat = 16
+        let size = CGSize(width: 50, height: 50)
+
+        composeButton.frame = CGRect(
+            x: node.bounds.maxX - offset - size.width,
+            y: node.bounds.maxY - offset - size.height,
+            width: size.width,
+            height: size.height
+        )
+        composeButton.cornerRadius = size.width / 2
+        tableNode.frame = node.bounds
+    }
 }
 
 extension InboxViewController {
@@ -71,19 +97,22 @@ extension InboxViewController {
         let titleText = viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
         title = titleText
 
-        lblEmptyMessage.text = "\(titleText) is empty"
-        lblEmptyMessage.isHidden = true
+        node.addSubnode(tableNode)
+        node.addSubnode(composeButton)
+
+//        lblEmptyMessage.text = "\(titleText) is empty"
+//        lblEmptyMessage.isHidden = true
 
 
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        tableView.refreshControl = refreshControl
-        tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
+//        tableView.refreshControl = refreshControl
+//        tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
 
-        view.bringSubviewToFront(btnCompose)
+//        view.bringSubviewToFront(btnCompose)
 
-        loadMoreActivityIndicator.frame = CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50)
-        tableView.tableFooterView = loadMoreActivityIndicator
-        tableView.tableFooterView?.isHidden = true
+//        loadMoreActivityIndicator.frame = CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50)
+//        tableView.tableFooterView = loadMoreActivityIndicator
+//        tableView.tableFooterView?.isHidden = true
     }
 
     private func setupNavigationBar() {
@@ -113,7 +142,7 @@ extension InboxViewController {
                     self.messages = context.messages.sorted(by: { $0.header.date > $1.header.date })
                     self.canLoadMore = self.messages.count < context.totalMessages
                     self.totalNumberOfMessages = context.totalMessages
-                    self.tableView.reloadData()
+//                    self.tableView.reloadData()
                 },
                 onError: { [weak self] error in
                     self?.refreshControl.endRefreshing()
@@ -153,7 +182,7 @@ extension InboxViewController {
             }
             .map { IndexPath(row: $0, section: 0)}
         messages.append(contentsOf: context.messages)
-        tableView.insertRows(at: indexesToUpdate, with: .none)
+//        tableView.insertRows(at: indexesToUpdate, with: .none)
         canLoadMore = messages.count < context.totalMessages
         totalNumberOfMessages = context.totalMessages
         refreshControl.endRefreshing()
@@ -175,7 +204,8 @@ extension InboxViewController {
         fetchAndRenderEmails(withSpinner: false)
     }
 
-    @IBAction func btnComposeTap(sender: AnyObject) {
+    private func btnComposeTap() {
+        TapTicFeedback.generate(.light)
         let composeVc = UIStoryboard.main.instantiate(ComposeViewController.self)
         navigationController?.pushViewController(composeVc, animated: true)
     }
@@ -210,9 +240,9 @@ extension InboxViewController {
         messages.remove(at: index)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
-            self.tableView.beginUpdates()
-            self.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-            self.tableView.endUpdates()
+//            self.tableView.beginUpdates()
+//            self.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+//            self.tableView.endUpdates()
         }
     }
 
@@ -220,9 +250,9 @@ extension InboxViewController {
         messages[index] = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
-            self.tableView.beginUpdates()
-            self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-            self.tableView.endUpdates()
+//            self.tableView.beginUpdates()
+//            self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+//            self.tableView.endUpdates()
         }
     }
 }
@@ -276,5 +306,41 @@ extension InboxViewController: UIScrollViewDelegate {
                 loadMoreInPosition = false
             } 
         }
+    }
+}
+
+extension InboxViewController: ASTableDataSource {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        return 0
+    }
+
+    func tableView(_ tableView: ASTableView, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return {
+            InboxNode()
+        }
+    }
+}
+
+extension InboxViewController: ASTableDelegate {
+
+}
+
+final class InboxNode: ASCellNode {
+
+}
+
+final class ComposeButtonNode: ASButtonNode {
+    private var onTap: (() -> Void)?
+
+    init(_ action: (() -> Void)?) {
+        super.init()
+        onTap = action
+        backgroundColor = .main
+        setTitle("+", with: UIFont.boldSystemFont(ofSize: 30), with: .white, for: .normal)
+        addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
+    }
+
+    @objc private func onButtonTap() {
+        onTap?()
     }
 }

@@ -7,7 +7,6 @@ import MBProgressHUD
 import RealmSwift
 import Promises
 
-
 extension MsgViewController {
     static func instance(with input: MsgViewController.Input, completion: MsgViewControllerCompletion?) -> MsgViewController {
         let vc = UIStoryboard.main.instantiate(MsgViewController.self)
