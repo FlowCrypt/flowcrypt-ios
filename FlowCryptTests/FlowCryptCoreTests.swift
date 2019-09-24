@@ -37,6 +37,24 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertNotNil(r.key.public.range(of: "-----BEGIN PGP PUBLIC KEY BLOCK-----"))
         XCTAssertEqual(r.key.ids.count, 2)
     }
+
+    func testZxcvbnStrengthBarWeak() throws {
+        let r = try Core.zxcvbnStrengthBar(passPhrase: "nothing much")
+        XCTAssertEqual(r.word.word, CoreRes.ZxcvbnStrengthBar.WordDetails.Word.weak)
+        XCTAssertEqual(r.word.pass, false)
+        XCTAssertEqual(r.word.color, CoreRes.ZxcvbnStrengthBar.WordDetails.Color.red)
+        XCTAssertEqual(r.word.bar, 10)
+        XCTAssertEqual(r.time, "less than a second")
+    }
+
+    func testZxcvbnStrengthBarStrong() throws {
+        let r = try Core.zxcvbnStrengthBar(passPhrase: "this one is seriously over the top strong pwd")
+        XCTAssertEqual(r.word.word, CoreRes.ZxcvbnStrengthBar.WordDetails.Word.perfect)
+        XCTAssertEqual(r.word.pass, true)
+        XCTAssertEqual(r.word.color, CoreRes.ZxcvbnStrengthBar.WordDetails.Color.green)
+        XCTAssertEqual(r.word.bar, 100)
+        XCTAssertEqual(r.time, "millennia")
+    }
     
     func testParseKeys() throws {
         let r = try Core.parseKeys(armoredOrBinary: TestData.k0.pub.data(using: .utf8)! + [10] + TestData.k1.prv.data(using: .utf8)!)

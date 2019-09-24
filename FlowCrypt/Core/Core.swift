@@ -72,16 +72,18 @@ final class Core {
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
     }
 
-    //    public func parseDateStr() throws -> CoreVersionRes {
-//    }
+    public static func zxcvbnStrengthBar(passPhrase: String) throws -> CoreRes.ZxcvbnStrengthBar {
+        let r = try self.call("zxcvbnStrengthBar", jsonDict: ["value": passPhrase, "purpose": "passphrase"], data: nil)
+        return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
+    }
 
+//    public func parseDateStr() throws -> CoreVersionRes {
+//    }
 //    public func encryptKey() throws -> CoreVersionRes {
 //    }
 //    public func encryptFile() throws -> CoreVersionRes {
 //    }
 //    public func decryptFile() throws -> CoreVersionRes {
-//    }
-//    public func zxcvbnStrengthBar() throws -> CoreVersionRes {
 //    }
 //    public func isEmailValid() throws -> CoreVersionRes {
 //    }

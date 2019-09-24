@@ -18,4 +18,8 @@ extension Data {
         return data
     }
 
+    func toStr() -> String {
+        String(decoding: self, as: UTF8.self)
+    }
+
 }

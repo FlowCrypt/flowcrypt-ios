@@ -29,7 +29,8 @@ struct CoreRes {
     struct ParseKeys: Decodable {
         enum Format: String, Decodable {
             case binary;
-            case armored; case unknown;
+            case armored;
+            case unknown;
         }
         let format: Format
         let keyDetails: [KeyDetails]
@@ -49,6 +50,32 @@ struct CoreRes {
             let stack: String?
         }
         let error: ErrorWithOptionalStack
+    }
+
+    struct ZxcvbnStrengthBar: Decodable {
+        struct WordDetails: Decodable {
+            enum Word: String, Decodable {
+                case perfect
+                case great
+                case good
+                case reasonable
+                case poor
+                case weak
+            }
+            enum Color: String, Decodable {
+                case green
+                case orange
+                case darkorange
+                case darkred
+                case red
+            }
+            let word: Word
+            let bar: Int32 // 0-100
+            let color: Color
+            let pass: Bool
+        }
+        let word: WordDetails
+        let time: String
     }
 
     enum ReplyType: String, Decodable {
