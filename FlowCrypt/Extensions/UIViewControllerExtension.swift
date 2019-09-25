@@ -89,19 +89,26 @@ extension UIViewController {
 
 extension UIViewController {
 
-    private func errorToUserFriendlyString(error: Error, title: String) -> String {
+    private func errorToUserFriendlyString(error: Error, title: String) -> String? {
         // todo - more intelligent handling of HttpErr
         do {
             throw error
         } catch AppErr.user(let userErr) { // if this is AppErr.user, show only the content of the message to the user, not info about the exception
             return "\(title)\n\n\(userErr)"
+        } catch AppErr.silentAbort { // don't show any alert
+            return nil
         } catch {
             return "\(title)\n\n\(error)"
         }
     }
 
     func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
-        showAlert(message: self.errorToUserFriendlyString(error: error, title: message), onOk: onOk)
+        guard let formatted = self.errorToUserFriendlyString(error: error, title: message) else {
+            hideSpinner()
+            onOk?()
+            return // silent abort
+        }
+        showAlert(message: formatted, onOk: onOk)
     }
 
     func showAlert(message: String, onOk: (() -> Void)? = nil) {
@@ -139,6 +146,23 @@ extension UIViewController {
             } catch {
                 self.showAlert(error: error, message: msg, onOk: { resolve(()) })
             }
+        }
+    }
+
+    func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
+        return Promise<String?> { [weak self] resolve, reject in
+            guard let self = self else { throw AppErr.nilSelf }
+            let alert = UIAlertController(title: "Pass Phrase", message: title, preferredStyle: .alert)
+            alert.addTextField { (textField) in
+                textField.isSecureTextEntry = true
+            }
+            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (_) in
+                resolve(nil)
+            }))
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+                resolve(alert?.textFields?[0].text)
+            }))
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }

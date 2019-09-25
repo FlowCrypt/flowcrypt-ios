@@ -169,6 +169,9 @@ extension SetupViewController {
             let userId = try self.getUserId()
             let strength = try Core.zxcvbnStrengthBar(passPhrase: passPhrase)
             guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
+            let confirmPassPhrase = try await(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
+            guard confirmPassPhrase != nil else { throw AppErr.silentAbort }
+            guard confirmPassPhrase == passPhrase else { throw AppErr.user("Pass phrases don't match") }
             let prv = try Core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
             try await(self.backupPrvToInbox(prv: prv.key, userId: userId))
             try self.storePrvs(prvs: [prv.key], passPhrase: passPhrase, source: .generated)
