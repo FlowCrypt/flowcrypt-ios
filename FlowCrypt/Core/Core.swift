@@ -59,6 +59,7 @@ final class Core {
             "from": msg.from,
             "subject": msg.subject,
             "replyToMimeMsg": msg.replyToMimeMsg,
+            "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": pubKeys
         ], data: nil)

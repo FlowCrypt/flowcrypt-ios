@@ -11,6 +11,7 @@ import Toast
 import RxSwift
 import RxCocoa
 import MBProgressHUD
+import Promises
 
 enum ToastPosition: String {
     case bottom, top, center
@@ -66,6 +67,7 @@ extension UIViewController {
 }
 
 extension UIViewController {
+
     /// Observable keyboard height from willShow and willHide notifications
     /// deliver signals on main queue.
     var keyboardHeight: Observable<CGFloat> {
@@ -86,9 +88,20 @@ extension UIViewController {
 }
 
 extension UIViewController {
+
+    private func errorToUserFriendlyString(error: Error, title: String) -> String {
+        // todo - more intelligent handling of HttpErr
+        do {
+            throw error
+        } catch AppErr.user(let userErr) { // if this is AppErr.user, show only the content of the message to the user, not info about the exception
+            return "\(title)\n\n\(userErr)"
+        } catch {
+            return "\(title)\n\n\(error)"
+        }
+    }
+
     func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
-        let message = "\(message)\n\n \(error)"
-        showAlert(message: message, onOk: onOk)
+        showAlert(message: self.errorToUserFriendlyString(error: error, title: message), onOk: onOk)
     }
 
     func showAlert(message: String, onOk: (() -> Void)? = nil) {
@@ -114,6 +127,18 @@ extension UIViewController {
             self.view.subviews
                 .compactMap { $0 as? MBProgressHUD }
                 .forEach { $0.hide(animated: true) }
+        }
+    }
+
+    func alertAndSkipOnRejection<T>(_ promise: Promise<T>, fail msg: String) -> Promise<Void> {
+        return Promise<Void> { [weak self] resolve, reject in
+            guard let self = self else { throw AppErr.nilSelf }
+            do {
+                let _ = try await(promise)
+                resolve(())
+            } catch {
+                self.showAlert(error: error, message: msg, onOk: { resolve(()) })
+            }
         }
     }
 }

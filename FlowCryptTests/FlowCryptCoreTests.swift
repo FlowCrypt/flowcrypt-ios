@@ -90,7 +90,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testComposeEmailPlain() throws {
-        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil)
+        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [])
         let composeEmailRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.plain, pubKeys: nil)
         let mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
         XCTAssertNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // not encrypted
@@ -100,7 +100,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testComposeEmailEncryptInline() throws {
-        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil)
+        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: ni, atts: [])
         let composeEmailRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
         let mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
         XCTAssertNotNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // encrypted
@@ -115,7 +115,7 @@ class FlowCryptCoreTests: XCTestCase {
         let text = "this is the encrypted e2e content"
         let generateKeyRes = try Core.generateKey(passphrase: passphrase, variant: KeyVariant.curve25519, userIds: [UserId(email: email, name: "End to end")])
         let k = generateKeyRes.key
-        let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: email, subject: "e2e subj", replyToMimeMsg: nil)
+        let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: email, subject: "e2e subj", replyToMimeMsg: nil, atts: [])
         let mime = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [k.public])
         let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase)]
         let decrypted = try Core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true)

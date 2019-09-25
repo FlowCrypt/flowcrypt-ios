@@ -85,7 +85,6 @@ struct CoreRes {
 
 }
 
-
 enum MsgFmt: String {
     case plain = "plain"
     case encryptInline = "encrypt-inline" // todo - rename these in TypeScript to be camelCase
@@ -103,6 +102,12 @@ struct UserId: Encodable {
     let name: String;
 }
 
+extension UserId {
+    func toMime() -> String {
+        return "\(self.name) <\(self.email)>"
+    }
+}
+
 struct PrvKeyInfo: Encodable {
     let `private`: String
     let longid: String
@@ -118,6 +123,11 @@ struct PrvKeyInfo: Encodable {
 }
 
 struct SendableMsg {
+    struct Att {
+        let name: String
+        let type: String
+        let base64: String
+    }
     let text: String
     let to: [String]
     let cc: [String]
@@ -125,6 +135,7 @@ struct SendableMsg {
     let from: String
     let subject: String
     let replyToMimeMsg: String?
+    let atts: [Att]
 }
 
 struct MsgBlock: Decodable {
