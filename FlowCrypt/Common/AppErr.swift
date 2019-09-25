@@ -15,6 +15,8 @@ enum AppErr: Error {
     case unexpected(String) // we did not expect to ever see this error in practice
     case cast(String) // something as? Something is unexpectedly nil
     // all others
+    case user(String) // user error, useful to throw from Promises
+    case silentAbort // useful in Promises when you want to cancel execution without showing any error (eg after user clicks cancel button)
     case general(String)
 }
 
@@ -28,6 +30,8 @@ extension AppErr: Equatable {
             case (.value, .value): return true
             case (.unexpected, .unexpected): return true
             case (.cast, .cast): return true
+            case (.user, .user): return true
+            case (.silentAbort, .silentAbort): return true
             case (.general, .general): return true
             default: return false
         }

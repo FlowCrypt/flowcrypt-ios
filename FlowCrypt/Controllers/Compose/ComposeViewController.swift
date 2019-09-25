@@ -202,7 +202,8 @@ extension ComposeViewController {
             bcc: [],
             from: dataManager.currentUser()?.email ?? "",
             subject: subject,
-            replyToMimeMsg: replyToMimeMsg
+            replyToMimeMsg: replyToMimeMsg,
+            atts: []
         )
         return try! Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
     }

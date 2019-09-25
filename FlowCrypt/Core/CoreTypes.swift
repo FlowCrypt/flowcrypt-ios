@@ -29,7 +29,8 @@ struct CoreRes {
     struct ParseKeys: Decodable {
         enum Format: String, Decodable {
             case binary;
-            case armored; case unknown;
+            case armored;
+            case unknown;
         }
         let format: Format
         let keyDetails: [KeyDetails]
@@ -51,13 +52,38 @@ struct CoreRes {
         let error: ErrorWithOptionalStack
     }
 
+    struct ZxcvbnStrengthBar: Decodable {
+        struct WordDetails: Decodable {
+            enum Word: String, Decodable {
+                case perfect
+                case great
+                case good
+                case reasonable
+                case poor
+                case weak
+            }
+            enum Color: String, Decodable {
+                case green
+                case orange
+                case darkorange
+                case darkred
+                case red
+            }
+            let word: Word
+            let bar: Int32 // 0-100
+            let color: Color
+            let pass: Bool
+        }
+        let word: WordDetails
+        let time: String
+    }
+
     enum ReplyType: String, Decodable {
         case encrypted;
         case plain;
     }
 
 }
-
 
 enum MsgFmt: String {
     case plain = "plain"
@@ -76,6 +102,12 @@ struct UserId: Encodable {
     let name: String;
 }
 
+extension UserId {
+    func toMime() -> String {
+        return "\(self.name) <\(self.email)>"
+    }
+}
+
 struct PrvKeyInfo: Encodable {
     let `private`: String
     let longid: String
@@ -91,6 +123,11 @@ struct PrvKeyInfo: Encodable {
 }
 
 struct SendableMsg {
+    struct Att {
+        let name: String
+        let type: String
+        let base64: String
+    }
     let text: String
     let to: [String]
     let cc: [String]
@@ -98,6 +135,7 @@ struct SendableMsg {
     let from: String
     let subject: String
     let replyToMimeMsg: String?
+    let atts: [Att]
 }
 
 struct MsgBlock: Decodable {

@@ -17,4 +17,8 @@ extension String {
         return self
     }
 
+    func data() -> Data {
+        return self.data(using: .utf8)!
+    }
+
 }

@@ -56,7 +56,7 @@ struct RootAssembley: AppAssembley {
             nv = menu
             nv.viewControllers = [inbox]
         } else {
-            let vc = storyboard.instantiate(RecoverViewController.self)
+            let vc = storyboard.instantiate(SetupViewController.self)
             nv.viewControllers = [vc]
         }
 

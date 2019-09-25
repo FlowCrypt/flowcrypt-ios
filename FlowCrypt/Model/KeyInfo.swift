@@ -6,10 +6,12 @@ import RealmSwift
 
 enum KeySource {
     case backup
+    case generated
 
     var path: String {
         switch self {
-        case .backup: return "backup"
+            case .backup: return "backup"
+            case .generated: return "generated"
         }
     }
 }
