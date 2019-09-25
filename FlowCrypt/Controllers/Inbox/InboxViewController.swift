@@ -201,8 +201,8 @@ extension InboxViewController {
     private func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
         guard let index = messages.firstIndex(of: message) else { return }
         switch operation {
-        case .markAsRead: markAsRead(message: message, at: index)
-        case .moveToTrash, .archive: delete(message: message, at: index)
+            case .markAsRead: markAsRead(message: message, at: index)
+            case .moveToTrash, .archive, .permanentlyDelete: delete(message: message, at: index)
         }
     }
 
