@@ -63,6 +63,10 @@
 		9F31AB99232BF05100CF87EA /* HeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB98232BF05100CF87EA /* HeaderCell.swift */; };
 		9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
+		9F75F06C233BED4800C6B752 /* InboxCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F06B233BED4800C6B752 /* InboxCellNode.swift */; };
+		9F75F06E233BED7100C6B752 /* ComposeButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */; };
+		9F75F071233BEF6200C6B752 /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F070233BEF6200C6B752 /* StyleExtension.swift */; };
+		9F75F073233BF92700C6B752 /* InboxCellNodeInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
@@ -90,8 +94,6 @@
 		C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */; };
 		C132B9CB1EC2DE6400763715 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* Constants.swift */; };
 		C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9D81EC30E1D00763715 /* InboxViewController.swift */; };
-		C132B9E91EC4484B00763715 /* InboxTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9E81EC4484B00763715 /* InboxTableViewCell.swift */; };
-		C132B9EB1EC45B9900763715 /* InboxTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C132B9EA1EC45B9900763715 /* InboxTableViewCell.xib */; };
 		C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* RecoverViewController.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
@@ -175,6 +177,10 @@
 		9F31AB98232BF05100CF87EA /* HeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderCell.swift; sourceTree = "<group>"; };
 		9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
+		9F75F06B233BED4800C6B752 /* InboxCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxCellNode.swift; sourceTree = "<group>"; };
+		9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeButtonNode.swift; sourceTree = "<group>"; };
+		9F75F070233BEF6200C6B752 /* StyleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleExtension.swift; sourceTree = "<group>"; };
+		9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxCellNodeInput.swift; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
@@ -201,8 +207,6 @@
 		C132B9CA1EC2DE6400763715 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		C132B9D81EC30E1D00763715 /* InboxViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxViewController.swift; sourceTree = "<group>"; };
 		C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
-		C132B9E81EC4484B00763715 /* InboxTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxTableViewCell.swift; sourceTree = "<group>"; };
-		C132B9EA1EC45B9900763715 /* InboxTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InboxTableViewCell.xib; sourceTree = "<group>"; };
 		C192421E1EC48B6900C3D251 /* RecoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecoverViewController.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MsgViewController.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -324,6 +328,7 @@
 				9F0C3C2723194E8500299985 /* Extensions.swift */,
 				9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */,
 				32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */,
+				9F75F070233BEF6200C6B752 /* StyleExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -415,6 +420,16 @@
 				9F0C3C2523194E0A00299985 /* FolderViewModel.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		9F75F06F233BED9400C6B752 /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				9F75F06B233BED4800C6B752 /* InboxCellNode.swift */,
+				9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */,
+				9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */,
+			);
+			path = Nodes;
 			sourceTree = "<group>";
 		};
 		9FD22A1D230FEEC8005067A6 /* Views */ = {
@@ -537,18 +552,9 @@
 			children = (
 				C132B9D81EC30E1D00763715 /* InboxViewController.swift */,
 				9FD22A20230FF9BC005067A6 /* Model */,
-				C132B9E71EC4476500763715 /* Views */,
+				9F75F06F233BED9400C6B752 /* Nodes */,
 			);
 			path = Inbox;
-			sourceTree = "<group>";
-		};
-		C132B9E71EC4476500763715 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				C132B9E81EC4484B00763715 /* InboxTableViewCell.swift */,
-				C132B9EA1EC45B9900763715 /* InboxTableViewCell.xib */,
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		C192421D1EC48B5600C3D251 /* Recover */ = {
@@ -677,7 +683,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
-				C132B9EB1EC45B9900763715 /* InboxTableViewCell.xib in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				C132B9B91EC2DBD800763715 /* Main.storyboard in Resources */,
 				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,
@@ -833,6 +838,7 @@
 				9F31AB95232BA27F00CF87EA /* MenuCell.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuTableViewController.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
+				9F75F071233BEF6200C6B752 /* StyleExtension.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
@@ -840,11 +846,12 @@
 				C192421F1EC48B6900C3D251 /* RecoverViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
+				9F75F06E233BED7100C6B752 /* ComposeButtonNode.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
-				C132B9E91EC4484B00763715 /* InboxTableViewCell.swift in Sources */,
 				9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */,
 				04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */,
 				32DCA1339D6857686ABD3FC4 /* UIVIewExtension.swift in Sources */,
+				9F75F073233BF92700C6B752 /* InboxCellNodeInput.swift in Sources */,
 				32DCA5577770FF2394018FA9 /* AttesterApi.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */,
@@ -860,6 +867,7 @@
 				9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */,
 				9F0C3C2823194E8500299985 /* Extensions.swift in Sources */,
 				9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */,
+				9F75F06C233BED4800C6B752 /* InboxCellNode.swift in Sources */,
 				32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */,
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,

@@ -70,7 +70,7 @@ final class MsgViewController: UIViewController {
         lblBody.numberOfLines = 0
         lblTIme.text = ""
         if let date = input?.objMessage.header.date {
-            lblTIme.text = Constants.convertDate(date: date)
+            lblTIme.text = DateFormatter().formatDate(date)
         }
     }
 
@@ -139,7 +139,7 @@ extension MsgViewController {
                 let err = decryptErrBlock.decryptErr?.error
                 self?.renderBody("Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)", color: .red)
             } else {
-                self?.renderBody(msg.text, color: msg.replyType == CoreRes.ReplyType.encrypted ? Constants.green : UIColor.black)
+                self?.renderBody(msg.text, color: msg.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.black)
             }
         }
     }

@@ -170,3 +170,16 @@ extension Array {
         }
     }
 }
+
+extension DateFormatter {
+    func formatDate(_ date: Date) -> String {
+        let dateFormater = DateFormatter()
+        if Calendar.current.isDateInToday(date) {
+            dateFormater.dateFormat = "h:mm a"
+        }
+        else {
+            dateFormater.dateFormat = "dd MMM"
+        }
+        return dateFormater.string(from: date)
+    }
+}
