@@ -7,11 +7,12 @@ import Foundation
 
 enum MailDestination {
     enum Gmail {
-        case trash
+        case trash, inbox
 
         var path: String {
             switch self {
-            case .trash: return "[Gmail]/Trash"
+                case .trash: return "[Gmail]/Trash"
+                case .inbox: return "[Gmail]/Inbox"
             }
         }
     }

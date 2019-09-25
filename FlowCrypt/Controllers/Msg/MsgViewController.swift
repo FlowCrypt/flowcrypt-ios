@@ -25,20 +25,22 @@ final class MsgViewController: UIViewController {
     }
 
     enum MessageAction {
-        case delete, archive, markAsRead
+        case moveToTrash, archive, markAsRead, permanentlyDelete
 
         var text: String? {
             switch self {
-                case .delete: return Language.moved_to_trash
+                case .moveToTrash: return Language.moved_to_trash
                 case .archive: return Language.email_archived
+                case .permanentlyDelete: return Language.email_deleted
                 case .markAsRead: return nil
             }
         }
 
         var error: String? {
             switch self {
-                case .delete: return Constants.ErrorTexts.Message.delete
+                case .moveToTrash: return Constants.ErrorTexts.Message.moveToTrash
                 case .archive: return Constants.ErrorTexts.Message.archive
+                case .permanentlyDelete: return Constants.ErrorTexts.Message.permanentlyDelete
                 case .markAsRead: return nil
             }
         }
@@ -80,9 +82,12 @@ final class MsgViewController: UIViewController {
         let archiveInput = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
         let trashInput = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
         let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
-        let buttons = input?.path == MailDestination.Gmail.trash.path
-            ? [infoInput, archiveInput, mailInput]
-            : [infoInput, archiveInput, trashInput, mailInput]
+        let buttons: [NavigationBarItemsView.Input]
+        switch input?.path {
+            case MailDestination.Gmail.trash.path: buttons = [infoInput, trashInput]
+            case MailDestination.Gmail.inbox.path: buttons = [infoInput, archiveInput, trashInput, mailInput]
+            default: buttons = [infoInput, trashInput, mailInput]
+        }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
 
@@ -182,13 +187,20 @@ extension MsgViewController {
     @objc private func handleTrashTap() {
         guard let input = input else { return }
         showSpinner()
-        imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path)
-            .then(on: .main) { [weak self] _ in
-                self?.handleSuccesMessage(operation: .delete)
+        let op = input.path != MailDestination.Gmail.trash.path ? MessageAction.moveToTrash : MessageAction.permanentlyDelete
+        Promise { [weak self] in
+            guard let self = self else { throw AppErr.nilSelf }
+            if op == MessageAction.permanentlyDelete {
+                input.objMessage.flags = MCOMessageFlag.deleted
+                try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
+            } else {
+                try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path))
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleErrorOnMessage(operation: .delete)
-            }
+        }.then(on: .main) { [weak self] in
+            self?.handleSuccesMessage(operation: op)
+        }.catch(on: .main) { [weak self] error in
+            self?.handleErrorOnMessage(operation: op)
+        }
     }
 
     @objc private func handleArchiveTap() {
