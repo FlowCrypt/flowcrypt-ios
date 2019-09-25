@@ -39,7 +39,7 @@ final class SetupViewController: UIViewController {
         super.viewDidLoad()
 
         setupUI()
-        fetchBackups()
+        fetchBackupsAndRenderSetupView()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -73,7 +73,7 @@ extension SetupViewController {
         observeKeyboardNotifications()
     }
 
-    private func fetchBackups() {
+    private func fetchBackupsAndRenderSetupView() {
         showSpinner()
         Promise<Void> { [weak self] in
             guard let self = self else { return }
@@ -119,7 +119,7 @@ extension SetupViewController {
             }
         })
         alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
-            self?.fetchBackups()
+            self?.fetchBackupsAndRenderSetupView()
         })
         present(alert, animated: true, completion: nil)
     }
@@ -140,15 +140,15 @@ extension SetupViewController {
         }
         showSpinner()
         if setupAction == SetupAction.recoverKey {
-            recoverAccountWithBackupsAndPassPhrase(passPhrase: passPhrase)
+            recoverAccountWithBackups(with: passPhrase)
         } else if setupAction == SetupAction.createKey {
-            setupAccountWithGeneratedKeyForPassPhrase(passPhrase: passPhrase)
+            setupAccountWithGeneratedKey(with: passPhrase)
         } else {
             showAlert(message: "Unknown setupAction \(setupAction), please contact human@flowcrypt.com")
         }
     }
 
-    private func recoverAccountWithBackupsAndPassPhrase(passPhrase: String) {
+    private func recoverAccountWithBackups(with passPhrase: String) {
         let matchingBackups: [KeyDetails] = fetchedEncryptedPrvs
             .compactMap { (key) -> KeyDetails? in
                 guard let prv = key.private else { return nil }
@@ -163,24 +163,30 @@ extension SetupViewController {
         performSegue(withIdentifier: "InboxSegue", sender: nil)
     }
 
-    private func setupAccountWithGeneratedKeyForPassPhrase(passPhrase: String) {
+    private func setupAccountWithGeneratedKey(with passPhrase: String) {
         Promise { [weak self] in
             guard let self = self else { return }
             let userId = try self.getUserId()
+            try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
+            let encryptedPrv = try Core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
+            try await(self.backupPrvToInbox(prv: encryptedPrv.key, userId: userId))
+            try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
+            try await(self.alertAndSkipOnRejection(AttesterApi.shared.updateKey(email: userId.email, pubkey: encryptedPrv.key.public), fail: "Failed to submit Public Key"))
+            try await(self.alertAndSkipOnRejection(AttesterApi.shared.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public), fail: "Failed to send you welcome email"))
+        }.then(on: .main) { [weak self] in
+            self?.performSegue(withIdentifier: "InboxSegue", sender: nil)
+        }.catch(on: .main) { [weak self] error in
+            self?.showAlert(error: error, message: "Could not finish setup, please try again")
+        }
+    }
+
+    private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
+        return Promise {
             let strength = try Core.zxcvbnStrengthBar(passPhrase: passPhrase)
             guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
             let confirmPassPhrase = try await(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
             guard confirmPassPhrase != nil else { throw AppErr.silentAbort }
             guard confirmPassPhrase == passPhrase else { throw AppErr.user("Pass phrases don't match") }
-            let prv = try Core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try await(self.backupPrvToInbox(prv: prv.key, userId: userId))
-            try self.storePrvs(prvs: [prv.key], passPhrase: passPhrase, source: .generated)
-            try await(self.alertAndSkipOnRejection(AttesterApi.shared.updateKey(email: userId.email, pubkey: prv.key.public), fail: "Failed to submit Public Key"))
-            try await(self.alertAndSkipOnRejection(AttesterApi.shared.testWelcome(email: userId.email, pubkey: prv.key.public), fail: "Failed to send you welcome email"))
-        }.then(on: .main) { [weak self] in
-            self?.performSegue(withIdentifier: "InboxSegue", sender: nil)
-        }.catch(on: .main) { [weak self] error in
-            self?.showAlert(error: error, message: "Could not finish setup, please try again")
         }
     }
 
@@ -192,6 +198,7 @@ extension SetupViewController {
 
     private func backupPrvToInbox(prv: KeyDetails, userId: UserId) -> Promise<Void> {
         return Promise { () -> Void in
+            guard prv.isFullyEncrypted ?? false else { throw AppErr.unexpected("Private Key must be fully enrypted before backing up") }
             let filename = "flowcrypt-backup-\(userId.email.replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression)).key"
             let backupEmail = try Core.composeEmail(msg: SendableMsg(
                 text: "This email contains a key backup. It will help you access your encrypted messages from other computers (along with your pass phrase). You can safely leave it in your inbox or archive it.\n\nThe key below is protected with pass phrase that only you know. You should make sure to note your pass phrase down.\n\nDO NOT DELETE THIS EMAIL. Write us at human@flowcrypt.com so that we can help.",

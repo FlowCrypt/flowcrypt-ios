@@ -18,9 +18,9 @@ enum ToastPosition: String {
 
     var value: String {
         switch self {
-        case .bottom: return CSToastPositionBottom
-        case .center: return CSToastPositionCenter
-        case .top:    return CSToastPositionTop
+            case .bottom: return CSToastPositionBottom
+            case .center: return CSToastPositionCenter
+            case .top:    return CSToastPositionTop
         }
     }
 }
