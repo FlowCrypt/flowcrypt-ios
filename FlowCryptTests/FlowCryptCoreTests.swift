@@ -100,7 +100,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testComposeEmailEncryptInline() throws {
-        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: ni, atts: [])
+        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [])
         let composeEmailRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
         let mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
         XCTAssertNotNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // encrypted
