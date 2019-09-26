@@ -347,5 +347,4 @@ extension InboxViewController {
         context.beginBatchFetching()
         handle(action: .beginBatchFetch, context: context)
     }
-}
-
+} 
