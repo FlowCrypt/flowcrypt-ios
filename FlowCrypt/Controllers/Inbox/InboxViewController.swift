@@ -34,8 +34,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
     private let messageProvider: MessageProvider = Imap.instance
     private var messages: [MCOIMAPMessage] = []
     private var viewModel: InboxViewModel
-
-
+ 
     private var tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode() { [weak self] in
         self?.btnComposeTap()
