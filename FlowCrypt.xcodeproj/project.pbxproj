@@ -67,6 +67,7 @@
 		9F75F06E233BED7100C6B752 /* ComposeButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */; };
 		9F75F071233BEF6200C6B752 /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F070233BEF6200C6B752 /* StyleExtension.swift */; };
 		9F75F073233BF92700C6B752 /* InboxCellNodeInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */; };
+		9F75F075233C97F600C6B752 /* TailLoadingCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F074233C97F600C6B752 /* TailLoadingCellNode.swift */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
@@ -181,6 +182,7 @@
 		9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeButtonNode.swift; sourceTree = "<group>"; };
 		9F75F070233BEF6200C6B752 /* StyleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleExtension.swift; sourceTree = "<group>"; };
 		9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxCellNodeInput.swift; sourceTree = "<group>"; };
+		9F75F074233C97F600C6B752 /* TailLoadingCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailLoadingCellNode.swift; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
@@ -428,6 +430,7 @@
 				9F75F06B233BED4800C6B752 /* InboxCellNode.swift */,
 				9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */,
 				9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */,
+				9F75F074233C97F600C6B752 /* TailLoadingCellNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -891,6 +894,7 @@
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
 				9F31AB99232BF05100CF87EA /* HeaderCell.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
+				9F75F075233C97F600C6B752 /* TailLoadingCellNode.swift in Sources */,
 				9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */,
 				470E79285E76FE700D12A2F2 /* MailDestination.swift in Sources */,
 				32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */,
