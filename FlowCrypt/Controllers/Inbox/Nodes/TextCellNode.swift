@@ -32,7 +32,7 @@ final class TextCellNode: ASCellNode {
             spacing: 16,
             justifyContent: .center,
             alignItems: .center,
-            children: withSpinner ? [text,spinner] : [ text ]
+            children: withSpinner ? [text,spinner] : [text]
         )
         spec.style.preferredSize = size
         return spec
