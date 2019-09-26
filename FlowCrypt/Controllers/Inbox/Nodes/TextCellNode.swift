@@ -8,25 +8,34 @@
 
 import AsyncDisplayKit
 
-final class TailLoadingCellNode: ASCellNode {
+final class TextCellNode: ASCellNode {
     private let spinner = SpinnerNode()
     private let text = ASTextNode()
+    private let size: CGSize
+    private let withSpinner: Bool
 
-    override init() {
+    init(title: String, withSpinner: Bool, size: CGSize) {
+        self.withSpinner = withSpinner
+        self.size = size
         super.init()
 
         addSubnode(text)
-        text.attributedText = NSAttributedString.text(from: "Loading...", style: .regular(12), color: .lightGray)
-        addSubnode(spinner)
+        text.attributedText = NSAttributedString.text(from: title, style: .medium(16), color: .lightGray)
+        if withSpinner {
+            addSubnode(spinner)
+        }
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        return ASStackLayoutSpec(
+        let spec = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 16,
             justifyContent: .center,
             alignItems: .center,
-            children: [ text, spinner ])
+            children: withSpinner ? [text,spinner] : [ text ]
+        )
+        spec.style.preferredSize = size
+        return spec
     }
 }
 

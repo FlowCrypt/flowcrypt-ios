@@ -67,7 +67,8 @@
 		9F75F06E233BED7100C6B752 /* ComposeButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */; };
 		9F75F071233BEF6200C6B752 /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F070233BEF6200C6B752 /* StyleExtension.swift */; };
 		9F75F073233BF92700C6B752 /* InboxCellNodeInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */; };
-		9F75F075233C97F600C6B752 /* TailLoadingCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F074233C97F600C6B752 /* TailLoadingCellNode.swift */; };
+		9F75F075233C97F600C6B752 /* TextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F074233C97F600C6B752 /* TextCellNode.swift */; };
+		9F75F077233D510900C6B752 /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F076233D510900C6B752 /* Imap+messages.swift */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
@@ -182,7 +183,8 @@
 		9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeButtonNode.swift; sourceTree = "<group>"; };
 		9F75F070233BEF6200C6B752 /* StyleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleExtension.swift; sourceTree = "<group>"; };
 		9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxCellNodeInput.swift; sourceTree = "<group>"; };
-		9F75F074233C97F600C6B752 /* TailLoadingCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TailLoadingCellNode.swift; sourceTree = "<group>"; };
+		9F75F074233C97F600C6B752 /* TextCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCellNode.swift; sourceTree = "<group>"; };
+		9F75F076233D510900C6B752 /* Imap+messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+messages.swift"; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 				9F31AB90232993F500CF87EA /* Imap+session.swift */,
 				9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */,
 				9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */,
+				9F75F076233D510900C6B752 /* Imap+messages.swift */,
 				9F31AB922329950800CF87EA /* Imap+backup.swift */,
 				32DCAF8424D0185FAA9401A7 /* Imap+send.swift */,
 				32DCA55C094E9745AA1FD210 /* Imap+msg.swift */,
@@ -430,7 +433,7 @@
 				9F75F06B233BED4800C6B752 /* InboxCellNode.swift */,
 				9F75F072233BF92700C6B752 /* InboxCellNodeInput.swift */,
 				9F75F06D233BED7100C6B752 /* ComposeButtonNode.swift */,
-				9F75F074233C97F600C6B752 /* TailLoadingCellNode.swift */,
+				9F75F074233C97F600C6B752 /* TextCellNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -891,10 +894,11 @@
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
 				32DCA1FE33A44B4B18F1404B /* AppErr.swift in Sources */,
 				32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */,
+				9F75F077233D510900C6B752 /* Imap+messages.swift in Sources */,
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
 				9F31AB99232BF05100CF87EA /* HeaderCell.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
-				9F75F075233C97F600C6B752 /* TailLoadingCellNode.swift in Sources */,
+				9F75F075233C97F600C6B752 /* TextCellNode.swift in Sources */,
 				9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */,
 				470E79285E76FE700D12A2F2 /* MailDestination.swift in Sources */,
 				32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */,

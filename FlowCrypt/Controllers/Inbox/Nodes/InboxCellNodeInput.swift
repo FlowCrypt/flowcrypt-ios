@@ -17,17 +17,17 @@ struct InboxCellNodeInput {
         let email = message.header.sender.mailbox ?? "Empty"
         let date = DateFormatter().formatDate(message.header.date)
         let msg = message.header.subject ?? "No subject"
-        let isMessageUnread = message.flags.rawValue == 0
+        let isMessageRead = message.flags.rawValue != 0
 
-        let style: NSAttributedString.Style = isMessageUnread
+        let style: NSAttributedString.Style = isMessageRead
             ? .regular(17)
             : .bold(17)
 
-        let dateColor: UIColor = isMessageUnread
+        let dateColor: UIColor = isMessageRead
             ? .lightGray
             : .main
 
-        let textColor: UIColor = isMessageUnread
+        let textColor: UIColor = isMessageRead
             ? .lightGray
             : .black
 
