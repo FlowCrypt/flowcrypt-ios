@@ -130,7 +130,11 @@ extension RecoverViewController {
                 realm.add(try! KeyInfo(k, passphrase: passPhrase, source: .backup))
             }
         }
-        performSegue(withIdentifier: "InboxSegue", sender: nil)
+        moveToMainFlow()
+    }
+
+    private func moveToMainFlow() {
+        GlobalRouter().proceedAfterLogOut()
     }
 
     @IBAction func useOtherAccount(_ sender: Any) {

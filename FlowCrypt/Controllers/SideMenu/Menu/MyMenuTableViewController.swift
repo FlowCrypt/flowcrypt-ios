@@ -147,8 +147,7 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let inboxVc = InboxViewController(input)
-            sideMenuController()?.setContentViewController(inboxVc)
+            sideMenuController()?.setContentViewController(InboxViewController(input))
         case .settings:
             showToast("Settings not yet implemented")
         case .logOut:

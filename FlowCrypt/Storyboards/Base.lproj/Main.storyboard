@@ -620,6 +620,7 @@
         <!--Side Menu Navigation Controller-->
         <scene sceneID="nas-Dc-0eT">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="h89-HX-AZ3" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController storyboardIdentifier="SideMenuNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="Kb6-Ov-pwM" customClass="SideMenuNavigationController" customModule="FlowCrypt" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="WGu-wk-Htx">
@@ -633,9 +634,8 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="h89-HX-AZ3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="680.79999999999995" y="79.610194902548713"/>
+            <point key="canvasLocation" x="772" y="58"/>
         </scene>
     </scenes>
     <resources>
