@@ -26,10 +26,11 @@ final class InboxCellNode: ASCellNode {
         emailNode.maximumNumberOfLines = 1
         dateNode.maximumNumberOfLines = 1
         messageNode.maximumNumberOfLines = 1
-    }
 
-    #warning("Remove comments")
-    // http://texturegroup.org/docs/automatic-layout-examples-2.html
+        emailNode.truncationMode = .byTruncatingTail
+        messageNode.truncationMode = .byTruncatingTail
+    }
+ 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let nameLocationStack = ASStackLayoutSpec.vertical()
         nameLocationStack.spacing = 6
