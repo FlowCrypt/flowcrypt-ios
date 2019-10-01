@@ -139,12 +139,12 @@ extension SetupViewController {
             return
         }
         showSpinner()
-        if setupAction == SetupAction.recoverKey {
+
+        switch setupAction {
+        case .recoverKey:
             recoverAccountWithBackups(with: passPhrase)
-        } else if setupAction == SetupAction.createKey {
+        case .createKey:
             setupAccountWithGeneratedKey(with: passPhrase)
-        } else {
-            showAlert(message: "Unknown setupAction \(setupAction), please contact human@flowcrypt.com")
         }
     }
 
@@ -160,7 +160,7 @@ extension SetupViewController {
             return
         }
         try! self.storePrvs(prvs: matchingBackups, passPhrase: passPhrase, source: .generated)
-        performSegue(withIdentifier: "InboxSegue", sender: nil)
+        moveToMainFlow()
     }
 
     private func setupAccountWithGeneratedKey(with passPhrase: String) {
@@ -174,10 +174,14 @@ extension SetupViewController {
             try await(self.alertAndSkipOnRejection(AttesterApi.shared.updateKey(email: userId.email, pubkey: encryptedPrv.key.public), fail: "Failed to submit Public Key"))
             try await(self.alertAndSkipOnRejection(AttesterApi.shared.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public), fail: "Failed to send you welcome email"))
         }.then(on: .main) { [weak self] in
-            self?.performSegue(withIdentifier: "InboxSegue", sender: nil)
+            self?.moveToMainFlow()
         }.catch(on: .main) { [weak self] error in
             self?.showAlert(error: error, message: "Could not finish setup, please try again")
         }
+    }
+
+    private func moveToMainFlow() {
+        GlobalRouter().proceedAfterLogOut()
     }
 
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {

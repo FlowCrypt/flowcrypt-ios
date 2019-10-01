@@ -15,6 +15,7 @@ target 'FlowCrypt' do
   pod 'ENSwiftSideMenu', '~> 0.1.4'
   pod 'RxSwift', '~> 5'
   pod 'RxCocoa', '~> 5'
+  pod 'Texture'
 end
 
 target 'FlowCryptTests' do

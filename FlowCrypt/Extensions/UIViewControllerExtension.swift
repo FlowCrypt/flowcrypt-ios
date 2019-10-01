@@ -144,13 +144,15 @@ extension UIViewController {
                 let _ = try await(promise)
                 resolve(())
             } catch {
-                self.showAlert(error: error, message: msg, onOk: { resolve(()) })
+                DispatchQueue.main.async {
+                    self.showAlert(error: error, message: msg, onOk: { resolve(()) })
+                }
             }
         }
     }
 
     func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
-        return Promise<String?> { [weak self] resolve, reject in
+        return Promise<String?>(on: .main) { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
             let alert = UIAlertController(title: "Pass Phrase", message: title, preferredStyle: .alert)
             alert.addTextField { (textField) in
