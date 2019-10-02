@@ -52,7 +52,7 @@ struct RootAssembley: AppAssembley {
 
         if keys.count > 0 {
             let menu = storyboard.instantiate(SideMenuNavigationController.self)
-            let inbox = storyboard.instantiate(InboxViewController.self)
+            let inbox = InboxViewController()
             nv = menu
             nv.viewControllers = [inbox]
         } else {

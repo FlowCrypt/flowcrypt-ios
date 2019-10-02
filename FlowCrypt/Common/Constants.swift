@@ -21,38 +21,11 @@ enum Constants {
         ]
     }
 
-    // TODO: update texts on failed archive/delete operation.
-    // Also better to add localization for application ASAP.
     enum ErrorTexts {
         enum Message {
             static let delete = "Unable to delete message"
             static let archive = "Unable to archive message"
         }
-    } 
-
-    static let unreadMessageFont = UIFont.boldSystemFont(ofSize: 17.0)
-    static let readMessageFont = UIFont.systemFont(ofSize: 17.0)
-    static let unreadDateFont = UIFont.boldSystemFont(ofSize: 17.0)
-    static let readDateFont = UIFont.systemFont(ofSize: 17.0)
-    static let unreadMessageTextColor = UIColor.black
-    static let readMessageTextColor = UIColor.lightGray
-    static let unreadDateTextColor = UIColor(red: 33.0 / 255.0, green: 157.0 / 255.0, blue: 5.0 / 255.0, alpha: 1.0)
-    static let readDateTextColor = UIColor.lightGray
-    static let green = UIColor(red:0.19, green:0.64, blue:0.09, alpha:1.0)    
-
-
-    static let rightUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: -25)
-    static let leftUiBarButtonItemImageInsets = UIEdgeInsets(top: 2, left: -25, bottom: 2, right: 0)    
-    
-    static func convertDate(date: Date) -> String {
-        let dateFormater = DateFormatter()
-        if Calendar.current.isDateInToday(date) {
-            dateFormater.dateFormat = "h:mm a"
-        }
-        else {
-            dateFormater.dateFormat = "dd MMM"
-        }
-        return dateFormater.string(from: date)
     }
 }
 

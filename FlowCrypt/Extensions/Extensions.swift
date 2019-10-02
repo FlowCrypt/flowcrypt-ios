@@ -44,12 +44,6 @@ extension UIView {
             ])
     }
 
-    func constraintSize(_ size: CGSize) {
-        translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: size.height)
-        widthAnchor.constraint(equalToConstant: size.width)
-    }
-
     func constrainToEdges(_ subview: UIView, insets: UIEdgeInsets = .zero) {
         subview.translatesAutoresizingMaskIntoConstraints = false
 
@@ -98,10 +92,10 @@ extension UIView {
 
     func constrainToBorders(_ subview: UIView, insets: UIEdgeInsets = .zero) {
         subview.translatesAutoresizingMaskIntoConstraints = false
-        subview.leftAnchor.constraint(equalTo: leftAnchor, constant: insets.left)
-        subview.rightAnchor.constraint(equalTo: rightAnchor, constant: -insets.right)
-        subview.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
-        subview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom)
+        subview.leftAnchor.constraint(equalTo: leftAnchor, constant: insets.left).isActive = true
+        subview.rightAnchor.constraint(equalTo: rightAnchor, constant: -insets.right).isActive = true
+        subview.topAnchor.constraint(equalTo: topAnchor, constant: insets.top).isActive = true
+        subview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom).isActive = true
     }
 }
 

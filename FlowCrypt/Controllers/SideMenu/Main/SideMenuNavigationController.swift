@@ -38,6 +38,10 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
         interactivePopGestureRecognizer?.delegate = self
         delegate = self
+
+        if let vc = viewControllers.first {
+            navigationController(self, didShow: vc, animated: false)
+        }
     }
 
     override func viewDidLayoutSubviews() {
