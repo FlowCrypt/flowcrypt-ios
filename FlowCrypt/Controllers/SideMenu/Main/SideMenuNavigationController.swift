@@ -10,6 +10,24 @@ protocol NavigationChildController {
 }
 
 final class SideMenuNavigationController: ENSideMenuNavigationController {
+    private var isStatusBarHidden = false {
+        didSet {
+          updateStatusBar()
+        }
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return .slide
+    }
+
+    override var prefersStatusBarHidden: Bool {
+        return isStatusBarHidden
+    }
+
     private enum Constants {
         static let menuOffset: CGFloat = 80
         static let sideOffset: CGFloat = 100
@@ -20,24 +38,23 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         self?.hideMenu()
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setup()
-    }
-
-    private func setup() {
-        let sideMenuVC = MyMenuTableViewController()
-        sideMenu = ENSideMenu(sourceView: view, menuViewController: sideMenuVC, menuPosition: .left).then {
+    convenience init() {
+        let menu = MyMenuTableViewController()
+        let contentViewController = InboxViewController()
+        self.init(menuViewController: menu, contentViewController: contentViewController)
+        sideMenu = ENSideMenu(sourceView: self.view, menuViewController: menu, menuPosition:.left).then {
             $0.bouncingEnabled = false
             $0.delegate = self
             $0.animationDuration = Constants.animationDuration
         }
+    }
 
-        navigationItem.backBarButtonItem = UIBarButtonItem()
-            .then { $0.title = "" }
-
-        interactivePopGestureRecognizer?.delegate = self
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setup()
+        
         delegate = self
+        interactivePopGestureRecognizer?.delegate = self
 
         if let vc = viewControllers.first {
             navigationController(self, didShow: vc, animated: false)
@@ -60,6 +77,17 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
             gestureView.frame = view.frame
         }
     }
+
+    private func updateStatusBar() {
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0.0,
+            options: [],
+            animations: {
+                self.setNeedsStatusBarAppearanceUpdate()
+            }, completion: nil
+        )
+    }
 }
 
 extension SideMenuNavigationController: ENSideMenuDelegate {
@@ -79,11 +107,14 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
     }
 
     func sideMenuDidClose() {
+        isStatusBarHidden = false
         gestureView.removeFromSuperview()
         updateNavigationItems(isShown: true)
     }
 
     func sideMenuDidOpen() {
+        isStatusBarHidden = true
+        setNeedsStatusBarAppearanceUpdate()
         gestureView.frame = view.frame
     }
 }

@@ -89,6 +89,14 @@ extension UIViewController {
 
 extension UIViewController {
 
+    var safeAreaWindowInsets: UIEdgeInsets {
+           return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
+       }
+
+       var statusBarHeight: CGFloat {
+           return UIApplication.shared.statusBarFrame.height
+       }
+    
     private func errorToUserFriendlyString(error: Error, title: String) -> String? {
         // todo - more intelligent handling of HttpErr
         do {

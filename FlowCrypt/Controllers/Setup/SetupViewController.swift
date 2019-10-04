@@ -112,7 +112,7 @@ extension SetupViewController {
         alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
             self?.userService.signOut().then(on: .main) { [weak self] in
                 if self?.navigationController?.popViewController(animated: true) == nil {
-                    self?.router.proceedAfterLogOut() // in case app got restarted and no view to pop
+                    self?.router.reset() // in case app got restarted and no view to pop
                 }
             }.catch(on: .main) { [weak self] error in
                 self?.showAlert(error: error, message: "Could not sign out")
@@ -181,7 +181,7 @@ extension SetupViewController {
     }
 
     private func moveToMainFlow() {
-        GlobalRouter().proceedAfterLogOut()
+        GlobalRouter().reset()
     }
 
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
@@ -229,7 +229,7 @@ extension SetupViewController {
 
     @IBAction func useOtherAccount(_ sender: Any) {
         userService.signOut().then(on: .main) { [weak self] _ in
-            self?.router.proceedAfterLogOut()
+            self?.router.reset()
         }.catch(on: .main) { [weak self] error in
             self?.showAlert(error: error, message: "Could not switch accounts")
         }

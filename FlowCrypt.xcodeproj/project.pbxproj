@@ -77,6 +77,7 @@
 		9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
 		9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */; };
+		9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE743062347AA54005E2DBB /* MainNavigationController.swift */; };
 		9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */; };
 		9FEED1D0230DA9FF00700F8E /* UIStoyboardExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */; };
 		9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */; };
@@ -190,6 +191,7 @@
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
+		9FE743062347AA54005E2DBB /* MainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationController.swift; sourceTree = "<group>"; };
 		9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStoyboardExtension.swift; sourceTree = "<group>"; };
 		9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewModel.swift; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 			children = (
 				9F31AB9A232BF08600CF87EA /* Menu */,
 				9F2A939F23363D2400014A92 /* Main */,
+				9FE743062347AA54005E2DBB /* MainNavigationController.swift */,
 			);
 			path = SideMenu;
 			sourceTree = "<group>";
@@ -884,6 +887,7 @@
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
+				9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */,
 				32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */,
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
 				9F31AB99232BF05100CF87EA /* HeaderCell.swift in Sources */,

@@ -38,11 +38,19 @@ final class MyMenuTableViewController: UIViewController {
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] = FolderViewModel.menuItems()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // Due to Bug in ENSideMenu
+    // we need to use this property to setup UI in viewDidAppear
+    // instead of viewDidload (ENSideMenu call self.view inside initializer)
+    private var isFirstLaunch = true
 
-        setupUI()
-        fetchFolders()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if isFirstLaunch {
+            setupUI()
+            fetchFolders()
+        }
+        isFirstLaunch = false
     }
 
     private func setupUI() {
@@ -57,7 +65,9 @@ final class MyMenuTableViewController: UIViewController {
             $0.reloadData()
         }
         view.addSubview(tableView)
-        view.constrainToEdges(tableView, insets: UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0))
+
+        let topInset = safeAreaWindowInsets.top
+        view.constrainToEdges(tableView, insets: UIEdgeInsets(top: -topInset, left: 0, bottom: 0, right: 0))
     }
 
     private func fetchFolders() {
@@ -153,7 +163,7 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         case .logOut:
             userService.signOut()
                 .then(on: .main) { [weak self] _ in
-                    self?.router.proceedAfterLogOut()
+                    self?.router.reset()
                 }.catch(on: .main) { [weak self] error in
                     self?.showAlert(error: error, message: "Could not log out")
                 }

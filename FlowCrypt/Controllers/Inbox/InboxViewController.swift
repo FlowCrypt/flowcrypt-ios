@@ -41,10 +41,6 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
     }
     private let refreshControl = UIRefreshControl()
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
     init(_ viewModel: InboxViewModel = .empty) {
         self.viewModel = viewModel
         self.tableNode = ASTableNode(style: .plain)

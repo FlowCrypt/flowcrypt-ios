@@ -35,13 +35,11 @@ struct RootAssembley: AppAssembley {
 
     func setupWindow() -> UIWindow {
         let window = UIWindow(frame: UIScreen.main.bounds)
-        let storyboard = UIStoryboard.main
-
-        guard var nv = storyboard.instantiateViewController(withIdentifier: "MainNavigationController") as? UINavigationController
-            else { assert(); return UIWindow() }
+        let main = UIStoryboard.main
 
         guard userService.isSessionValid() else {
-            window.rootViewController = nv
+            let root = main.instantiate(SignInViewController.self)
+            window.rootViewController = MainNavigationController(rootViewController: root)
             window.makeKeyAndVisible()
             return window
         }
@@ -50,17 +48,14 @@ struct RootAssembley: AppAssembley {
         let realm = try! Realm()
         let keys = realm.objects(KeyInfo.self)
 
-        if keys.count > 0 {
-            let menu = storyboard.instantiate(SideMenuNavigationController.self)
-            let inbox = InboxViewController()
-            nv = menu
-            nv.viewControllers = [inbox]
-        } else {
-            let vc = storyboard.instantiate(SetupViewController.self)
-            nv.viewControllers = [vc]
-        }
-
-        window.rootViewController = nv
+        window.rootViewController = {
+            if keys.count > 0 {
+                return SideMenuNavigationController()
+            } else {
+                let root = main.instantiate(SetupViewController.self)
+                return MainNavigationController(rootViewController: root)
+            }
+        }()
         window.makeKeyAndVisible()
 
         return window
