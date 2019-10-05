@@ -159,7 +159,7 @@ extension MsgViewController {
             }
     }
 
-    private func handleSuccesMessage(operation: MessageAction) {
+    private func handleOpSuccess(operation: MessageAction) {
         guard let input = input else { return }
         hideSpinner()
         operation.text.flatMap { showToast($0) }
@@ -167,7 +167,7 @@ extension MsgViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    private func handleErrorOnMessage(operation: MessageAction) {
+    private func handleOpErr(operation: MessageAction) {
         hideSpinner()
         operation.error.flatMap { showToast($0) }
     }
@@ -188,18 +188,24 @@ extension MsgViewController {
         guard let input = input else { return }
         showSpinner()
         let op = input.path != MailDestination.Gmail.trash.path ? MessageAction.moveToTrash : MessageAction.permanentlyDelete
-        Promise { [weak self] in
+        Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
             if op == MessageAction.permanentlyDelete {
                 input.objMessage.flags = MCOMessageFlag.deleted
+                guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
                 try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
             } else {
                 try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path))
             }
-        }.then(on: .main) { [weak self] in
-            self?.handleSuccesMessage(operation: op)
+            return true
+        }.then(on: .main) { [weak self] didPerformOp in
+            if didPerformOp {
+                self?.handleOpSuccess(operation: op)
+            } else {
+                self?.hideSpinner()
+            }
         }.catch(on: .main) { [weak self] _ in
-            self?.handleErrorOnMessage(operation: op)
+            self?.handleOpErr(operation: op)
         }
     }
 
@@ -209,10 +215,10 @@ extension MsgViewController {
         input.objMessage.flags = MCOMessageFlag.deleted
         imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] _ in
-                self?.handleSuccesMessage(operation: .archive)
+                self?.handleOpSuccess(operation: .archive)
             }
             .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
-                self?.handleErrorOnMessage(operation: .archive)
+                self?.handleOpErr(operation: .archive)
             }
     }
 
