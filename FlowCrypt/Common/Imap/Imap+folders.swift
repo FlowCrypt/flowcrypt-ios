@@ -20,7 +20,7 @@ protocol FoldersProvider {
 extension Imap: FoldersProvider {
     func fetchFolders() -> Promise<FoldersContext> {
         return Promise { [weak self] resolve, reject in
-            self?.getImapSess()?
+            self?.getImapSess()
                 .fetchAllFoldersOperation()?
                 .start { [weak self] error, value in
                     guard let self = self else { return reject(AppErr.nilSelf) }

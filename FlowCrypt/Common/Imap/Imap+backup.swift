@@ -46,7 +46,7 @@ extension Imap: BackupProvider {
     private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
         return Promise<Data> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            self.getImapSess()?
+            self.getImapSess()
                 .fetchMessageAttachmentOperation(withFolder: folder, uid: msgUid, partID: part.partID, encoding: part.encoding)
                 .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
                     self.fetchMsgAttribute(in: folder, msgUid: msgUid, part: part)
@@ -78,7 +78,7 @@ extension Imap: BackupProvider {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            self.getImapSess()?
+            self.getImapSess()
                 .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
                 .start { error, msgs, _ in
                     guard self.notRetrying("fetchMsgs", error, resolve, reject, retry: {
@@ -97,7 +97,7 @@ extension Imap: BackupProvider {
     // todo - should be moved to a general Imap class or extension
     private func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
         return Promise<MCOIndexSet> { resolve, reject in
-            self.getImapSess()?
+            self.getImapSess()
                 .searchExpressionOperation(withFolder: folder, expression: expr)
                 .start(self.finalize("searchExpression", resolve, reject, retry: { self.fetchUids(folder: folder, expr: expr) }))
         }

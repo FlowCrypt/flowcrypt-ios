@@ -11,46 +11,48 @@ import Promises
 
 extension Imap {
     @discardableResult
-    func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession? {
-        if imapSess == nil || newAccessToken != nil {
+    func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession {
+        guard let existingImapSess = imapSess, newAccessToken == nil else {
             print("IMAP: creating a new session")
-            let imapSess = MCOIMAPSession()
-            imapSess.hostname = "imap.gmail.com"
-            imapSess.port = 993
-            imapSess.connectionType = MCOConnectionType.TLS
-            imapSess.authType = MCOAuthType.xoAuth2
-            imapSess.username = email
-            imapSess.password = nil
-            imapSess.oAuth2Token = newAccessToken ?? DataManager.shared.currentToken() ?? ""
-            imapSess.authType = MCOAuthType.xoAuth2
-            imapSess.connectionType = MCOConnectionType.TLS
-            self.imapSess = imapSess
-            //            imapSess.connectionLogger = {(connectionID, type, data) in
-            //                if data != nil {
-            //                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
-            //                        print("IMAP:\(type):\(string)")
-            //                    }
-            //                }
-            //            }
+            let newImapSess = MCOIMAPSession()
+            newImapSess.hostname = "imap.gmail.com"
+            newImapSess.port = 993
+            newImapSess.connectionType = MCOConnectionType.TLS
+            newImapSess.authType = MCOAuthType.xoAuth2
+            newImapSess.username = email
+            newImapSess.password = nil
+            newImapSess.oAuth2Token = newAccessToken ?? accessToken ?? "(no access token)"
+            newImapSess.authType = MCOAuthType.xoAuth2
+            newImapSess.connectionType = MCOConnectionType.TLS
+//            newImapSess.connectionLogger = {(connectionID, type, data) in
+//                if data != nil {
+//                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
+//                        print("IMAP:\(type):\(string)")
+//                    }
+//                }
+//            }
+            imapSess = newImapSess
+            return newImapSess
         }
-        return imapSess
+        return existingImapSess
     }
 
     @discardableResult
-    func getSmtpSess(newAccessToken: String? = nil) -> MCOSMTPSession? {
-        if smtpSess == nil || newAccessToken != nil {
+    func getSmtpSess(newAccessToken: String? = nil) -> MCOSMTPSession {
+        guard let existingSess = smtpSess, newAccessToken == nil else {
             print("SMTP: creating a new session")
-            let smtpSess = MCOSMTPSession()
-            smtpSess.hostname = "smtp.gmail.com"
-            smtpSess.port = 465
-            smtpSess.connectionType = MCOConnectionType.TLS
-            smtpSess.authType = MCOAuthType.xoAuth2
-            smtpSess.username = email
-            smtpSess.password = nil
-            smtpSess.oAuth2Token = token
-            self.smtpSess = smtpSess
+            let newSmtpSess = MCOSMTPSession()
+            newSmtpSess.hostname = "smtp.gmail.com"
+            newSmtpSess.port = 465
+            newSmtpSess.connectionType = MCOConnectionType.TLS
+            newSmtpSess.authType = MCOAuthType.xoAuth2
+            newSmtpSess.username = email
+            newSmtpSess.password = nil
+            newSmtpSess.oAuth2Token = newAccessToken ?? accessToken ?? "(no access token)"
+            smtpSess = newSmtpSess
+            return newSmtpSess
         }
-        return smtpSess
+        return existingSess
     }
 
     func renewSession() -> Promise<Void> {

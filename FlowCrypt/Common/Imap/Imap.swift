@@ -28,8 +28,8 @@ final class Imap {
         return dataManager.currentUser()?.name ?? ""
     }
 
-    var token: String {
-        return dataManager.currentToken() ?? ""
+    var accessToken: String? {
+        return dataManager.currentToken()
     }
 
     private init(userService: UserService = UserService.shared, dataManager: DataManager = .shared) {

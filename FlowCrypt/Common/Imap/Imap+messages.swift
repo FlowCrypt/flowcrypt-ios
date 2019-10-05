@@ -37,7 +37,7 @@ extension Imap: MessageProvider {
 
     private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
         return Promise { [weak self] resolve, reject in
-            self?.getImapSess()?
+            self?.getImapSess()
                 .folderInfoOperation(path)
                 .start { [weak self] error, folders in
                     guard let self = self else { return reject(AppErr.nilSelf) }
@@ -79,7 +79,7 @@ extension Imap: MessageProvider {
         set: MCOIndexSet
     ) -> Promise<[MCOIMAPMessage]> {
         return Promise { [weak self] resolve, reject in
-            self?.getImapSess()?
+            self?.getImapSess()
                 .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: set)
                 .start { error, messages, _ in
                     if let error = error {
