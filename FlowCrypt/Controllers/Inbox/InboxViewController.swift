@@ -124,7 +124,6 @@ extension InboxViewController {
 
         let from = messages.count
         let diff = min(Constants.numberOfMessagesToLoad, totalNumberOfMessages - from)
-
         messageProvider
             .fetchMessages(for: viewModel.path, count: diff, from: from)
             .then { [weak self] context in

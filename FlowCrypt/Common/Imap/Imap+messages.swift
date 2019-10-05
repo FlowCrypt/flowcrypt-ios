@@ -36,16 +36,9 @@ extension Imap: MessageProvider {
             guard let self = self else { return reject(AppErr.nilSelf) }
             self.getImapSess()
                 .folderInfoOperation(path)
-                .start { error, folders in
-                    guard self.notRetrying("folderInfo", error, resolve, reject, retry: { self.folderInfo(for: path) }) else { return }
-                    if let error = error {
-                        reject(AppErr(error))
-                    } else if let folders = folders {
-                        resolve(folders)
-                    } else {
-                        reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
-                    }
-                }
+                .start(self.finalize("folderInfo", resolve, reject, retry: {
+                    self.folderInfo(for: path)
+                }))
         }
     }
 
@@ -73,17 +66,13 @@ extension Imap: MessageProvider {
     ) -> Promise<[MCOIMAPMessage]> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
+            let start = DispatchTime.now() // because we only call finalize once it's finished, we need to supply start time
             self.getImapSess()
                 .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: set)
-                .start { error, messages, _ in
-                    guard self.notRetrying("fetchMsgsByNumber", error, resolve, reject, retry: { self.fetchMsgsByNumber(for: folder, kind: kind, set: set) }) else { return }
-                    if let error = error {
-                        reject(AppErr(error))
-                    } else if let messages = messages as? [MCOIMAPMessage] {
-                        resolve(messages)
-                    } else {
-                        reject(AppErr.cast("messages as? [MCOIMAPMessage]"))
-                    }
+                .start { error, messages, _ in // original method sig has 3 args, finalize expects 2 args
+                    self.finalize("fetchMsgsByNumber", resolve, reject, retry: {
+                        self.fetchMsgsByNumber(for: folder, kind: kind, set: set)
+                    }, start: start)(error, messages as? [MCOIMAPMessage])
                 }
         }
     }

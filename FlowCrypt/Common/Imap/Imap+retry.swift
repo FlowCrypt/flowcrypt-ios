@@ -14,9 +14,9 @@ extension Imap {
         _ op: String,
         _ resolve: @escaping (T) -> Void,
         _ reject: @escaping (Error) -> Void,
-        retry: @escaping () -> Promise<T>
+        retry: @escaping () -> Promise<T>,
+        start: DispatchTime = DispatchTime.now()
     ) -> (Error?, T?) -> Void {
-        let start = DispatchTime.now()
         return { [weak self] error, res in
             log(op, error: error, res: res, start: start)
             guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
