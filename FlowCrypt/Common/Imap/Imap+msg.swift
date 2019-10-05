@@ -6,7 +6,6 @@ import Foundation
 import Promises
 
 extension Imap {
-
     func fetchMsg(message: MCOIMAPMessage, folder: String) -> Promise<Data> {
         return Promise { resolve, reject in
             self.getImapSess()?
@@ -38,5 +37,4 @@ extension Imap {
                 .start(self.finalizeVoid("updateMsgFlags", resolve, reject, retry: { self.pushUpdatedMsgFlags(msg: msg, folder: folder) }))
         }
     }
-
 }

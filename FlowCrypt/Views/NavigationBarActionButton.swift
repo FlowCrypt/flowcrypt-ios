@@ -9,7 +9,6 @@
 import UIKit
 
 final class NavigationBarActionButton: UIBarButtonItem {
-
     private enum Constants {
         static let buttonSize = CGSize(width: 44, height: 44)
     }
@@ -31,7 +30,7 @@ final class NavigationBarActionButton: UIBarButtonItem {
     }
 }
 
-fileprivate final class LeftAlignedIconButton: UIButton {
+private final class LeftAlignedIconButton: UIButton {
     override func layoutSubviews() {
         super.layoutSubviews()
         contentHorizontalAlignment = .left

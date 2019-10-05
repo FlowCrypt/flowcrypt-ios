@@ -17,7 +17,7 @@ enum Constants {
             "Your CryptUp Backup",
             "Your CryptUP Backup",
             "CryptUP Account Backup",
-            "All you need to know about CryptUP (contains a backup)"
+            "All you need to know about CryptUP (contains a backup)",
         ]
     }
 
@@ -28,8 +28,6 @@ enum Constants {
         }
     }
 }
-
-
 
 struct Language {
     static let loading = "Loading"
@@ -46,4 +44,3 @@ struct Language {
     static let unhandled_core_err = "Background core service error"
     static let could_not_fetch_folders = "Could not fetch folders"
 }
-

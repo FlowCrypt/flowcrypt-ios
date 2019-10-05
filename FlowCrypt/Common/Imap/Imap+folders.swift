@@ -18,7 +18,6 @@ protocol FoldersProvider {
 }
 
 extension Imap: FoldersProvider {
-
     func fetchFolders() -> Promise<FoldersContext> {
         return Promise { [weak self] resolve, reject in
             self?.getImapSess()?
@@ -38,5 +37,4 @@ extension Imap: FoldersProvider {
                 }
         }
     }
-
 }

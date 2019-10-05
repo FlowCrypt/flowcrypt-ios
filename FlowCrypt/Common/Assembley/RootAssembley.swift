@@ -6,8 +6,8 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 protocol AppAssembley {
     func assemble()
@@ -73,7 +73,7 @@ struct RootAssembley: AppAssembley {
 
 struct AssembleyFactory {
     private init() {}
-    
+
     static func assemblies() -> [Assembley] {
         return [AuthAssembley()]
     }

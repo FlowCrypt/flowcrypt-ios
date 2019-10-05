@@ -9,8 +9,7 @@
 import Foundation
 import Promises
 
-extension Imap { 
-
+extension Imap {
     @discardableResult
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession? {
         if imapSess == nil || newAccessToken != nil {
@@ -65,8 +64,8 @@ extension Imap {
 
     func disconnect() {
         let start = DispatchTime.now()
-        self.imapSess?.disconnectOperation().start { error in log("disconnect", error: error, res: nil, start: start) }
-        self.imapSess = nil
-        self.smtpSess = nil // smtp session has no disconnect method
+        imapSess?.disconnectOperation().start { error in log("disconnect", error: error, res: nil, start: start) }
+        imapSess = nil
+        smtpSess = nil // smtp session has no disconnect method
     }
 }

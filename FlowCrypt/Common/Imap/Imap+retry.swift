@@ -10,7 +10,6 @@ import Foundation
 import Promises
 
 extension Imap {
-
     func finalize<T>(
         _ op: String,
         _ resolve: @escaping (T) -> Void,
@@ -18,7 +17,7 @@ extension Imap {
         retry: @escaping () -> Promise<T>
     ) -> (Error?, T?) -> Void {
         let start = DispatchTime.now()
-        return { [weak self] (error, res) in
+        return { [weak self] error, res in
             log(op, error: error, res: res, start: start)
             guard self?.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) ?? false else { return }
             if let res = res {
@@ -55,7 +54,7 @@ extension Imap {
         retry: @escaping () -> Promise<Void>
     ) -> (Error?, Any?) -> Void {
         let start = DispatchTime.now()
-        return { [weak self] (error, discardable) in
+        return { [weak self] error, _ in
             log(op, error: error, res: nil, start: start)
             guard self?.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) ?? false else { return }
             if let error = error {
@@ -76,7 +75,7 @@ extension Imap {
     ) -> Bool {
         if let err = err {
             let error = AppErr(err)
-            let debugId = Int.random(in: 1...Int.max)
+            let debugId = Int.random(in: 1 ... Int.max)
             let start = DispatchTime.now()
 
             switch error {
@@ -90,7 +89,7 @@ extension Imap {
                     log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
                     retry().then(resolve).catch(reject)
                 }.catch(reject)
-                logDebug(7, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                logDebug(7, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
                 logDebug(11, "(\(debugId)|\(op)) return=true (need to retry)")
 
                 return false
@@ -102,7 +101,7 @@ extension Imap {
                 smtpSess = nil // but maybe there could be a cleaner way to dispose of the connection?
                 lastErr[op] = error
 
-                logDebug(14, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                logDebug(14, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
                 log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
                 retry().then(resolve).catch(reject)
                 logDebug(15, "(\(debugId)|\(op)) return=true (need to retry)")
@@ -110,8 +109,8 @@ extension Imap {
             default:
                 logDebug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
                 reject(error)
-                self.lastErr[op] = error
-                logDebug(9, "(\(debugId)|\(op)) just set lastErr to ", value: self.lastErr[op])
+                lastErr[op] = error
+                logDebug(9, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
                 logDebug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
                 return true
             }

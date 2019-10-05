@@ -5,20 +5,20 @@
 //  Created by Anton Kharchevskyi on 01.10.2019.
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
- 
+
 import Foundation
 import Promises
 
- protocol MessageProvider {
+protocol MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Promise<MessageContext>
 }
 
- struct MessageContext {
+struct MessageContext {
     let messages: [MCOIMAPMessage]
     let totalMessages: Int
 }
 
- extension Imap: MessageProvider {
+extension Imap: MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Promise<MessageContext> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
@@ -35,7 +35,7 @@ import Promises
         }
     }
 
-     private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
+    private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
         return Promise { [weak self] resolve, reject in
             self?.getImapSess()?
                 .folderInfoOperation(path)
@@ -52,11 +52,11 @@ import Promises
                     } else {
                         reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
                     }
-            }
+                }
         }
     }
 
-     private func createSet(
+    private func createSet(
         for numberOfMessages: Int,
         total: Int,
         from: Int
@@ -73,7 +73,7 @@ import Promises
         return MCOIndexSet(range: range)
     }
 
-     private func fetchMessagesByNumberOperation(
+    private func fetchMessagesByNumberOperation(
         for folder: String,
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet
@@ -81,14 +81,13 @@ import Promises
         return Promise { [weak self] resolve, reject in
             self?.getImapSess()?
                 .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: set)
-                .start { error, messages, set in
+                .start { error, messages, _ in
                     if let error = error {
                         reject(AppErr(error))
                     }
-                    if let messages = messages as? [MCOIMAPMessage]  {
+                    if let messages = messages as? [MCOIMAPMessage] {
                         resolve(messages)
-                    }
-                    else {
+                    } else {
                         reject(AppErr.cast("messages as? [MCOIMAPMessage]"))
                     }
                 }

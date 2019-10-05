@@ -2,11 +2,10 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import MBProgressHUD
-import RealmSwift
 import Promises
-
+import RealmSwift
+import UIKit
 
 extension MsgViewController {
     static func instance(with input: MsgViewController.Input, completion: MsgViewControllerCompletion?) -> MsgViewController {
@@ -29,17 +28,17 @@ final class MsgViewController: UIViewController {
 
         var text: String? {
             switch self {
-                case .delete: return Language.moved_to_trash
-                case .archive: return Language.email_archived
-                case .markAsRead: return nil
+            case .delete: return Language.moved_to_trash
+            case .archive: return Language.email_archived
+            case .markAsRead: return nil
             }
         }
 
         var error: String? {
             switch self {
-                case .delete: return Constants.ErrorTexts.Message.delete
-                case .archive: return Constants.ErrorTexts.Message.archive
-                case .markAsRead: return nil
+            case .delete: return Constants.ErrorTexts.Message.delete
+            case .archive: return Constants.ErrorTexts.Message.archive
+            case .markAsRead: return nil
             }
         }
     }
@@ -57,7 +56,7 @@ final class MsgViewController: UIViewController {
     // TODO: Inject as a dependency
     private let imap = Imap.instance
     private var input: MsgViewController.Input?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -95,8 +94,8 @@ final class MsgViewController: UIViewController {
 }
 
 // MARK: - Message
-extension MsgViewController {
 
+extension MsgViewController {
     private func fetchDecryptAndRenderMsg() {
         guard let input = input else { return }
         showSpinner(Language.loading, isUserInteractionEnabled: true)
@@ -170,6 +169,7 @@ extension MsgViewController {
 }
 
 // MARK: - Handle Actions
+
 extension MsgViewController {
     @objc private func handleInfoTap() {
         showToast("Email us at human@flowcrypt.com")
@@ -186,7 +186,7 @@ extension MsgViewController {
             .then(on: .main) { [weak self] _ in
                 self?.handleSuccesMessage(operation: .delete)
             }
-            .catch(on: .main) { [weak self] error in
+            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
                 self?.handleErrorOnMessage(operation: .delete)
             }
     }
@@ -199,12 +199,12 @@ extension MsgViewController {
             .then(on: .main) { [weak self] _ in
                 self?.handleSuccesMessage(operation: .archive)
             }
-            .catch(on: .main) { [weak self] error in
+            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
                 self?.handleErrorOnMessage(operation: .archive)
             }
     }
 
-    @IBAction private func handleReplyTap(_ sender: UIButton) {
+    @IBAction private func handleReplyTap(_: UIButton) {
         guard let input = input else { return }
         let viewModel = ComposeViewController.Input(
             isReply: true,

@@ -6,10 +6,9 @@ import Foundation
 import Promises
 
 final class BackendApi {
-
     static let shared: BackendApi = BackendApi()
 
-    private init() { }
+    private init() {}
 
     private static func url(endpoint: String) -> String {
         return "https://flowcrypt.com/api/\(endpoint)"
@@ -18,5 +17,4 @@ final class BackendApi {
     private static func normalize(_ email: String) -> String {
         return email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
-    
 }

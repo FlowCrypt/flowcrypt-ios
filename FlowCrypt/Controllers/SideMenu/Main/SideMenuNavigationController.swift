@@ -2,8 +2,8 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import ENSwiftSideMenu
+import UIKit
 
 protocol NavigationChildController {
     func handleBackButtonTap()
@@ -12,7 +12,7 @@ protocol NavigationChildController {
 final class SideMenuNavigationController: ENSideMenuNavigationController {
     private var isStatusBarHidden = false {
         didSet {
-          updateStatusBar()
+            updateStatusBar()
         }
     }
 
@@ -34,7 +34,7 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         static let animationDuration: TimeInterval = 0.3
     }
 
-    private lazy var gestureView = SideMenuOptionalView() { [weak self] in
+    private lazy var gestureView = SideMenuOptionalView { [weak self] in
         self?.hideMenu()
     }
 
@@ -42,7 +42,7 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         let menu = MyMenuTableViewController()
         let contentViewController = InboxViewController()
         self.init(menuViewController: menu, contentViewController: contentViewController)
-        sideMenu = ENSideMenu(sourceView: self.view, menuViewController: menu, menuPosition:.left).then {
+        sideMenu = ENSideMenu(sourceView: view, menuViewController: menu, menuPosition: .left).then {
             $0.bouncingEnabled = false
             $0.delegate = self
             $0.animationDuration = Constants.animationDuration
@@ -52,7 +52,7 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
-        
+
         delegate = self
         interactivePopGestureRecognizer?.delegate = self
 
@@ -149,14 +149,13 @@ extension SideMenuNavigationController {
 }
 
 extension SideMenuNavigationController: UINavigationControllerDelegate {
-
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+    func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated _: Bool) {
         viewController.navigationItem.hidesBackButton = true
         let navigationButton: UIBarButtonItem
         switch viewControllers.firstIndex(of: viewController) {
         case 0:
             navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn"), action: nil)
-        default: 
+        default:
             navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c"), action: nil)
         }
 
@@ -164,7 +163,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
         viewController.navigationItem.leftBarButtonItem = navigationButton
     }
 
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+    func navigationController(_: UINavigationController, didShow viewController: UIViewController, animated _: Bool) {
         let navigationButton: UIBarButtonItem
         switch viewControllers.firstIndex(of: viewController) {
         case 0:
@@ -180,7 +179,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             interactivePopGestureRecognizer?.isEnabled = true
             navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
                 guard let self = self else { return }
-                if let viewController = self.viewControllers.compactMap ({ $0 as? NavigationChildController }).last {
+                if let viewController = self.viewControllers.compactMap({ $0 as? NavigationChildController }).last {
                     viewController.handleBackButtonTap()
                 } else {
                     self.popViewController(animated: true)

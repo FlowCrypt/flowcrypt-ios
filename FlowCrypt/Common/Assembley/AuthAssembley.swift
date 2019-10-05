@@ -16,7 +16,7 @@ struct AuthAssembley: Assembley {
         GIDSignIn.sharedInstance().clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
         GIDSignIn.sharedInstance().scopes = [
             "https://www.googleapis.com/auth/userinfo.profile",
-            "https://mail.google.com/"
+            "https://mail.google.com/",
         ]
         service.setup()
     }

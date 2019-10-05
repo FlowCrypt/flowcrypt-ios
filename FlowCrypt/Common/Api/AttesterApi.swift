@@ -10,16 +10,15 @@ struct PubkeySearchResult {
 }
 
 final class AttesterApi {
-
     static let shared: AttesterApi = AttesterApi()
     private static var url = "https://flowcrypt.com/attester/"
 
-    private init() { }
+    private init() {}
 
     func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
         return Promise { () -> PubkeySearchResult in
             let res = try await(URLSession.shared.call(AttesterApi.urlPub(emailOrLongid: email), tolerateStatus: [404]))
-            if res.status >= 200 && res.status <= 299 {
+            if res.status >= 200, res.status <= 299 {
                 return PubkeySearchResult(armored: res.data.toStr())
             }
             if res.status == 404 {
@@ -29,7 +28,6 @@ final class AttesterApi {
             throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
         }
     }
-
 
     @discardableResult
     func updateKey(email: String, pubkey: String) -> Promise<String> {
@@ -60,7 +58,7 @@ final class AttesterApi {
             req.httpMethod = "POST"
             req.addValue("application/json", forHTTPHeaderField: "Content-Type")
             req.httpBody = try JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey])
-            let _ = try await(URLSession.shared.call(req)) // will throw on non-200
+            _ = try await(URLSession.shared.call(req)) // will throw on non-200
         }
     }
 
@@ -71,5 +69,4 @@ final class AttesterApi {
     private static func normalize(_ email: String) -> String {
         return email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
-    
 }

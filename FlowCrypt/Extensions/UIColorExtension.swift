@@ -13,4 +13,3 @@ extension UIColor {
         return UIColor(named: "mainGreenColor")!
     }
 }
-

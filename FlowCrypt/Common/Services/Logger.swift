@@ -46,7 +46,7 @@ private struct Logger {
         print("IMAP \(message) -> \(errStr) \(resStr) \(start.millisecondsSince)ms")
     }
 
-    func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
-       // print("[Imap debug \(id) - \(msg)] \(String(describing: value))")
+    func debug(_: Int, _: String, value _: Any? = nil) { // temporary function while we debug token refreshing
+        // print("[Imap debug \(id) - \(msg)] \(String(describing: value))")
     }
 }

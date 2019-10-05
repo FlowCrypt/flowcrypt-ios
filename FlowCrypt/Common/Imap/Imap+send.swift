@@ -6,7 +6,6 @@ import Foundation
 import Promises
 
 extension Imap {
-
     func sendMail(mime: Data) -> Promise<Void> {
         return Promise { resolve, reject in
             self.getSmtpSess()?
@@ -14,5 +13,4 @@ extension Imap {
                 .start(self.finalizeVoid("send", resolve, reject, retry: { self.sendMail(mime: mime) }))
         }
     }
-
 }

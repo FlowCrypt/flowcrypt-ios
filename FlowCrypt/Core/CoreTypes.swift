@@ -6,7 +6,6 @@ import Foundation
 import RealmSwift
 
 struct CoreRes {
-
     struct Version: Decodable {
         let app_version: String
     }
@@ -28,10 +27,11 @@ struct CoreRes {
 
     struct ParseKeys: Decodable {
         enum Format: String, Decodable {
-            case binary;
-            case armored;
-            case unknown;
+            case binary
+            case armored
+            case unknown
         }
+
         let format: Format
         let keyDetails: [KeyDetails]
     }
@@ -49,6 +49,7 @@ struct CoreRes {
             let message: String
             let stack: String?
         }
+
         let error: ErrorWithOptionalStack
     }
 
@@ -62,6 +63,7 @@ struct CoreRes {
                 case poor
                 case weak
             }
+
             enum Color: String, Decodable {
                 case green
                 case orange
@@ -69,24 +71,25 @@ struct CoreRes {
                 case darkred
                 case red
             }
+
             let word: Word
             let bar: Int32 // 0-100
             let color: Color
             let pass: Bool
         }
+
         let word: WordDetails
         let time: String
     }
 
     enum ReplyType: String, Decodable {
-        case encrypted;
-        case plain;
+        case encrypted
+        case plain
     }
-
 }
 
 enum MsgFmt: String {
-    case plain = "plain"
+    case plain
     case encryptInline = "encrypt-inline" // todo - rename these in TypeScript to be camelCase
     case encryptPgpmime = "encrypt-pgpmime"
 }
@@ -98,13 +101,13 @@ enum KeyVariant: String {
 }
 
 struct UserId: Encodable {
-    let email: String;
-    let name: String;
+    let email: String
+    let name: String
 }
 
 extension UserId {
     func toMime() -> String {
-        return "\(self.name) <\(self.email)>"
+        return "\(name) <\(email)>"
     }
 }
 
@@ -128,6 +131,7 @@ struct SendableMsg {
         let type: String
         let base64: String
     }
+
     let text: String
     let to: [String]
     let cc: [String]
@@ -173,31 +177,31 @@ struct MsgBlock: Decodable {
             case noMdc = "no_mdc"
             case badMdc = "bad_mdc"
             case needPassphrase = "need_passphrase"
-            case format = "format"
-            case other = "other"
+            case format
+            case other
         }
     }
 
     enum BlockType: String, Decodable {
-        case plainHtml; // all content blocks, regardless if encrypted or not, formatted as a plainHtml (todo - rename this one day to formattedHtml)
-        case publicKey;
-        case privateKey;
-        case encryptedMsgLink;
-        case plainAtt;
-        case encryptedAtt;
-        case decryptedAtt;
-        case encryptedAttLink;
-        case decryptErr;
-        case blockParseErr; // block type for situations where block json could not be parsed out
+        case plainHtml // all content blocks, regardless if encrypted or not, formatted as a plainHtml (todo - rename this one day to formattedHtml)
+        case publicKey
+        case privateKey
+        case encryptedMsgLink
+        case plainAtt
+        case encryptedAtt
+        case decryptedAtt
+        case encryptedAttLink
+        case decryptErr
+        case blockParseErr // block type for situations where block json could not be parsed out
         // case cryptupVerification; // not sure if Swift code will ever encounter this
     }
 }
 
 struct KeyId: Decodable {
-    let shortid: String;
-    let longid: String;
-    let fingerprint: String;
-    let keywords: String;
+    let shortid: String
+    let longid: String
+    let fingerprint: String
+    let keywords: String
 }
 
 struct KeyDetails: Decodable {

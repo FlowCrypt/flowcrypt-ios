@@ -10,12 +10,11 @@ import Foundation
 import Promises
 
 protocol BackupProvider {
-    func searchBackups(email: String) -> Promise<Data>
+    func searchBackups() -> Promise<Data>
 }
 
 extension Imap: BackupProvider {
-
-    func searchBackups(email: String) -> Promise<Data> {
+    func searchBackups() -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
             let searchExpr = self.createSearchBackupExpression()
@@ -26,7 +25,7 @@ extension Imap: BackupProvider {
                 folderPaths = [Constants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
             }
             let dataArr = try folderPaths
-                .compactMap { folder in UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr)))}
+                .compactMap { folder in UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr))) }
                 .filter { $0.uids.count() > 0 }
                 .flatMap { uidsContext -> [MsgContext] in
                     let msgs = try await(self.fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
@@ -52,7 +51,7 @@ extension Imap: BackupProvider {
                 .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
                     self.fetchMsgAttribute(in: folder, msgUid: msgUid, part: part)
                 }))
-            }
+        }
     }
 
     // todo - should be moved to a general Imap class or extension
@@ -81,7 +80,7 @@ extension Imap: BackupProvider {
 
             self.getImapSess()?
                 .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
-                .start { (error, msgs, _) in
+                .start { error, msgs, _ in
                     guard self.retryAuthErrorNotNeeded("fetchMsgs", error, resolve, reject, retry: {
                         self.fetchMessage(in: folder, kind: kind, uids: uids)
                     }) else { return }
@@ -127,17 +126,17 @@ extension Imap: BackupProvider {
     }
 }
 
-fileprivate struct UidsContext {
+private struct UidsContext {
     let path: String
     let uids: MCOIndexSet
 }
 
-fileprivate struct MsgContext {
+private struct MsgContext {
     let path: String
     let msg: MCOIMAPMessage
 }
 
-fileprivate struct AttContext {
+private struct AttContext {
     let path: String
     let msg: MCOIMAPMessage
     let part: MCOIMAPPart
