@@ -169,7 +169,10 @@ extension ComposeViewController {
             let email = txtRecipient.text,
             let text = txtMessage.text
         else { return }
-
+        let subject = viewModel.isReply
+            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+            : txtSubject.text ?? "(no subject)"
+        
         showSpinner(Constants.sending)
 
         Promise<Void> { [weak self] in
@@ -178,7 +181,7 @@ extension ComposeViewController {
             guard let recipientPubkey = lookupRes.armored else { return self.showAlert(message: Constants.noPgp) }
             let realm = try Realm() // TODO: Anton - Refactor to use db service
             guard let myPubkey = realm.objects(KeyInfo.self).map({ $0.public }).first else { return self.showAlert(message: Constants.noSenderPgp) }
-            let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], message: text, email: email)
+            let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], subject: subject, message: text, email: email)
             try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
         }.then(on: .main) { [weak self] in
             self?.hideSpinner()
@@ -189,10 +192,7 @@ extension ComposeViewController {
         }
     }
 
-    private func encryptMsg(pubkeys: [String], message: String, email: String) -> CoreRes.ComposeEmail {
-        let subject = viewModel.isReply
-            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
-            : txtSubject.text ?? "(no subject)"
+    private func encryptMsg(pubkeys: [String], subject: String, message: String, email: String) -> CoreRes.ComposeEmail {
         let replyToMimeMsg = viewModel.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
         let msg = SendableMsg(
