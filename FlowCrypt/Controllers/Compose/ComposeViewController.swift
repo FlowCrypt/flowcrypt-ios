@@ -172,7 +172,7 @@ extension ComposeViewController {
         let subject = viewModel.isReply
             ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
             : txtSubject.text ?? "(no subject)"
-        
+
         showSpinner(Constants.sending)
 
         Promise<Void> { [weak self] in
