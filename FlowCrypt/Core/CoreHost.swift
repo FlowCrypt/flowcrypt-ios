@@ -2,15 +2,14 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
+import CommonCrypto // for hashing
 import Foundation
+import IDZSwiftCommonCrypto // for aes
 import JavaScriptCore // for export to js
 import Security // for rng
 import SwiftyRSA // for rsa
-import IDZSwiftCommonCrypto // for aes
-import CommonCrypto // for hashing
 
 @objc protocol CoreHostExports: JSExport {
-
     // crypto
     func getSecureRandomByteNumberArray(_ byteCount: Int) -> [UInt8]?
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8]
@@ -20,20 +19,18 @@ import CommonCrypto // for hashing
 
     // other
     func log(_ text: String) -> Void
-    func setTimeout(_ callback : JSValue,_ ms : Double) -> String
+    func setTimeout(_ callback: JSValue, _ ms: Double) -> String
     func clearTimeout(_ identifier: String)
-
 }
 
 var timers = [String: Timer]()
 
 final class CoreHost: NSObject, CoreHostExports {
-
     // todo - things to look at for optimisation:
     //  -> a) reading rsa4096 prv key (just openpgp.key.readArmored(...)) takes 70ms. It should take about 10 ms. Could dearmor it in swift, return bytes
     //  -> b) produceHashedIteratedS2k below takes 300ms for two keys, could be 100ms or so
 
-    func log(_ message: String) -> Void {
+    func log(_ message: String) {
         print(message.split(separator: "\n").map { "Js: \($0)" }.joined(separator: "\n"))
     }
 
@@ -53,7 +50,7 @@ final class CoreHost: NSObject, CoreHostExports {
 
     // aes256 msglen:1300, original 11ms, now 7ms
     // performance untested for larger messages
-    func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8],  _ iv: [UInt8]) -> [UInt8] {
+    func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8] {
         return Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
     }
 
@@ -68,7 +65,7 @@ final class CoreHost: NSObject, CoreHostExports {
     }
 
     func hashDigest(name: String, data: Data) throws -> [UInt8] {
-        let algo = try self.getHashAlgo(name: name)
+        let algo = try getHashAlgo(name: name)
         var hash = [UInt8](repeating: 0, count: Int(algo.length))
         data.withUnsafeBytes {
             _ = algo.digest($0.baseAddress, CC_LONG(data.count), &hash)
@@ -81,20 +78,20 @@ final class CoreHost: NSObject, CoreHostExports {
     // I suspect it could be optimised to 50ms per pass, or 100ms total
     // but still better than 20 SECONDS per pass in JS
     func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8] {
-        let dataGroupSize = 750; // performance optimisation
+        let dataGroupSize = 750 // performance optimisation
         let data = salt + passphrase
         let dataRepeatCount = Int((Float(count - prefix.count) / Float(max(data.count, 1))).rounded(.up))
         var dataGroup = Data()
-        for _ in 0..<dataGroupSize { // takes 11 ms
+        for _ in 0 ..< dataGroupSize { // takes 11 ms
             dataGroup += data
         }
         var isp = prefix + dataGroup
-        for _ in 0...dataRepeatCount / dataGroupSize { // takes 75 ms, just adding data (16mb)
+        for _ in 0 ... dataRepeatCount / dataGroupSize { // takes 75 ms, just adding data (16mb)
             isp += dataGroup
         }
-        let subArr = isp[0..<prefix.count + count]; // free
+        let subArr = isp[0 ..< prefix.count + count] // free
         let hashable = Data(subArr) // takes 18 ms just recreating data, could be shaved off by passing ArraySlice to hash
-        return try! self.hashDigest(name: algo, data: hashable); // takes 30 ms for sha256 16mb
+        return try! hashDigest(name: algo, data: hashable) // takes 30 ms for sha256 16mb
     }
 
     // JavaScriptCore does not come with a RNG, use one from Swift
@@ -102,9 +99,9 @@ final class CoreHost: NSObject, CoreHostExports {
         var bytes = [UInt8](repeating: 0, count: byteCount)
         let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
         if status == errSecSuccess {
-            return bytes;
+            return bytes
         }
-        return nil; // is checked for in JavaScript
+        return nil // is checked for in JavaScript
     }
 
     func clearTimeout(_ id: String) {
@@ -113,7 +110,7 @@ final class CoreHost: NSObject, CoreHostExports {
     }
 
     func setTimeout(_ cb: JSValue, _ ms: Double) -> String {
-        let interval = ms/1000.0
+        let interval = ms / 1000.0
         let uuid = NSUUID().uuidString
         DispatchQueue.main.async { // queue all in the same executable queue, JS calls are getting lost if the queue is not specified
             let timer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.callJsCb), userInfo: cb, repeats: false)
@@ -130,13 +127,13 @@ final class CoreHost: NSObject, CoreHostExports {
 
     func getHashAlgo(name: String) throws -> HashAlgo {
         switch name {
-            case "md5": return HashAlgo(digest: CC_MD5, length: CC_MD5_DIGEST_LENGTH)
-            case "sha1": return HashAlgo(digest: CC_SHA1, length: CC_SHA1_DIGEST_LENGTH)
-            case "sha224": return HashAlgo(digest: CC_SHA224, length: CC_SHA224_DIGEST_LENGTH)
-            case "sha384": return HashAlgo(digest: CC_SHA384, length: CC_SHA384_DIGEST_LENGTH)
-            case "sha256": return HashAlgo(digest: CC_SHA256, length: CC_SHA256_DIGEST_LENGTH)
-            case "sha512": return HashAlgo(digest: CC_SHA512, length: CC_SHA512_DIGEST_LENGTH)
-            default: throw AppErr.value("Unsupported iterated s2k hash algo: \(name). Please contact us to add support.") // ripemd
+        case "md5": return HashAlgo(digest: CC_MD5, length: CC_MD5_DIGEST_LENGTH)
+        case "sha1": return HashAlgo(digest: CC_SHA1, length: CC_SHA1_DIGEST_LENGTH)
+        case "sha224": return HashAlgo(digest: CC_SHA224, length: CC_SHA224_DIGEST_LENGTH)
+        case "sha384": return HashAlgo(digest: CC_SHA384, length: CC_SHA384_DIGEST_LENGTH)
+        case "sha256": return HashAlgo(digest: CC_SHA256, length: CC_SHA256_DIGEST_LENGTH)
+        case "sha512": return HashAlgo(digest: CC_SHA512, length: CC_SHA512_DIGEST_LENGTH)
+        default: throw AppErr.value("Unsupported iterated s2k hash algo: \(name). Please contact us to add support.") // ripemd
         }
     }
 

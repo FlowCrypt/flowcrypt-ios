@@ -12,6 +12,7 @@ final class MenuCell: UITableViewCell {
     enum Constants {
         static let imageSize = CGSize(width: 24, height: 24)
     }
+
     private let titleLabel = UILabel()
     private let menuImageView = UIImageView()
 
@@ -20,7 +21,7 @@ final class MenuCell: UITableViewCell {
         setup()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -78,8 +79,6 @@ final class MenuCell: UITableViewCell {
                 width: textSize.width,
                 height: textSize.height
             )
-        } 
+        }
     }
-
 }
-

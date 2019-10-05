@@ -2,15 +2,15 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import GoogleSignIn
+import UIKit
 
 final class SignInViewController: UIViewController {
     // TODO: Inject as a dependency
     private let userService = UserService.shared
 
-    @IBOutlet weak var signInWithGmailButton: UIButton!
-    @IBOutlet weak var signInWithOutlookButton: UIButton!
+    @IBOutlet var signInWithGmailButton: UIButton!
+    @IBOutlet var signInWithOutlookButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +27,7 @@ final class SignInViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
@@ -35,8 +35,9 @@ final class SignInViewController: UIViewController {
 }
 
 // MARK: - Events
+
 extension SignInViewController {
-    @IBAction func signInWithGmailButtonPressed(_ sender: Any) {
+    @IBAction func signInWithGmailButtonPressed(_: Any) {
         logDebug(106, "GoogleApi.signIn")
         userService.signIn()
             .then(on: .main) { [weak self] _ in
@@ -47,7 +48,7 @@ extension SignInViewController {
             }
     }
 
-    @IBAction func signInWithOutlookButtonPressed(_ sender: Any) {
+    @IBAction func signInWithOutlookButtonPressed(_: Any) {
         showToast("Outlook sign in not implemented yet")
         // below for debugging
         do {
@@ -75,32 +76,31 @@ extension SignInViewController {
             print("catch generic")
             print(error)
         }
-
     }
 
-    @IBAction func privacyPressed(_ sender: Any) {
+    @IBAction func privacyPressed(_: Any) {
         guard let url = URL(string: "https://flowcrypt.com/privacy") else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 
-    @IBAction func termsPressed(_ sender: Any) {
+    @IBAction func termsPressed(_: Any) {
         guard let url = URL(string: "https://flowcrypt.com/license") else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 
-    @IBAction func securityPressed(_ sender: Any) {
+    @IBAction func securityPressed(_: Any) {
         guard let url = URL(string: "https://flowcrypt.com/docs/technical/security.html") else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }
 
 extension SignInViewController: GIDSignInUIDelegate {
-    func sign(_ signIn: GIDSignIn!, present viewController: UIViewController!) {
+    func sign(_: GIDSignIn!, present viewController: UIViewController!) {
         logDebug(117, "GoogleApi present vc")
         present(viewController, animated: true, completion: nil)
     }
 
-    func sign(_ signIn: GIDSignIn!, dismiss viewController: UIViewController!) {
+    func sign(_: GIDSignIn!, dismiss _: UIViewController!) {
         logDebug(118, "GoogleApi dismiss vc")
         dismiss(animated: true, completion: nil)
     }

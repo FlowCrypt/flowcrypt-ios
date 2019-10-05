@@ -377,7 +377,6 @@
                         <outlet property="passPhaseTextField" destination="hCk-l6-78X" id="ZSh-3X-kmV"/>
                         <outlet property="scrollView" destination="7Bh-Om-1rx" id="0Dw-mv-lxv"/>
                         <outlet property="subTitleLabel" destination="sDK-PD-Lej" id="7xz-Hw-mQr"/>
-                        <segue destination="Kb6-Ov-pwM" kind="show" identifier="InboxSegue" id="u48-KL-mDr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a8a-jX-2ip" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -612,26 +611,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7xT-lm-qW2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3603.75" y="87.676056338028161"/>
-        </scene>
-        <!--Side Menu Navigation Controller-->
-        <scene sceneID="nas-Dc-0eT">
-            <objects>
-                <navigationController storyboardIdentifier="SideMenuNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="Kb6-Ov-pwM" customClass="SideMenuNavigationController" customModule="FlowCrypt" customModuleProvider="target" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="WGu-wk-Htx">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <color key="barTintColor" red="0.12941176469999999" green="0.61568627450000002" blue="0.019607843140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <textAttributes key="titleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        </textAttributes>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="h89-HX-AZ3" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="690" y="58"/>
         </scene>
     </scenes>
     <resources>

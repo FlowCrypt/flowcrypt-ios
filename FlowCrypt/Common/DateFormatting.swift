@@ -13,8 +13,7 @@ extension DateFormatter {
         let dateFormater = DateFormatter()
         if Calendar.current.isDateInToday(date) {
             dateFormater.dateFormat = "h:mm a"
-        }
-        else {
+        } else {
             dateFormater.dateFormat = "dd MMM"
         }
         return dateFormater.string(from: date)

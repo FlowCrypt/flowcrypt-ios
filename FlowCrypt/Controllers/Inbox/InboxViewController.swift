@@ -2,10 +2,10 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
+import AsyncDisplayKit
 import Promises
 import RxSwift
-import AsyncDisplayKit
+import UIKit
 
 final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
@@ -36,18 +36,15 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
     private var viewModel: InboxViewModel
 
     private var tableNode: ASTableNode
-    private lazy var composeButton = ComposeButtonNode() { [weak self] in
+    private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
-    private let refreshControl = UIRefreshControl()
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+    private let refreshControl = UIRefreshControl()
 
     init(_ viewModel: InboxViewModel = .empty) {
         self.viewModel = viewModel
-        self.tableNode = ASTableNode(style: .plain)
+        tableNode = ASTableNode(style: .plain)
         super.init(node: ASDisplayNode())
 
         tableNode.delegate = self
@@ -55,7 +52,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
         tableNode.leadingScreensForBatching = 1
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -104,7 +101,7 @@ extension InboxViewController {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
+                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap))),
             ]
         )
     }
@@ -127,7 +124,6 @@ extension InboxViewController {
 
         let from = messages.count
         let diff = min(Constants.numberOfMessagesToLoad, totalNumberOfMessages - from)
-
         messageProvider
             .fetchMessages(for: viewModel.path, count: diff, from: from)
             .then { [weak self] context in
@@ -181,11 +177,11 @@ extension InboxViewController {
                 let count = messages.count - 1
                 let indexesToInsert = messageContext.messages
                     .enumerated()
-                    .map { (index, value) -> Int in
+                    .map { (index, _) -> Int in
                         let indexInTableView = index + count
                         return indexInTableView
                     }
-                    .map { IndexPath(row: $0, section: 0)}
+                    .map { IndexPath(row: $0, section: 0) }
 
                 let indexesToDelete = [IndexPath(row: messages.count, section: 0)]
 
@@ -270,7 +266,7 @@ extension InboxViewController {
         }
     }
 
-    private func delete(message: MCOIMAPMessage, at index: Int) {
+    private func delete(message _: MCOIMAPMessage, at index: Int) {
         messages.remove(at: index)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
@@ -288,7 +284,7 @@ extension InboxViewController {
 }
 
 extension InboxViewController: ASTableDataSource, ASTableDelegate {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
         case .empty: return 1
         case .idle: return 1
@@ -332,7 +328,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 }
 
 extension InboxViewController {
-    func shouldBatchFetch(for tableNode: ASTableNode) -> Bool {
+    func shouldBatchFetch(for _: ASTableNode) -> Bool {
         switch state {
         case .idle:
             return true
@@ -343,7 +339,7 @@ extension InboxViewController {
         }
     }
 
-    func tableNode(_ tableNode: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
+    func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
         context.beginBatchFetching()
         handle(action: .beginBatchFetch, context: context)
     }

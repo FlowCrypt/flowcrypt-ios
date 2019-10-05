@@ -36,7 +36,7 @@ struct DataManager {
             let encodedData = try PropertyListEncoder().encode(user)
             userDefaults.set(encodedData, forKey: Constants.userKey)
             return true
-        } catch let error {
+        } catch {
             print(error)
             return false
         }

@@ -6,21 +6,21 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
-import Toast
-import RxSwift
-import RxCocoa
 import MBProgressHUD
 import Promises
+import RxCocoa
+import RxSwift
+import Toast
+import UIKit
 
 enum ToastPosition: String {
     case bottom, top, center
 
     var value: String {
         switch self {
-            case .bottom: return CSToastPositionBottom
-            case .center: return CSToastPositionCenter
-            case .top:    return CSToastPositionTop
+        case .bottom: return CSToastPositionBottom
+        case .center: return CSToastPositionCenter
+        case .top: return CSToastPositionTop
         }
     }
 }
@@ -28,7 +28,6 @@ enum ToastPosition: String {
 typealias ShowToastCompletion = (Bool) -> Void
 
 extension UIViewController {
-
     /// Showing toast on root controller
     ///
     /// - Parameters:
@@ -57,7 +56,7 @@ extension UIViewController {
                 position: position.value,
                 title: title,
                 image: nil,
-                style: CSToastStyle.init(defaultStyle: ()),
+                style: CSToastStyle(defaultStyle: ()),
                 completion: completion
             )
 
@@ -67,7 +66,6 @@ extension UIViewController {
 }
 
 extension UIViewController {
-
     /// Observable keyboard height from willShow and willHide notifications
     /// deliver signals on main queue.
     var keyboardHeight: Observable<CGFloat> {
@@ -75,10 +73,10 @@ extension UIViewController {
             .notification(UIResponder.keyboardWillShowNotification)
             .map { notification in
                 (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
-        }
+            }
         let willHideNotification = NotificationCenter.default.rx
             .notification(UIResponder.keyboardWillHideNotification)
-            .map { _ in return CGFloat(0) }
+            .map { _ in CGFloat(0) }
 
         return Observable.from([willShowNotification, willHideNotification])
             .merge()
@@ -88,12 +86,19 @@ extension UIViewController {
 }
 
 extension UIViewController {
+    var safeAreaWindowInsets: UIEdgeInsets {
+        return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
+    }
+
+    var statusBarHeight: CGFloat {
+        return UIApplication.shared.statusBarFrame.height
+    }
 
     private func errorToUserFriendlyString(error: Error, title: String) -> String? {
         // todo - more intelligent handling of HttpErr
         do {
             throw error
-        } catch AppErr.user(let userErr) { // if this is AppErr.user, show only the content of the message to the user, not info about the exception
+        } catch let AppErr.user(userErr) { // if this is AppErr.user, show only the content of the message to the user, not info about the exception
             return "\(title)\n\n\(userErr)"
         } catch AppErr.silentAbort { // don't show any alert
             return nil
@@ -116,7 +121,7 @@ extension UIViewController {
             self.view.hideAllToasts()
             self.hideSpinner()
             let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .destructive) { action in onOk?() })
+            alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in onOk?() })
             self.present(alert, animated: true, completion: nil)
         }
     }
@@ -138,10 +143,10 @@ extension UIViewController {
     }
 
     func alertAndSkipOnRejection<T>(_ promise: Promise<T>, fail msg: String) -> Promise<Void> {
-        return Promise<Void> { [weak self] resolve, reject in
+        return Promise<Void> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
             do {
-                let _ = try await(promise)
+                _ = try await(promise)
                 resolve(())
             } catch {
                 DispatchQueue.main.async {
@@ -152,16 +157,16 @@ extension UIViewController {
     }
 
     func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
-        return Promise<String?>(on: .main) { [weak self] resolve, reject in
+        return Promise<String?>(on: .main) { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
             let alert = UIAlertController(title: "Pass Phrase", message: title, preferredStyle: .alert)
-            alert.addTextField { (textField) in
+            alert.addTextField { textField in
                 textField.isSecureTextEntry = true
             }
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (_) in
+            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in
                 resolve(nil)
             }))
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] _ in
                 resolve(alert?.textFields?[0].text)
             }))
             self.present(alert, animated: true, completion: nil)

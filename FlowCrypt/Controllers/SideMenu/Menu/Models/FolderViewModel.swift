@@ -12,6 +12,7 @@ struct FolderViewModel {
     enum ItemType {
         case folder, settings, logOut
     }
+
     static var empty = FolderViewModel(name: "", path: "", image: nil, itemType: .folder)
 
     let name: String
@@ -25,10 +26,10 @@ extension FolderViewModel {
         let gmailRootPath = Constants.Global.gmailRootPath
         guard !folder.path.isEmpty else { return nil }
         guard folder.path != gmailRootPath else { return nil }
-        self.name = folder.path.contains(gmailRootPath)
+        name = folder.path.contains(gmailRootPath)
             ? folder.path.replacingOccurrences(of: gmailRootPath, with: "").trimLeadingSlash.capitalized
             : folder.path.capitalized
-        self.path = folder.path
+        path = folder.path
         self.image = image
         self.itemType = itemType
     }
@@ -37,8 +38,8 @@ extension FolderViewModel {
 extension FolderViewModel {
     static func menuItems() -> [FolderViewModel] {
         return [
-            FolderViewModel(name: "Settings", path: "" ,image: UIImage(named: "settings"), itemType: .settings),
-            FolderViewModel(name: "Log out", path: "" ,image: UIImage(named: "exit"), itemType: .logOut)
+            FolderViewModel(name: "Settings", path: "", image: UIImage(named: "settings"), itemType: .settings),
+            FolderViewModel(name: "Log out", path: "", image: UIImage(named: "exit"), itemType: .logOut),
         ]
     }
 
@@ -47,7 +48,7 @@ extension FolderViewModel {
             string: name,
             attributes: [
                 NSAttributedString.Key.foregroundColor: UIColor.black,
-                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)
+                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
             ]
         )
     }

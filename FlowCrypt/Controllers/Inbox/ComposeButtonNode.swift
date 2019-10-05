@@ -8,10 +8,10 @@
 
 import AsyncDisplayKit
 
- final class ComposeButtonNode: ASButtonNode {
+final class ComposeButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
 
-     init(_ action: (() -> Void)?) {
+    init(_ action: (() -> Void)?) {
         super.init()
         onTap = action
         backgroundColor = .main
@@ -19,7 +19,7 @@ import AsyncDisplayKit
         addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
     }
 
-     @objc private func onButtonTap() {
+    @objc private func onButtonTap() {
         onTap?()
     }
 }

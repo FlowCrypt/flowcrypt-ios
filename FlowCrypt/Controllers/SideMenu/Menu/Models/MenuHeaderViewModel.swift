@@ -16,15 +16,15 @@ struct MenuHeaderViewModel {
         self.title = NSAttributedString(
             string: title,
             attributes: [
-                NSAttributedString.Key.font : UIFont.systemFont(ofSize: 17, weight: .light),
-                NSAttributedString.Key.foregroundColor: UIColor.white
+                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: .light),
+                NSAttributedString.Key.foregroundColor: UIColor.white,
             ]
         )
         self.subtitle = NSAttributedString(
             string: subtitle ?? "",
             attributes: [
-                NSAttributedString.Key.font : UIFont.systemFont(ofSize: 11, weight: .light),
-                NSAttributedString.Key.foregroundColor: UIColor.white
+                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 11, weight: .light),
+                NSAttributedString.Key.foregroundColor: UIColor.white,
             ]
         )
     }

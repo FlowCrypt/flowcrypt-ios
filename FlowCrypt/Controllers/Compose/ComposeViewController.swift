@@ -2,10 +2,10 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import MBProgressHUD
 import Promises
 import RealmSwift
+import UIKit
 
 extension ComposeViewController {
     static func instance(with input: ComposeViewController.Input) -> ComposeViewController {
@@ -16,7 +16,6 @@ extension ComposeViewController {
 }
 
 final class ComposeViewController: UIViewController {
-
     struct Input {
         let isReply: Bool
         let replyToRecipient: MCOAddress?
@@ -37,10 +36,10 @@ final class ComposeViewController: UIViewController {
         static let enterMessage = "Enter secure message"
     }
 
-    @IBOutlet weak var txtRecipient: UITextField!
-    @IBOutlet weak var txtSubject: UITextField!
-    @IBOutlet weak var txtMessage: UITextView!
-    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet var txtRecipient: UITextField!
+    @IBOutlet var txtSubject: UITextField!
+    @IBOutlet var txtMessage: UITextView!
+    @IBOutlet var scrollView: UIScrollView!
 
     // TODO: Inject as a dependency
     private let imap = Imap.instance
@@ -70,14 +69,15 @@ final class ComposeViewController: UIViewController {
     }
 }
 
-// MARK - Setup UI
+// MARK: - Setup UI
+
 extension ComposeViewController {
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
                 NavigationBarItemsView.Input(image: UIImage(named: "paperclip"), action: (self, #selector(handleAttachTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "android-send"), action: (self, #selector(handleSendTap)))
+                NavigationBarItemsView.Input(image: UIImage(named: "android-send"), action: (self, #selector(handleSendTap))),
             ]
         )
     }
@@ -105,7 +105,8 @@ extension ComposeViewController {
     }
 }
 
-// MARK - Keyboard
+// MARK: - Keyboard
+
 extension ComposeViewController {
     private func registerKeyboardNotifications() {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -115,8 +116,7 @@ extension ComposeViewController {
     @objc private func adjustForKeyboard(notification: Notification) {
         guard let userInfo = notification.userInfo,
             let keyboardScreenEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-            else { assertionFailure("Check user info"); return }
-
+        else { assertionFailure("Check user info"); return }
 
         let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
 
@@ -135,7 +135,8 @@ extension ComposeViewController {
     }
 }
 
-// MARK - Handle actions
+// MARK: - Handle actions
+
 extension ComposeViewController {
     @objc private func handleInfoTap() {
         #warning("ToDo")
@@ -155,13 +156,12 @@ extension ComposeViewController {
         view.endEditing(true)
     }
 
-    @objc private func convertStringToLowercase(textField: UITextField) {
+    @objc private func convertStringToLowercase(textField _: UITextField) {
         txtRecipient.text = txtRecipient.text?.lowercased()
     }
 }
 
 extension ComposeViewController {
-
     private func sendMsgTapHandler() {
         dismissKeyboard()
 
@@ -169,6 +169,9 @@ extension ComposeViewController {
             let email = txtRecipient.text,
             let text = txtMessage.text
         else { return }
+        let subject = viewModel.isReply
+            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+            : txtSubject.text ?? "(no subject)"
 
         showSpinner(Constants.sending)
 
@@ -177,8 +180,8 @@ extension ComposeViewController {
             let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
             guard let recipientPubkey = lookupRes.armored else { return self.showAlert(message: Constants.noPgp) }
             let realm = try Realm() // TODO: Anton - Refactor to use db service
-            guard let myPubkey = realm.objects(KeyInfo.self).map( { $0.public }).first else { return self.showAlert(message: Constants.noSenderPgp) }
-            let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], message: text, email: email)
+            guard let myPubkey = realm.objects(KeyInfo.self).map({ $0.public }).first else { return self.showAlert(message: Constants.noSenderPgp) }
+            let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], subject: subject, message: text, email: email)
             try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
         }.then(on: .main) { [weak self] in
             self?.hideSpinner()
@@ -189,10 +192,7 @@ extension ComposeViewController {
         }
     }
 
-    private func encryptMsg(pubkeys: [String], message: String, email: String) -> CoreRes.ComposeEmail {
-        let subject = viewModel.isReply
-            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
-            : txtSubject.text ?? "(no subject)"
+    private func encryptMsg(pubkeys: [String], subject: String, message: String, email: String) -> CoreRes.ComposeEmail {
         let replyToMimeMsg = viewModel.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
         let msg = SendableMsg(
@@ -223,10 +223,10 @@ extension ComposeViewController {
         }
         return true
     }
-
 }
 
-// MARK - UITextViewDelegate, UITextFieldDelegate
+// MARK: - UITextViewDelegate, UITextFieldDelegate
+
 extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == Constants.yourMessage || textView.text == Language.message_placeholder {
@@ -234,19 +234,19 @@ extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
             txtMessage.text = ""
         }
     }
-    
+
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text == "" || textView.text == "\n" {
             txtMessage.textColor = UIColor.lightGray
             txtMessage.text = Constants.yourMessage
         }
     }
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == self.txtRecipient {
+        if textField == txtRecipient {
             txtSubject.becomeFirstResponder()
         }
-        if !viewModel.isReply && textField == self.txtSubject {
+        if !viewModel.isReply, textField == txtSubject {
             txtMessage.becomeFirstResponder()
             return false
         }

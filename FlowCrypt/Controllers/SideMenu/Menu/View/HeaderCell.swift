@@ -17,7 +17,7 @@ final class HeaderCell: UITableViewCell {
         setup()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -35,7 +35,7 @@ final class HeaderCell: UITableViewCell {
             $0.spacing = 8
             addSubview($0)
         }
-        constrainToEdges(stackView, insets:  UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16))
+        constrainToEdges(stackView, insets: UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16))
     }
 
     func setup(with viewModel: MenuHeaderViewModel) -> Self {

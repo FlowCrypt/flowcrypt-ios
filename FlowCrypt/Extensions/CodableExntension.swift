@@ -5,7 +5,6 @@
 import Foundation
 
 extension Encodable {
-
     func toJsonData() throws -> Data {
         return try JSONEncoder().encode(self)
     }
@@ -17,5 +16,4 @@ extension Encodable {
         }
         return dictionary
     }
-
 }

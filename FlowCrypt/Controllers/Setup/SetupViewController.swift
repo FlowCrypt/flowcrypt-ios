@@ -2,13 +2,12 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import MBProgressHUD
-import RealmSwift
 import Promises
+import RealmSwift
+import UIKit
 
 final class SetupViewController: UIViewController {
-
     private enum Constants {
         static let noBackups = "No backups found on account: \n"
         static let actionFailed = "Action failed"
@@ -28,11 +27,11 @@ final class SetupViewController: UIViewController {
     private let router = GlobalRouter()
     private var setupAction = SetupAction.recoverKey
 
-    @IBOutlet weak var passPhaseTextField: UITextField!
-    @IBOutlet weak var btnLoadAccount: UIButton!
-    @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var subTitleLabel: UILabel!
-    
+    @IBOutlet var passPhaseTextField: UITextField!
+    @IBOutlet var btnLoadAccount: UIButton!
+    @IBOutlet var scrollView: UIScrollView!
+    @IBOutlet var subTitleLabel: UILabel!
+
     private var fetchedEncryptedPrvs: [KeyDetails] = []
 
     override func viewDidLoad() {
@@ -54,7 +53,6 @@ final class SetupViewController: UIViewController {
 }
 
 extension SetupViewController {
-
     private func observeKeyboardNotifications() {
         _ = keyboardHeight
             .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 5, right: 0) }
@@ -77,8 +75,7 @@ extension SetupViewController {
         showSpinner()
         Promise<Void> { [weak self] in
             guard let self = self else { return }
-            guard let email = DataManager.shared.currentUser()?.email else { throw AppErr.unexpected("Missing account email") }
-            let backupData = try await(self.imap.searchBackups(email: email))
+            let backupData = try await(self.imap.searchBackups())
             let parsed = try Core.parseKeys(armoredOrBinary: backupData)
             self.fetchedEncryptedPrvs = parsed.keyDetails.filter { $0.private != nil }
         }.then(on: .main) { [weak self] in
@@ -112,7 +109,7 @@ extension SetupViewController {
         alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
             self?.userService.signOut().then(on: .main) { [weak self] in
                 if self?.navigationController?.popViewController(animated: true) == nil {
-                    self?.router.proceedAfterLogOut() // in case app got restarted and no view to pop
+                    self?.router.reset() // in case app got restarted and no view to pop
                 }
             }.catch(on: .main) { [weak self] error in
                 self?.showAlert(error: error, message: "Could not sign out")
@@ -123,16 +120,14 @@ extension SetupViewController {
         })
         present(alert, animated: true, completion: nil)
     }
-
 }
 
 extension SetupViewController {
-
     @objc private func endEditing() {
         view.endEditing(true)
     }
 
-    @IBAction func loadAccountButtonPressed(_ sender: Any) {
+    @IBAction func loadAccountButtonPressed(_: Any) {
         endEditing()
         guard let passPhrase = passPhaseTextField.text, !passPhrase.isEmpty else {
             showAlert(message: Constants.enterPassPhrase)
@@ -159,7 +154,7 @@ extension SetupViewController {
             showAlert(message: Constants.wrongPassPhraseRetry)
             return
         }
-        try! self.storePrvs(prvs: matchingBackups, passPhrase: passPhrase, source: .generated)
+        try! storePrvs(prvs: matchingBackups, passPhrase: passPhrase, source: .generated)
         moveToMainFlow()
     }
 
@@ -181,7 +176,7 @@ extension SetupViewController {
     }
 
     private func moveToMainFlow() {
-        GlobalRouter().proceedAfterLogOut()
+        GlobalRouter().reset()
     }
 
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
@@ -227,21 +222,18 @@ extension SetupViewController {
         }
     }
 
-    @IBAction func useOtherAccount(_ sender: Any) {
+    @IBAction func useOtherAccount(_: Any) {
         userService.signOut().then(on: .main) { [weak self] _ in
-            self?.router.proceedAfterLogOut()
+            self?.router.reset()
         }.catch(on: .main) { [weak self] error in
             self?.showAlert(error: error, message: "Could not switch accounts")
         }
     }
-
 }
 
 extension SetupViewController: UITextFieldDelegate {
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_: UITextField) -> Bool {
         view.endEditing(true)
         return true
     }
-
 }

@@ -18,14 +18,13 @@ protocol FoldersProvider {
 }
 
 extension Imap: FoldersProvider {
-
     func fetchFolders() -> Promise<FoldersContext> {
         return Promise { [weak self] resolve, reject in
-            self?.getImapSess()?
+            self?.getImapSess()
                 .fetchAllFoldersOperation()?
                 .start { [weak self] error, value in
                     guard let self = self else { return reject(AppErr.nilSelf) }
-                    guard self.retryAuthErrorNotNeeded("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
+                    guard self.notRetrying("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
                         return
                     }
                     if let error = error {
@@ -38,5 +37,4 @@ extension Imap: FoldersProvider {
                 }
         }
     }
-
 }

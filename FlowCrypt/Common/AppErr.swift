@@ -23,17 +23,17 @@ enum AppErr: Error {
 extension AppErr: Equatable {
     static func == (lhs: AppErr, rhs: AppErr) -> Bool {
         switch (lhs, rhs) {
-            case (.authentication, .authentication): return true
-            case (.connection, .connection): return true
-            case (.operation, .operation): return true
-            case (.nilSelf, .nilSelf): return true
-            case (.value, .value): return true
-            case (.unexpected, .unexpected): return true
-            case (.cast, .cast): return true
-            case (.user, .user): return true
-            case (.silentAbort, .silentAbort): return true
-            case (.general, .general): return true
-            default: return false
+        case (.authentication, .authentication): return true
+        case (.connection, .connection): return true
+        case (.operation, .operation): return true
+        case (.nilSelf, .nilSelf): return true
+        case (.value, .value): return true
+        case (.unexpected, .unexpected): return true
+        case (.cast, .cast): return true
+        case (.user, .user): return true
+        case (.silentAbort, .silentAbort): return true
+        case (.general, .general): return true
+        default: return false
         }
     }
 }
@@ -42,14 +42,14 @@ extension AppErr {
     init(_ error: Error) {
         let code = (error as NSError).code
         switch code {
-            case MCOErrorCode.authentication.rawValue:
-                self = .authentication
-            case MCOErrorCode.connection.rawValue,
-                 MCOErrorCode.tlsNotAvailable.rawValue,
-                 MCOErrorCode.connection.rawValue:
-                self = .connection
-            default:
-                self = .operation(error)
+        case MCOErrorCode.authentication.rawValue:
+            self = .authentication
+        case MCOErrorCode.connection.rawValue,
+             MCOErrorCode.tlsNotAvailable.rawValue,
+             MCOErrorCode.connection.rawValue:
+            self = .connection
+        default:
+            self = .operation(error)
         }
     }
 }
