@@ -19,7 +19,7 @@ extension Imap {
         let start = DispatchTime.now()
         return { [weak self] error, res in
             log(op, error: error, res: res, start: start)
-            guard self?.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) ?? false else { return }
+            guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
             if let res = res {
                 resolve(res)
             } else {
@@ -37,7 +37,7 @@ extension Imap {
         let start = DispatchTime.now()
         return { [weak self] error in
             log(op, error: error, res: nil, start: start)
-            guard self?.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) ?? false else { return }
+            guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
 
             if let error = error {
                 reject(error)
@@ -56,7 +56,7 @@ extension Imap {
         let start = DispatchTime.now()
         return { [weak self] error, _ in
             log(op, error: error, res: nil, start: start)
-            guard self?.retryAuthErrorNotNeeded(op, error, resolve, reject, retry: retry) ?? false else { return }
+            guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
             if let error = error {
                 reject(error)
             } else {
@@ -66,7 +66,7 @@ extension Imap {
     }
 
     /// must be always called with `guard retryAuthErrorNotNeeded else { return }`
-    func retryAuthErrorNotNeeded<T>(
+    func notRetrying<T>(
         _ op: String,
         _ err: Error?,
         _ resolve: @escaping (T) -> Void,

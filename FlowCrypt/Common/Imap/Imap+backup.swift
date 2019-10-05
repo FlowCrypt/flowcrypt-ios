@@ -81,7 +81,7 @@ extension Imap: BackupProvider {
             self.getImapSess()?
                 .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
                 .start { error, msgs, _ in
-                    guard self.retryAuthErrorNotNeeded("fetchMsgs", error, resolve, reject, retry: {
+                    guard self.notRetrying("fetchMsgs", error, resolve, reject, retry: {
                         self.fetchMessage(in: folder, kind: kind, uids: uids)
                     }) else { return }
 

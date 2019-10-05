@@ -24,7 +24,7 @@ extension Imap: FoldersProvider {
                 .fetchAllFoldersOperation()?
                 .start { [weak self] error, value in
                     guard let self = self else { return reject(AppErr.nilSelf) }
-                    guard self.retryAuthErrorNotNeeded("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
+                    guard self.notRetrying("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
                         return
                     }
                     if let error = error {

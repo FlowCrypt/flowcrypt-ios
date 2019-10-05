@@ -41,7 +41,7 @@ extension Imap: MessageProvider {
                 .folderInfoOperation(path)
                 .start { [weak self] error, folders in
                     guard let self = self else { return reject(AppErr.nilSelf) }
-                    guard self.retryAuthErrorNotNeeded("folderInfo", error, resolve, reject, retry: { self.folderInfo(for: path) }) else {
+                    guard self.notRetrying("folderInfo", error, resolve, reject, retry: { self.folderInfo(for: path) }) else {
                         return
                     }
 
