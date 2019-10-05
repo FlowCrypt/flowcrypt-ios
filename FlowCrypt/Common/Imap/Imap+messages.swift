@@ -23,15 +23,15 @@ import Promises
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-             let folderInfo = try await(self.folderInfo(for: folder))
+            let folderInfo = try await(self.folderInfo(for: folder))
 
-             let totalCount = Int(folderInfo.messageCount)
+            let totalCount = Int(folderInfo.messageCount)
             let set = self.createSet(for: count, total: totalCount, from: from ?? 0)
             let kind = DefaultMessageKindProvider().imapMessagesRequestKind
 
-             let messages = try await(self.fetchMessagesByNumberOperation(for: folder, kind: kind, set: set))
+            let messages = try await(self.fetchMessagesByNumberOperation(for: folder, kind: kind, set: set))
 
-             resolve(MessageContext(messages: messages, totalMessages: totalCount))
+            resolve(MessageContext(messages: messages, totalMessages: totalCount))
         }
     }
 
@@ -45,7 +45,7 @@ import Promises
                         return
                     }
 
-                     if let error = error {
+                    if let error = error {
                         reject(AppErr(error))
                     } else if let folders = folders {
                         resolve(folders)
@@ -61,19 +61,16 @@ import Promises
         total: Int,
         from: Int
     ) -> MCOIndexSet {
-        var lenght = numberOfMessages - 1
-        if lenght < 0 {
-            lenght = 0
+        var length = numberOfMessages - 1
+        if length < 0 {
+            length = 0
         }
-
-         var diff = total - lenght - from
+        var diff = total - length - from
         if diff < 0 {
             diff = 1
         }
-
-         let range = MCORange(location: UInt64(diff), length: UInt64(lenght))
-
-         return MCOIndexSet(range: range)
+        let range = MCORange(location: UInt64(diff), length: UInt64(length))
+        return MCOIndexSet(range: range)
     }
 
      private func fetchMessagesByNumberOperation(
