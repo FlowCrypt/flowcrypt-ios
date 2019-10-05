@@ -5,16 +5,18 @@
 import Foundation
 
 extension String {
-
     var hasContent: Bool {
         return trimmingCharacters(in: .whitespaces).isEmpty == false
     }
 
     var trimLeadingSlash: String {
-        if count > 0 && self[self.startIndex] == "/" {
-            return String(self.dropFirst())
+        if count > 0, self[self.startIndex] == "/" {
+            return String(dropFirst())
         }
         return self
     }
 
+    func data() -> Data {
+        return data(using: .utf8)!
+    }
 }

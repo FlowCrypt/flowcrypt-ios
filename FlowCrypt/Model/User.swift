@@ -16,7 +16,7 @@ struct User: Codable {
 
 extension User {
     init(_ googleUser: GIDGoogleUser!) {
-        self.email = googleUser.profile.email
-        self.name = googleUser.profile.name
+        email = googleUser.profile.email
+        name = googleUser.profile.name
     }
 }

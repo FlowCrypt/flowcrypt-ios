@@ -2,8 +2,8 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import Promises
+import UIKit
 
 final class MyMenuTableViewController: UIViewController {
     private enum Constants {
@@ -35,14 +35,23 @@ final class MyMenuTableViewController: UIViewController {
 
         return MenuHeaderViewModel(title: name, subtitle: email)
     }()
+
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] = FolderViewModel.menuItems()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // Due to Bug in ENSideMenu
+    // we need to use this property to setup UI in viewDidAppear
+    // instead of viewDidload (ENSideMenu call self.view inside initializer)
+    private var isFirstLaunch = true
 
-        setupUI()
-        fetchFolders()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if isFirstLaunch {
+            setupUI()
+            fetchFolders()
+        }
+        isFirstLaunch = false
     }
 
     private func setupUI() {
@@ -57,7 +66,9 @@ final class MyMenuTableViewController: UIViewController {
             $0.reloadData()
         }
         view.addSubview(tableView)
-        view.constrainToEdges(tableView, insets: UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0))
+
+        let topInset = safeAreaWindowInsets.top
+        view.constrainToEdges(tableView, insets: UIEdgeInsets(top: -topInset, left: 0, bottom: 0, right: 0))
     }
 
     private func fetchFolders() {
@@ -77,7 +88,7 @@ final class MyMenuTableViewController: UIViewController {
             .compactMap {
                 FolderViewModel($0)
             }
-            .sorted(by: { (left, right) in
+            .sorted(by: { left, _ in
                 if left.path.caseInsensitiveCompare(Constants.inbox) == .orderedSame {
                     return true
                 } else if left.path.caseInsensitiveCompare(Constants.allMail) == .orderedSame {
@@ -90,11 +101,11 @@ final class MyMenuTableViewController: UIViewController {
 }
 
 extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in _: UITableView) -> Int {
         return Sections.allCases.count
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case Sections.header.rawValue: return 1
         case Sections.folders.rawValue: return folders.count
@@ -103,7 +114,7 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case Sections.header.rawValue: return 110
         case Sections.folders.rawValue: return 40
@@ -116,7 +127,7 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         switch indexPath.section {
         case Sections.header.rawValue:
             return tableView.dequeueReusableCell(ofType: HeaderCell.self, at: indexPath)
-                    .setup(with: headerViewModel)
+                .setup(with: headerViewModel)
         case Sections.folders.rawValue:
             return tableView.dequeueReusableCell(ofType: MenuCell.self, at: indexPath)
                 .setup(with: folders[indexPath.row])
@@ -126,10 +137,9 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         default:
             return tableView.dequeueReusableCell(ofType: MenuCell.self, at: indexPath)
         }
-
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case Sections.folders.rawValue:
             guard let item = folders[safe: indexPath.row] else { return }
@@ -140,29 +150,26 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         default:
             break
         }
-
     }
 
     private func handleTapOn(folder: FolderViewModel) {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let inboxVc = InboxViewController.instance(with: input)
-            sideMenuController()?.setContentViewController(inboxVc)
+            sideMenuController()?.setContentViewController(InboxViewController(input))
         case .settings:
             showToast("Settings not yet implemented")
         case .logOut:
             userService.signOut()
                 .then(on: .main) { [weak self] _ in
-                    self?.router.proceedAfterLogOut()
+                    self?.router.reset()
                 }.catch(on: .main) { [weak self] error in
                     self?.showAlert(error: error, message: "Could not log out")
                 }
         }
-
     }
 
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
         return UIView().then {
             let divider = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 16, height: 1))
             $0.addSubview(divider)
@@ -171,8 +178,7 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
 
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return section == Sections.folders.rawValue ? 1 : 0
     }
 }
-

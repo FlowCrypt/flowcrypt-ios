@@ -2,161 +2,220 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
+import AsyncDisplayKit
 import Promises
 import RxSwift
+import UIKit
 
-extension InboxViewController {
-    static func instance(with input: InboxViewModel) -> InboxViewController {
-        let vc = UIStoryboard.main.instantiate(InboxViewController.self)
-        vc.viewModel = input
-        return vc
-    }
-}
-
-final class InboxViewController: UIViewController {
+final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
-        static let numberOfMessagesToLoad = 10
-        static let inboxCellHeight: CGFloat = 90.0
-        static let loadMoreTreshold: CGFloat = 300
+        static let numberOfMessagesToLoad = 20
         static let messageSizeLimit: Int = 5_000_000
     }
 
-    private let messageProvider: MessageProvider = DefaultMessageProvider()
-    private let disposeBag = DisposeBag()
+    enum State {
+        case idle, empty, fetching(_ isInitial: Bool), fetched(_ totalNumberOfMessages: Int)
 
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var lblEmptyMessage: UILabel!
-    @IBOutlet weak var btnCompose: UIButton!
-
-    private var messages: [MCOIMAPMessage] = [] {
-        didSet {
-            lblEmptyMessage.isHidden = messages.count > 0
-            refreshControl.endRefreshing()
-            hideSpinner()
+        var total: Int? {
+            switch self {
+            case let .fetched(totalNumberOfMessages): return totalNumberOfMessages
+            default: return nil
+            }
         }
     }
-    private var viewModel = InboxViewModel.empty
+
+    enum Action {
+        case beginBatchFetch
+        case endBatchFetch(messageContext: MessageContext)
+    }
+
+    private var state: State = .idle
+
+    private let messageProvider: MessageProvider = Imap.instance
+    private var messages: [MCOIMAPMessage] = []
+    private var viewModel: InboxViewModel
+
+    private var tableNode: ASTableNode
+    private lazy var composeButton = ComposeButtonNode { [weak self] in
+        self?.btnComposeTap()
+    }
 
     private let refreshControl = UIRefreshControl()
-    private let loadMoreActivityIndicator = UIActivityIndicatorView(style: .gray)
-    private var loadMoreInPosition = false
-    private var canLoadMore = true {
-        didSet {
-            tableView.tableFooterView?.isHidden = !canLoadMore
-        }
-    }
-    private var totalNumberOfMessages = 0
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+    init(_ viewModel: InboxViewModel = .empty) {
+        self.viewModel = viewModel
+        tableNode = ASTableNode(style: .plain)
+        super.init(node: ASDisplayNode())
+
+        tableNode.delegate = self
+        tableNode.dataSource = self
+        tableNode.leadingScreensForBatching = 1
     }
-    
+
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupUI()
         setupNavigationBar()
-        fetchAndRenderEmails(withSpinner: true)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let offset: CGFloat = 16
+        let size = CGSize(width: 50, height: 50)
+
+        composeButton.frame = CGRect(
+            x: node.bounds.maxX - offset - size.width,
+            y: node.bounds.maxY - offset - size.height,
+            width: size.width,
+            height: size.height
+        )
+        composeButton.cornerRadius = size.width / 2
+        tableNode.frame = node.bounds
+    }
 }
 
 extension InboxViewController {
     private func setupUI() {
-        let titleText = viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
-        title = titleText
+        title = viewModel.folderName.isEmpty
+            ? "Inbox"
+            : viewModel.folderName
 
-        lblEmptyMessage.text = "\(titleText) is empty"
-        lblEmptyMessage.isHidden = true
-
+        node.addSubnode(tableNode)
+        node.addSubnode(composeButton)
 
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        tableView.refreshControl = refreshControl
-        tableView.register(UINib(nibName: "InboxTableViewCell", bundle: nil), forCellReuseIdentifier: "InboxTableViewCell")
-
-        view.bringSubviewToFront(btnCompose)
-
-        loadMoreActivityIndicator.frame = CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 50)
-        tableView.tableFooterView = loadMoreActivityIndicator
-        tableView.tableFooterView?.isHidden = true
+        tableNode.view.refreshControl = refreshControl
     }
 
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
+                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap))),
             ]
         )
     }
 }
 
 extension InboxViewController {
-    private func fetchAndRenderEmails(withSpinner isSpinnerShown: Bool) {
-        if isSpinnerShown {
-            showSpinner()
-        } else if !refreshControl.isRefreshing {
-            refreshControl.beginRefreshing()
-        }
-
+    private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
         messageProvider
             .fetchMessages(for: viewModel.path, count: Constants.numberOfMessagesToLoad, from: 0)
-            .observeOn(MainScheduler.instance)
-            .subscribe(
-                onNext: { [weak self] context in
-                    guard let self = self else { return }
-                    self.messages = context.messages.sorted(by: { $0.header.date > $1.header.date })
-                    self.canLoadMore = self.messages.count < context.totalMessages
-                    self.totalNumberOfMessages = context.totalMessages
-                    self.tableView.reloadData()
-                },
-                onError: { [weak self] error in
-                    self?.refreshControl.endRefreshing()
-                    self?.showAlert(error: error, message: Language.failedToLoadMessages)
-                })
-            .disposed(by: disposeBag)
+            .then { [weak self] context in
+                self?.handle(action: .endBatchFetch(messageContext: context), context: batchContext)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.handle(error: error)
+            }
     }
 
-    private func loadMore() {
-        guard canLoadMore else { return }
-        loadMoreActivityIndicator.startAnimating()
-
+    private func loadMore(_ batchContext: ASBatchContext?) {
+        guard let totalNumberOfMessages = state.total else { return }
 
         let from = messages.count
         let diff = min(Constants.numberOfMessagesToLoad, totalNumberOfMessages - from)
-
         messageProvider
             .fetchMessages(for: viewModel.path, count: diff, from: from)
-            .observeOn(MainScheduler.instance)
-            .subscribe(
-                onNext: { [weak self] context in
-                    self?.handleNew(messages: context)
-                },
-                onError: { [weak self] error in
-                    self?.canLoadMore = true
-                    self?.refreshControl.endRefreshing()
-                })
-            .disposed(by: disposeBag)
+            .then { [weak self] context in
+                self?.handle(action: .endBatchFetch(messageContext: context), context: batchContext)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.handle(error: error)
+            }
     }
 
-    private func handleNew(messages context: MessageContext) {
-        let count = messages.count - 1
-        let indexesToUpdate = context.messages.enumerated()
-            .map { (index, value) -> Int in
-                let indexInTableView = index + count
-                return indexInTableView
+    private func handle(action: Action, context: ASBatchContext?) {
+        switch action {
+        case .beginBatchFetch:
+            handleBeginFetching(with: context)
+        case let .endBatchFetch(messageContext):
+            handleEndFetching(with: messageContext, context: context)
+        }
+    }
+
+    private func handleBeginFetching(with context: ASBatchContext?) {
+        switch state {
+        case .idle:
+            fetchAndRenderEmails(context)
+        case .fetched:
+            loadMore(context)
+            state = .fetching(false)
+        case .empty:
+            fetchAndRenderEmails(context)
+            state = .idle
+        default:
+            fetchAndRenderEmails(context)
+            state = .fetching(true)
+        }
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.tableNode.reloadData()
+        }
+    }
+
+    private func handleEndFetching(with messageContext: MessageContext, context: ASBatchContext?) {
+        context?.completeBatchFetching(true)
+        switch state {
+        case .idle:
+            handleNew(messageContext)
+        default:
+            guard case let .fetching(isInitial) = state else { return }
+
+            if isInitial {
+                handleNew(messageContext)
+            } else {
+                let count = messages.count - 1
+                let indexesToInsert = messageContext.messages
+                    .enumerated()
+                    .map { (index, _) -> Int in
+                        let indexInTableView = index + count
+                        return indexInTableView
+                    }
+                    .map { IndexPath(row: $0, section: 0) }
+
+                let indexesToDelete = [IndexPath(row: messages.count, section: 0)]
+
+                messages.append(contentsOf: messageContext.messages)
+                state = .fetched(messageContext.totalMessages)
+
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                    self.tableNode.performBatchUpdates({
+                        self.tableNode.deleteRows(at: indexesToDelete, with: .fade)
+                        self.tableNode.insertRows(at: indexesToInsert, with: .none)
+                    }, completion: nil)
+                }
             }
-            .map { IndexPath(row: $0, section: 0)}
-        messages.append(contentsOf: context.messages)
-        tableView.insertRows(at: indexesToUpdate, with: .none)
-        canLoadMore = messages.count < context.totalMessages
-        totalNumberOfMessages = context.totalMessages
+        }
+    }
+
+    private func handleNew(_ messageContext: MessageContext) {
+        if messageContext.messages.isEmpty {
+            state = .empty
+        } else {
+            messages = messageContext.messages
+                .sorted(by: { $0.header.date > $1.header.date })
+            state = .fetched(messageContext.totalMessages)
+        }
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.tableNode.reloadData()
+        }
+    }
+
+    private func handle(error: Error) {
         refreshControl.endRefreshing()
+        showAlert(error: error, message: Language.failedToLoadMessages)
     }
 }
 
@@ -172,10 +231,11 @@ extension InboxViewController {
     }
 
     @objc private func refresh() {
-        fetchAndRenderEmails(withSpinner: false)
+        handle(action: .beginBatchFetch, context: nil)
     }
 
-    @IBAction func btnComposeTap(sender: AnyObject) {
+    private func btnComposeTap() {
+        TapTicFeedback.generate(.light)
         let composeVc = UIStoryboard.main.instantiate(ComposeViewController.self)
         navigationController?.pushViewController(composeVc, animated: true)
     }
@@ -206,13 +266,11 @@ extension InboxViewController {
         }
     }
 
-    private func delete(message: MCOIMAPMessage, at index: Int) {
+    private func delete(message _: MCOIMAPMessage, at index: Int) {
         messages.remove(at: index)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
-            self.tableView.beginUpdates()
-            self.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-            self.tableView.endUpdates()
+            self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
         }
     }
 
@@ -220,61 +278,69 @@ extension InboxViewController {
         messages[index] = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
-            self.tableView.beginUpdates()
-            self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-            self.tableView.endUpdates()
+            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
         }
     }
 }
 
-extension InboxViewController: UITableViewDelegate, UITableViewDataSource {
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return messages.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell: InboxTableViewCell = tableView.dequeueReusableCell(withIdentifier: "InboxTableViewCell", for: indexPath) as? InboxTableViewCell
-            else {
-                assertionFailure("Couldn't dequeueReusableCell cell \(self.debugDescription)")
-                return UITableViewCell()
+extension InboxViewController: ASTableDataSource, ASTableDelegate {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
+        switch state {
+        case .empty: return 1
+        case .idle: return 1
+        case let .fetching(isInitial): return isInitial
+            ? messages.count + 1
+            : messages.count + 1
+        case .fetched: return messages.count
         }
-        cell.message = messages[indexPath.row]
-        return cell
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return Constants.inboxCellHeight
+
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        let height = tableNode.frame.size.height - 44.0
+        let size = CGSize(width: tableNode.frame.size.width, height: height)
+        let text = title ?? ""
+
+        return { [weak self] in
+            guard let self = self else { return ASCellNode() }
+
+            switch self.state {
+            case .empty:
+                return TextCellNode(title: "\(text) is empty", withSpinner: false, size: size)
+            case .idle:
+                return TextCellNode(title: "", withSpinner: true, size: size)
+            case .fetched:
+                return InboxCellNode(message: InboxCellNodeInput(self.messages[indexPath.row]))
+            case .fetching:
+                guard let message = self.messages[safe: indexPath.row] else {
+                    return TextCellNode(title: "Loading ...", withSpinner: true, size: CGSize(width: 44, height: 44))
+                }
+                return InboxCellNode(message: InboxCellNodeInput(message))
+            }
+        }
     }
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return Constants.inboxCellHeight
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        tableNode.deselectRow(at: indexPath, animated: true)
         guard let message = messages[safe: indexPath.row] else { return }
 
         openMessageIfPossible(with: message)
     }
 }
 
-extension InboxViewController: UIScrollViewDelegate {
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let y = scrollView.contentOffset.y
-        let height = scrollView.contentSize.height - scrollView.bounds.height - Constants.loadMoreTreshold
-        
-        if scrollView.contentSize.height > scrollView.bounds.height {
-            if y > height {
-                if !loadMoreInPosition {
-                    loadMore()
-                }
-                loadMoreInPosition = true
-            }
-            else {
-                loadMoreInPosition = false
-            } 
+extension InboxViewController {
+    func shouldBatchFetch(for _: ASTableNode) -> Bool {
+        switch state {
+        case .idle:
+            return true
+        case .empty:
+            return false
+        case .fetched, .fetching:
+            return messages.count < state.total ?? 0
         }
+    }
+
+    func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
+        context.beginBatchFetching()
+        handle(action: .beginBatchFetch, context: context)
     }
 }

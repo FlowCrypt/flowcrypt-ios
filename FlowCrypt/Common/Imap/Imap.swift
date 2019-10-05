@@ -2,11 +2,10 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
+import Promises
 import UIKit
-import Promises 
 
-final class Imap { 
-
+final class Imap {
     static let instance = Imap()
 
     let inboxFolder = "INBOX"
@@ -24,11 +23,13 @@ final class Imap {
     var email: String {
         return dataManager.currentUser()?.email ?? ""
     }
+
     var name: String {
         return dataManager.currentUser()?.name ?? ""
     }
-    var token: String {
-        return dataManager.currentToken() ?? ""
+
+    var accessToken: String? {
+        return dataManager.currentToken()
     }
 
     private init(userService: UserService = UserService.shared, dataManager: DataManager = .shared) {
@@ -42,5 +43,4 @@ final class Imap {
         guard let token = dataManager.currentToken() else { return }
         getImapSess(newAccessToken: token)
     }
-
 }

@@ -6,16 +6,17 @@ import RealmSwift
 
 enum KeySource {
     case backup
+    case generated
 
     var path: String {
         switch self {
         case .backup: return "backup"
+        case .generated: return "generated"
         }
     }
 }
 
 final class KeyInfo: Object {
-
     @objc dynamic var `private`: String = ""
     @objc dynamic var `public`: String = ""
     @objc dynamic var longid: String = ""
@@ -32,12 +33,10 @@ final class KeyInfo: Object {
             assertionFailure("Will not store Private Key that is not fully encrypted") // crash tests
             throw AppErr.value("Will not store Private Key that is not fully encrypted")
         }
-        self.private = privateKey
-        self.public = keyDetails.public
-        self.longid = keyDetails.ids[0].longid
+        `private` = privateKey
+        `public` = keyDetails.public
+        longid = keyDetails.ids[0].longid
         self.passphrase = passphrase
         self.source = source.path
     }
-
 }
-

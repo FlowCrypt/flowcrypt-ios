@@ -73,7 +73,7 @@ final class UserService: NSObject, UserServiceType {
                 self.googleManager.signIn()
             }
 
-            self.onLogin = { token in
+            self.onLogin = { _ in
                 resolve(())
             }
 
@@ -109,7 +109,7 @@ final class UserService: NSObject, UserServiceType {
 }
 
 extension UserService: GIDSignInDelegate {
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+    func sign(_: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if error == nil {
             let newUser = User(user)
             if dataManager.saveCurrent(user: newUser), let token = user.authentication.accessToken {
@@ -124,7 +124,7 @@ extension UserService: GIDSignInDelegate {
         }
     }
 
-    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
+    func sign(_: GIDSignIn!, didDisconnectWith _: GIDGoogleUser!, withError _: Error!) {
         dataManager.logOut()
 
         do {

@@ -5,8 +5,7 @@
 import Foundation
 
 extension Data {
-
-    func decodeJson<T>(as type: T.Type) throws -> T where T : Decodable {
+    func decodeJson<T>(as _: T.Type) throws -> T where T: Decodable {
         return try JSONDecoder().decode(T.self, from: self)
     }
 
@@ -18,4 +17,7 @@ extension Data {
         return data
     }
 
+    func toStr() -> String {
+        String(decoding: self, as: UTF8.self)
+    }
 }

@@ -19,7 +19,7 @@ final class SideMenuOptionalView: UIView {
 
     init(_ action: Action?) {
         super.init(frame: .zero)
-        self.onAction = action
+        onAction = action
         setupUI()
     }
 
@@ -43,8 +43,8 @@ final class SideMenuOptionalView: UIView {
     func animate(to state: State, with duration: TimeInterval) {
         let alpha: CGFloat = {
             switch state {
-                case .oppened: return 0.8
-                case .closed: return 0.0
+            case .oppened: return 0.8
+            case .closed: return 0.0
             }
         }()
 

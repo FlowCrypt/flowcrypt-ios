@@ -9,8 +9,9 @@
 import UIKit
 
 // MARK: - Collection
+
 extension Collection {
-    subscript (safe index: Index) -> Iterator.Element? {
+    subscript(safe index: Index) -> Iterator.Element? {
         return indices.contains(index)
             ? self[index]
             : nil
@@ -18,7 +19,7 @@ extension Collection {
 }
 
 public extension MutableCollection {
-    subscript (safe index: Index) -> Iterator.Element? {
+    subscript(safe index: Index) -> Iterator.Element? {
         set {
             if indices.contains(index), let newValue = newValue {
                 self[index] = newValue
@@ -33,6 +34,7 @@ public extension MutableCollection {
 }
 
 // MARK: - UIView
+
 extension UIView {
     func constraintsToEdges(to guide: UILayoutGuide) {
         translatesAutoresizingMaskIntoConstraints = false
@@ -40,14 +42,8 @@ extension UIView {
             leadingAnchor.constraint(equalTo: guide.leadingAnchor),
             trailingAnchor.constraint(equalTo: guide.trailingAnchor),
             topAnchor.constraint(equalTo: guide.topAnchor),
-            bottomAnchor.constraint(equalTo: guide.bottomAnchor)
-            ])
-    }
-
-    func constraintSize(_ size: CGSize) {
-        translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: size.height)
-        widthAnchor.constraint(equalToConstant: size.width)
+            bottomAnchor.constraint(equalTo: guide.bottomAnchor),
+        ])
     }
 
     func constrainToEdges(_ subview: UIView, insets: UIEdgeInsets = .zero) {
@@ -60,7 +56,8 @@ extension UIView {
             toItem: self,
             attribute: .top,
             multiplier: 1.0,
-            constant: insets.top)
+            constant: insets.top
+        )
 
         let bottomConstraint = NSLayoutConstraint(
             item: subview,
@@ -69,7 +66,8 @@ extension UIView {
             toItem: self,
             attribute: .bottom,
             multiplier: 1.0,
-            constant: -insets.bottom)
+            constant: -insets.bottom
+        )
 
         let leadingContraint = NSLayoutConstraint(
             item: subview,
@@ -78,7 +76,8 @@ extension UIView {
             toItem: self,
             attribute: .leading,
             multiplier: 1.0,
-            constant: insets.left)
+            constant: insets.left
+        )
 
         let trailingContraint = NSLayoutConstraint(
             item: subview,
@@ -87,26 +86,28 @@ extension UIView {
             toItem: self,
             attribute: .trailing,
             multiplier: 1.0,
-            constant: -insets.right)
+            constant: -insets.right
+        )
 
         addConstraints([
             topContraint,
             bottomConstraint,
             leadingContraint,
-            trailingContraint])
+            trailingContraint,
+        ])
     }
 
     func constrainToBorders(_ subview: UIView, insets: UIEdgeInsets = .zero) {
         subview.translatesAutoresizingMaskIntoConstraints = false
-        subview.leftAnchor.constraint(equalTo: leftAnchor, constant: insets.left)
-        subview.rightAnchor.constraint(equalTo: rightAnchor, constant: -insets.right)
-        subview.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
-        subview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom)
+        subview.leftAnchor.constraint(equalTo: leftAnchor, constant: insets.left).isActive = true
+        subview.rightAnchor.constraint(equalTo: rightAnchor, constant: -insets.right).isActive = true
+        subview.topAnchor.constraint(equalTo: topAnchor, constant: insets.top).isActive = true
+        subview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom).isActive = true
     }
 }
 
-
 // MARK: - ReusableView
+
 protocol ReusableView: class {
     static var defaultReuseIdentifier: String { get }
 }
@@ -117,18 +118,16 @@ extension ReusableView where Self: UIView {
     }
 }
 
-extension UITableViewCell: ReusableView { }
+extension UITableViewCell: ReusableView {}
 
-extension UICollectionViewCell: ReusableView { }
+extension UICollectionViewCell: ReusableView {}
 
 extension UICollectionView {
-
     func register<T: ReusableView>(cellType: T.Type = T.self, bundle: Bundle = Bundle.main) {
         let reuseIdentifier = cellType.defaultReuseIdentifier
         if bundle.path(forResource: reuseIdentifier, ofType: "nib") != nil {
             register(UINib(nibName: reuseIdentifier, bundle: bundle), forCellWithReuseIdentifier: reuseIdentifier)
-        }
-        else {
+        } else {
             register(cellType, forCellWithReuseIdentifier: reuseIdentifier)
         }
     }
@@ -143,13 +142,11 @@ extension UICollectionView {
 }
 
 extension UITableView {
-
     func register<T: ReusableView>(cellType: T.Type = T.self, bundle: Bundle = Bundle.main) {
         let reuseIdentifier = cellType.defaultReuseIdentifier
         if bundle.path(forResource: reuseIdentifier, ofType: "nib") != nil {
             register(UINib(nibName: reuseIdentifier, bundle: bundle), forCellReuseIdentifier: reuseIdentifier)
-        }
-        else {
+        } else {
             register(cellType, forCellReuseIdentifier: reuseIdentifier)
         }
     }

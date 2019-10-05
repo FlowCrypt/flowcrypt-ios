@@ -1,3 +1,4 @@
+
 //
 //  GlobalRouter.swift
 //  FlowCrypt
@@ -9,11 +10,11 @@
 import UIKit
 
 protocol GlobalRouterType {
-    func proceedAfterLogOut()
+    func reset()
 }
 
 struct GlobalRouter: GlobalRouterType {
-    func proceedAfterLogOut() {
+    func reset() {
         guard let delegate = (UIApplication.shared.delegate as? AppDelegate) else { assertionFailure(); return }
         delegate.window = delegate.assembley.setupWindow()
     }

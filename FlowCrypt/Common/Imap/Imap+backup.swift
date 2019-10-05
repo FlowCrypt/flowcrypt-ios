@@ -10,12 +10,11 @@ import Foundation
 import Promises
 
 protocol BackupProvider {
-    func searchBackups(email: String) -> Promise<Data>
+    func searchBackups() -> Promise<Data>
 }
 
 extension Imap: BackupProvider {
-
-    func searchBackups(email: String) -> Promise<Data> {
+    func searchBackups() -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
             let searchExpr = self.createSearchBackupExpression()
@@ -26,7 +25,7 @@ extension Imap: BackupProvider {
                 folderPaths = [Constants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
             }
             let dataArr = try folderPaths
-                .compactMap { folder in UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr)))}
+                .compactMap { folder in UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr))) }
                 .filter { $0.uids.count() > 0 }
                 .flatMap { uidsContext -> [MsgContext] in
                     let msgs = try await(self.fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
@@ -47,12 +46,12 @@ extension Imap: BackupProvider {
     private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
         return Promise<Data> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            self.getImapSess()?
+            self.getImapSess()
                 .fetchMessageAttachmentOperation(withFolder: folder, uid: msgUid, partID: part.partID, encoding: part.encoding)
                 .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
                     self.fetchMsgAttribute(in: folder, msgUid: msgUid, part: part)
                 }))
-            }
+        }
     }
 
     // todo - should be moved to a general Imap class or extension
@@ -79,10 +78,10 @@ extension Imap: BackupProvider {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            self.getImapSess()?
+            self.getImapSess()
                 .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
-                .start { (error, msgs, _) in
-                    guard self.retryAuthErrorNotNeeded("fetchMsgs", error, resolve, reject, retry: {
+                .start { error, msgs, _ in
+                    guard self.notRetrying("fetchMsgs", error, resolve, reject, retry: {
                         self.fetchMessage(in: folder, kind: kind, uids: uids)
                     }) else { return }
 
@@ -98,7 +97,7 @@ extension Imap: BackupProvider {
     // todo - should be moved to a general Imap class or extension
     private func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
         return Promise<MCOIndexSet> { resolve, reject in
-            self.getImapSess()?
+            self.getImapSess()
                 .searchExpressionOperation(withFolder: folder, expression: expr)
                 .start(self.finalize("searchExpression", resolve, reject, retry: { self.fetchUids(folder: folder, expr: expr) }))
         }
@@ -127,17 +126,17 @@ extension Imap: BackupProvider {
     }
 }
 
-fileprivate struct UidsContext {
+private struct UidsContext {
     let path: String
     let uids: MCOIndexSet
 }
 
-fileprivate struct MsgContext {
+private struct MsgContext {
     let path: String
     let msg: MCOIMAPMessage
 }
 
-fileprivate struct AttContext {
+private struct AttContext {
     let path: String
     let msg: MCOIMAPMessage
     let part: MCOIMAPPart

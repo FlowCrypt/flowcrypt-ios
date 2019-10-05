@@ -2,11 +2,10 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import MBProgressHUD
-import RealmSwift
 import Promises
-
+import RealmSwift
+import UIKit
 
 extension MsgViewController {
     static func instance(with input: MsgViewController.Input, completion: MsgViewControllerCompletion?) -> MsgViewController {
@@ -29,19 +28,19 @@ final class MsgViewController: UIViewController {
 
         var text: String? {
             switch self {
-                case .moveToTrash: return Language.moved_to_trash
-                case .archive: return Language.email_archived
-                case .permanentlyDelete: return Language.email_deleted
-                case .markAsRead: return nil
+            case .moveToTrash: return Language.moved_to_trash
+            case .archive: return Language.email_archived
+            case .permanentlyDelete: return Language.email_deleted
+            case .markAsRead: return nil
             }
         }
 
         var error: String? {
             switch self {
-                case .moveToTrash: return Constants.ErrorTexts.Message.moveToTrash
-                case .archive: return Constants.ErrorTexts.Message.archive
-                case .permanentlyDelete: return Constants.ErrorTexts.Message.permanentlyDelete
-                case .markAsRead: return nil
+            case .moveToTrash: return Constants.ErrorTexts.Message.moveToTrash
+            case .archive: return Constants.ErrorTexts.Message.archive
+            case .permanentlyDelete: return Constants.ErrorTexts.Message.permanentlyDelete
+            case .markAsRead: return nil
             }
         }
     }
@@ -59,7 +58,7 @@ final class MsgViewController: UIViewController {
     // TODO: Inject as a dependency
     private let imap = Imap.instance
     private var input: MsgViewController.Input?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -73,7 +72,7 @@ final class MsgViewController: UIViewController {
         lblBody.numberOfLines = 0
         lblTIme.text = ""
         if let date = input?.objMessage.header.date {
-            lblTIme.text = Constants.convertDate(date: date)
+            lblTIme.text = DateFormatter().formatDate(date)
         }
     }
 
@@ -100,8 +99,8 @@ final class MsgViewController: UIViewController {
 }
 
 // MARK: - Message
-extension MsgViewController {
 
+extension MsgViewController {
     private func fetchDecryptAndRenderMsg() {
         guard let input = input else { return }
         showSpinner(Language.loading, isUserInteractionEnabled: true)
@@ -145,7 +144,7 @@ extension MsgViewController {
                 let err = decryptErrBlock.decryptErr?.error
                 self?.renderBody("Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)", color: .red)
             } else {
-                self?.renderBody(msg.text, color: msg.replyType == CoreRes.ReplyType.encrypted ? Constants.green : UIColor.black)
+                self?.renderBody(msg.text, color: msg.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.black)
             }
         }
     }
@@ -175,6 +174,7 @@ extension MsgViewController {
 }
 
 // MARK: - Handle Actions
+
 extension MsgViewController {
     @objc private func handleInfoTap() {
         showToast("Email us at human@flowcrypt.com")
@@ -211,12 +211,12 @@ extension MsgViewController {
             .then(on: .main) { [weak self] _ in
                 self?.handleSuccesMessage(operation: .archive)
             }
-            .catch(on: .main) { [weak self] error in
+            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
                 self?.handleErrorOnMessage(operation: .archive)
             }
     }
 
-    @IBAction private func handleReplyTap(_ sender: UIButton) {
+    @IBAction private func handleReplyTap(_: UIButton) {
         guard let input = input else { return }
         let viewModel = ComposeViewController.Input(
             isReply: true,
