@@ -22,29 +22,22 @@ extension Imap: MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Promise<MessageContext> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-
             let folderInfo = try await(self.folderInfo(for: folder))
-
             let totalCount = Int(folderInfo.messageCount)
             let set = self.createSet(for: count, total: totalCount, from: from ?? 0)
             let kind = DefaultMessageKindProvider().imapMessagesRequestKind
-
-            let messages = try await(self.fetchMessagesByNumberOperation(for: folder, kind: kind, set: set))
-
+            let messages = try await(self.fetchMsgsByNumber(for: folder, kind: kind, set: set))
             resolve(MessageContext(messages: messages, totalMessages: totalCount))
         }
     }
 
     private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
         return Promise { [weak self] resolve, reject in
-            self?.getImapSess()
+            guard let self = self else { return reject(AppErr.nilSelf) }
+            self.getImapSess()
                 .folderInfoOperation(path)
-                .start { [weak self] error, folders in
-                    guard let self = self else { return reject(AppErr.nilSelf) }
-                    guard self.notRetrying("folderInfo", error, resolve, reject, retry: { self.folderInfo(for: path) }) else {
-                        return
-                    }
-
+                .start { error, folders in
+                    guard self.notRetrying("folderInfo", error, resolve, reject, retry: { self.folderInfo(for: path) }) else { return }
                     if let error = error {
                         reject(AppErr(error))
                     } else if let folders = folders {
@@ -73,19 +66,20 @@ extension Imap: MessageProvider {
         return MCOIndexSet(range: range)
     }
 
-    private func fetchMessagesByNumberOperation(
+    private func fetchMsgsByNumber(
         for folder: String,
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet
     ) -> Promise<[MCOIMAPMessage]> {
         return Promise { [weak self] resolve, reject in
-            self?.getImapSess()
+            guard let self = self else { return reject(AppErr.nilSelf) }
+            self.getImapSess()
                 .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: set)
                 .start { error, messages, _ in
+                    guard self.notRetrying("fetchMsgsByNumber", error, resolve, reject, retry: { self.fetchMsgsByNumber(for: folder, kind: kind, set: set) }) else { return }
                     if let error = error {
                         reject(AppErr(error))
-                    }
-                    if let messages = messages as? [MCOIMAPMessage] {
+                    } else if let messages = messages as? [MCOIMAPMessage] {
                         resolve(messages)
                     } else {
                         reject(AppErr.cast("messages as? [MCOIMAPMessage]"))
