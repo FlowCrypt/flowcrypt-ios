@@ -11,8 +11,8 @@ enum MailDestination {
 
         var path: String {
             switch self {
-                case .trash: return "[Gmail]/Trash"
-                case .inbox: return "[Gmail]/Inbox"
+            case .trash: return "[Gmail]/Trash"
+            case .inbox: return "[Gmail]/Inbox"
             }
         }
     }

@@ -83,9 +83,9 @@ final class MsgViewController: UIViewController {
         let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
         let buttons: [NavigationBarItemsView.Input]
         switch input?.path {
-            case MailDestination.Gmail.trash.path: buttons = [infoInput, trashInput]
-            case MailDestination.Gmail.inbox.path: buttons = [infoInput, archiveInput, trashInput, mailInput]
-            default: buttons = [infoInput, trashInput, mailInput]
+        case MailDestination.Gmail.trash.path: buttons = [infoInput, trashInput]
+        case MailDestination.Gmail.inbox.path: buttons = [infoInput, archiveInput, trashInput, mailInput]
+        default: buttons = [infoInput, trashInput, mailInput]
         }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
@@ -198,7 +198,7 @@ extension MsgViewController {
             }
         }.then(on: .main) { [weak self] in
             self?.handleSuccesMessage(operation: op)
-        }.catch(on: .main) { [weak self] error in
+        }.catch(on: .main) { [weak self] _ in
             self?.handleErrorOnMessage(operation: op)
         }
     }
