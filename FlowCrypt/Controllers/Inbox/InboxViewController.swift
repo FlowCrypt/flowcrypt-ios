@@ -14,7 +14,16 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
     }
 
     enum State {
-        case idle, empty, fetching(_ isInitial: Bool), fetched(_ totalNumberOfMessages: Int)
+        /// Just loaded scene
+        case idle
+        /// Fetched without any messages
+        case empty
+        /// Performing fertching of new messages
+        case fetching
+        /// Performing refreshing
+        case refresh
+        /// Fetched messages where
+        case fetched(_ totalNumberOfMessages: Int)
 
         var total: Int? {
             switch self {
@@ -22,11 +31,6 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
             default: return nil
             }
         }
-    }
-
-    enum Action {
-        case beginBatchFetch
-        case endBatchFetch(messageContext: MessageContext)
     }
 
     private var state: State = .idle
@@ -112,7 +116,7 @@ extension InboxViewController {
         messageProvider
             .fetchMessages(for: viewModel.path, count: Constants.numberOfMessagesToLoad, from: 0)
             .then { [weak self] context in
-                self?.handle(action: .endBatchFetch(messageContext: context), context: batchContext)
+                self?.handleEndFetching(with: context, context: batchContext)
             }
             .catch(on: .main) { [weak self] error in
                 self?.handle(error: error)
@@ -122,80 +126,27 @@ extension InboxViewController {
     private func loadMore(_ batchContext: ASBatchContext?) {
         guard let totalNumberOfMessages = state.total else { return }
 
+        state = .fetching
         let from = messages.count
         let diff = min(Constants.numberOfMessagesToLoad, totalNumberOfMessages - from)
         messageProvider
             .fetchMessages(for: viewModel.path, count: diff, from: from)
             .then { [weak self] context in
-                self?.handle(action: .endBatchFetch(messageContext: context), context: batchContext)
+                self?.state = .fetched(context.totalMessages)
+                self?.handleEndFetching(with: context, context: batchContext)
             }
             .catch(on: .main) { [weak self] error in
                 self?.handle(error: error)
             }
     }
 
-    private func handle(action: Action, context: ASBatchContext?) {
-        switch action {
-        case .beginBatchFetch:
-            handleBeginFetching(with: context)
-        case let .endBatchFetch(messageContext):
-            handleEndFetching(with: messageContext, context: context)
-        }
-    }
-
-    private func handleBeginFetching(with context: ASBatchContext?) {
-        switch state {
-        case .idle:
-            fetchAndRenderEmails(context)
-        case .fetched:
-            loadMore(context)
-            state = .fetching(false)
-        case .empty:
-            fetchAndRenderEmails(context)
-            state = .idle
-        default:
-            fetchAndRenderEmails(context)
-            state = .fetching(true)
-        }
-        DispatchQueue.main.async {
-            self.refreshControl.endRefreshing()
-            self.tableNode.reloadData()
-        }
-    }
-
     private func handleEndFetching(with messageContext: MessageContext, context: ASBatchContext?) {
         context?.completeBatchFetching(true)
+
         switch state {
-        case .idle:
-            handleNew(messageContext)
-        default:
-            guard case let .fetching(isInitial) = state else { return }
-
-            if isInitial {
-                handleNew(messageContext)
-            } else {
-                let count = messages.count - 1
-                let indexesToInsert = messageContext.messages
-                    .enumerated()
-                    .map { (index, _) -> Int in
-                        let indexInTableView = index + count
-                        return indexInTableView
-                    }
-                    .map { IndexPath(row: $0, section: 0) }
-
-                let indexesToDelete = [IndexPath(row: messages.count, section: 0)]
-
-                messages.append(contentsOf: messageContext.messages)
-                state = .fetched(messageContext.totalMessages)
-
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.tableNode.performBatchUpdates({
-                        self.tableNode.deleteRows(at: indexesToDelete, with: .fade)
-                        self.tableNode.insertRows(at: indexesToInsert, with: .none)
-                    }, completion: nil)
-                }
-            }
+        case .idle, .refresh: handleNew(messageContext)
+        case .fetched: handleFetched(messageContext)
+        default: break
         }
     }
 
@@ -210,6 +161,27 @@ extension InboxViewController {
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()
             self.tableNode.reloadData()
+        }
+    }
+
+    private func handleFetched(_ messageContext: MessageContext) {
+        let count = messages.count - 1
+
+        // insert new messages
+        let indexesToInsert = messageContext.messages
+            .enumerated()
+            .map { (index, _) -> Int in
+                let indexInTableView = index + count
+                return indexInTableView
+        }
+        .map { IndexPath(row: $0, section: 0) }
+
+        messages.append(contentsOf: messageContext.messages)
+        state = .fetched(messageContext.totalMessages)
+
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.tableNode.insertRows(at: indexesToInsert, with: .none)
         }
     }
 
@@ -231,7 +203,8 @@ extension InboxViewController {
     }
 
     @objc private func refresh() {
-        handle(action: .beginBatchFetch, context: nil)
+        state = .refresh
+        handleBeginFetching(nil)
     }
 
     private func btnComposeTap() {
@@ -267,10 +240,20 @@ extension InboxViewController {
     }
 
     private func delete(message _: MCOIMAPMessage, at index: Int) {
+        guard messages[safe: index] != nil else { return }
         messages.remove(at: index)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-            guard let self = self else { return }
-            self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+
+        if messages.isEmpty {
+            state = .empty
+            tableNode.reloadData()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                guard let self = self else { return }
+                let total = self.state.total ?? 0
+                let newTotalCount = total - 1
+                self.state = .fetched(newTotalCount)
+                self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+            }
         }
     }
 
@@ -286,17 +269,19 @@ extension InboxViewController {
 extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
-        case .empty: return 1
-        case .idle: return 1
-        case let .fetching(isInitial): return isInitial
-            ? messages.count + 1
-            : messages.count + 1
-        case .fetched: return messages.count
+        case .empty, .idle:
+            return 1
+        case .fetching, .fetched, .refresh:
+            return messages.count
         }
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        let height = tableNode.frame.size.height - 44.0
+        let height = tableNode.frame.size.height
+            - (navigationController?.navigationBar.frame.size.height ?? 0.0)
+            - safeAreaWindowInsets.top
+            - safeAreaWindowInsets.bottom
+
         let size = CGSize(width: tableNode.frame.size.width, height: height)
         let text = title ?? ""
 
@@ -308,7 +293,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 return TextCellNode(title: "\(text) is empty", withSpinner: false, size: size)
             case .idle:
                 return TextCellNode(title: "", withSpinner: true, size: size)
-            case .fetched:
+            case .fetched, .refresh:
                 return InboxCellNode(message: InboxCellNodeInput(self.messages[indexPath.row]))
             case .fetching:
                 guard let message = self.messages[safe: indexPath.row] else {
@@ -330,17 +315,46 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {
         switch state {
-        case .idle:
-            return true
-        case .empty:
-            return false
-        case .fetched, .fetching:
-            return messages.count < state.total ?? 0
+        case .idle: return true
+        case .empty: return false
+        case .fetched: return messages.count < state.total ?? 0
+        case .fetching: return false
+        case .refresh: return false
         }
     }
 
     func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
         context.beginBatchFetching()
-        handle(action: .beginBatchFetch, context: context)
+        handleBeginFetching(context)
     }
+
+    private func handleBeginFetching(_ context: ASBatchContext?) {
+        switch state {
+        case .idle:
+            fetchAndRenderEmails(context)
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.tableNode.reloadData()
+            }
+        case let .fetched(total):
+            if messages.count != total {
+                loadMore(context)
+            }
+        case .empty:
+            fetchAndRenderEmails(context)
+            state = .idle
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.tableNode.reloadData()
+            }
+        case .fetching:
+            break
+        case .refresh:
+            if let context = context, context.isFetching() {
+                return
+            }
+            fetchAndRenderEmails(context)
+        }
+    }
+
 }
