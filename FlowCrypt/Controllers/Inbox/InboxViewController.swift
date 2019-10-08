@@ -247,13 +247,10 @@ extension InboxViewController {
             state = .empty
             tableNode.reloadData()
         } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-                guard let self = self else { return }
-                let total = self.state.total ?? 0
-                let newTotalCount = total - 1
-                self.state = .fetched(newTotalCount)
-                self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-            }
+            let total = self.state.total ?? 0
+            let newTotalCount = total - 1
+            state = .fetched(newTotalCount)
+            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
         }
     }
 
