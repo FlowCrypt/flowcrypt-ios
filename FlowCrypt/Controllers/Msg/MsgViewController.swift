@@ -163,8 +163,10 @@ extension MsgViewController {
         guard let input = input else { return }
         hideSpinner()
         operation.text.flatMap { showToast($0) }
-        updateCompletion?(operation, input.objMessage)
-        navigationController?.popViewController(animated: true)
+
+        navigationController?.popViewController(animated: true) { [weak self] in
+            self?.updateCompletion?(operation, input.objMessage)
+        }
     }
 
     private func handleOpErr(operation: MessageAction) {
