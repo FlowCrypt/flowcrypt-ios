@@ -14,7 +14,7 @@ struct InboxCellNodeInput {
     let messageText: NSAttributedString
 
     init(_ message: MCOIMAPMessage) {
-        let email = message.header.from.displayName ?? "Empty"
+        let email = message.header.from.displayName ?? message.header.sender.mailbox ?? "(unknown sender)"
         let date = DateFormatter().formatDate(message.header.date)
         let msg = message.header.subject ?? "No subject"
         let isMessageRead = message.flags.rawValue != 0
