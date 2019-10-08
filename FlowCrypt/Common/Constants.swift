@@ -21,10 +21,12 @@ enum Constants {
         ]
     }
 
+    // TODO: update texts on failed archive/delete operation.
     enum ErrorTexts {
         enum Message {
-            static let delete = "Unable to delete message"
+            static let moveToTrash = "Unable to move message to Trash"
             static let archive = "Unable to archive message"
+            static let permanentlyDelete = "Unable to delete message"
         }
     }
 }

@@ -24,20 +24,22 @@ final class MsgViewController: UIViewController {
     }
 
     enum MessageAction {
-        case delete, archive, markAsRead
+        case moveToTrash, archive, markAsRead, permanentlyDelete
 
         var text: String? {
             switch self {
-            case .delete: return Language.moved_to_trash
+            case .moveToTrash: return Language.moved_to_trash
             case .archive: return Language.email_archived
+            case .permanentlyDelete: return Language.email_deleted
             case .markAsRead: return nil
             }
         }
 
         var error: String? {
             switch self {
-            case .delete: return Constants.ErrorTexts.Message.delete
+            case .moveToTrash: return Constants.ErrorTexts.Message.moveToTrash
             case .archive: return Constants.ErrorTexts.Message.archive
+            case .permanentlyDelete: return Constants.ErrorTexts.Message.permanentlyDelete
             case .markAsRead: return nil
             }
         }
@@ -79,9 +81,12 @@ final class MsgViewController: UIViewController {
         let archiveInput = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
         let trashInput = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
         let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
-        let buttons = input?.path == MailDestination.Gmail.trash.path
-            ? [infoInput, archiveInput, mailInput]
-            : [infoInput, archiveInput, trashInput, mailInput]
+        let buttons: [NavigationBarItemsView.Input]
+        switch input?.path {
+        case MailDestination.Gmail.trash.path: buttons = [infoInput, trashInput]
+        case MailDestination.Gmail.inbox.path: buttons = [infoInput, archiveInput, trashInput, mailInput]
+        default: buttons = [infoInput, trashInput, mailInput]
+        }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
 
@@ -154,7 +159,7 @@ extension MsgViewController {
             }
     }
 
-    private func handleSuccesMessage(operation: MessageAction) {
+    private func handleOpSuccess(operation: MessageAction) {
         guard let input = input else { return }
         hideSpinner()
         operation.text.flatMap { showToast($0) }
@@ -164,7 +169,7 @@ extension MsgViewController {
         }
     }
 
-    private func handleErrorOnMessage(operation: MessageAction) {
+    private func handleOpErr(operation: MessageAction) {
         hideSpinner()
         operation.error.flatMap { showToast($0) }
     }
@@ -184,13 +189,26 @@ extension MsgViewController {
     @objc private func handleTrashTap() {
         guard let input = input else { return }
         showSpinner()
-        imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path)
-            .then(on: .main) { [weak self] _ in
-                self?.handleSuccesMessage(operation: .delete)
+        let op = input.path != MailDestination.Gmail.trash.path ? MessageAction.moveToTrash : MessageAction.permanentlyDelete
+        Promise<Bool> { [weak self] () -> Bool in
+            guard let self = self else { throw AppErr.nilSelf }
+            if op == MessageAction.permanentlyDelete {
+                input.objMessage.flags = MCOMessageFlag.deleted
+                guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
+                try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
+            } else {
+                try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path))
             }
-            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
-                self?.handleErrorOnMessage(operation: .delete)
+            return true
+        }.then(on: .main) { [weak self] didPerformOp in
+            if didPerformOp {
+                self?.handleOpSuccess(operation: op)
+            } else {
+                self?.hideSpinner()
             }
+        }.catch(on: .main) { [weak self] _ in
+            self?.handleOpErr(operation: op)
+        }
     }
 
     @objc private func handleArchiveTap() {
@@ -199,10 +217,10 @@ extension MsgViewController {
         input.objMessage.flags = MCOMessageFlag.deleted
         imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] _ in
-                self?.handleSuccesMessage(operation: .archive)
+                self?.handleOpSuccess(operation: .archive)
             }
             .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
-                self?.handleErrorOnMessage(operation: .archive)
+                self?.handleOpErr(operation: .archive)
             }
     }
 
