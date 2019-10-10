@@ -126,7 +126,7 @@ extension UIViewController {
         }
     }
 
-    func showSpinner(_ message: String = Language.loading, isUserInteractionEnabled: Bool = false) {
+    func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
         DispatchQueue.main.async {
             let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
             spinner.label.text = message

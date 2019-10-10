@@ -9,8 +9,14 @@ final class SignInViewController: UIViewController {
     // TODO: Inject as a dependency
     private let userService = UserService.shared
 
-    @IBOutlet var signInWithGmailButton: UIButton!
-    @IBOutlet var signInWithOutlookButton: UIButton!
+    @IBOutlet weak var signInWithGmailButton: UIButton!
+    @IBOutlet weak var signInWithOutlookButton: UIButton!
+    @IBOutlet weak var privacyButton: UIButton!
+    @IBOutlet weak var termsButton: UIButton!
+    @IBOutlet weak var securityButton: UIButton!
+    @IBOutlet weak var descriptionText: UILabel!
+    @IBOutlet weak var gmailButton: UIButton!
+    @IBOutlet weak var outlookButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,9 +24,18 @@ final class SignInViewController: UIViewController {
     }
 
     private func setup() {
-        signInWithGmailButton.setViewBorder(1.0, borderColor: UIColor.lightGray, cornerRadius: 5.0)
-        signInWithOutlookButton.setViewBorder(1.0, borderColor: UIColor.lightGray, cornerRadius: 5.0)
         GIDSignIn.sharedInstance().uiDelegate = self
+
+        [signInWithGmailButton, signInWithOutlookButton].forEach {
+            $0.bordered(color: .lightGray, width: 1).cornered(5.0)
+        }
+
+        privacyButton.setTitle("sign_in_privacy".localized, for: .normal)
+        termsButton.setTitle("sign_in_terms".localized, for: .normal)
+        securityButton.setTitle("sign_in_security".localized, for: .normal)
+        gmailButton.setTitle("sign_in_gmail".localized, for: .normal)
+        outlookButton.setTitle("sign_in_outlook".localized, for: .normal)
+        descriptionText.text = "sign_in_description".localized
     }
 
     override func viewWillAppear(_ animated: Bool) {

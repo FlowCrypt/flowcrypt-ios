@@ -7,8 +7,8 @@ import UIKit
 
 final class MyMenuTableViewController: UIViewController {
     private enum Constants {
-        static let allMail = "All Mail"
-        static let inbox = "Inbox"
+        static let allMail = "folder_all_mail".localized
+        static let inbox = "folder_all_inbox".localized
         static let cellHeight: CGFloat = 60
     }
 
@@ -78,7 +78,7 @@ final class MyMenuTableViewController: UIViewController {
                 self?.handleNewFolders(with: folders)
             }
             .catch { [weak self] error in
-                self?.showAlert(error: error, message: Language.could_not_fetch_folders)
+                self?.showAlert(error: error, message: "error_fetch_folders".localized)
             }
     }
 

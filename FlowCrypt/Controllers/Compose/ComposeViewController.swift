@@ -23,19 +23,6 @@ final class ComposeViewController: UIViewController {
         let replyToMime: Data?
     }
 
-    private enum Constants {
-        static let yourMessage = "Your message"
-        static let sending = "Sending"
-        static let enterRecipient = "Enter recipient"
-        static let noPgp = "Recipient doesn't seem to have encryption set up"
-        static let noSenderPgp = "Missing sender public key. Is FlowCrypt iOS app well set up?"
-        static let composeError = "Could not compose message"
-        static let replySent = "Reply successfully sent"
-        static let messageSent = "Encrypted message sent"
-        static let enterSubject = "Enter subject"
-        static let enterMessage = "Enter secure message"
-    }
-
     @IBOutlet var txtRecipient: UITextField!
     @IBOutlet var txtSubject: UITextField!
     @IBOutlet var txtMessage: UITextView!
@@ -169,26 +156,32 @@ extension ComposeViewController {
             let email = txtRecipient.text,
             let text = txtMessage.text
         else { return }
+
+        let pgpText = "compose_missed_public".localized
         let subject = viewModel.isReply
             ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
             : txtSubject.text ?? "(no subject)"
+        let message = viewModel.isReply
+            ? "compose_reply_successfull".localized
+            : "compose_sent".localized
 
-        showSpinner(Constants.sending)
+        showSpinner("sending_title".localized)
 
         Promise<Void> { [weak self] in
             guard let self = self else { return }
             let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
-            guard let recipientPubkey = lookupRes.armored else { return self.showAlert(message: Constants.noPgp) }
+            guard let recipientPubkey = lookupRes.armored else { return self.showAlert(message: pgpText) }
             let realm = try Realm() // TODO: Anton - Refactor to use db service
-            guard let myPubkey = realm.objects(KeyInfo.self).map({ $0.public }).first else { return self.showAlert(message: Constants.noSenderPgp) }
+
+            guard let myPubkey = realm.objects(KeyInfo.self).map({ $0.public }).first else { return self.showAlert(message: pgpText) }
             let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], subject: subject, message: text, email: email)
             try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
         }.then(on: .main) { [weak self] in
             self?.hideSpinner()
-            self?.showToast(self?.viewModel.isReply ?? false ? Constants.replySent : Constants.messageSent)
+            self?.showToast(message)
             self?.navigationController?.popViewController(animated: true)
         }.catch(on: .main) { [weak self] error in
-            self?.showAlert(error: error, message: Constants.composeError)
+            self?.showAlert(error: error, message: "compose_error".localized)
         }
     }
 
@@ -210,15 +203,15 @@ extension ComposeViewController {
 
     private func isInputValid() -> Bool {
         guard txtRecipient.text?.hasContent ?? false else {
-            showAlert(message: Constants.enterRecipient)
+            showAlert(message: "compose_enter_recipient".localized)
             return false
         }
         guard viewModel.isReply || txtSubject.text?.hasContent ?? false else {
-            showAlert(message: Constants.enterSubject)
+            showAlert(message: "compose_enter_subject".localized)
             return false
         }
         guard txtMessage.text?.hasContent ?? false else {
-            showAlert(message: Constants.enterMessage)
+            showAlert(message: "compose_enter_secure".localized)
             return false
         }
         return true
@@ -229,7 +222,9 @@ extension ComposeViewController {
 
 extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == Constants.yourMessage || textView.text == Language.message_placeholder {
+        let placeholder = "message_compose_secure".localized
+        
+        if textView.text == "message_your".localized || textView.text == placeholder {
             txtMessage.textColor = .black
             txtMessage.text = ""
         }
@@ -238,7 +233,7 @@ extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text == "" || textView.text == "\n" {
             txtMessage.textColor = UIColor.lightGray
-            txtMessage.text = Constants.yourMessage
+            txtMessage.text = "message_your".localized
         }
     }
 

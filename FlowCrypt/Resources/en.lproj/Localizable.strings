@@ -1,0 +1,55 @@
+// COMMON
+"loading_title" = "Loading";
+"sending_title" = "Sending";
+
+// EMAIL
+"email_removed" = "Email moved to Trash";
+"email_deleted" = "Email deleted";
+"email_archived" = "Email archived";
+
+// MESSAGE
+"message_failed_open" = "Could not open message";
+"message_failed_load" = "Failed to load messages";
+"message_your" = "Your message";
+"message_compose_secure" = "Compose Secure Message";
+
+// REPLY
+"reply_title" = "Your reply"; // not used
+
+// EROOR
+"error_internet_connection" = "No internet connection"; // not used
+"error_google_service" = "Could not configure google services"; // not used
+"error_background_core" = "Background core service error"; // not used
+"error_fetch_folders" = "Could not fetch folders";
+"error_move_trash" = "Unable to move message to Trash";
+"error_archive" = "Unable to archive message";
+"error_permanently_delete" = "Unable to delete message";
+
+// Compose
+"compose_enter_recipient" = "Enter recipient";
+"compose_pgp" = "Recipient doesn't seem to have encryption set up";
+"compose_missed_public" = "Missing sender public key. Is FlowCrypt iOS app well set up?";
+"compose_error" = "Could not compose message";
+"compose_reply_successfull" = "Reply successfully sent";
+"compose_sent" = "Encrypted message sent";
+"compose_enter_subject" = "Enter subject";
+"compose_enter_secure" = "Enter secure message";
+
+"folder_all_mail" = "All Mail";
+"folder_all_inbox" = "Inbox";
+
+
+// Sign in
+"sign_in_privacy" = "Privacy";
+"sign_in_terms" = "Terms";
+"sign_in_security" = "Security";
+"sign_in_description" = "Connect your email account\nto send encrypted messages";
+"sign_in_gmail" = "Continue with Gmail";
+"sign_in_outlook" = "Continue with Outlook";
+
+// Setup
+"setup_title" = "Set up FlowCrypt";
+"setup_description" = "OpenPGP email encryption";
+"setup_enter" = "Enter your pass phrase";
+"setup_load" = "Load Account";
+"setup_use_another" = "Use Another Account";

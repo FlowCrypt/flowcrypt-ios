@@ -42,10 +42,10 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uS1-7C-blF">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="583"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="562.5"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connect your email account  to send encrypted messages" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xxf-nw-Qjx">
-                                                <rect key="frame" x="0.0" y="302" width="414" height="41"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connect" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xxf-nw-Qjx">
+                                                <rect key="frame" x="0.0" y="302" width="414" height="20.5"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="200" id="pEo-Hv-E8s"/>
                                                 </constraints>
@@ -93,7 +93,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8pF-mJ-6zr">
-                                                <rect key="frame" x="20" y="423" width="374" height="50"/>
+                                                <rect key="frame" x="20" y="402.5" width="374" height="50"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="50" id="TYT-sM-vmd"/>
                                                 </constraints>
@@ -107,7 +107,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ge5-RW-mgl">
-                                                <rect key="frame" x="20" y="503" width="374" height="50"/>
+                                                <rect key="frame" x="20" y="482.5" width="374" height="50"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="50" id="f9v-YG-GNX"/>
                                                 </constraints>
@@ -212,8 +212,14 @@
                     </view>
                     <navigationItem key="navigationItem" id="NT5-bo-cEy"/>
                     <connections>
+                        <outlet property="descriptionText" destination="Xxf-nw-Qjx" id="Hkp-VW-DJS"/>
+                        <outlet property="gmailButton" destination="8pF-mJ-6zr" id="Q0b-Oj-lAE"/>
+                        <outlet property="outlookButton" destination="ge5-RW-mgl" id="eCS-Ks-Puj"/>
+                        <outlet property="privacyButton" destination="Pge-Ew-kc2" id="m2Y-p9-nZP"/>
+                        <outlet property="securityButton" destination="YS0-gm-dao" id="3So-7B-kOF"/>
                         <outlet property="signInWithGmailButton" destination="8pF-mJ-6zr" id="0Tg-wh-rVc"/>
                         <outlet property="signInWithOutlookButton" destination="ge5-RW-mgl" id="YH0-wk-WUb"/>
+                        <outlet property="termsButton" destination="3rU-QG-DmR" id="pgh-Kv-XHo"/>
                         <segue destination="rhx-os-B3W" kind="show" identifier="RecoverSegue" id="W19-R4-QOF"/>
                     </connections>
                 </viewController>
@@ -285,17 +291,10 @@
                                                     <outlet property="delegate" destination="rhx-os-B3W" id="Chj-RN-7Rh"/>
                                                 </connections>
                                             </textField>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nC7-mo-qZJ">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nC7-mo-qZJ">
                                                 <rect key="frame" x="20" y="439" width="374" height="30"/>
-                                                <state key="normal">
-                                                    <attributedString key="attributedTitle">
-                                                        <fragment content="Use Another Account">
-                                                            <attributes>
-                                                                <font key="NSFont" metaFont="system" size="15"/>
-                                                            </attributes>
-                                                        </fragment>
-                                                    </attributedString>
-                                                </state>
+                                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
+                                                <state key="normal" title="Use Another Account"/>
                                                 <connections>
                                                     <action selector="useOtherAccount:" destination="rhx-os-B3W" eventType="touchUpInside" id="cOU-Jt-6Qf"/>
                                                 </connections>
@@ -374,9 +373,11 @@
                     <navigationItem key="navigationItem" id="Ge7-ku-rGP"/>
                     <connections>
                         <outlet property="btnLoadAccount" destination="f9Y-F4-Vti" id="GSw-rP-QwP"/>
+                        <outlet property="btnUseAnother" destination="nC7-mo-qZJ" id="PEd-lA-ayO"/>
                         <outlet property="passPhaseTextField" destination="hCk-l6-78X" id="ZSh-3X-kmV"/>
                         <outlet property="scrollView" destination="7Bh-Om-1rx" id="0Dw-mv-lxv"/>
                         <outlet property="subTitleLabel" destination="sDK-PD-Lej" id="7xz-Hw-mQr"/>
+                        <outlet property="titleLabel" destination="A1i-TL-SnL" id="Aby-WQ-sig"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a8a-jX-2ip" userLabel="First Responder" sceneMemberID="firstResponder"/>

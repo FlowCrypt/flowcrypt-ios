@@ -187,7 +187,7 @@ extension InboxViewController {
 
     private func handle(error: Error) {
         refreshControl.endRefreshing()
-        showAlert(error: error, message: Language.failedToLoadMessages)
+        showAlert(error: error, message: "message_failed_load".localized)
     }
 }
 

@@ -28,18 +28,18 @@ final class MsgViewController: UIViewController {
 
         var text: String? {
             switch self {
-            case .moveToTrash: return Language.moved_to_trash
-            case .archive: return Language.email_archived
-            case .permanentlyDelete: return Language.email_deleted
+            case .moveToTrash: return "email_removed".localized
+            case .archive: return "email_archived".localized
+            case .permanentlyDelete: return "email_deleted".localized
             case .markAsRead: return nil
             }
         }
 
         var error: String? {
             switch self {
-            case .moveToTrash: return Constants.ErrorTexts.Message.moveToTrash
-            case .archive: return Constants.ErrorTexts.Message.archive
-            case .permanentlyDelete: return Constants.ErrorTexts.Message.permanentlyDelete
+            case .moveToTrash: return "error_move_trash".localized
+            case .archive: return "error_archive".localized
+            case .permanentlyDelete: return "error_permanently_delete".localized
             case .markAsRead: return nil
             }
         }
@@ -103,7 +103,7 @@ final class MsgViewController: UIViewController {
 extension MsgViewController {
     private func fetchDecryptAndRenderMsg() {
         guard let input = input else { return }
-        showSpinner(Language.loading, isUserInteractionEnabled: true)
+        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
         Promise { [weak self] in
             guard let self = self else { return }
             let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
@@ -131,7 +131,7 @@ extension MsgViewController {
             showToast("Message not found in folder: \(path)")
         } else {
             // todo - this should be a retry / cancel alert
-            showAlert(error: error, message: Language.could_not_open_message + "\n\n\(error)")
+            showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
         }
         navigationController?.popViewController(animated: true)
     }
