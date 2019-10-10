@@ -29,8 +29,10 @@ final class SetupViewController: UIViewController {
 
     @IBOutlet var passPhaseTextField: UITextField!
     @IBOutlet var btnLoadAccount: UIButton!
+    @IBOutlet weak var btnUseAnother: UIButton!
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var subTitleLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
 
     private var fetchedEncryptedPrvs: [KeyDetails] = []
 
@@ -69,6 +71,12 @@ extension SetupViewController {
         }
         passPhaseTextField.delegate = self
         observeKeyboardNotifications()
+
+        passPhaseTextField.placeholder = "setup_enter".localized
+        btnLoadAccount.setTitle("setup_load".localized, for: .normal)
+        btnUseAnother.setTitle("setup_use_another".localized, for: .normal)
+        subTitleLabel.text = "setup_description".localized
+        titleLabel.text = "setup_title".localized
     }
 
     private func fetchBackupsAndRenderSetupView() {

@@ -5,12 +5,25 @@
 import UIKit
 
 extension UIView {
-    // TODO: Anton - replace this
-    func setViewBorder(_ borderWidth: CGFloat, borderColor: UIColor, cornerRadius: CGFloat) {
-        layer.borderWidth = borderWidth
-        layer.borderColor = borderColor.cgColor
-        layer.cornerRadius = cornerRadius
+    @discardableResult
+    func bordered(color: UIColor, width: CGFloat) -> Self {
+        layer.borderColor = color.cgColor
+        layer.borderWidth = width
+        return self
     }
+
+    @discardableResult
+    func cornered(_ cornerRadius: CGFloat) -> Self {
+        layer.cornerRadius = cornerRadius
+        return self
+    }
+}
+
+func borderStyle(color: UIColor, width: CGFloat) -> (UIView) -> Void {
+  return {
+    $0.layer.borderColor = color.cgColor
+    $0.layer.borderWidth = width
+  }
 }
 
 extension UITextField {
