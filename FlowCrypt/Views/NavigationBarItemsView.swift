@@ -11,7 +11,7 @@ import UIKit
 final class NavigationBarItemsView: UIBarButtonItem {
     private enum Constants {
         static let buttonSize = CGSize(width: 30, height: 30)
-        static let interItemSpacing: CGFloat = 8
+        static let interItemSpacing: CGFloat = 16
     }
 
     struct Input {
