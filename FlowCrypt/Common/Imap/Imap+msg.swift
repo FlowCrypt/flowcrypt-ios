@@ -33,7 +33,7 @@ extension Imap {
     func pushUpdatedMsgFlags(msg: MCOIMAPMessage, folder: String) -> Promise<Void> {
         return Promise { resolve, reject in
             self.getImapSess()
-                .storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(msg.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: msg.flags)
+                .storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(msg.uid)), kind: MCOIMAPStoreFlagsRequestKind.set, flags: msg.flags)
                 .start(self.finalizeVoid("updateMsgFlags", resolve, reject, retry: { self.pushUpdatedMsgFlags(msg: msg, folder: folder) }))
         }
     }
