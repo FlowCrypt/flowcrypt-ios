@@ -4,7 +4,6 @@
 
 import AsyncDisplayKit
 import Promises
-import RxSwift
 import UIKit
 
 final class InboxViewController: ASViewController<ASDisplayNode> {
@@ -35,20 +34,25 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     private var state: State = .idle
 
-    private let messageProvider: MessageProvider = Imap.instance
+    private let messageProvider: MessageProvider
+    private let viewModel: InboxViewModel
     private var messages: [MCOIMAPMessage] = []
-    private var viewModel: InboxViewModel
+    private let tableNode: ASTableNode
 
-    private var tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
 
     private let refreshControl = UIRefreshControl()
 
-    init(_ viewModel: InboxViewModel = .empty) {
+    init(
+        _ viewModel: InboxViewModel = .empty,
+        messageProvider: MessageProvider = Imap.instance
+    ) {
         self.viewModel = viewModel
-        tableNode = ASTableNode(style: .plain)
+        self.messageProvider = messageProvider
+        self.tableNode = ASTableNode(style: .plain)
+
         super.init(node: ASDisplayNode())
 
         tableNode.delegate = self
