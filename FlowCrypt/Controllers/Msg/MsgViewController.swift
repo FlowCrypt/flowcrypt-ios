@@ -193,9 +193,10 @@ extension MsgViewController {
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
             if op == MessageAction.permanentlyDelete {
-                input.objMessage.flags = MCOMessageFlag.deleted
+                input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
                 guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
                 try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
+                try await(self.imap.expungeMsgs(folder: input.path))
             } else {
                 try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path))
             }
@@ -214,7 +215,7 @@ extension MsgViewController {
     @objc private func handleArchiveTap() {
         guard let input = input else { return }
         showSpinner()
-        input.objMessage.flags = MCOMessageFlag.deleted
+        input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
         imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] _ in
                 self?.handleOpSuccess(operation: .archive)
