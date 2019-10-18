@@ -24,7 +24,7 @@ final class SignInViewController: UIViewController {
     }
 
     private func setup() {
-        GIDSignIn.sharedInstance().uiDelegate = self
+        GIDSignIn.sharedInstance()?.presentingViewController = self
 
         [signInWithGmailButton, signInWithOutlookButton].forEach {
             $0.bordered(color: .lightGray, width: 1).cornered(5.0)
@@ -106,17 +106,5 @@ extension SignInViewController {
     @IBAction func securityPressed(_: Any) {
         guard let url = URL(string: "https://flowcrypt.com/docs/technical/security.html") else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
-    }
-}
-
-extension SignInViewController: GIDSignInUIDelegate {
-    func sign(_: GIDSignIn!, present viewController: UIViewController!) {
-        logDebug(117, "GoogleApi present vc")
-        present(viewController, animated: true, completion: nil)
-    }
-
-    func sign(_: GIDSignIn!, dismiss _: UIViewController!) {
-        logDebug(118, "GoogleApi dismiss vc")
-        dismiss(animated: true, completion: nil)
     }
 }
