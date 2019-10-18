@@ -9,6 +9,15 @@ platform :ios do
   end
 
   desc "Run Tests"
+  lane :test_ui do
+    #scan
+    scan(
+      scheme: "FlowCryptUITests"
+    )
+
+  end
+
+  desc "Run UI Tests"
   lane :test do
     #scan
     scan(
@@ -21,12 +30,18 @@ platform :ios do
   desc "Build without code sign. Just to see if the build is working"
   lane :build do |options|
     gym(
-      scheme: "HelloWorld",
+      scheme: "FlowCrypt",
       skip_package_ipa: true,
       skip_archive: true,
       silent: true,
       clean: true
     )
+  end
+
+  desc "Build app, run tests, run UI test"
+  lane :do_everything do 
+    build
+    test
   end
 end
 
