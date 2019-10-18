@@ -30,12 +30,35 @@ final class SignInViewController: UIViewController {
             $0.bordered(color: .lightGray, width: 1).cornered(5.0)
         }
 
-        privacyButton.setTitle("sign_in_privacy".localized, for: .normal)
-        termsButton.setTitle("sign_in_terms".localized, for: .normal)
-        securityButton.setTitle("sign_in_security".localized, for: .normal)
-        gmailButton.setTitle("sign_in_gmail".localized, for: .normal)
-        outlookButton.setTitle("sign_in_outlook".localized, for: .normal)
-        descriptionText.text = "sign_in_description".localized
+        privacyButton.do {
+            $0.setTitle("sign_in_privacy".localized, for: .normal)
+            $0.accessibilityLabel = "privacy"
+        }
+
+        termsButton.do {
+            $0.setTitle("sign_in_terms".localized, for: .normal)
+            $0.accessibilityLabel = "terms"
+        }
+
+        securityButton.do {
+            $0.setTitle("sign_in_security".localized, for: .normal)
+            $0.accessibilityLabel = "security"
+        }
+
+        gmailButton.do {
+            $0.setTitle("sign_in_gmail".localized, for: .normal)
+            $0.accessibilityLabel = "gmail"
+        }
+
+        outlookButton.do {
+            $0.setTitle("sign_in_outlook".localized, for: .normal)
+            $0.accessibilityLabel = "outlook"
+        }
+
+        descriptionText.do {
+            $0.text = "sign_in_description".localized
+            $0.accessibilityLabel = "description"
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

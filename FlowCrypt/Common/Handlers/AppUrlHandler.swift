@@ -12,7 +12,7 @@ import GoogleSignIn
 struct AppUrlHandler {
     private let googleApi: GIDSignIn
 
-    init(googleApi: GIDSignIn) {
+    init(googleApi: GIDSignIn = GIDSignIn.sharedInstance()) {
         self.googleApi = googleApi
     }
 
