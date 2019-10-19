@@ -6,7 +6,6 @@ platform :ios do
   before_all do
     # installed via the semaphore plugin with `fastlane add_plugin semaphore`
     setup_semaphore
-    cocoapod_update
   end
 
   desc "Cocoapod update"
@@ -28,7 +27,7 @@ platform :ios do
 
   desc "Run UI Tests"
   lane :test do
-    #scan
+    cocoapod_update
     scan(
       scheme: "FlowCryptTests"
     )
