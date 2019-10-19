@@ -6,6 +6,15 @@ platform :ios do
   before_all do
     # installed via the semaphore plugin with `fastlane add_plugin semaphore`
     setup_semaphore
+    cocoapod_update
+  end
+
+  desc "Cocoapod update"
+  lane: cocoapod_update do 
+    cocoapods(
+      clean: true,
+      podfile: "./CustomPodfile"
+    )
   end
 
   desc "Run Tests"
