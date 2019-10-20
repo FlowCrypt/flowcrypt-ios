@@ -20,9 +20,12 @@ blocks:
       prologue:
         commands:
           - checkout
-          - bundle update 
-          - pod deintegrate
-          - pod update
+          - cache restore
+          - bundle install --path vendor/bundle
+          - cache store
+          - cache restore pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock),pods-master    
+          - pod install    
+          - cache store pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock) Pods
       jobs:
         - name: FlowCryptTests
           commands:
