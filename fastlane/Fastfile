@@ -18,8 +18,9 @@ platform :ios do
 
   desc "Run Tests"
   lane :test_ui do
-    scan(
-      scheme: "FlowCryptUITests"
+    run_tests(
+      scheme: "FlowCryptUITests",
+      devices: ["iPhone Xr"]
     )
 
   end
@@ -50,9 +51,9 @@ platform :ios do
     cocoapod_update
     build
     test
-    test_ui
+    #test_ui
 
   end
-  
+
 end
 

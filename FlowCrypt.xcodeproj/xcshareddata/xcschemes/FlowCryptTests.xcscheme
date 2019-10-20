@@ -7,15 +7,29 @@
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A3DAD5FA22E4574A00F2C4CD"
                BuildableName = "FlowCryptTests.xctest"
                BlueprintName = "FlowCryptTests"
+               ReferencedContainer = "container:FlowCrypt.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "9FDF3640235A1B0100614596"
+               BuildableName = "FlowCryptUITests.xctest"
+               BlueprintName = "FlowCryptUITests"
                ReferencedContainer = "container:FlowCrypt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -37,9 +51,17 @@
                ReferencedContainer = "container:FlowCrypt.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "9FDF3640235A1B0100614596"
+               BuildableName = "FlowCryptUITests.xctest"
+               BlueprintName = "FlowCryptUITests"
+               ReferencedContainer = "container:FlowCrypt.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -51,17 +73,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A3DAD5FA22E4574A00F2C4CD"
-            BuildableName = "FlowCryptTests.xctest"
-            BlueprintName = "FlowCryptTests"
-            ReferencedContainer = "container:FlowCrypt.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
       <LocationScenarioReference
          identifier = "com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier"
          referenceType = "1">
