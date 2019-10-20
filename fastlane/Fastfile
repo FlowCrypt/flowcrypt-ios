@@ -9,29 +9,24 @@ platform :ios do
   end
 
   desc "Cocoapod update"
-  lane: cocoapod_update do 
+  lane :cocoapod_update do 
     cocoapods(
-      clean: true,
-      podfile: "./CustomPodfile"
+      repo_update: true
     )
   end
 
   desc "Run Tests"
   lane :test_ui do
-    #scan
     scan(
       scheme: "FlowCryptUITests"
     )
-
   end
 
   desc "Run UI Tests"
   lane :test do
-    cocoapod_update
     scan(
       scheme: "FlowCryptTests"
     )
-
   end
 
   desc "Build"
