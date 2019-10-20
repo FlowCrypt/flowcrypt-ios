@@ -23,9 +23,6 @@ blocks:
           - cache restore
           - bundle update 
           - cache store
-          - cache restore pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock),pods-master
-          - pod install
-          - cache store pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock) Pods
       jobs:
         - name: FlowCryptTests
           commands:
