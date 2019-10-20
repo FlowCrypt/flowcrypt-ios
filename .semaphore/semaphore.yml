@@ -21,8 +21,11 @@ blocks:
         commands:
           - checkout
           - cache restore
-          - bundle update
+          - bundle update --path vendor/bundle
           - cache store
+          - cache restore pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock),pods-master
+          - pod install
+          - cache store pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock) Pods
       jobs:
         - name: FlowCryptTests
           commands:
@@ -30,5 +33,5 @@ blocks:
             # Run tests of iOS and Mac app on a simulator or connected device
             # See https://docs.fastlane.tools/actions/scan/
 #            - bundle update fastlane
-            - bundle exec fastlane do_everything
+            - bundle exec fastlane test
 
