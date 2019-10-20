@@ -13,6 +13,7 @@ platform :ios do
     cocoapods(
       repo_update: true
     )
+
   end
 
   desc "Run Tests"
@@ -20,6 +21,7 @@ platform :ios do
     scan(
       scheme: "FlowCryptUITests"
     )
+
   end
 
   desc "Run UI Tests"
@@ -27,6 +29,7 @@ platform :ios do
     scan(
       scheme: "FlowCryptTests"
     )
+
   end
 
   desc "Build"
@@ -39,6 +42,7 @@ platform :ios do
       silent: true,
       clean: true
     )
+
   end
 
   desc "Build app, run tests, run UI test"
@@ -47,6 +51,8 @@ platform :ios do
     build
     test
     test_ui
+
   end
+  
 end
 
