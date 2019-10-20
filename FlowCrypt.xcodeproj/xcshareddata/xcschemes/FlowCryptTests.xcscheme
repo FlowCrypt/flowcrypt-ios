@@ -7,10 +7,10 @@
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A3DAD5FA22E4574A00F2C4CD"
@@ -84,6 +84,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "A3DAD5FA22E4574A00F2C4CD"
+            BuildableName = "FlowCryptTests.xctest"
+            BlueprintName = "FlowCryptTests"
+            ReferencedContainer = "container:FlowCrypt.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
