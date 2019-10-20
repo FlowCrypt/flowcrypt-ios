@@ -20,9 +20,7 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cache restore
           - bundle update 
-          - cache store
           - pod deintegrate
       jobs:
         - name: FlowCryptTests
