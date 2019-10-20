@@ -11,7 +11,7 @@ platform :ios do
   desc "Cocoapod update"
   lane :cocoapod_update do 
     cocoapods(
-      repo_update: true
+      try_repo_update_on_error: true
     )
 
   end
