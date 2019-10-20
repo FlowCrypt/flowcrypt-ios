@@ -21,7 +21,7 @@ blocks:
         commands:
           - checkout
           - cache restore
-          - bundle update --path vendor/bundle
+          - bundle update
           - cache store
       jobs:
         - name: FlowCryptTests
