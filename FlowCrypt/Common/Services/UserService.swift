@@ -52,7 +52,7 @@ final class UserService: NSObject, UserServiceType {
             guard let self = self else { return }
 
             DispatchQueue.main.async {
-                self.googleManager.signInSilently()
+                self.googleManager.restorePreviousSignIn()
             }
 
             self.onNewToken = { token in

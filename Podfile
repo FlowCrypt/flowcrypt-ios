@@ -1,6 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, '12.2'
 
+
 target 'FlowCrypt' do
   use_frameworks!
   pod 'GoogleSignIn'
@@ -28,4 +29,10 @@ target 'FlowCryptTests' do
   pod 'RxBlocking', '~> 5'
   pod 'RxTest', '~> 5'
   inherit! :search_paths
+end
+
+target 'FlowCryptUITests' do
+  use_frameworks!
+  pod 'GoogleSignIn'
+
 end

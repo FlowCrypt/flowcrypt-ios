@@ -2,10 +2,11 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
 import UIKit
+import Promises
+import AsyncDisplayKit
 
-final class MyMenuTableViewController: UIViewController {
+final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
         static let allMail = "folder_all_mail".localized
         static let inbox = "folder_all_inbox".localized
@@ -16,13 +17,10 @@ final class MyMenuTableViewController: UIViewController {
         case header = 0, folders, service
     }
 
-    // TODO: Inject as a dependency
-    private let foldersProvider: FoldersProvider = Imap.instance
-    private let dataManager = DataManager.shared
-    private let userService = UserService.shared
-    private let router = GlobalRouter()
-
-    private let tableView: UITableView = UITableView()
+    private let foldersProvider: FoldersProvider
+    private let dataManager: DataManagerType
+    private let userService: UserServiceType
+    private let router: GlobalRouterType
 
     private lazy var headerViewModel: MenuHeaderViewModel = {
         let name = dataManager.currentUser()?.name
@@ -38,6 +36,26 @@ final class MyMenuTableViewController: UIViewController {
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] = FolderViewModel.menuItems()
+    private let tableNode: ASTableNode
+
+    init(
+        foldersProvider: FoldersProvider = Imap.instance,
+        dataManager: DataManagerType = DataManager.shared,
+        userService: UserServiceType = UserService.shared,
+        globalRouter: GlobalRouterType = GlobalRouter(),
+        tabelNode: ASTableNode = ASTableNode()
+    ) {
+        self.foldersProvider = foldersProvider
+        self.dataManager = dataManager
+        self.userService = userService
+        self.router = globalRouter
+        self.tableNode = tabelNode
+        super.init(node: ASDisplayNode())
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // Due to Bug in ENSideMenu
     // we need to use this property to setup UI in viewDidAppear
@@ -47,6 +65,7 @@ final class MyMenuTableViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+
         if isFirstLaunch {
             setupUI()
             fetchFolders()
@@ -54,21 +73,32 @@ final class MyMenuTableViewController: UIViewController {
         isFirstLaunch = false
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        tableNode.frame = CGRect(
+            x: 0,
+            y: -safeAreaWindowInsets.top,
+            width: node.bounds.size.width,
+            height: node.bounds.size.height + safeAreaWindowInsets.top
+        )
+    }
+
     private func setupUI() {
-        tableView.setup {
+        node.addSubnode(tableNode)
+        tableNode.setup {
             $0.dataSource = self
             $0.delegate = self
-            $0.register(cellType: MenuCell.self)
-            $0.register(cellType: HeaderCell.self)
-            $0.showsVerticalScrollIndicator = false
-            $0.alwaysBounceVertical = false
-            $0.separatorStyle = .none
+
+            $0.view.showsVerticalScrollIndicator = false
+            $0.view.separatorStyle = .none
+            $0.view.tableHeaderView = UIView().then {
+                $0.backgroundColor = .main
+                $0.frame.size.height = safeAreaWindowInsets.top
+            }
+
             $0.reloadData()
         }
-        view.addSubview(tableView)
-
-        let topInset = safeAreaWindowInsets.top
-        view.constrainToEdges(tableView, insets: UIEdgeInsets(top: -topInset, left: 0, bottom: 0, right: 0))
     }
 
     private func fetchFolders() {
@@ -96,16 +126,16 @@ final class MyMenuTableViewController: UIViewController {
                 }
                 return false
             })
-        tableView.reloadData()
+        tableNode.reloadData()
     }
 }
 
-extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in _: UITableView) -> Int {
+extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
+    func numberOfSections(in tableNode: ASTableNode) -> Int {
         return Sections.allCases.count
     }
 
-    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case Sections.header.rawValue: return 1
         case Sections.folders.rawValue: return folders.count
@@ -114,32 +144,20 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
 
-    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.section {
-        case Sections.header.rawValue: return 110
-        case Sections.folders.rawValue: return 40
-        case Sections.service.rawValue: return 40
-        default: return 0
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self else { return ASCellNode() }
+            switch indexPath.section {
+            case Sections.header.rawValue: return HeaderNode(input: self.headerViewModel)
+            case Sections.folders.rawValue: return MenuNode(input: self.folders[safe: indexPath.row])
+            case Sections.service.rawValue: return MenuNode(input: self.serviceItems[safe: indexPath.row])
+            default: return ASCellNode()
+            } 
         }
+
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case Sections.header.rawValue:
-            return tableView.dequeueReusableCell(ofType: HeaderCell.self, at: indexPath)
-                .setup(with: headerViewModel)
-        case Sections.folders.rawValue:
-            return tableView.dequeueReusableCell(ofType: MenuCell.self, at: indexPath)
-                .setup(with: folders[indexPath.row])
-        case Sections.service.rawValue:
-            return tableView.dequeueReusableCell(ofType: MenuCell.self, at: indexPath)
-                .setup(with: serviceItems[indexPath.row])
-        default:
-            return tableView.dequeueReusableCell(ofType: MenuCell.self, at: indexPath)
-        }
-    }
-
-    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case Sections.folders.rawValue:
             guard let item = folders[safe: indexPath.row] else { return }
@@ -152,6 +170,21 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
 
+    func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
+        return UIView().then {
+            let divider = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 16, height: 1))
+            $0.addSubview(divider)
+            $0.backgroundColor = .clear
+            divider.backgroundColor = UIColor(white: 0, alpha: 0.1)
+        }
+    }
+
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return section == Sections.folders.rawValue ? 1 : 0
+    }
+}
+
+extension MyMenuViewController {
     private func handleTapOn(folder: FolderViewModel) {
         switch folder.itemType {
         case .folder:
@@ -167,18 +200,5 @@ extension MyMenuTableViewController: UITableViewDelegate, UITableViewDataSource 
                     self?.showAlert(error: error, message: "Could not log out")
                 }
         }
-    }
-
-    func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
-        return UIView().then {
-            let divider = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 16, height: 1))
-            $0.addSubview(divider)
-            $0.backgroundColor = .clear
-            divider.backgroundColor = UIColor(white: 0, alpha: 0.1)
-        }
-    }
-
-    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return section == Sections.folders.rawValue ? 1 : 0
     }
 }

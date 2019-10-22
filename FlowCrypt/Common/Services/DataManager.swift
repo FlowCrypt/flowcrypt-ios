@@ -8,7 +8,15 @@
 
 import Foundation
 
-struct DataManager {
+protocol DataManagerType {
+    func saveToken(with string: String)
+    func currentToken() -> String?
+    func saveCurrent(user: User) -> Bool
+    func currentUser() -> User?
+    func logOut()
+}
+
+struct DataManager: DataManagerType {
     // TODO: - safe in keychain
     static let shared = DataManager()
 

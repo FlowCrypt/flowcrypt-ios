@@ -8,9 +8,25 @@ platform :ios do
     setup_semaphore
   end
 
+  desc "Cocoapod update"
+  lane :cocoapod_update do 
+    cocoapods(
+      try_repo_update_on_error: true
+    )
+
+  end
+
   desc "Run Tests"
+  lane :test_ui do
+    run_tests(
+      scheme: "FlowCryptUITests",
+      devices: ["iPhone Xr"]
+    )
+
+  end
+
+  desc "Run UI Tests"
   lane :test do
-    #scan
     scan(
       scheme: "FlowCryptTests"
     )
@@ -21,12 +37,23 @@ platform :ios do
   desc "Build without code sign. Just to see if the build is working"
   lane :build do |options|
     gym(
-      scheme: "HelloWorld",
+      scheme: "FlowCrypt",
       skip_package_ipa: true,
       skip_archive: true,
       silent: true,
       clean: true
     )
+
   end
+
+  desc "Build app, run tests, run UI test"
+  lane :do_everything do 
+    cocoapod_update
+    build
+    test
+    #test_ui
+
+  end
+
 end
 

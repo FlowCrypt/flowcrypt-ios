@@ -12,16 +12,12 @@ import GoogleSignIn
 struct AppUrlHandler {
     private let googleApi: GIDSignIn
 
-    init(googleApi: GIDSignIn) {
+    init(googleApi: GIDSignIn = GIDSignIn.sharedInstance()) {
         self.googleApi = googleApi
     }
 
     func handle(_: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        return googleApi.handle(
-            url,
-            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-            annotation:
-            options[UIApplication.OpenURLOptionsKey.annotation]
-        )
+
+        return googleApi.handle(url)
     }
 }

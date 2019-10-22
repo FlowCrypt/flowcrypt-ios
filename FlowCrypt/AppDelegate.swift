@@ -3,14 +3,11 @@
 //  FlowCrypt
 //
 
-import GoogleSignIn
-import RealmSwift
 import UIKit
 
-@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let assembley = RootAssembley()
-    private lazy var appUrlHandler = AppUrlHandler(googleApi: GIDSignIn.sharedInstance())
+    private lazy var appUrlHandler = AppUrlHandler()
 
     var window: UIWindow?
 

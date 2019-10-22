@@ -2,7 +2,7 @@ version: v1.0
 name: FlowCrypt iOS App
 
 execution_time_limit:
-  minutes: 20
+  minutes: 30
 
 agent:
   machine:
@@ -12,7 +12,7 @@ agent:
 blocks:
   - name: iOS Tests
     execution_time_limit:
-      minutes: 10
+      minutes: 25
     task:
       env_vars:
         - name: LANG
@@ -23,9 +23,6 @@ blocks:
           - cache restore
           - bundle install --path vendor/bundle
           - cache store
-          - cache restore pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock),pods-master
-          - pod install
-          - cache store pods-$SEMAPHORE_GIT_BRANCH-revision-$(checksum Podfile.lock) Pods
       jobs:
         - name: FlowCryptTests
           commands:
@@ -33,5 +30,5 @@ blocks:
             # Run tests of iOS and Mac app on a simulator or connected device
             # See https://docs.fastlane.tools/actions/scan/
 #            - bundle update fastlane
-            - bundle exec fastlane test
+            - bundle exec fastlane do_everything
 

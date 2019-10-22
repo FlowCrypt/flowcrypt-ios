@@ -6,9 +6,9 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
+import AsyncDisplayKit
 
-final class MainNavigationController: UINavigationController {
+final class MainNavigationController: ASNavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
