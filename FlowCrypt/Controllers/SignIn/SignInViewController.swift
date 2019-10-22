@@ -4,10 +4,25 @@
 
 import GoogleSignIn
 import UIKit
+import AsyncDisplayKit
 
-final class SignInViewController: UIViewController {
-    // TODO: Inject as a dependency
-    private let userService = UserService.shared
+final class SignInViewController: ASViewController<ASTableNode> {
+    enum Parts: Int, CaseIterable {
+        case options, logo, description, gmail, outlook
+    }
+
+    private let userService: UserServiceType
+
+    init(userService: UserServiceType = UserService.shared) {
+        self.userService = userService
+        super.init(node: ASTableNode() )
+        node.delegate = self
+        node.dataSource = self
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     @IBOutlet weak var signInWithGmailButton: UIButton!
     @IBOutlet weak var signInWithOutlookButton: UIButton!
@@ -24,41 +39,28 @@ final class SignInViewController: UIViewController {
     }
 
     private func setup() {
-        GIDSignIn.sharedInstance()?.presentingViewController = self
-
-        [signInWithGmailButton, signInWithOutlookButton].forEach {
-            $0.bordered(color: .lightGray, width: 1).cornered(5.0)
-        }
-
-        privacyButton.do {
-            $0.setTitle("sign_in_privacy".localized, for: .normal)
-            $0.accessibilityLabel = "privacy"
-        }
-
-        termsButton.do {
-            $0.setTitle("sign_in_terms".localized, for: .normal)
-            $0.accessibilityLabel = "terms"
-        }
-
-        securityButton.do {
-            $0.setTitle("sign_in_security".localized, for: .normal)
-            $0.accessibilityLabel = "security"
-        }
-
-        gmailButton.do {
-            $0.setTitle("sign_in_gmail".localized, for: .normal)
-            $0.accessibilityLabel = "gmail"
-        }
-
-        outlookButton.do {
-            $0.setTitle("sign_in_outlook".localized, for: .normal)
-            $0.accessibilityLabel = "outlook"
-        }
-
-        descriptionText.do {
-            $0.text = "sign_in_description".localized
-            $0.accessibilityLabel = "description"
-        }
+//        GIDSignIn.sharedInstance()?.presentingViewController = self
+//
+//        [signInWithGmailButton, signInWithOutlookButton].forEach {
+//            $0.bordered(color: .lightGray, width: 1).cornered(5.0)
+//        }
+//
+//
+//
+//        gmailButton.do {
+//            $0.setTitle("sign_in_gmail".localized, for: .normal)
+//            $0.accessibilityLabel = "gmail"
+//        }
+//
+//        outlookButton.do {
+//            $0.setTitle("sign_in_outlook".localized, for: .normal)
+//            $0.accessibilityLabel = "outlook"
+//        }
+//
+//        descriptionText.do {
+//            $0.text = "sign_in_description".localized
+//            $0.accessibilityLabel = "description"
+//        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -115,19 +117,77 @@ extension SignInViewController {
             print(error)
         }
     }
+}
 
-    @IBAction func privacyPressed(_: Any) {
-        guard let url = URL(string: "https://flowcrypt.com/privacy") else { return }
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+extension SignInViewController: ASTableDelegate, ASTableDataSource {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        return 1
+        return Parts.allCases.count
     }
 
-    @IBAction func termsPressed(_: Any) {
-        guard let url = URL(string: "https://flowcrypt.com/license") else { return }
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            switch part {
+            case .options:
+                return OptionButtonNode(inputs: OptionsButton.allCases) { [weak self] action in
+                    self?.handle(option: action)
+                }
+            case .logo: return ASCellNode()
+            case .description: return ASCellNode()
+            case .gmail: return ASCellNode()
+            case .outlook: return ASCellNode()
+            }
+        }
     }
 
-    @IBAction func securityPressed(_: Any) {
-        guard let url = URL(string: "https://flowcrypt.com/docs/technical/security.html") else { return }
+    private func handle(option: OptionsButton) {
+        guard let url = option.url else { assertionFailure("Issue in provided url"); return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }
+
+final class OptionButtonNode: ASCellNode {
+    typealias Action = (OptionsButton) -> ()
+
+    private let buttons: [ASButtonNode]
+    private var tapAction: Action?
+
+    init(inputs: [OptionsButton], action: Action?) {
+        tapAction = action
+        buttons = inputs.map {
+            let button = ASButtonNode()
+            button.setAttributedTitle($0.attributedTitle, for: .normal)
+            button.accessibilityLabel = $0.rawValue
+            return button
+        }
+        super.init()
+        automaticallyManagesSubnodes = true
+        buttons.forEach { $0.addTarget(self, action: #selector(onTap(_:)), forControlEvents: .touchUpInside) }
+    }
+
+    @objc private func onTap(_ sender: ASButtonNode) {
+        guard let identifier = sender.accessibilityLabel, let button = OptionsButton(rawValue: identifier) else { return }
+        tapAction?(button)
+    }
+
+    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        return ASInsetLayoutSpec(
+            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            child: ASCenterLayoutSpec(
+                centeringOptions: .XY,
+                sizingOptions: .minimumXY,
+                child: ASStackLayoutSpec(
+                    direction: .horizontal,
+                    spacing: 16,
+                    justifyContent: .center,
+                    alignItems: .center,
+                    children: buttons
+                )
+            )
+        )
+    }
+}
+
+
+
