@@ -31,3 +31,9 @@ extension NSAttributedString {
         )
     }
 }
+
+extension String {
+    func attributed(_ style: NSAttributedString.Style, color: UIColor = .black) -> NSAttributedString {
+        return NSAttributedString.text(from: self, style: style, color: color)
+    }
+}

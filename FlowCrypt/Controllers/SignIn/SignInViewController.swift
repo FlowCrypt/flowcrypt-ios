@@ -39,28 +39,12 @@ final class SignInViewController: ASViewController<ASTableNode> {
     }
 
     private func setup() {
-//        GIDSignIn.sharedInstance()?.presentingViewController = self
-//
-//        [signInWithGmailButton, signInWithOutlookButton].forEach {
-//            $0.bordered(color: .lightGray, width: 1).cornered(5.0)
-//        }
-//
-//
-//
-//        gmailButton.do {
-//            $0.setTitle("sign_in_gmail".localized, for: .normal)
-//            $0.accessibilityLabel = "gmail"
-//        }
-//
-//        outlookButton.do {
-//            $0.setTitle("sign_in_outlook".localized, for: .normal)
-//            $0.accessibilityLabel = "outlook"
-//        }
-//
-//        descriptionText.do {
-//            $0.text = "sign_in_description".localized
-//            $0.accessibilityLabel = "description"
-//        }
+        GIDSignIn.sharedInstance()?.presentingViewController = self
+        //
+        //        descriptionText.do {
+        //            $0.text = "sign_in_description".localized
+        //            $0.accessibilityLabel = "description"
+        //        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -77,18 +61,18 @@ final class SignInViewController: ASViewController<ASTableNode> {
 // MARK: - Events
 
 extension SignInViewController {
-    @IBAction func signInWithGmailButtonPressed(_: Any) {
+    private func signInWithGmail() {
         logDebug(106, "GoogleApi.signIn")
         userService.signIn()
             .then(on: .main) { [weak self] _ in
                 self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.showAlert(error: error, message: "Failed to sign in")
-            }
+        }
+        .catch(on: .main) { [weak self] error in
+            self?.showAlert(error: error, message: "Failed to sign in")
+        }
     }
 
-    @IBAction func signInWithOutlookButtonPressed(_: Any) {
+    private func signInWithOutlook() {
         showToast("Outlook sign in not implemented yet")
         // below for debugging
         do {
@@ -117,11 +101,15 @@ extension SignInViewController {
             print(error)
         }
     }
+
+    private func handle(option: SignInOption) {
+        guard let url = option.url else { assertionFailure("Issue in provided url"); return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
 }
 
 extension SignInViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return 1
         return Parts.allCases.count
     }
 
@@ -130,64 +118,24 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .options:
-                return OptionButtonNode(inputs: OptionsButton.allCases) { [weak self] action in
+                return OptionButtonNode(inputs: SignInOption.allCases) { [weak self] action in
                     self?.handle(option: action)
                 }
-            case .logo: return ASCellNode()
-            case .description: return ASCellNode()
-            case .gmail: return ASCellNode()
-            case .outlook: return ASCellNode()
+            case .logo:
+                return SignInImageNode(image: nil)
+            case .description:
+                return SignInDescriptionNode(
+                    title: "sign_in_description".localized.attributed(.medium(13), color: .red)
+                )
+            case .gmail:
+                return SigninButtonNode(.gmail) { [weak self] in
+                    self?.signInWithGmail()
+                }
+            case .outlook:
+                return SigninButtonNode(.outlook) { [weak self] in
+                    self?.signInWithOutlook()
+                }
             }
         }
     }
-
-    private func handle(option: OptionsButton) {
-        guard let url = option.url else { assertionFailure("Issue in provided url"); return }
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-    }
-}
-
-final class OptionButtonNode: ASCellNode {
-    typealias Action = (OptionsButton) -> ()
-
-    private let buttons: [ASButtonNode]
-    private var tapAction: Action?
-
-    init(inputs: [OptionsButton], action: Action?) {
-        tapAction = action
-        buttons = inputs.map {
-            let button = ASButtonNode()
-            button.setAttributedTitle($0.attributedTitle, for: .normal)
-            button.accessibilityLabel = $0.rawValue
-            return button
-        }
-        super.init()
-        automaticallyManagesSubnodes = true
-        buttons.forEach { $0.addTarget(self, action: #selector(onTap(_:)), forControlEvents: .touchUpInside) }
-    }
-
-    @objc private func onTap(_ sender: ASButtonNode) {
-        guard let identifier = sender.accessibilityLabel, let button = OptionsButton(rawValue: identifier) else { return }
-        tapAction?(button)
-    }
-
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
-            child: ASCenterLayoutSpec(
-                centeringOptions: .XY,
-                sizingOptions: .minimumXY,
-                child: ASStackLayoutSpec(
-                    direction: .horizontal,
-                    spacing: 16,
-                    justifyContent: .center,
-                    alignItems: .center,
-                    children: buttons
-                )
-            )
-        )
-    }
-}
-
-
-
+} 
