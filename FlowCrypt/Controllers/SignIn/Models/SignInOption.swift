@@ -20,7 +20,7 @@ enum SignInOption: String, CaseIterable {
     }
 
     var attributedTitle: NSAttributedString {
-        return NSAttributedString.text(from: title, style: .medium(17), color: .darkText)
+        return NSAttributedString.text(from: title, style: .medium(17), color: .textColor)
     }
 
     var url: URL? {

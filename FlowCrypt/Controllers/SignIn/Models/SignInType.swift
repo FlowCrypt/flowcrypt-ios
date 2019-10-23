@@ -20,19 +20,12 @@ enum SignInType: String {
 
     var image: UIImage? {
         switch self {
-        case .gmail: return nil
-        case .outlook: return nil
+        case .gmail: return UIImage(named: "gmail_icn")
+        case .outlook: return UIImage(named: "outlook_icn")
         }
-    }
-
-    var identifier: String? {
-        switch self {
-        case .gmail: return "sign_in_gmail"
-        case .outlook: return "Some"
-        }
-    }
+    } 
 
     var attributedTitle: NSAttributedString {
-        return NSAttributedString.text(from: title, style: .medium(13))
+        return NSAttributedString.text(from: title, style: .medium(17), color: .black)
     }
 }

@@ -11,15 +11,16 @@ import AsyncDisplayKit
 final class SignInDescriptionNode: ASCellNode {
     private let textNode = ASTextNode()
 
-    init(title: NSAttributedString?) {
+    init(_ title: NSAttributedString?) {
         super.init()
         textNode.attributedText = title
+        textNode.accessibilityLabel = "description"
         automaticallyManagesSubnodes = true
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0),
+            insets: UIEdgeInsets(top: 30, left: 16, bottom: 55, right: 16),
             child: ASCenterLayoutSpec(
                 centeringOptions: .XY,
                 sizingOptions: .minimumXY,

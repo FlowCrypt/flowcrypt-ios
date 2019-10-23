@@ -24,27 +24,16 @@ final class SignInViewController: ASViewController<ASTableNode> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @IBOutlet weak var signInWithGmailButton: UIButton!
-    @IBOutlet weak var signInWithOutlookButton: UIButton!
-    @IBOutlet weak var privacyButton: UIButton!
-    @IBOutlet weak var termsButton: UIButton!
-    @IBOutlet weak var securityButton: UIButton!
-    @IBOutlet weak var descriptionText: UILabel!
-    @IBOutlet weak var gmailButton: UIButton!
-    @IBOutlet weak var outlookButton: UIButton!
-
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setup()
     }
 
     private func setup() {
         GIDSignIn.sharedInstance()?.presentingViewController = self
-        //
-        //        descriptionText.do {
-        //            $0.text = "sign_in_description".localized
-        //            $0.accessibilityLabel = "description"
-        //        }
+        node.view.separatorStyle = .none
+        node.view.alwaysBounceVertical = false
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -58,6 +47,43 @@ final class SignInViewController: ASViewController<ASTableNode> {
     }
 }
 
+// MARK: - ASTableDelegate, ASTableDataSource
+
+extension SignInViewController: ASTableDelegate, ASTableDataSource {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        return Parts.allCases.count
+    }
+
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        let imageHeight = tableNode.bounds.size.height * 0.2
+
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            switch part {
+            case .options:
+                return OptionButtonNode(SignInOption.allCases) { [weak self] action in
+                    self?.handle(option: action)
+                }
+            case .logo:
+                return SignInImageNode(UIImage(named: "full-logo"), height: imageHeight)
+            case .description:
+                let title = "sign_in_description"
+                    .localized
+                    .attributed(.medium(13), color: .textColor, alignment: .center)
+                return SignInDescriptionNode(title)
+            case .gmail:
+                return SigninButtonNode(.gmail) { [weak self] in
+                    self?.signInWithGmail()
+                }
+            case .outlook:
+                return SigninButtonNode(.outlook) { [weak self] in
+                    self?.signInWithOutlook()
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Events
 
 extension SignInViewController {
@@ -65,11 +91,16 @@ extension SignInViewController {
         logDebug(106, "GoogleApi.signIn")
         userService.signIn()
             .then(on: .main) { [weak self] _ in
-                self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
-        }
-        .catch(on: .main) { [weak self] error in
-            self?.showAlert(error: error, message: "Failed to sign in")
-        }
+                self?.proceedToRecover()
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.showAlert(error: error, message: "Failed to sign in")
+            }
+    }
+
+    private func proceedToRecover() {
+        let setupViewController = UIStoryboard.main.instantiate(SetupViewController.self)
+        navigationController?.pushViewController(setupViewController, animated: true)
     }
 
     private func signInWithOutlook() {
@@ -107,35 +138,3 @@ extension SignInViewController {
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }
-
-extension SignInViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return Parts.allCases.count
-    }
-
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
-            switch part {
-            case .options:
-                return OptionButtonNode(inputs: SignInOption.allCases) { [weak self] action in
-                    self?.handle(option: action)
-                }
-            case .logo:
-                return SignInImageNode(image: nil)
-            case .description:
-                return SignInDescriptionNode(
-                    title: "sign_in_description".localized.attributed(.medium(13), color: .red)
-                )
-            case .gmail:
-                return SigninButtonNode(.gmail) { [weak self] in
-                    self?.signInWithGmail()
-                }
-            case .outlook:
-                return SigninButtonNode(.outlook) { [weak self] in
-                    self?.signInWithOutlook()
-                }
-            }
-        }
-    }
-} 

@@ -20,7 +20,7 @@ final class SigninButtonNode: ASCellNode {
         button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(tapHandle), forControlEvents: .touchUpInside)
 
-        button.style.preferredSize.height = 40
+        button.style.preferredSize.height = 50
         button.cornerRadius = 5
         button.borderColor = UIColor.lightGray.cgColor
         button.borderWidth = 1.0
@@ -37,7 +37,7 @@ final class SigninButtonNode: ASCellNode {
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16),
             child: button
         )
     }

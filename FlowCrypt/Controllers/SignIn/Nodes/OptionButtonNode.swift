@@ -14,7 +14,7 @@ final class OptionButtonNode: ASCellNode {
     private let buttons: [ASButtonNode]
     private var tapAction: Action?
 
-    init(inputs: [SignInOption], action: Action?) {
+    init(_ inputs: [SignInOption], action: Action?) {
         tapAction = action
         buttons = inputs.map {
             let button = ASButtonNode()
@@ -34,7 +34,7 @@ final class OptionButtonNode: ASCellNode {
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            insets: UIEdgeInsets(top: 30, left: 16, bottom: 8, right: 18),
             child: ASCenterLayoutSpec(
                 centeringOptions: .XY,
                 sizingOptions: .minimumXY,
