@@ -24,6 +24,7 @@ final class SigninButtonNode: ASCellNode {
         button.cornerRadius = 5
         button.borderColor = UIColor.lightGray.cgColor
         button.borderWidth = 1.0
+        selectionStyle = .none
     }
 
     convenience init(_ buttonType: SignInType, onTap: (() -> Void)?) {

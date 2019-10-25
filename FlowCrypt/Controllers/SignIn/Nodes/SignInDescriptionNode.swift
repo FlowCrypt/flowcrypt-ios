@@ -16,6 +16,7 @@ final class SignInDescriptionNode: ASCellNode {
         textNode.attributedText = title
         textNode.accessibilityLabel = "description"
         automaticallyManagesSubnodes = true
+        selectionStyle = .none
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

@@ -19,6 +19,7 @@ final class SignInImageNode: ASCellNode {
         addSubnode(imageNode)
         imageHeight = height ?? .zero
         setNeedsLayout()
+        selectionStyle = .none
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

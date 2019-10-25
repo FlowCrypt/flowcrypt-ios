@@ -25,6 +25,7 @@ final class OptionButtonNode: ASCellNode {
         super.init()
         automaticallyManagesSubnodes = true
         buttons.forEach { $0.addTarget(self, action: #selector(onTap(_:)), forControlEvents: .touchUpInside) }
+        selectionStyle = .none
     }
 
     @objc private func onTap(_ sender: ASButtonNode) {
