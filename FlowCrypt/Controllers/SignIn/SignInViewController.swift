@@ -8,7 +8,7 @@ import AsyncDisplayKit
 
 final class SignInViewController: ASViewController<ASTableNode> {
     enum Parts: Int, CaseIterable {
-        case options, logo, description, gmail, outlook
+        case links, logo, description, gmail, outlook
     }
 
     private let userService: UserServiceType
@@ -60,8 +60,8 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
-            case .options:
-                return OptionButtonNode(SignInOption.allCases) { [weak self] action in
+            case .links:
+                return LinkButtonNode(SignInLinks.allCases) { [weak self] action in
                     self?.handle(option: action)
                 }
             case .logo:
@@ -133,7 +133,7 @@ extension SignInViewController {
         }
     }
 
-    private func handle(option: SignInOption) {
+    private func handle(option: SignInLinks) {
         guard let url = option.url else { assertionFailure("Issue in provided url"); return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
