@@ -4,61 +4,36 @@
 
 import GoogleSignIn
 import UIKit
+import AsyncDisplayKit
 
-final class SignInViewController: UIViewController {
-    // TODO: Inject as a dependency
-    private let userService = UserService.shared
+final class SignInViewController: ASViewController<ASTableNode> {
+    enum Parts: Int, CaseIterable {
+        case links, logo, description, gmail, outlook
+    }
 
-    @IBOutlet weak var signInWithGmailButton: UIButton!
-    @IBOutlet weak var signInWithOutlookButton: UIButton!
-    @IBOutlet weak var privacyButton: UIButton!
-    @IBOutlet weak var termsButton: UIButton!
-    @IBOutlet weak var securityButton: UIButton!
-    @IBOutlet weak var descriptionText: UILabel!
-    @IBOutlet weak var gmailButton: UIButton!
-    @IBOutlet weak var outlookButton: UIButton!
+    private let userService: UserServiceType
+
+    init(userService: UserServiceType = UserService.shared) {
+        self.userService = userService
+        super.init(node: ASTableNode() )
+        node.delegate = self
+        node.dataSource = self
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setup()
     }
 
     private func setup() {
         GIDSignIn.sharedInstance()?.presentingViewController = self
-
-        [signInWithGmailButton, signInWithOutlookButton].forEach {
-            $0.bordered(color: .lightGray, width: 1).cornered(5.0)
-        }
-
-        privacyButton.do {
-            $0.setTitle("sign_in_privacy".localized, for: .normal)
-            $0.accessibilityLabel = "privacy"
-        }
-
-        termsButton.do {
-            $0.setTitle("sign_in_terms".localized, for: .normal)
-            $0.accessibilityLabel = "terms"
-        }
-
-        securityButton.do {
-            $0.setTitle("sign_in_security".localized, for: .normal)
-            $0.accessibilityLabel = "security"
-        }
-
-        gmailButton.do {
-            $0.setTitle("sign_in_gmail".localized, for: .normal)
-            $0.accessibilityLabel = "gmail"
-        }
-
-        outlookButton.do {
-            $0.setTitle("sign_in_outlook".localized, for: .normal)
-            $0.accessibilityLabel = "outlook"
-        }
-
-        descriptionText.do {
-            $0.text = "sign_in_description".localized
-            $0.accessibilityLabel = "description"
-        }
+        node.view.separatorStyle = .none
+        node.view.alwaysBounceVertical = false
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -72,21 +47,63 @@ final class SignInViewController: UIViewController {
     }
 }
 
+// MARK: - ASTableDelegate, ASTableDataSource
+
+extension SignInViewController: ASTableDelegate, ASTableDataSource {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        return Parts.allCases.count
+    }
+
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        let imageHeight = tableNode.bounds.size.height * 0.2
+
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            switch part {
+            case .links:
+                return LinkButtonNode(SignInLinks.allCases) { [weak self] action in
+                    self?.handle(option: action)
+                }
+            case .logo:
+                return SignInImageNode(UIImage(named: "full-logo"), height: imageHeight)
+            case .description:
+                let title = "sign_in_description"
+                    .localized
+                    .attributed(.medium(13), color: .textColor, alignment: .center)
+                return SignInDescriptionNode(title)
+            case .gmail:
+                return SigninButtonNode(.gmail) { [weak self] in
+                    self?.signInWithGmail()
+                }
+            case .outlook:
+                return SigninButtonNode(.outlook) { [weak self] in
+                    self?.signInWithOutlook()
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Events
 
 extension SignInViewController {
-    @IBAction func signInWithGmailButtonPressed(_: Any) {
+    private func signInWithGmail() {
         logDebug(106, "GoogleApi.signIn")
         userService.signIn()
             .then(on: .main) { [weak self] _ in
-                self?.performSegue(withIdentifier: "RecoverSegue", sender: nil)
+                self?.proceedToRecover()
             }
             .catch(on: .main) { [weak self] error in
                 self?.showAlert(error: error, message: "Failed to sign in")
             }
     }
 
-    @IBAction func signInWithOutlookButtonPressed(_: Any) {
+    private func proceedToRecover() {
+        let setupViewController = UIStoryboard.main.instantiate(SetupViewController.self)
+        navigationController?.pushViewController(setupViewController, animated: true)
+    }
+
+    private func signInWithOutlook() {
         showToast("Outlook sign in not implemented yet")
         // below for debugging
         do {
@@ -116,18 +133,8 @@ extension SignInViewController {
         }
     }
 
-    @IBAction func privacyPressed(_: Any) {
-        guard let url = URL(string: "https://flowcrypt.com/privacy") else { return }
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-    }
-
-    @IBAction func termsPressed(_: Any) {
-        guard let url = URL(string: "https://flowcrypt.com/license") else { return }
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-    }
-
-    @IBAction func securityPressed(_: Any) {
-        guard let url = URL(string: "https://flowcrypt.com/docs/technical/security.html") else { return }
+    private func handle(option: SignInLinks) {
+        guard let url = option.url else { assertionFailure("Issue in provided url"); return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }

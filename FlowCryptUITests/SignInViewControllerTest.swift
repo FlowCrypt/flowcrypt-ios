@@ -12,20 +12,31 @@ class SignInViewControllerTest: XCTestCase {
     var app: XCUIApplication!
 
     override func setUp() {
+        Springboard.resetSafari()
         continueAfterFailure = false
-
         app = XCUIApplicationBuilder().reset().build()
         app.launch()
     }
 
-    func test_existence_of_elements() {
-        let elementsQuery = app.scrollViews.otherElements
-        XCTAssertTrue(UITestHelper.wait(for: elementsQuery.buttons["privacy"], timeout: 5))
-        XCTAssertTrue(UITestHelper.wait(for: elementsQuery.buttons["terms"], timeout: 5))
-        XCTAssertTrue(UITestHelper.wait(for: elementsQuery.buttons["security"], timeout: 5))
-        XCTAssertTrue(UITestHelper.wait(for: elementsQuery.buttons["gmail"], timeout: 5))
-        XCTAssertTrue(UITestHelper.wait(for: elementsQuery.buttons["outlook"], timeout: 5))
-        XCTAssertTrue(UITestHelper.wait(for: elementsQuery.staticTexts["description"], timeout: 5))
+    override class func tearDown() {
+        super.tearDown()
+        Springboard.deleteApp()
+        Springboard.resetSettings()
+        Springboard.resetSafari()
     }
-    
+
+    func test_existence_of_elements() {
+        let elementsQuery = app.tables
+        XCTAssertTrue(wait(for: elementsQuery.buttons["privacy"], timeout: 5))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["terms"], timeout: 5))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["security"], timeout: 5))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["gmail"], timeout: 5))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["outlook"], timeout: 5))
+        XCTAssertTrue(wait(for: elementsQuery.staticTexts["description"], timeout: 5))
+    }
+
+    func test_successful_gmail_login() {
+        let gmailButton = app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        gmailButton.tap()
+    }
 }

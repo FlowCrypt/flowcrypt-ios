@@ -12,4 +12,8 @@ extension UIColor {
     static var main: UIColor {
         return UIColor(named: "mainGreenColor")!
     }
+
+    static var textColor: UIColor {
+        return UIColor(named: "additionalInfoLabelColor")!
+    }
 }
