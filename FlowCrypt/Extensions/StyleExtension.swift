@@ -21,13 +21,23 @@ extension NSAttributedString {
         }
     }
 
-    static func text(from string: String, style: Style, color: UIColor = .black) -> NSAttributedString {
-        return NSAttributedString(
-            string: string,
-            attributes: [
-                NSAttributedString.Key.font: style.font,
-                NSAttributedString.Key.foregroundColor: color,
-            ]
-        )
+    static func text(from string: String, style: Style, color: UIColor = .black, alignment: NSTextAlignment? = nil) -> NSAttributedString {
+        var attributes = [
+            NSAttributedString.Key.font: style.font,
+            NSAttributedString.Key.foregroundColor: color,
+        ]
+
+        if let alignment = alignment {
+            let paragraph = NSMutableParagraphStyle().then { $0.alignment = alignment }
+            attributes[NSAttributedString.Key.paragraphStyle] = paragraph
+        }
+
+        return NSAttributedString(string: string, attributes: attributes)
+    }
+}
+
+extension String {
+    func attributed(_ style: NSAttributedString.Style, color: UIColor = .black, alignment: NSTextAlignment? = nil) -> NSAttributedString {
+        return NSAttributedString.text(from: self, style: style, color: color)
     }
 }

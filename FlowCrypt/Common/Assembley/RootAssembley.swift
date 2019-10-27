@@ -38,7 +38,7 @@ struct RootAssembley: AppAssembley {
         let main = UIStoryboard.main
 
         guard userService.isSessionValid() else {
-            let root = main.instantiate(SignInViewController.self)
+            let root = SignInViewController()
             window.rootViewController = MainNavigationController(rootViewController: root)
             window.makeKeyAndVisible()
             return window
