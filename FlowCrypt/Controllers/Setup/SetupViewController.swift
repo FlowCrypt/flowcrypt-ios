@@ -43,13 +43,6 @@ final class SetupViewController: ASViewController<ASTableNode> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @IBOutlet var passPhaseTextField: UITextField?
-    @IBOutlet var btnLoadAccount: UIButton?
-    @IBOutlet weak var btnUseAnother: UIButton?
-    @IBOutlet var scrollView: UIScrollView?
-    @IBOutlet var subTitleLabel: UILabel?
-    @IBOutlet weak var titleLabel: UILabel?
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -71,7 +64,6 @@ extension SetupViewController {
         //        btnLoadAccount.setTitle("setup_load".localized, for: .normal)
         //        btnUseAnother.setTitle("setup_use_another".localized, for: .normal)
         //        subTitleLabel.text = "setup_description".localized
-        //        titleLabel.text = "setup_title".localized
     }
 
     private func observeKeyboardNotifications() {
@@ -135,13 +127,10 @@ extension SetupViewController {
     }
 }
 
-extension SetupViewController {
-    @objc private func endEditing() {
-        view.endEditing(true)
-    }
+extension SetupViewController { 
 
     @IBAction func loadAccountButtonPressed(_: Any) {
-        //        endEditing()
+        //        view.endEditing(true)
         //        guard let passPhrase = passPhaseTextField.text, !passPhrase.isEmpty else {
         //            showAlert(message: "setup_enter_pass_phrase".localized)
         //            return
@@ -235,7 +224,13 @@ extension SetupViewController {
         }
     }
 
-    @IBAction func useOtherAccount(_: Any) {
+
+}
+
+// MARK: - Events
+
+extension SetupViewController {
+    private func useOtherAccount() {
         userService.signOut().then(on: .main) { [weak self] _ in
             self?.router.reset()
         }.catch(on: .main) { [weak self] error in
@@ -248,15 +243,26 @@ extension SetupViewController {
 
 extension SetupViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return 2//Parts.allCases.count
+        return Parts.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
-            case .title: return SetupTitleNode()
-            default: return SetupPassPraseNode()
+            case .title:
+                return SetupTitleNode()
+            case .passPrase:
+                return SetupPassPraseNode()
+            case .action:
+                return SetupButtonNode(SetupButtonType.loadAccount.attributedTitle) {
+
+                }
+            case .optionalAction:
+                return SetupButtonNode(SetupStyle.useAnotherAccountTitle, color: .white) { [weak self] in
+                    self?.useOtherAccount()
+                }
+            default: return ASCellNode()
             }
         }
 
@@ -356,7 +362,64 @@ extension SetupPassPraseNode: ASEditableTextNodeDelegate {
 }
 
 
+enum SetupButtonType {
+    case loadAccount, createKey
+
+    var title: String {
+        switch self {
+        case .loadAccount: return "setup_load".localized
+        case .createKey: return "setup_create_key".localized
+        }
+    }
+
+    var attributedTitle: NSAttributedString {
+        title.attributed(.regular(17), color: .white, alignment: .center)
+    }
+}
+
+final class SetupButtonNode: ASCellNode {
+    private var onTap: (() -> Void)?
+    private lazy var button = ButtonNode() { [weak self] in
+        self?.onTap?()
+    }
+
+    init(_ title: NSAttributedString, color: UIColor? = nil, action: (() -> Void)?) {
+        self.onTap = action
+        super.init()
+        automaticallyManagesSubnodes = true
+        selectionStyle = .none
+        button.cornerRadius = 5
+        button.backgroundColor = color ?? .main
+        button.style.preferredSize.height = 50
+        button.setAttributedTitle(title, for: .normal)
+    }
+
+    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        ASInsetLayoutSpec(
+            insets: UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24),
+            child: button
+        )
+    }
+}
+
 enum SetupStyle {
     static let title = "setup_title".localized.attributed(.bold(35), color: .black, alignment: .center)
     static let passPrasePlaceholder = "setup_enter".localized.attributed(.bold(16), color: .darkGray, alignment: .center)
+    static let useAnotherAccountTitle = "setup_use_another".localized.attributed(.regular(15), color: .systemTeal, alignment: .center)
+}
+
+
+// TODO: - Refactor with this button
+final class ButtonNode: ASButtonNode {
+    private var onTap: (() -> Void)?
+
+    init(_ action: (() -> Void)?) {
+        self.onTap = action
+        super.init()
+        addTarget(self, action: #selector(handleTap), forControlEvents: .touchUpInside)
+    }
+
+    @objc private func handleTap() {
+        onTap?()
+    }
 }

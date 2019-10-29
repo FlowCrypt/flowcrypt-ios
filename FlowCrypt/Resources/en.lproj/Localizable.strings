@@ -52,6 +52,7 @@
 "setup_description" = "OpenPGP email encryption";
 "setup_enter" = "Enter your pass phrase";
 "setup_load" = "Load Account";
+"setup_create_key" = "Create Key";
 "setup_use_another" = "Use Another Account";
 "setup_no_backups" = "No backups found on account: \n";
 "setup_action_failed" = "Action failed";
