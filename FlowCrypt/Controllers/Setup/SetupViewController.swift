@@ -127,7 +127,7 @@ extension SetupViewController {
     }
 }
 
-extension SetupViewController { 
+extension SetupViewController {
 
     @IBAction func loadAccountButtonPressed(_: Any) {
         //        view.endEditing(true)
@@ -224,7 +224,6 @@ extension SetupViewController {
         }
     }
 
-
 }
 
 // MARK: - Events
@@ -294,132 +293,5 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
         //                }
         //            }
         //        }
-    }
-}
-
-final class SetupTitleNode: ASCellNode {
-    private let textNode = ASTextNode()
-
-    init(_ title: NSAttributedString = SetupStyle.title) {
-        super.init()
-        automaticallyManagesSubnodes = true
-        selectionStyle = .none
-        textNode.attributedText = title
-    }
-
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 502, left: 16, bottom: 16, right: 16),
-            child: ASCenterLayoutSpec(centeringOptions: .XY, sizingOptions: .minimumXY, child: textNode)
-        )
-    }
-}
-
-
-
-final class SetupPassPraseNode: ASCellNode {
-    private let line = ASDisplayNode()
-    private let textField = ASEditableTextNode()
-
-    init(_ placeholder: NSAttributedString = SetupStyle.passPrasePlaceholder) {
-        super.init()
-        automaticallyManagesSubnodes = true
-        selectionStyle = .none
-        textField.attributedPlaceholderText = placeholder
-        textField.delegate = self
-        textField.isSecureTextEntry = true
-        line.style.flexGrow = 1.0
-        line.backgroundColor = .red
-        line.style.preferredSize.height = 3
-    }
-
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 32, left: 16, bottom: 16, right: 16),
-            child: ASCenterLayoutSpec(
-                centeringOptions: .XY,
-                sizingOptions: .minimumXY,
-                child: ASStackLayoutSpec(
-                    direction: .horizontal,
-                    spacing: 1,
-                    justifyContent: .center,
-                    alignItems: .baselineFirst,
-                    children: [
-                        textField,
-                        line
-                    ])
-            )
-        )
-    }
-}
-
-extension SetupPassPraseNode: ASEditableTextNodeDelegate {
-    func editableTextNode(_ editableTextNode: ASEditableTextNode, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        guard text.rangeOfCharacter(from: .newlines) != nil else { return true }
-        editableTextNode.resignFirstResponder()
-        return false
-    }
-}
-
-
-enum SetupButtonType {
-    case loadAccount, createKey
-
-    var title: String {
-        switch self {
-        case .loadAccount: return "setup_load".localized
-        case .createKey: return "setup_create_key".localized
-        }
-    }
-
-    var attributedTitle: NSAttributedString {
-        title.attributed(.regular(17), color: .white, alignment: .center)
-    }
-}
-
-final class SetupButtonNode: ASCellNode {
-    private var onTap: (() -> Void)?
-    private lazy var button = ButtonNode() { [weak self] in
-        self?.onTap?()
-    }
-
-    init(_ title: NSAttributedString, color: UIColor? = nil, action: (() -> Void)?) {
-        self.onTap = action
-        super.init()
-        automaticallyManagesSubnodes = true
-        selectionStyle = .none
-        button.cornerRadius = 5
-        button.backgroundColor = color ?? .main
-        button.style.preferredSize.height = 50
-        button.setAttributedTitle(title, for: .normal)
-    }
-
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24),
-            child: button
-        )
-    }
-}
-
-enum SetupStyle {
-    static let title = "setup_title".localized.attributed(.bold(35), color: .black, alignment: .center)
-    static let passPrasePlaceholder = "setup_enter".localized.attributed(.bold(16), color: .darkGray, alignment: .center)
-    static let useAnotherAccountTitle = "setup_use_another".localized.attributed(.regular(15), color: .systemTeal, alignment: .center)
-}
-
-
-// TODO: - Refactor with this button
-final class ButtonNode: ASButtonNode {
-    private var onTap: (() -> Void)?
-
-    init(_ action: (() -> Void)?) {
-        self.onTap = action
-        super.init()
-        addTarget(self, action: #selector(handleTap), forControlEvents: .touchUpInside)
-    }
-
-    @objc private func handleTap() {
-        onTap?()
     }
 }
