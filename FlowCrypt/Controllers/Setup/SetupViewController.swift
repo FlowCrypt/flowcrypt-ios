@@ -251,6 +251,8 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             switch part {
             case .title:
                 return SetupTitleNode()
+            case .description:
+                return ASCellNode()
             case .passPrase:
                 return SetupPassPraseNode()
             case .action:
@@ -261,37 +263,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 return SetupButtonNode(SetupStyle.useAnotherAccountTitle, color: .white) { [weak self] in
                     self?.useOtherAccount()
                 }
-            default: return ASCellNode()
             }
         }
-
-
-
-        //        let imageHeight = tableNode.bounds.size.height * 0.2
-        //
-        //        return { [weak self] in
-        //            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
-        //            switch part {
-        //            case .links:
-        //                return LinkButtonNode(SignInLinks.allCases) { [weak self] action in
-        //                    self?.handle(option: action)
-        //                }
-        //            case .logo:
-        //                return SignInImageNode(UIImage(named: "full-logo"), height: imageHeight)
-        //            case .description:
-        //                let title = "sign_in_description"
-        //                    .localized
-        //                    .attributed(.medium(13), color: .textColor, alignment: .center)
-        //                return SignInDescriptionNode(title)
-        //            case .gmail:
-        //                return SigninButtonNode(.gmail) { [weak self] in
-        //                    self?.signInWithGmail()
-        //                }
-        //            case .outlook:
-        //                return SigninButtonNode(.outlook) { [weak self] in
-        //                    self?.signInWithOutlook()
-        //                }
-        //            }
-        //        }
     }
 }
