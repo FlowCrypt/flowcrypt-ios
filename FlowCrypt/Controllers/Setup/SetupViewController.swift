@@ -6,14 +6,11 @@ import MBProgressHUD
 import Promises
 import RealmSwift
 import UIKit
+import AsyncDisplayKit
 
-final class SetupViewController: UIViewController {
-    private enum Constants {
-        static let noBackups = "No backups found on account: \n"
-        static let actionFailed = "Action failed"
-        static let useOtherAccount = "Use other account"
-        static let enterPassPhrase = "Enter pass phrase"
-        static let wrongPassPhraseRetry = "Wrong pass phrase, please try again"
+final class SetupViewController: ASViewController<ASTableNode> {
+    private enum Parts: Int, CaseIterable {
+        case title, passPrase, description, action, optionalAction
     }
 
     private enum SetupAction {
@@ -21,20 +18,37 @@ final class SetupViewController: UIViewController {
         case createKey
     }
 
-    // TODO: Inject as a dependency
-    private let imap = Imap.instance
-    private let userService = UserService.shared
-    private let router = GlobalRouter()
+    private let imap: Imap
+    private let userService: UserServiceType
+    private let router: GlobalRouterType
+
     private var setupAction = SetupAction.recoverKey
-
-    @IBOutlet var passPhaseTextField: UITextField!
-    @IBOutlet var btnLoadAccount: UIButton!
-    @IBOutlet weak var btnUseAnother: UIButton!
-    @IBOutlet var scrollView: UIScrollView!
-    @IBOutlet var subTitleLabel: UILabel!
-    @IBOutlet weak var titleLabel: UILabel!
-
     private var fetchedEncryptedPrvs: [KeyDetails] = []
+
+    init(
+        imap: Imap = .instance,
+        userService: UserServiceType = UserService.shared,
+        router: GlobalRouterType = GlobalRouter()
+    ) {
+        self.imap = imap
+        self.userService = userService
+        self.router = router
+
+        super.init(node: ASTableNode())
+        node.delegate = self
+        node.dataSource = self
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    @IBOutlet var passPhaseTextField: UITextField?
+    @IBOutlet var btnLoadAccount: UIButton?
+    @IBOutlet weak var btnUseAnother: UIButton?
+    @IBOutlet var scrollView: UIScrollView?
+    @IBOutlet var subTitleLabel: UILabel?
+    @IBOutlet weak var titleLabel: UILabel?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,86 +61,77 @@ final class SetupViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        btnLoadAccount.layer.cornerRadius = 5
-    }
 }
 
 extension SetupViewController {
+    private func setupUI() {
+        node.view.showsVerticalScrollIndicator = false
+        observeKeyboardNotifications()
+
+        //        btnLoadAccount.setTitle("setup_load".localized, for: .normal)
+        //        btnUseAnother.setTitle("setup_use_another".localized, for: .normal)
+        //        subTitleLabel.text = "setup_description".localized
+        //        titleLabel.text = "setup_title".localized
+    }
+
     private func observeKeyboardNotifications() {
         _ = keyboardHeight
             .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 5, right: 0) }
             .subscribe(onNext: { [weak self] inset in
-                self?.scrollView.contentInset = inset
-                self?.scrollView.scrollIndicatorInsets = inset
+                self?.node.contentInset = inset
+                self?.node.scrollToRow(at: IndexPath(item: Parts.passPrase.rawValue, section: 0), at: .middle, animated: true)
             })
-    }
-
-    private func setupUI() {
-        UITapGestureRecognizer(target: self, action: #selector(endEditing)).do {
-            $0.cancelsTouchesInView = false
-            self.view.addGestureRecognizer($0)
-        }
-        passPhaseTextField.delegate = self
-        observeKeyboardNotifications()
-
-        passPhaseTextField.placeholder = "setup_enter".localized
-        btnLoadAccount.setTitle("setup_load".localized, for: .normal)
-        btnUseAnother.setTitle("setup_use_another".localized, for: .normal)
-        subTitleLabel.text = "setup_description".localized
-        titleLabel.text = "setup_title".localized
     }
 
     private func fetchBackupsAndRenderSetupView() {
-        showSpinner()
-        Promise<Void> { [weak self] in
-            guard let self = self else { return }
-            let backupData = try await(self.imap.searchBackups())
-            let parsed = try Core.parseKeys(armoredOrBinary: backupData)
-            self.fetchedEncryptedPrvs = parsed.keyDetails.filter { $0.private != nil }
-        }.then(on: .main) { [weak self] in
-            guard let self = self else { return }
-            self.hideSpinner()
-            if self.fetchedEncryptedPrvs.isEmpty {
-                self.renderNoBackupsFoundOptions(msg: Constants.noBackups + (DataManager.shared.currentUser()?.email ?? "(unknown)"))
-            } else {
-                self.subTitleLabel.text = "Found \(self.fetchedEncryptedPrvs.count) key backup\(self.fetchedEncryptedPrvs.count > 1 ? "s" : "")"
-            }
-        }.catch(on: .main) { [weak self] error in
-            self?.renderNoBackupsFoundOptions(msg: Constants.actionFailed, error: error)
-        }
+        //        showSpinner()
+        //        Promise<Void> { [weak self] in
+        //            guard let self = self else { return }
+        //            let backupData = try await(self.imap.searchBackups())
+        //            let parsed = try Core.parseKeys(armoredOrBinary: backupData)
+        //            self.fetchedEncryptedPrvs = parsed.keyDetails.filter { $0.private != nil }
+        //        }.then(on: .main) { [weak self] in
+        //            guard let self = self else { return }
+        //            self.hideSpinner()
+        //            if self.fetchedEncryptedPrvs.isEmpty {
+        //                let msg = "setup_no_backups".localized
+        //                self.renderNoBackupsFoundOptions(msg: msg + (DataManager.shared.currentUser()?.email ?? "(unknown)"))
+        //            } else {
+        //                self.subTitleLabel.text = "Found \(self.fetchedEncryptedPrvs.count) key backup\(self.fetchedEncryptedPrvs.count > 1 ? "s" : "")"
+        //            }
+        //        }.catch(on: .main) { [weak self] error in
+        //            self?.renderNoBackupsFoundOptions(msg: "setup_action_failed".localized, error: error)
+        //        }
     }
 
     private func renderNoBackupsFoundOptions(msg: String, error: Error? = nil) {
-        let errStr = error != nil ? "\n\n\(error!)" : ""
-        let alert = UIAlertController(title: "Notice", message: msg + errStr, preferredStyle: .alert)
-        if error == nil { // no backous found, not an error: show option to create a key or import key
-            alert.addAction(UIAlertAction(title: "Import existing Private Key", style: .default) { [weak self] _ in
-                self?.showToast("Key Import will be implemented soon! Contact human@flowcrypt.com")
-                self?.renderNoBackupsFoundOptions(msg: msg, error: nil)
-            })
-            alert.addAction(UIAlertAction(title: "Create new Private Key", style: .default) { [weak self] _ in
-                self?.subTitleLabel.text = "Create a new OpenPGP Private Key"
-                self?.btnLoadAccount.setTitle("Create Key", for: .normal)
-                self?.setupAction = SetupAction.createKey
-                // todo - show strength bar while typed so that user can choose the strength they need
-            })
-        }
-        alert.addAction(UIAlertAction(title: Constants.useOtherAccount, style: .default) { [weak self] _ in
-            self?.userService.signOut().then(on: .main) { [weak self] in
-                if self?.navigationController?.popViewController(animated: true) == nil {
-                    self?.router.reset() // in case app got restarted and no view to pop
-                }
-            }.catch(on: .main) { [weak self] error in
-                self?.showAlert(error: error, message: "Could not sign out")
-            }
-        })
-        alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
-            self?.fetchBackupsAndRenderSetupView()
-        })
-        present(alert, animated: true, completion: nil)
+        //        let errStr = error != nil ? "\n\n\(error!)" : ""
+        //        let alert = UIAlertController(title: "Notice", message: msg + errStr, preferredStyle: .alert)
+        //        if error == nil { // no backous found, not an error: show option to create a key or import key
+        //            alert.addAction(UIAlertAction(title: "Import existing Private Key", style: .default) { [weak self] _ in
+        //                self?.showToast("Key Import will be implemented soon! Contact human@flowcrypt.com")
+        //                self?.renderNoBackupsFoundOptions(msg: msg, error: nil)
+        //            })
+        //            alert.addAction(UIAlertAction(title: "Create new Private Key", style: .default) { [weak self] _ in
+        //                self?.subTitleLabel.text = "Create a new OpenPGP Private Key"
+        //                self?.btnLoadAccount.setTitle("Create Key", for: .normal)
+        //                self?.setupAction = SetupAction.createKey
+        //                // todo - show strength bar while typed so that user can choose the strength they need
+        //            })
+        //        }
+        //        alert.addAction(UIAlertAction(title: "setup_use_otherAccount".localized, style: .default) { [weak self] _ in
+        //            self?.userService.signOut().then(on: .main) { [weak self] in
+        //                if self?.navigationController?.popViewController(animated: true) == nil {
+        //                    self?.router.reset() // in case app got restarted and no view to pop
+        //                }
+        //            }.catch(on: .main) { [weak self] error in
+        //                self?.showAlert(error: error, message: "Could not sign out")
+        //            }
+        //        })
+        //        alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
+        //            self?.fetchBackupsAndRenderSetupView()
+        //        })
+        //        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -136,19 +141,19 @@ extension SetupViewController {
     }
 
     @IBAction func loadAccountButtonPressed(_: Any) {
-        endEditing()
-        guard let passPhrase = passPhaseTextField.text, !passPhrase.isEmpty else {
-            showAlert(message: Constants.enterPassPhrase)
-            return
-        }
-        showSpinner()
-
-        switch setupAction {
-        case .recoverKey:
-            recoverAccountWithBackups(with: passPhrase)
-        case .createKey:
-            setupAccountWithGeneratedKey(with: passPhrase)
-        }
+        //        endEditing()
+        //        guard let passPhrase = passPhaseTextField.text, !passPhrase.isEmpty else {
+        //            showAlert(message: "setup_enter_pass_phrase".localized)
+        //            return
+        //        }
+        //        showSpinner()
+        //
+        //        switch setupAction {
+        //        case .recoverKey:
+        //            recoverAccountWithBackups(with: passPhrase)
+        //        case .createKey:
+        //            setupAccountWithGeneratedKey(with: passPhrase)
+        //        }
     }
 
     private func recoverAccountWithBackups(with passPhrase: String) {
@@ -157,9 +162,9 @@ extension SetupViewController {
                 guard let prv = key.private else { return nil }
                 guard let r = try? Core.decryptKey(armoredPrv: prv, passphrase: passPhrase), r.decryptedKey != nil else { return nil }
                 return key
-            }
+        }
         guard matchingBackups.count > 0 else {
-            showAlert(message: Constants.wrongPassPhraseRetry)
+            showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
         try! storePrvs(prvs: matchingBackups, passPhrase: passPhrase, source: .generated)
@@ -239,9 +244,119 @@ extension SetupViewController {
     }
 }
 
-extension SetupViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_: UITextField) -> Bool {
-        view.endEditing(true)
-        return true
+// MARK: - ASTableDelegate, ASTableDataSource
+
+extension SetupViewController: ASTableDelegate, ASTableDataSource {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        return 2//Parts.allCases.count
     }
+
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            switch part {
+            case .title: return SetupTitleNode()
+            default: return SetupPassPraseNode()
+            }
+        }
+
+
+
+        //        let imageHeight = tableNode.bounds.size.height * 0.2
+        //
+        //        return { [weak self] in
+        //            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+        //            switch part {
+        //            case .links:
+        //                return LinkButtonNode(SignInLinks.allCases) { [weak self] action in
+        //                    self?.handle(option: action)
+        //                }
+        //            case .logo:
+        //                return SignInImageNode(UIImage(named: "full-logo"), height: imageHeight)
+        //            case .description:
+        //                let title = "sign_in_description"
+        //                    .localized
+        //                    .attributed(.medium(13), color: .textColor, alignment: .center)
+        //                return SignInDescriptionNode(title)
+        //            case .gmail:
+        //                return SigninButtonNode(.gmail) { [weak self] in
+        //                    self?.signInWithGmail()
+        //                }
+        //            case .outlook:
+        //                return SigninButtonNode(.outlook) { [weak self] in
+        //                    self?.signInWithOutlook()
+        //                }
+        //            }
+        //        }
+    }
+}
+
+final class SetupTitleNode: ASCellNode {
+    private let textNode = ASTextNode()
+
+    init(_ title: NSAttributedString = SetupStyle.title) {
+        super.init()
+        automaticallyManagesSubnodes = true
+        selectionStyle = .none
+        textNode.attributedText = title
+    }
+
+    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        ASInsetLayoutSpec(
+            insets: UIEdgeInsets(top: 502, left: 16, bottom: 16, right: 16),
+            child: ASCenterLayoutSpec(centeringOptions: .XY, sizingOptions: .minimumXY, child: textNode)
+        )
+    }
+}
+
+
+
+final class SetupPassPraseNode: ASCellNode {
+    private let line = ASDisplayNode()
+    private let textField = ASEditableTextNode()
+
+    init(_ placeholder: NSAttributedString = SetupStyle.passPrasePlaceholder) {
+        super.init()
+        automaticallyManagesSubnodes = true
+        selectionStyle = .none
+        textField.attributedPlaceholderText = placeholder
+        textField.delegate = self
+        textField.isSecureTextEntry = true
+        line.style.flexGrow = 1.0
+        line.backgroundColor = .red
+        line.style.preferredSize.height = 3
+    }
+
+    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        ASInsetLayoutSpec(
+            insets: UIEdgeInsets(top: 32, left: 16, bottom: 16, right: 16),
+            child: ASCenterLayoutSpec(
+                centeringOptions: .XY,
+                sizingOptions: .minimumXY,
+                child: ASStackLayoutSpec(
+                    direction: .horizontal,
+                    spacing: 1,
+                    justifyContent: .center,
+                    alignItems: .baselineFirst,
+                    children: [
+                        textField,
+                        line
+                    ])
+            )
+        )
+    }
+}
+
+extension SetupPassPraseNode: ASEditableTextNodeDelegate {
+    func editableTextNode(_ editableTextNode: ASEditableTextNode, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard text.rangeOfCharacter(from: .newlines) != nil else { return true }
+        editableTextNode.resignFirstResponder()
+        return false
+    }
+}
+
+
+enum SetupStyle {
+    static let title = "setup_title".localized.attributed(.bold(35), color: .black, alignment: .center)
+    static let passPrasePlaceholder = "setup_enter".localized.attributed(.bold(16), color: .darkGray, alignment: .center)
 }

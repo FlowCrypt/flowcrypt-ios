@@ -15,7 +15,7 @@ final class SignInViewController: ASViewController<ASTableNode> {
 
     init(userService: UserServiceType = UserService.shared) {
         self.userService = userService
-        super.init(node: ASTableNode() )
+        super.init(node: ASTableNode())
         node.delegate = self
         node.dataSource = self
     }
@@ -99,7 +99,7 @@ extension SignInViewController {
     }
 
     private func proceedToRecover() {
-        let setupViewController = UIStoryboard.main.instantiate(SetupViewController.self)
+        let setupViewController = SetupViewController()
         navigationController?.pushViewController(setupViewController, animated: true)
     }
 

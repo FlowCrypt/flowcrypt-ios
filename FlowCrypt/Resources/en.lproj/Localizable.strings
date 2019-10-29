@@ -53,3 +53,8 @@
 "setup_enter" = "Enter your pass phrase";
 "setup_load" = "Load Account";
 "setup_use_another" = "Use Another Account";
+"setup_no_backups" = "No backups found on account: \n";
+"setup_action_failed" = "Action failed";
+"setup_use_otherAccount" = "Use other account";
+"setup_enter_pass_phrase" = "Enter pass phrase";
+"setup_wrong_pass_phrase_retry" = "Wrong pass phrase, please try again";

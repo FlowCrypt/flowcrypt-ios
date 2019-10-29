@@ -52,7 +52,7 @@ struct RootAssembley: AppAssembley {
             if keys.count > 0 {
                 return SideMenuNavigationController()
             } else {
-                let root = main.instantiate(SetupViewController.self)
+                let root = SetupViewController()
                 return MainNavigationController(rootViewController: root)
             }
         }()
