@@ -69,6 +69,8 @@
 		9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
 		9F4453C0236B894D005D7D05 /* TableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453BF236B894D005D7D05 /* TableNode.swift */; };
+		9F4453C2236B9273005D7D05 /* TextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C1236B9273005D7D05 /* TextFieldNode.swift */; };
+		9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerNode.swift */; };
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
 		9F56BD2E23438ABA00A7371A /* Taptic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2D23438ABA00A7371A /* Taptic.swift */; };
 		9F56BD3023438B4400A7371A /* ComposeButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2F23438B4400A7371A /* ComposeButtonNode.swift */; };
@@ -219,6 +221,8 @@
 		9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
 		9F4453BF236B894D005D7D05 /* TableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNode.swift; sourceTree = "<group>"; };
+		9F4453C1236B9273005D7D05 /* TextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNode.swift; sourceTree = "<group>"; };
+		9F4453C3236B96F9005D7D05 /* DividerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerNode.swift; sourceTree = "<group>"; };
 		9F56BD2B23438A8500A7371A /* Imap+messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+messages.swift"; sourceTree = "<group>"; };
 		9F56BD2D23438ABA00A7371A /* Taptic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taptic.swift; sourceTree = "<group>"; };
 		9F56BD2F23438B4400A7371A /* ComposeButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeButtonNode.swift; sourceTree = "<group>"; };
@@ -457,6 +461,8 @@
 				9F1797702368EEE8002BF770 /* ButtonNode.swift */,
 				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F4453BF236B894D005D7D05 /* TableNode.swift */,
+				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
+				9F4453C3236B96F9005D7D05 /* DividerNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -1122,10 +1128,12 @@
 				32DCA1339D6857686ABD3FC4 /* UIVIewExtension.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */,
+				9F4453C2236B9273005D7D05 /* TextFieldNode.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
 				9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */,
+				9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */,
 				9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */,
 				9F1797712368EEE8002BF770 /* ButtonNode.swift in Sources */,
 				9F0C3C18231819B200299985 /* Logger.swift in Sources */,

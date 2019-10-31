@@ -8,7 +8,7 @@ import AsyncDisplayKit
 
 final class SetupViewController: ASViewController<ASTableNode> {
     private enum Parts: Int, CaseIterable {
-        case title, passPrase, description, action, optionalAction
+        case title, description, passPrase, divider, action, optionalAction
     }
 
     private enum SetupAction {
@@ -283,23 +283,27 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
-                return SetupTitleNode(SetupStyle.title, insets: .zero)
+                return SetupTitleNode(SetupStyle.title, insets: SetupStyle.titleInset)
             case .description:
-                return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: .zero)
+                return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: SetupStyle.subTitleInset)
             case .passPrase:
                 return SetupPassPraseNode() { [weak self] value in
                     self?.passPhrase = value
                 }
+            case .divider:
+                return DividerNode(inset: SetupStyle.dividerInsets, color: .lightGray, height: 1)
             case .action:
-                return SetupButtonNode(self.setupAction.buttonTitle) { [weak self] in
+                return SetupButtonNode(self.setupAction.buttonTitle, insets: SetupStyle.buttonInsets) { [weak self] in
                     self?.handleButtonPressed()
                 }
             case .optionalAction:
-                return SetupButtonNode(SetupStyle.useAnotherAccountTitle, color: .white) { [weak self] in
-                    self?.useOtherAccount()
-                }
+                return SetupButtonNode(
+                    SetupStyle.useAnotherAccountTitle,
+                    insets: SetupStyle.optionalBbuttonInsets,
+                    color: .white) { [weak self] in
+                        self?.useOtherAccount()
+                    }
             }
         }
     }
 }
-

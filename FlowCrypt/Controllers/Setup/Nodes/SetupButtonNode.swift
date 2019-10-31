@@ -13,9 +13,11 @@ final class SetupButtonNode: CellNode {
     private lazy var button = ButtonNode() { [weak self] in
         self?.onTap?()
     }
+    private let insets: UIEdgeInsets
 
-    init(_ title: NSAttributedString, color: UIColor? = nil, action: (() -> Void)?) {
+    init(_ title: NSAttributedString, insets: UIEdgeInsets, color: UIColor? = nil, action: (() -> Void)?) {
         self.onTap = action
+        self.insets = insets
         super.init() 
         button.cornerRadius = 5
         button.backgroundColor = color ?? .main
@@ -25,7 +27,7 @@ final class SetupButtonNode: CellNode {
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24),
+            insets: insets,
             child: button
         )
     }

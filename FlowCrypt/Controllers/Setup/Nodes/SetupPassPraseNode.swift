@@ -10,9 +10,7 @@ import AsyncDisplayKit
 
 final class SetupPassPraseNode: CellNode {
     typealias DidEndEditingCompletion = (String) -> Void
-
-    private let line = ASDisplayNode()
-    private let textField = ASEditableTextNode()
+    private let textField = TextFieldNode()
     private var onDidEndEditing: DidEndEditingCompletion?
 
     init(_ placeholder: NSAttributedString = SetupStyle.passPrasePlaceholder, onDidEndEditing: DidEndEditingCompletion?) {
@@ -21,39 +19,24 @@ final class SetupPassPraseNode: CellNode {
         textField.attributedPlaceholderText = placeholder
         textField.delegate = self
         textField.isSecureTextEntry = true
-        line.style.flexGrow = 1.0
-        line.backgroundColor = .red
-        line.style.preferredSize.height = 3
+        textField.textAlignment = .center
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 32, left: 16, bottom: 16, right: 16),
-            child: ASCenterLayoutSpec(
-                centeringOptions: .XY,
-                sizingOptions: .minimumXY,
-                child: ASStackLayoutSpec(
-                    direction: .horizontal,
-                    spacing: 1,
-                    justifyContent: .center,
-                    alignItems: .baselineFirst,
-                    children: [
-                        textField,
-                        line
-                    ])
-            )
+            insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16),
+            child: textField
         )
     }
 }
 
-extension SetupPassPraseNode: ASEditableTextNodeDelegate {
-    func editableTextNode(_ editableTextNode: ASEditableTextNode, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        guard text.rangeOfCharacter(from: .newlines) != nil else { return true }
-        editableTextNode.resignFirstResponder()
-        return false
+extension SetupPassPraseNode: UITextFieldDelegate {
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        textField.endEditing(true)
+        return true
     }
 
-    func editableTextNodeDidFinishEditing(_ editableTextNode: ASEditableTextNode) {
-        onDidEndEditing?(editableTextNode.attributedText?.string ?? "")
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        onDidEndEditing?(textField.text ?? "")
     }
 }
