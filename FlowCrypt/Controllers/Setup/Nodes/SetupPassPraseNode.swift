@@ -8,14 +8,16 @@
 
 import AsyncDisplayKit
 
-final class SetupPassPraseNode: ASCellNode {
+final class SetupPassPraseNode: CellNode {
+    typealias DidEndEditingCompletion = (String) -> Void
+
     private let line = ASDisplayNode()
     private let textField = ASEditableTextNode()
+    private var onDidEndEditing: DidEndEditingCompletion?
 
-    init(_ placeholder: NSAttributedString = SetupStyle.passPrasePlaceholder) {
+    init(_ placeholder: NSAttributedString = SetupStyle.passPrasePlaceholder, onDidEndEditing: DidEndEditingCompletion?) {
         super.init()
-        automaticallyManagesSubnodes = true
-        selectionStyle = .none
+        self.onDidEndEditing = onDidEndEditing
         textField.attributedPlaceholderText = placeholder
         textField.delegate = self
         textField.isSecureTextEntry = true
@@ -49,5 +51,9 @@ extension SetupPassPraseNode: ASEditableTextNodeDelegate {
         guard text.rangeOfCharacter(from: .newlines) != nil else { return true }
         editableTextNode.resignFirstResponder()
         return false
+    }
+
+    func editableTextNodeDidFinishEditing(_ editableTextNode: ASEditableTextNode) {
+        onDidEndEditing?(editableTextNode.attributedText?.string ?? "")
     }
 }

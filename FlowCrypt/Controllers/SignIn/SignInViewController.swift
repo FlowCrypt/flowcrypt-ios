@@ -15,7 +15,7 @@ final class SignInViewController: ASViewController<ASTableNode> {
 
     init(userService: UserServiceType = UserService.shared) {
         self.userService = userService
-        super.init(node: ASTableNode())
+        super.init(node: TableNode())
         node.delegate = self
         node.dataSource = self
     }

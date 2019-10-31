@@ -2,10 +2,8 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import MBProgressHUD
 import Promises
 import RealmSwift
-import UIKit
 import AsyncDisplayKit
 
 final class SetupViewController: ASViewController<ASTableNode> {
@@ -16,6 +14,20 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private enum SetupAction {
         case recoverKey
         case createKey
+
+        var buttonTitle: NSAttributedString {
+            switch self {
+            case .recoverKey: return SetupButtonType.loadAccount.attributedTitle
+            case .createKey: return SetupButtonType.createKey.attributedTitle
+            }
+        }
+
+        var desctiption: NSAttributedString {
+            switch self {
+            case .recoverKey: return "setup_description".localized.attributed(.regular(17))
+            case .createKey: return "!!!!! setup_description".localized.attributed(.regular(17))
+            }
+        }
     }
 
     private let imap: Imap
@@ -24,6 +36,19 @@ final class SetupViewController: ASViewController<ASTableNode> {
 
     private var setupAction = SetupAction.recoverKey
     private var fetchedEncryptedPrvs: [KeyDetails] = []
+
+    // TODO: refactor with state approach
+    private var subtitle = "setup_description".localized {
+        didSet {
+            node.reloadRows(at: [IndexPath(row: Parts.description.rawValue, section: 0)], with: .fade)
+        }
+    }
+    private var actionButton = SetupButtonType.loadAccount {
+        didSet {
+            node.reloadRows(at: [IndexPath(row: Parts.action.rawValue, section: 0)], with: .fade)
+        }
+    }
+    private var passPhrase = ""
 
     init(
         imap: Imap = .instance,
@@ -34,7 +59,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         self.userService = userService
         self.router = router
 
-        super.init(node: ASTableNode())
+        super.init(node: TableNode())
         node.delegate = self
         node.dataSource = self
     }
@@ -56,14 +81,14 @@ final class SetupViewController: ASViewController<ASTableNode> {
     }
 }
 
+// MARK: - Setup
+
 extension SetupViewController {
     private func setupUI() {
         node.view.showsVerticalScrollIndicator = false
         observeKeyboardNotifications()
 
-        //        btnLoadAccount.setTitle("setup_load".localized, for: .normal)
-        //        btnUseAnother.setTitle("setup_use_another".localized, for: .normal)
-        //        subTitleLabel.text = "setup_description".localized
+        subtitle = "setup_description".localized
     }
 
     private func observeKeyboardNotifications() {
@@ -74,82 +99,74 @@ extension SetupViewController {
                 self?.node.scrollToRow(at: IndexPath(item: Parts.passPrase.rawValue, section: 0), at: .middle, animated: true)
             })
     }
-
-    private func fetchBackupsAndRenderSetupView() {
-        //        showSpinner()
-        //        Promise<Void> { [weak self] in
-        //            guard let self = self else { return }
-        //            let backupData = try await(self.imap.searchBackups())
-        //            let parsed = try Core.parseKeys(armoredOrBinary: backupData)
-        //            self.fetchedEncryptedPrvs = parsed.keyDetails.filter { $0.private != nil }
-        //        }.then(on: .main) { [weak self] in
-        //            guard let self = self else { return }
-        //            self.hideSpinner()
-        //            if self.fetchedEncryptedPrvs.isEmpty {
-        //                let msg = "setup_no_backups".localized
-        //                self.renderNoBackupsFoundOptions(msg: msg + (DataManager.shared.currentUser()?.email ?? "(unknown)"))
-        //            } else {
-        //                self.subTitleLabel.text = "Found \(self.fetchedEncryptedPrvs.count) key backup\(self.fetchedEncryptedPrvs.count > 1 ? "s" : "")"
-        //            }
-        //        }.catch(on: .main) { [weak self] error in
-        //            self?.renderNoBackupsFoundOptions(msg: "setup_action_failed".localized, error: error)
-        //        }
-    }
-
-    private func renderNoBackupsFoundOptions(msg: String, error: Error? = nil) {
-        //        let errStr = error != nil ? "\n\n\(error!)" : ""
-        //        let alert = UIAlertController(title: "Notice", message: msg + errStr, preferredStyle: .alert)
-        //        if error == nil { // no backous found, not an error: show option to create a key or import key
-        //            alert.addAction(UIAlertAction(title: "Import existing Private Key", style: .default) { [weak self] _ in
-        //                self?.showToast("Key Import will be implemented soon! Contact human@flowcrypt.com")
-        //                self?.renderNoBackupsFoundOptions(msg: msg, error: nil)
-        //            })
-        //            alert.addAction(UIAlertAction(title: "Create new Private Key", style: .default) { [weak self] _ in
-        //                self?.subTitleLabel.text = "Create a new OpenPGP Private Key"
-        //                self?.btnLoadAccount.setTitle("Create Key", for: .normal)
-        //                self?.setupAction = SetupAction.createKey
-        //                // todo - show strength bar while typed so that user can choose the strength they need
-        //            })
-        //        }
-        //        alert.addAction(UIAlertAction(title: "setup_use_otherAccount".localized, style: .default) { [weak self] _ in
-        //            self?.userService.signOut().then(on: .main) { [weak self] in
-        //                if self?.navigationController?.popViewController(animated: true) == nil {
-        //                    self?.router.reset() // in case app got restarted and no view to pop
-        //                }
-        //            }.catch(on: .main) { [weak self] error in
-        //                self?.showAlert(error: error, message: "Could not sign out")
-        //            }
-        //        })
-        //        alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
-        //            self?.fetchBackupsAndRenderSetupView()
-        //        })
-        //        present(alert, animated: true, completion: nil)
-    }
 }
 
-extension SetupViewController {
+// MARK: - Key Setup
 
-    @IBAction func loadAccountButtonPressed(_: Any) {
-        //        view.endEditing(true)
-        //        guard let passPhrase = passPhaseTextField.text, !passPhrase.isEmpty else {
-        //            showAlert(message: "setup_enter_pass_phrase".localized)
-        //            return
-        //        }
-        //        showSpinner()
-        //
-        //        switch setupAction {
-        //        case .recoverKey:
-        //            recoverAccountWithBackups(with: passPhrase)
-        //        case .createKey:
-        //            setupAccountWithGeneratedKey(with: passPhrase)
-        //        }
+extension SetupViewController {
+    private func fetchBackupsAndRenderSetupView() {
+        showSpinner()
+        Promise<Void> { [weak self] in
+            guard let self = self else { return }
+            let backupData = try await(self.imap.searchBackups())
+            let parsed = try Core.parseKeys(armoredOrBinary: backupData)
+            self.fetchedEncryptedPrvs = parsed.keyDetails.filter { $0.private != nil }
+        }.then(on: .main) { [weak self] in
+            self?.handleSuccessfullBackUp()
+        }.catch(on: .main) { [weak self] error in
+            self?.renderNoBackupsFoundOptions("setup_action_failed".localized, error: error)
+        }
+    }
+
+    private func handleSuccessfullBackUp() {
+        hideSpinner()
+        if fetchedEncryptedPrvs.isEmpty {
+            let user = DataManager.shared.currentUser()?.email ?? "(unknown)"
+            let msg = "setup_no_backups".localized + user
+            renderNoBackupsFoundOptions(msg)
+        } else {
+            subtitle = "Found \(self.fetchedEncryptedPrvs.count) key backup\(self.fetchedEncryptedPrvs.count > 1 ? "s" : "")"
+        }
+    }
+
+    private func renderNoBackupsFoundOptions(_ msg: String, error: Error? = nil) {
+        let errStr = error != nil ? "\n\n\(error!)" : ""
+        let alert = UIAlertController(title: "Notice", message: msg + errStr, preferredStyle: .alert)
+        if error == nil { // no backous found, not an error: show option to create a key or import key
+            alert.addAction(UIAlertAction(title: "Import existing Private Key", style: .default) { [weak self] _ in
+                self?.showToast("Key Import will be implemented soon! Contact human@flowcrypt.com")
+                self?.renderNoBackupsFoundOptions(msg, error: nil)
+            })
+            alert.addAction(UIAlertAction(title: "Create new Private Key", style: .default) { [weak self] _ in
+                self?.subtitle = "Create a new OpenPGP Private Key"
+                self?.actionButton = .createKey
+                self?.setupAction = SetupAction.createKey
+                // todo - show strength bar while typed so that user can choose the strength they need
+            })
+        }
+        alert.addAction(UIAlertAction(title: "setup_use_otherAccount".localized, style: .default) { [weak self] _ in
+            self?.userService.signOut().then(on: .main) { [weak self] in
+                if self?.navigationController?.popViewController(animated: true) == nil {
+                    self?.router.reset() // in case app got restarted and no view to pop
+                }
+            }.catch(on: .main) { [weak self] error in
+                self?.showAlert(error: error, message: "Could not sign out")
+            }
+        })
+        alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
+            self?.fetchBackupsAndRenderSetupView()
+        })
+        present(alert, animated: true, completion: nil)
     }
 
     private func recoverAccountWithBackups(with passPhrase: String) {
         let matchingBackups: [KeyDetails] = fetchedEncryptedPrvs
             .compactMap { (key) -> KeyDetails? in
-                guard let prv = key.private else { return nil }
-                guard let r = try? Core.decryptKey(armoredPrv: prv, passphrase: passPhrase), r.decryptedKey != nil else { return nil }
+                guard let privateKey = key.private,
+                    let recovery = try? Core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
+                    recovery.decryptedKey != nil
+                    else { return nil }
+
                 return key
         }
         guard matchingBackups.count > 0 else {
@@ -177,10 +194,6 @@ extension SetupViewController {
         }
     }
 
-    private func moveToMainFlow() {
-        GlobalRouter().reset()
-    }
-
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
         return Promise {
             let strength = try Core.zxcvbnStrengthBar(passPhrase: passPhrase)
@@ -202,7 +215,7 @@ extension SetupViewController {
             guard prv.isFullyEncrypted ?? false else { throw AppErr.unexpected("Private Key must be fully enrypted before backing up") }
             let filename = "flowcrypt-backup-\(userId.email.replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression)).key"
             let backupEmail = try Core.composeEmail(msg: SendableMsg(
-                text: "This email contains a key backup. It will help you access your encrypted messages from other computers (along with your pass phrase). You can safely leave it in your inbox or archive it.\n\nThe key below is protected with pass phrase that only you know. You should make sure to note your pass phrase down.\n\nDO NOT DELETE THIS EMAIL. Write us at human@flowcrypt.com so that we can help.",
+                text: "setu_backup_email".localized,
                 to: [userId.toMime()],
                 cc: [],
                 bcc: [],
@@ -229,12 +242,32 @@ extension SetupViewController {
 // MARK: - Events
 
 extension SetupViewController {
+    private func handleButtonPressed() {
+        view.endEditing(true)
+        guard !passPhrase.isEmpty else {
+            showAlert(message: "setup_enter_pass_phrase".localized)
+            return
+        }
+        showSpinner()
+
+        switch setupAction {
+        case .recoverKey:
+            recoverAccountWithBackups(with: passPhrase)
+        case .createKey:
+            setupAccountWithGeneratedKey(with: passPhrase)
+        }
+    }
+
     private func useOtherAccount() {
         userService.signOut().then(on: .main) { [weak self] _ in
             self?.router.reset()
         }.catch(on: .main) { [weak self] error in
             self?.showAlert(error: error, message: "Could not switch accounts")
         }
+    }
+
+    private func moveToMainFlow() {
+        GlobalRouter().reset()
     }
 }
 
@@ -250,14 +283,16 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
-                return SetupTitleNode()
+                return SetupTitleNode(SetupStyle.title, insets: .zero)
             case .description:
-                return ASCellNode()
+                return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: .zero)
             case .passPrase:
-                return SetupPassPraseNode()
+                return SetupPassPraseNode() { [weak self] value in
+                    self?.passPhrase = value
+                }
             case .action:
-                return SetupButtonNode(SetupButtonType.loadAccount.attributedTitle) {
-
+                return SetupButtonNode(self.setupAction.buttonTitle) { [weak self] in
+                    self?.handleButtonPressed()
                 }
             case .optionalAction:
                 return SetupButtonNode(SetupStyle.useAnotherAccountTitle, color: .white) { [weak self] in
@@ -267,3 +302,4 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 }
+

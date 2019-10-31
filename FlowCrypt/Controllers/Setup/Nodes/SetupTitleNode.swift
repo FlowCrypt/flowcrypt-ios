@@ -8,19 +8,19 @@
 
 import AsyncDisplayKit
 
-final class SetupTitleNode: ASCellNode {
+final class SetupTitleNode: CellNode {
     private let textNode = ASTextNode()
+    private let insets: UIEdgeInsets
 
-    init(_ title: NSAttributedString = SetupStyle.title) {
+    init(_ title: NSAttributedString, insets: UIEdgeInsets) {
+        self.insets = insets
         super.init()
-        automaticallyManagesSubnodes = true
-        selectionStyle = .none
-        textNode.attributedText = title
+        self.textNode.attributedText = title
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 502, left: 16, bottom: 16, right: 16),
+            insets: insets,
             child: ASCenterLayoutSpec(centeringOptions: .XY, sizingOptions: .minimumXY, child: textNode)
         )
     }

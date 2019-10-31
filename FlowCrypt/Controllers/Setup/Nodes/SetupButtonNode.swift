@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-final class SetupButtonNode: ASCellNode {
+final class SetupButtonNode: CellNode {
     private var onTap: (() -> Void)?
     private lazy var button = ButtonNode() { [weak self] in
         self?.onTap?()
@@ -16,9 +16,7 @@ final class SetupButtonNode: ASCellNode {
 
     init(_ title: NSAttributedString, color: UIColor? = nil, action: (() -> Void)?) {
         self.onTap = action
-        super.init()
-        automaticallyManagesSubnodes = true
-        selectionStyle = .none
+        super.init() 
         button.cornerRadius = 5
         button.backgroundColor = color ?? .main
         button.style.preferredSize.height = 50
