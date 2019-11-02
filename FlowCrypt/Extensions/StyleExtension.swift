@@ -38,6 +38,6 @@ extension NSAttributedString {
 
 extension String {
     func attributed(_ style: NSAttributedString.Style, color: UIColor = .black, alignment: NSTextAlignment? = nil) -> NSAttributedString {
-        return NSAttributedString.text(from: self, style: style, color: color)
+        return NSAttributedString.text(from: self, style: style, color: color, alignment: alignment)
     }
 }

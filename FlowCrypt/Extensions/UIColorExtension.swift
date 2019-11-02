@@ -16,4 +16,8 @@ extension UIColor {
     static var textColor: UIColor {
         return UIColor(named: "additionalInfoLabelColor")!
     }
+
+    static var blueColor: UIColor {
+        return UIColor(red: 0, green: 120/255, blue: 1, alpha: 1)
+    }
 }

@@ -9,17 +9,13 @@
 import AsyncDisplayKit
 import Foundation
 
-final class InboxCellNode: ASCellNode {
+final class InboxCellNode: CellNode {
     private let emailNode = ASTextNode()
     private let dateNode = ASTextNode()
     private let messageNode = ASTextNode()
 
     init(message: InboxCellNodeInput) {
-        super.init()
-        addSubnode(emailNode)
-        addSubnode(dateNode)
-        addSubnode(messageNode)
-
+        super.init()  
         emailNode.attributedText = message.emailText
         dateNode.attributedText = message.dateText
         messageNode.attributedText = message.messageText

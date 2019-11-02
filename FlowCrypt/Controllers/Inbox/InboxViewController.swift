@@ -51,7 +51,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
-        self.tableNode = ASTableNode(style: .plain)
+        self.tableNode = TableNode()
 
         super.init(node: ASDisplayNode())
 

@@ -43,7 +43,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         dataManager: DataManagerType = DataManager.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
-        tabelNode: ASTableNode = ASTableNode()
+        tabelNode: ASTableNode = TableNode()
     ) {
         self.foldersProvider = foldersProvider
         self.dataManager = dataManager
@@ -89,9 +89,6 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         tableNode.setup {
             $0.dataSource = self
             $0.delegate = self
-
-            $0.view.showsVerticalScrollIndicator = false
-            $0.view.separatorStyle = .none
             $0.view.tableHeaderView = UIView().then {
                 $0.backgroundColor = .main
                 $0.frame.size.height = safeAreaWindowInsets.top
