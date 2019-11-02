@@ -8,7 +8,7 @@ import AsyncDisplayKit
 
 final class SetupViewController: ASViewController<ASTableNode> {
     private enum Parts: Int, CaseIterable {
-        case title, description, passPrase, divider, action, optionalAction
+        case title, description, passPhrase, divider, action, optionalAction
     }
 
     private enum SetupAction {
@@ -96,7 +96,7 @@ extension SetupViewController {
             .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 5, right: 0) }
             .subscribe(onNext: { [weak self] inset in
                 self?.node.contentInset = inset
-                self?.node.scrollToRow(at: IndexPath(item: Parts.passPrase.rawValue, section: 0), at: .middle, animated: true)
+                self?.node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
             })
     }
 }
@@ -112,13 +112,13 @@ extension SetupViewController {
             let parsed = try Core.parseKeys(armoredOrBinary: backupData)
             self.fetchedEncryptedPrvs = parsed.keyDetails.filter { $0.private != nil }
         }.then(on: .main) { [weak self] in
-            self?.handleSuccessfullBackUp()
+            self?.handleBackupsFetchResult()
         }.catch(on: .main) { [weak self] error in
             self?.renderNoBackupsFoundOptions("setup_action_failed".localized, error: error)
         }
     }
 
-    private func handleSuccessfullBackUp() {
+    private func handleBackupsFetchResult() {
         hideSpinner()
         if fetchedEncryptedPrvs.isEmpty {
             let user = DataManager.shared.currentUser()?.email ?? "(unknown)"
@@ -163,10 +163,9 @@ extension SetupViewController {
         let matchingBackups: [KeyDetails] = fetchedEncryptedPrvs
             .compactMap { (key) -> KeyDetails? in
                 guard let privateKey = key.private,
-                    let recovery = try? Core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
-                    recovery.decryptedKey != nil
+                    let decrypted = try? Core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
+                      decrypted.decryptedKey != nil
                     else { return nil }
-
                 return key
         }
         guard matchingBackups.count > 0 else {
@@ -286,8 +285,8 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 return SetupTitleNode(SetupStyle.title, insets: SetupStyle.titleInset)
             case .description:
                 return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: SetupStyle.subTitleInset)
-            case .passPrase:
-                return SetupPassPraseNode() { [weak self] value in
+            case .passPhrase:
+                return SetupPassPhraseNode() { [weak self] value in
                     self?.passPhrase = value
                 }
             case .divider:

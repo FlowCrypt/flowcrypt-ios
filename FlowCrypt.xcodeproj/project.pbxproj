@@ -54,7 +54,7 @@
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
-		9F1797682368EE7A002BF770 /* SetupPassPraseNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797672368EE7A002BF770 /* SetupPassPraseNode.swift */; };
+		9F1797682368EE7A002BF770 /* SetupPassPhraseNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797672368EE7A002BF770 /* SetupPassPhraseNode.swift */; };
 		9F17976A2368EE90002BF770 /* SetupButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* SetupButtonNode.swift */; };
 		9F17976D2368EEBD002BF770 /* SetupStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupStyle.swift */; };
 		9F17976F2368EECF002BF770 /* SetupButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976E2368EECF002BF770 /* SetupButtonType.swift */; };
@@ -206,7 +206,7 @@
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
 		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9F1797652368EE50002BF770 /* SetupTitleNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupTitleNode.swift; sourceTree = "<group>"; };
-		9F1797672368EE7A002BF770 /* SetupPassPraseNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPassPraseNode.swift; sourceTree = "<group>"; };
+		9F1797672368EE7A002BF770 /* SetupPassPhraseNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPassPhraseNode.swift; sourceTree = "<group>"; };
 		9F1797692368EE90002BF770 /* SetupButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupButtonNode.swift; sourceTree = "<group>"; };
 		9F17976C2368EEBD002BF770 /* SetupStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupStyle.swift; sourceTree = "<group>"; };
 		9F17976E2368EECF002BF770 /* SetupButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupButtonType.swift; sourceTree = "<group>"; };
@@ -449,7 +449,7 @@
 			isa = PBXGroup;
 			children = (
 				9F1797652368EE50002BF770 /* SetupTitleNode.swift */,
-				9F1797672368EE7A002BF770 /* SetupPassPraseNode.swift */,
+				9F1797672368EE7A002BF770 /* SetupPassPhraseNode.swift */,
 				9F1797692368EE90002BF770 /* SetupButtonNode.swift */,
 			);
 			path = Nodes;
@@ -1170,7 +1170,7 @@
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
 				9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */,
-				9F1797682368EE7A002BF770 /* SetupPassPraseNode.swift in Sources */,
+				9F1797682368EE7A002BF770 /* SetupPassPhraseNode.swift in Sources */,
 				9F716305234FC7200031645E /* Localization.swift in Sources */,
 				9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,

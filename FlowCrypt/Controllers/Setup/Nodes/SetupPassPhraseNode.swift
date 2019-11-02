@@ -1,5 +1,5 @@
 //
-//  SetupPassPraseNode.swift
+//  SetupPassPhraseNode.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 29.10.2019.
@@ -8,12 +8,12 @@
 
 import AsyncDisplayKit
 
-final class SetupPassPraseNode: CellNode {
+final class SetupPassPhraseNode: CellNode {
     typealias DidEndEditingCompletion = (String) -> Void
     private let textField = TextFieldNode()
     private var onDidEndEditing: DidEndEditingCompletion?
 
-    init(_ placeholder: NSAttributedString = SetupStyle.passPrasePlaceholder, onDidEndEditing: DidEndEditingCompletion?) {
+    init(_ placeholder: NSAttributedString = SetupStyle.passPhrasePlaceholder, onDidEndEditing: DidEndEditingCompletion?) {
         super.init()
         self.onDidEndEditing = onDidEndEditing
         textField.attributedPlaceholderText = placeholder
@@ -30,7 +30,7 @@ final class SetupPassPraseNode: CellNode {
     }
 }
 
-extension SetupPassPraseNode: UITextFieldDelegate {
+extension SetupPassPhraseNode: UITextFieldDelegate {
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         textField.endEditing(true)
         return true
