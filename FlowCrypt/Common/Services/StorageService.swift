@@ -26,13 +26,3 @@ struct StorageService: StorageServiceType {
         }
     }
 }
-
-
-//private func storePrvs(prvs: [KeyDetails], passPhrase: String, source: KeySource) throws {
-//    let realm = try! Realm() // TODO: - Refactor with realm service
-//    try! realm.write {
-//        for k in prvs {
-//            realm.add(try! KeyInfo(k, passphrase: passPhrase, source: source))
-//        }
-//    }
-//}

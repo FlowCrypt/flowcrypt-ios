@@ -20,6 +20,7 @@ final class TextFieldNode: ASDisplayNode {
             }
         }
     }
+
     var delegate: UITextFieldDelegate? {
         didSet {
             DispatchQueue.main.async {
@@ -44,11 +45,25 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
+    var textInsets: CGFloat = -7 {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.setTextInset(self.textInsets)
+            }
+        }
+    }
+
+    var text: String {
+        return textField.text ?? ""
+    }
+
     private lazy var node = ASDisplayNode { UITextField() }
 
     override init() {
         super.init()
         addSubnode(node)
+
+
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
@@ -56,4 +71,10 @@ final class TextFieldNode: ASDisplayNode {
         return ASInsetLayoutSpec(insets: .zero, child: node)
     }
 
+    func addTarget(_ target: Any?, action: Selector, for event: UIControl.Event) {
+        DispatchQueue.main.async {
+            self.textField.addTarget(target, action: action, for: event)
+        }
+    }
 }
+

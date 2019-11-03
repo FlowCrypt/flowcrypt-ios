@@ -8,11 +8,18 @@
 
 import AsyncDisplayKit
 
-// TODO: Anton - change in setup as well
 final class TextFieldCellNode: CellNode {
+    struct Input {
+        var placeholder: NSAttributedString? = nil
+        var isSecureTextEntry = false
+        var textInsets: CGFloat = -7
+        var textAlignment: NSTextAlignment = .left
+    }
+
     enum TextFieldActionType {
         case didEndEditing(String)
         case didBeginEditing(String)
+        case editingChanged(String)
     }
 
     typealias TextFieldAction = (TextFieldActionType) -> Void
@@ -23,14 +30,23 @@ final class TextFieldCellNode: CellNode {
     var shouldEndEditing: ((UITextField) -> (Bool))?
     var shouldReturn: ((UITextField) -> (Bool))?
 
-    // TODO: Anton -
-    init(_ placeholder: NSAttributedString? = nil, textFiledAction: TextFieldAction? = nil) {
+    init(_ input: Input, action: TextFieldAction? = nil) {
         super.init()
-        self.textFiledAction = textFiledAction
-        textField.attributedPlaceholderText = placeholder
+        textFiledAction = action
+
+        textField.attributedPlaceholderText = input.placeholder
+        textField.isSecureTextEntry = input.isSecureTextEntry
+        textField.textAlignment = input.textAlignment
+        textField.textInsets = input.textInsets
+
+        textField.addTarget(
+            self,
+            action: #selector(onEditingChanged),
+            for: UIControl.Event.editingChanged
+        )
+
+
         textField.delegate = self
-        textField.isSecureTextEntry = true
-        textField.textAlignment = .center
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
@@ -58,5 +74,9 @@ extension TextFieldCellNode: UITextFieldDelegate {
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         return shouldReturn?(textField) ?? true
+    }
+
+    @objc private func onEditingChanged() {
+        textFiledAction?(.editingChanged(textField.text))
     }
 }

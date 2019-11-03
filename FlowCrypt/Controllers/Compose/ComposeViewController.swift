@@ -60,7 +60,7 @@ final class ComposeViewController: ASViewController<ASTableNode> {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-//        txtMessage.resignFirstResponder()
+        node.view.endEditing(true)
     }
 }
 
@@ -85,15 +85,6 @@ extension ComposeViewController {
         }
 
 
-//        [txtSubject, txtRecipient].forEach { $0.setTextInset() }
-//
-//        txtRecipient.addTarget(
-//            self,
-//            action: #selector(ComposeViewController.convertStringToLowercase(textField:)),
-//            for: UIControl.Event.editingChanged
-//        )
-//
-//        txtMessage.delegate = self
 //        txtMessage.textColor = UIColor.lightGray
 //
 //        if viewModel.isReply {
@@ -276,13 +267,23 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
-            case .recipient: let tf = TextFieldCellNode()
+            case .recipient: let tf = TextFieldCellNode(ComposeStyle.textFieldStyle)
                 return tf
-            case .subject: return TextFieldCellNode()
-            case .text: return ASCellNode()
+            case .subject:
+                return TextFieldCellNode(ComposeStyle.textFieldStyle)
+            case .text:
+                return ASCellNode()
             }
         }
     }
 }
 
 
+enum ComposeStyle {
+    static let textFieldStyle = TextFieldCellNode.Input(
+        placeholder: "setup_enter".localized.attributed(.bold(16), color: .lightGray, alignment: .center),
+        isSecureTextEntry: false,
+        textInsets: -7,
+        textAlignment: .center
+    )
+}

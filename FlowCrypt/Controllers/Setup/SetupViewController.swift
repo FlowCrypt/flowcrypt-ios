@@ -60,10 +60,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         self.userService = userService
         self.router = router
         self.storage = storage
-        
         super.init(node: TableNode())
-        node.delegate = self
-        node.dataSource = self
     }
 
     required init?(coder: NSCoder) {
@@ -87,7 +84,8 @@ final class SetupViewController: ASViewController<ASTableNode> {
 
 extension SetupViewController {
     private func setupUI() {
-        node.view.showsVerticalScrollIndicator = false
+        node.delegate = self
+        node.dataSource = self
         observeKeyboardNotifications()
 
         subtitle = "setup_description".localized
@@ -282,7 +280,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: SetupStyle.subTitleInset)
             case .passPhrase:
-                return TextFieldCellNode(SetupStyle.passPhrasePlaceholder) { [weak self] action in
+                return TextFieldCellNode(input: SetupStyle.textFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
