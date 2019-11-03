@@ -9,7 +9,14 @@ struct PubkeySearchResult {
     let armored: String?
 }
 
-final class AttesterApi {
+protocol AttesterApiType {
+    func lookupEmail(email: String) -> Promise<PubkeySearchResult>
+    func updateKey(email: String, pubkey: String) -> Promise<String>
+    func replaceKey(email: String, pubkey: String) -> Promise<String>
+    func testWelcome(email: String, pubkey: String) -> Promise<Void>
+}
+
+final class AttesterApi: AttesterApiType {
     static let shared: AttesterApi = AttesterApi()
     private static var url = "https://flowcrypt.com/attester/"
 

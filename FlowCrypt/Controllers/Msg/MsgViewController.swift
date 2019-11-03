@@ -233,7 +233,7 @@ extension MsgViewController {
             replyToSubject: input.objMessage.header.subject,
             replyToMime: input.bodyMessage
         )
-        let replyVc = ComposeViewController.instance(with: viewModel)
+        let replyVc = ComposeViewController(input: viewModel)
         navigationController?.pushViewController(replyVc, animated: true)
     }
 }

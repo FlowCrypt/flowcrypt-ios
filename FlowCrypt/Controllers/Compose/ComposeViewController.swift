@@ -2,45 +2,57 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import MBProgressHUD
 import Promises
-import RealmSwift
-import UIKit
+import AsyncDisplayKit
 
-extension ComposeViewController {
-    static func instance(with input: ComposeViewController.Input) -> ComposeViewController {
-        let vc = UIStoryboard.main.instantiate(ComposeViewController.self)
-        vc.viewModel = input
-        return vc
+final class ComposeViewController: ASViewController<ASTableNode> {
+    enum Parts: Int, CaseIterable {
+        case recipient, subject, text
     }
-}
 
-final class ComposeViewController: UIViewController {
     struct Input {
+        static let empty = Input(isReply: false, replyToRecipient: nil, replyToSubject: nil, replyToMime: nil)
         let isReply: Bool
         let replyToRecipient: MCOAddress?
         let replyToSubject: String?
         let replyToMime: Data?
     }
 
-    @IBOutlet var txtRecipient: UITextField!
-    @IBOutlet var txtSubject: UITextField!
-    @IBOutlet var txtMessage: UITextView!
-    @IBOutlet var scrollView: UIScrollView!
+    private let imap: Imap
+    private let notificationCenter: NotificationCenter
+    private let dataManager: DataManagerType
+    private let attesterApi: AttesterApiType
+    private let storageService: StorageServiceType
+    private var viewModel: Input
 
-    // TODO: Inject as a dependency
-    private let imap = Imap.instance
-    private let notificationCenter = NotificationCenter.default
-    private let dataManager = DataManager.shared
-    private let attesterApi = AttesterApi.shared
-    private var viewModel = Input(isReply: false, replyToRecipient: nil, replyToSubject: nil, replyToMime: nil)
+    init(
+        imap: Imap = .instance,
+        notificationCenter: NotificationCenter = .default,
+        dataManager: DataManagerType = DataManager.shared,
+        attesterApi: AttesterApiType = AttesterApi.shared,
+        storageService: StorageServiceType = StorageService(),
+        input: ComposeViewController.Input = .empty
+    ) {
+        self.imap = imap
+        self.notificationCenter = notificationCenter
+        self.dataManager = dataManager
+        self.attesterApi = attesterApi
+        self.viewModel = input
+        self.storageService = storageService
+        
+        super.init(node: TableNode())
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupNavigationBar()
         setupUI()
-        registerKeyboardNotifications()
+        setupNavigationBar()
+        observeKeyboardNotifications()
 
         // establish session before user taps send, so that sending msg is faster once the user does tap it
         imap.getSmtpSess()
@@ -48,11 +60,7 @@ final class ComposeViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        txtMessage.resignFirstResponder()
-    }
-
-    deinit {
-        notificationCenter.removeObserver(self)
+//        txtMessage.resignFirstResponder()
     }
 }
 
@@ -70,55 +78,62 @@ extension ComposeViewController {
     }
 
     private func setupUI() {
-        [txtSubject, txtRecipient]
-            .forEach { $0.setTextInset() }
-
-        scrollView.delegate = self
-        scrollView.keyboardDismissMode = .interactive
-
-        txtRecipient.addTarget(
-            self,
-            action: #selector(ComposeViewController.convertStringToLowercase(textField:)),
-            for: UIControl.Event.editingChanged
-        )
-
-        txtMessage.delegate = self
-        txtMessage.textColor = UIColor.lightGray
-
-        if viewModel.isReply {
-            txtSubject.text = "Re: \(viewModel.replyToSubject ?? "(no subject)")"
-            txtRecipient.text = viewModel.replyToRecipient?.mailbox ?? ""
+        node.do {
+            $0.delegate = self
+            $0.dataSource = self
+            $0.view.keyboardDismissMode = .interactive
         }
+
+
+//        [txtSubject, txtRecipient].forEach { $0.setTextInset() }
+//
+//        txtRecipient.addTarget(
+//            self,
+//            action: #selector(ComposeViewController.convertStringToLowercase(textField:)),
+//            for: UIControl.Event.editingChanged
+//        )
+//
+//        txtMessage.delegate = self
+//        txtMessage.textColor = UIColor.lightGray
+//
+//        if viewModel.isReply {
+//            txtSubject.text = "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+//            txtRecipient.text = viewModel.replyToRecipient?.mailbox ?? ""
+//        }
     }
 }
 
 // MARK: - Keyboard
 
 extension ComposeViewController {
-    private func registerKeyboardNotifications() {
-        notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+    private func observeKeyboardNotifications() {
+        _ = keyboardHeight
+            .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 5, right: 0) }
+            .subscribe(onNext: { [weak self] inset in
+                self?.adjustForKeyboard(with: inset)
+            })
     }
 
-    @objc private func adjustForKeyboard(notification: Notification) {
-        guard let userInfo = notification.userInfo,
-            let keyboardScreenEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-        else { assertionFailure("Check user info"); return }
+    @objc private func adjustForKeyboard(with inset: UIEdgeInsets) {
+        //                self?.node.contentInset = inset
+        //                self?.node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
 
-        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
 
-        if notification.name == UIResponder.keyboardWillHideNotification {
-            scrollView.contentInset = UIEdgeInsets.zero
-        } else {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardViewEndFrame.height, right: 0)
-        }
 
-        guard txtMessage.isFirstResponder else { return }
-        scrollView.scrollIndicatorInsets = txtMessage.contentInset
-
-        guard let selectedRange = txtMessage.selectedTextRange else { return }
-        let rect = txtMessage.caretRect(for: selectedRange.start)
-        scrollView.scrollRectToVisible(rect, animated: true)
+//        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
+//
+//        if notification.name == UIResponder.keyboardWillHideNotification {
+//            scrollView.contentInset = UIEdgeInsets.zero
+//        } else {
+//            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardViewEndFrame.height, right: 0)
+//        }
+//
+//        guard txtMessage.isFirstResponder else { return }
+//        scrollView.scrollIndicatorInsets = txtMessage.contentInset
+//
+//        guard let selectedRange = txtMessage.selectedTextRange else { return }
+//        let rect = txtMessage.caretRect(for: selectedRange.start)
+//        scrollView.scrollRectToVisible(rect, animated: true)
     }
 }
 
@@ -143,46 +158,46 @@ extension ComposeViewController {
         view.endEditing(true)
     }
 
-    @objc private func convertStringToLowercase(textField _: UITextField) {
-        txtRecipient.text = txtRecipient.text?.lowercased()
-    }
+//    @objc private func convertStringToLowercase(textField _: UITextField) {
+//        txtRecipient.text = txtRecipient.text?.lowercased()
+//    }
 }
 
 extension ComposeViewController {
     private func sendMsgTapHandler() {
-        dismissKeyboard()
-
-        guard isInputValid(),
-            let email = txtRecipient.text,
-            let text = txtMessage.text
-        else { return }
-
-        let pgpText = "compose_missed_public".localized
-        let subject = viewModel.isReply
-            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
-            : txtSubject.text ?? "(no subject)"
-        let message = viewModel.isReply
-            ? "compose_reply_successfull".localized
-            : "compose_sent".localized
-
-        showSpinner("sending_title".localized)
-
-        Promise<Void> { [weak self] in
-            guard let self = self else { return }
-            let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
-            guard let recipientPubkey = lookupRes.armored else { return self.showAlert(message: pgpText) }
-            let realm = try Realm() // TODO: Anton - Refactor to use db service
-
-            guard let myPubkey = realm.objects(KeyInfo.self).map({ $0.public }).first else { return self.showAlert(message: pgpText) }
-            let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], subject: subject, message: text, email: email)
-            try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
-        }.then(on: .main) { [weak self] in
-            self?.hideSpinner()
-            self?.showToast(message)
-            self?.navigationController?.popViewController(animated: true)
-        }.catch(on: .main) { [weak self] error in
-            self?.showAlert(error: error, message: "compose_error".localized)
-        }
+//        dismissKeyboard()
+//
+//        guard isInputValid(),
+//            let email = txtRecipient.text,
+//            let text = txtMessage.text
+//        else { return }
+//
+//        let pgpText = "compose_missed_public".localized
+//        let subject = viewModel.isReply
+//            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+//            : txtSubject.text ?? "(no subject)"
+//        let message = viewModel.isReply
+//            ? "compose_reply_successfull".localized
+//            : "compose_sent".localized
+//
+//        showSpinner("sending_title".localized)
+//
+//        Promise<Void> { [weak self] in
+//            guard let self = self else { return }
+//            let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
+//            guard let recipientPubkey = lookupRes.armored else { return self.showAlert(message: pgpText) }
+//            let realm = try Realm() // TODO: Anton - Refactor to use db service
+//
+//            guard let myPubkey = realm.objects(KeyInfo.self).map({ $0.public }).first else { return self.showAlert(message: pgpText) }
+//            let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], subject: subject, message: text, email: email)
+//            try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
+//        }.then(on: .main) { [weak self] in
+//            self?.hideSpinner()
+//            self?.showToast(message)
+//            self?.navigationController?.popViewController(animated: true)
+//        }.catch(on: .main) { [weak self] error in
+//            self?.showAlert(error: error, message: "compose_error".localized)
+//        }
     }
 
     private func encryptMsg(pubkeys: [String], subject: String, message: String, email: String) -> CoreRes.ComposeEmail {
@@ -202,18 +217,18 @@ extension ComposeViewController {
     }
 
     private func isInputValid() -> Bool {
-        guard txtRecipient.text?.hasContent ?? false else {
-            showAlert(message: "compose_enter_recipient".localized)
-            return false
-        }
-        guard viewModel.isReply || txtSubject.text?.hasContent ?? false else {
-            showAlert(message: "compose_enter_subject".localized)
-            return false
-        }
-        guard txtMessage.text?.hasContent ?? false else {
-            showAlert(message: "compose_enter_secure".localized)
-            return false
-        }
+//        guard txtRecipient.text?.hasContent ?? false else {
+//            showAlert(message: "compose_enter_recipient".localized)
+//            return false
+//        }
+//        guard viewModel.isReply || txtSubject.text?.hasContent ?? false else {
+//            showAlert(message: "compose_enter_subject".localized)
+//            return false
+//        }
+//        guard txtMessage.text?.hasContent ?? false else {
+//            showAlert(message: "compose_enter_secure".localized)
+//            return false
+//        }
         return true
     }
 }
@@ -222,29 +237,52 @@ extension ComposeViewController {
 
 extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        let placeholder = "message_compose_secure".localized
-        
-        if textView.text == "message_your".localized || textView.text == placeholder {
-            txtMessage.textColor = .black
-            txtMessage.text = ""
-        }
+//        let placeholder = "message_compose_secure".localized
+//
+//        if textView.text == "message_your".localized || textView.text == placeholder {
+//            txtMessage.textColor = .black
+//            txtMessage.text = ""
+//        }
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text == "" || textView.text == "\n" {
-            txtMessage.textColor = UIColor.lightGray
-            txtMessage.text = "message_your".localized
-        }
+//        if textView.text == "" || textView.text == "\n" {
+//            txtMessage.textColor = UIColor.lightGray
+//            txtMessage.text = "message_your".localized
+//        }
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == txtRecipient {
-            txtSubject.becomeFirstResponder()
-        }
-        if !viewModel.isReply, textField == txtSubject {
-            txtMessage.becomeFirstResponder()
-            return false
-        }
+//        if textField == txtRecipient {
+//            txtSubject.becomeFirstResponder()
+//        }
+//        if !viewModel.isReply, textField == txtSubject {
+//            txtMessage.becomeFirstResponder()
+//            return false
+//        }
         return true
     }
 }
+
+// MARK: - Handle actions
+
+extension ComposeViewController: ASTableDelegate, ASTableDataSource {
+
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        return Parts.allCases.count
+    }
+
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            switch part {
+            case .recipient: let tf = TextFieldCellNode()
+                return tf
+            case .subject: return TextFieldCellNode()
+            case .text: return ASCellNode()
+            }
+        }
+    }
+}
+
+

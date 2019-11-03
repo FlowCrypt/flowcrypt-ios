@@ -213,7 +213,7 @@ extension InboxViewController {
 
     private func btnComposeTap() {
         TapTicFeedback.generate(.light)
-        let composeVc = UIStoryboard.main.instantiate(ComposeViewController.self)
+        let composeVc = ComposeViewController()
         navigationController?.pushViewController(composeVc, animated: true)
     }
 }

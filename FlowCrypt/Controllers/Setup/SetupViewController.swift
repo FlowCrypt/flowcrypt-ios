@@ -3,7 +3,6 @@
 //
 
 import Promises
-import RealmSwift
 import AsyncDisplayKit
 
 final class SetupViewController: ASViewController<ASTableNode> {
@@ -33,6 +32,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType
+    private let storage: StorageServiceType
 
     private var setupAction = SetupAction.recoverKey
     private var fetchedEncryptedPrvs: [KeyDetails] = []
@@ -53,12 +53,14 @@ final class SetupViewController: ASViewController<ASTableNode> {
     init(
         imap: Imap = .instance,
         userService: UserServiceType = UserService.shared,
-        router: GlobalRouterType = GlobalRouter()
+        router: GlobalRouterType = GlobalRouter(),
+        storage: StorageServiceType = StorageService()
     ) {
         self.imap = imap
         self.userService = userService
         self.router = router
-
+        self.storage = storage
+        
         super.init(node: TableNode())
         node.delegate = self
         node.dataSource = self
@@ -228,14 +230,8 @@ extension SetupViewController {
     }
 
     private func storePrvs(prvs: [KeyDetails], passPhrase: String, source: KeySource) throws {
-        let realm = try! Realm() // TODO: - Refactor with realm service
-        try! realm.write {
-            for k in prvs {
-                realm.add(try! KeyInfo(k, passphrase: passPhrase, source: source))
-            }
-        }
+        storage.store(keyDetails: prvs, passPhrase: passPhrase, source: source)
     }
-
 }
 
 // MARK: - Events
@@ -286,15 +282,18 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: SetupStyle.subTitleInset)
             case .passPhrase:
-                return SetupPassPhraseNode() { [weak self] value in
+                return TextFieldCellNode(SetupStyle.passPhrasePlaceholder) { [weak self] action in
+                    guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
             case .divider:
                 return DividerNode(inset: SetupStyle.dividerInsets, color: .lightGray, height: 1)
             case .action:
-                return SetupButtonNode(self.setupAction.buttonTitle, insets: SetupStyle.buttonInsets) { [weak self] in
-                    self?.handleButtonPressed()
-                }
+                return SetupButtonNode(
+                    self.setupAction.buttonTitle,
+                    insets: SetupStyle.buttonInsets) { [weak self] in
+                        self?.handleButtonPressed()
+                    }
             case .optionalAction:
                 return SetupButtonNode(
                     SetupStyle.useAnotherAccountTitle,

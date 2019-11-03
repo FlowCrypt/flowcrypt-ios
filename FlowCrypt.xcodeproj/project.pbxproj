@@ -54,7 +54,6 @@
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
-		9F1797682368EE7A002BF770 /* SetupPassPhraseNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797672368EE7A002BF770 /* SetupPassPhraseNode.swift */; };
 		9F17976A2368EE90002BF770 /* SetupButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* SetupButtonNode.swift */; };
 		9F17976D2368EEBD002BF770 /* SetupStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupStyle.swift */; };
 		9F17976F2368EECF002BF770 /* SetupButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976E2368EECF002BF770 /* SetupButtonType.swift */; };
@@ -87,6 +86,8 @@
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
 		9F8D5E62236B04E300186E43 /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8D5E61236B04E300186E43 /* CellNode.swift */; };
+		9F92EE70236F144C009BE0D7 /* TextFieldCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */; };
+		9F92EE72236F165E009BE0D7 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* StorageService.swift */; };
 		9F95A3F52360778E00C80B64 /* LinkButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */; };
 		9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */; };
 		9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F823607C2900C80B64 /* SignInType.swift */; };
@@ -206,7 +207,6 @@
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
 		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9F1797652368EE50002BF770 /* SetupTitleNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupTitleNode.swift; sourceTree = "<group>"; };
-		9F1797672368EE7A002BF770 /* SetupPassPhraseNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPassPhraseNode.swift; sourceTree = "<group>"; };
 		9F1797692368EE90002BF770 /* SetupButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupButtonNode.swift; sourceTree = "<group>"; };
 		9F17976C2368EEBD002BF770 /* SetupStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupStyle.swift; sourceTree = "<group>"; };
 		9F17976E2368EECF002BF770 /* SetupButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupButtonType.swift; sourceTree = "<group>"; };
@@ -239,6 +239,8 @@
 		9F716309234FC73E0031645E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9F71630B234FC7500031645E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9F8D5E61236B04E300186E43 /* CellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
+		9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCellNode.swift; sourceTree = "<group>"; };
+		9F92EE71236F165E009BE0D7 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkButtonNode.swift; sourceTree = "<group>"; };
 		9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninButtonNode.swift; sourceTree = "<group>"; };
 		9F95A3F823607C2900C80B64 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
@@ -436,6 +438,7 @@
 		9F0C3C1F23191F2000299985 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				9F92EE71236F165E009BE0D7 /* StorageService.swift */,
 				9F0C3C0F2316DD5B00299985 /* UserService.swift */,
 				9F0C3C112316DDA500299985 /* DataManager.swift */,
 				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
@@ -449,7 +452,6 @@
 			isa = PBXGroup;
 			children = (
 				9F1797652368EE50002BF770 /* SetupTitleNode.swift */,
-				9F1797672368EE7A002BF770 /* SetupPassPhraseNode.swift */,
 				9F1797692368EE90002BF770 /* SetupButtonNode.swift */,
 			);
 			path = Nodes;
@@ -463,6 +465,7 @@
 				9F4453BF236B894D005D7D05 /* TableNode.swift */,
 				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
 				9F4453C3236B96F9005D7D05 /* DividerNode.swift */,
+				9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -1104,6 +1107,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F92EE70236F144C009BE0D7 /* TextFieldCellNode.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
 				9F56BD3223438B5B00A7371A /* InboxCellNode.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
@@ -1170,7 +1174,6 @@
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
 				9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */,
-				9F1797682368EE7A002BF770 /* SetupPassPhraseNode.swift in Sources */,
 				9F716305234FC7200031645E /* Localization.swift in Sources */,
 				9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
@@ -1184,6 +1187,7 @@
 				32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupStyle.swift in Sources */,
 				9F56BD3A23438D3800A7371A /* StyleExtension.swift in Sources */,
+				9F92EE72236F165E009BE0D7 /* StorageService.swift in Sources */,
 				9F56BD2E23438ABA00A7371A /* Taptic.swift in Sources */,
 				9FDF363A235A0B3B00614596 /* HeaderNode.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
