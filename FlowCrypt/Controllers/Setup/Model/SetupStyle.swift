@@ -21,12 +21,12 @@ enum SetupStyle {
     static let subTitleInset = UIEdgeInsets(top: 0, left: 16, bottom: 60, right: 16)
     static let buttonInsets = UIEdgeInsets(top: 80, left: 24, bottom: 8, right: 24)
     static let optionalBbuttonInsets = UIEdgeInsets(top: 0, left: 24, bottom: 8, right: 24)
-    static let dividerInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
 
     static let textFieldStyle = TextFieldCellNode.Input(
         placeholder: "setup_enter".localized.attributed(.bold(16), color: .lightGray, alignment: .center),
         isSecureTextEntry: true,
         textInsets: 0,
-        textAlignment: .center
+        textAlignment: .center,
+        insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     )
 }

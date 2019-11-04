@@ -280,12 +280,12 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: SetupStyle.subTitleInset)
             case .passPhrase:
-                return TextFieldCellNode(input: SetupStyle.textFieldStyle) { [weak self] action in
+                return TextFieldCellNode(SetupStyle.textFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
             case .divider:
-                return DividerNode(inset: SetupStyle.dividerInsets, color: .lightGray, height: 1)
+                return DividerNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
             case .action:
                 return SetupButtonNode(
                     self.setupAction.buttonTitle,

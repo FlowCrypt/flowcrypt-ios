@@ -12,7 +12,11 @@ final class DividerNode: CellNode {
     private let line = ASDisplayNode()
     private let inset: UIEdgeInsets
 
-    init(inset: UIEdgeInsets, color: UIColor, height: CGFloat) {
+    init(
+        inset: UIEdgeInsets = .zero,
+        color: UIColor = .lightGray,
+        height: CGFloat = 1
+    ) {
         self.inset = inset
         super.init()
         line.style.preferredSize.height = height

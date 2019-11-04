@@ -34,6 +34,8 @@
 "compose_sent" = "Encrypted message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
+"compose_recipient" = "Add Recipient";
+"compose_subject" = "Subject";
 
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";

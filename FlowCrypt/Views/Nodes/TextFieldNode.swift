@@ -54,7 +54,31 @@ final class TextFieldNode: ASDisplayNode {
     }
 
     var text: String {
-        return textField.text ?? ""
+        textField.text ?? ""
+    }
+
+    var attributedText: NSAttributedString? {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.attributedText = self.attributedText
+            }
+        }
+    }
+
+    var isLowercased = false {
+        didSet {
+            DispatchQueue.main.async {
+                if self.isLowercased {
+                    self.textField.addTarget(
+                        self,
+                        action: #selector(self.onEditingChanged),
+                        for: UIControl.Event.editingChanged
+                    )
+                } else {
+                    self.textField.removeTarget(self, action: nil, for: UIControl.Event.editingChanged)
+                }
+            }
+        }
     }
 
     private lazy var node = ASDisplayNode { UITextField() }
@@ -63,17 +87,30 @@ final class TextFieldNode: ASDisplayNode {
         super.init()
         addSubnode(node)
 
-
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        node.style.preferredSize = CGSize(width: constrainedSize.max.width, height: 30)
+        node.style.preferredSize = CGSize(width: constrainedSize.max.width, height: 40)
         return ASInsetLayoutSpec(insets: .zero, child: node)
     }
 
-    func addTarget(_ target: Any?, action: Selector, for event: UIControl.Event) {
+    private func addTarget(_ target: Any?, action: Selector, for event: UIControl.Event) {
         DispatchQueue.main.async {
             self.textField.addTarget(target, action: action, for: event)
+        }
+    }
+
+    @objc private func onEditingChanged() {
+        guard let attributedText = textField.attributedText else { return }
+        textField.attributedText = NSAttributedString(
+            string: attributedText.string.lowercased(),
+            attributes: attributedText.attributes(at: 0, effectiveRange: nil)
+        )
+    }
+
+    func firstResponder() {
+        DispatchQueue.main.async {
+            self.textField.becomeFirstResponder()
         }
     }
 }

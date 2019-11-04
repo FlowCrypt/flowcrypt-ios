@@ -14,12 +14,13 @@ final class TextFieldCellNode: CellNode {
         var isSecureTextEntry = false
         var textInsets: CGFloat = -7
         var textAlignment: NSTextAlignment = .left
+        var isLowercased = false
+        var insets: UIEdgeInsets = .zero
     }
 
     enum TextFieldActionType {
         case didEndEditing(String)
         case didBeginEditing(String)
-        case editingChanged(String)
     }
 
     typealias TextFieldAction = (TextFieldActionType) -> Void
@@ -29,8 +30,20 @@ final class TextFieldCellNode: CellNode {
 
     var shouldEndEditing: ((UITextField) -> (Bool))?
     var shouldReturn: ((UITextField) -> (Bool))?
+    var attributedText: NSAttributedString? {
+        didSet {
+            textField.attributedText = attributedText
+        }
+    }
+    var isLowercased = false {
+        didSet {
+            self.textField.isLowercased = isLowercased
+        }
+    }
 
+    private let input: Input
     init(_ input: Input, action: TextFieldAction? = nil) {
+        self.input = input
         super.init()
         textFiledAction = action
 
@@ -39,21 +52,15 @@ final class TextFieldCellNode: CellNode {
         textField.textAlignment = input.textAlignment
         textField.textInsets = input.textInsets
 
-        textField.addTarget(
-            self,
-            action: #selector(onEditingChanged),
-            for: UIControl.Event.editingChanged
-        )
-
-
         textField.delegate = self
     }
 
+    func firstResponder() {
+        textField.firstResponder()
+    }
+
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16),
-            child: textField
-        )
+        ASInsetLayoutSpec(insets: input.insets, child: textField)
     }
 }
 
@@ -74,9 +81,5 @@ extension TextFieldCellNode: UITextFieldDelegate {
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         return shouldReturn?(textField) ?? true
-    }
-
-    @objc private func onEditingChanged() {
-        textFiledAction?(.editingChanged(textField.text))
     }
 }

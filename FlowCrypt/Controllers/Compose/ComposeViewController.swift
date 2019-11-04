@@ -7,11 +7,12 @@ import AsyncDisplayKit
 
 final class ComposeViewController: ASViewController<ASTableNode> {
     enum Parts: Int, CaseIterable {
-        case recipient, subject, text
+        case recipient, recipientDivider, subject, subjectDivider, text
     }
 
     struct Input {
         static let empty = Input(isReply: false, replyToRecipient: nil, replyToSubject: nil, replyToMime: nil)
+
         let isReply: Bool
         let replyToRecipient: MCOAddress?
         let replyToSubject: String?
@@ -83,14 +84,6 @@ extension ComposeViewController {
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
         }
-
-
-//        txtMessage.textColor = UIColor.lightGray
-//
-//        if viewModel.isReply {
-//            txtSubject.text = "Re: \(viewModel.replyToSubject ?? "(no subject)")"
-//            txtRecipient.text = viewModel.replyToRecipient?.mailbox ?? ""
-//        }
     }
 }
 
@@ -144,19 +137,11 @@ extension ComposeViewController {
     @objc private func handleSendTap() {
         sendMsgTapHandler()
     }
-
-    private func dismissKeyboard() {
-        view.endEditing(true)
-    }
-
-//    @objc private func convertStringToLowercase(textField _: UITextField) {
-//        txtRecipient.text = txtRecipient.text?.lowercased()
-//    }
 }
 
 extension ComposeViewController {
     private func sendMsgTapHandler() {
-//        dismissKeyboard()
+//        view.endEditing(true)
 //
 //        guard isInputValid(),
 //            let email = txtRecipient.text,
@@ -242,17 +227,6 @@ extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
 //            txtMessage.text = "message_your".localized
 //        }
     }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        if textField == txtRecipient {
-//            txtSubject.becomeFirstResponder()
-//        }
-//        if !viewModel.isReply, textField == txtSubject {
-//            txtMessage.becomeFirstResponder()
-//            return false
-//        }
-        return true
-    }
 }
 
 // MARK: - Handle actions
@@ -267,23 +241,72 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
-            case .recipient: let tf = TextFieldCellNode(ComposeStyle.textFieldStyle)
-                return tf
-            case .subject:
-                return TextFieldCellNode(ComposeStyle.textFieldStyle)
-            case .text:
-                return ASCellNode()
+            case .recipientDivider, .subjectDivider: return DividerNode()
+            case .recipient: return self.recipientNode()
+            case .subject: return self.subjectNode()
+            case .text: return self.textNode()
             }
         }
     }
+
+    private func recipientNode() -> ASCellNode {
+        let decorator = ComposeDecorator()
+        let placeholder = decorator.styledPlaceholder("compose_recipient".localized)
+        let node = TextFieldCellNode(placeholder)
+        node.isLowercased = true
+        node.shouldReturn = { [weak self] _ in
+            guard let node = self?.node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return true }
+            node.firstResponder()
+            return true
+        }
+        if viewModel.isReply {
+            let title = viewModel.replyToRecipient?.mailbox ?? ""
+            node.attributedText = decorator.styledTitle(title)
+        }
+        return node
+    }
+
+    private func subjectNode() -> ASCellNode {
+        let decorator = ComposeDecorator()
+        let placeholder = decorator.styledPlaceholder("compose_subject".localized)
+        let node = TextFieldCellNode(placeholder)
+        node.shouldReturn = { [weak self] _ in
+            guard let self = self, !self.viewModel.isReply else { return true }
+            // TODO: Anton -
+            ////        if !viewModel.isReply, textField == txtSubject {
+            ////            txtMessage.becomeFirstResponder()
+            ////            return false
+            ////        }
+            return true
+        }
+
+        if viewModel.isReply {
+            let title = "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+            node.attributedText = decorator.styledTitle(title)
+        }
+        return node
+    }
+
+    private func textNode() -> ASCellNode {
+        return ASCellNode()
+    }
 }
 
+struct ComposeDecorator {
+    var styledPlaceholder: (String) -> TextFieldCellNode.Input {
+        return {
+            TextFieldCellNode.Input(
+                placeholder: $0.localized.attributed(.regular(17), color: .lightGray, alignment: .left),
+                isSecureTextEntry: false,
+                textInsets: -7,
+                textAlignment: .left
+            )
+        }
+    }
 
-enum ComposeStyle {
-    static let textFieldStyle = TextFieldCellNode.Input(
-        placeholder: "setup_enter".localized.attributed(.bold(16), color: .lightGray, alignment: .center),
-        isSecureTextEntry: false,
-        textInsets: -7,
-        textAlignment: .center
-    )
+    var styledTitle: (String) -> (NSAttributedString) {
+        return { string in
+            string.attributed(.regular(17))
+        }
+    }
 }
