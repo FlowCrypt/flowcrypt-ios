@@ -271,12 +271,13 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         let placeholder = decorator.styledPlaceholder("compose_subject".localized)
         let node = TextFieldCellNode(placeholder)
         node.shouldReturn = { [weak self] _ in
-            guard let self = self, !self.viewModel.isReply else { return true }
-            // TODO: Anton -
-            ////        if !viewModel.isReply, textField == txtSubject {
-            ////            txtMessage.becomeFirstResponder()
-            ////            return false
-            ////        }
+            guard let self = self else { return true }
+            if !self.viewModel.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
+                node.firstResponder()
+            } else {
+                self.node.view.endEditing(true)
+            }
+    
             return true
         }
 
@@ -288,7 +289,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func textNode() -> ASCellNode {
-        return ASCellNode()
+        return TextViewCellNode()
     }
 }
 
@@ -308,5 +309,31 @@ struct ComposeDecorator {
         return { string in
             string.attributed(.regular(17))
         }
+    }
+}
+
+
+final class TextViewCellNode: CellNode {
+    enum TextViewActionType {
+        case didEndEditing(String)
+        case didBeginEditing(String)
+    }
+
+    typealias TextViewAction = (TextViewActionType) -> Void
+
+    private let textView = ASEditableTextNode()
+
+    override init() {
+        super.init()
+
+    }
+
+    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        textView.style.preferredSize.height = 300
+        return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8), child: textView)
+    }
+
+    func firstResponder() {
+        textView.becomeFirstResponder()
     }
 }
