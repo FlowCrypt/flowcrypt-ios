@@ -5,27 +5,13 @@
 import Promises
 import AsyncDisplayKit
 
-final class ComposeViewController: ASViewController<ASTableNode> {
-    enum Parts: Int, CaseIterable {
-        case recipient, recipientDivider, subject, subjectDivider, text
-    }
-
-    struct Input {
-        static let empty = Input(isReply: false, replyToRecipient: nil, replyToSubject: nil, replyToMime: nil)
-
-        let isReply: Bool
-        let replyToRecipient: MCOAddress?
-        let replyToSubject: String?
-        let replyToMime: Data?
-    }
-
+final class ComposeViewController: ASViewController<ASTableNode> { 
     private let imap: Imap
     private let notificationCenter: NotificationCenter
     private let dataManager: DataManagerType
     private let attesterApi: AttesterApiType
     private let storageService: StorageServiceType
     private var viewModel: Input
-    private var currentKeyboardHeight: CGFloat = 0
 
     init(
         imap: Imap = .instance,
@@ -93,37 +79,19 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func observeKeyboardNotifications() {
         _ = keyboardHeight
-            .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 5, right: 0) }
-            .subscribe(onNext: { [weak self] inset in
-                self?.adjustForKeyboard(with: inset)
+            .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 8, right: 0) }
+            .subscribe(onNext: {  [weak self] insets in
+                self?.adjustForKeyboard(insets: insets)
             })
     }
 
-    @objc private func adjustForKeyboard(with inset: UIEdgeInsets) {
+    @objc private func adjustForKeyboard(insets: UIEdgeInsets) {
+        node.contentInset = insets
 
-
-
-
-
-        //                self?.node.contentInset = inset
-        //                self?.node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
-
-
-
-//        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
-//
-//        if notification.name == UIResponder.keyboardWillHideNotification {
-//            scrollView.contentInset = UIEdgeInsets.zero
-//        } else {
-//            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardViewEndFrame.height, right: 0)
-//        }
-//
-//        guard txtMessage.isFirstResponder else { return }
-//        scrollView.scrollIndicatorInsets = txtMessage.contentInset
-//
-//        guard let selectedRange = txtMessage.selectedTextRange else { return }
-//        let rect = txtMessage.caretRect(for: selectedRange.start)
-//        scrollView.scrollRectToVisible(rect, animated: true)
+        guard let textView = node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first?.textView.textView else { return }
+        guard let selectedRange = textView.selectedTextRange else { return }
+        let rect = textView.caretRect(for: selectedRange.start)
+        node.view.scrollRectToVisible(rect, animated: true)
     }
 }
 
@@ -215,27 +183,8 @@ extension ComposeViewController {
     }
 }
 
-// MARK: - UITextViewDelegate, UITextFieldDelegate
 
-extension ComposeViewController: UITextViewDelegate, UITextFieldDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-//        let placeholder = "message_compose_secure".localized
-//
-//        if textView.text == "message_your".localized || textView.text == placeholder {
-//            txtMessage.textColor = .black
-//            txtMessage.text = ""
-//        }
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-//        if textView.text == "" || textView.text == "\n" {
-//            txtMessage.textColor = UIColor.lightGray
-//            txtMessage.text = "message_your".localized
-//        }
-    }
-}
-
-// MARK: - Handle actions
+// MARK: - ASTableDelegate, ASTableDataSource
 
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
@@ -248,7 +197,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             - (navigationController?.navigationBar.frame.size.height ?? 0.0)
             - safeAreaWindowInsets.top
             - safeAreaWindowInsets.bottom
-            
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
@@ -304,80 +252,8 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         let textFieldHeight = decorator.styledTextFieldInput("").height
         let dividerHeight: CGFloat = 1
         let prefferedHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
-        return TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight))
-    }
-}
+        let node = TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight))
 
-struct ComposeDecorator {
-    func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
-        return TextViewCellNode.Input(
-            placeholder: "message_compose_secure".localized.attributed(.regular(17), color: .lightGray, alignment: .left),
-            prefferedHeight: height
-        )
-    }
-
-    var styledTextFieldInput: (String) -> TextFieldCellNode.Input {
-        return {
-            TextFieldCellNode.Input(
-                placeholder: $0.localized.attributed(.regular(17), color: .lightGray, alignment: .left),
-                isSecureTextEntry: false,
-                textInsets: -7,
-                textAlignment: .left,
-                height: 40
-            )
-        }
-    }
-
-    var styledTitle: (String) -> (NSAttributedString) {
-        return { string in
-            string.attributed(.regular(17))
-        }
-    }
-}
-
-
-final class TextViewCellNode: CellNode {
-    struct Input {
-        var placeholder: NSAttributedString
-        var prefferedHeight: CGFloat
-    }
-
-    enum TextViewActionType {
-        case didEndEditing(NSAttributedString?)
-        case didBeginEditing(NSAttributedString?)
-    }
-
-    typealias TextViewAction = (TextViewActionType) -> Void
-
-    private let textView = ASEditableTextNode()
-    private let action: TextViewAction?
-    private let height: CGFloat
-
-    init(_ input: Input, action: TextViewAction? = nil) {
-        self.action = action
-        self.height = input.prefferedHeight
-        super.init()
-        textView.delegate = self
-        textView.backgroundColor = .red
-        textView.attributedPlaceholderText = input.placeholder
-        textView.typingAttributes = [
-            NSAttributedString.Key.font.rawValue: NSAttributedString.Style.regular(17).font,
-            NSAttributedString.Key.foregroundColor.rawValue: UIColor.black
-        ]
-    }
-
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        textView.style.preferredSize.height = self.height
-        return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8), child: textView)
-    }
-
-    func firstResponder() {
-        textView.becomeFirstResponder()
-    }
-}
-
-extension TextViewCellNode: ASEditableTextNodeDelegate {
-    func editableTextNodeDidBeginEditing(_ editableTextNode: ASEditableTextNode) {
-        action?(.didBeginEditing(editableTextNode.attributedText))
+        return node
     }
 }
