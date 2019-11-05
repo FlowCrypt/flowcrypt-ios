@@ -48,7 +48,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
             node.reloadRows(at: [IndexPath(row: Parts.action.rawValue, section: 0)], with: .fade)
         }
     }
-    private var passPhrase = ""
+    private var passPhrase: String?
 
     init(
         imap: Imap = .instance,
@@ -237,6 +237,7 @@ extension SetupViewController {
 extension SetupViewController {
     private func handleButtonPressed() {
         view.endEditing(true)
+        guard let passPhrase = passPhrase else { return }
         guard !passPhrase.isEmpty else {
             showAlert(message: "setup_enter_pass_phrase".localized)
             return

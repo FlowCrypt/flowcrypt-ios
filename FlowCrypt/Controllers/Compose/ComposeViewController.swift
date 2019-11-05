@@ -11,7 +11,8 @@ final class ComposeViewController: ASViewController<ASTableNode> {
     private let dataManager: DataManagerType
     private let attesterApi: AttesterApiType
     private let storageService: StorageServiceType
-    private var viewModel: Input
+    private var input: Input
+    private var contextToSend = Context()
 
     init(
         imap: Imap = .instance,
@@ -25,7 +26,7 @@ final class ComposeViewController: ASViewController<ASTableNode> {
         self.notificationCenter = notificationCenter
         self.dataManager = dataManager
         self.attesterApi = attesterApi
-        self.viewModel = input
+        self.input = input
         self.storageService = storageService
         
         super.init(node: TableNode())
@@ -151,7 +152,7 @@ extension ComposeViewController {
     }
 
     private func encryptMsg(pubkeys: [String], subject: String, message: String, email: String) -> CoreRes.ComposeEmail {
-        let replyToMimeMsg = viewModel.replyToMime
+        let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
         let msg = SendableMsg(
             text: message,
@@ -167,6 +168,9 @@ extension ComposeViewController {
     }
 
     private func isInputValid() -> Bool {
+        
+
+
 //        guard txtRecipient.text?.hasContent ?? false else {
 //            showAlert(message: "compose_enter_recipient".localized)
 //            return false
@@ -211,15 +215,19 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     private func recipientNode() -> ASCellNode {
         let decorator = ComposeDecorator()
         let placeholder = decorator.styledTextFieldInput("compose_recipient".localized)
-        let node = TextFieldCellNode(placeholder)
+        let node = TextFieldCellNode(placeholder) { [weak self] event in
+            guard case let .didEndEditing(text) = event else { return }
+
+        }
+
         node.isLowercased = true
         node.shouldReturn = { [weak self] _ in
             guard let node = self?.node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return true }
             node.firstResponder()
             return true
         }
-        if viewModel.isReply {
-            let title = viewModel.replyToRecipient?.mailbox ?? ""
+        if input.isReply {
+            let title = input.replyToRecipient?.mailbox ?? ""
             node.attributedText = decorator.styledTitle(title)
         }
         return node
@@ -228,10 +236,14 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     private func subjectNode() -> ASCellNode {
         let decorator = ComposeDecorator()
         let placeholder = decorator.styledTextFieldInput("compose_subject".localized)
-        let node = TextFieldCellNode(placeholder)
+        let node = TextFieldCellNode(placeholder) { [weak self] event in
+            guard case let .didEndEditing(text) = event else { return }
+
+        }
+
         node.shouldReturn = { [weak self] _ in
             guard let self = self else { return true }
-            if !self.viewModel.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
+            if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
                 node.firstResponder()
             } else {
                 self.node.view.endEditing(true)
@@ -240,8 +252,8 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             return true
         }
 
-        if viewModel.isReply {
-            let title = "Re: \(viewModel.replyToSubject ?? "(no subject)")"
+        if input.isReply {
+            let title = "Re: \(input.replyToSubject ?? "(no subject)")"
             node.attributedText = decorator.styledTitle(title)
         }
         return node
@@ -252,8 +264,12 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         let textFieldHeight = decorator.styledTextFieldInput("").height
         let dividerHeight: CGFloat = 1
         let prefferedHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
-        let node = TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight))
 
-        return node
+        return TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight)) { [weak self] event in
+            guard case let .didEndEditing(text) = event else { return }
+        }
     }
 }
+
+// TODO: Anton -
+// setup initial context

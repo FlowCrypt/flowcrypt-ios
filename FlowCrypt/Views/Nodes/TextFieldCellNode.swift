@@ -20,8 +20,8 @@ final class TextFieldCellNode: CellNode {
     }
 
     enum TextFieldActionType {
-        case didEndEditing(String)
-        case didBeginEditing(String)
+        case didEndEditing(String?)
+        case didBeginEditing(String?)
     }
 
     typealias TextFieldAction = (TextFieldActionType) -> Void
@@ -68,13 +68,11 @@ final class TextFieldCellNode: CellNode {
 
 extension TextFieldCellNode: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        let text = textField.text ?? ""
-        textFiledAction?(.didBeginEditing(text))
+        textFiledAction?(.didBeginEditing(textField.text))
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
-        let text = textField.text ?? ""
-        textFiledAction?(.didEndEditing(text))
+        textFiledAction?(.didEndEditing(textField.text))
     }
 
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {

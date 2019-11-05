@@ -21,4 +21,10 @@ extension ComposeViewController {
         let replyToSubject: String?
         let replyToMime: Data?
     }
+
+    struct Context {
+        var message: String?
+        var resipient: String?
+        var subject: String?
+    }
 }
