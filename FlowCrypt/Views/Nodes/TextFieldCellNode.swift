@@ -16,6 +16,7 @@ final class TextFieldCellNode: CellNode {
         var textAlignment: NSTextAlignment = .left
         var isLowercased = false
         var insets: UIEdgeInsets = .zero
+        var height: CGFloat = 40
     }
 
     enum TextFieldActionType {
@@ -25,7 +26,7 @@ final class TextFieldCellNode: CellNode {
 
     typealias TextFieldAction = (TextFieldActionType) -> Void
 
-    private let textField = TextFieldNode()
+    private let textField: TextFieldNode
     private var textFiledAction: TextFieldAction?
 
     var shouldEndEditing: ((UITextField) -> (Bool))?
@@ -43,6 +44,7 @@ final class TextFieldCellNode: CellNode {
 
     private let input: Input
     init(_ input: Input, action: TextFieldAction? = nil) {
+        textField = TextFieldNode(prefferedHeight: input.height)
         self.input = input
         super.init()
         textFiledAction = action

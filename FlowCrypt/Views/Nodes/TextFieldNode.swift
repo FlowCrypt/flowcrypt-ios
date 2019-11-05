@@ -81,16 +81,17 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
+    private var height: CGFloat?
+
     private lazy var node = ASDisplayNode { UITextField() }
 
-    override init() {
+    init(prefferedHeight: CGFloat?) {
         super.init()
         addSubnode(node)
-
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        node.style.preferredSize = CGSize(width: constrainedSize.max.width, height: 40)
+        node.style.preferredSize = CGSize(width: constrainedSize.max.width, height: height ?? 40.0)
         return ASInsetLayoutSpec(insets: .zero, child: node)
     }
 

@@ -25,6 +25,7 @@ final class ComposeViewController: ASViewController<ASTableNode> {
     private let attesterApi: AttesterApiType
     private let storageService: StorageServiceType
     private var viewModel: Input
+    private var currentKeyboardHeight: CGFloat = 0
 
     init(
         imap: Imap = .instance,
@@ -99,6 +100,11 @@ extension ComposeViewController {
     }
 
     @objc private func adjustForKeyboard(with inset: UIEdgeInsets) {
+
+
+
+
+
         //                self?.node.contentInset = inset
         //                self?.node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
 
@@ -238,20 +244,25 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        let nodeHeight = tableNode.frame.size.height
+            - (navigationController?.navigationBar.frame.size.height ?? 0.0)
+            - safeAreaWindowInsets.top
+            - safeAreaWindowInsets.bottom
+            
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .recipientDivider, .subjectDivider: return DividerNode()
             case .recipient: return self.recipientNode()
             case .subject: return self.subjectNode()
-            case .text: return self.textNode()
+            case .text: return self.textNode(with: nodeHeight)
             }
         }
     }
 
     private func recipientNode() -> ASCellNode {
         let decorator = ComposeDecorator()
-        let placeholder = decorator.styledPlaceholder("compose_recipient".localized)
+        let placeholder = decorator.styledTextFieldInput("compose_recipient".localized)
         let node = TextFieldCellNode(placeholder)
         node.isLowercased = true
         node.shouldReturn = { [weak self] _ in
@@ -268,7 +279,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     private func subjectNode() -> ASCellNode {
         let decorator = ComposeDecorator()
-        let placeholder = decorator.styledPlaceholder("compose_subject".localized)
+        let placeholder = decorator.styledTextFieldInput("compose_subject".localized)
         let node = TextFieldCellNode(placeholder)
         node.shouldReturn = { [weak self] _ in
             guard let self = self else { return true }
@@ -277,7 +288,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             } else {
                 self.node.view.endEditing(true)
             }
-    
+
             return true
         }
 
@@ -288,19 +299,31 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         return node
     }
 
-    private func textNode() -> ASCellNode {
-        return TextViewCellNode()
+    private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
+        let decorator = ComposeDecorator()
+        let textFieldHeight = decorator.styledTextFieldInput("").height
+        let dividerHeight: CGFloat = 1
+        let prefferedHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
+        return TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight))
     }
 }
 
 struct ComposeDecorator {
-    var styledPlaceholder: (String) -> TextFieldCellNode.Input {
+    func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
+        return TextViewCellNode.Input(
+            placeholder: "message_compose_secure".localized.attributed(.regular(17), color: .lightGray, alignment: .left),
+            prefferedHeight: height
+        )
+    }
+
+    var styledTextFieldInput: (String) -> TextFieldCellNode.Input {
         return {
             TextFieldCellNode.Input(
                 placeholder: $0.localized.attributed(.regular(17), color: .lightGray, alignment: .left),
                 isSecureTextEntry: false,
                 textInsets: -7,
-                textAlignment: .left
+                textAlignment: .left,
+                height: 40
             )
         }
     }
@@ -314,26 +337,47 @@ struct ComposeDecorator {
 
 
 final class TextViewCellNode: CellNode {
+    struct Input {
+        var placeholder: NSAttributedString
+        var prefferedHeight: CGFloat
+    }
+
     enum TextViewActionType {
-        case didEndEditing(String)
-        case didBeginEditing(String)
+        case didEndEditing(NSAttributedString?)
+        case didBeginEditing(NSAttributedString?)
     }
 
     typealias TextViewAction = (TextViewActionType) -> Void
 
     private let textView = ASEditableTextNode()
+    private let action: TextViewAction?
+    private let height: CGFloat
 
-    override init() {
+    init(_ input: Input, action: TextViewAction? = nil) {
+        self.action = action
+        self.height = input.prefferedHeight
         super.init()
-
+        textView.delegate = self
+        textView.backgroundColor = .red
+        textView.attributedPlaceholderText = input.placeholder
+        textView.typingAttributes = [
+            NSAttributedString.Key.font.rawValue: NSAttributedString.Style.regular(17).font,
+            NSAttributedString.Key.foregroundColor.rawValue: UIColor.black
+        ]
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        textView.style.preferredSize.height = 300
-        return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8), child: textView)
+        textView.style.preferredSize.height = self.height
+        return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8), child: textView)
     }
 
     func firstResponder() {
         textView.becomeFirstResponder()
+    }
+}
+
+extension TextViewCellNode: ASEditableTextNodeDelegate {
+    func editableTextNodeDidBeginEditing(_ editableTextNode: ASEditableTextNode) {
+        action?(.didBeginEditing(editableTextNode.attributedText))
     }
 }
