@@ -12,7 +12,7 @@ final class MsgViewController: ASViewController<ASTableNode> {
     private let imap: Imap
     private let decorator: MessageDecoratorType
     private let storage: StorageServiceType
-    private var message: NSAttributedString?
+    private var message: NSAttributedString
 
     init(
         imap: Imap = Imap.instance,
@@ -26,6 +26,8 @@ final class MsgViewController: ASViewController<ASTableNode> {
         self.decorator = decorator
         self.storage = storage
         self.onCompletion = completion
+        self.message = decorator.attributed(text: "loading_title".localized + "...", color: .lightGray)
+
         super.init(node: TableNode())
     }
 
