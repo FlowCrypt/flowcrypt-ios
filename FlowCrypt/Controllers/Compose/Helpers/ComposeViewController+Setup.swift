@@ -22,11 +22,15 @@ extension ComposeViewController {
         let replyToMime: Data?
 
         var recipientReplyTitle: String? {
-            return isReply ? replyToRecipient?.mailbox : nil
+            isReply ? replyToRecipient?.mailbox : nil
         }
 
         var subjectReplyTitle: String? {
-            return isReply ? "Re: \(replyToSubject ?? "(no subject)")" : nil
+            isReply ? "Re: \(replyToSubject ?? "(no subject)")" : nil
+        }
+
+        var alertMessage: String {
+            isReply ? "compose_reply_successfull".localized : "compose_sent".localized
         }
     }
 

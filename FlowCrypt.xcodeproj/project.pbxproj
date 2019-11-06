@@ -342,9 +342,7 @@
 			isa = PBXGroup;
 			children = (
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
-				9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */,
-				9F23EA4F237217140017DFED /* ComposeDecorator.swift */,
-				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
+				9F8277902373446300E19C07 /* Helpers */,
 			);
 			path = Compose;
 			sourceTree = "<group>";
@@ -473,6 +471,7 @@
 				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F4453BF236B894D005D7D05 /* TableNode.swift */,
 				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
+				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
 				9F4453C3236B96F9005D7D05 /* DividerNode.swift */,
 				9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */,
 			);
@@ -556,6 +555,15 @@
 				9F95A3F823607C2900C80B64 /* SignInType.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		9F8277902373446300E19C07 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */,
+				9F23EA4F237217140017DFED /* ComposeDecorator.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		9F8D5E63236B05B500186E43 /* Model */ = {

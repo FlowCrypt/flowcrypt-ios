@@ -51,4 +51,8 @@ extension TextViewCellNode: ASEditableTextNodeDelegate {
     func editableTextNodeDidBeginEditing(_ editableTextNode: ASEditableTextNode) {
         action?(.didBeginEditing(editableTextNode.attributedText))
     }
+
+    func editableTextNodeDidFinishEditing(_ editableTextNode: ASEditableTextNode) {
+        action?(.didEndEditing(editableTextNode.attributedText))
+    }
 }

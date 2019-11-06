@@ -117,41 +117,62 @@ extension ComposeViewController {
     }
 }
 
+// MARK: - Message Sending
+
 extension ComposeViewController {
     private func sendMsgTapHandler() {
         view.endEditing(true)
-//
-//        guard isInputValid(),
-//            let email = txtRecipient.text,
-//            let text = txtMessage.text
-//        else { return }
-//
-//        let pgpText = "compose_missed_public".localized
-//        let subject = viewModel.isReply
-//            ? "Re: \(viewModel.replyToSubject ?? "(no subject)")"
-//            : txtSubject.text ?? "(no subject)"
-//        let message = viewModel.isReply
-//            ? "compose_reply_successfull".localized
-//            : "compose_sent".localized
-//
-//        showSpinner("sending_title".localized)
-//
-//        Promise<Void> { [weak self] in
-//            guard let self = self else { return }
-//            let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
-//            guard let recipientPubkey = lookupRes.armored else { return self.showAlert(message: pgpText) }
-//            let realm = try Realm() // TODO: Anton - Refactor to use db service
-//
-//            guard let myPubkey = realm.objects(KeyInfo.self).map({ $0.public }).first else { return self.showAlert(message: pgpText) }
-//            let encrypted = self.encryptMsg(pubkeys: [myPubkey, recipientPubkey], subject: subject, message: text, email: email)
-//            try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
-//        }.then(on: .main) { [weak self] in
-//            self?.hideSpinner()
-//            self?.showToast(message)
-//            self?.navigationController?.popViewController(animated: true)
-//        }.catch(on: .main) { [weak self] error in
-//            self?.showAlert(error: error, message: "compose_error".localized)
-//        }
+        guard isInputValid() else { return }
+
+        showSpinner("sending_title".localized)
+
+        Promise<Void> { [weak self] in
+            try await(self!.tryToSendMessage())
+        }.then(on: .main) { [weak self] in
+            self?.handleSuccessfullySentMessage()
+        }.catch(on: .main) { [weak self] error in
+            self?.showAlert(error: error, message: "compose_error".localized)
+        }
+    }
+
+    private func tryToSendMessage() -> Promise<Void> {
+        Promise { [weak self] in
+            guard let self = self else { return }
+            guard let email = self.contextToSend.resipient, let text = self.contextToSend.message else {
+                assertionFailure("Text and Email should not be nil at this point. Fail in checking");
+                return
+            }
+
+            let subject = self.input.subjectReplyTitle
+                ?? self.contextToSend.subject
+                ?? "(no subject)"
+
+            let pgpText = "compose_missed_public".localized
+
+            let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
+
+            guard let recipientPubkey = lookupRes.armored else {
+                return self.showAlert(message: pgpText)
+            }
+
+            guard let myPubkey = self.storageService.publicKey() else {
+                return self.showAlert(message: pgpText)
+            }
+
+            let encrypted = self.encryptMsg(
+                pubkeys: [myPubkey, recipientPubkey],
+                subject: subject,
+                message: text,
+                email: email
+            )
+            try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
+        }
+    }
+
+    private func handleSuccessfullySentMessage() {
+        hideSpinner()
+        showToast(input.alertMessage)
+        navigationController?.popViewController(animated: true)
     }
 
     private func encryptMsg(pubkeys: [String], subject: String, message: String, email: String) -> CoreRes.ComposeEmail {
@@ -176,7 +197,7 @@ extension ComposeViewController {
             return false
         }
         guard input.isReply || contextToSend.subject?.hasContent ?? false else {
-            showAlert(message: "compose_enter_recipient".localized)
+            showAlert(message: "compose_enter_subject".localized)
             return false
         }
 
