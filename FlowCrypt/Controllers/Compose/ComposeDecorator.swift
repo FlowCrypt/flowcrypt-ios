@@ -28,9 +28,10 @@ struct ComposeDecorator {
         }
     }
 
-    var styledTitle: (String) -> (NSAttributedString) {
+    var styledTitle: (String?) -> (NSAttributedString?) {
         return { string in
-            string.attributed(.regular(17))
+            guard let string = string else { return nil }
+            return string.attributed(.regular(17))
         }
     }
 }

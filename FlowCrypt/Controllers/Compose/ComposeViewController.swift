@@ -28,7 +28,10 @@ final class ComposeViewController: ASViewController<ASTableNode> {
         self.attesterApi = attesterApi
         self.input = input
         self.storageService = storageService
-        
+        if input.isReply {
+            contextToSend.resipient = input.recipientReplyTitle
+            contextToSend.subject = input.replyToSubject
+        }
         super.init(node: TableNode())
     }
 
@@ -116,7 +119,7 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func sendMsgTapHandler() {
-//        view.endEditing(true)
+        view.endEditing(true)
 //
 //        guard isInputValid(),
 //            let email = txtRecipient.text,
@@ -168,21 +171,19 @@ extension ComposeViewController {
     }
 
     private func isInputValid() -> Bool {
-        
+        guard contextToSend.resipient?.hasContent ?? false else {
+            showAlert(message: "compose_enter_recipient".localized)
+            return false
+        }
+        guard input.isReply || contextToSend.subject?.hasContent ?? false else {
+            showAlert(message: "compose_enter_recipient".localized)
+            return false
+        }
 
-
-//        guard txtRecipient.text?.hasContent ?? false else {
-//            showAlert(message: "compose_enter_recipient".localized)
-//            return false
-//        }
-//        guard viewModel.isReply || txtSubject.text?.hasContent ?? false else {
-//            showAlert(message: "compose_enter_subject".localized)
-//            return false
-//        }
-//        guard txtMessage.text?.hasContent ?? false else {
-//            showAlert(message: "compose_enter_secure".localized)
-//            return false
-//        }
+        guard contextToSend.message?.hasContent ?? false else {
+            showAlert(message: "compose_enter_secure".localized)
+            return false
+        }
         return true
     }
 }
@@ -217,7 +218,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         let placeholder = decorator.styledTextFieldInput("compose_recipient".localized)
         let node = TextFieldCellNode(placeholder) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
-
+            self?.contextToSend.resipient = text
         }
 
         node.isLowercased = true
@@ -226,10 +227,9 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             node.firstResponder()
             return true
         }
-        if input.isReply {
-            let title = input.replyToRecipient?.mailbox ?? ""
-            node.attributedText = decorator.styledTitle(title)
-        }
+
+        node.attributedText = decorator.styledTitle(input.recipientReplyTitle)
+
         return node
     }
 
@@ -238,7 +238,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         let placeholder = decorator.styledTextFieldInput("compose_subject".localized)
         let node = TextFieldCellNode(placeholder) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
-
+            self?.contextToSend.subject = text
         }
 
         node.shouldReturn = { [weak self] _ in
@@ -248,14 +248,11 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             } else {
                 self.node.view.endEditing(true)
             }
-
             return true
         }
 
-        if input.isReply {
-            let title = "Re: \(input.replyToSubject ?? "(no subject)")"
-            node.attributedText = decorator.styledTitle(title)
-        }
+        node.attributedText = decorator.styledTitle(input.subjectReplyTitle)
+
         return node
     }
 
@@ -267,9 +264,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
         return TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight)) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
+            self?.contextToSend.message = text?.string
         }
     }
 }
-
-// TODO: Anton -
-// setup initial context

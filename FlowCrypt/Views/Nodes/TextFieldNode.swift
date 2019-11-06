@@ -102,7 +102,7 @@ final class TextFieldNode: ASDisplayNode {
     }
 
     @objc private func onEditingChanged() {
-        guard let attributedText = textField.attributedText else { return }
+        guard let attributedText = textField.attributedText, attributedText.string.isNotEmpty else { return }
         textField.attributedText = NSAttributedString(
             string: attributedText.string.lowercased(),
             attributes: attributedText.attributes(at: 0, effectiveRange: nil)

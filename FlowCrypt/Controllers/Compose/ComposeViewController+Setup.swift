@@ -20,6 +20,14 @@ extension ComposeViewController {
         let replyToRecipient: MCOAddress?
         let replyToSubject: String?
         let replyToMime: Data?
+
+        var recipientReplyTitle: String? {
+            return isReply ? replyToRecipient?.mailbox : nil
+        }
+
+        var subjectReplyTitle: String? {
+            return isReply ? "Re: \(replyToSubject ?? "(no subject)")" : nil
+        }
     }
 
     struct Context {

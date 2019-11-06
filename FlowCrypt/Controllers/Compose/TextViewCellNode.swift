@@ -30,7 +30,6 @@ final class TextViewCellNode: CellNode {
         self.height = input.prefferedHeight
         super.init()
         textView.delegate = self
-        textView.backgroundColor = .red
         textView.attributedPlaceholderText = input.placeholder
         textView.typingAttributes = [
             NSAttributedString.Key.font.rawValue: NSAttributedString.Style.regular(17).font,
