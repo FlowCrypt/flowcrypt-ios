@@ -1,6 +1,9 @@
 //
-// Created by Anton Kharchevskyi on 9/16/19.
-// Copyright (c) 2019 FlowCrypt Limited. All rights reserved.
+//  MailDestination.swift
+//  FlowCrypt
+//
+//  Created by Anton Kharchevskyi on 06.11.2019.
+//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
 import Foundation

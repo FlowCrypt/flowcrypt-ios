@@ -10,13 +10,14 @@ import UIKit
 
 extension NSAttributedString {
     enum Style {
-        case regular(CGFloat), medium(CGFloat), bold(CGFloat)
+        case regular(CGFloat), medium(CGFloat), bold(CGFloat), thin(CGFloat)
 
         var font: UIFont {
             switch self {
             case let .regular(size): return UIFont.systemFont(ofSize: size)
             case let .medium(size): return UIFont.systemFont(ofSize: size, weight: .medium)
             case let .bold(size): return UIFont.boldSystemFont(ofSize: size)
+            case let .thin(size): return UIFont.systemFont(ofSize: size, weight: .thin)
             }
         }
     }
