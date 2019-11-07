@@ -150,16 +150,14 @@ extension ComposeViewController {
                 ?? self.contextToSend.subject
                 ?? "(no subject)"
 
-            let pgpText = "compose_missed_public".localized
-
             let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
 
             guard let recipientPubkey = lookupRes.armored else {
-                return self.showAlert(message: pgpText)
+                return self.showAlert(message: "compose_no_pub_recipient".localized)
             }
 
             guard let myPubkey = self.storageService.publicKey() else {
-                return self.showAlert(message: pgpText)
+                return self.showAlert(message: "compose_no_pub_sender".localized)
             }
 
             let encrypted = self.encryptMsg(

@@ -228,7 +228,7 @@ extension SetupViewController {
     }
 
     private func storePrvs(prvs: [KeyDetails], passPhrase: String, source: KeySource) throws {
-        storage.store(keyDetails: prvs, passPhrase: passPhrase, source: source)
+        storage.addKeys(keyDetails: prvs, passPhrase: passPhrase, source: source)
     }
 }
 

@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 protocol StorageServiceType {
-    func store(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>
 }
@@ -20,7 +20,7 @@ struct StorageService: StorageServiceType {
         return try! Realm()
     }
 
-    func store(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
         try! storage.write {
             for k in keyDetails {
                 storage.add(try! KeyInfo(k, passphrase: passPhrase, source: source))
