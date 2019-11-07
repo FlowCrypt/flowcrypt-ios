@@ -11,6 +11,7 @@ final class ComposeViewController: ASViewController<ASTableNode> {
     private let dataManager: DataManagerType
     private let attesterApi: AttesterApiType
     private let storageService: StorageServiceType
+    private let decorator: ComposeDecoratorType
     private var input: Input
     private var contextToSend = Context()
 
@@ -20,6 +21,7 @@ final class ComposeViewController: ASViewController<ASTableNode> {
         dataManager: DataManagerType = DataManager.shared,
         attesterApi: AttesterApiType = AttesterApi.shared,
         storageService: StorageServiceType = StorageService(),
+        decorator: ComposeDecoratorType = ComposeDecorator(),
         input: ComposeViewController.Input = .empty
     ) {
         self.imap = imap
@@ -28,6 +30,7 @@ final class ComposeViewController: ASViewController<ASTableNode> {
         self.attesterApi = attesterApi
         self.input = input
         self.storageService = storageService
+        self.decorator = decorator
         if input.isReply {
             contextToSend.resipient = input.recipientReplyTitle
             contextToSend.subject = input.replyToSubject
@@ -127,7 +130,7 @@ extension ComposeViewController {
         showSpinner("sending_title".localized)
 
         Promise<Void> { [weak self] in
-            try await(self!.tryToSendMessage())
+            try await(self!.sendMessage())
         }.then(on: .main) { [weak self] in
             self?.handleSuccessfullySentMessage()
         }.catch(on: .main) { [weak self] error in
@@ -135,7 +138,7 @@ extension ComposeViewController {
         }
     }
 
-    private func tryToSendMessage() -> Promise<Void> {
+    private func sendMessage() -> Promise<Void> {
         Promise { [weak self] in
             guard let self = self else { return }
             guard let email = self.contextToSend.resipient, let text = self.contextToSend.message else {
@@ -235,7 +238,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func recipientNode() -> ASCellNode {
-        let decorator = ComposeDecorator()
         let placeholder = decorator.styledTextFieldInput("compose_recipient".localized)
         let node = TextFieldCellNode(placeholder) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
@@ -255,7 +257,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func subjectNode() -> ASCellNode {
-        let decorator = ComposeDecorator()
         let placeholder = decorator.styledTextFieldInput("compose_subject".localized)
         let node = TextFieldCellNode(placeholder) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
@@ -278,7 +279,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
-        let decorator = ComposeDecorator()
         let textFieldHeight = decorator.styledTextFieldInput("").height
         let dividerHeight: CGFloat = 1
         let prefferedHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)

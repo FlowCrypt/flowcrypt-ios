@@ -34,8 +34,7 @@ struct RootAssembley: AppAssembley {
     }
 
     func setupWindow() -> UIWindow {
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        let main = UIStoryboard.main
+        let window = UIWindow(frame: UIScreen.main.bounds) 
 
         guard userService.isSessionValid() else {
             let root = SignInViewController()

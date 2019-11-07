@@ -12,6 +12,7 @@ import RealmSwift
 protocol StorageServiceType {
     func store(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func publicKey() -> String?
+    func keys() -> Results<KeyInfo>
 }
 
 struct StorageService: StorageServiceType {
@@ -31,5 +32,9 @@ struct StorageService: StorageServiceType {
         return storage.objects(KeyInfo.self)
             .map { $0.public }
             .first 
+    }
+
+    func keys() -> Results<KeyInfo> {
+        storage.objects(KeyInfo.self)
     }
 }
