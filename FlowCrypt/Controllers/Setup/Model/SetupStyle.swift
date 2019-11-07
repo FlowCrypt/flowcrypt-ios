@@ -10,7 +10,6 @@ import UIKit
 
 enum SetupStyle {
     static let title = "setup_title".localized.attributed(.bold(35), color: .black, alignment: .center)
-    static let passPhrasePlaceholder = "setup_enter".localized.attributed(.bold(16), color: .lightGray, alignment: .center)
     static let useAnotherAccountTitle = "setup_use_another".localized.attributed(.regular(15), color: .blueColor, alignment: .center)
     static var subtitleStyle: (String) -> NSAttributedString {
         return {
@@ -22,5 +21,12 @@ enum SetupStyle {
     static let subTitleInset = UIEdgeInsets(top: 0, left: 16, bottom: 60, right: 16)
     static let buttonInsets = UIEdgeInsets(top: 80, left: 24, bottom: 8, right: 24)
     static let optionalBbuttonInsets = UIEdgeInsets(top: 0, left: 24, bottom: 8, right: 24)
-    static let dividerInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
+
+    static let textFieldStyle = TextFieldCellNode.Input(
+        placeholder: "setup_enter".localized.attributed(.bold(16), color: .lightGray, alignment: .center),
+        isSecureTextEntry: true,
+        textInsets: 0,
+        textAlignment: .center,
+        insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    )
 }

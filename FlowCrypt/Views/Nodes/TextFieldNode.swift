@@ -20,6 +20,7 @@ final class TextFieldNode: ASDisplayNode {
             }
         }
     }
+
     var delegate: UITextFieldDelegate? {
         didSet {
             DispatchQueue.main.async {
@@ -44,16 +45,74 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
+    var textInsets: CGFloat = -7 {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.setTextInset(self.textInsets)
+            }
+        }
+    }
+
+    var text: String {
+        textField.text ?? ""
+    }
+
+    var attributedText: NSAttributedString? {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.attributedText = self.attributedText
+            }
+        }
+    }
+
+    var isLowercased = false {
+        didSet {
+            DispatchQueue.main.async {
+                if self.isLowercased {
+                    self.textField.addTarget(
+                        self,
+                        action: #selector(self.onEditingChanged),
+                        for: UIControl.Event.editingChanged
+                    )
+                } else {
+                    self.textField.removeTarget(self, action: nil, for: UIControl.Event.editingChanged)
+                }
+            }
+        }
+    }
+
+    private var height: CGFloat?
+
     private lazy var node = ASDisplayNode { UITextField() }
 
-    override init() {
+    init(prefferedHeight: CGFloat?) {
         super.init()
         addSubnode(node)
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        node.style.preferredSize = CGSize(width: constrainedSize.max.width, height: 30)
+        node.style.preferredSize = CGSize(width: constrainedSize.max.width, height: height ?? 40.0)
         return ASInsetLayoutSpec(insets: .zero, child: node)
     }
 
+    private func addTarget(_ target: Any?, action: Selector, for event: UIControl.Event) {
+        DispatchQueue.main.async {
+            self.textField.addTarget(target, action: action, for: event)
+        }
+    }
+
+    @objc private func onEditingChanged() {
+        guard let attributedText = textField.attributedText, attributedText.string.isNotEmpty else { return }
+        textField.attributedText = NSAttributedString(
+            string: attributedText.string.lowercased(),
+            attributes: attributedText.attributes(at: 0, effectiveRange: nil)
+        )
+    }
+
+    func firstResponder() {
+        DispatchQueue.main.async {
+            self.textField.becomeFirstResponder()
+        }
+    }
 }
+

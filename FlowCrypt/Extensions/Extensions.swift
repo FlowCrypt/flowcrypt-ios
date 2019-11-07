@@ -16,6 +16,10 @@ extension Collection {
             ? self[index]
             : nil
     }
+
+    var isNotEmpty: Bool {
+        return !isEmpty
+    }
 }
 
 public extension MutableCollection {

@@ -27,13 +27,15 @@
 
 // Compose
 "compose_enter_recipient" = "Enter recipient";
-"compose_pgp" = "Recipient doesn't seem to have encryption set up";
-"compose_missed_public" = "Missing sender public key. Is FlowCrypt iOS app well set up?";
+"compose_no_pub_recipient" = "Recipient doesn't seem to have encryption set up";
+"compose_no_pub_sender" = "Missing sender public key. Is FlowCrypt iOS app well set up?";
 "compose_error" = "Could not compose message";
 "compose_reply_successfull" = "Reply successfully sent";
 "compose_sent" = "Encrypted message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
+"compose_recipient" = "Add Recipient";
+"compose_subject" = "Subject";
 
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";

@@ -2,62 +2,38 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import MBProgressHUD
 import Promises
-import RealmSwift
-import UIKit
+import AsyncDisplayKit
 
-extension MsgViewController {
-    static func instance(with input: MsgViewController.Input, completion: MsgViewControllerCompletion?) -> MsgViewController {
-        let vc = UIStoryboard.main.instantiate(MsgViewController.self)
-        vc.updateCompletion = completion
-        vc.input = input
-        return vc
-    }
-}
-
-final class MsgViewController: UIViewController {
-    struct Input {
-        var objMessage = MCOIMAPMessage()
-        var bodyMessage: Data?
-        var path = ""
-    }
-
-    enum MessageAction {
-        case moveToTrash, archive, markAsRead, permanentlyDelete
-
-        var text: String? {
-            switch self {
-            case .moveToTrash: return "email_removed".localized
-            case .archive: return "email_archived".localized
-            case .permanentlyDelete: return "email_deleted".localized
-            case .markAsRead: return nil
-            }
-        }
-
-        var error: String? {
-            switch self {
-            case .moveToTrash: return "error_move_trash".localized
-            case .archive: return "error_archive".localized
-            case .permanentlyDelete: return "error_permanently_delete".localized
-            case .markAsRead: return nil
-            }
-        }
-    }
-
+final class MsgViewController: ASViewController<ASTableNode> {
     typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
-    private var updateCompletion: MsgViewControllerCompletion?
-
-    @IBOutlet var lblSender: UILabel!
-    @IBOutlet var lblSubject: UILabel!
-    @IBOutlet var lblTIme: UILabel!
-    @IBOutlet var lblBody: UILabel!
-    @IBOutlet var scrollView: UIScrollView!
-    @IBOutlet var scrollViewContent: UIView!
-
-    // TODO: Inject as a dependency
-    private let imap = Imap.instance
+    private let onCompletion: MsgViewControllerCompletion?
     private var input: MsgViewController.Input?
+    private let imap: Imap
+    private let decorator: MessageDecoratorType
+    private let storage: StorageServiceType
+    private var message: NSAttributedString
+
+    init(
+        imap: Imap = Imap.instance,
+        decorator: MessageDecoratorType = MessageDecorator(dateFormatter: DateFormatter()),
+        storage: StorageServiceType = StorageService(),
+        input: MsgViewController.Input,
+        completion: MsgViewControllerCompletion?
+    ) {
+        self.imap = imap
+        self.input = input
+        self.decorator = decorator
+        self.storage = storage
+        self.onCompletion = completion
+        self.message = decorator.attributed(text: "loading_title".localized + "...", color: .lightGray)
+
+        super.init(node: TableNode())
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,12 +43,10 @@ final class MsgViewController: UIViewController {
     }
 
     private func setupUI() {
-        lblSender.text = input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
-        lblSubject.text = input?.objMessage.header.subject ?? "(no subject)"
-        lblBody.numberOfLines = 0
-        lblTIme.text = ""
-        if let date = input?.objMessage.header.date {
-            lblTIme.text = DateFormatter().formatDate(date)
+        node.do {
+            $0.delegate = self
+            $0.dataSource = self
+            $0.view.keyboardDismissMode = .interactive
         }
     }
 
@@ -89,13 +63,6 @@ final class MsgViewController: UIViewController {
         }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
-
-    private func renderBody(_ text: String, color: UIColor = UIColor.black) {
-        lblBody.text = text
-        lblBody.textColor = color
-        lblBody.sizeToFit()
-        scrollView.contentSize = scrollViewContent.frame.size
-    }
 }
 
 // MARK: - Message
@@ -105,22 +72,47 @@ extension MsgViewController {
         guard let input = input else { return }
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
         Promise { [weak self] in
-            guard let self = self else { return }
-            let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
-            self.input?.bodyMessage = rawMimeData
-            let decrypted = try Core.parseDecryptMsg(
-                encrypted: rawMimeData,
-                keys: PrvKeyInfo.from(realm: try Realm().objects(KeyInfo.self)),
-                msgPwd: nil,
-                isEmail: true
-            )
-            self.renderMsgOnMain(decrypted)
-            self.asyncMarkAsReadIfNotAlreadyMarked()
-        }.then(on: .main) { [weak self] in
+            self?.message = try await(self!.fetchMessage())
+        }.then(on: .main) { [weak self]  in
             self?.hideSpinner()
+            self?.node.reloadRows(at: [Parts.text.indexPath], with: .fade)
+            self?.asyncMarkAsReadIfNotAlreadyMarked()
         }.catch(on: .main) { [weak self] error in
             self?.hideSpinner()
             self?.handleError(error, path: input.path)
+        }
+    }
+
+    private func fetchMessage() -> Promise<NSAttributedString> {
+        return Promise { [weak self] resolve, reject in
+            guard let self = self, let input = self.input else { return }
+            let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
+            self.input?.bodyMessage = rawMimeData
+            let keys = self.storage.keys()
+
+            let decrypted = try Core.parseDecryptMsg(
+                encrypted: rawMimeData,
+                keys: PrvKeyInfo.from(realm: keys),
+                msgPwd: nil,
+                isEmail: true
+            )
+            let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
+
+            let message: NSAttributedString
+            if let decryptErrBlock = decryptErrBlocks.first {
+                let rawMsg = decryptErrBlock.content
+                let err = decryptErrBlock.decryptErr?.error
+                message = self.decorator.attributed(
+                    text: "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)",
+                    color: .red
+                )
+            } else {
+                message = self.decorator.attributed(
+                    text: decrypted.text,
+                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.black
+                )
+            }
+            resolve(message)
         }
     }
 
@@ -134,19 +126,6 @@ extension MsgViewController {
             showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
         }
         navigationController?.popViewController(animated: true)
-    }
-
-    private func renderMsgOnMain(_ msg: CoreRes.ParseDecryptMsg) {
-        DispatchQueue.main.async { [weak self] in
-            let decryptErrBlocks = msg.blocks.filter { $0.decryptErr != nil }
-            if let decryptErrBlock = decryptErrBlocks.first {
-                let rawMsg = decryptErrBlock.content
-                let err = decryptErrBlock.decryptErr?.error
-                self?.renderBody("Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)", color: .red)
-            } else {
-                self?.renderBody(msg.text, color: msg.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.black)
-            }
-        }
     }
 
     private func asyncMarkAsReadIfNotAlreadyMarked() {
@@ -165,7 +144,7 @@ extension MsgViewController {
         operation.text.flatMap { showToast($0) }
 
         navigationController?.popViewController(animated: true) { [weak self] in
-            self?.updateCompletion?(operation, input.objMessage)
+            self?.onCompletion?(operation, input.objMessage)
         }
     }
 
@@ -225,7 +204,7 @@ extension MsgViewController {
             }
     }
 
-    @IBAction private func handleReplyTap(_: UIButton) {
+    private func handleReplyTap() {
         guard let input = input else { return }
         let viewModel = ComposeViewController.Input(
             isReply: true,
@@ -233,15 +212,51 @@ extension MsgViewController {
             replyToSubject: input.objMessage.header.subject,
             replyToMime: input.bodyMessage
         )
-        let replyVc = ComposeViewController.instance(with: viewModel)
+        let replyVc = ComposeViewController(input: viewModel)
         navigationController?.pushViewController(replyVc, animated: true)
     }
 }
 
+// MARK: - NavigationChildController
+
 extension MsgViewController: NavigationChildController {
     func handleBackButtonTap() {
         guard let message = input?.objMessage else { return }
-        updateCompletion?(MessageAction.markAsRead, message)
+        onCompletion?(MessageAction.markAsRead, message)
         navigationController?.popViewController(animated: true)
+    }
+}
+
+// MARK: - ASTableDelegate, ASTableDataSource
+
+extension MsgViewController: ASTableDelegate, ASTableDataSource {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        return Parts.allCases.count
+    }
+
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        let senderTitle = decorator.attributed(
+            title: input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
+        )
+        let subject = decorator.attributed(
+            subject: input?.objMessage.header.subject ?? "(no subject)"
+        )
+        let time = decorator.attributed(
+            date: input?.objMessage.header.date
+        )
+
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            switch part {
+            case .sender:
+                return MessageSenderNode(senderTitle) { [weak self] in
+                    self?.handleReplyTap()
+                }
+            case .subject:
+                return MessageSubjectNode(subject, time: time)
+            case .text:
+                return TextSubjectNode(self.message)
+            }
+        }
     }
 }
