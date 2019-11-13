@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-final class HeaderNode: ASCellNode {
+final class HeaderNode: CellNode {
     private let titleNode = ASTextNode()
     private let subTitleNode = ASTextNode()
 

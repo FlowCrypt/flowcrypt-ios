@@ -58,8 +58,7 @@ final class MsgViewController: ASViewController<ASTableNode> {
         let buttons: [NavigationBarItemsView.Input]
         switch input?.path {
         case MailDestination.Gmail.trash.path: buttons = [infoInput, trashInput]
-        case MailDestination.Gmail.inbox.path: buttons = [infoInput, archiveInput, trashInput, mailInput]
-        default: buttons = [infoInput, trashInput, mailInput]
+        default: buttons = [infoInput, archiveInput, trashInput, mailInput]
         }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }

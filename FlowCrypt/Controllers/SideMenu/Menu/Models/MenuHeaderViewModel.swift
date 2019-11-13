@@ -13,19 +13,7 @@ struct MenuHeaderViewModel {
     let subtitle: NSAttributedString
 
     init(title: String, subtitle: String?) {
-        self.title = NSAttributedString(
-            string: title,
-            attributes: [
-                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: .light),
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ]
-        )
-        self.subtitle = NSAttributedString(
-            string: subtitle ?? "",
-            attributes: [
-                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 11, weight: .light),
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ]
-        )
+        self.title = title.attributed(.bold(20), color: .white, alignment: .left)
+        self.subtitle = (subtitle ?? "").attributed(.medium(16), color: .white, alignment: .left)
     }
 }
