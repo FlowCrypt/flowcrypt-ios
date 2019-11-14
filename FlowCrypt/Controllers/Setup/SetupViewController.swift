@@ -71,12 +71,16 @@ final class SetupViewController: ASViewController<ASTableNode> {
         super.viewDidLoad()
 
         setupUI()
-        fetchBackupsAndRenderSetupView()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        fetchBackups()
     }
 }
 
@@ -104,7 +108,7 @@ extension SetupViewController {
 // MARK: - Key Setup
 
 extension SetupViewController {
-    private func fetchBackupsAndRenderSetupView() {
+    private func fetchBackups() {
         showSpinner()
         Promise<Void> { [weak self] in
             guard let self = self else { return }
@@ -134,14 +138,10 @@ extension SetupViewController {
         let alert = UIAlertController(title: "Notice", message: msg + errStr, preferredStyle: .alert)
         if error == nil { // no backous found, not an error: show option to create a key or import key
             alert.addAction(UIAlertAction(title: "Import existing Private Key", style: .default) { [weak self] _ in
-                self?.showToast("Key Import will be implemented soon! Contact human@flowcrypt.com")
-                self?.renderNoBackupsFoundOptions(msg, error: nil)
+                self?.handleImportKey()
             })
             alert.addAction(UIAlertAction(title: "Create new Private Key", style: .default) { [weak self] _ in
-                self?.subtitle = "Create a new OpenPGP Private Key"
-                self?.actionButton = .createKey
-                self?.setupAction = SetupAction.createKey
-                // todo - show strength bar while typed so that user can choose the strength they need
+                self?.handleCreatingKey()
             })
         }
         alert.addAction(UIAlertAction(title: "setup_use_otherAccount".localized, style: .default) { [weak self] _ in
@@ -154,9 +154,21 @@ extension SetupViewController {
             }
         })
         alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
-            self?.fetchBackupsAndRenderSetupView()
+            self?.fetchBackups()
         })
         present(alert, animated: true, completion: nil)
+    }
+
+    private func handleImportKey() {
+        let viewController = ImportKeyViewController()
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func handleCreatingKey() {
+        subtitle = "Create a new OpenPGP Private Key"
+        actionButton = .createKey
+        setupAction = SetupAction.createKey
+        // todo - show strength bar while typed so that user can choose the strength they need
     }
 
     private func recoverAccountWithBackups(with passPhrase: String) {

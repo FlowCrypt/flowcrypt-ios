@@ -61,6 +61,7 @@
 		9F23EA4E237216FA0017DFED /* TextViewCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */; };
 		9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeDecorator.swift */; };
 		9F23EA522372175E0017DFED /* ComposeViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */; };
+		9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268890237DC55600428A94 /* ImportKeyViewController.swift */; };
 		9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */; };
 		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
@@ -222,6 +223,7 @@
 		9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewCellNode.swift; sourceTree = "<group>"; };
 		9F23EA4F237217140017DFED /* ComposeDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeDecorator.swift; sourceTree = "<group>"; };
 		9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Setup.swift"; sourceTree = "<group>"; };
+		9F268890237DC55600428A94 /* ImportKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportKeyViewController.swift; sourceTree = "<group>"; };
 		9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
 		9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+retry.swift"; sourceTree = "<group>"; };
 		9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+folders.swift"; sourceTree = "<group>"; };
@@ -496,6 +498,14 @@
 			path = NavigationController;
 			sourceTree = "<group>";
 		};
+		9F268892237DC55E00428A94 /* ImportKey */ = {
+			isa = PBXGroup;
+			children = (
+				9F268890237DC55600428A94 /* ImportKeyViewController.swift */,
+			);
+			path = ImportKey;
+			sourceTree = "<group>";
+		};
 		9F2A939F23363D2400014A92 /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -735,6 +745,7 @@
 				D952B71B1ED0CB0100E5C02B /* Msg */,
 				04B4728F1ECE29F600B8266F /* Compose */,
 				C192421D1EC48B5600C3D251 /* Setup */,
+				9F268892237DC55E00428A94 /* ImportKey */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 			);
@@ -1230,6 +1241,7 @@
 				9F716305234FC7200031645E /* Localization.swift in Sources */,
 				9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */,
 				9F23EA522372175E0017DFED /* ComposeViewController+Setup.swift in Sources */,
+				9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
