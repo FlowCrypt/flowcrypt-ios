@@ -17,6 +17,7 @@ protocol SetupDecoratorType {
     var optionalBbuttonInsets: UIEdgeInsets { get }
     var textFieldStyle: TextFieldCellNode.Input { get }
     var subtitleStyle: (String) -> NSAttributedString { get }
+    func titleForAction(button: SetupViewController.SetupAction) -> NSAttributedString
 }
 
 struct SetupDecorator: SetupDecoratorType {
@@ -40,4 +41,13 @@ struct SetupDecorator: SetupDecoratorType {
         textAlignment: .center,
         insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     )
+
+    func titleForAction(button: SetupViewController.SetupAction) -> NSAttributedString {
+        let title: String
+        switch button {
+        case .createKey: title = "setup_load"
+        case .recoverKey: title = "setup_create_key"
+        }
+        return title.localized.attributed(.regular(17), color: .white, alignment: .center)
+    }
 }

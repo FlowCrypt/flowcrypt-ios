@@ -6,31 +6,6 @@ import Promises
 import AsyncDisplayKit
 
 final class SetupViewController: ASViewController<ASTableNode> {
-    private enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, action, optionalAction
-    }
-
-    private enum SetupAction {
-        case recoverKey
-        case createKey
-
-        // TODO: Anton - move to decorator
-        var buttonTitle: NSAttributedString {
-            switch self {
-            case .recoverKey: return SetupButtonType.loadAccount.attributedTitle
-            case .createKey: return SetupButtonType.createKey.attributedTitle
-            }
-        }
-
-        // TODO: Anton - move to decorator
-        var desctiption: NSAttributedString {
-            switch self {
-            case .recoverKey: return "setup_description".localized.attributed(.regular(17))
-            case .createKey: return "setup_create_key".localized.attributed(.regular(17))
-            }
-        }
-    }
-
     private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType
@@ -311,7 +286,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
 
             case .action:
                 return SetupButtonNode(
-                    title: self.setupAction.buttonTitle,
+                    title: self.decorator.titleForAction(button: self.setupAction),
                     insets: self.decorator.buttonInsets) { [weak self] in
                         self?.handleButtonPressed()
                 }
