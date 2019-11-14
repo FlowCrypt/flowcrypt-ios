@@ -15,7 +15,7 @@ final class SetupButtonNode: CellNode {
     }
     private let insets: UIEdgeInsets
 
-    init(_ title: NSAttributedString, insets: UIEdgeInsets, color: UIColor? = nil, action: (() -> Void)?) {
+    init(title: NSAttributedString, insets: UIEdgeInsets, color: UIColor? = nil, action: (() -> Void)?) {
         self.onTap = action
         self.insets = insets
         super.init() 

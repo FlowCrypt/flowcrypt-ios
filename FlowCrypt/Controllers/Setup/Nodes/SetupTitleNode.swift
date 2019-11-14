@@ -12,7 +12,7 @@ final class SetupTitleNode: CellNode {
     private let textNode = ASTextNode()
     private let insets: UIEdgeInsets
 
-    init(_ title: NSAttributedString, insets: UIEdgeInsets) {
+    init(title: NSAttributedString, insets: UIEdgeInsets) {
         self.insets = insets
         super.init()
         self.textNode.attributedText = title

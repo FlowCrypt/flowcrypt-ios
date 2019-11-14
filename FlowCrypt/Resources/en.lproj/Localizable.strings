@@ -62,8 +62,10 @@
 "setup_enter_pass_phrase" = "Enter pass phrase";
 "setup_wrong_pass_phrase_retry" = "Wrong pass phrase, please try again";
 "setu_backup_email" = "This email contains a key backup. It will help you access your encrypted messages from other computers (along with your pass phrase). You can safely leave it in your inbox or archive it.\n\nThe key below is protected with pass phrase that only you know. You should make sure to note your pass phrase down.\n\nDO NOT DELETE THIS EMAIL. Write us at human@flowcrypt.com so that we can help.";
-
+"setup_create_key" = "Create";
 
 // Key Import
 "import_key_title" = "Import Key";
 "import_key_description" = "Import Private Key";
+"import_key_file" = "Load From File";
+"import_key_paste" = "Load From Clipboard";

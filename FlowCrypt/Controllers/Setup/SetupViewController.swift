@@ -14,6 +14,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         case recoverKey
         case createKey
 
+        // TODO: Anton - move to decorator
         var buttonTitle: NSAttributedString {
             switch self {
             case .recoverKey: return SetupButtonType.loadAccount.attributedTitle
@@ -21,10 +22,11 @@ final class SetupViewController: ASViewController<ASTableNode> {
             }
         }
 
+        // TODO: Anton - move to decorator
         var desctiption: NSAttributedString {
             switch self {
             case .recoverKey: return "setup_description".localized.attributed(.regular(17))
-            case .createKey: return "!!!!! setup_description".localized.attributed(.regular(17))
+            case .createKey: return "setup_create_key".localized.attributed(.regular(17))
             }
         }
     }
@@ -33,6 +35,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let userService: UserServiceType
     private let router: GlobalRouterType
     private let storage: StorageServiceType
+    private let decorator: SetupDecoratorType
 
     private var setupAction = SetupAction.recoverKey
     private var fetchedEncryptedPrvs: [KeyDetails] = []
@@ -54,12 +57,14 @@ final class SetupViewController: ASViewController<ASTableNode> {
         imap: Imap = .instance,
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
-        storage: StorageServiceType = StorageService()
+        storage: StorageServiceType = StorageService(),
+        decorator: SetupDecoratorType = SetupDecorator()
     ) {
         self.imap = imap
         self.userService = userService
         self.router = router
         self.storage = storage
+        self.decorator = decorator
         super.init(node: TableNode())
     }
 
@@ -289,29 +294,36 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
-                return SetupTitleNode(SetupStyle.title, insets: SetupStyle.titleInset)
+                return SetupTitleNode(
+                    title: self.decorator.title,
+                    insets: self.decorator.titleInset
+                )
             case .description:
-                return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: SetupStyle.subTitleInset)
+                return SetupTitleNode(
+                    title: self.decorator.subtitleStyle(self.subtitle),
+                    insets: self.decorator.subTitleInset
+                )
             case .passPhrase:
-                return TextFieldCellNode(SetupStyle.textFieldStyle) { [weak self] action in
+                return TextFieldCellNode(self.decorator.textFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
-            case .divider:
-                return DividerNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
+
             case .action:
                 return SetupButtonNode(
-                    self.setupAction.buttonTitle,
-                    insets: SetupStyle.buttonInsets) { [weak self] in
+                    title: self.setupAction.buttonTitle,
+                    insets: self.decorator.buttonInsets) { [weak self] in
                         self?.handleButtonPressed()
-                    }
+                }
             case .optionalAction:
                 return SetupButtonNode(
-                    SetupStyle.useAnotherAccountTitle,
-                    insets: SetupStyle.optionalBbuttonInsets,
+                    title: self.decorator.useAnotherAccountTitle,
+                    insets: self.decorator.optionalBbuttonInsets,
                     color: .white) { [weak self] in
                         self?.useOtherAccount()
-                    }
+                }
+            case .divider:
+                return DividerNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
             }
         }
     }

@@ -10,7 +10,7 @@ import AsyncDisplayKit
 
 final class ImportKeyViewController: ASViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
-        case title
+        case title, fileImport, pasteBoardImport
     }
 
     private let decorator: ImportKeyDecoratorType
@@ -40,8 +40,7 @@ final class ImportKeyViewController: ASViewController<TableNode> {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
-
-        title = "import_key_title".localized
+        title = decorator.sceneTitle
     }
 }
 
@@ -57,18 +56,23 @@ extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
-                return SetupTitleNode(self.decorator.attributedTitle, insets: self.decorator.titleInsets)
+                return SetupTitleNode(
+                    title: self.decorator.title,
+                    insets: self.decorator.titleInsets
+                )
+            case .fileImport:
+                return SetupButtonNode(
+                    title: self.decorator.fileImportTitle,
+                    insets: self.decorator.buttonInsets) {
+
+                }
+            case .pasteBoardImport:
+                return SetupButtonNode(
+                    title: self.decorator.pasteBoardTitle,
+                    insets: self.decorator.buttonInsets) {
+
+                }
             }
         }
     }
-}
-
-protocol ImportKeyDecoratorType {
-    var attributedTitle: NSAttributedString { get }
-    var titleInsets: UIEdgeInsets { get }
-}
-
-struct ImportKeyDecorator: ImportKeyDecoratorType {
-    let attributedTitle = "import_key_description".localized.attributed(.bold(35), color: .black, alignment: .center)
-    let titleInsets = SetupStyle.titleInset
 }
