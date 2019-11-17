@@ -188,7 +188,7 @@ extension ComposeViewController {
             to: [email],
             cc: [],
             bcc: [],
-            from: dataManager.currentUser()?.email ?? "",
+            from: dataManager.email ?? "",
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: []
@@ -241,7 +241,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     private func recipientNode() -> ASCellNode {
         let placeholder = decorator.styledTextFieldInput("compose_recipient".localized)
-        let node = TextFieldCellNode(placeholder) { [weak self] event in
+        let node = TextFieldCellNode(input: placeholder) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.resipient = text
         }
@@ -260,7 +260,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     private func subjectNode() -> ASCellNode {
         let placeholder = decorator.styledTextFieldInput("compose_subject".localized)
-        let node = TextFieldCellNode(placeholder) { [weak self] event in
+        let node = TextFieldCellNode(input: placeholder) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.subject = text
         }

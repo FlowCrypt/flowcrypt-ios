@@ -43,7 +43,7 @@ final class TextFieldCellNode: CellNode {
     }
 
     private let input: Input
-    init(_ input: Input, action: TextFieldAction? = nil) {
+    init(input: Input, action: TextFieldAction? = nil) {
         textField = TextFieldNode(prefferedHeight: input.height)
         self.input = input
         super.init()

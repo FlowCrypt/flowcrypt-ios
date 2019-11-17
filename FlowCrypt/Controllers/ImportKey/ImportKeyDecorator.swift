@@ -17,17 +17,54 @@ protocol ImportKeyDecoratorType {
     var subTitleInset: UIEdgeInsets { get }
     var buttonInsets: UIEdgeInsets { get }
     var subtitleStyle: (String) -> NSAttributedString { get }
+
+    var passPhraseTitle: NSAttributedString { get }
+    var passPhraseContine: NSAttributedString { get }
+    var passPhraseChooseAnother: NSAttributedString { get }
+    var passPhraseInsets: UIEdgeInsets { get }
+    var passPhraseTextFieldStyle: TextFieldCellNode.Input { get }
 }
 
 struct ImportKeyDecorator: ImportKeyDecoratorType {
     let sceneTitle = "import_key_title".localized
-    let title = "import_key_description".localized.attributed(.bold(35), color: .black, alignment: .center)
-    let fileImportTitle = "import_key_file".localized.attributed(.regular(17), color: .white, alignment: .center)
-    let pasteBoardTitle = "import_key_paste".localized.attributed(.regular(17), color: .white, alignment: .center)
-    let buttonInsets = UIEdgeInsets(top: 32, left: 16, bottom: 16, right: 16)
-    let titleInsets = UIEdgeInsets(top: 100, left: 16, bottom: 46, right: 16)
-    let subTitleInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+
+    var title: NSAttributedString {
+        attributed(title: "import_key_description")
+    }
+    var passPhraseTitle: NSAttributedString {
+        attributed(title: "import_key_description")
+    }
+    var fileImportTitle: NSAttributedString {
+        attributed(subTitle: "import_key_file")
+    }
+    var pasteBoardTitle: NSAttributedString {
+        attributed(subTitle: "import_key_paste")
+    }
+    var passPhraseContine: NSAttributedString {
+        attributed(subTitle: "import_key_continue")
+    }
+    var passPhraseChooseAnother: NSAttributedString {
+        attributed(subTitle: "import_key_choose", color: UIColor.white.withAlphaComponent(0.9))
+    }
+
+    let buttonInsets = UIEdgeInsets(top: 16, left: 16, bottom: 8, right: 16)
+    let passPhraseInsets = UIEdgeInsets(top: 32, left: 16, bottom: 0, right: 16)
+    let titleInsets = UIEdgeInsets(top: 100, left: 16, bottom: 30, right: 16)
+    let subTitleInset = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
     var subtitleStyle: (String) -> NSAttributedString {
         { $0.attributed(.regular(17), alignment: .center) }
     }
+
+    private func attributed(title: String) -> NSAttributedString {
+        title.localized.attributed(.bold(35), color: .black, alignment: .center)
+    }
+
+    private func attributed(subTitle: String, color: UIColor = .white) -> NSAttributedString {
+        subTitle.localized.attributed(.regular(17), color: color, alignment: .center)
+    }
+
+    let passPhraseTextFieldStyle = TextFieldCellNode.Input(
+        placeholder: "setup_enter".localized.attributed(.regular(17), color: .lightGray, alignment: .center),
+        textAlignment: .center
+    )
 }

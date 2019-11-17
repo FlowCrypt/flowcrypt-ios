@@ -19,6 +19,9 @@ final class ImportKeyViewController: ASViewController<TableNode> {
 
     private let decorator: ImportKeyDecoratorType
     private let pasteboard: UIPasteboard
+    private let dataManager: DataManagerType
+    private let core: Core
+
     private var userInfoMessage = "" {
         didSet {
             updateSubtitle()
@@ -27,11 +30,14 @@ final class ImportKeyViewController: ASViewController<TableNode> {
 
     init(
         decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
-        pasteboard: UIPasteboard = UIPasteboard.general
+        pasteboard: UIPasteboard = UIPasteboard.general,
+        core: Core = Core.shared,
+        dataManager: DataManagerType = DataManager.shared
     ) {
         self.pasteboard = pasteboard
         self.decorator = decorator
-
+        self.dataManager = dataManager
+        self.core = core
         super.init(node: TableNode())
     }
     
@@ -131,22 +137,37 @@ extension ImportKeyViewController {
 
     func proceedToKeyImportFromPasteboard() {
         guard let armoredKey = pasteboard.string else { return }
-        let backupData = Data(armoredKey.utf8)
-        do {
-            let keys = try Core.shared.parseKeys(armoredOrBinary: backupData)
-            let privateKey = keys.keyDetails.filter { $0.private != nil }
+        parseFetched(key: armoredKey)
+    }
 
+    private func parseFetched(key: String) {
+        let keyData = Data(key.utf8)
+        do {
+            let keys = try core.parseKeys(armoredOrBinary: keyData)
+            let privateKey = keys.keyDetails.filter { $0.private != nil }
+            let user = dataManager.email ?? "unknown_title".localized
 
             if privateKey.isEmpty {
-                let user = DataManager.shared.currentUser()?.email ?? "(unknown)"
                 userInfoMessage = "import_no_backups_clipboard".localized + user
             } else {
                 userInfoMessage = "Found \(privateKey.count) key backup\(privateKey.count > 1 ? "s" : "")"
+                proceedToPassPhrase(with: user)
             }
         } catch let error {
             userInfoMessage = error.localizedDescription
         }
+    }
 
+    private func proceedToPassPhrase(with email: String) {
+        let viewController = EnterPassPhraseViewController(
+            decorator: decorator,
+            email: email
+        )
+        let animationDuration = 1.0
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
+            self?.navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }
 

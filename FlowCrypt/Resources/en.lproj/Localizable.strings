@@ -1,6 +1,8 @@
 // COMMON
 "loading_title" = "Loading";
 "sending_title" = "Sending";
+"unknown_title" = "(unknown)";
+
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -70,3 +72,5 @@
 "import_key_file" = "Load From File";
 "import_key_paste" = "Load From Clipboard";
 "import_no_backups_clipboard" = "No backups found for account: \n";
+"import_key_choose" = "Choose Another Key";
+"import_key_continue" = "Continue";

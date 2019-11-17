@@ -108,7 +108,7 @@ extension SetupViewController {
     private func handleBackupsFetchResult() {
         hideSpinner()
         if fetchedEncryptedPrvs.isEmpty {
-            let user = DataManager.shared.currentUser()?.email ?? "(unknown)"
+            let user = DataManager.shared.currentUser()?.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             renderNoBackupsFoundOptions(msg)
         } else {
@@ -282,7 +282,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                     insets: self.decorator.subTitleInset
                 )
             case .passPhrase:
-                return TextFieldCellNode(self.decorator.textFieldStyle) { [weak self] action in
+                return TextFieldCellNode(input: self.decorator.textFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
