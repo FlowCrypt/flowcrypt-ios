@@ -57,8 +57,12 @@ final class MsgViewController: ASViewController<ASTableNode> {
         let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
         let buttons: [NavigationBarItemsView.Input]
         switch input?.path {
-        case MailDestination.Gmail.trash.path: buttons = [infoInput, trashInput]
-        default: buttons = [infoInput, archiveInput, trashInput, mailInput]
+        case MailDestination.Gmail.trash.path:
+            buttons = [infoInput, trashInput]
+        case MailDestination.Gmail.inbox.path:
+            buttons = [infoInput, archiveInput, trashInput, mailInput]
+        default:
+            buttons = [infoInput, trashInput, mailInput]
         }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
@@ -167,7 +171,9 @@ extension MsgViewController {
     @objc private func handleTrashTap() {
         guard let input = input else { return }
         showSpinner()
-        let op = input.path != MailDestination.Gmail.trash.path ? MessageAction.moveToTrash : MessageAction.permanentlyDelete
+        let op = input.path == MailDestination.Gmail.trash.path
+            ? MessageAction.permanentlyDelete
+            : MessageAction.moveToTrash
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
             if op == MessageAction.permanentlyDelete {
