@@ -14,7 +14,9 @@ protocol ImportKeyDecoratorType {
     var fileImportTitle: NSAttributedString { get }
     var pasteBoardTitle: NSAttributedString { get }
     var titleInsets: UIEdgeInsets { get }
+    var subTitleInset: UIEdgeInsets { get }
     var buttonInsets: UIEdgeInsets { get }
+    var subtitleStyle: (String) -> NSAttributedString { get }
 }
 
 struct ImportKeyDecorator: ImportKeyDecoratorType {
@@ -23,5 +25,9 @@ struct ImportKeyDecorator: ImportKeyDecoratorType {
     let fileImportTitle = "import_key_file".localized.attributed(.regular(17), color: .white, alignment: .center)
     let pasteBoardTitle = "import_key_paste".localized.attributed(.regular(17), color: .white, alignment: .center)
     let buttonInsets = UIEdgeInsets(top: 32, left: 16, bottom: 16, right: 16)
-    let titleInsets = UIEdgeInsets(top: 120, left: 16, bottom: 46, right: 16)
+    let titleInsets = UIEdgeInsets(top: 100, left: 16, bottom: 46, right: 16)
+    let subTitleInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+    var subtitleStyle: (String) -> NSAttributedString {
+        { $0.attributed(.regular(17), alignment: .center) }
+    }
 }

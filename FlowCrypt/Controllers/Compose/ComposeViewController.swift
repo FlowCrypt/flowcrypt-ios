@@ -12,6 +12,8 @@ final class ComposeViewController: ASViewController<ASTableNode> {
     private let attesterApi: AttesterApiType
     private let storageService: StorageServiceType
     private let decorator: ComposeDecoratorType
+    private let core: Core
+
     private var input: Input
     private var contextToSend = Context()
 
@@ -22,7 +24,8 @@ final class ComposeViewController: ASViewController<ASTableNode> {
         attesterApi: AttesterApiType = AttesterApi.shared,
         storageService: StorageServiceType = StorageService(),
         decorator: ComposeDecoratorType = ComposeDecorator(),
-        input: ComposeViewController.Input = .empty
+        input: ComposeViewController.Input = .empty,
+        core: Core = Core.shared
     ) {
         self.imap = imap
         self.notificationCenter = notificationCenter
@@ -31,6 +34,7 @@ final class ComposeViewController: ASViewController<ASTableNode> {
         self.input = input
         self.storageService = storageService
         self.decorator = decorator
+        self.core = core
         if input.isReply {
             contextToSend.resipient = input.recipientReplyTitle
             contextToSend.subject = input.replyToSubject
@@ -189,7 +193,7 @@ extension ComposeViewController {
             replyToMimeMsg: replyToMimeMsg,
             atts: []
         )
-        return try! Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
+        return try! core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
     }
 
     private func isInputValid() -> Bool {

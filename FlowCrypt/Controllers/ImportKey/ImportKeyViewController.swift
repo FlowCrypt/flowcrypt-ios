@@ -10,11 +10,20 @@ import AsyncDisplayKit
 
 final class ImportKeyViewController: ASViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
-        case title, fileImport, pasteBoardImport
+        case title, description, fileImport, pasteBoardImport
+
+        var indexPath: IndexPath {
+            IndexPath(row: self.rawValue, section: 0)
+        }
     }
 
     private let decorator: ImportKeyDecoratorType
     private let pasteboard: UIPasteboard
+    private var userInfoMessage = "" {
+        didSet {
+            updateSubtitle()
+        }
+    }
 
     init(
         decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
@@ -22,6 +31,7 @@ final class ImportKeyViewController: ASViewController<TableNode> {
     ) {
         self.pasteboard = pasteboard
         self.decorator = decorator
+
         super.init(node: TableNode())
     }
     
@@ -45,6 +55,12 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         node.dataSource = self
         title = decorator.sceneTitle
     }
+
+    private func updateSubtitle() {
+        DispatchQueue.main.async {
+            self.node.reloadRows(at: [Parts.description.indexPath], with: .fade)
+        }
+    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
@@ -62,6 +78,11 @@ extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
                 return SetupTitleNode(
                     title: self.decorator.title,
                     insets: self.decorator.titleInsets
+                )
+            case .description:
+                return SetupTitleNode(
+                    title: self.decorator.subtitleStyle(self.userInfoMessage),
+                    insets: self.decorator.subTitleInset
                 )
             case .fileImport:
                 return SetupButtonNode(
@@ -109,6 +130,22 @@ extension ImportKeyViewController {
     }
 
     func proceedToKeyImportFromPasteboard() {
+        guard let armoredKey = pasteboard.string else { return }
+        let backupData = Data(armoredKey.utf8)
+        do {
+            let keys = try Core.shared.parseKeys(armoredOrBinary: backupData)
+            let privateKey = keys.keyDetails.filter { $0.private != nil }
+
+
+            if privateKey.isEmpty {
+                let user = DataManager.shared.currentUser()?.email ?? "(unknown)"
+                userInfoMessage = "import_no_backups_clipboard".localized + user
+            } else {
+                userInfoMessage = "Found \(privateKey.count) key backup\(privateKey.count > 1 ? "s" : "")"
+            }
+        } catch let error {
+            userInfoMessage = error.localizedDescription
+        }
 
     }
 }

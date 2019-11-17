@@ -69,3 +69,4 @@
 "import_key_description" = "Import Private Key";
 "import_key_file" = "Load From File";
 "import_key_paste" = "Load From Clipboard";
+"import_no_backups_clipboard" = "No backups found for account: \n";

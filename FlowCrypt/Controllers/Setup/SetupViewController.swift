@@ -11,6 +11,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let router: GlobalRouterType
     private let storage: StorageServiceType
     private let decorator: SetupDecoratorType
+    private let core: Core
 
     private var setupAction = SetupAction.recoverKey
     private var fetchedEncryptedPrvs: [KeyDetails] = []
@@ -33,13 +34,15 @@ final class SetupViewController: ASViewController<ASTableNode> {
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
         storage: StorageServiceType = StorageService(),
-        decorator: SetupDecoratorType = SetupDecorator()
+        decorator: SetupDecoratorType = SetupDecorator(),
+        core: Core = Core.shared
     ) {
         self.imap = imap
         self.userService = userService
         self.router = router
         self.storage = storage
         self.decorator = decorator
+        self.core = core
         super.init(node: TableNode())
     }
 
@@ -93,7 +96,7 @@ extension SetupViewController {
         Promise<Void> { [weak self] in
             guard let self = self else { return }
             let backupData = try await(self.imap.searchBackups())
-            let parsed = try Core.parseKeys(armoredOrBinary: backupData)
+            let parsed = try self.core.parseKeys(armoredOrBinary: backupData)
             self.fetchedEncryptedPrvs = parsed.keyDetails.filter { $0.private != nil }
         }.then(on: .main) { [weak self] in
             self?.handleBackupsFetchResult()
@@ -155,7 +158,7 @@ extension SetupViewController {
         let matchingBackups: [KeyDetails] = fetchedEncryptedPrvs
             .compactMap { (key) -> KeyDetails? in
                 guard let privateKey = key.private,
-                    let decrypted = try? Core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
+                    let decrypted = try? self.core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
                       decrypted.decryptedKey != nil
                     else { return nil }
                 return key
@@ -173,7 +176,7 @@ extension SetupViewController {
             guard let self = self else { return }
             let userId = try self.getUserId()
             try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
-            let encryptedPrv = try Core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
+            let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
             try await(self.backupPrvToInbox(prv: encryptedPrv.key, userId: userId))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
             try await(self.alertAndSkipOnRejection(AttesterApi.shared.updateKey(email: userId.email, pubkey: encryptedPrv.key.public), fail: "Failed to submit Public Key"))
@@ -187,7 +190,7 @@ extension SetupViewController {
 
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
         return Promise {
-            let strength = try Core.zxcvbnStrengthBar(passPhrase: passPhrase)
+            let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
             guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
             let confirmPassPhrase = try await(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
             guard confirmPassPhrase != nil else { throw AppErr.silentAbort }
@@ -205,7 +208,7 @@ extension SetupViewController {
         return Promise { () -> Void in
             guard prv.isFullyEncrypted ?? false else { throw AppErr.unexpected("Private Key must be fully enrypted before backing up") }
             let filename = "flowcrypt-backup-\(userId.email.replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression)).key"
-            let backupEmail = try Core.composeEmail(msg: SendableMsg(
+            let backupEmail = try self.core.composeEmail(msg: SendableMsg(
                 text: "setu_backup_email".localized,
                 to: [userId.toMime()],
                 cc: [],

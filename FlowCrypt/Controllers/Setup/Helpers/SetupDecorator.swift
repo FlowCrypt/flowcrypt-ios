@@ -24,9 +24,7 @@ struct SetupDecorator: SetupDecoratorType {
     let title = "setup_title".localized.attributed(.bold(35), color: .black, alignment: .center)
     let useAnotherAccountTitle = "setup_use_another".localized.attributed(.regular(15), color: .blueColor, alignment: .center)
     var subtitleStyle: (String) -> NSAttributedString {
-        return {
-            $0.attributed(.regular(17))
-        }
+        { $0.attributed(.regular(17)) }
     }
 
     let titleInset = UIEdgeInsets(top: 92, left: 16, bottom: 20, right: 16)

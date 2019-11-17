@@ -12,12 +12,15 @@ final class MsgViewController: ASViewController<ASTableNode> {
     private let imap: Imap
     private let decorator: MessageDecoratorType
     private let storage: StorageServiceType
+    private let core: Core
+
     private var message: NSAttributedString
 
     init(
         imap: Imap = Imap.instance,
         decorator: MessageDecoratorType = MessageDecorator(dateFormatter: DateFormatter()),
         storage: StorageServiceType = StorageService(),
+        core: Core = Core.shared,
         input: MsgViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
@@ -25,6 +28,7 @@ final class MsgViewController: ASViewController<ASTableNode> {
         self.input = input
         self.decorator = decorator
         self.storage = storage
+        self.core = core
         self.onCompletion = completion
         self.message = decorator.attributed(text: "loading_title".localized + "...", color: .lightGray)
 
@@ -90,7 +94,7 @@ extension MsgViewController {
             self.input?.bodyMessage = rawMimeData
             let keys = self.storage.keys()
 
-            let decrypted = try Core.parseDecryptMsg(
+            let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
                 keys: PrvKeyInfo.from(realm: keys),
                 msgPwd: nil,
