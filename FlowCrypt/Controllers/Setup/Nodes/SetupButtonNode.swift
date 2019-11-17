@@ -14,10 +14,22 @@ final class SetupButtonNode: CellNode {
         self?.onTap?()
     }
     private let insets: UIEdgeInsets
+    private let buttonColor: UIColor?
+
+    var isButtonEnabled: Bool = true {
+        didSet {
+            button.isEnabled = isButtonEnabled
+            let alpha: CGFloat = isButtonEnabled ? 1 : 0.5
+            button.backgroundColor = (self.buttonColor ?? UIColor.main)
+                .withAlphaComponent(alpha)
+        }
+    }
+
 
     init(title: NSAttributedString, insets: UIEdgeInsets, color: UIColor? = nil, action: (() -> Void)?) {
         self.onTap = action
         self.insets = insets
+        self.buttonColor = color
         super.init() 
         button.cornerRadius = 5
         button.backgroundColor = color ?? .main

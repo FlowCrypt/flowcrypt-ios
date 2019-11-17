@@ -14,10 +14,13 @@ final class ImportKeyViewController: ASViewController<TableNode> {
     }
 
     private let decorator: ImportKeyDecoratorType
+    private let pasteboard: UIPasteboard
 
     init(
-        decorator: ImportKeyDecoratorType = ImportKeyDecorator()
+        decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
+        pasteboard: UIPasteboard = UIPasteboard.general
     ) {
+        self.pasteboard = pasteboard
         self.decorator = decorator
         super.init(node: TableNode())
     }
@@ -63,16 +66,60 @@ extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
             case .fileImport:
                 return SetupButtonNode(
                     title: self.decorator.fileImportTitle,
-                    insets: self.decorator.buttonInsets) {
-
+                    insets: self.decorator.buttonInsets
+                ) { [weak self] in
+                    self?.proceedToKeyImportFromFile()
                 }
             case .pasteBoardImport:
                 return SetupButtonNode(
                     title: self.decorator.pasteBoardTitle,
-                    insets: self.decorator.buttonInsets) {
-
+                    insets: self.decorator.buttonInsets
+                ) { [weak self] in
+                    self?.proceedToKeyImportFromPasteboard()
+                }
+                .then {
+                    $0.isButtonEnabled = self.pasteboard.hasStrings
                 }
             }
         }
+    }
+}
+
+// MARK: - Actions
+
+extension ImportKeyViewController {
+    private func proceedToKeyImportFromFile() {
+//        let documentInteractionController = UIDocumentBrowserViewController()
+//        documentInteractionController.allowsDocumentCreation = false
+//        documentInteractionController.allowsPickingMultipleItems = false
+//        documentInteractionController.browserUserInterfaceStyle = .light
+//        documentInteractionController.view.tintColor = .main
+//        documentInteractionController.allowedContentTypes
+
+        let documentInteractionController = UIDocumentPickerViewController(documentTypes: [
+            "public.text",
+            "public.plain-text",
+            "public.jpeg",
+            "public.html",
+            "public.folders"
+        ], in: .open)
+
+
+        present(documentInteractionController, animated: true, completion: nil)
+    }
+
+    func proceedToKeyImportFromPasteboard() {
+
+    }
+}
+
+// MARK: - UIDocumentInteractionControllerDelegate
+
+extension ImportKeyViewController: UIDocumentInteractionControllerDelegate {
+    func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
+        guard let navVC = self.navigationController else {
+            return self
+        }
+        return navVC
     }
 }

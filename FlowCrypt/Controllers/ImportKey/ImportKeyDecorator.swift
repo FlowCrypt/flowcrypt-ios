@@ -18,15 +18,10 @@ protocol ImportKeyDecoratorType {
 }
 
 struct ImportKeyDecorator: ImportKeyDecoratorType {
-    init(titleInsets: UIEdgeInsets = SetupDecorator().titleInset) {
-        self.titleInsets = titleInsets
-    }
-
     let sceneTitle = "import_key_title".localized
     let title = "import_key_description".localized.attributed(.bold(35), color: .black, alignment: .center)
-    let fileImportTitle = "import_key_file".attributed(.regular(17), color: .white, alignment: .center)
-    let pasteBoardTitle = "import_key_paste".attributed(.regular(17), color: .white, alignment: .center)
-
-    let titleInsets: UIEdgeInsets
-    let buttonInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+    let fileImportTitle = "import_key_file".localized.attributed(.regular(17), color: .white, alignment: .center)
+    let pasteBoardTitle = "import_key_paste".localized.attributed(.regular(17), color: .white, alignment: .center)
+    let buttonInsets = UIEdgeInsets(top: 32, left: 16, bottom: 16, right: 16)
+    let titleInsets = UIEdgeInsets(top: 120, left: 16, bottom: 46, right: 16)
 }
