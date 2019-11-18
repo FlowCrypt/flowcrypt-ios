@@ -9,12 +9,16 @@
 import XCTest
 
 class FlowCryptCoreTests: XCTestCase {
-    override class func setUp() { // Called once before any tests are run
+    var sut: Core!
+ 
+
+    override func setUp() {
         super.setUp()
         // DispatchQueue.promises = .global() // this helps prevent Promise deadlocks - but currently Promises are not in use by tests
-        Core.startInBackgroundIfNotAlreadyRunning()
+        sut = Core.shared
+        sut.startInBackgroundIfNotAlreadyRunning()
         do {
-            try Core.blockUntilReadyOrThrow()
+            try sut.blockUntilReadyOrThrow()
         } catch {
             XCTFail("Core did not get ready in time")
         }
@@ -23,12 +27,12 @@ class FlowCryptCoreTests: XCTestCase {
     // the tests below
 
     func testVersions() throws {
-        let r = try Core.version()
+        let r = try sut.version()
         XCTAssertEqual(r.app_version, "iOS 0.2")
     }
 
     func testGenerateKey() throws {
-        let r = try Core.generateKey(passphrase: "some pass phrase test", variant: KeyVariant.curve25519, userIds: [UserId(email: "first@domain.com", name: "First")])
+        let r = try sut.generateKey(passphrase: "some pass phrase test", variant: KeyVariant.curve25519, userIds: [UserId(email: "first@domain.com", name: "First")])
         XCTAssertNotNil(r.key.private)
         XCTAssertEqual(r.key.isFullyDecrypted, false)
         XCTAssertEqual(r.key.isFullyEncrypted, true)
@@ -38,7 +42,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testZxcvbnStrengthBarWeak() throws {
-        let r = try Core.zxcvbnStrengthBar(passPhrase: "nothing much")
+        let r = try sut.zxcvbnStrengthBar(passPhrase: "nothing much")
         XCTAssertEqual(r.word.word, CoreRes.ZxcvbnStrengthBar.WordDetails.Word.weak)
         XCTAssertEqual(r.word.pass, false)
         XCTAssertEqual(r.word.color, CoreRes.ZxcvbnStrengthBar.WordDetails.Color.red)
@@ -47,7 +51,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testZxcvbnStrengthBarStrong() throws {
-        let r = try Core.zxcvbnStrengthBar(passPhrase: "this one is seriously over the top strong pwd")
+        let r = try sut.zxcvbnStrengthBar(passPhrase: "this one is seriously over the top strong pwd")
         XCTAssertEqual(r.word.word, CoreRes.ZxcvbnStrengthBar.WordDetails.Word.perfect)
         XCTAssertEqual(r.word.pass, true)
         XCTAssertEqual(r.word.color, CoreRes.ZxcvbnStrengthBar.WordDetails.Color.green)
@@ -56,7 +60,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testParseKeys() throws {
-        let r = try Core.parseKeys(armoredOrBinary: TestData.k0.pub.data(using: .utf8)! + [10] + TestData.k1.prv.data(using: .utf8)!)
+        let r = try sut.parseKeys(armoredOrBinary: TestData.k0.pub.data(using: .utf8)! + [10] + TestData.k1.prv.data(using: .utf8)!)
         XCTAssertEqual(r.format, CoreRes.ParseKeys.Format.armored)
         XCTAssertEqual(r.keyDetails.count, 2)
         // k0 k is public
@@ -75,22 +79,22 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testDecryptKeyWithCorrectPassPhrase() throws {
-        let decryptKeyRes = try Core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: TestData.k0.passphrase)
+        let decryptKeyRes = try sut.decryptKey(armoredPrv: TestData.k0.prv, passphrase: TestData.k0.passphrase)
         XCTAssertNotNil(decryptKeyRes.decryptedKey)
         // make sure indeed decrypted
-        let parseKeyRes = try Core.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey!.data(using: .utf8)!)
+        let parseKeyRes = try sut.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey!.data(using: .utf8)!)
         XCTAssertEqual(parseKeyRes.keyDetails[0].isFullyDecrypted, true)
         XCTAssertEqual(parseKeyRes.keyDetails[0].isFullyEncrypted, false)
     }
 
     func testDecryptKeyWithWrongPassPhrase() throws {
-        let k = try Core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong")
+        let k = try sut.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong")
         XCTAssertNil(k.decryptedKey)
     }
 
     func testComposeEmailPlain() throws {
         let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [])
-        let composeEmailRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.plain, pubKeys: nil)
+        let composeEmailRes = try sut.composeEmail(msg: msg, fmt: MsgFmt.plain, pubKeys: nil)
         let mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
         XCTAssertNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // not encrypted
         XCTAssertNotNil(mime.range(of: msg.text)) // plain text visible
@@ -100,7 +104,7 @@ class FlowCryptCoreTests: XCTestCase {
 
     func testComposeEmailEncryptInline() throws {
         let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [])
-        let composeEmailRes = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
+        let composeEmailRes = try sut.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
         let mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
         XCTAssertNotNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // encrypted
         XCTAssertNil(mime.range(of: msg.text)) // plain text not visible
@@ -112,12 +116,12 @@ class FlowCryptCoreTests: XCTestCase {
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
         let text = "this is the encrypted e2e content"
-        let generateKeyRes = try Core.generateKey(passphrase: passphrase, variant: KeyVariant.curve25519, userIds: [UserId(email: email, name: "End to end")])
+        let generateKeyRes = try sut.generateKey(passphrase: passphrase, variant: KeyVariant.curve25519, userIds: [UserId(email: email, name: "End to end")])
         let k = generateKeyRes.key
         let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: email, subject: "e2e subj", replyToMimeMsg: nil, atts: [])
-        let mime = try Core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [k.public])
+        let mime = try sut.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [k.public])
         let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase)]
-        let decrypted = try Core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true)
+        let decrypted = try sut.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true)
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.encrypted)
         XCTAssertEqual(decrypted.blocks.count, 1)
@@ -130,7 +134,7 @@ class FlowCryptCoreTests: XCTestCase {
 
     func testDecryptErrMismatch() throws {
         let key = PrvKeyInfo(private: TestData.k0.prv, longid: TestData.k0.longid, passphrase: TestData.k0.passphrase)
-        let r = try Core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false)
+        let r = try sut.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false)
         let decrypted = r
         XCTAssertEqual(decrypted.text, "")
         XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.plain) // replies to errors should be plain
@@ -147,7 +151,7 @@ class FlowCryptCoreTests: XCTestCase {
 
     func testException() throws {
         do {
-            _ = try Core.decryptKey(armoredPrv: "not really a key", passphrase: "whatnot")
+            _ = try sut.decryptKey(armoredPrv: "not really a key", passphrase: "whatnot")
             XCTFail("Should have thrown above")
         } catch let CoreError.exception(message) {
             print(message)
