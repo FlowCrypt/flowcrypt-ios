@@ -19,13 +19,27 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
 
     private let decorator: ImportKeyDecoratorType
     private let email: String
+    private let fetchedKeys: [KeyDetails]
+    private let backupService: BackupServiceType
+    private let storage: StorageServiceType
+    private let router: GlobalRouterType
+
+    private var passPhrase: String?
 
     init(
         decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
-        email: String
+        backupService: BackupServiceType = BackupService(core: .shared),
+        storage: StorageServiceType = StorageService(),
+        router: GlobalRouterType = GlobalRouter(),
+        email: String,
+        fetchedKeys: [KeyDetails]
     ) {
+        self.fetchedKeys = fetchedKeys
         self.email = email
         self.decorator = decorator
+        self.backupService = backupService
+        self.storage = storage
+        self.router = router
         super.init(node: TableNode())
     }
 
@@ -51,7 +65,6 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     }
 }
 
-
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
@@ -74,15 +87,16 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                     insets: self.decorator.subTitleInset
                 )
             case .passPhrase:
-                return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { action in
-                    print("^^ \(action)")
+                return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { [weak self] action in
+                    guard case let .didEndEditing(text) = action else { return }
+                    self?.passPhrase = text
                 }
             case .enterPhrase:
                  return SetupButtonNode(
                     title: self.decorator.passPhraseContine,
                     insets: self.decorator.passPhraseInsets
                  ) { [weak self] in
-
+                    self?.handleContinueAction()
                  }
             case .chooseAnother:
                 return SetupButtonNode(
@@ -96,5 +110,39 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                 return DividerNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
             }
         }
+    }
+}
+
+// MARK: - Actions
+
+extension EnterPassPhraseViewController { 
+    private func handleContinueAction() {
+        view.endEditing(true)
+        guard let passPhrase = passPhrase else { return }
+
+        guard passPhrase.isNotEmpty else {
+            showAlert(message: "setup_enter_pass_phrase".localized)
+            return
+        }
+        showSpinner()
+
+        let matchingBackups = backupService.match(keys: fetchedKeys, with: passPhrase)
+
+        guard matchingBackups.count > 0 else {
+            showAlert(message: "setup_wrong_pass_phrase_retry".localized)
+            return
+        }
+
+        storage.addKeys(keyDetails: fetchedKeys, passPhrase: passPhrase, source: .generated)
+        moveToMainFlow()
+    }
+
+
+    private func handleAnotherKeySelection() {
+        navigationController?.popViewController(animated: true)
+    }
+
+    private func moveToMainFlow() {
+        router.reset()
     }
 }

@@ -63,8 +63,5 @@ struct ImportKeyDecorator: ImportKeyDecoratorType {
         subTitle.localized.attributed(.regular(17), color: color, alignment: .center)
     }
 
-    let passPhraseTextFieldStyle = TextFieldCellNode.Input(
-        placeholder: "setup_enter".localized.attributed(.regular(17), color: .lightGray, alignment: .center),
-        textAlignment: .center
-    )
+    let passPhraseTextFieldStyle = SetupCommonStyle.passPhraseTextFieldStyle
 }

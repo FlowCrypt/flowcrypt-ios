@@ -32,13 +32,7 @@ struct SetupDecorator: SetupDecoratorType {
     let buttonInsets = UIEdgeInsets(top: 80, left: 24, bottom: 8, right: 24)
     let optionalBbuttonInsets = UIEdgeInsets(top: 0, left: 24, bottom: 8, right: 24)
 
-    let textFieldStyle = TextFieldCellNode.Input(
-        placeholder: "setup_enter".localized.attributed(.bold(16), color: .lightGray, alignment: .center),
-        isSecureTextEntry: true,
-        textInsets: 0,
-        textAlignment: .center,
-        insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-    )
+    let textFieldStyle = SetupCommonStyle.passPhraseTextFieldStyle
 
     func titleForAction(button: SetupViewController.SetupAction) -> NSAttributedString {
         let title: String
@@ -48,4 +42,14 @@ struct SetupDecorator: SetupDecoratorType {
         }
         return title.localized.attributed(.regular(17), color: .white, alignment: .center)
     }
+}
+
+enum SetupCommonStyle {
+    static let passPhraseTextFieldStyle = TextFieldCellNode.Input(
+        placeholder: "setup_enter".localized.attributed(.bold(16), color: .lightGray, alignment: .center),
+        isSecureTextEntry: true,
+        textInsets: 0,
+        textAlignment: .center,
+        insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    )
 }

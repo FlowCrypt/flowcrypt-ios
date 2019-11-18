@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import MobileCoreServices
 
 final class ImportKeyViewController: ASViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
@@ -23,9 +24,7 @@ final class ImportKeyViewController: ASViewController<TableNode> {
     private let core: Core
 
     private var userInfoMessage = "" {
-        didSet {
-            updateSubtitle()
-        }
+        didSet { updateSubtitle() }
     }
 
     init(
@@ -116,20 +115,27 @@ extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
 
 extension ImportKeyViewController {
     private func proceedToKeyImportFromFile() {
-//        let documentInteractionController = UIDocumentBrowserViewController()
-//        documentInteractionController.allowsDocumentCreation = false
-//        documentInteractionController.allowsPickingMultipleItems = false
-//        documentInteractionController.browserUserInterfaceStyle = .light
-//        documentInteractionController.view.tintColor = .main
-//        documentInteractionController.allowedContentTypes
+        let acceptableDocumentTypes = [
+            String(kUTTypeText),
+            String(kUTTypePlainText),
+            String(kUTTypeUTF8PlainText),
+            String(kUTTypeUTF16ExternalPlainText),
+            String(kUTTypeUTF16PlainText),
+            String(kUTTypeDelimitedText),
+            String(kUTTypeCommaSeparatedText),
+            String(kUTTypeTabSeparatedText),
+            String(kUTTypeUTF8TabSeparatedText),
+            String(kUTTypeRTF),
+            String(kUTTypePDF),
+            String(kUTTypeItem)
+        ]
+        let documentInteractionController = UIDocumentPickerViewController(
+            documentTypes: acceptableDocumentTypes,
+            in: .open
+        )
+        documentInteractionController.delegate = self
 
-        let documentInteractionController = UIDocumentPickerViewController(documentTypes: [
-            "public.text",
-            "public.plain-text",
-            "public.jpeg",
-            "public.html",
-            "public.folders"
-        ], in: .open)
+
 
 
         present(documentInteractionController, animated: true, completion: nil)
@@ -151,17 +157,18 @@ extension ImportKeyViewController {
                 userInfoMessage = "import_no_backups_clipboard".localized + user
             } else {
                 userInfoMessage = "Found \(privateKey.count) key backup\(privateKey.count > 1 ? "s" : "")"
-                proceedToPassPhrase(with: user)
+                proceedToPassPhrase(with: user, keys: privateKey)
             }
         } catch let error {
             userInfoMessage = error.localizedDescription
         }
     }
 
-    private func proceedToPassPhrase(with email: String) {
+    private func proceedToPassPhrase(with email: String, keys: [KeyDetails]) {
         let viewController = EnterPassPhraseViewController(
             decorator: decorator,
-            email: email
+            email: email,
+            fetchedKeys: keys
         )
         let animationDuration = 1.0
 
@@ -171,13 +178,50 @@ extension ImportKeyViewController {
     }
 }
 
-// MARK: - UIDocumentInteractionControllerDelegate
+// MARK: -
 
-extension ImportKeyViewController: UIDocumentInteractionControllerDelegate {
-    func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
-        guard let navVC = self.navigationController else {
-            return self
+extension ImportKeyViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let pickedURL = urls.first else { return }
+        let shouldStopAccessing = pickedURL.startAccessingSecurityScopedResource()
+        defer {
+           if shouldStopAccessing {
+               pickedURL.stopAccessingSecurityScopedResource()
+            }
         }
-        return navVC
+
+        print("^^ \(pickedURL)")
+        let data = try! Data(contentsOf: pickedURL)
+        let s = String(data: data, encoding: .utf8)
+        let doc = Document(fileURL: pickedURL)
+        doc.open { success in
+            guard success else {
+              fatalError("Failed to open doc.")
+            }
+
+            let metadata = doc.data
+            let fileURL = doc.fileURL
+            let version = NSFileVersion.currentVersionOfItem(at: fileURL)
+             print("^^ \(metadata)")
+        }
+
+    }
+
+}
+
+class Document: UIDocument {
+    var data: Data?
+
+    override func contents(forType typeName: String) throws -> Any {
+        guard let data = data else { return Data() }
+        return try NSKeyedArchiver.archivedData(
+            withRootObject:data,
+            requiringSecureCoding: true
+        )
+    }
+
+    override func load(fromContents contents: Any, ofType typeName: String?) throws {
+        guard let data = contents as? Data else { return }
+        self.data = data
     }
 }
