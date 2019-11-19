@@ -132,22 +132,20 @@ extension ImportKeyViewController {
         let documentInteractionController = UIDocumentPickerViewController(
             documentTypes: acceptableDocumentTypes,
             in: .open
-        )
-        documentInteractionController.delegate = self
-
-
-
+        ).then {
+            $0.delegate = self
+            $0.allowsMultipleSelection = false
+        }
 
         present(documentInteractionController, animated: true, completion: nil)
     }
 
-    func proceedToKeyImportFromPasteboard() {
+    private func proceedToKeyImportFromPasteboard() {
         guard let armoredKey = pasteboard.string else { return }
-        parseFetched(key: armoredKey)
+        parseFetched(data: Data(armoredKey.utf8))
     }
 
-    private func parseFetched(key: String) {
-        let keyData = Data(key.utf8)
+    private func parseFetched(data keyData: Data) {
         do {
             let keys = try core.parseKeys(armoredOrBinary: keyData)
             let privateKey = keys.keyDetails.filter { $0.private != nil }
@@ -178,50 +176,27 @@ extension ImportKeyViewController {
     }
 }
 
-// MARK: -
+// MARK: - UIDocumentPickerDelegate
 
 extension ImportKeyViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let pickedURL = urls.first else { return }
-        let shouldStopAccessing = pickedURL.startAccessingSecurityScopedResource()
+        hanldePicked(document: pickedURL)
+    }
+
+    private func hanldePicked(document url: URL) {
+        let shouldStopAccessing = url.startAccessingSecurityScopedResource()
         defer {
            if shouldStopAccessing {
-               pickedURL.stopAccessingSecurityScopedResource()
+               url.stopAccessingSecurityScopedResource()
             }
         }
 
-        print("^^ \(pickedURL)")
-        let data = try! Data(contentsOf: pickedURL)
-        let s = String(data: data, encoding: .utf8)
-        let doc = Document(fileURL: pickedURL)
-        doc.open { success in
-            guard success else {
-              fatalError("Failed to open doc.")
-            }
-
-            let metadata = doc.data
-            let fileURL = doc.fileURL
-            let version = NSFileVersion.currentVersionOfItem(at: fileURL)
-             print("^^ \(metadata)")
+        let document = Document(fileURL: url)
+        document.open { [weak self] success in
+            guard success else { assertionFailure("Failed to open doc"); return }
+            guard let metadata = document.data else { assertionFailure("Failed to fetch data"); return  }
+            self?.parseFetched(data: metadata)
         }
-
-    }
-
-}
-
-class Document: UIDocument {
-    var data: Data?
-
-    override func contents(forType typeName: String) throws -> Any {
-        guard let data = data else { return Data() }
-        return try NSKeyedArchiver.archivedData(
-            withRootObject:data,
-            requiringSecureCoding: true
-        )
-    }
-
-    override func load(fromContents contents: Any, ofType typeName: String?) throws {
-        guard let data = contents as? Data else { return }
-        self.data = data
     }
 }
