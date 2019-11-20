@@ -55,6 +55,11 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         navigationController?.navigationBar.barStyle = .black
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        userInfoMessage = ""
+    }
+
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -65,7 +70,7 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         DispatchQueue.main.async {
             self.node.reloadRows(at: [Parts.description.indexPath], with: .fade)
         }
-    }
+    } 
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
@@ -154,7 +159,7 @@ extension ImportKeyViewController {
             if privateKey.isEmpty {
                 userInfoMessage = "import_no_backups_clipboard".localized + user
             } else {
-                userInfoMessage = "Found \(privateKey.count) key backup\(privateKey.count > 1 ? "s" : "")"
+                userInfoMessage = "Found \(privateKey.count) key\(privateKey.count > 1 ? "s" : "")"
                 proceedToPassPhrase(with: user, keys: privateKey)
             }
         } catch let error {

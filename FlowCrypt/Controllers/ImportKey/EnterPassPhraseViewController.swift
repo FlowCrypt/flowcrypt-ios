@@ -50,6 +50,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        observeKeyboardNotifications()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -62,6 +63,21 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         node.delegate = self
         node.dataSource = self
         title = decorator.sceneTitle
+        node.view.contentInsetAdjustmentBehavior = .never
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        node.contentInset.top = view.safeAreaInsets.top
+    }
+
+    private func observeKeyboardNotifications() {
+        _ = keyboardHeight
+            .map { UIEdgeInsets(top: self.node.contentInset.top, left: 0, bottom: $0 + 10, right: 0) }
+            .subscribe(onNext: { [weak self] inset in
+                self?.node.contentInset = inset
+                self?.node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
+            })
     }
 }
 
@@ -90,6 +106,11 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                 return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(text) = action else { return }
                     self?.passPhrase = text
+                }.then {
+                    $0.shouldReturn = { _ in
+                        self.view.endEditing(true)
+                        return true
+                    }
                 }
             case .enterPhrase:
                  return SetupButtonNode(

@@ -512,8 +512,8 @@
 			children = (
 				9F268890237DC55600428A94 /* ImportKeyViewController.swift */,
 				9F9AAFFC2383E216000A00F1 /* Document.swift */,
-				9FD364852381EFCB00657302 /* EnterPassPhraseViewController.swift */,
 				9F268893237DD98900428A94 /* ImportKeyDecorator.swift */,
+				9FD364852381EFCB00657302 /* EnterPassPhraseViewController.swift */,
 			);
 			path = ImportKey;
 			sourceTree = "<group>";
