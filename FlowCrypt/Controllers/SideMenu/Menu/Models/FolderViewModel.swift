@@ -44,12 +44,6 @@ extension FolderViewModel {
     }
 
     func attributedTitle() -> NSAttributedString {
-        return NSAttributedString(
-            string: name,
-            attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.black,
-                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
-            ]
-        )
+        name.attributed(.regular(17))
     }
 }

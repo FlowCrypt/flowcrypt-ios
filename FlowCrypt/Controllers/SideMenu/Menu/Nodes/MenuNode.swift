@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-final class MenuNode: ASCellNode {
+final class MenuNode: CellNode {
     private let textNode = ASTextNode()
     private let imageNode = ASImageNode()
 
