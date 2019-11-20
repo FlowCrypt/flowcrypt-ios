@@ -93,7 +93,8 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
                 $0.backgroundColor = .main
                 $0.frame.size.height = safeAreaWindowInsets.top
             }
-
+            $0.view.alwaysBounceVertical = false
+            $0.view.alwaysBounceHorizontal = false
             $0.reloadData()
         }
     }

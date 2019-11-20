@@ -13,6 +13,7 @@ final class InboxCellNode: CellNode {
     private let emailNode = ASTextNode()
     private let dateNode = ASTextNode()
     private let messageNode = ASTextNode()
+    private let separatorNode = ASDisplayNode()
 
     init(message: InboxCellNodeInput) {
         super.init()  
@@ -26,6 +27,8 @@ final class InboxCellNode: CellNode {
 
         emailNode.truncationMode = .byTruncatingTail
         messageNode.truncationMode = .byTruncatingTail
+
+        separatorNode.backgroundColor = .lightGray
     }
 
     override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
@@ -33,6 +36,8 @@ final class InboxCellNode: CellNode {
         nameLocationStack.spacing = 6
         nameLocationStack.style.flexShrink = 1.0
         nameLocationStack.style.flexGrow = 1.0
+        separatorNode.style.flexGrow = 1.0
+        separatorNode.style.preferredSize.height = 1.0
 
         nameLocationStack.children = [emailNode, messageNode]
 
@@ -44,9 +49,12 @@ final class InboxCellNode: CellNode {
             children: [nameLocationStack, dateNode]
         )
 
+        let finalSpec = ASStackLayoutSpec.vertical()
+        finalSpec.children = [headerStackSpec, separatorNode]
+        finalSpec.spacing = 8
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16),
-            child: headerStackSpec
+            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            child: finalSpec
         )
     }
 }
