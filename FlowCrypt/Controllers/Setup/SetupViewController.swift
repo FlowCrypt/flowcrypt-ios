@@ -66,7 +66,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        fetchBackups()
+        fetchBackupsAndRenderResult()
     }
 }
 
@@ -94,7 +94,7 @@ extension SetupViewController {
 // MARK: - Key Setup
 
 extension SetupViewController {
-    private func fetchBackups() {
+    private func fetchBackupsAndRenderResult() {
         showSpinner()
         Promise<Void> { [weak self] in
             guard let self = self else { return }
@@ -127,7 +127,7 @@ extension SetupViewController {
                 self?.handleImportKey()
             })
             alert.addAction(UIAlertAction(title: "Create new Private Key", style: .default) { [weak self] _ in
-                self?.handleCreatingKey()
+                self?.handleCreateKey()
             })
         }
         alert.addAction(UIAlertAction(title: "setup_use_otherAccount".localized, style: .default) { [weak self] _ in
@@ -140,7 +140,7 @@ extension SetupViewController {
             }
         })
         alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
-            self?.fetchBackups()
+            self?.fetchBackupsAndRenderResult()
         })
         present(alert, animated: true, completion: nil)
     }
@@ -150,7 +150,7 @@ extension SetupViewController {
         navigationController?.pushViewController(viewController, animated: true)
     }
 
-    private func handleCreatingKey() {
+    private func handleCreateKey() {
         subtitle = "Create a new OpenPGP Private Key"
         actionButton = .createKey
         setupAction = SetupAction.createKey
