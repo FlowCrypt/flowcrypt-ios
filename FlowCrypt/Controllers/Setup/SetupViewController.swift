@@ -206,7 +206,7 @@ extension SetupViewController {
             guard prv.isFullyEncrypted ?? false else { throw AppErr.unexpected("Private Key must be fully enrypted before backing up") }
             let filename = "flowcrypt-backup-\(userId.email.replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression)).key"
             let backupEmail = try self.core.composeEmail(msg: SendableMsg(
-                text: "setu_backup_email".localized,
+                text: "setup_backup_email".localized,
                 to: [userId.toMime()],
                 cc: [],
                 bcc: [],

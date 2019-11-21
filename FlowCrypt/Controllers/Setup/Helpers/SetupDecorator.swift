@@ -37,8 +37,8 @@ struct SetupDecorator: SetupDecoratorType {
     func titleForAction(button: SetupViewController.SetupAction) -> NSAttributedString {
         let title: String
         switch button {
-        case .createKey: title = "setup_load"
-        case .recoverKey: title = "setup_create_key"
+        case .createKey: title = "setup_create_key"
+        case .recoverKey: title = "setup_load"
         }
         return title.localized.attributed(.regular(17), color: .white, alignment: .center)
     }
