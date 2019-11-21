@@ -158,13 +158,13 @@ extension SetupViewController {
     }
 
     private func recoverAccountWithBackups(with passPhrase: String) {
-        let matchingBackups = keyMethods.filterByPassPhraseMatch(keys: fetchedEncryptedPrvs, passPhrase: passPhrase)
+        let matchingKeyBackups = keyMethods.filterByPassPhraseMatch(keys: fetchedEncryptedPrvs, passPhrase: passPhrase)
 
-        guard matchingBackups.count > 0 else {
+        guard matchingKeyBackups.count > 0 else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        try! storePrvs(prvs: matchingBackups, passPhrase: passPhrase, source: .generated)
+        try! storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .generated)
         moveToMainFlow()
     }
 

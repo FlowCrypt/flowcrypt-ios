@@ -147,9 +147,9 @@ extension EnterPassPhraseViewController {
         }
         showSpinner()
 
-        let matchingBackups = keyMethods.filterByPassPhraseMatch(keys: fetchedKeys, passPhrase: passPhrase)
+        let matchingKeys = keyMethods.filterByPassPhraseMatch(keys: fetchedKeys, passPhrase: passPhrase)
 
-        guard matchingBackups.count > 0 else {
+        guard matchingKeys.count > 0 else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
