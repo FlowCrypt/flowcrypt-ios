@@ -14,7 +14,7 @@ protocol SetupDecoratorType {
     var titleInset: UIEdgeInsets { get }
     var subTitleInset: UIEdgeInsets { get }
     var buttonInsets: UIEdgeInsets { get }
-    var optionalBbuttonInsets: UIEdgeInsets { get }
+    var optionalButtonInsets: UIEdgeInsets { get }
     var textFieldStyle: TextFieldCellNode.Input { get }
     var subtitleStyle: (String) -> NSAttributedString { get }
     func titleForAction(button: SetupViewController.SetupAction) -> NSAttributedString
@@ -30,7 +30,7 @@ struct SetupDecorator: SetupDecoratorType {
     let titleInset = UIEdgeInsets(top: 92, left: 16, bottom: 20, right: 16)
     let subTitleInset = UIEdgeInsets(top: 0, left: 16, bottom: 60, right: 16)
     let buttonInsets = UIEdgeInsets(top: 80, left: 24, bottom: 8, right: 24)
-    let optionalBbuttonInsets = UIEdgeInsets(top: 0, left: 24, bottom: 8, right: 24)
+    let optionalButtonInsets = UIEdgeInsets(top: 0, left: 24, bottom: 8, right: 24)
 
     let textFieldStyle = SetupCommonStyle.passPhraseTextFieldStyle
 

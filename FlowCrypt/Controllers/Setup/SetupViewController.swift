@@ -293,7 +293,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .optionalAction:
                 return SetupButtonNode(
                     title: self.decorator.useAnotherAccountTitle,
-                    insets: self.decorator.optionalBbuttonInsets,
+                    insets: self.decorator.optionalButtonInsets,
                     color: .white) { [weak self] in
                         self?.useOtherAccount()
                 }
