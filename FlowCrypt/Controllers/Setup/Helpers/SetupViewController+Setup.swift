@@ -13,7 +13,7 @@ extension SetupViewController {
        case title, description, passPhrase, divider, action, optionalAction
    }
 
-   enum SetupAction {
+   enum SetupAction { // importing key is in different VC: ImportKeyViewController
        case recoverKey, createKey
    }
 
