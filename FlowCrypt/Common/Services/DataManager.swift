@@ -14,11 +14,17 @@ protocol DataManagerType {
     func saveCurrent(user: User) -> Bool
     func currentUser() -> User?
     func logOut()
+
+    var email: String? { get }
 }
 
 struct DataManager: DataManagerType {
     // TODO: - safe in keychain
     static let shared = DataManager()
+
+    var email: String? {
+        currentUser()?.email
+    }
 
     private enum Constants {
         static let userKey = "keyCurrentUser"
@@ -45,7 +51,6 @@ struct DataManager: DataManagerType {
             userDefaults.set(encodedData, forKey: Constants.userKey)
             return true
         } catch {
-            print(error)
             return false
         }
     }

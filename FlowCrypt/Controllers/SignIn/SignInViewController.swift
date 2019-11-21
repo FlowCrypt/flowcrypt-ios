@@ -12,8 +12,13 @@ final class SignInViewController: ASViewController<ASTableNode> {
     }
 
     private let userService: UserServiceType
+    private let core: Core
 
-    init(userService: UserServiceType = UserService.shared) {
+    init(
+        userService: UserServiceType = UserService.shared,
+        core: Core = Core.shared
+    ) {
+        self.core = core
         self.userService = userService
         super.init(node: TableNode())
         node.delegate = self
@@ -115,7 +120,7 @@ extension SignInViewController {
                 assertionFailure(); return
             }
 
-            let decrypted = try Core.parseDecryptMsg(
+            let decrypted = try core.parseDecryptMsg(
                 encrypted: encrypted,
                 keys: keys,
                 msgPwd: nil,

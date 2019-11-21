@@ -6,33 +6,13 @@ import Promises
 import AsyncDisplayKit
 
 final class SetupViewController: ASViewController<ASTableNode> {
-    private enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, action, optionalAction
-    }
-
-    private enum SetupAction {
-        case recoverKey
-        case createKey
-
-        var buttonTitle: NSAttributedString {
-            switch self {
-            case .recoverKey: return SetupButtonType.loadAccount.attributedTitle
-            case .createKey: return SetupButtonType.createKey.attributedTitle
-            }
-        }
-
-        var desctiption: NSAttributedString {
-            switch self {
-            case .recoverKey: return "setup_description".localized.attributed(.regular(17))
-            case .createKey: return "!!!!! setup_description".localized.attributed(.regular(17))
-            }
-        }
-    }
-
     private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType
     private let storage: StorageServiceType
+    private let decorator: SetupDecoratorType
+    private let core: Core
+    private let keyMethods: KeyMethodsType
 
     private var setupAction = SetupAction.recoverKey
     private var fetchedEncryptedPrvs: [KeyDetails] = []
@@ -54,12 +34,18 @@ final class SetupViewController: ASViewController<ASTableNode> {
         imap: Imap = .instance,
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
-        storage: StorageServiceType = StorageService()
+        storage: StorageServiceType = StorageService(),
+        decorator: SetupDecoratorType = SetupDecorator(),
+        core: Core = Core.shared,
+        keyMethods: KeyMethodsType = KeyMethods(core: .shared)
     ) {
         self.imap = imap
         self.userService = userService
         self.router = router
         self.storage = storage
+        self.decorator = decorator
+        self.core = core
+        self.keyMethods = keyMethods
         super.init(node: TableNode())
     }
 
@@ -71,12 +57,16 @@ final class SetupViewController: ASViewController<ASTableNode> {
         super.viewDidLoad()
 
         setupUI()
-        fetchBackupsAndRenderSetupView()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        fetchBackupsAndRenderResult()
     }
 }
 
@@ -104,12 +94,12 @@ extension SetupViewController {
 // MARK: - Key Setup
 
 extension SetupViewController {
-    private func fetchBackupsAndRenderSetupView() {
+    private func fetchBackupsAndRenderResult() {
         showSpinner()
         Promise<Void> { [weak self] in
             guard let self = self else { return }
             let backupData = try await(self.imap.searchBackups())
-            let parsed = try Core.parseKeys(armoredOrBinary: backupData)
+            let parsed = try self.core.parseKeys(armoredOrBinary: backupData)
             self.fetchedEncryptedPrvs = parsed.keyDetails.filter { $0.private != nil }
         }.then(on: .main) { [weak self] in
             self?.handleBackupsFetchResult()
@@ -121,7 +111,7 @@ extension SetupViewController {
     private func handleBackupsFetchResult() {
         hideSpinner()
         if fetchedEncryptedPrvs.isEmpty {
-            let user = DataManager.shared.currentUser()?.email ?? "(unknown)"
+            let user = DataManager.shared.currentUser()?.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             renderNoBackupsFoundOptions(msg)
         } else {
@@ -134,14 +124,10 @@ extension SetupViewController {
         let alert = UIAlertController(title: "Notice", message: msg + errStr, preferredStyle: .alert)
         if error == nil { // no backous found, not an error: show option to create a key or import key
             alert.addAction(UIAlertAction(title: "Import existing Private Key", style: .default) { [weak self] _ in
-                self?.showToast("Key Import will be implemented soon! Contact human@flowcrypt.com")
-                self?.renderNoBackupsFoundOptions(msg, error: nil)
+                self?.handleImportKey()
             })
             alert.addAction(UIAlertAction(title: "Create new Private Key", style: .default) { [weak self] _ in
-                self?.subtitle = "Create a new OpenPGP Private Key"
-                self?.actionButton = .createKey
-                self?.setupAction = SetupAction.createKey
-                // todo - show strength bar while typed so that user can choose the strength they need
+                self?.handleCreateKey()
             })
         }
         alert.addAction(UIAlertAction(title: "setup_use_otherAccount".localized, style: .default) { [weak self] _ in
@@ -154,25 +140,31 @@ extension SetupViewController {
             }
         })
         alert.addAction(UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
-            self?.fetchBackupsAndRenderSetupView()
+            self?.fetchBackupsAndRenderResult()
         })
         present(alert, animated: true, completion: nil)
     }
 
+    private func handleImportKey() {
+        let viewController = ImportKeyViewController()
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func handleCreateKey() {
+        subtitle = "Create a new OpenPGP Private Key"
+        actionButton = .createKey
+        setupAction = SetupAction.createKey
+        // todo - show strength bar while typed so that user can choose the strength they need
+    }
+
     private func recoverAccountWithBackups(with passPhrase: String) {
-        let matchingBackups: [KeyDetails] = fetchedEncryptedPrvs
-            .compactMap { (key) -> KeyDetails? in
-                guard let privateKey = key.private,
-                    let decrypted = try? Core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
-                      decrypted.decryptedKey != nil
-                    else { return nil }
-                return key
-        }
-        guard matchingBackups.count > 0 else {
+        let matchingKeyBackups = keyMethods.filterByPassPhraseMatch(keys: fetchedEncryptedPrvs, passPhrase: passPhrase)
+
+        guard matchingKeyBackups.count > 0 else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        try! storePrvs(prvs: matchingBackups, passPhrase: passPhrase, source: .generated)
+        try! storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .generated)
         moveToMainFlow()
     }
 
@@ -181,7 +173,7 @@ extension SetupViewController {
             guard let self = self else { return }
             let userId = try self.getUserId()
             try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
-            let encryptedPrv = try Core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
+            let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
             try await(self.backupPrvToInbox(prv: encryptedPrv.key, userId: userId))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
             try await(self.alertAndSkipOnRejection(AttesterApi.shared.updateKey(email: userId.email, pubkey: encryptedPrv.key.public), fail: "Failed to submit Public Key"))
@@ -195,7 +187,7 @@ extension SetupViewController {
 
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
         return Promise {
-            let strength = try Core.zxcvbnStrengthBar(passPhrase: passPhrase)
+            let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
             guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
             let confirmPassPhrase = try await(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
             guard confirmPassPhrase != nil else { throw AppErr.silentAbort }
@@ -213,7 +205,7 @@ extension SetupViewController {
         return Promise { () -> Void in
             guard prv.isFullyEncrypted ?? false else { throw AppErr.unexpected("Private Key must be fully enrypted before backing up") }
             let filename = "flowcrypt-backup-\(userId.email.replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression)).key"
-            let backupEmail = try Core.composeEmail(msg: SendableMsg(
+            let backupEmail = try self.core.composeEmail(msg: SendableMsg(
                 text: "setu_backup_email".localized,
                 to: [userId.toMime()],
                 cc: [],
@@ -277,29 +269,36 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
-                return SetupTitleNode(SetupStyle.title, insets: SetupStyle.titleInset)
+                return SetupTitleNode(
+                    title: self.decorator.title,
+                    insets: self.decorator.titleInset
+                )
             case .description:
-                return SetupTitleNode(SetupStyle.subtitleStyle(self.subtitle), insets: SetupStyle.subTitleInset)
+                return SetupTitleNode(
+                    title: self.decorator.subtitleStyle(self.subtitle),
+                    insets: self.decorator.subTitleInset
+                )
             case .passPhrase:
-                return TextFieldCellNode(SetupStyle.textFieldStyle) { [weak self] action in
+                return TextFieldCellNode(input: self.decorator.textFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
-            case .divider:
-                return DividerNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
+
             case .action:
                 return SetupButtonNode(
-                    self.setupAction.buttonTitle,
-                    insets: SetupStyle.buttonInsets) { [weak self] in
+                    title: self.decorator.titleForAction(button: self.setupAction),
+                    insets: self.decorator.buttonInsets) { [weak self] in
                         self?.handleButtonPressed()
-                    }
+                }
             case .optionalAction:
                 return SetupButtonNode(
-                    SetupStyle.useAnotherAccountTitle,
-                    insets: SetupStyle.optionalBbuttonInsets,
+                    title: self.decorator.useAnotherAccountTitle,
+                    insets: self.decorator.optionalBbuttonInsets,
                     color: .white) { [weak self] in
                         self?.useOtherAccount()
-                    }
+                }
+            case .divider:
+                return DividerNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
             }
         }
     }

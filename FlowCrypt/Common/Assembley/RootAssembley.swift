@@ -18,19 +18,21 @@ protocol AppAssembley {
 struct RootAssembley: AppAssembley {
     private let userService: UserServiceType
     private let assemblies: [Assembley]
-
+    private let core: Core
     init(
         userService: UserServiceType = UserService.shared,
-        assemblies: [Assembley] = AssembleyFactory.assemblies()
+        assemblies: [Assembley] = AssembleyFactory.assemblies(),
+        core: Core = Core.shared
     ) {
         self.userService = userService
         self.assemblies = assemblies
+        self.core = core
     }
 
     func assemble() {
         DispatchQueue.promises = .global() // this helps prevent Promise deadlocks
 
-        Core.startInBackgroundIfNotAlreadyRunning()
+        core.startInBackgroundIfNotAlreadyRunning()
     }
 
     func setupWindow() -> UIWindow {

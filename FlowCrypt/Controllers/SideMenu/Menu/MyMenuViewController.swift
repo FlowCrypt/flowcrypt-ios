@@ -28,7 +28,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
             .first
             .map(String.init) ?? ""
 
-        let email = dataManager.currentUser()?.email
+        let email = dataManager.email?
             .replacingOccurrences(of: "@gmail.com", with: "")
 
         return MenuHeaderViewModel(title: name, subtitle: email)

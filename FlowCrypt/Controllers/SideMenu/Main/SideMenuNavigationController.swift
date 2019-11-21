@@ -79,14 +79,9 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     }
 
     private func updateStatusBar() {
-        UIView.animate(
-            withDuration: 0.3,
-            delay: 0.0,
-            options: [],
-            animations: {
-                self.setNeedsStatusBarAppearanceUpdate()
-            }, completion: nil
-        )
+        UIView.animate(withDuration: 0.3, animations: {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }, completion: nil)
     }
 }
 
