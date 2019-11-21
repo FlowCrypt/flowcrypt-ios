@@ -99,7 +99,7 @@
 		9F8D5E62236B04E300186E43 /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8D5E61236B04E300186E43 /* CellNode.swift */; };
 		9F92EE70236F144C009BE0D7 /* TextFieldCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */; };
 		9F92EE72236F165E009BE0D7 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* StorageService.swift */; };
-		9F953E09238310D500AEB98B /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F953E08238310D500AEB98B /* BackupService.swift */; };
+		9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F953E08238310D500AEB98B /* KeyMethods.swift */; };
 		9F95A3F52360778E00C80B64 /* LinkButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */; };
 		9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */; };
 		9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F823607C2900C80B64 /* SignInType.swift */; };
@@ -264,7 +264,7 @@
 		9F8D5E61236B04E300186E43 /* CellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
 		9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCellNode.swift; sourceTree = "<group>"; };
 		9F92EE71236F165E009BE0D7 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
-		9F953E08238310D500AEB98B /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
+		9F953E08238310D500AEB98B /* KeyMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMethods.swift; sourceTree = "<group>"; };
 		9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkButtonNode.swift; sourceTree = "<group>"; };
 		9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninButtonNode.swift; sourceTree = "<group>"; };
 		9F95A3F823607C2900C80B64 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
@@ -471,7 +471,6 @@
 				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
 				9F0C3C17231819B200299985 /* Logger.swift */,
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
-				9F953E08238310D500AEB98B /* BackupService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -676,6 +675,14 @@
 			path = FlowCryptUITests;
 			sourceTree = "<group>";
 		};
+		A370EAB6238697E000685215 /* Pgp */ = {
+			isa = PBXGroup;
+			children = (
+				9F953E08238310D500AEB98B /* KeyMethods.swift */,
+			);
+			path = Pgp;
+			sourceTree = "<group>";
+		};
 		A3D328BF22E1C640002888F4 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
@@ -767,6 +774,7 @@
 		C132B9C61EC2DCC000763715 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				A370EAB6238697E000685215 /* Pgp */,
 				9F0C3C0D2316DD4100299985 /* Assembley */,
 				9F0C3C0E2316DD4B00299985 /* Handlers */,
 				9F0C3C1F23191F2000299985 /* Services */,
@@ -1268,7 +1276,7 @@
 				9F95A3F52360778E00C80B64 /* LinkButtonNode.swift in Sources */,
 				32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupDecorator.swift in Sources */,
-				9F953E09238310D500AEB98B /* BackupService.swift in Sources */,
+				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				9F56BD3A23438D3800A7371A /* StyleExtension.swift in Sources */,
 				9F82779A23737E1900E19C07 /* MessageSenderNode.swift in Sources */,
 				9F92EE72236F165E009BE0D7 /* StorageService.swift in Sources */,

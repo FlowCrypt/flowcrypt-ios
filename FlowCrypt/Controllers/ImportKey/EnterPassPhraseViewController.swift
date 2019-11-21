@@ -20,7 +20,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     private let decorator: ImportKeyDecoratorType
     private let email: String
     private let fetchedKeys: [KeyDetails]
-    private let backupService: BackupServiceType
+    private let keyMethods: KeyMethodsType
     private let storage: StorageServiceType
     private let router: GlobalRouterType
 
@@ -28,7 +28,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
 
     init(
         decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
-        backupService: BackupServiceType = BackupService(core: .shared),
+        keyMethods: KeyMethodsType = KeyMethods(core: .shared),
         storage: StorageServiceType = StorageService(),
         router: GlobalRouterType = GlobalRouter(),
         email: String,
@@ -37,7 +37,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         self.fetchedKeys = fetchedKeys
         self.email = email
         self.decorator = decorator
-        self.backupService = backupService
+        self.keyMethods = keyMethods
         self.storage = storage
         self.router = router
         super.init(node: TableNode())
@@ -147,7 +147,7 @@ extension EnterPassPhraseViewController {
         }
         showSpinner()
 
-        let matchingBackups = backupService.match(keys: fetchedKeys, with: passPhrase)
+        let matchingBackups = keyMethods.filterByPassPhraseMatch(keys: fetchedKeys, passPhrase: passPhrase)
 
         guard matchingBackups.count > 0 else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)

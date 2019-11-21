@@ -12,7 +12,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let storage: StorageServiceType
     private let decorator: SetupDecoratorType
     private let core: Core
-    private let backupService: BackupServiceType
+    private let keyMethods: KeyMethodsType
 
     private var setupAction = SetupAction.recoverKey
     private var fetchedEncryptedPrvs: [KeyDetails] = []
@@ -37,7 +37,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         storage: StorageServiceType = StorageService(),
         decorator: SetupDecoratorType = SetupDecorator(),
         core: Core = Core.shared,
-        backupService: BackupServiceType = BackupService(core: .shared)
+        keyMethods: KeyMethodsType = KeyMethods(core: .shared)
     ) {
         self.imap = imap
         self.userService = userService
@@ -45,7 +45,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         self.storage = storage
         self.decorator = decorator
         self.core = core
-        self.backupService = backupService
+        self.keyMethods = keyMethods
         super.init(node: TableNode())
     }
 
@@ -158,7 +158,7 @@ extension SetupViewController {
     }
 
     private func recoverAccountWithBackups(with passPhrase: String) {
-        let matchingBackups = backupService.match(keys: fetchedEncryptedPrvs, with: passPhrase)
+        let matchingBackups = keyMethods.filterByPassPhraseMatch(keys: fetchedEncryptedPrvs, passPhrase: passPhrase)
 
         guard matchingBackups.count > 0 else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
