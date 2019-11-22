@@ -106,12 +106,11 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                 return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(text) = action else { return }
                     self?.passPhrase = text
-                }.then {
-                    $0.shouldReturn = { _ in
-                        self.view.endEditing(true)
-                        return true
-                    }
                 }
+                .onReturn { [weak self] _ in
+                    self?.view.endEditing(true)
+                    return true
+                } 
             case .enterPhrase:
                  return SetupButtonNode(
                     title: self.decorator.passPhraseContine,

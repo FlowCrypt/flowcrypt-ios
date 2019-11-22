@@ -28,9 +28,9 @@ final class TextFieldCellNode: CellNode {
 
     private let textField: TextFieldNode
     private var textFiledAction: TextFieldAction?
+    private var shouldReturn: ((UITextField) -> (Bool))?
 
     var shouldEndEditing: ((UITextField) -> (Bool))?
-    var shouldReturn: ((UITextField) -> (Bool))?
     var attributedText: NSAttributedString? {
         didSet {
             textField.attributedText = attributedText
@@ -63,6 +63,11 @@ final class TextFieldCellNode: CellNode {
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(insets: input.insets, child: textField)
+    }
+
+    func onReturn(_ action: ((UITextField) -> (Bool))?) -> Self {
+        shouldReturn = action
+        return self
     }
 }
 

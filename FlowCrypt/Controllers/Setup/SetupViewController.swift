@@ -283,7 +283,10 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
-
+                .onReturn { [weak self] _ in
+                    self?.view.endEditing(true)
+                    return true
+                }
             case .action:
                 return SetupButtonNode(
                     title: self.decorator.titleForAction(button: self.setupAction),
