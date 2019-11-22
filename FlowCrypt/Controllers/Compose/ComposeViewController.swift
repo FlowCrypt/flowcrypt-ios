@@ -5,7 +5,7 @@
 import Promises
 import AsyncDisplayKit
 
-final class ComposeViewController: ASViewController<ASTableNode> { 
+final class ComposeViewController: ASViewController<TableNode> {
     private let imap: Imap
     private let notificationCenter: NotificationCenter
     private let dataManager: DataManagerType
@@ -240,32 +240,31 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func recipientNode() -> ASCellNode {
-        let placeholder = decorator.styledTextFieldInput("compose_recipient".localized)
-        let node = TextFieldCellNode(input: placeholder) { [weak self] event in
+        TextFieldCellNode(
+            input: decorator.styledTextFieldInput("compose_recipient".localized)
+        ) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.resipient = text
         }
-
-        node.isLowercased = true
-        node.shouldReturn = { [weak self] _ in
+        .onReturn { [weak self] _ in
             guard let node = self?.node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return true }
             node.firstResponder()
             return true
         }
-
-        node.attributedText = decorator.styledTitle(input.recipientReplyTitle)
-
-        return node
+        .then {
+            $0.isLowercased = true
+            $0.attributedText = decorator.styledTitle(input.recipientReplyTitle)
+        }
     }
 
     private func subjectNode() -> ASCellNode {
-        let placeholder = decorator.styledTextFieldInput("compose_subject".localized)
-        let node = TextFieldCellNode(input: placeholder) { [weak self] event in
+        TextFieldCellNode(
+            input: decorator.styledTextFieldInput("compose_subject".localized)
+        ) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.subject = text
         }
-
-        node.shouldReturn = { [weak self] _ in
+        .onReturn { [weak self] _ in
             guard let self = self else { return true }
             if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
                 node.firstResponder()
@@ -274,10 +273,9 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             }
             return true
         }
-
-        node.attributedText = decorator.styledTitle(input.subjectReplyTitle)
-
-        return node
+        .then {
+            $0.attributedText = decorator.styledTitle(input.subjectReplyTitle)
+        }
     }
 
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {

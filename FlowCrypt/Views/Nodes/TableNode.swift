@@ -13,5 +13,6 @@ final class TableNode: ASTableNode {
         super.init(style: style)
         view.showsVerticalScrollIndicator = false
         view.separatorStyle = .none
+        view.keyboardDismissMode = .onDrag
     }
 }
