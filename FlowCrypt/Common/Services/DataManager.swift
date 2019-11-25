@@ -19,29 +19,37 @@ protocol DataManagerType {
 }
 
 struct DataManager: DataManagerType {
-    // TODO: - safe in keychain
-    static let shared = DataManager()
+    static let shared = DataManager(userDefaults: UserDefaults.standard)
 
     var email: String? {
         currentUser()?.email
     }
 
+    private lazy var storageService: StorageServiceType? = {
+        StorageService(
+               keychainHelper: Keyc
+           )
+
+    }()
+    private let userDefaults: UserDefaults
+
     private enum Constants {
         static let userKey = "keyCurrentUser"
+        // TODO: Anton - save to encrypted
         static let tokenKey = "keyCurrentToken"
     }
 
-    private let userDefaults: UserDefaults
-
-    private init(userDefaults: UserDefaults = .standard) {
+    private init(userDefaults: UserDefaults) {
         self.userDefaults = userDefaults
     }
 
     func saveToken(with string: String) {
+        // TODO: Anton - save to encrypted
         userDefaults.set(string, forKey: Constants.tokenKey)
     }
 
     func currentToken() -> String? {
+        // TODO: Anton - get from encrypted
         return userDefaults.string(forKey: Constants.tokenKey)
     }
 
@@ -61,6 +69,8 @@ struct DataManager: DataManagerType {
     }
 
     func logOut() {
+        email.map { storageService.clear(for: $0) }
+
         [Constants.tokenKey, Constants.userKey]
             .forEach { userDefaults.removeObject(forKey: $0) }
     }
