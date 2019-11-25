@@ -23,7 +23,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let router: GlobalRouterType
 
     private lazy var headerViewModel: MenuHeaderViewModel = {
-        let name = dataManager.currentUser()?.name
+        let name = dataManager.currentUser?.name
             .split(separator: " ")
             .first
             .map(String.init) ?? ""
@@ -39,8 +39,8 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let tableNode: ASTableNode
 
     init(
-        foldersProvider: FoldersProvider = Imap.instance,
-        dataManager: DataManagerType = DataManager.shared,
+        foldersProvider: FoldersProvider = Imap(),
+        dataManager: DataManagerType = DataManager(),
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
         tabelNode: ASTableNode = TableNode()

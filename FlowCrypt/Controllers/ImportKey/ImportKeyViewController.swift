@@ -31,7 +31,7 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
         pasteboard: UIPasteboard = UIPasteboard.general,
         core: Core = Core.shared,
-        dataManager: DataManagerType = DataManager.shared
+        dataManager: DataManagerType = DataManager()
     ) {
         self.pasteboard = pasteboard
         self.decorator = decorator

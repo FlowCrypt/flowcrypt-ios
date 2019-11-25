@@ -6,8 +6,6 @@ import Promises
 import UIKit
 
 final class Imap {
-    static let instance = Imap()
-
     let inboxFolder = "INBOX"
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
@@ -17,22 +15,32 @@ final class Imap {
 
     var lastErr: [String: AppErr] = [:]
 
-    let userService: UserService
-    let dataManager: DataManager
+    let userService: UserServiceType
+    let dataManager: DataManagerType
 
+    // TODO: Anton - show login flow instead of fatal error
     var email: String {
-        return dataManager.currentUser()?.email ?? ""
+        guard let email = dataManager.currentUser?.email else {
+            fatalError("Can't use Imap without user data")
+        }
+        return email
     }
 
     var name: String {
-        return dataManager.currentUser()?.name ?? ""
+        guard let name = dataManager.currentUser?.name else {
+            fatalError("Can't use Imap without user data")
+        }
+        return name
     }
 
     var accessToken: String? {
-        return dataManager.currentToken()
+        guard let token = dataManager.currentToken else {
+            fatalError("Can't use Imap without user data")
+        }
+        return token
     }
 
-    private init(userService: UserService = UserService.shared, dataManager: DataManager = .shared) {
+    init(userService: UserService = .shared, dataManager: DataManagerType = DataManager()) {
         self.userService = userService
         self.dataManager = dataManager
 
@@ -40,7 +48,7 @@ final class Imap {
     }
 
     private func setup() {
-        guard let token = dataManager.currentToken() else { return }
+        guard let token = accessToken else { return }
         getImapSess(newAccessToken: token)
     }
 }

@@ -6,7 +6,6 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import RealmSwift
 import UIKit
 
 protocol AppAssembley {
@@ -19,14 +18,18 @@ struct RootAssembley: AppAssembley {
     private let userService: UserServiceType
     private let assemblies: [Assembley]
     private let core: Core
+    private let dataManager: DataManagerType
+
     init(
         userService: UserServiceType = UserService.shared,
         assemblies: [Assembley] = AssembleyFactory.assemblies(),
-        core: Core = Core.shared
+        core: Core = Core.shared,
+        dataManager: DataManagerType = DataManager()
     ) {
         self.userService = userService
         self.assemblies = assemblies
         self.core = core
+        self.dataManager = dataManager
     }
 
     func assemble() {
@@ -44,13 +47,9 @@ struct RootAssembley: AppAssembley {
             window.makeKeyAndVisible()
             return window
         }
-
-        // TODO: - Refactor with realm service
-        let realm = try! Realm()
-        let keys = realm.objects(KeyInfo.self)
-
+ 
         window.rootViewController = {
-            if keys.count > 0 {
+            if dataManager.isLogedIn {
                 return SideMenuNavigationController()
             } else {
                 let root = SetupViewController()

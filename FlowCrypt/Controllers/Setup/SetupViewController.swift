@@ -9,7 +9,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType
-    private let storage: StorageServiceType
+    private let storage: EncryptedStorageType
     private let decorator: SetupDecoratorType
     private let core: Core
     private let keyMethods: KeyMethodsType
@@ -31,10 +31,10 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private var passPhrase: String?
 
     init(
-        imap: Imap = .instance,
+        imap: Imap = Imap(),
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
-        storage: StorageServiceType = StorageService(),
+        storage: EncryptedStorageType = EncryptedStorage(),
         decorator: SetupDecoratorType = SetupDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(core: .shared)
@@ -111,7 +111,8 @@ extension SetupViewController {
     private func handleBackupsFetchResult() {
         hideSpinner()
         if fetchedEncryptedPrvs.isEmpty {
-            let user = DataManager.shared.currentUser()?.email ?? "unknown_title".localized
+            // TODO: Anton -
+            let user = DataManager().email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             renderNoBackupsFoundOptions(msg)
         } else {
@@ -196,8 +197,9 @@ extension SetupViewController {
     }
 
     private func getUserId() throws -> UserId {
-        guard let email = DataManager.shared.currentUser()?.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
-        guard let name = DataManager.shared.currentUser()?.name, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
+        // TODO: Anton -
+        guard let email = DataManager().email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
+        guard let name = DataManager().email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
         return UserId(email: email, name: name)
     }
 
@@ -215,7 +217,7 @@ extension SetupViewController {
                 replyToMimeMsg: nil,
                 atts: [SendableMsg.Att(name: filename, type: "text/plain", base64: prv.private!.data().base64EncodedString())] // !crash ok
             ), fmt: .plain, pubKeys: nil)
-            try await(Imap.instance.sendMail(mime: backupEmail.mimeEncoded))
+            try await(Imap().sendMail(mime: backupEmail.mimeEncoded))
         }
     }
 

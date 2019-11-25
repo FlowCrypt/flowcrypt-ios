@@ -10,7 +10,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let notificationCenter: NotificationCenter
     private let dataManager: DataManagerType
     private let attesterApi: AttesterApiType
-    private let storageService: StorageServiceType
+    private let storageService: EncryptedStorageType
     private let decorator: ComposeDecoratorType
     private let core: Core
 
@@ -18,11 +18,11 @@ final class ComposeViewController: ASViewController<TableNode> {
     private var contextToSend = Context()
 
     init(
-        imap: Imap = .instance,
+        imap: Imap = Imap(),
         notificationCenter: NotificationCenter = .default,
-        dataManager: DataManagerType = DataManager.shared,
+        dataManager: DataManagerType = DataManager(),
         attesterApi: AttesterApiType = AttesterApi.shared,
-        storageService: StorageServiceType = StorageService(),
+        storageService: EncryptedStorageType = EncryptedStorage(),
         decorator: ComposeDecoratorType = ComposeDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared

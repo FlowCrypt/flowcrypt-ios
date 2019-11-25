@@ -28,11 +28,11 @@ final class UserService: NSObject, UserServiceType {
     private var onLogOut: (() -> Void)?
 
     private let googleManager: GIDSignIn
-    private var dataManager: DataManager
+    private var dataManager: DataManagerType & LogOutHandler
 
     private init(
         googleManager: GIDSignIn = GIDSignIn.sharedInstance(),
-        dataManager: DataManager = .shared
+        dataManager: DataManagerType & LogOutHandler = DataManager()
     ) {
         self.googleManager = googleManager
         self.dataManager = dataManager
@@ -42,8 +42,11 @@ final class UserService: NSObject, UserServiceType {
     func setup() {
         logDebug(100, "GoogleApi.setup()")
         GIDSignIn.sharedInstance().delegate = self
-        if let token = dataManager.currentToken() {
+        if let token = dataManager.currentToken {
             onNewToken?(token)
+        }
+        if let user = dataManager.currentUser {
+            onLogin?(user)
         }
     }
 
@@ -53,14 +56,14 @@ final class UserService: NSObject, UserServiceType {
 
             DispatchQueue.main.async {
                 self.googleManager.restorePreviousSignIn()
-            }
 
-            self.onNewToken = { token in
-                resolve(token)
-            }
+                self.onNewToken = { token in
+                    resolve(token)
+                }
 
-            self.onError = { error in
-                reject(error)
+                self.onError = { error in
+                    reject(error)
+                }
             }
         }
     }
@@ -70,15 +73,15 @@ final class UserService: NSObject, UserServiceType {
             guard let self = self else { return }
 
             DispatchQueue.main.async {
+                self.onLogin = { _ in
+                    resolve(())
+                }
+
+                self.onError = { error in
+                    reject(AppErr(error))
+                }
+
                 self.googleManager.signIn()
-            }
-
-            self.onLogin = { _ in
-                resolve(())
-            }
-
-            self.onError = { error in
-                reject(AppErr(error))
             }
         }
     }
@@ -103,8 +106,7 @@ final class UserService: NSObject, UserServiceType {
     }
 
     func isSessionValid() -> Bool {
-        return dataManager.currentToken() != nil
-            && dataManager.currentUser() != nil
+        dataManager.currentToken != nil && dataManager.currentUser != nil
     }
 }
 
@@ -112,8 +114,9 @@ extension UserService: GIDSignInDelegate {
     func sign(_: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if error == nil {
             let newUser = User(user)
-            if dataManager.saveCurrent(user: newUser), let token = user.authentication.accessToken {
-                dataManager.saveToken(with: token)
+            dataManager.currentUser = newUser
+            if let token = user.authentication.accessToken {
+                dataManager.currentToken = token
                 onNewToken?(token)
                 onLogin?(newUser)
             } else {
@@ -126,16 +129,8 @@ extension UserService: GIDSignInDelegate {
 
     func sign(_: GIDSignIn!, didDisconnectWith _: GIDGoogleUser!, withError _: Error!) {
         dataManager.logOut()
-
-        do {
-            Imap.instance.disconnect() // will not wait until disconnected. errors ignored
-            let realm = try Realm()
-            try realm.write {
-                realm.deleteAll()
-            }
-        } catch {
-            onError?(AppErr.general("Could not properly finish signing out"))
-        }
+        // will not wait until disconnected. errors ignored
+        Imap().disconnect()
 
         onLogOut?()
     }

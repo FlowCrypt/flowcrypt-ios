@@ -7,16 +7,8 @@
 //
 
 import Foundation
-import GoogleSignIn
 
 struct User: Codable {
     let email: String
     let name: String
-}
-
-extension User {
-    init(_ googleUser: GIDGoogleUser!) {
-        email = googleUser.profile.email
-        name = googleUser.profile.name
-    }
 }
