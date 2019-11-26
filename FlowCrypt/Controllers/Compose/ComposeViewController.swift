@@ -10,7 +10,6 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let notificationCenter: NotificationCenter
     private let dataManager: DataManagerType
     private let attesterApi: AttesterApiType
-    private let storageService: EncryptedStorageType
     private let decorator: ComposeDecoratorType
     private let core: Core
 
@@ -20,9 +19,8 @@ final class ComposeViewController: ASViewController<TableNode> {
     init(
         imap: Imap = Imap(),
         notificationCenter: NotificationCenter = .default,
-        dataManager: DataManagerType = DataManager(),
+        dataManager: DataManagerType = DataManager.shared,
         attesterApi: AttesterApiType = AttesterApi.shared,
-        storageService: EncryptedStorageType = EncryptedStorage(),
         decorator: ComposeDecoratorType = ComposeDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared
@@ -32,7 +30,6 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.dataManager = dataManager
         self.attesterApi = attesterApi
         self.input = input
-        self.storageService = storageService
         self.decorator = decorator
         self.core = core
         if input.isReply {
@@ -160,7 +157,7 @@ extension ComposeViewController {
                 return self.showAlert(message: "compose_no_pub_recipient".localized)
             }
 
-            guard let myPubkey = self.storageService.publicKey() else {
+            guard let myPubkey = self.dataManager.publicKey() else {
                 return self.showAlert(message: "compose_no_pub_sender".localized)
             }
 

@@ -69,7 +69,7 @@ struct KeyChainService: KeyChainServiceType {
         guard status == noErr, let data = dataTypeRef as? Data else {
             assertionFailure()
             return nil
-        }
+        } 
         return data
     }
 

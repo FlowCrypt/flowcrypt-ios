@@ -10,9 +10,9 @@ import Foundation
 import RealmSwift
 
 final class Token: Object {
-    @objc dynamic var value: String?
+    @objc dynamic var value: String = ""
 
-    convenience init(value: String?) {
+    convenience init(value: String) {
         self.init()
         self.value = value
     }

@@ -40,7 +40,7 @@ final class Imap {
         return token
     }
 
-    init(userService: UserService = .shared, dataManager: DataManagerType = DataManager()) {
+    init(userService: UserService = .shared, dataManager: DataManagerType = DataManager.shared) {
         self.userService = userService
         self.dataManager = dataManager
 

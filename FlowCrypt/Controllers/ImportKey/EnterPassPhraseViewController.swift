@@ -21,7 +21,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let storage: EncryptedStorage
+    private let storage: DataManagerType
     private let router: GlobalRouterType
 
     private var passPhrase: String?
@@ -29,7 +29,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     init(
         decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(core: .shared),
-        storage: EncryptedStorage = EncryptedStorage(),
+        storage: DataManagerType = DataManager.shared,
         router: GlobalRouterType = GlobalRouter(),
         email: String,
         fetchedKeys: [KeyDetails]
@@ -154,7 +154,7 @@ extension EnterPassPhraseViewController {
         }
 
         storage.addKeys(keyDetails: fetchedKeys, passPhrase: passPhrase, source: .generated)
-        
+
         moveToMainFlow()
     }
 

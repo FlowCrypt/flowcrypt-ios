@@ -9,7 +9,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType
-    private let storage: EncryptedStorageType
+    private let storage: DataManagerType
     private let decorator: SetupDecoratorType
     private let core: Core
     private let keyMethods: KeyMethodsType
@@ -34,7 +34,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         imap: Imap = Imap(),
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
-        storage: EncryptedStorageType = EncryptedStorage(),
+        storage: DataManagerType = DataManager.shared,
         decorator: SetupDecoratorType = SetupDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(core: .shared)
@@ -112,7 +112,7 @@ extension SetupViewController {
         hideSpinner()
         if fetchedEncryptedPrvs.isEmpty {
             // TODO: Anton -
-            let user = DataManager().email ?? "unknown_title".localized
+            let user = DataManager.shared.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             renderNoBackupsFoundOptions(msg)
         } else {
@@ -198,8 +198,8 @@ extension SetupViewController {
 
     private func getUserId() throws -> UserId {
         // TODO: Anton -
-        guard let email = DataManager().email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
-        guard let name = DataManager().email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
+        guard let email = DataManager.shared.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
+        guard let name = DataManager.shared.email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
         return UserId(email: email, name: name)
     }
 

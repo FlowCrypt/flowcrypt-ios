@@ -11,7 +11,7 @@ final class MsgViewController: ASViewController<ASTableNode> {
     private var input: MsgViewController.Input?
     private let imap: Imap
     private let decorator: MessageDecoratorType
-    private let storage: EncryptedStorageType
+    private let dataManager: DataManagerType
     private let core: Core
 
     private var message: NSAttributedString
@@ -19,7 +19,7 @@ final class MsgViewController: ASViewController<ASTableNode> {
     init(
         imap: Imap = Imap(),
         decorator: MessageDecoratorType = MessageDecorator(dateFormatter: DateFormatter()),
-        storage: EncryptedStorageType = EncryptedStorage(),
+        storage: DataManagerType = DataManager.shared,
         core: Core = Core.shared,
         input: MsgViewController.Input,
         completion: MsgViewControllerCompletion?
@@ -27,7 +27,7 @@ final class MsgViewController: ASViewController<ASTableNode> {
         self.imap = imap
         self.input = input
         self.decorator = decorator
-        self.storage = storage
+        self.dataManager = storage
         self.core = core
         self.onCompletion = completion
         self.message = decorator.attributed(text: "loading_title".localized + "...", color: .lightGray)
@@ -96,14 +96,14 @@ extension MsgViewController {
             let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
             self.input?.bodyMessage = rawMimeData
 
-            guard let keys = self.storage.keys() else {
+            guard let keys = self.dataManager.keys() else {
                 reject(CoreError.notReady("Could not fetch keys"))
                 return
             }
 
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
-                keys: PrvKeyInfo.from(realm: keys),
+                keys: keys,
                 msgPwd: nil,
                 isEmail: true
             )

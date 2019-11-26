@@ -24,7 +24,7 @@ struct RootAssembley: AppAssembley {
         userService: UserServiceType = UserService.shared,
         assemblies: [Assembley] = AssembleyFactory.assemblies(),
         core: Core = Core.shared,
-        dataManager: DataManagerType = DataManager()
+        dataManager: DataManagerType = DataManager.shared
     ) {
         self.userService = userService
         self.assemblies = assemblies

@@ -13,11 +13,19 @@ protocol DataManagerType {
     var currentUser: User? { get set }
     var currentToken: String? { get set }
     var isLogedIn: Bool { get }
+
+    func keys() -> [PrvKeyInfo]?
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
+    func publicKey() -> String?
 }
 
 final class DataManager: DataManagerType {
+    static let shared = DataManager()
+
     var isLogedIn: Bool {
-        currentUser != nil && currentToken != nil
+        let isUserStored = currentUser != nil && currentToken != nil
+        let hasKey = (self.encryptedStorage.keys()?.count ?? 0) > 0
+        return isUserStored && hasKey
     }
 
     var email: String? {
@@ -39,17 +47,28 @@ final class DataManager: DataManagerType {
         set { encryptedStorage.saveToken(with: newValue) }
     }
 
-    private let encryptedStorage: EncryptedStorageType & LogOutHandler
+    private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(email: { self.email })
     private var localStorage: LocalStorageType & LogOutHandler
 
-    init(
-        encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
+    private init(
         localStorage: LocalStorageType & LogOutHandler = LocalStorage()
     ) {
-        self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
     }
-}
+
+    func keys() -> [PrvKeyInfo]? {
+        guard let keys = encryptedStorage.keys() else { return nil }
+        return PrvKeyInfo.from(realm: keys)
+    }
+
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
+    }
+
+    func publicKey() -> String? {
+        encryptedStorage.publicKey()
+    }
+} 
 
 extension DataManager: LogOutHandler {
     func logOut() {

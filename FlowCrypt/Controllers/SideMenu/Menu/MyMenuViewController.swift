@@ -40,7 +40,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
 
     init(
         foldersProvider: FoldersProvider = Imap(),
-        dataManager: DataManagerType = DataManager(),
+        dataManager: DataManagerType = DataManager.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
         tabelNode: ASTableNode = TableNode()

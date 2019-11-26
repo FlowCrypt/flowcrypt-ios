@@ -22,24 +22,29 @@ protocol EncryptedStorageType {
 
 final class EncryptedStorage: EncryptedStorageType {
     let keychainHelper: KeyChainServiceType
-    var email: String?
-    
-    init(keychainHelper: KeyChainServiceType = KeyChainService()) {
+    private var email: String? { emailGetter() }
+    private let emailGetter: () -> (String?)
+
+    init(keychainHelper: KeyChainServiceType = KeyChainService(), email: @escaping () -> (String?)) {
         self.keychainHelper = KeyChainService()
+        self.emailGetter = email
+    }
+
+    private var encryptedConfiguration: Realm.Configuration? {
+        guard let email = email else { return nil }
+        let configuration = Realm.Configuration(encryptionKey: self.keychainHelper.getEncryptedKey(for: email))
+        return configuration
     }
 
     private var storage: Realm? {
-        guard let email = email else { return nil }
-
         do {
-            let config = Realm.Configuration(encryptionKey: self.keychainHelper.getEncryptedKey(for: email))
-            let realm = try Realm(configuration: config)
-            print(realm)
-        } catch let error as NSError {
-            fatalError("Error opening realm: \(error)")
+            guard let configuration = self.encryptedConfiguration else { return nil }
+            let realm = try Realm(configuration: configuration)
+            return realm
+        } catch let error {
+            print("^^ \(error)")
+            return nil
         }
-        let realm = try? Realm(configuration: Realm.Configuration(encryptionKey: self.keychainHelper.getEncryptedKey(for: email)))
-        return realm
     }
 
     func ecnryptFor(email: String?) {
@@ -50,8 +55,6 @@ final class EncryptedStorage: EncryptedStorageType {
             logOut()
             return
         }
-
-        self.email = email
     }
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
@@ -89,11 +92,15 @@ final class EncryptedStorage: EncryptedStorageType {
 
 extension EncryptedStorage: LogOutHandler {
     func logOut() {
-        try? storage?.write {
-            storage?.deleteAll()
-        }
-        try? Realm().write {
-            try? Realm().deleteAll()
+        do {
+            if let oldConfigurationURL = Realm.Configuration.defaultConfiguration.fileURL {
+                try FileManager.default.removeItem(at: oldConfigurationURL)
+            }
+            if let url = encryptedConfiguration?.fileURL {
+                try FileManager.default.removeItem(at: url)
+            }
+        } catch let error {
+            print("^^ \(error)")
         }
     }
 }
