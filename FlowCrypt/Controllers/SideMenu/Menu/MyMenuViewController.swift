@@ -65,11 +65,10 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-
         if isFirstLaunch {
             setupUI()
             fetchFolders()
-        }
+        }  
         isFirstLaunch = false
     }
 
@@ -106,7 +105,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
                 self?.handleNewFolders(with: folders)
             }
             .catch { [weak self] error in
-                self?.showAlert(error: error, message: "error_fetch_folders".localized)
+                self?.handleError(with: error)
             }
     }
 
@@ -125,6 +124,16 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
                 return false
             })
         tableNode.reloadData()
+    }
+
+    private func handleError(with error: Error) { 
+        switch AppErr(error) {
+        case .connection:
+            hideSpinner()
+        default:
+            showAlert(error: error, message: "error_fetch_folders".localized)
+        }
+
     }
 }
 
@@ -197,6 +206,14 @@ extension MyMenuViewController {
                 }.catch(on: .main) { [weak self] error in
                     self?.showAlert(error: error, message: "Could not log out")
                 }
+        }
+    }
+}
+
+extension MyMenuViewController: SideMenuViewController {
+    func didOpen() {
+        if folders.isEmpty {
+            fetchFolders()
         }
     }
 }

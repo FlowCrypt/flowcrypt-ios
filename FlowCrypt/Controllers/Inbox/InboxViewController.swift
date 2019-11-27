@@ -23,6 +23,8 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
         case refresh
         /// Fetched messages where
         case fetched(_ totalNumberOfMessages: Int)
+        /// error state with description message
+        case error(_ message: String)
 
         var total: Int? {
             switch self {
@@ -191,7 +193,15 @@ extension InboxViewController {
 
     private func handle(error: Error) {
         refreshControl.endRefreshing()
-        showAlert(error: error, message: "message_failed_load".localized)
+        let appError = AppErr(error)
+
+        switch appError {
+        case .connection:
+            state = .error(appError.userMessage)
+            tableNode.reloadData()
+        default:
+            showAlert(error: error, message: "message_failed_load".localized)
+        }
     }
 }
 
@@ -271,7 +281,7 @@ extension InboxViewController {
 extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
-        case .empty, .idle:
+        case .empty, .idle, .error:
             return 1
         case .fetching, .fetched, .refresh:
             return messages.count
@@ -302,6 +312,8 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                     return TextCellNode(title: "Loading ...", withSpinner: true, size: CGSize(width: 44, height: 44))
                 }
                 return InboxCellNode(message: InboxCellNodeInput(message))
+            case let .error(message):
+                return TextCellNode(title: message, withSpinner: false, size: size)
             }
         }
     }
@@ -318,10 +330,8 @@ extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {
         switch state {
         case .idle: return true
-        case .empty: return false
         case .fetched: return messages.count < state.total ?? 0
-        case .fetching: return false
-        case .refresh: return false
+        case .error, .refresh, .fetching, .empty: return false
         }
     }
 
@@ -356,6 +366,8 @@ extension InboxViewController {
                 return
             }
             fetchAndRenderEmails(context)
+        case .error:
+            break
         }
     }
 

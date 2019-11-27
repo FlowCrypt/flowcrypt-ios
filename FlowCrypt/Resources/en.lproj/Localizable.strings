@@ -26,6 +26,7 @@
 "error_move_trash" = "Unable to move message to Trash";
 "error_archive" = "Unable to archive message";
 "error_permanently_delete" = "Unable to delete message";
+"error_app_connection" = "Cannot load inbox: connection error (offline)";
 
 // Compose
 "compose_enter_recipient" = "Enter recipient";

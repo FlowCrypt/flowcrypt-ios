@@ -9,6 +9,11 @@ protocol NavigationChildController {
     func handleBackButtonTap()
 }
 
+protocol SideMenuViewController {
+    func didOpen()
+}
+
+
 final class SideMenuNavigationController: ENSideMenuNavigationController {
     private var isStatusBarHidden = false {
         didSet {
@@ -38,10 +43,13 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         self?.hideMenu()
     }
 
+    private var menuViewContoller: SideMenuViewController?
+
     convenience init() {
         let menu = MyMenuViewController()
         let contentViewController = InboxViewController()
         self.init(menuViewController: menu, contentViewController: contentViewController)
+        menuViewContoller = menu
         sideMenu = ENSideMenu(sourceView: view, menuViewController: menu, menuPosition: .left).then {
             $0.bouncingEnabled = false
             $0.delegate = self
@@ -110,7 +118,8 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
     func sideMenuDidOpen() {
         isStatusBarHidden = true
         setNeedsStatusBarAppearanceUpdate()
-        gestureView.frame = view.frame
+        gestureView.frame = view.frame 
+        menuViewContoller?.didOpen()
     }
 }
 
