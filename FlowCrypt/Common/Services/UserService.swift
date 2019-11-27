@@ -112,19 +112,20 @@ final class UserService: NSObject, UserServiceType {
 
 extension UserService: GIDSignInDelegate {
     func sign(_: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        if error == nil {
-            let newUser = User(user)
-            dataManager.currentUser = newUser
-            if let token = user.authentication.accessToken {
-                dataManager.currentToken = token
-                onNewToken?(token)
-                onLogin?(newUser)
-            } else {
-                onError?(AppErr.general("could not save user or retrieve token"))
-            }
-        } else {
+        guard error == nil else {
             onError?(AppErr(error))
+            return
         }
+
+        guard let token = user.authentication.accessToken else {
+            onError?(AppErr.general("could not save user or retrieve token"))
+            return
+        }
+
+        let user = User(user)
+        dataManager.startForNew(user: user, with: token)
+        onNewToken?(token)
+        onLogin?(user)
     }
 
     func sign(_: GIDSignIn!, didDisconnectWith _: GIDGoogleUser!, withError _: Error!) {

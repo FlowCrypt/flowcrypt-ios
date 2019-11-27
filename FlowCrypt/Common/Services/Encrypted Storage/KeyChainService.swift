@@ -10,8 +10,8 @@ import Foundation
 import Security
 
 protocol KeyChainServiceType {
-    func saveEncryptedKey(for email: String) -> KeyChainStatus
-    func getEncryptedKey(for email: String) -> Data?
+    func saveEncryptedKey() -> KeyChainStatus
+    func getEncryptedKey() -> Data?
 
 }
 
@@ -28,7 +28,7 @@ enum KeyChainStatus {
 }
 
 struct KeyChainService: KeyChainServiceType {
-    private let keyTag = "EncryptedKey"
+    private let tag = "flowcrypt-realm-encryption-key"
     private let keyGenerator: KeychainKeyGeneratorType
 
     init(
@@ -37,9 +37,8 @@ struct KeyChainService: KeyChainServiceType {
         self.keyGenerator = keyGenerator
     }
 
-    func saveEncryptedKey(for email: String) -> KeyChainStatus {
+    func saveEncryptedKey() -> KeyChainStatus {
         let key = keyGenerator.generateKeyData()
-        let tag = generateTag(for: email)
 
         let query: [CFString : Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -52,9 +51,7 @@ struct KeyChainService: KeyChainServiceType {
         return KeyChainStatus(osStatus)
     }
 
-    func getEncryptedKey(for email: String) -> Data? {
-        let tag = generateTag(for: email)
-
+    func getEncryptedKey() -> Data? {
         let query: [CFString : Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: tag,
@@ -67,13 +64,8 @@ struct KeyChainService: KeyChainServiceType {
         let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
 
         guard status == noErr, let data = dataTypeRef as? Data else {
-            assertionFailure()
             return nil
         } 
         return data
-    }
-
-    private func generateTag(for email: String) -> String {
-        keyTag + email
     }
 }

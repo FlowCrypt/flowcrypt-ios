@@ -9,9 +9,11 @@
 import Foundation
 
 protocol DataManagerType {
+    func startForNew(user: User?, with token: String?)
+    
     var email: String? { get }
-    var currentUser: User? { get set }
-    var currentToken: String? { get set }
+    var currentUser: User? { get }
+    var currentToken: String? { get }
     var isLogedIn: Bool { get }
 
     func keys() -> [PrvKeyInfo]?
@@ -33,21 +35,13 @@ final class DataManager: DataManagerType {
     }
 
     var currentUser: User? {
-        get {
-            localStorage.currentUser()
-        }
-        set {
-            localStorage.saveCurrent(user: newValue)
-            encryptedStorage.ecnryptFor(email: newValue?.email)
-        }
+        get { localStorage.currentUser() }
     }
-
     var currentToken: String? {
         get { encryptedStorage.currentToken() }
-        set { encryptedStorage.saveToken(with: newValue) }
     }
 
-    private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(email: { self.email })
+    private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(accessCheck: { self.email != nil })
     private var localStorage: LocalStorageType & LogOutHandler
 
     private init(
@@ -67,6 +61,12 @@ final class DataManager: DataManagerType {
 
     func publicKey() -> String? {
         encryptedStorage.publicKey()
+    }
+
+    func startForNew(user: User?, with token: String?) {
+        localStorage.saveCurrent(user: user)
+        encryptedStorage.ecnryptFor(email: user?.email)
+        encryptedStorage.saveToken(with: token)
     }
 } 
 

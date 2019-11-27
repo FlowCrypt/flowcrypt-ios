@@ -22,17 +22,17 @@ protocol EncryptedStorageType {
 
 final class EncryptedStorage: EncryptedStorageType {
     let keychainHelper: KeyChainServiceType
-    private var email: String? { emailGetter() }
-    private let emailGetter: () -> (String?)
+    private var canHaveAccessToStorage: Bool { accessCheck() }
+    private let accessCheck: () -> (Bool)
 
-    init(keychainHelper: KeyChainServiceType = KeyChainService(), email: @escaping () -> (String?)) {
+    init(keychainHelper: KeyChainServiceType = KeyChainService(), accessCheck: @escaping () -> (Bool)) {
         self.keychainHelper = KeyChainService()
-        self.emailGetter = email
+        self.accessCheck = accessCheck
     }
 
     private var encryptedConfiguration: Realm.Configuration? {
-        guard let email = email else { return nil }
-        let configuration = Realm.Configuration(encryptionKey: self.keychainHelper.getEncryptedKey(for: email))
+        guard canHaveAccessToStorage else { return nil }
+        let configuration = Realm.Configuration(encryptionKey: self.keychainHelper.getEncryptedKey())
         return configuration
     }
 
@@ -51,7 +51,7 @@ final class EncryptedStorage: EncryptedStorageType {
         // clear all data
         logOut()
 
-        guard let email = email, case .success = keychainHelper.saveEncryptedKey(for: email) else {
+        guard canHaveAccessToStorage, case .success = keychainHelper.saveEncryptedKey() else {
             logOut()
             return
         }
