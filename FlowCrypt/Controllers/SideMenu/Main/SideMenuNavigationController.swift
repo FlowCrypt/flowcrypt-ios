@@ -13,7 +13,6 @@ protocol SideMenuViewController {
     func didOpen()
 }
 
-
 final class SideMenuNavigationController: ENSideMenuNavigationController {
     private var isStatusBarHidden = false {
         didSet {

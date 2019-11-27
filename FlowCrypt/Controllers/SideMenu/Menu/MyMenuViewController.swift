@@ -68,7 +68,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         if isFirstLaunch {
             setupUI()
             fetchFolders()
-        }  
+        }
         isFirstLaunch = false
     }
 
