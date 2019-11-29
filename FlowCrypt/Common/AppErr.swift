@@ -18,6 +18,14 @@ enum AppErr: Error {
     case user(String) // user error, useful to throw from Promises
     case silentAbort // useful in Promises when you want to cancel execution without showing any error (eg after user clicks cancel button)
     case general(String)
+
+    var userMessage: String {
+        switch self {
+        case .connection: return "error_app_connection".localized
+        case let .operation(error): return error.localizedDescription
+        default: return "" // TODO: - provide description for error if needed
+        }
+    }
 }
 
 extension AppErr: Equatable {
@@ -40,6 +48,10 @@ extension AppErr: Equatable {
 
 extension AppErr {
     init(_ error: Error) {
+        if let alreadyAppError = error as? AppErr {
+            self = alreadyAppError
+            return
+        }
         let code = (error as NSError).code
         switch code {
         case MCOErrorCode.authentication.rawValue:
