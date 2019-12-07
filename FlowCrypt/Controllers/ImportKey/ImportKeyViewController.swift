@@ -126,13 +126,8 @@ extension ImportKeyViewController {
             String(kUTTypeUTF8PlainText),
             String(kUTTypeUTF16ExternalPlainText),
             String(kUTTypeUTF16PlainText),
-            String(kUTTypeDelimitedText),
-            String(kUTTypeCommaSeparatedText),
-            String(kUTTypeTabSeparatedText),
-            String(kUTTypeUTF8TabSeparatedText),
-            String(kUTTypeRTF),
-            String(kUTTypePDF),
-            String(kUTTypeItem)
+            String(kUTTypeItem),
+            String(kUTTypeData)
         ]
         let documentInteractionController = UIDocumentPickerViewController(
             documentTypes: acceptableDocumentTypes,
