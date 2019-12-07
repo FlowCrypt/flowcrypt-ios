@@ -33,6 +33,20 @@
                ReferencedContainer = "container:FlowCrypt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A3DAD5FA22E4574A00F2C4CD"
+               BuildableName = "FlowCryptTests.xctest"
+               BlueprintName = "FlowCryptTests"
+               ReferencedContainer = "container:FlowCrypt.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -44,7 +58,7 @@
       region = "GB">
       <Testables>
          <TestableReference
-            skipped = "NO"
+            skipped = "YES"
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"

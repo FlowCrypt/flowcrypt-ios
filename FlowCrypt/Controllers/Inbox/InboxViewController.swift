@@ -49,7 +49,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel = .empty,
-        messageProvider: MessageProvider = Imap.instance
+        messageProvider: MessageProvider = Imap()
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider

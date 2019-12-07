@@ -74,7 +74,7 @@ final class CoreHost: NSObject, CoreHostExports {
     }
 
     // this could be further optimised. Takes about 150ms per key
-    // there tend to be two keys to decrypt in an armored key, so that makes is 300 ms
+    // there tend to be two keys to decrypt in an armored key, so that makes it 300 ms
     // I suspect it could be optimised to 50ms per pass, or 100ms total
     // but still better than 20 SECONDS per pass in JS
     func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8] {

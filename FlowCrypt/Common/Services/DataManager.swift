@@ -9,59 +9,72 @@
 import Foundation
 
 protocol DataManagerType {
-    func saveToken(with string: String)
-    func currentToken() -> String?
-    func saveCurrent(user: User) -> Bool
-    func currentUser() -> User?
-    func logOut()
-
+    func startForNew(user: User?, with token: String?)
+    
     var email: String? { get }
+    var currentUser: User? { get }
+    var currentToken: String? { get }
+    var isLogedIn: Bool { get }
+
+    func keys() -> [PrvKeyInfo]?
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
+    func publicKey() -> String?
 }
 
-struct DataManager: DataManagerType {
-    // TODO: - safe in keychain
+final class DataManager: DataManagerType {
     static let shared = DataManager()
 
+    var isLogedIn: Bool {
+        let isUserStored = currentUser != nil && currentToken != nil
+        let hasKey = (self.encryptedStorage.keys()?.count ?? 0) > 0
+        return isUserStored && hasKey
+    }
+
     var email: String? {
-        currentUser()?.email
+        currentUser?.email
     }
 
-    private enum Constants {
-        static let userKey = "keyCurrentUser"
-        static let tokenKey = "keyCurrentToken"
+    var currentUser: User? {
+        get { localStorage.currentUser() }
+    }
+    var currentToken: String? {
+        get { encryptedStorage.currentToken() }
     }
 
-    private let userDefaults: UserDefaults
+    private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(accessCheck: { self.email != nil })
+    private var localStorage: LocalStorageType & LogOutHandler
 
-    private init(userDefaults: UserDefaults = .standard) {
-        self.userDefaults = userDefaults
+    private init(
+        localStorage: LocalStorageType & LogOutHandler = LocalStorage()
+    ) {
+        self.localStorage = localStorage
     }
 
-    func saveToken(with string: String) {
-        userDefaults.set(string, forKey: Constants.tokenKey)
+    func keys() -> [PrvKeyInfo]? {
+        guard let keys = encryptedStorage.keys() else { return nil }
+        return PrvKeyInfo.from(realm: keys)
     }
 
-    func currentToken() -> String? {
-        return userDefaults.string(forKey: Constants.tokenKey)
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
     }
 
-    func saveCurrent(user: User) -> Bool {
-        do {
-            let encodedData = try PropertyListEncoder().encode(user)
-            userDefaults.set(encodedData, forKey: Constants.userKey)
-            return true
-        } catch {
-            return false
-        }
+    func publicKey() -> String? {
+        encryptedStorage.publicKey()
     }
 
-    func currentUser() -> User? {
-        guard let data = userDefaults.object(forKey: Constants.userKey) as? Data else { return nil }
-        return try? PropertyListDecoder().decode(User.self, from: data)
+    func startForNew(user: User?, with token: String?) {
+        logOut()
+        encryptedStorage.encrypt()
+        localStorage.saveCurrent(user: user)
+        encryptedStorage.saveToken(with: token)
     }
+} 
 
+extension DataManager: LogOutHandler {
     func logOut() {
-        [Constants.tokenKey, Constants.userKey]
-            .forEach { userDefaults.removeObject(forKey: $0) }
+        [localStorage, encryptedStorage].map { $0 as LogOutHandler }.forEach {
+            $0.logOut()
+        }
     }
 }
