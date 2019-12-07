@@ -64,8 +64,9 @@ final class DataManager: DataManagerType {
     }
 
     func startForNew(user: User?, with token: String?) {
+        logOut()
+        encryptedStorage.encrypt()
         localStorage.saveCurrent(user: user)
-        encryptedStorage.ecnryptFor(email: user?.email)
         encryptedStorage.saveToken(with: token)
     }
 } 

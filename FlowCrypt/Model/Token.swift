@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-final class Token: Object {
+final class EmailAccessToken: Object {
     @objc dynamic var value: String = ""
 
     convenience init(value: String) {

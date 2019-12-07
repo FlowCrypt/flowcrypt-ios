@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 protocol EncryptedStorageType {
-    func ecnryptFor(email: String?)
+    func encrypt()
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func saveToken(with string: String?)
@@ -47,13 +47,16 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    func ecnryptFor(email: String?) {
-        // clear all data
-        logOut()
-
-        guard canHaveAccessToStorage, case .success = keychainHelper.saveEncryptedKey() else {
+    func encrypt() {
+        guard canHaveAccessToStorage else { return }
+        let status = keychainHelper.generateAndSaveStorageEncryptionKey()
+        
+        switch status {
+        case .success:
+            break
+        case .noData:
+            assertionFailure("Keychain could not save generated key")
             logOut()
-            return
         }
     }
 
@@ -81,12 +84,12 @@ final class EncryptedStorage: EncryptedStorageType {
             return
         }
         try? storage?.write {
-            self.storage?.add(Token(value: token))
+            self.storage?.add(EmailAccessToken(value: token))
         }
     }
 
     func currentToken() -> String? {
-        storage?.objects(Token.self).first?.value
+        storage?.objects(EmailAccessToken.self).first?.value
     }
 }
 

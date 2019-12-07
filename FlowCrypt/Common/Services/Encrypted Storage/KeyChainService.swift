@@ -10,7 +10,7 @@ import Foundation
 import Security
 
 protocol KeyChainServiceType {
-    func saveEncryptedKey() -> KeyChainStatus
+    func generateAndSaveStorageEncryptionKey() -> KeyChainStatus
     func getEncryptedKey() -> Data?
 
 }
@@ -37,7 +37,7 @@ struct KeyChainService: KeyChainServiceType {
         self.keyGenerator = keyGenerator
     }
 
-    func saveEncryptedKey() -> KeyChainStatus {
+    func generateAndSaveStorageEncryptionKey() -> KeyChainStatus {
         let key = keyGenerator.generateKeyData()
 
         let query: [CFString : Any] = [
