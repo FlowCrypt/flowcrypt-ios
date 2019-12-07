@@ -21,18 +21,18 @@ protocol EncryptedStorageType {
 }
 
 final class EncryptedStorage: EncryptedStorageType {
-    let keychainHelper: KeyChainServiceType
+    let keychainService: KeyChainServiceType
     private var canHaveAccessToStorage: Bool { accessCheck() }
     private let accessCheck: () -> (Bool)
 
     init(keychainHelper: KeyChainServiceType = KeyChainService(), accessCheck: @escaping () -> (Bool)) {
-        self.keychainHelper = KeyChainService()
+        self.keychainService = KeyChainService()
         self.accessCheck = accessCheck
     }
 
     private var encryptedConfiguration: Realm.Configuration? {
         guard canHaveAccessToStorage else { return nil }
-        let configuration = Realm.Configuration(encryptionKey: self.keychainHelper.getEncryptedKey())
+        let configuration = Realm.Configuration(encryptionKey: self.keychainService.getStorageEncryptionKey())
         return configuration
     }
 
@@ -49,7 +49,7 @@ final class EncryptedStorage: EncryptedStorageType {
 
     func encrypt() {
         guard canHaveAccessToStorage else { return }
-        let status = keychainHelper.generateAndSaveStorageEncryptionKey()
+        let status = keychainService.generateAndSaveStorageEncryptionKey()
         
         switch status {
         case .success:

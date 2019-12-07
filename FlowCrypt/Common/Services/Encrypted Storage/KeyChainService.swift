@@ -11,7 +11,7 @@ import Security
 
 protocol KeyChainServiceType {
     func generateAndSaveStorageEncryptionKey() -> KeyChainStatus
-    func getEncryptedKey() -> Data?
+    func getStorageEncryptionKey() -> Data?
 
 }
 
@@ -29,16 +29,12 @@ enum KeyChainStatus {
 
 struct KeyChainService: KeyChainServiceType {
     private let tag = "flowcrypt-realm-encryption-key"
-    private let keyGenerator: KeychainKeyGeneratorType
 
-    init(
-        keyGenerator: KeychainKeyGeneratorType = KeychainKeyGenerator()
-    ) {
-        self.keyGenerator = keyGenerator
+    init() {
     }
 
     func generateAndSaveStorageEncryptionKey() -> KeyChainStatus {
-        let key = keyGenerator.generateKeyData()
+        let key = Data(CoreHost().getSecureRandomByteNumberArray(64)!) // ok to crash app when missing, should be extremely rare
 
         let query: [CFString : Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -51,7 +47,7 @@ struct KeyChainService: KeyChainServiceType {
         return KeyChainStatus(osStatus)
     }
 
-    func getEncryptedKey() -> Data? {
+    func getStorageEncryptionKey() -> Data? {
         let query: [CFString : Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: tag,
