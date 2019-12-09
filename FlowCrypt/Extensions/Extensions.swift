@@ -174,4 +174,8 @@ extension UIEdgeInsets {
     static var side: (CGFloat) -> UIEdgeInsets {
         return { side in UIEdgeInsets(top: side, left: side, bottom: side, right: side)}
     }
+    
+    var width: CGFloat {
+        self.left + self.right
+    }
 }

@@ -47,6 +47,9 @@
 		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
 		5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F438239ECDD0001F4607 /* ExtensionTests.swift */; };
 		5A39F43A239ECE13001F4607 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
+		5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */; };
+		5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */; };
+		5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A948DC4239EF2F4006284D7 /* LegalViewController.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
@@ -226,6 +229,9 @@
 		5A39F433239EC61C001F4607 /* SettingsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCellNode.swift; sourceTree = "<group>"; };
 		5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F438239ECDD0001F4607 /* ExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExtensionTests.swift; path = FlowCryptTests/ExtensionTests.swift; sourceTree = SOURCE_ROOT; };
+		5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedViewController.swift; sourceTree = "<group>"; };
+		5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewControllersProvider.swift; sourceTree = "<group>"; };
+		5A948DC4239EF2F4006284D7 /* LegalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewController.swift; sourceTree = "<group>"; };
 		5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
 		6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.testflight.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -467,7 +473,6 @@
 				9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				9F0C3C2723194E8500299985 /* Extensions.swift */,
-				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */,
 				32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */,
 				9F56BD3923438D3700A7371A /* StyleExtension.swift */,
@@ -554,6 +559,7 @@
 				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
 				9F4453C3236B96F9005D7D05 /* DividerNode.swift */,
 				9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */,
+				5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -772,6 +778,7 @@
 		A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */ = {
 			isa = PBXGroup;
 			children = (
+				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
 				A3DAD5FF22E4574B00F2C4CD /* Info.plist */,
 				A3DAD60722E4588800F2C4CD /* TestData.swift */,
@@ -846,6 +853,8 @@
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 				5A39F42E239EC32B001F4607 /* Settings */,
+				5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */,
+				5A948DC4239EF2F4006284D7 /* LegalViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1277,6 +1286,7 @@
 				9F56BD3223438B5B00A7371A /* InboxCellNode.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
+				5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */,
 				9F268896237DDEB200428A94 /* SetupViewController+Setup.swift in Sources */,
 				9F56BD3623438B9D00A7371A /* TextCellNode.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
@@ -1331,6 +1341,7 @@
 				9F17976A2368EE90002BF770 /* SetupButtonNode.swift in Sources */,
 				32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */,
 				9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */,
+				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
 				9FDF3638235A0B3100614596 /* MenuNode.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				9F56BD3823438C7000A7371A /* DateFormatting.swift in Sources */,
@@ -1363,6 +1374,7 @@
 				9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */,
+				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
 				32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */,
 				32DCAD9F3A6B6101B78F0918 /* AttesterApi.swift in Sources */,

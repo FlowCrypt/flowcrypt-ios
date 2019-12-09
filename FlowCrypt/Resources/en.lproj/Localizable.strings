@@ -86,3 +86,7 @@
 "settings_screen_notifications" = "Notifications";
 "settings_screen_legal" = "Legal";
 "settings_screen_experimental" = "Experimental";
+"settings_legal_privacy" = "Privacy";
+"settings_legal_terms" = "Terms";
+"settings_legal_license" = "License";
+"settings_legal_sources" = "Sources";

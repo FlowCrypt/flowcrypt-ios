@@ -20,6 +20,12 @@ extension ExtensionTests {
         XCTAssert(sut.top == 16)
         XCTAssert(sut.bottom == 16)
     }
+    
+    func test_width() {
+        let sut = UIEdgeInsets.side(8)
+        
+        XCTAssert(sut.width == 16)
+    }
 }
 
 // MARK: - Collection

@@ -88,6 +88,7 @@ extension SettingsViewController {
         
         switch setting {
         case .keys: viewController = KeySettingsViewController()
+        case .legal: viewController = LegalViewController()
         default: viewController = nil
         }
         
