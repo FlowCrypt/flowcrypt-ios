@@ -12,14 +12,12 @@ import UIKit
 
 extension Collection {
     subscript(safe index: Index) -> Iterator.Element? {
-        return indices.contains(index)
+        indices.contains(index)
             ? self[index]
             : nil
     }
 
-    var isNotEmpty: Bool {
-        return !isEmpty
-    }
+    var isNotEmpty: Bool { !isEmpty }
 }
 
 public extension MutableCollection {
@@ -169,5 +167,11 @@ extension Array {
         return stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
         }
+    }
+}
+
+extension UIEdgeInsets {
+    static var side: (CGFloat) -> UIEdgeInsets {
+        return { side in UIEdgeInsets(top: side, left: side, bottom: side, right: side)}
     }
 }

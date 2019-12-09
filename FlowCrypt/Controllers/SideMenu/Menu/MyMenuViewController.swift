@@ -198,7 +198,7 @@ extension MyMenuViewController {
             let input = InboxViewModel(folder)
             sideMenuController()?.setContentViewController(InboxViewController(input))
         case .settings:
-            showToast("Settings not yet implemented")
+            sideMenuController()?.setContentViewController(SettingsViewController())
         case .logOut:
             userService.signOut()
                 .then(on: .main) { [weak self] _ in

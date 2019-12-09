@@ -75,3 +75,14 @@
 "import_no_backups_clipboard" = "No backups found for account: \n";
 "import_key_choose" = "Choose Another Key";
 "import_key_continue" = "Continue";
+
+// Settings
+"settings_screen_title" = "Settings";
+"settings_screen_backup" = "Backups";
+"settings_screen_security" = "Security and Privacy";
+"settings_screen_contacts" = "Contacts";
+"settings_screen_keys" = "Keys";
+"settings_screen_attester" = "Attester";
+"settings_screen_notifications" = "Notifications";
+"settings_screen_legal" = "Legal";
+"settings_screen_experimental" = "Experimental";

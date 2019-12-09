@@ -1,14 +1,14 @@
 //
-//  SetupTitleNode.swift
+//  SettingsCellNode.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 29.10.2019.
+//  Created by Anton Kharchevskyi on 12/9/19.
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
 import AsyncDisplayKit
 
-final class SetupTitleNode: CellNode {
+final class SettingsCellNode: CellNode {
     private let textNode = ASTextNode()
     private let insets: UIEdgeInsets
 
@@ -21,7 +21,7 @@ final class SetupTitleNode: CellNode {
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
-            child: ASCenterLayoutSpec(centeringOptions: .XY, sizingOptions: .minimumXY, child: textNode)
+            child: textNode
         )
     }
 }

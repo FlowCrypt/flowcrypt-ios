@@ -41,6 +41,12 @@
 		32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA55C094E9745AA1FD210 /* Imap+msg.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */; };
+		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
+		5A39F430239EC396001F4607 /* SettingsViewControllerDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewControllerDecorator.swift */; };
+		5A39F434239EC61C001F4607 /* SettingsCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F433239EC61C001F4607 /* SettingsCellNode.swift */; };
+		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
+		5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F438239ECDD0001F4607 /* ExtensionTests.swift */; };
+		5A39F43A239ECE13001F4607 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
@@ -215,6 +221,11 @@
 		3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		411CEC75050F852F172CD687 /* Pods-FlowCryptTests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.testflight.xcconfig"; sourceTree = "<group>"; };
 		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		5A39F42F239EC396001F4607 /* SettingsViewControllerDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewControllerDecorator.swift; sourceTree = "<group>"; };
+		5A39F433239EC61C001F4607 /* SettingsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCellNode.swift; sourceTree = "<group>"; };
+		5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsViewController.swift; sourceTree = "<group>"; };
+		5A39F438239ECDD0001F4607 /* ExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExtensionTests.swift; path = FlowCryptTests/ExtensionTests.swift; sourceTree = SOURCE_ROOT; };
 		5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
 		6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.testflight.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -456,12 +467,40 @@
 				9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				9F0C3C2723194E8500299985 /* Extensions.swift */,
+				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */,
 				32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */,
 				9F56BD3923438D3700A7371A /* StyleExtension.swift */,
 				9F8277952373732000E19C07 /* UIImageExtension.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5A39F42E239EC32B001F4607 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F435239ECADA001F4607 /* Settings List */,
+				5A39F43B239ECFA0001F4607 /* KeySettings */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		5A39F435239ECADA001F4607 /* Settings List */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F42C239EC321001F4607 /* SettingsViewController.swift */,
+				5A39F42F239EC396001F4607 /* SettingsViewControllerDecorator.swift */,
+				5A39F433239EC61C001F4607 /* SettingsCellNode.swift */,
+			);
+			path = "Settings List";
+			sourceTree = "<group>";
+		};
+		5A39F43B239ECFA0001F4607 /* KeySettings */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */,
+			);
+			path = KeySettings;
 			sourceTree = "<group>";
 		};
 		9F0C3C0D2316DD4100299985 /* Assembley */ = {
@@ -806,6 +845,7 @@
 				9F268892237DC55E00428A94 /* ImportKey */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
+				5A39F42E239EC32B001F4607 /* Settings */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1206,6 +1246,7 @@
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				A3DAD60A22E458C100F2C4CD /* CodableExntension.swift in Sources */,
 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
+				5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */,
 				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
@@ -1218,6 +1259,7 @@
 				32DCA1D6067D3A5B9AF03635 /* CoreHost.swift in Sources */,
 				32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */,
 				9F589F1D238C8693007FD759 /* LogOutHandler.swift in Sources */,
+				5A39F43A239ECE13001F4607 /* Extensions.swift in Sources */,
 				9F589F20238C8A90007FD759 /* Token.swift in Sources */,
 				32DCAF683D87EA6221F71335 /* SequenceExtension.swift in Sources */,
 				32DCA24159622E7442FF9459 /* AppErr.swift in Sources */,
@@ -1252,6 +1294,7 @@
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
+				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
 				9F56BD3423438B7100A7371A /* InboxCellNodeInput .swift in Sources */,
 				9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */,
 				9F589F13238C7DF2007FD759 /* User+Google.swift in Sources */,
@@ -1268,8 +1311,10 @@
 				9F589F1F238C8A90007FD759 /* Token.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */,
+				5A39F434239EC61C001F4607 /* SettingsCellNode.swift in Sources */,
 				9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */,
 				9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */,
+				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9F1797712368EEE8002BF770 /* ButtonNode.swift in Sources */,
 				9F0C3C18231819B200299985 /* Logger.swift in Sources */,
 				32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */,
@@ -1325,6 +1370,7 @@
 				9F1F8A1F235F9618006463A1 /* SignInLinks.swift in Sources */,
 				9F95A3F52360778E00C80B64 /* LinkButtonNode.swift in Sources */,
 				32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */,
+				5A39F430239EC396001F4607 /* SettingsViewControllerDecorator.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupDecorator.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				9F56BD3A23438D3800A7371A /* StyleExtension.swift in Sources */,
