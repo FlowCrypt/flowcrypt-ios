@@ -21,15 +21,17 @@ private enum Items: Int, CaseIterable {
         }
     }
     
-    var viewController: UIViewController {
-        let url: URL?
+    var url: URL? {
         switch self {
-        case .privacy: url = AppLinks.privacy.url
-        case .terms: url = AppLinks.terms.url
-        case .license: url = AppLinks.security.url
-        case .sources: url = URL(string: "https://github.com/FlowCrypt/")
+        case .privacy: return URL(string: "https://flowcrypt.com/privacy")
+        case .terms: return URL(string: "https://flowcrypt.com/terms")
+        case .license: return URL(string: "https://flowcrypt.com/license")
+        case .sources: return URL(string: "https://github.com/FlowCrypt/flowcrypt-ios")
         }
-        guard let link = url else {
+    }
+    
+    var viewController: UIViewController {
+        guard let link = self.url else {
             assertionFailure()
             return UIViewController()
         }
@@ -42,7 +44,7 @@ protocol LegalViewControllersProviderType {
     func viewControllers() -> [Segment]
 }
 
-final class LegalViewControllersProvider: NSObject, LegalViewControllersProviderType {
+struct LegalViewControllersProvider: LegalViewControllersProviderType {
     func viewControllers() -> [Segment] {
         Items.allCases.map {
             Segment(

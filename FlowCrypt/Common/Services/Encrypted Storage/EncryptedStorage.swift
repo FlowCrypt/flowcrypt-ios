@@ -36,13 +36,13 @@ final class EncryptedStorage: EncryptedStorageType {
         return configuration
     }
 
-    private var storage: Realm? {
+    var storage: Realm? {
         do {
             guard let configuration = self.encryptedConfiguration else { return nil }
             let realm = try Realm(configuration: configuration)
             return realm
         } catch let error {
-            print("^^ \(error)")
+            assertionFailure("Check Realm")
             return nil
         }
     }

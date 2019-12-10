@@ -13,4 +13,13 @@ final class KeySettingsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        guard let keys = DataManager.shared.keys() else { return }
+        print(keys)
+        Core.shared.parseKeys(armoredOrBinary: <#T##Data#>)
+        
+    }
 }
