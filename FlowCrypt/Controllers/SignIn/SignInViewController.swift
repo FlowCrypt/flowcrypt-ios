@@ -66,7 +66,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .links:
-                return LinkButtonNode(SignInLinks.allCases) { [weak self] action in
+                return LinkButtonNode(AppLinks.allCases) { [weak self] action in
                     self?.handle(option: action)
                 }
             case .logo:
@@ -138,7 +138,7 @@ extension SignInViewController {
         }
     }
 
-    private func handle(option: SignInLinks) {
+    private func handle(option: AppLinks) {
         guard let url = option.url else { assertionFailure("Issue in provided url"); return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }

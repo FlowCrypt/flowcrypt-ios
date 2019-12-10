@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 
 private enum Items: Int, CaseIterable {
     case privacy, terms, license, sources
@@ -21,7 +22,19 @@ private enum Items: Int, CaseIterable {
     }
     
     var viewController: UIViewController {
-        UIViewController()
+        let url: URL?
+        switch self {
+        case .privacy: url = AppLinks.privacy.url
+        case .terms: url = AppLinks.terms.url
+        case .license: url = AppLinks.security.url
+        case .sources: url = URL(string: "https://github.com/FlowCrypt/")
+        }
+        guard let link = url else {
+            assertionFailure()
+            return UIViewController()
+        }
+        let vc = WebViewController(url: link)
+        return vc
     }
 }
 
@@ -29,7 +42,7 @@ protocol LegalViewControllersProviderType {
     func viewControllers() -> [Segment]
 }
 
-struct LegalViewControllersProvider: LegalViewControllersProviderType {
+final class LegalViewControllersProvider: NSObject, LegalViewControllersProviderType {
     func viewControllers() -> [Segment] {
         Items.allCases.map {
             Segment(

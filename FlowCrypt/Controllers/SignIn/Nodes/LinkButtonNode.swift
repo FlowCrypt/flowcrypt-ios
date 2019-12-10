@@ -9,12 +9,12 @@
 import AsyncDisplayKit
 
 final class LinkButtonNode: ASCellNode {
-    typealias Action = (SignInLinks) -> ()
+    typealias Action = (AppLinks) -> ()
 
     private let buttons: [ASButtonNode]
     private var tapAction: Action?
 
-    init(_ inputs: [SignInLinks], action: Action?) {
+    init(_ inputs: [AppLinks], action: Action?) {
         tapAction = action
         buttons = inputs.map {
             let button = ASButtonNode()
@@ -29,7 +29,7 @@ final class LinkButtonNode: ASCellNode {
     }
 
     @objc private func onTap(_ sender: ASButtonNode) {
-        guard let identifier = sender.accessibilityLabel, let button = SignInLinks(rawValue: identifier) else { return }
+        guard let identifier = sender.accessibilityLabel, let button = AppLinks(rawValue: identifier) else { return }
         tapAction?(button)
     }
 
