@@ -87,9 +87,14 @@ extension SettingsViewController {
         let viewController: UIViewController?
         
         switch setting {
-        case .keys: viewController = KeySettingsViewController()
-        case .legal: viewController = LegalViewController()
-        default: viewController = nil
+        case .keys:
+            viewController = KeySettingsViewController(
+                user: DataManager.shared.email ?? ""
+            )
+        case .legal:
+            viewController = LegalViewController()
+        default:
+            viewController = nil
         }
         
         guard let vc = viewController else {

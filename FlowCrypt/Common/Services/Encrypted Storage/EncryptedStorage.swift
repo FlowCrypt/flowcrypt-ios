@@ -32,7 +32,8 @@ final class EncryptedStorage: EncryptedStorageType {
 
     private var encryptedConfiguration: Realm.Configuration? {
         guard canHaveAccessToStorage else { return nil }
-        let configuration = Realm.Configuration(encryptionKey: self.keychainService.getStorageEncryptionKey())
+        let key = self.keychainService.getStorageEncryptionKey()
+        let configuration = Realm.Configuration(encryptionKey: key)
         return configuration
     }
 

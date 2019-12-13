@@ -12,13 +12,16 @@ final class KeySettingsViewController: ASViewController<TableNode> {
     private var keys: [KeySettingsItem] = []
     private let decorator: KeySettingsDecoratorType
     private let provider: KeySettingsProviderType
+    private let user: String
 
     init(
         decorator: KeySettingsDecorator = KeySettingsDecorator(),
-        provider: KeySettingsProviderType = KeySettingsProvider.shared
+        provider: KeySettingsProviderType = KeySettingsProvider.shared,
+        user: String
     ) {
         self.decorator = decorator
         self.provider = provider
+        self.user = user
         super.init(node: TableNode())
     }
 
@@ -29,6 +32,11 @@ final class KeySettingsViewController: ASViewController<TableNode> {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "key_settings_title".localized
+
+        node.delegate = self
+        node.dataSource = self
+        node.reloadData()
+
         fetchKeys()
     }
 }
@@ -68,13 +76,12 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
                 return ASCellNode()
             }
 
-            return KeySettingCellNode(
-                with: KeySettingCellNode.Input(
-                    title: self.decorator.attributedTitle(for: key),
-                    subtitle: self.decorator.attributedSubTitle(for: key),
-                    date: self.decorator.attributedDate(for: key)
-                )
+            let input = KeySettingCellNode.Input(
+                title: self.decorator.attributedTitle(for: self.user),
+                subtitle: self.decorator.attributedSubTitle(for: key),
+                date: self.decorator.attributedDate(for: key)
             )
+            return KeySettingCellNode(with: input)
         }
     }
 

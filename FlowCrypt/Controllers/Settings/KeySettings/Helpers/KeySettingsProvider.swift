@@ -32,22 +32,25 @@ struct KeySettingsProvider: KeySettingsProviderType {
 
         var isAnyErrorInKeyParsing = false
 
-        let items = keys.compactMap { (privateKeys: PrvKeyInfo) -> KeySettingsItem? in
-            do {
-                let parsedKey = try core.parseKeys(
-                    armoredOrBinary: privateKeys.private.data()
-                )
-                return KeySettingsItem(parsedKey)
-            } catch {
-                isAnyErrorInKeyParsing = true
-                return nil
+        let items = keys
+            .compactMap { (privateKeys: PrvKeyInfo) -> [KeyDetails]? in
+                do {
+                    let parsedKey = try core.parseKeys(
+                        armoredOrBinary: privateKeys.private.data()
+                    )
+                    return parsedKey.keyDetails
+                } catch {
+                    isAnyErrorInKeyParsing = true
+                    return nil
+                }
             }
-        }
+            .flatMap { $0 }
+            .compactMap(KeySettingsItem.init)
 
         // in case we have multiple keys and error was only in one key parsing
         if isAnyErrorInKeyParsing && items.isEmpty {
             return .failure(.parsing)
-        } else {
+        } else { 
             return .success(items)
         }
     }

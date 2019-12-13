@@ -19,8 +19,8 @@ final class KeySettingCellNode: CellNode {
 
     init(with input: KeySettingCellNode.Input) {
         titleNode.attributedText = input.title
-        dateNode.attributedText = input.subtitle
-        subTitleNode.attributedText = input.date
+        dateNode.attributedText = input.date
+        subTitleNode.attributedText = input.subtitle
 
         titleNode.maximumNumberOfLines = 1
         dateNode.maximumNumberOfLines = 1

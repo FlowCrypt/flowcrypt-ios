@@ -10,19 +10,16 @@ import Foundation
 
 struct KeySettingsItem {
     let title: String
-    let createdDate: String
-    let keywords: String
-    let publicInfo: String
-    let fingerPrint: String
-    let longId: String
-    let user: String
+    let createdDate: Date
+    let details: [KeyId]
+    let publicKey: String
 }
 
-// TODO: - Anton
 extension KeySettingsItem {
-    init?(_ core: CoreRes.ParseKeys) {
-        guard let details = core.keyDetails.first else { return nil }
+    init?(_ details: KeyDetails) {
         self.title = details.private ?? "key_settings_no_private".localized
-        return nil
+        self.createdDate = Date(timeIntervalSince1970: TimeInterval(details.created))
+        self.details = details.ids
+        self.publicKey = details.public
     }
 }
