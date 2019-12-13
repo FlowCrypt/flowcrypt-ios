@@ -212,10 +212,9 @@ struct KeyDetails: Decodable {
     let isFullyEncrypted: Bool? // only if this is prv
     let ids: [KeyId]
     let created: Int
-    
-    // todo
-    //    let users: [String]
-    
+    let users: [String]
+
+    // TODO: -
     //    let algo: { // same as OpenPGP.key.AlgorithmInfo
     //        algorithm: string;
     //        algorithmId: number;

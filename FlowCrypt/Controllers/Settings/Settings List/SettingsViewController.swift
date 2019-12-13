@@ -88,9 +88,7 @@ extension SettingsViewController {
         
         switch setting {
         case .keys:
-            viewController = KeySettingsViewController(
-                user: DataManager.shared.email ?? ""
-            )
+            viewController = KeySettingsViewController()
         case .legal:
             viewController = LegalViewController()
         default:

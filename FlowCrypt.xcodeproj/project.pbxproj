@@ -57,6 +57,8 @@
 		5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A948DC4239EF2F4006284D7 /* LegalViewController.swift */; };
 		5ADEDCAF23A3EA9E00EC495E /* KeySettingsDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */; };
 		5ADEDCB123A3EAAF00EC495E /* KeySettingCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */; };
+		5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */; };
+		5ADEDCB923A42B9400EC495E /* KeySettingsItemDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
@@ -69,7 +71,7 @@
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
-		9F17976A2368EE90002BF770 /* SetupButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* SetupButtonNode.swift */; };
+		9F17976A2368EE90002BF770 /* ButtonCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* ButtonCellNode.swift */; };
 		9F17976D2368EEBD002BF770 /* SetupDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupDecorator.swift */; };
 		9F1797712368EEE8002BF770 /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797702368EEE8002BF770 /* ButtonNode.swift */; };
 		9F1F8A1F235F9618006463A1 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1F8A1E235F9618006463A1 /* AppLinks.swift */; };
@@ -245,6 +247,8 @@
 		5A948DC4239EF2F4006284D7 /* LegalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewController.swift; sourceTree = "<group>"; };
 		5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsDecorator.swift; sourceTree = "<group>"; };
 		5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingCellNode.swift; sourceTree = "<group>"; };
+		5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailViewController.swift; sourceTree = "<group>"; };
+		5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsItemDecorator.swift; sourceTree = "<group>"; };
 		5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
 		6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.testflight.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -260,7 +264,7 @@
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
 		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9F1797652368EE50002BF770 /* SetupTitleNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupTitleNode.swift; sourceTree = "<group>"; };
-		9F1797692368EE90002BF770 /* SetupButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupButtonNode.swift; sourceTree = "<group>"; };
+		9F1797692368EE90002BF770 /* ButtonCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonCellNode.swift; sourceTree = "<group>"; };
 		9F17976C2368EEBD002BF770 /* SetupDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupDecorator.swift; sourceTree = "<group>"; };
 		9F1797702368EEE8002BF770 /* ButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
 		9F1F8A1E235F9618006463A1 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
@@ -517,9 +521,8 @@
 		5A39F43B239ECFA0001F4607 /* KeySettings */ = {
 			isa = PBXGroup;
 			children = (
-				5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */,
-				5ADEDCB323A3EACE00EC495E /* Helpers */,
-				5ADEDCB223A3EAC600EC495E /* Node */,
+				5ADEDCB423A4262600EC495E /* Key List */,
+				5ADEDCB723A426E900EC495E /* Key Details */,
 			);
 			path = KeySettings;
 			sourceTree = "<group>";
@@ -569,6 +572,33 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		5ADEDCB423A4262600EC495E /* Key List */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */,
+				5ADEDCB323A3EACE00EC495E /* Helpers */,
+				5ADEDCB223A3EAC600EC495E /* Node */,
+			);
+			path = "Key List";
+			sourceTree = "<group>";
+		};
+		5ADEDCB723A426E900EC495E /* Key Details */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */,
+				5ADEDCBA23A42CE300EC495E /* Helpers */,
+			);
+			path = "Key Details";
+			sourceTree = "<group>";
+		};
+		5ADEDCBA23A42CE300EC495E /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		9F0C3C0D2316DD4100299985 /* Assembley */ = {
 			isa = PBXGroup;
 			children = (
@@ -605,7 +635,6 @@
 			isa = PBXGroup;
 			children = (
 				9F1797652368EE50002BF770 /* SetupTitleNode.swift */,
-				9F1797692368EE90002BF770 /* SetupButtonNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -614,6 +643,7 @@
 			isa = PBXGroup;
 			children = (
 				9F1797702368EEE8002BF770 /* ButtonNode.swift */,
+				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
 				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F4453BF236B894D005D7D05 /* TableNode.swift */,
 				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
@@ -1362,6 +1392,7 @@
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				9F56BD3023438B4400A7371A /* ComposeButtonNode.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
+				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
@@ -1381,6 +1412,7 @@
 				9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */,
 				9F589F1F238C8A90007FD759 /* Token.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
+				5ADEDCB923A42B9400EC495E /* KeySettingsItemDecorator.swift in Sources */,
 				32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */,
 				5A39F434239EC61C001F4607 /* SettingsCellNode.swift in Sources */,
 				9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */,
@@ -1402,7 +1434,7 @@
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
 				5ADEDCB123A3EAAF00EC495E /* KeySettingCellNode.swift in Sources */,
-				9F17976A2368EE90002BF770 /* SetupButtonNode.swift in Sources */,
+				9F17976A2368EE90002BF770 /* ButtonCellNode.swift in Sources */,
 				32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */,
 				9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,

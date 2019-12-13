@@ -9,7 +9,7 @@
 import Foundation
 
 protocol KeySettingsDecoratorType {
-    func attributedTitle(for userEmail: String) -> NSAttributedString
+    func attributedTitle(for key: KeySettingsItem) -> NSAttributedString
     func attributedSubTitle(for key: KeySettingsItem) -> NSAttributedString
     func attributedDate(for key: KeySettingsItem) -> NSAttributedString
 }
@@ -21,8 +21,8 @@ struct KeySettingsDecorator: KeySettingsDecoratorType {
         self.dateFormatter = dateFormatter
     }
 
-    func attributedTitle(for userEmail: String) -> NSAttributedString {
-        userEmail.attributed(.medium(16))
+    func attributedTitle(for key: KeySettingsItem) -> NSAttributedString {
+        key.users.attributed(.medium(16))
     }
 
     func attributedSubTitle(for key: KeySettingsItem) -> NSAttributedString {

@@ -112,14 +112,14 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                     return true
                 } 
             case .enterPhrase:
-                 return SetupButtonNode(
+                 return ButtonCellNode(
                     title: self.decorator.passPhraseContine,
                     insets: self.decorator.passPhraseInsets
                  ) { [weak self] in
                     self?.handleContinueAction()
                  }
             case .chooseAnother:
-                return SetupButtonNode(
+                return ButtonCellNode(
                     title: self.decorator.passPhraseChooseAnother,
                     insets: self.decorator.buttonInsets,
                     color: .lightGray

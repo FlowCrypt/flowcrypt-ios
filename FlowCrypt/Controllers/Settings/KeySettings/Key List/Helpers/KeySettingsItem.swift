@@ -13,6 +13,7 @@ struct KeySettingsItem {
     let createdDate: Date
     let details: [KeyId]
     let publicKey: String
+    let users: String
 }
 
 extension KeySettingsItem {
@@ -21,5 +22,6 @@ extension KeySettingsItem {
         self.createdDate = Date(timeIntervalSince1970: TimeInterval(details.created))
         self.details = details.ids
         self.publicKey = details.public
+        self.users = details.users.reduce("", +)
     }
 }
