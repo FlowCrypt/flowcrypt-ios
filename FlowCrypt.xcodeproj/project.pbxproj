@@ -59,6 +59,10 @@
 		5ADEDCB123A3EAAF00EC495E /* KeySettingCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */; };
 		5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */; };
 		5ADEDCB923A42B9400EC495E /* KeySettingsItemDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */; };
+		5ADEDCBC23A4329000EC495E /* PublickKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBB23A4329000EC495E /* PublickKeyDetailViewController.swift */; };
+		5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */; };
+		5ADEDCC023A43B0800EC495E /* KeyDetailInfoDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */; };
+		5ADEDCC223A43C6800EC495E /* KeyTextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
@@ -249,6 +253,10 @@
 		5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingCellNode.swift; sourceTree = "<group>"; };
 		5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailViewController.swift; sourceTree = "<group>"; };
 		5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsItemDecorator.swift; sourceTree = "<group>"; };
+		5ADEDCBB23A4329000EC495E /* PublickKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublickKeyDetailViewController.swift; sourceTree = "<group>"; };
+		5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewController.swift; sourceTree = "<group>"; };
+		5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoDecorator.swift; sourceTree = "<group>"; };
+		5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTextCellNode.swift; sourceTree = "<group>"; };
 		5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
 		6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.testflight.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -586,7 +594,10 @@
 			isa = PBXGroup;
 			children = (
 				5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */,
+				5ADEDCBB23A4329000EC495E /* PublickKeyDetailViewController.swift */,
+				5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */,
 				5ADEDCBA23A42CE300EC495E /* Helpers */,
+				5ADEDCC323A43C8600EC495E /* Nodes */,
 			);
 			path = "Key Details";
 			sourceTree = "<group>";
@@ -595,8 +606,17 @@
 			isa = PBXGroup;
 			children = (
 				5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */,
+				5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		5ADEDCC323A43C8600EC495E /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */,
+			);
+			path = Nodes;
 			sourceTree = "<group>";
 		};
 		9F0C3C0D2316DD4100299985 /* Assembley */ = {
@@ -1388,6 +1408,7 @@
 				C132B9CB1EC2DE6400763715 /* Constants.swift in Sources */,
 				9F82779E23737E3800E19C07 /* TextSubjectNode.swift in Sources */,
 				9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */,
+				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				9F56BD3023438B4400A7371A /* ComposeButtonNode.swift in Sources */,
@@ -1396,7 +1417,9 @@
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
+				5ADEDCC223A43C6800EC495E /* KeyTextCellNode.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
+				5ADEDCBC23A4329000EC495E /* PublickKeyDetailViewController.swift in Sources */,
 				9F56BD3423438B7100A7371A /* InboxCellNodeInput .swift in Sources */,
 				9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */,
 				9F589F13238C7DF2007FD759 /* User+Google.swift in Sources */,
@@ -1482,6 +1505,7 @@
 				32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */,
 				5A39F430239EC396001F4607 /* SettingsViewControllerDecorator.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupDecorator.swift in Sources */,
+				5ADEDCC023A43B0800EC495E /* KeyDetailInfoDecorator.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				9F56BD3A23438D3800A7371A /* StyleExtension.swift in Sources */,
 				9F82779A23737E1900E19C07 /* MessageSenderNode.swift in Sources */,

@@ -10,17 +10,20 @@ import AsyncDisplayKit
 
 final class KeyDetailViewController: ASViewController<TableNode> {
     enum Parts: Int, CaseIterable {
-        case description, keyDetails, publicInfo, copy, save, privateInfo
+        case description, publicInfo, keyDetails, copy, save, privateInfo
     }
 
+    private let pasteboard: UIPasteboard
     private let key: KeySettingsItem
     private let decorator: KeySettingsItemDecoratorType
 
     init(
         key: KeySettingsItem,
+        pasteboard: UIPasteboard = UIPasteboard.general,
         decorator: KeySettingsItemDecoratorType = KeySettingsItemDecorator()
     ) {
         self.key = key
+        self.pasteboard = pasteboard
         self.decorator = decorator
         super.init(node: TableNode())
     }
@@ -69,17 +72,29 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
 
     private func handleTap(on part: Parts) {
         switch part {
-        case .description:
-            break
         case .publicInfo:
-            break
+            let viewController = PublickKeyDetailViewController(text: key.publicKey)
+            navigationController?.pushViewController(viewController, animated: true)
         case .copy:
-            break
+            pasteboard.string = key.publicKey
+            showToast("key_settings_detail_copy".localized)
         case .keyDetails:
-            break
+            let viewController = KeyDetailInfoViewController(
+                details: key.details,
+                date: key.createdDate,
+                user: key.users
+            )
+            navigationController?.pushViewController(viewController, animated: true)
         case .save:
-            break
+            let items = [key.publicKey]
+            let viewController = UIActivityViewController(
+                activityItems: items,
+                applicationActivities: nil
+            )
+            present(viewController, animated: true)
         case .privateInfo:
+            showToast("key_settings_detail_show_private".localized)
+        case .description:
             break
         }
     }
