@@ -230,9 +230,7 @@ extension SetupViewController {
 
 extension SetupViewController {
     private func handleButtonPressed() {
-        view.endEditing(true)
-        // TODO: - Anton WARNING
-        passPhrase = "this is a super mega secure pass phrase"
+        view.endEditing(true) 
         guard let passPhrase = passPhrase else { return }
         guard passPhrase.isNotEmpty else {
             showAlert(message: "setup_enter_pass_phrase".localized)
