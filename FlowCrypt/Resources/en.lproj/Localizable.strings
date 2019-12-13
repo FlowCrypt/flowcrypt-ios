@@ -90,3 +90,20 @@
 "settings_legal_terms" = "Terms";
 "settings_legal_license" = "License";
 "settings_legal_sources" = "Sources";
+
+// Key Settings
+"key_settings_title" = "Keys";
+"key_settings_subtitle" = "Publick Keys are safe to share";
+"key_settings_no_private" = "Private key";
+
+"key_settings_detail_title" = "My pulick keys";
+"key_settings_detail_show_public" = "Show public key";
+"key_settings_detail_show_private" = "Show private key";
+"key_settings_detail_copy" = "Copy to clipboard";
+"key_settings_detail_save" = "Save to file";
+"key_settings_detail_show_details" = "Show key details";
+
+"key_settings_detail_fingerprint" = "Fingerprint";
+"key_settings_detail_long" = "Longid";
+"key_settings_detail_date" = "Date";
+"key_settings_detail_users" = "Users";

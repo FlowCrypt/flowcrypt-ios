@@ -6,20 +6,79 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
+import AsyncDisplayKit
 
-final class KeySettingsViewController: UIViewController {
+final class KeySettingsViewController: ASViewController<TableNode> {
+    private var keys: [KeySettingsItem] = []
+    private let decorator: KeySettingsDecoratorType
+    private let provider: KeySettingsProviderType
+
+    init(
+        decorator: KeySettingsDecorator = KeySettingsDecorator(),
+        provider: KeySettingsProviderType = KeySettingsProvider.shared
+    ) {
+        self.decorator = decorator
+        self.provider = provider
+        super.init(node: TableNode())
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        title = "key_settings_title".localized
+        fetchKeys()
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        guard let keys = DataManager.shared.keys() else { return }
-        print(keys)
-        Core.shared.parseKeys(armoredOrBinary: <#T##Data#>)
-        
+}
+
+extension KeySettingsViewController {
+    private func fetchKeys() {
+        let result = provider.getPublickKeys()
+        switch result {
+        case let .failure(error): handle(error: error)
+        case let .success(keys): handle(fetched: keys)
+        }
+    }
+
+    private func handle(error: KeySettingsError) {
+        // TODO: - Handle possible errors
+        switch error {
+        case .fetching: break
+        case .parsing: break
+        }
+    }
+
+    private func handle(fetched keys: [KeySettingsItem]) {
+        self.keys = keys
+        node.reloadData()
+    }
+}
+
+extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        keys.count
+    }
+
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+
+        return { [weak self] in
+            guard let self = self, let key = self.keys[safe: indexPath.row] else {
+                return ASCellNode()
+            }
+
+            return KeySettingCellNode(
+                with: KeySettingCellNode.Input(
+                    title: self.decorator.attributedTitle(for: key),
+                    subtitle: self.decorator.attributedSubTitle(for: key),
+                    date: self.decorator.attributedDate(for: key)
+                )
+            )
+        }
+    }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+
     }
 }

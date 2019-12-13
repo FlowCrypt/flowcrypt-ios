@@ -114,16 +114,17 @@ extension UserId {
 struct PrvKeyInfo: Encodable {
     let `private`: String
     let longid: String
-    let passphrase: String?
+    let passphrase: String? 
+}
 
-    static func from(keyInfo ki: KeyInfo) -> PrvKeyInfo {
-        return PrvKeyInfo(private: ki.private, longid: ki.longid, passphrase: ki.passphrase)
-    }
-
-    static func from(realm keyInfoResults: Results<KeyInfo>) -> [PrvKeyInfo] {
-        return Array(keyInfoResults).map { PrvKeyInfo.from(keyInfo: $0) }
+extension PrvKeyInfo {
+    init(from keyInfo: KeyInfo) {
+        self.private = keyInfo.private
+        self.longid = keyInfo.longid
+        self.passphrase = keyInfo.passphrase
     }
 }
+
 
 struct SendableMsg {
     struct Att {
