@@ -76,14 +76,18 @@ extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
             )
 
             if part.isSeparator {
+                let isLastSection = indexPath.section == self.details.count - 1
+                let dividerHeight: CGFloat = isLastSection ? 0 : 1
                 return DividerNode(
-                    inset: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+                    inset: self.decorator.dividerInsets,
+                    height: dividerHeight
+                )
+            } else {
+                return KeyTextCellNode(
+                    title: title,
+                    insets: self.decorator.insets
                 )
             }
-            return KeyTextCellNode(
-                title: title,
-                insets: self.decorator.insets
-            )
         }
     }
 }

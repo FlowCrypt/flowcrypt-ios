@@ -26,7 +26,9 @@ struct KeySettingsDecorator: KeySettingsDecoratorType {
     }
 
     func attributedSubTitle(for key: KeySettingsItem) -> NSAttributedString {
-        (key.details.first?.keywords ?? "")
+        key.details
+            .compactMap { $0.keywords }
+            .joined(separator:"\n")
             .attributed(.regular(14), color: .main)
     }
 

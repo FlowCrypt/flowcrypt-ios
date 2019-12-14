@@ -22,7 +22,7 @@ final class KeySettingCellNode: CellNode {
         dateNode.attributedText = input.date
         subTitleNode.attributedText = input.subtitle
 
-        titleNode.maximumNumberOfLines = 1
+        titleNode.maximumNumberOfLines = 0
         dateNode.maximumNumberOfLines = 1
         subTitleNode.maximumNumberOfLines = 0
 

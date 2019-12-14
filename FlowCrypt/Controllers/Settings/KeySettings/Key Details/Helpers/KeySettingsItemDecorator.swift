@@ -41,7 +41,7 @@ struct KeySettingsItemDecorator: KeySettingsItemDecoratorType {
         case .copy: title = "key_settings_detail_copy".localized
         case .keyDetails: title = "key_settings_detail_show_details".localized
         case .save: title = "key_settings_detail_save".localized
-        case .privateInfo: title = "key_settings_detail_show_private".localized
+        case .privateInfo: title = "key_settings_detail_show_private_title".localized
         }
 
         if keyDetailPart.isDescription {

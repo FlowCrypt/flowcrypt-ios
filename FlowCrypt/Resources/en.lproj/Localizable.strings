@@ -98,7 +98,7 @@
 
 "key_settings_detail_title" = "My pulick keys";
 "key_settings_detail_show_public" = "Show public key";
-"key_settings_detail_show_private" = "Show private key";
+"key_settings_detail_show_private_title" = "Show private key";
 "key_settings_detail_copy" = "Copy to clipboard";
 "key_settings_detail_save" = "Share";
 "key_settings_detail_show_details" = "Show key details";

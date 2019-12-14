@@ -10,6 +10,8 @@ import UIKit
 
 protocol KeyDetailInfoDecoratorType {
     var insets: UIEdgeInsets { get }
+    var dividerInsets: UIEdgeInsets { get }
+
     func attributedTitle(
         for part: KeyDetailInfoViewController.Parts,
         details: KeyId,
@@ -19,7 +21,8 @@ protocol KeyDetailInfoDecoratorType {
 }
 
 struct KeyDetailInfoDecorator: KeyDetailInfoDecoratorType {
-    var insets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+    let insets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+    let dividerInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
 
     func attributedTitle(
         for part: KeyDetailInfoViewController.Parts,

@@ -230,7 +230,7 @@ extension SetupViewController {
 
 extension SetupViewController {
     private func handleButtonPressed() {
-        view.endEditing(true) 
+        view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
         guard passPhrase.isNotEmpty else {
             showAlert(message: "setup_enter_pass_phrase".localized)
