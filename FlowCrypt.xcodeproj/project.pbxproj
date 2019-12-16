@@ -41,6 +41,11 @@
 		32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA55C094E9745AA1FD210 /* Imap+msg.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */; };
+		5ADEDCC523A80CDA00EC495E /* AppErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC423A80CDA00EC495E /* AppErrorHandler.swift */; };
+		5ADEDCC823A80F8100EC495E /* ErrorLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC723A80F8100EC495E /* ErrorLevel.swift */; };
+		5ADEDCCA23A80FBD00EC495E /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC923A80FBD00EC495E /* ErrorHandler.swift */; };
+		5ADEDCCC23A80FD300EC495E /* ViewControllerErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCCB23A80FD300EC495E /* ViewControllerErrorHandler.swift */; };
+		5ADEDCCE23A80FE300EC495E /* DataErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCCD23A80FE300EC495E /* DataErrorHandler.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
@@ -215,6 +220,11 @@
 		3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		411CEC75050F852F172CD687 /* Pods-FlowCryptTests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.testflight.xcconfig"; sourceTree = "<group>"; };
 		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5ADEDCC423A80CDA00EC495E /* AppErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppErrorHandler.swift; sourceTree = "<group>"; };
+		5ADEDCC723A80F8100EC495E /* ErrorLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorLevel.swift; sourceTree = "<group>"; };
+		5ADEDCC923A80FBD00EC495E /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
+		5ADEDCCB23A80FD300EC495E /* ViewControllerErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerErrorHandler.swift; sourceTree = "<group>"; };
+		5ADEDCCD23A80FE300EC495E /* DataErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataErrorHandler.swift; sourceTree = "<group>"; };
 		5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
 		6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.testflight.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -372,6 +382,7 @@
 				9F0C3C132316E69300299985 /* User.swift */,
 				9F589F12238C7DF2007FD759 /* User+Google.swift */,
 				9F589F1E238C8A90007FD759 /* Token.swift */,
+				9F82779323736EF100E19C07 /* MailDestination.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -464,6 +475,26 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		5ADEDCC623A80F7400EC495E /* Error Handling */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCC423A80CDA00EC495E /* AppErrorHandler.swift */,
+				5ADEDCC923A80FBD00EC495E /* ErrorHandler.swift */,
+				5ADEDCC723A80F8100EC495E /* ErrorLevel.swift */,
+				5ADEDCCF23A8102100EC495E /* Handlers */,
+			);
+			path = "Error Handling";
+			sourceTree = "<group>";
+		};
+		5ADEDCCF23A8102100EC495E /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCCB23A80FD300EC495E /* ViewControllerErrorHandler.swift */,
+				5ADEDCCD23A80FE300EC495E /* DataErrorHandler.swift */,
+			);
+			path = Handlers;
+			sourceTree = "<group>";
+		};
 		9F0C3C0D2316DD4100299985 /* Assembley */ = {
 			isa = PBXGroup;
 			children = (
@@ -477,6 +508,7 @@
 			isa = PBXGroup;
 			children = (
 				9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */,
+				5ADEDCC623A80F7400EC495E /* Error Handling */,
 			);
 			path = Handlers;
 			sourceTree = "<group>";
@@ -722,14 +754,6 @@
 			path = Pgp;
 			sourceTree = "<group>";
 		};
-		A3D328BF22E1C640002888F4 /* Storyboards */ = {
-			isa = PBXGroup;
-			children = (
-				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
-			);
-			path = Storyboards;
-			sourceTree = "<group>";
-		};
 		A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -744,6 +768,7 @@
 		A3DAD60C22E469E400F2C4CD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
 				32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
@@ -777,7 +802,6 @@
 			isa = PBXGroup;
 			children = (
 				32DCA376D595968F13A3347A /* Core */,
-				A3D328BF22E1C640002888F4 /* Storyboards */,
 				C132B9C51EC2DCAB00763715 /* Controllers */,
 				04B4728A1ECE29D200B8266F /* Model */,
 				9FD22A1D230FEEC8005067A6 /* Views */,
@@ -825,7 +849,6 @@
 				9F56BD2D23438ABA00A7371A /* Taptic.swift */,
 				9F56BD3723438C7000A7371A /* DateFormatting.swift */,
 				9F716304234FC7200031645E /* Localization.swift */,
-				9F82779323736EF100E19C07 /* MailDestination.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1265,6 +1288,7 @@
 				9F4453C2236B9273005D7D05 /* TextFieldNode.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
 				9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */,
+				5ADEDCCC23A80FD300EC495E /* ViewControllerErrorHandler.swift in Sources */,
 				9F589F1F238C8A90007FD759 /* Token.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */,
@@ -1277,6 +1301,7 @@
 				9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */,
 				9FD364862381EFCB00657302 /* EnterPassPhraseViewController.swift in Sources */,
 				9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */,
+				5ADEDCC523A80CDA00EC495E /* AppErrorHandler.swift in Sources */,
 				9F0C3C2823194E8500299985 /* Extensions.swift in Sources */,
 				9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */,
 				32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */,
@@ -1317,6 +1342,7 @@
 				9F23EA522372175E0017DFED /* ComposeViewController+Setup.swift in Sources */,
 				9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
+				5ADEDCCA23A80FBD00EC495E /* ErrorHandler.swift in Sources */,
 				32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
 				32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */,
@@ -1332,7 +1358,9 @@
 				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
 				9F56BD2E23438ABA00A7371A /* Taptic.swift in Sources */,
 				9FDF363A235A0B3B00614596 /* HeaderNode.swift in Sources */,
+				5ADEDCCE23A80FE300EC495E /* DataErrorHandler.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
+				5ADEDCC823A80F8100EC495E /* ErrorLevel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
