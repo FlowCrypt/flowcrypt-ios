@@ -129,9 +129,11 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private func handleError(with error: Error) { 
         switch AppErr(error) {
         case .connection:
-            hideSpinner()
+            let error = ViewControllerError.MyMenu.general
+            appErrorHandler.handle(error: .viewController(error, self))
         default:
-            showAlert(error: error, message: "error_fetch_folders".localized)
+            let error = ViewControllerError.MyMenu.fetchFolders
+            appErrorHandler.handle(error: .viewController(error, self))
         }
 
     }

@@ -8,10 +8,20 @@
 
 import Foundation
 
+enum DataError: Error {
+    case userRequired
+}
+
 struct DataErrorHandler: ErrorHandlerType {
     func handle(error level: ErrorLevel) -> Bool {
         guard case let .dataError(error) = level else { return false }
 
+        switch error {
+        case DataError.userRequired:
+            print("Show User login flow")
+        default:
+            return false
+        }
 
         return true
     }

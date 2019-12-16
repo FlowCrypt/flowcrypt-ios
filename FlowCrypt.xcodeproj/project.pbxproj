@@ -46,6 +46,7 @@
 		5ADEDCCA23A80FBD00EC495E /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC923A80FBD00EC495E /* ErrorHandler.swift */; };
 		5ADEDCCC23A80FD300EC495E /* ViewControllerErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCCB23A80FD300EC495E /* ViewControllerErrorHandler.swift */; };
 		5ADEDCCE23A80FE300EC495E /* DataErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCCD23A80FE300EC495E /* DataErrorHandler.swift */; };
+		5ADEDCD223A817AB00EC495E /* RequiredOptional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCD123A817AB00EC495E /* RequiredOptional.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
@@ -225,6 +226,7 @@
 		5ADEDCC923A80FBD00EC495E /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		5ADEDCCB23A80FD300EC495E /* ViewControllerErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerErrorHandler.swift; sourceTree = "<group>"; };
 		5ADEDCCD23A80FE300EC495E /* DataErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataErrorHandler.swift; sourceTree = "<group>"; };
+		5ADEDCD123A817AB00EC495E /* RequiredOptional.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequiredOptional.swift; sourceTree = "<group>"; };
 		5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
 		6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.testflight.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -482,6 +484,7 @@
 				5ADEDCC923A80FBD00EC495E /* ErrorHandler.swift */,
 				5ADEDCC723A80F8100EC495E /* ErrorLevel.swift */,
 				5ADEDCCF23A8102100EC495E /* Handlers */,
+				5ADEDCD123A817AB00EC495E /* RequiredOptional.swift */,
 			);
 			path = "Error Handling";
 			sourceTree = "<group>";
@@ -1324,6 +1327,7 @@
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F82779C23737E2B00E19C07 /* MessageSubjectNode.swift in Sources */,
 				9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */,
+				5ADEDCD223A817AB00EC495E /* RequiredOptional.swift in Sources */,
 				9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */,
 				32DCAAD97FDEB229EA327DB5 /* SecPaddingExtension.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* UserService.swift in Sources */,

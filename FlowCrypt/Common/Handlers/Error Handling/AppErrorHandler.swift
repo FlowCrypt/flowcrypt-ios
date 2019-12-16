@@ -9,11 +9,15 @@
 import UIKit
  
 /// Common Service which handle application errors
-struct AppErrorHandler {
+final class AppErrorHandler {
     static let `default` = AppErrorHandler(
         handlers: ErrorHandlerBuilder().handlers()
     )
     private let handlers: [ErrorHandlerType]
+
+    private init(handlers: [ErrorHandlerType]) {
+        self.handlers = handlers
+    }
 }
 
 extension AppErrorHandler: ErrorHandlerType {
@@ -30,3 +34,23 @@ extension AppErrorHandler: ErrorHandlerType {
         return true
     }
 }
+
+
+// TODO: - App Error
+// Workaround to not inject AppErrorHandler to every ViewController.
+// Should be updated with DI
+extension UIViewController {
+    private static var _appErrorHandler = [String:AppErrorHandler]()
+
+    var appErrorHandler: AppErrorHandler {
+        get {
+            let tmpAddress = String(format: "%p", unsafeBitCast(self, to: Int.self))
+            return UIViewController._appErrorHandler[tmpAddress] ?? AppErrorHandler.default
+        }
+        set(newValue) {
+            let tmpAddress = String(format: "%p", unsafeBitCast(self, to: Int.self))
+            UIViewController._appErrorHandler[tmpAddress] = newValue
+        }
+    }
+}
+
