@@ -23,7 +23,9 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let router: GlobalRouterType
 
     private lazy var headerViewModel: MenuHeaderViewModel = {
-        let name = dataManager.currentUser?.name
+        let name = dataManager.currentUser
+            .required? // TODO: - TOM
+            .name
             .split(separator: " ")
             .first
             .map(String.init) ?? ""
@@ -126,7 +128,8 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         tableNode.reloadData()
     }
 
-    private func handleError(with error: Error) { 
+    private func handleError(with error: Error) {
+        // TODO: - TOM
         switch AppErr(error) {
         case .connection:
             let error = ViewControllerError.MyMenu.general

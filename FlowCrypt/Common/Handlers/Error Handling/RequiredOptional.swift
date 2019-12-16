@@ -9,15 +9,20 @@
 import Foundation
 
 extension Optional {
+    func orThrow(_ errorExpression: @autoclosure () -> Error) throws -> Wrapped {
+        guard let value = self else {
+            throw errorExpression()
+        }
+        return value
+    }
+}
 
-    /// Optional property that shoul be required inside the application
+extension Optional {
     var required: Wrapped? {
-        switch self {
-        case .some(let value):
-            return value
-        default:
+        guard let value = try? self.orThrow(DataError.userRequired) else {
             AppErrorHandler.default.handle(error: .dataError(DataError.userRequired))
             return nil
         }
+        return value
     }
 }
