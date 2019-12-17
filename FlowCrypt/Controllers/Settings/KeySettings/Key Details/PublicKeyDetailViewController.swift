@@ -1,5 +1,5 @@
 //
-//  PublickKeyDetailViewController.swift
+//  PublicKeyDetailViewController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 12/13/19.
@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-final class PublickKeyDetailViewController: ASViewController<TableNode> {
+final class PublicKeyDetailViewController: ASViewController<TableNode> {
     private let text: String
 
     init(text: String) {
@@ -30,7 +30,7 @@ final class PublickKeyDetailViewController: ASViewController<TableNode> {
     }
 }
 
-extension PublickKeyDetailViewController: ASTableDelegate, ASTableDataSource {
+extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         1
     }

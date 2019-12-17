@@ -198,7 +198,7 @@ struct MsgBlock: Decodable {
     }
 }
 
-struct KeyId: Decodable {
+struct KeyId: Decodable, Equatable {
     let shortid: String
     let longid: String
     let fingerprint: String

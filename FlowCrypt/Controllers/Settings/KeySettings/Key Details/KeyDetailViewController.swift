@@ -73,7 +73,7 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
     private func handleTap(on part: Parts) {
         switch part {
         case .publicInfo:
-            let viewController = PublickKeyDetailViewController(text: key.publicKey)
+            let viewController = PublicKeyDetailViewController(text: key.publicKey)
             navigationController?.pushViewController(viewController, animated: true)
         case .copy:
             pasteboard.string = key.publicKey

@@ -59,7 +59,7 @@
 		5ADEDCB123A3EAAF00EC495E /* KeySettingCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */; };
 		5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */; };
 		5ADEDCB923A42B9400EC495E /* KeySettingsItemDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */; };
-		5ADEDCBC23A4329000EC495E /* PublickKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBB23A4329000EC495E /* PublickKeyDetailViewController.swift */; };
+		5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */; };
 		5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */; };
 		5ADEDCC023A43B0800EC495E /* KeyDetailInfoDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */; };
 		5ADEDCC223A43C6800EC495E /* KeyTextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */; };
@@ -253,7 +253,7 @@
 		5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingCellNode.swift; sourceTree = "<group>"; };
 		5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailViewController.swift; sourceTree = "<group>"; };
 		5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsItemDecorator.swift; sourceTree = "<group>"; };
-		5ADEDCBB23A4329000EC495E /* PublickKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublickKeyDetailViewController.swift; sourceTree = "<group>"; };
+		5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicKeyDetailViewController.swift; sourceTree = "<group>"; };
 		5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewController.swift; sourceTree = "<group>"; };
 		5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoDecorator.swift; sourceTree = "<group>"; };
 		5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTextCellNode.swift; sourceTree = "<group>"; };
@@ -594,7 +594,7 @@
 			isa = PBXGroup;
 			children = (
 				5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */,
-				5ADEDCBB23A4329000EC495E /* PublickKeyDetailViewController.swift */,
+				5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */,
 				5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */,
 				5ADEDCBA23A42CE300EC495E /* Helpers */,
 				5ADEDCC323A43C8600EC495E /* Nodes */,
@@ -1419,7 +1419,7 @@
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
 				5ADEDCC223A43C6800EC495E /* KeyTextCellNode.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
-				5ADEDCBC23A4329000EC495E /* PublickKeyDetailViewController.swift in Sources */,
+				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
 				9F56BD3423438B7100A7371A /* InboxCellNodeInput .swift in Sources */,
 				9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */,
 				9F589F13238C7DF2007FD759 /* User+Google.swift in Sources */,

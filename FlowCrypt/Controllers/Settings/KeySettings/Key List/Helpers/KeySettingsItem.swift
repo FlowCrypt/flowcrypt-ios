@@ -22,6 +22,12 @@ extension KeySettingsItem {
         self.createdDate = Date(timeIntervalSince1970: TimeInterval(details.created))
         self.details = details.ids
         self.publicKey = details.public
-        self.users = details.users.reduce("", +)
+        self.users = details.users.reduce("") { (result, newValue) in
+            var new = result
+            new.append(newValue)
+            new.append(" ")
+            return new
+        }
+        print(self.users)
     }
 }
