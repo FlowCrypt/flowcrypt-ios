@@ -13,11 +13,6 @@ protocol MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Promise<MessageContext>
 }
 
-struct MessageContext {
-    let messages: [MCOIMAPMessage]
-    let totalMessages: Int
-}
-
 extension Imap: MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Promise<MessageContext> {
         return Promise { [weak self] resolve, reject in

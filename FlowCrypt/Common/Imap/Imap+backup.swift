@@ -20,7 +20,10 @@ extension Imap: BackupProvider {
             let searchExpr = self.createSearchBackupExpression()
             var folderPaths = try await(self.fetchFolders()).folders
                 .compactMap { $0.path }
-                .compactMap { (path: String) -> String? in path.isEmpty || path == Constants.Global.gmailRootPath ? nil : path }
+                .compactMap { (path: String) -> String? in
+                    path.isEmpty || path == Constants.Global.gmailRootPath
+                        ? nil : path
+                }
             if folderPaths.contains(Constants.Global.gmailAllMailPath) {
                 folderPaths = [Constants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
             }
@@ -104,14 +107,19 @@ extension Imap: BackupProvider {
     }
 
     private func subjectsExpr() -> MCOIMAPSearchExpression {
-        var resultArray = Constants.EmailConstant.recoverAccountSearchSubject.compactMap { MCOIMAPSearchExpression.searchSubject($0) }
+        var resultArray = Constants.EmailConstant.recoverAccountSearchSubject
+            .compactMap { MCOIMAPSearchExpression.searchSubject($0) }
+        
         while resultArray.count > 1 {
             resultArray = resultArray
                 .chunked(2)
-                .compactMap { (chunk) -> MCOIMAPSearchExpression? in
+                .compactMap { chunk -> MCOIMAPSearchExpression? in
                     guard let firstSearchExp = chunk.first else { return nil }
                     guard let secondSearchExp = chunk[safe: 1] else { return firstSearchExp }
-                    return MCOIMAPSearchExpression.searchOr(firstSearchExp, other: secondSearchExp)
+                    return MCOIMAPSearchExpression.searchOr(
+                        firstSearchExp,
+                        other: secondSearchExp
+                    )
                 }
         }
         return resultArray.first! // app should crash if we got this wrong
@@ -124,7 +132,15 @@ extension Imap: BackupProvider {
         )
         return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: subjectsExpr())
     }
+    
+    
+    func searchExpressions(for string: String) {
+        let searchExpression = MCOIMAPSearchExpression.searchSubject(string)
+        
+        
+    }
 }
+
 
 private struct UidsContext {
     let path: String
