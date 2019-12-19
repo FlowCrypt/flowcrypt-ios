@@ -71,6 +71,9 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
         setupUI()
         setupNavigationBar()
+        
+        let a = Imap().searchExpressions(for: "Anton")
+        let b = Imap().createSearchExpressions(from: a)
     }
 
     override func viewWillAppear(_ animated: Bool) {

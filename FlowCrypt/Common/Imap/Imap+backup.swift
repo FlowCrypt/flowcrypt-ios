@@ -133,12 +133,7 @@ extension Imap: BackupProvider {
         return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: subjectsExpr())
     }
     
-    
-    func searchExpressions(for string: String) {
-        let searchExpression = MCOIMAPSearchExpression.searchSubject(string)
-        
-        
-    }
+ 
 }
 
 
