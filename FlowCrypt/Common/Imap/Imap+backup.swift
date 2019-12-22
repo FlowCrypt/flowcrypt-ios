@@ -17,7 +17,9 @@ extension Imap: BackupProvider {
     func searchBackups() -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
-            let searchExpr = self.createSearchBackupExpression()
+            guard let searchExpr = self.createSearchBackupExpression() else {
+                throw AppErr.general("could not create search expression")
+            }
             var folderPaths = try await(self.fetchFolders()).folders
                 .compactMap { $0.path }
                 .compactMap { (path: String) -> String? in
@@ -58,46 +60,6 @@ extension Imap: BackupProvider {
     }
 
     // todo - should be moved to a general Imap class or extension
-    private func fetchMessagesIn(folder: String, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> {
-        return Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            let start = DispatchTime.now()
-            let kind = DefaultMessageKindProvider().imapMessagesRequestKind
-
-            guard uids.count() > 0 else {
-                log("fetchMsgs_empty", error: nil, res: [], start: start)
-                resolve([]) // attempting to fetch an empty set of uids would cause IMAP error
-                return
-            }
-
-            let messages = try await(self.fetchMessage(in: folder, kind: kind, uids: uids))
-            resolve(messages)
-        }
-    }
-
-    // todo - should be moved to a general Imap class or extension
-    private func fetchMessage(in folder: String, kind: MCOIMAPMessagesRequestKind, uids: MCOIndexSet) -> Promise<[MCOIMAPMessage]> {
-        return Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.getImapSess()
-                .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
-                .start { error, msgs, _ in
-                    guard self.notRetrying("fetchMsgs", error, resolve, reject, retry: {
-                        self.fetchMessage(in: folder, kind: kind, uids: uids)
-                    }) else { return }
-
-                    if let messages = msgs as? [MCOIMAPMessage] {
-                        return resolve(messages)
-                    } else {
-                        reject(AppErr.cast("msgs as? [MCOIMAPMessage]"))
-                    }
-                }
-        }
-    }
-
-    // todo - should be moved to a general Imap class or extension
     private func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
         return Promise<MCOIndexSet> { resolve, reject in
             self.getImapSess()
@@ -106,34 +68,28 @@ extension Imap: BackupProvider {
         }
     }
 
-    private func subjectsExpr() -> MCOIMAPSearchExpression {
-        var resultArray = Constants.EmailConstant.recoverAccountSearchSubject
+    private func subjectsExpr() -> MCOIMAPSearchExpression? {
+        let expressions = Constants.EmailConstant
+            .recoverAccountSearchSubject
             .compactMap { MCOIMAPSearchExpression.searchSubject($0) }
         
-        while resultArray.count > 1 {
-            resultArray = resultArray
-                .chunked(2)
-                .compactMap { chunk -> MCOIMAPSearchExpression? in
-                    guard let firstSearchExp = chunk.first else { return nil }
-                    guard let secondSearchExp = chunk[safe: 1] else { return firstSearchExp }
-                    return MCOIMAPSearchExpression.searchOr(
-                        firstSearchExp,
-                        other: secondSearchExp
-                    )
-                }
+        guard let expression = createSearchExpressions(from: expressions) else {
+            return nil
         }
-        return resultArray.first! // app should crash if we got this wrong
+        
+        return expression
     }
 
-    private func createSearchBackupExpression() -> MCOIMAPSearchExpression {
+    private func createSearchBackupExpression() -> MCOIMAPSearchExpression? {
+        guard let expression = subjectsExpr() else { return nil }
+        
         let fromToExpr = MCOIMAPSearchExpression.searchAnd(
             MCOIMAPSearchExpression.search(from: email),
             other: MCOIMAPSearchExpression.search(to: email)
         )
-        return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: subjectsExpr())
+        
+        return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: expression)
     }
-    
- 
 }
 
 

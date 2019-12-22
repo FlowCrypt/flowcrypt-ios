@@ -30,45 +30,42 @@ protocol SearchResultsProvider {
     func search(
         expression: String,
         in folder: String,
+        destinaions: [SearchDestinations],
         count: Int,
         from: Int?
     ) -> Promise<MessageContext>
-    
-    func searchExpressions(
-        for string: String,
-        destinaions: [SearchDestinations]
-    ) -> [MCOIMAPSearchExpression]
-    
+     
     func createSearchExpressions(from possibleExpressions: [MCOIMAPSearchExpression]) -> MCOIMAPSearchExpression?
 }
 
-
-
-extension Imap {
+extension Imap: SearchResultsProvider {
     func search(
         expression: String,
         in folder: String,
+        destinaions: [SearchDestinations] = SearchDestinations.allCases,
         count: Int,
         from: Int?
     ) -> Promise<MessageContext> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            self.getImapSess()
-            
+           
+            let session = self.getImapSess()
+            let searchExpressions = self.createSearchExpressions(
+                from: destinaions.map { $0.searchExpresion(expression) }
+            )
+            let operation = session.searchExpressionOperation(
+                withFolder: folder,
+                expression: searchExpressions
+            )
+            operation?.start { (error, indexSet) in
+                print(indexSet!)
+            }
             
             
             return reject(AppErr.nilSelf)
         }
     }
-    
-    
-    func searchExpressions(
-        for string: String,
-        destinaions: [SearchDestinations] = SearchDestinations.allCases
-    ) -> [MCOIMAPSearchExpression] {
-        destinaions.map { $0.searchExpresion(string) }
-    }
-    
+     
     func createSearchExpressions(from possibleExpressions: [MCOIMAPSearchExpression]) -> MCOIMAPSearchExpression? {
         
         if possibleExpressions.isEmpty {

@@ -36,7 +36,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     private var state: State = .idle
 
-    private let messageProvider: MessageProvider
+    private let messageProvider: MessageProvider & SearchResultsProvider
     private let viewModel: InboxViewModel
     private var messages: [MCOIMAPMessage] = []
     private let tableNode: ASTableNode
@@ -49,7 +49,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel = .empty,
-        messageProvider: MessageProvider = Imap()
+        messageProvider: MessageProvider & SearchResultsProvider = Imap()
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
@@ -71,14 +71,19 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
         setupUI()
         setupNavigationBar()
-        
-        let a = Imap().searchExpressions(for: "Anton")
-        let b = Imap().createSearchExpressions(from: a)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        
+        messageProvider.search(
+            expression: "Google",
+            in: "INBOX",
+            destinaions: SearchDestinations.allCases,
+            count: 10,
+            from: 0
+        )
     }
 
     override func viewDidLayoutSubviews() {
@@ -123,7 +128,11 @@ extension InboxViewController {
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
         messageProvider
-            .fetchMessages(for: viewModel.path, count: Constants.numberOfMessagesToLoad, from: 0)
+            .fetchMessages(
+                for: viewModel.path,
+                count: Constants.numberOfMessagesToLoad,
+                from: 0
+            )
             .then { [weak self] context in
                 self?.handleEndFetching(with: context, context: batchContext)
             }

@@ -15,6 +15,17 @@ struct FoldersContext {
 
 protocol FoldersProvider {
     func fetchFolders() -> Promise<FoldersContext>
+    
+    func fetchMessagesIn(
+        folder: String,
+        uids: MCOIndexSet
+    ) -> Promise<[MCOIMAPMessage]>
+    
+    func fetchMessage(
+        in folder: String,
+        kind: MCOIMAPMessagesRequestKind,
+        uids: MCOIndexSet
+    ) -> Promise<[MCOIMAPMessage]>
 }
 
 extension Imap: FoldersProvider {
@@ -38,13 +49,57 @@ extension Imap: FoldersProvider {
         }
     }
 
-    // expunges messages from a folder which already have a /Deleted flag set on them
     func expungeMsgs(folder: String) -> Promise<Void> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
             self.getImapSess()
                 .expungeOperation(folder)
                 .start(self.finalizeVoid("expungeMsgs", resolve, reject, retry: { self.expungeMsgs(folder: folder) }))
+        }
+    }
+    
+    func fetchMessagesIn(
+        folder: String,
+        uids: MCOIndexSet
+    ) -> Promise<[MCOIMAPMessage]> {
+        Promise { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf) }
+
+            let start = DispatchTime.now()
+            let kind = DefaultMessageKindProvider().imapMessagesRequestKind
+
+            guard uids.count() > 0 else {
+                log("fetchMsgs_empty", error: nil, res: [], start: start)
+                resolve([]) // attempting to fetch an empty set of uids would cause IMAP error
+                return
+            }
+
+            let messages = try await(self.fetchMessage(in: folder, kind: kind, uids: uids))
+            resolve(messages)
+        }
+    }
+
+    func fetchMessage(
+        in folder: String,
+        kind: MCOIMAPMessagesRequestKind,
+        uids: MCOIndexSet
+    ) -> Promise<[MCOIMAPMessage]> {
+        Promise { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf) }
+
+            self.getImapSess()
+                .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
+                .start { error, msgs, _ in
+                    guard self.notRetrying("fetchMsgs", error, resolve, reject, retry: {
+                        self.fetchMessage(in: folder, kind: kind, uids: uids)
+                    }) else { return }
+
+                    if let messages = msgs as? [MCOIMAPMessage] {
+                        return resolve(messages)
+                    } else {
+                        reject(AppErr.cast("msgs as? [MCOIMAPMessage]"))
+                    }
+                }
         }
     }
 }
