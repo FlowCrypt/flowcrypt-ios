@@ -23,11 +23,11 @@ extension Imap: BackupProvider {
             var folderPaths = try await(self.fetchFolders()).folders
                 .compactMap { $0.path }
                 .compactMap { (path: String) -> String? in
-                    path.isEmpty || path == Constants.Global.gmailRootPath
+                    path.isEmpty || path == GeneralConstants.Global.gmailRootPath
                         ? nil : path
                 }
-            if folderPaths.contains(Constants.Global.gmailAllMailPath) {
-                folderPaths = [Constants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
+            if folderPaths.contains(GeneralConstants.Global.gmailAllMailPath) {
+                folderPaths = [GeneralConstants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
             }
             let dataArr = try folderPaths
                 .compactMap { folder in UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr))) }
@@ -60,7 +60,7 @@ extension Imap: BackupProvider {
     }
 
     private func subjectsExpr() -> MCOIMAPSearchExpression? {
-        let expressions = Constants.EmailConstant
+        let expressions = GeneralConstants.EmailConstant
             .recoverAccountSearchSubject
             .compactMap { MCOIMAPSearchExpression.searchSubject($0) }
         

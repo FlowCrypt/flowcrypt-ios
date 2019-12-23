@@ -75,3 +75,6 @@
 "import_no_backups_clipboard" = "No backups found for account: \n";
 "import_key_choose" = "Choose Another Key";
 "import_key_continue" = "Continue";
+
+// Search
+"search_title" = "Search";

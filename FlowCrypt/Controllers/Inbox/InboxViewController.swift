@@ -9,7 +9,6 @@ import UIKit
 final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
         static let numberOfMessagesToLoad = 20
-        static let messageSizeLimit: Int = 5_000_000
     }
 
     enum State {
@@ -36,7 +35,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     private var state: State = .idle
 
-    private let messageProvider: MessageProvider & SearchResultsProvider
+    private let messageProvider: MessageProvider
     private let viewModel: InboxViewModel
     private var messages: [MCOIMAPMessage] = []
     private let tableNode: ASTableNode
@@ -49,7 +48,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel = .empty,
-        messageProvider: MessageProvider & SearchResultsProvider = Imap()
+        messageProvider: MessageProvider = Imap()
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
@@ -76,14 +75,6 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        
-        messageProvider.search(
-            expression: "Google",
-            in: "INBOX",
-            destinaions: SearchDestinations.allCases,
-            count: 10,
-            from: 0
-        )
     }
 
     override func viewDidLayoutSubviews() {
@@ -224,8 +215,8 @@ extension InboxViewController {
     }
 
     @objc private func handleSearchTap() {
-        #warning("ToDo")
-        showToast("Search not implemented yet")
+        let viewController = SearchViewController()
+        navigationController?.pushViewController(viewController, animated: true)
     }
 
     @objc private func refresh() {
@@ -240,25 +231,8 @@ extension InboxViewController {
     }
 }
 
-extension InboxViewController {
-    private func openMessageIfPossible(with message: MCOIMAPMessage) {
-        if Int(message.size) > Constants.messageSizeLimit {
-            showToast("Messages larger than 5MB are not supported yet")
-        } else {
-            let messageInput = MsgViewController.Input(
-                objMessage: message,
-                bodyMessage: nil,
-                path: viewModel.path
-            )
-
-            let msgVc = MsgViewController(input: messageInput) { [weak self] operation, message in
-                self?.handleMessage(operation: operation, message: message)
-            }
-            navigationController?.pushViewController(msgVc, animated: true)
-        }
-    }
-
-    private func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
+extension InboxViewController: MessageHandlerViewConroller {
+    func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
         guard let index = messages.firstIndex(of: message) else { return }
         switch operation {
         case .markAsRead: markAsRead(message: message, at: index)
@@ -334,7 +308,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         tableNode.deselectRow(at: indexPath, animated: true)
         guard let message = messages[safe: indexPath.row] else { return }
 
-        openMessageIfPossible(with: message)
+        openMessageIfPossible(with: message, path: viewModel.path)
     }
 }
 

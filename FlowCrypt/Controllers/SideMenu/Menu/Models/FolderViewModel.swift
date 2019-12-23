@@ -23,7 +23,7 @@ struct FolderViewModel {
 
 extension FolderViewModel {
     init?(_ folder: MCOIMAPFolder, image: UIImage? = nil, itemType: ItemType = .folder) {
-        let gmailRootPath = Constants.Global.gmailRootPath
+        let gmailRootPath = GeneralConstants.Global.gmailRootPath
         guard !folder.path.isEmpty else { return nil }
         guard folder.path != gmailRootPath else { return nil }
         name = folder.path.contains(gmailRootPath)

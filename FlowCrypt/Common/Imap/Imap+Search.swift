@@ -58,7 +58,7 @@ extension Imap: SearchResultsProvider {
             let kind = self.messageKindProvider.imapMessagesRequestKind
             let indexes = try await(self.fetchUids(folder: folder, expr: expression))
             let messages = try await(self.fetchMsgsByNumber(
-                for: Constants.Global.gmailAllMailPath,
+                for: GeneralConstants.Global.gmailAllMailPath,
                 kind: kind,
                 set: indexes
             ))
