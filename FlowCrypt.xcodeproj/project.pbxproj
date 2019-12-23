@@ -71,6 +71,9 @@
 		9F31AB97232BF03D00CF87EA /* MenuHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB96232BF03D00CF87EA /* MenuHeaderViewModel.swift */; };
 		9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
+		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
+		9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
+		9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */; };
 		9F4453C0236B894D005D7D05 /* TableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453BF236B894D005D7D05 /* TableNode.swift */; };
 		9F4453C2236B9273005D7D05 /* TextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C1236B9273005D7D05 /* TextFieldNode.swift */; };
 		9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerNode.swift */; };
@@ -250,6 +253,8 @@
 		9F31AB96232BF03D00CF87EA /* MenuHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeaderViewModel.swift; sourceTree = "<group>"; };
 		9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
+		9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelper.swift; sourceTree = "<group>"; };
+		9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelperTest.swift; sourceTree = "<group>"; };
 		9F4453BF236B894D005D7D05 /* TableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNode.swift; sourceTree = "<group>"; };
 		9F4453C1236B9273005D7D05 /* TextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNode.swift; sourceTree = "<group>"; };
 		9F4453C3236B96F9005D7D05 /* DividerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerNode.swift; sourceTree = "<group>"; };
@@ -572,6 +577,8 @@
 				9F56BD2B23438A8500A7371A /* Imap+messages.swift */,
 				9F9ABC8423AC1E5700D560E3 /* Imap+Search.swift */,
 				9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */,
+				9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */,
+				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 			);
 			path = Imap;
 			sourceTree = "<group>";
@@ -1212,6 +1219,7 @@
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				A3DAD60A22E458C100F2C4CD /* CodableExntension.swift in Sources */,
 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
+				9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */,
 				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
@@ -1220,6 +1228,7 @@
 				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */,
 				9F589F0F238C7D15007FD759 /* LocalStorageTest.swift in Sources */,
 				32DCA17B0294558E2ADA998D /* bignum.c in Sources */,
+				9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */,
 				32DCA3847AFB3D05608CB191 /* Core.swift in Sources */,
 				32DCA1D6067D3A5B9AF03635 /* CoreHost.swift in Sources */,
 				32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */,
@@ -1300,6 +1309,7 @@
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
 				9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */,
 				9F31AB97232BF03D00CF87EA /* MenuHeaderViewModel.swift in Sources */,
+				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
 				32DCA64A309E3C34D8C9039E /* DispatchTimeExtension.swift in Sources */,
 				9F268894237DD98900428A94 /* ImportKeyDecorator.swift in Sources */,

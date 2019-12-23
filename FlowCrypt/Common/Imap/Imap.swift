@@ -6,6 +6,7 @@ import Promises
 import UIKit
 
 final class Imap {
+    let helper: ImapHelperType
     let inboxFolder = "INBOX"
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
@@ -40,10 +41,15 @@ final class Imap {
         return token
     }
 
-    init(userService: UserService = .shared, dataManager: DataManagerType = DataManager.shared) {
+    init(
+        userService: UserService = .shared,
+        dataManager: DataManagerType = DataManager.shared,
+        helper: ImapHelperType = ImapHelper()
+    ) {
         self.userService = userService
         self.dataManager = dataManager
-
+        self.helper = helper
+        
         setup()
     }
 
