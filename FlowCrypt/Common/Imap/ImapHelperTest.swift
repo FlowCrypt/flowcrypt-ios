@@ -42,6 +42,12 @@ class ImapHelperTest: XCTestCase {
         XCTAssert(set.nsIndexSet() == IndexSet(integer: 0))
     }
     
+    func test_create_with_one() {
+        let set = sut.createSet(for: 1, total: 83, from: 0)
+        XCTAssert(set.count() == 1)
+        XCTAssert(set.nsIndexSet() == IndexSet(integer: 83))
+    }
+    
     func test_create_search_expressions() {
         let emptyExpressions = sut.createSearchExpressions(from: [])
         XCTAssertNil(emptyExpressions)
@@ -61,3 +67,19 @@ class ImapHelperTest: XCTestCase {
         XCTAssertNotNil(three)
     }
 }
+//func createSet(
+//    for numberOfMessages: Int,
+//    total: Int,
+//    from: Int
+//) -> MCOIndexSet {
+//    var length = numberOfMessages - 1
+//    if length < 0 {
+//        length = 0
+//    }
+//    var diff = total - length - from
+//    if diff < 0 {
+//        diff = 1
+//    }
+//    let range = MCORange(location: UInt64(diff), length: UInt64(length))
+//    return MCOIndexSet(range: range)
+//}
