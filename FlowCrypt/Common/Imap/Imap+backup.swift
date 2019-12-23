@@ -59,21 +59,12 @@ extension Imap: BackupProvider {
         }
     }
 
-    // todo - should be moved to a general Imap class or extension
-    private func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
-        return Promise<MCOIndexSet> { resolve, reject in
-            self.getImapSess()
-                .searchExpressionOperation(withFolder: folder, expression: expr)
-                .start(self.finalize("searchExpression", resolve, reject, retry: { self.fetchUids(folder: folder, expr: expr) }))
-        }
-    }
-
     private func subjectsExpr() -> MCOIMAPSearchExpression? {
         let expressions = Constants.EmailConstant
             .recoverAccountSearchSubject
             .compactMap { MCOIMAPSearchExpression.searchSubject($0) }
         
-        guard let expression = createSearchExpressions(from: expressions) else {
+        guard let expression = helper.createSearchExpressions(from: expressions) else {
             return nil
         }
         

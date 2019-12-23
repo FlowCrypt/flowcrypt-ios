@@ -41,4 +41,23 @@ class ImapHelperTest: XCTestCase {
         XCTAssert(set.count() == 1)
         XCTAssert(set.nsIndexSet() == IndexSet(integer: 0))
     }
+    
+    func test_create_search_expressions() {
+        let emptyExpressions = sut.createSearchExpressions(from: [])
+        XCTAssertNil(emptyExpressions)
+        
+        let possibleExpressionsOne = [ MCOIMAPSearchExpression.search(from: "Ilon")! ]
+        
+        let one = sut.createSearchExpressions(from: possibleExpressionsOne)
+        XCTAssertNotNil(one)
+        
+        let possibleExpressions = [
+            MCOIMAPSearchExpression.search(from: "Ilon")!,
+            MCOIMAPSearchExpression.search(from: "Tesla")!,
+            MCOIMAPSearchExpression.search(from: "Model S")!
+        ]
+        
+        let three = sut.createSearchExpressions(from: possibleExpressions)
+        XCTAssertNotNil(three)
+    }
 }

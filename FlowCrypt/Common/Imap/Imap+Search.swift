@@ -33,9 +33,7 @@ protocol SearchResultsProvider {
         destinaions: [SearchDestinations],
         count: Int,
         from: Int?
-    ) -> Promise<MessageContext>
-     
-    func createSearchExpressions(from possibleExpressions: [MCOIMAPSearchExpression]) -> MCOIMAPSearchExpression?
+    ) -> Promise<[MCOIMAPMessage]>
 }
 
 extension Imap: SearchResultsProvider {
@@ -45,47 +43,37 @@ extension Imap: SearchResultsProvider {
         destinaions: [SearchDestinations] = SearchDestinations.allCases,
         count: Int,
         from: Int?
-    ) -> Promise<MessageContext> {
-        return Promise { [weak self] resolve, reject in
+    ) -> Promise<[MCOIMAPMessage]> {
+        return Promise { [weak self] (resolve, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
            
-            let session = self.getImapSess()
-            let searchExpressions = self.createSearchExpressions(
+            let searchExpressions = self.helper.createSearchExpressions(
                 from: destinaions.map { $0.searchExpresion(expression) }
             )
-            let operation = session.searchExpressionOperation(
-                withFolder: folder,
-                expression: searchExpressions
-            )
-            operation?.start { (error, indexSet) in
-                print(indexSet!)
+            
+            guard let expressions = searchExpressions else {
+                return resolve([])
             }
             
-            
-            return reject(AppErr.nilSelf)
+            let kind = self.messageKindProvider.imapMessagesRequestKind
+            let indexes = try await(self.fetchUids(folder: folder, expr: expressions))
+            let messages = try await(self.fetchMsgsByNumber(for: folder, kind: kind, set: indexes))
+
+            return resolve(messages)
         }
     }
-     
-    func createSearchExpressions(from possibleExpressions: [MCOIMAPSearchExpression]) -> MCOIMAPSearchExpression? {
-        
-        if possibleExpressions.isEmpty {
-            return nil
-        }
-        
-        if possibleExpressions.count == 1 {
-            return possibleExpressions[0]
-        }
-        
-        let possibleResult: [MCOIMAPSearchExpression] = possibleExpressions
-            .chunked(2)
-            .compactMap { chunk -> MCOIMAPSearchExpression? in
-                guard let firstSearchExp = chunk.first else { return nil }
-                guard let secondSearchExp = chunk[safe: 1] else { return firstSearchExp }
-                return MCOIMAPSearchExpression.searchOr(
-                    firstSearchExp,
-                    other: secondSearchExp
+    
+    func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
+        Promise<MCOIndexSet> { resolve, reject in
+            self.getImapSess()
+                .searchExpressionOperation(withFolder: folder, expression: expr)
+                .start(self.finalize(
+                    "searchExpression", resolve, reject,
+                    retry: {
+                        self.fetchUids(folder: folder, expr: expr)
+                    }
                 )
+            )
         }
-        return createSearchExpressions(from: possibleResult)
     }
 }

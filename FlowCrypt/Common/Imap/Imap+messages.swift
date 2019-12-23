@@ -24,7 +24,7 @@ extension Imap: MessageProvider {
                 total: totalCount,
                 from: from ?? 0
             )
-            let kind = DefaultMessageKindProvider().imapMessagesRequestKind
+            let kind = self.messageKindProvider.imapMessagesRequestKind
             let messages = try await(self.fetchMsgsByNumber(for: folder, kind: kind, set: set))
             resolve(MessageContext(messages: messages, totalMessages: totalCount))
         }
@@ -41,7 +41,7 @@ extension Imap: MessageProvider {
         }
     }
 
-    private func fetchMsgsByNumber(
+    func fetchMsgsByNumber(
         for folder: String,
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet

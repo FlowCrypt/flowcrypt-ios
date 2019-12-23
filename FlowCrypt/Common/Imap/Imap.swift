@@ -7,10 +7,12 @@ import UIKit
 
 final class Imap {
     let helper: ImapHelperType
+    let messageKindProvider: MessageKindProviderType
     let inboxFolder = "INBOX"
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
-
+    
+    typealias ImapIndexSet = MCOIndexSet
     typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
 
@@ -44,11 +46,13 @@ final class Imap {
     init(
         userService: UserService = .shared,
         dataManager: DataManagerType = DataManager.shared,
-        helper: ImapHelperType = ImapHelper()
+        helper: ImapHelperType = ImapHelper(),
+        messageKindProvider: MessageKindProviderType = MessageKindProvider()
     ) {
         self.userService = userService
         self.dataManager = dataManager
         self.helper = helper
+        self.messageKindProvider = messageKindProvider
         
         setup()
     }

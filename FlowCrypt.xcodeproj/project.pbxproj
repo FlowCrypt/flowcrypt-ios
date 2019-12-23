@@ -48,7 +48,7 @@
 		9F0C3C122316DDA500299985 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C112316DDA500299985 /* DataManager.swift */; };
 		9F0C3C142316E69300299985 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
 		9F0C3C18231819B200299985 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C17231819B200299985 /* Logger.swift */; };
-		9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProvider.swift */; };
+		9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProviderType.swift */; };
 		9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1B23186A5700299985 /* AuthAssembley.swift */; };
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
@@ -74,6 +74,7 @@
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
 		9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
 		9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */; };
+		9F3EF32B23B16ADE00FA0CEF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		9F4453C0236B894D005D7D05 /* TableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453BF236B894D005D7D05 /* TableNode.swift */; };
 		9F4453C2236B9273005D7D05 /* TextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C1236B9273005D7D05 /* TextFieldNode.swift */; };
 		9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerNode.swift */; };
@@ -230,7 +231,7 @@
 		9F0C3C112316DDA500299985 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9F0C3C132316E69300299985 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		9F0C3C17231819B200299985 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		9F0C3C19231819C500299985 /* MessageKindProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageKindProvider.swift; sourceTree = "<group>"; };
+		9F0C3C19231819C500299985 /* MessageKindProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageKindProviderType.swift; sourceTree = "<group>"; };
 		9F0C3C1B23186A5700299985 /* AuthAssembley.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAssembley.swift; sourceTree = "<group>"; };
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
 		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -498,7 +499,7 @@
 				9F589F19238C82A1007FD759 /* Local Storage */,
 				9F0C3C0F2316DD5B00299985 /* UserService.swift */,
 				9F589F1B238C8693007FD759 /* LogOutHandler.swift */,
-				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
+				9F0C3C19231819C500299985 /* MessageKindProviderType.swift */,
 				9F0C3C17231819B200299985 /* Logger.swift */,
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 			);
@@ -1212,6 +1213,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FB84728238FBD7400820C23 /* Localization.swift in Sources */,
+				9F3EF32B23B16ADE00FA0CEF /* Extensions.swift in Sources */,
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
 				9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
@@ -1301,7 +1303,7 @@
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
 				9F17976A2368EE90002BF770 /* SetupButtonNode.swift in Sources */,
 				32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */,
-				9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */,
+				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
 				9FDF3638235A0B3100614596 /* MenuNode.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				9F56BD3823438C7000A7371A /* DateFormatting.swift in Sources */,

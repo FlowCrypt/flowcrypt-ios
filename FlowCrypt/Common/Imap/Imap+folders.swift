@@ -66,7 +66,7 @@ extension Imap: FoldersProvider {
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             let start = DispatchTime.now()
-            let kind = DefaultMessageKindProvider().imapMessagesRequestKind
+            let kind = self.messageKindProvider.imapMessagesRequestKind
 
             guard uids.count() > 0 else {
                 log("fetchMsgs_empty", error: nil, res: [], start: start)
