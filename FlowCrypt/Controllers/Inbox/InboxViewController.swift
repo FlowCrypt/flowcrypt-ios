@@ -216,7 +216,7 @@ extension InboxViewController {
 
     @objc private func handleSearchTap() {
         let viewController = SearchViewController()
-        navigationController?.pushViewController(viewController, animated: true)
+        navigationController?.pushViewController(viewController, animated: false)
     }
 
     @objc private func refresh() {

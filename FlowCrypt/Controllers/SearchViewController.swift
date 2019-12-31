@@ -16,6 +16,8 @@ final class SearchViewController: ASViewController<TableNode> {
     private let messageProvider: SearchResultsProvider
     private var state: State = .idle
     
+    private let searchController = UISearchController(searchResultsController: nil)
+    
     init(
         messageProvider: SearchResultsProvider = Imap()
     ) {
@@ -30,9 +32,16 @@ final class SearchViewController: ASViewController<TableNode> {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupNavigationBar()
+        setupSearch()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        searchController.isActive = true
     }
 }
+
+// MARK: - Setup
 
 extension SearchViewController {
     private func setupUI() {
@@ -42,22 +51,61 @@ extension SearchViewController {
         node.dataSource = self
     }
 
-    private func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(
-            with: [
-                NavigationBarItemsView.Input(
-                    image: UIImage(named: "help_icn"),
-                    action: (self, #selector(handleInfoTap))
-                )
-            ]
-        )
+    private func setupSearch() {
+        searchController.do {
+            $0.delegate = self
+            $0.searchResultsUpdater = self
+            $0.hidesNavigationBarDuringPresentation = false
+            $0.searchBar.tintColor = .white
+            $0.searchBar.setImage( #imageLiteral(resourceName: "search_icn").tinted(.white), for: .search, state: .normal)
+            $0.searchBar.setImage( #imageLiteral(resourceName: "cancel.png").tinted(.white), for: .clear, state: .normal)
+        }
+        definesPresentationContext = true
+        navigationItem.titleView = searchController.searchBar
     }
-    
+ 
     @objc private func handleInfoTap() {
         #warning("ToDo")
         showToast("Email us at human@flowcrypt.com")
     }
 }
+
+// MARK: - MessageHandlerViewConroller
+
+extension SearchViewController: MessageHandlerViewConroller {
+    func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
+//        guard let index = messages.firstIndex(of: message) else { return }
+//        switch operation {
+//        case .markAsRead: markAsRead(message: message, at: index)
+//        case .moveToTrash, .archive, .permanentlyDelete: delete(message: message, at: index)
+//        }
+    }
+
+    private func delete(message _: MCOIMAPMessage, at index: Int) {
+//        guard messages[safe: index] != nil else { return }
+//        messages.remove(at: index)
+//
+//        if messages.isEmpty {
+//            state = .empty
+//            tableNode.reloadData()
+//        } else {
+//            let total = self.state.total ?? 0
+//            let newTotalCount = total - 1
+//            state = .fetched(newTotalCount)
+//            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+//        }
+    }
+
+    private func markAsRead(message: MCOIMAPMessage, at index: Int) {
+//        messages[index] = message
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+//            guard let self = self else { return }
+//            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+//        }
+    }
+}
+
+// MARK: - ASTableDataSource, ASTableDelegate
 
 extension SearchViewController : ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
@@ -113,35 +161,36 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
     }
 }
 
-extension SearchViewController: MessageHandlerViewConroller {
-    func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
-//        guard let index = messages.firstIndex(of: message) else { return }
-//        switch operation {
-//        case .markAsRead: markAsRead(message: message, at: index)
-//        case .moveToTrash, .archive, .permanentlyDelete: delete(message: message, at: index)
-//        }
+
+// MARK: - UISearchResults
+
+extension SearchViewController: UISearchResultsUpdating, UISearchControllerDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        let strippedString = searchText.trimmingCharacters(in: .whitespaces)
+        
+        guard strippedString.isNotEmpty else { return }
+        
+        print("^^ \(strippedString)")
+
+        let searchItems = strippedString.components(separatedBy: " ")
+        
+        print("^^ searchItems \(searchItems)")
     }
 
-    private func delete(message _: MCOIMAPMessage, at index: Int) {
-//        guard messages[safe: index] != nil else { return }
-//        messages.remove(at: index)
-//
-//        if messages.isEmpty {
-//            state = .empty
-//            tableNode.reloadData()
-//        } else {
-//            let total = self.state.total ?? 0
-//            let newTotalCount = total - 1
-//            state = .fetched(newTotalCount)
-//            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-//        }
-    }
-
-    private func markAsRead(message: MCOIMAPMessage, at index: Int) {
-//        messages[index] = message
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-//            guard let self = self else { return }
-//            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-//        }
+    func didPresentSearchController(_ searchController: UISearchController) {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.searchController.searchBar.becomeFirstResponder()
+        }
+        
+        searchController.searchBar.searchTextField.attributedPlaceholder = "search_placeholder"
+            .localized
+            .attributed(
+                .regular(14),
+                color: UIColor.white.withAlphaComponent(0.7),
+                alignment: .left
+            )
+        searchController.searchBar.searchTextField.textColor = .white
     }
 }
