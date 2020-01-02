@@ -10,11 +10,14 @@ import AsyncDisplayKit
 
 final class SearchViewController: ASViewController<TableNode> {
     enum State {
-        case idle, empty, fetched([MCOIMAPMessage]), error(String)
+        case idle, startFetching, empty, fetched([MCOIMAPMessage]), error(String)
+    }
+    
+    private var state: State = .idle {
+        didSet { updateState() }
     }
     
     private let messageProvider: SearchResultsProvider
-    private var state: State = .idle
     private var searchTask: DispatchWorkItem?
     
     private let searchController = UISearchController(searchResultsController: nil)
@@ -131,27 +134,30 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
             - safeAreaWindowInsets.bottom
 
         let size = CGSize(width: tableNode.frame.size.width, height: height)
-        let text = title ?? ""
-
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
             case .empty:
                 return TextCellNode(
-                    title: "\(text) is empty",
+                    title: "search_empty".localized,
                     withSpinner: false,
                     size: size
                 )
-            case .idle:
+            case .startFetching:
                 return TextCellNode(
                     title: "",
                     withSpinner: true,
                     size: size
                 )
-            case .fetched(let messages):
-                return InboxCellNode(message: InboxCellNodeInput(messages[indexPath.row])
+            case .idle:
+                return TextCellNode(
+                    title: "",
+                    withSpinner: false,
+                    size: size
                 )
+            case .fetched(let messages):
+                return InboxCellNode(message: InboxCellNodeInput(messages[indexPath.row]))
             case let .error(message):
                 return TextCellNode(title: message, withSpinner: false, size: size)
             }
@@ -202,8 +208,6 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
 
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        defer { }
-        
         guard let searchText = searchText(for: searchController.searchBar) else {
             searchTask?.cancel()
             return
@@ -224,6 +228,12 @@ extension SearchViewController: UISearchResultsUpdating {
     
     private func searchText(for searchBar: UISearchBar) -> String? {
         guard let text = searchBar.text, text.isNotEmpty else { return nil }
+        switch state {
+        case .idle, .empty, .error:
+            state = .startFetching
+        default:
+            break
+        }
         return text
     }
     
@@ -235,9 +245,35 @@ extension SearchViewController: UISearchResultsUpdating {
             destinaions: SearchDestinations.allCases,
             count: 10,
             from: 0
-        ).then {
-            print($0.count)
+            )
+            .catch(on: .main) { [weak self] error in
+                self?.handleError(with: error)
+            }
+            .then(on: .main) { [weak self] messages in
+                self?.handleFetchedMessages(with: messages)
+            }
+    }
+    
+    private func handleFetchedMessages(with messages: [MCOIMAPMessage]) {
+        if messages.isEmpty {
+            state = .empty
+        } else {
+            state = .fetched(messages)
         }
     }
 
+    private func handleError(with error: Error) {
+        state = .error("search_empty".localized)
+    }
+    
+    private func updateState() {
+        node.reloadData()
+        
+        switch state {
+        case .empty, .error, .fetched:
+            searchController.isActive = false
+        default:
+            break
+        }
+    }
 }

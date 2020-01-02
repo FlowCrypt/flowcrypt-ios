@@ -79,3 +79,5 @@
 // Search
 "search_title" = "Search";
 "search_placeholder" = "Search";
+"search_error" = "Error in searching";
+"search_empty" = "No messages found";
