@@ -17,6 +17,7 @@ extension Imap: MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Promise<MessageContext> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
+            
             let folderInfo = try await(self.folderInfo(for: folder))
             let totalCount = Int(folderInfo.messageCount)
             let set = self.helper.createSet(
@@ -33,6 +34,7 @@ extension Imap: MessageProvider {
     private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
+            
             self.getImapSess()
                 .folderInfoOperation(path)
                 .start(self.finalize("folderInfo", resolve, reject, retry: {
@@ -46,15 +48,15 @@ extension Imap: MessageProvider {
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet
     ) -> Promise<[MCOIMAPMessage]> {
-        return Promise { [weak self] resolve, reject in
+        Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            let start = DispatchTime.now() // because we only call finalize once it's finished, we need to supply start time
+            
             self.getImapSess()
                 .fetchMessagesByNumberOperation(withFolder: folder, requestKind: kind, numbers: set)
                 .start { error, messages, _ in // original method sig has 3 args, finalize expects 2 args
                     self.finalize("fetchMsgsByNumber", resolve, reject, retry: {
                         self.fetchMsgsByNumber(for: folder, kind: kind, set: set)
-                    }, start: start)(error, messages as? [MCOIMAPMessage])
+                    })(error, messages as? [MCOIMAPMessage])
                 }
         }
     }

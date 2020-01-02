@@ -8,7 +8,6 @@ import UIKit
 final class Imap {
     let helper: ImapHelperType
     let messageKindProvider: MessageKindProviderType
-    let inboxFolder = "INBOX"
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
     

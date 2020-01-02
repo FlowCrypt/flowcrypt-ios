@@ -56,7 +56,7 @@ extension Imap {
     }
 
     func renewSession() -> Promise<Void> {
-        return userService
+        userService
             .renewAccessToken()
             .then { [weak self] token -> Void in
                 self?.getImapSess(newAccessToken: token)

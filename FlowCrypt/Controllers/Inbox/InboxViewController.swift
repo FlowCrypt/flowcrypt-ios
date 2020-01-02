@@ -215,7 +215,7 @@ extension InboxViewController {
     }
 
     @objc private func handleSearchTap() {
-        let viewController = SearchViewController()
+        let viewController = SearchViewController(folderPath: viewModel.path)
         navigationController?.pushViewController(viewController, animated: false)
     }
 

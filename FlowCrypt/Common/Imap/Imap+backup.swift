@@ -17,6 +17,7 @@ extension Imap: BackupProvider {
     func searchBackups() -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
+            
             guard let searchExpr = self.createSearchBackupExpression() else {
                 throw AppErr.general("could not create search expression")
             }
@@ -49,13 +50,18 @@ extension Imap: BackupProvider {
 
     // todo - should be moved to a general Imap class or extension
     private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
-        return Promise<Data> { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-            self.getImapSess()
-                .fetchMessageAttachmentOperation(withFolder: folder, uid: msgUid, partID: part.partID, encoding: part.encoding)
-                .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
-                    self.fetchMsgAttribute(in: folder, msgUid: msgUid, part: part)
-                }))
+            Promise<Data> { [weak self] resolve, reject in
+                guard let self = self else { return reject(AppErr.nilSelf) }
+                self.getImapSess()
+                    .fetchMessageAttachmentOperation(
+                        withFolder: folder,
+                        uid: msgUid,
+                        partID: part.partID,
+                        encoding: part.encoding
+                    )
+                    .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
+                        self.fetchMsgAttribute(in: folder, msgUid: msgUid, part: part)
+                    }))
         }
     }
 

@@ -13,7 +13,7 @@ enum SearchDestinations: CaseIterable {
     case subject, from, to, recipient, content, body
     
     var searchExpresion: (String) -> (MCOIMAPSearchExpression) {
-        return { expression in
+        { expression in
             switch self {
             case .subject: return MCOIMAPSearchExpression.searchSubject(expression)
             case .from: return MCOIMAPSearchExpression.search(from: expression)
@@ -44,7 +44,7 @@ extension Imap: SearchResultsProvider {
         count: Int,
         from: Int?
     ) -> Promise<[MCOIMAPMessage]> {
-        return Promise { [weak self] (resolve, reject) in
+        Promise { [weak self] (resolve, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
            
             let searchExpressions = self.helper.createSearchExpressions(
@@ -57,6 +57,7 @@ extension Imap: SearchResultsProvider {
             
             let kind = self.messageKindProvider.imapMessagesRequestKind
             let indexes = try await(self.fetchUids(folder: folder, expr: expression))
+            
             let messages = try await(self.fetchMsgsByNumber(
                 for: GeneralConstants.Global.gmailAllMailPath,
                 kind: kind,
@@ -68,7 +69,9 @@ extension Imap: SearchResultsProvider {
     }
     
     func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
-        Promise<MCOIndexSet> { resolve, reject in
+        Promise<MCOIndexSet> { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf) }
+            
             self.getImapSess()
                 .searchExpressionOperation(withFolder: folder, expression: expr)
                 .start(self.finalize(

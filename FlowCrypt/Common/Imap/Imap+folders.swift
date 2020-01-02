@@ -52,6 +52,7 @@ extension Imap: FoldersProvider {
     func expungeMsgs(folder: String) -> Promise<Void> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
+           
             self.getImapSess()
                 .expungeOperation(folder)
                 .start(self.finalizeVoid("expungeMsgs", resolve, reject, retry: { self.expungeMsgs(folder: folder) }))

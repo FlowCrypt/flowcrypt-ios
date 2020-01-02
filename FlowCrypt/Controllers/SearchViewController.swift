@@ -15,13 +15,17 @@ final class SearchViewController: ASViewController<TableNode> {
     
     private let messageProvider: SearchResultsProvider
     private var state: State = .idle
+    private var searchTask: DispatchWorkItem?
     
     private let searchController = UISearchController(searchResultsController: nil)
+    private let folderPath: String
     
     init(
-        messageProvider: SearchResultsProvider = Imap()
+        messageProvider: SearchResultsProvider = Imap(),
+        folderPath: String
     ) {
         self.messageProvider = messageProvider
+        self.folderPath = folderPath
         super.init(node: TableNode())
     }
     
@@ -59,7 +63,10 @@ extension SearchViewController {
             $0.searchBar.tintColor = .white
             $0.searchBar.setImage( #imageLiteral(resourceName: "search_icn").tinted(.white), for: .search, state: .normal)
             $0.searchBar.setImage( #imageLiteral(resourceName: "cancel.png").tinted(.white), for: .clear, state: .normal)
+            $0.searchBar.delegate = self
+            $0.searchBar.searchTextField.textColor = .white
         }
+        update(searchController: searchController)
         definesPresentationContext = true
         navigationItem.titleView = searchController.searchBar
     }
@@ -162,28 +169,24 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
 }
 
 
-// MARK: - UISearchResults
+// MARK: - UISearchControllerDelegate
 
-extension SearchViewController: UISearchResultsUpdating, UISearchControllerDelegate {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text else { return }
-        let strippedString = searchText.trimmingCharacters(in: .whitespaces)
-        
-        guard strippedString.isNotEmpty else { return }
-        
-        print("^^ \(strippedString)")
-
-        let searchItems = strippedString.components(separatedBy: " ")
-        
-        print("^^ searchItems \(searchItems)")
+extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchText(for: searchController.searchBar) else { return }
+        searchTask?.cancel()
+        search(for: searchText)
     }
-
+    
     func didPresentSearchController(_ searchController: UISearchController) {
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             self?.searchController.searchBar.becomeFirstResponder()
         }
         
+        update(searchController: searchController)
+    }
+ 
+    private func update(searchController: UISearchController) {
         searchController.searchBar.searchTextField.attributedPlaceholder = "search_placeholder"
             .localized
             .attributed(
@@ -193,4 +196,48 @@ extension SearchViewController: UISearchResultsUpdating, UISearchControllerDeleg
             )
         searchController.searchBar.searchTextField.textColor = .white
     }
+}
+
+// MARK: - UISearchResultsUpdating
+
+extension SearchViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        defer { }
+        
+        guard let searchText = searchText(for: searchController.searchBar) else {
+            searchTask?.cancel()
+            return
+        }
+
+        searchTask?.cancel()
+        let task = DispatchWorkItem { [weak self] in
+            self?.search(for: searchText)
+        }
+        searchTask = task
+        
+        let throttleTime = 1.0
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + throttleTime,
+            execute: task
+        )
+    }
+    
+    private func searchText(for searchBar: UISearchBar) -> String? {
+        guard let text = searchBar.text, text.isNotEmpty else { return nil }
+        return text
+    }
+    
+    private func search(for searchText: String) {
+        print(searchText)
+        messageProvider.search(
+            expression: searchText,
+            in: folderPath,
+            destinaions: SearchDestinations.allCases,
+            count: 10,
+            from: 0
+        ).then {
+            print($0.count)
+        }
+    }
+
 }
