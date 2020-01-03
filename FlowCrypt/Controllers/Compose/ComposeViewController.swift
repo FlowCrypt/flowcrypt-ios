@@ -245,12 +245,13 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
         .onReturn { [weak self] _ in
             guard let node = self?.node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return true }
-            node.firstResponder()
+            node.becomeFirstResponder()
             return true
         }
         .then {
             $0.isLowercased = true
             $0.attributedText = decorator.styledTitle(input.recipientReplyTitle)
+            $0.becomeFirstResponder()
         }
     }
 
