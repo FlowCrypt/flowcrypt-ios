@@ -11,17 +11,47 @@ import AsyncDisplayKit
 final class SetupTitleNode: CellNode {
     private let textNode = ASTextNode()
     private let insets: UIEdgeInsets
-
-    init(title: NSAttributedString, insets: UIEdgeInsets) {
+    private let selectedNode = ASDisplayNode()
+    private var selectedLineColor: UIColor?
+    
+    init(
+        title: NSAttributedString,
+        insets: UIEdgeInsets,
+        selectedLineColor: UIColor? = nil
+    ) {
         self.insets = insets
+        self.selectedLineColor = selectedLineColor
         super.init()
-        self.textNode.attributedText = title
+        textNode.attributedText = title
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(
+        let layout = ASInsetLayoutSpec(
             insets: insets,
-            child: ASCenterLayoutSpec(centeringOptions: .XY, sizingOptions: .minimumXY, child: textNode)
+            child: ASCenterLayoutSpec(
+                centeringOptions: .XY,
+                sizingOptions: .minimumXY,
+                child: textNode
+            )
         )
+        if selectedLineColor != nil {
+            selectedNode.style.flexGrow = 1.0
+            selectedNode.style.preferredSize.height = 2
+            return ASStackLayoutSpec.vertical().then {
+                $0.spacing = 4
+                $0.children = [
+                    ASInsetLayoutSpec(insets: insets, child: textNode),
+                    selectedNode
+                ]
+            }
+        } else {
+            return layout
+        }
+    }
+    
+    override var isSelected: Bool {
+        didSet {
+            selectedNode.backgroundColor = isSelected ? selectedLineColor : .clear
+        }
     }
 }

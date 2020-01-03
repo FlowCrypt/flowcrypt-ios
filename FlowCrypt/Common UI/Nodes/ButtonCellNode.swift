@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-final class SetupButtonNode: CellNode {
+final class ButtonCellNode: CellNode {
     private var onTap: (() -> Void)?
     private lazy var button = ButtonNode() { [weak self] in
         self?.onTap?()
