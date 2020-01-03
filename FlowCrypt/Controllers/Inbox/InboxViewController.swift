@@ -48,7 +48,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel = .empty,
-        messageProvider: MessageProvider = Imap()
+        messageProvider: MessageProvider = Imap.shared
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider

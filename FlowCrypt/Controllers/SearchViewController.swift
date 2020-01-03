@@ -10,7 +10,15 @@ import AsyncDisplayKit
 
 final class SearchViewController: ASViewController<TableNode> {
     enum State {
-        case idle, startFetching, empty, fetched([MCOIMAPMessage]), error(String)
+        enum FetchedUpdates {
+            case added(Int), removed(Int)
+        }
+        case idle, startFetching, empty, fetched([MCOIMAPMessage], FetchedUpdates?), error(String)
+        
+        var messages: [MCOIMAPMessage] {
+            guard case let .fetched(messages, _) = self else { return [] }
+            return messages
+        }
     }
     
     private var state: State = .idle {
@@ -22,9 +30,10 @@ final class SearchViewController: ASViewController<TableNode> {
     
     private let searchController = UISearchController(searchResultsController: nil)
     private let folderPath: String
+    private var searchedExpression: String = ""
     
     init(
-        messageProvider: SearchResultsProvider = Imap(),
+        messageProvider: SearchResultsProvider = Imap.shared,
         folderPath: String
     ) {
         self.messageProvider = messageProvider
@@ -44,7 +53,9 @@ final class SearchViewController: ASViewController<TableNode> {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        searchController.isActive = true
+        if case .idle = state {
+            searchController.isActive = true
+        }
     }
 }
 
@@ -84,34 +95,33 @@ extension SearchViewController {
 
 extension SearchViewController: MessageHandlerViewConroller {
     func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
-//        guard let index = messages.firstIndex(of: message) else { return }
-//        switch operation {
-//        case .markAsRead: markAsRead(message: message, at: index)
-//        case .moveToTrash, .archive, .permanentlyDelete: delete(message: message, at: index)
-//        }
+        guard let index = state.messages.firstIndex(of: message) else { return }
+        
+        switch operation {
+        case .markAsRead:
+            markAsRead(message: message, at: index)
+        case .moveToTrash, .archive, .permanentlyDelete:
+            delete(message: message, at: index)
+        }
     }
 
     private func delete(message _: MCOIMAPMessage, at index: Int) {
-//        guard messages[safe: index] != nil else { return }
-//        messages.remove(at: index)
-//
-//        if messages.isEmpty {
-//            state = .empty
-//            tableNode.reloadData()
-//        } else {
-//            let total = self.state.total ?? 0
-//            let newTotalCount = total - 1
-//            state = .fetched(newTotalCount)
-//            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-//        }
+        var updatedMessages = state.messages
+        guard updatedMessages[safe: index] != nil else { return }
+        updatedMessages.remove(at: index)
+
+        if updatedMessages.isEmpty {
+            state = .empty
+        } else {
+            state = .fetched(updatedMessages, .removed(index))
+        }
     }
 
     private func markAsRead(message: MCOIMAPMessage, at index: Int) {
-//        messages[index] = message
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-//            guard let self = self else { return }
-//            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-//        }
+        var updatedMessages = state.messages
+        updatedMessages[safe: index] = message
+        
+        state = .fetched(updatedMessages, .added(index))
     }
 }
 
@@ -120,8 +130,8 @@ extension SearchViewController: MessageHandlerViewConroller {
 extension SearchViewController : ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
-        case .fetched(let messages):
-            return messages.count
+        case .fetched:
+            return state.messages.count
         default:
             return 1
         }
@@ -156,21 +166,25 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
                     withSpinner: false,
                     size: size
                 )
-            case .fetched(let messages):
-                return InboxCellNode(message: InboxCellNodeInput(messages[indexPath.row]))
+            case .fetched:
+                return InboxCellNode(
+                    message: InboxCellNodeInput(self.state.messages[indexPath.row])
+                )
             case let .error(message):
-                return TextCellNode(title: message, withSpinner: false, size: size)
+                return TextCellNode(
+                    title: message,
+                    withSpinner: false,
+                    size: size
+                )
             }
         }
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        guard case let .fetched(messages) = state,
-            let message = messages[safe: indexPath.row]
-        else { return }
+        guard let message = state.messages[safe: indexPath.row] else { return }
 
-        openMessageIfPossible(with: message, path: "")
+        openMessageIfPossible(with: message, path: folderPath)
     }
 }
 
@@ -208,11 +222,17 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
 
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchText(for: searchController.searchBar) else {
+        defer {
             searchTask?.cancel()
+        }
+        guard searchController.isActive,
+            let searchText = searchText(for: searchController.searchBar)
+        else {
             return
         }
 
+        guard searchedExpression != searchText else { return }
+        
         searchTask?.cancel()
         let task = DispatchWorkItem { [weak self] in
             self?.search(for: searchText)
@@ -238,7 +258,7 @@ extension SearchViewController: UISearchResultsUpdating {
     }
     
     private func search(for searchText: String) {
-        print(searchText)
+        searchedExpression = searchText
         messageProvider.search(
             expression: searchText,
             in: folderPath,
@@ -258,7 +278,7 @@ extension SearchViewController: UISearchResultsUpdating {
         if messages.isEmpty {
             state = .empty
         } else {
-            state = .fetched(messages)
+            state = .fetched(messages, nil)
         }
     }
 
@@ -267,13 +287,20 @@ extension SearchViewController: UISearchResultsUpdating {
     }
     
     private func updateState() {
-        node.reloadData()
-        
         switch state {
-        case .empty, .error, .fetched:
-            searchController.isActive = false
-        default:
-            break
+        case .empty, .error, .fetched(_, nil):
+            searchController.dismiss(animated: true, completion: nil)
+            node.reloadData()
+        case let .fetched(_, .added(index)):
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                self?.node.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+            }
+        case let .fetched(_, .removed(index)):
+            node.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+        case .startFetching:
+            node.reloadData()
+        case .idle:
+            node.reloadData()
         }
     }
 }

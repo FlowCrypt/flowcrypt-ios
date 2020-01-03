@@ -17,7 +17,7 @@ enum SearchDestinations: CaseIterable {
             switch self {
             case .subject: return MCOIMAPSearchExpression.searchSubject(expression)
             case .from: return MCOIMAPSearchExpression.search(from: expression)
-            case .to: return MCOIMAPSearchExpression.search(to:expression)
+            case .to: return MCOIMAPSearchExpression.search(to: expression)
             case .recipient: return MCOIMAPSearchExpression.searchRecipient(expression)
             case .content: return MCOIMAPSearchExpression.searchContent(expression)
             case .body: return MCOIMAPSearchExpression.searchBody(expression)
@@ -57,13 +57,13 @@ extension Imap: SearchResultsProvider {
             
             let kind = self.messageKindProvider.imapMessagesRequestKind
             let indexes = try await(self.fetchUids(folder: folder, expr: expression))
-            
-            let messages = try await(self.fetchMsgsByNumber(
-                for: GeneralConstants.Global.gmailAllMailPath,
+  
+            let messages = try await(self.fetchMessagesByUIDOperation(
+                for: folder,
                 kind: kind,
                 set: indexes
-            ))
-
+                )
+            )
             return resolve(messages)
         }
     }

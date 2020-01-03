@@ -130,7 +130,7 @@ extension UserService: GIDSignInDelegate {
 
     func sign(_: GIDSignIn!, didDisconnectWith _: GIDGoogleUser!, withError _: Error!) {
         // will not wait until disconnected. errors ignored
-        Imap().disconnect()
+        Imap.shared.disconnect()
         dataManager.logOut()
         onLogOut?()
     }

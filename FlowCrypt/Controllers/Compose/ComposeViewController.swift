@@ -17,7 +17,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     private var contextToSend = Context()
 
     init(
-        imap: Imap = Imap(),
+        imap: Imap = Imap.shared,
         notificationCenter: NotificationCenter = .default,
         dataManager: DataManagerType = DataManager.shared,
         attesterApi: AttesterApiType = AttesterApi.shared,

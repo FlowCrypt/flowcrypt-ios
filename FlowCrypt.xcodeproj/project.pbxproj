@@ -120,7 +120,7 @@
 		9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */; };
 		9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F823607C2900C80B64 /* SignInType.swift */; };
 		9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
-		9F9ABC8523AC1E5700D560E3 /* Imap+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8423AC1E5700D560E3 /* Imap+Search.swift */; };
+		9F9ABC8523AC1E5700D560E3 /* Imap+search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */; };
 		9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */; };
 		9FB84728238FBD7400820C23 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F716304234FC7200031645E /* Localization.swift */; };
 		9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
@@ -298,7 +298,7 @@
 		9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninButtonNode.swift; sourceTree = "<group>"; };
 		9F95A3F823607C2900C80B64 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
 		9F9AAFFC2383E216000A00F1 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
-		9F9ABC8423AC1E5700D560E3 /* Imap+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Search.swift"; sourceTree = "<group>"; };
+		9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+search.swift"; sourceTree = "<group>"; };
 		9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContext.swift; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
@@ -580,7 +580,7 @@
 				32DCAF8424D0185FAA9401A7 /* Imap+send.swift */,
 				32DCA55C094E9745AA1FD210 /* Imap+msg.swift */,
 				9F56BD2B23438A8500A7371A /* Imap+messages.swift */,
-				9F9ABC8423AC1E5700D560E3 /* Imap+Search.swift */,
+				9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */,
 				9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */,
 				9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */,
 				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
@@ -1299,7 +1299,7 @@
 				32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */,
 				9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */,
 				9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */,
-				9F9ABC8523AC1E5700D560E3 /* Imap+Search.swift in Sources */,
+				9F9ABC8523AC1E5700D560E3 /* Imap+search.swift in Sources */,
 				9FD364862381EFCB00657302 /* EnterPassPhraseViewController.swift in Sources */,
 				9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */,
 				9F0C3C2823194E8500299985 /* Extensions.swift in Sources */,

@@ -39,7 +39,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let tableNode: ASTableNode
 
     init(
-        foldersProvider: FoldersProvider = Imap(),
+        foldersProvider: FoldersProvider = Imap.shared,
         dataManager: DataManagerType = DataManager.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),

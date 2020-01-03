@@ -31,7 +31,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private var passPhrase: String?
 
     init(
-        imap: Imap = Imap(),
+        imap: Imap = Imap.shared,
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
         storage: DataManagerType = DataManager.shared,
@@ -217,7 +217,7 @@ extension SetupViewController {
                 replyToMimeMsg: nil,
                 atts: [SendableMsg.Att(name: filename, type: "text/plain", base64: prv.private!.data().base64EncodedString())] // !crash ok
             ), fmt: .plain, pubKeys: nil)
-            try await(Imap().sendMail(mime: backupEmail.mimeEncoded))
+            try await(Imap.shared.sendMail(mime: backupEmail.mimeEncoded))
         }
     }
 
