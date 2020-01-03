@@ -42,8 +42,12 @@ final class TextViewCellNode: CellNode {
         return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8), child: textView)
     }
 
-    func firstResponder() {
-        textView.becomeFirstResponder()
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        DispatchQueue.main.async {
+            _ = self.textView.textView.becomeFirstResponder()
+        }
+        return true
     }
 }
 
