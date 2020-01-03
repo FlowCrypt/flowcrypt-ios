@@ -9,7 +9,7 @@
 import Foundation
 
 protocol KeySettingsProviderType {
-    func getPublickKeys() -> Result<[KeySettingsItem], KeySettingsError>
+    func getPublicKeys() -> Result<[KeySettingsItem], KeySettingsError>
 }
 
 enum KeySettingsError: Swift.Error {
@@ -25,7 +25,7 @@ struct KeySettingsProvider: KeySettingsProviderType {
     private let dataManager: DataManagerType
     private let core: Core
 
-    func getPublickKeys() -> Result<[KeySettingsItem], KeySettingsError> {
+    func getPublicKeys() -> Result<[KeySettingsItem], KeySettingsError> {
         guard let keys = dataManager.keys() else {
             return .failure(.fetching)
         }

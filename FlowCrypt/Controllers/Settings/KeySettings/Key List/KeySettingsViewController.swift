@@ -40,7 +40,7 @@ final class KeySettingsViewController: ASViewController<TableNode> {
 
 extension KeySettingsViewController {
     private func fetchKeys() {
-        let result = provider.getPublickKeys()
+        let result = provider.getPublicKeys()
         switch result {
         case let .failure(error): handle(error: error)
         case let .success(keys): handle(fetched: keys)

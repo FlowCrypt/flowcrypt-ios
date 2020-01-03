@@ -93,7 +93,7 @@
 
 // Key Settings
 "key_settings_title" = "Keys";
-"key_settings_subtitle" = "Publick Keys are safe to share";
+"key_settings_subtitle" = "Public Keys are safe to share";
 "key_settings_no_private" = "Private key";
 
 "key_settings_detail_title" = "My pulick keys";
