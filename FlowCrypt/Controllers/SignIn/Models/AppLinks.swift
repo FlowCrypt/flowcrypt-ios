@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum SignInLinks: String, CaseIterable {
+enum AppLinks: String, CaseIterable {
     case privacy, terms, security
 
     var title: String {

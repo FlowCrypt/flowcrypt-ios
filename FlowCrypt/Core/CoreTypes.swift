@@ -114,16 +114,17 @@ extension UserId {
 struct PrvKeyInfo: Encodable {
     let `private`: String
     let longid: String
-    let passphrase: String?
+    let passphrase: String? 
+}
 
-    static func from(keyInfo ki: KeyInfo) -> PrvKeyInfo {
-        return PrvKeyInfo(private: ki.private, longid: ki.longid, passphrase: ki.passphrase)
-    }
-
-    static func from(realm keyInfoResults: Results<KeyInfo>) -> [PrvKeyInfo] {
-        return Array(keyInfoResults).map { PrvKeyInfo.from(keyInfo: $0) }
+extension PrvKeyInfo {
+    init(from keyInfo: KeyInfo) {
+        self.private = keyInfo.private
+        self.longid = keyInfo.longid
+        self.passphrase = keyInfo.passphrase
     }
 }
+
 
 struct SendableMsg {
     struct Att {
@@ -197,7 +198,7 @@ struct MsgBlock: Decodable {
     }
 }
 
-struct KeyId: Decodable {
+struct KeyId: Decodable, Equatable {
     let shortid: String
     let longid: String
     let fingerprint: String
@@ -210,9 +211,10 @@ struct KeyDetails: Decodable {
     let isFullyDecrypted: Bool? // only if this is prv
     let isFullyEncrypted: Bool? // only if this is prv
     let ids: [KeyId]
-    // todo
-    //    let users: [String]
-    //    let created: Int64
+    let created: Int
+    let users: [String]
+
+    // TODO: -
     //    let algo: { // same as OpenPGP.key.AlgorithmInfo
     //        algorithm: string;
     //        algorithmId: number;

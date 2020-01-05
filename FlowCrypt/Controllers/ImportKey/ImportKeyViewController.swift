@@ -95,14 +95,14 @@ extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
                     insets: self.decorator.subTitleInset
                 )
             case .fileImport:
-                return SetupButtonNode(
+                return ButtonCellNode(
                     title: self.decorator.fileImportTitle,
                     insets: self.decorator.buttonInsets
                 ) { [weak self] in
                     self?.proceedToKeyImportFromFile()
                 }
             case .pasteBoardImport:
-                return SetupButtonNode(
+                return ButtonCellNode(
                     title: self.decorator.pasteBoardTitle,
                     insets: self.decorator.buttonInsets
                 ) { [weak self] in
