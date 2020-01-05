@@ -222,16 +222,13 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
 
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        defer {
-            searchTask?.cancel()
-        }
         guard searchController.isActive,
-            let searchText = searchText(for: searchController.searchBar)
+            let searchText = searchText(for: searchController.searchBar),
+            searchedExpression != searchText
         else {
+            searchTask?.cancel()
             return
         }
-
-        guard searchedExpression != searchText else { return }
         
         searchTask?.cancel()
         let task = DispatchWorkItem { [weak self] in

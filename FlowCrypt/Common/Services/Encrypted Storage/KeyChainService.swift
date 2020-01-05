@@ -30,8 +30,7 @@ enum KeyChainStatus {
 struct KeyChainService: KeyChainServiceType {
     private let tag = "flowcrypt-realm-encryption-key"
 
-    init() {
-    }
+    init() { }
 
     func generateAndSaveStorageEncryptionKey() -> KeyChainStatus {
         let key = Data(CoreHost().getSecureRandomByteNumberArray(64)!) // ok to crash app when missing, should be extremely rare

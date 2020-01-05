@@ -81,3 +81,40 @@
 "search_placeholder" = "Search";
 "search_error" = "Error in searching";
 "search_empty" = "No messages found";
+
+// Settings
+"settings_screen_title" = "Settings";
+"settings_screen_backup" = "Backups";
+"settings_screen_security" = "Security and Privacy";
+"settings_screen_contacts" = "Contacts";
+"settings_screen_keys" = "Keys";
+"settings_screen_attester" = "Attester";
+"settings_screen_notifications" = "Notifications";
+"settings_screen_legal" = "Legal";
+"settings_screen_experimental" = "Experimental";
+"settings_legal_privacy" = "Privacy";
+"settings_legal_terms" = "Terms";
+"settings_legal_license" = "License";
+"settings_legal_sources" = "Sources";
+
+// Key Settings
+"key_settings_title" = "Keys";
+"key_settings_subtitle" = "Public Keys are safe to share";
+"key_settings_no_private" = "Private key";
+
+"key_settings_detail_title" = "My pulick keys";
+"key_settings_detail_show_public" = "Show public key";
+"key_settings_detail_show_private_title" = "Show private key";
+"key_settings_detail_copy" = "Copy to clipboard";
+"key_settings_detail_save" = "Share";
+"key_settings_detail_show_details" = "Show key details";
+
+"key_settings_detail_key_words" = "KeyWords";
+"key_settings_detail_fingerprint" = "Fingerprint";
+"key_settings_detail_long" = "Longid";
+"key_settings_detail_date" = "Date";
+"key_settings_detail_users" = "Users";
+
+"key_settings_detail_copy" = "Copy to clipboard";
+"key_settings_detail_show_private" = "Not implemented yet";
+"key_settings_detail_public" = "Public key";

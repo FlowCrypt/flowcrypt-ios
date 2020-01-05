@@ -41,6 +41,28 @@
 		32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA55C094E9745AA1FD210 /* Imap+msg.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */; };
+		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
+		5A39F430239EC396001F4607 /* SettingsViewControllerDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewControllerDecorator.swift */; };
+		5A39F434239EC61C001F4607 /* SettingsCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F433239EC61C001F4607 /* SettingsCellNode.swift */; };
+		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
+		5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F438239ECDD0001F4607 /* ExtensionTests.swift */; };
+		5A39F43A239ECE13001F4607 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
+		5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */; };
+		5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */; };
+		5A5C234B23A042520015E705 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5C234A23A042520015E705 /* WebViewController.swift */; };
+		5A92607223A3C05300C2E9F4 /* KeySettingsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A92607123A3C05300C2E9F4 /* KeySettingsItem.swift */; };
+		5A92607423A3C08200C2E9F4 /* KeySettingsItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A92607323A3C08200C2E9F4 /* KeySettingsItemTest.swift */; };
+		5A92607523A3C09500C2E9F4 /* KeySettingsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A92607123A3C05300C2E9F4 /* KeySettingsItem.swift */; };
+		5A92607723A3CA0F00C2E9F4 /* KeySettingsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A92607623A3CA0F00C2E9F4 /* KeySettingsProvider.swift */; };
+		5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A948DC4239EF2F4006284D7 /* LegalViewController.swift */; };
+		5ADEDCAF23A3EA9E00EC495E /* KeySettingsDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */; };
+		5ADEDCB123A3EAAF00EC495E /* KeySettingCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */; };
+		5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */; };
+		5ADEDCB923A42B9400EC495E /* KeySettingsItemDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */; };
+		5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */; };
+		5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */; };
+		5ADEDCC023A43B0800EC495E /* KeyDetailInfoDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */; };
+		5ADEDCC223A43C6800EC495E /* KeyTextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F0C3C03231574BF00299985 /* RootAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C02231574BF00299985 /* RootAssembley.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
@@ -53,10 +75,10 @@
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
-		9F17976A2368EE90002BF770 /* SetupButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* SetupButtonNode.swift */; };
+		9F17976A2368EE90002BF770 /* ButtonCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* ButtonCellNode.swift */; };
 		9F17976D2368EEBD002BF770 /* SetupDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupDecorator.swift */; };
 		9F1797712368EEE8002BF770 /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797702368EEE8002BF770 /* ButtonNode.swift */; };
-		9F1F8A1F235F9618006463A1 /* SignInLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1F8A1E235F9618006463A1 /* SignInLinks.swift */; };
+		9F1F8A1F235F9618006463A1 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1F8A1E235F9618006463A1 /* AppLinks.swift */; };
 		9F23EA4E237216FA0017DFED /* TextViewCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */; };
 		9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeDecorator.swift */; };
 		9F23EA522372175E0017DFED /* ComposeViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */; };
@@ -223,6 +245,26 @@
 		3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		411CEC75050F852F172CD687 /* Pods-FlowCryptTests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.testflight.xcconfig"; sourceTree = "<group>"; };
 		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		5A39F42F239EC396001F4607 /* SettingsViewControllerDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewControllerDecorator.swift; sourceTree = "<group>"; };
+		5A39F433239EC61C001F4607 /* SettingsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCellNode.swift; sourceTree = "<group>"; };
+		5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsViewController.swift; sourceTree = "<group>"; };
+		5A39F438239ECDD0001F4607 /* ExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExtensionTests.swift; path = FlowCryptTests/ExtensionTests.swift; sourceTree = SOURCE_ROOT; };
+		5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedViewController.swift; sourceTree = "<group>"; };
+		5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewControllersProvider.swift; sourceTree = "<group>"; };
+		5A5C234A23A042520015E705 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		5A92607123A3C05300C2E9F4 /* KeySettingsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsItem.swift; sourceTree = "<group>"; };
+		5A92607323A3C08200C2E9F4 /* KeySettingsItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsItemTest.swift; sourceTree = "<group>"; };
+		5A92607623A3CA0F00C2E9F4 /* KeySettingsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsProvider.swift; sourceTree = "<group>"; };
+		5A948DC4239EF2F4006284D7 /* LegalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewController.swift; sourceTree = "<group>"; };
+		5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsDecorator.swift; sourceTree = "<group>"; };
+		5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingCellNode.swift; sourceTree = "<group>"; };
+		5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailViewController.swift; sourceTree = "<group>"; };
+		5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsItemDecorator.swift; sourceTree = "<group>"; };
+		5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicKeyDetailViewController.swift; sourceTree = "<group>"; };
+		5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewController.swift; sourceTree = "<group>"; };
+		5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoDecorator.swift; sourceTree = "<group>"; };
+		5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTextCellNode.swift; sourceTree = "<group>"; };
 		5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
 		6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.testflight.xcconfig"; sourceTree = "<group>"; };
 		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -238,10 +280,10 @@
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
 		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		9F1797652368EE50002BF770 /* SetupTitleNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupTitleNode.swift; sourceTree = "<group>"; };
-		9F1797692368EE90002BF770 /* SetupButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupButtonNode.swift; sourceTree = "<group>"; };
+		9F1797692368EE90002BF770 /* ButtonCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonCellNode.swift; sourceTree = "<group>"; };
 		9F17976C2368EEBD002BF770 /* SetupDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupDecorator.swift; sourceTree = "<group>"; };
 		9F1797702368EEE8002BF770 /* ButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
-		9F1F8A1E235F9618006463A1 /* SignInLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInLinks.swift; sourceTree = "<group>"; };
+		9F1F8A1E235F9618006463A1 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewCellNode.swift; sourceTree = "<group>"; };
 		9F23EA4F237217140017DFED /* ComposeDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeDecorator.swift; sourceTree = "<group>"; };
 		9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Setup.swift"; sourceTree = "<group>"; };
@@ -478,6 +520,119 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		5A39F42E239EC32B001F4607 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F435239ECADA001F4607 /* Settings List */,
+				5A39F43B239ECFA0001F4607 /* KeySettings */,
+				5A5C234723A042070015E705 /* KeyLegal */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		5A39F435239ECADA001F4607 /* Settings List */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F42C239EC321001F4607 /* SettingsViewController.swift */,
+				5A39F42F239EC396001F4607 /* SettingsViewControllerDecorator.swift */,
+				5A39F433239EC61C001F4607 /* SettingsCellNode.swift */,
+			);
+			path = "Settings List";
+			sourceTree = "<group>";
+		};
+		5A39F43B239ECFA0001F4607 /* KeySettings */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCB423A4262600EC495E /* Key List */,
+				5ADEDCB723A426E900EC495E /* Key Details */,
+			);
+			path = KeySettings;
+			sourceTree = "<group>";
+		};
+		5A5C234723A042070015E705 /* KeyLegal */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */,
+				5A948DC4239EF2F4006284D7 /* LegalViewController.swift */,
+			);
+			path = KeyLegal;
+			sourceTree = "<group>";
+		};
+		5A5C234823A042260015E705 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */,
+				9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5A5C234923A0422C0015E705 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */,
+				5A5C234A23A042520015E705 /* WebViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		5ADEDCB223A3EAC600EC495E /* Node */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */,
+			);
+			path = Node;
+			sourceTree = "<group>";
+		};
+		5ADEDCB323A3EACE00EC495E /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				5A92607123A3C05300C2E9F4 /* KeySettingsItem.swift */,
+				5A92607623A3CA0F00C2E9F4 /* KeySettingsProvider.swift */,
+				5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		5ADEDCB423A4262600EC495E /* Key List */ = {
+			isa = PBXGroup;
+			children = (
+				5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */,
+				5ADEDCB323A3EACE00EC495E /* Helpers */,
+				5ADEDCB223A3EAC600EC495E /* Node */,
+			);
+			path = "Key List";
+			sourceTree = "<group>";
+		};
+		5ADEDCB723A426E900EC495E /* Key Details */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */,
+				5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */,
+				5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */,
+				5ADEDCBA23A42CE300EC495E /* Helpers */,
+				5ADEDCC323A43C8600EC495E /* Nodes */,
+			);
+			path = "Key Details";
+			sourceTree = "<group>";
+		};
+		5ADEDCBA23A42CE300EC495E /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */,
+				5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		5ADEDCC323A43C8600EC495E /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */,
+			);
+			path = Nodes;
+			sourceTree = "<group>";
+		};
 		9F0C3C0D2316DD4100299985 /* Assembley */ = {
 			isa = PBXGroup;
 			children = (
@@ -514,7 +669,6 @@
 			isa = PBXGroup;
 			children = (
 				9F1797652368EE50002BF770 /* SetupTitleNode.swift */,
-				9F1797692368EE90002BF770 /* SetupButtonNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -523,6 +677,7 @@
 			isa = PBXGroup;
 			children = (
 				9F1797702368EEE8002BF770 /* ButtonNode.swift */,
+				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
 				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F4453BF236B894D005D7D05 /* TableNode.swift */,
 				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
@@ -639,7 +794,7 @@
 		9F6962972360925B003712E1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				9F1F8A1E235F9618006463A1 /* SignInLinks.swift */,
+				9F1F8A1E235F9618006463A1 /* AppLinks.swift */,
 				9F95A3F823607C2900C80B64 /* SignInType.swift */,
 			);
 			path = Models;
@@ -682,14 +837,14 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		9FD22A1D230FEEC8005067A6 /* Views */ = {
+		9FD22A1D230FEEC8005067A6 /* Common UI */ = {
 			isa = PBXGroup;
 			children = (
-				9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */,
-				9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */,
+				5A5C234923A0422C0015E705 /* View Controllers */,
+				5A5C234823A042260015E705 /* Views */,
 				9F1797722368EF02002BF770 /* Nodes */,
 			);
-			path = Views;
+			path = "Common UI";
 			sourceTree = "<group>";
 		};
 		9FD22A20230FF9BC005067A6 /* Model */ = {
@@ -751,10 +906,12 @@
 		A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */ = {
 			isa = PBXGroup;
 			children = (
+				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
 				A3DAD5FF22E4574B00F2C4CD /* Info.plist */,
 				A3DAD60722E4588800F2C4CD /* TestData.swift */,
 				A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */,
+				5A92607323A3C08200C2E9F4 /* KeySettingsItemTest.swift */,
 			);
 			path = FlowCryptTests;
 			sourceTree = "<group>";
@@ -798,7 +955,7 @@
 				A3D328BF22E1C640002888F4 /* Storyboards */,
 				C132B9C51EC2DCAB00763715 /* Controllers */,
 				04B4728A1ECE29D200B8266F /* Model */,
-				9FD22A1D230FEEC8005067A6 /* Views */,
+				9FD22A1D230FEEC8005067A6 /* Common UI */,
 				32DCAEF9FEEF84D4F0D4A516 /* Extensions */,
 				C132B9C61EC2DCC000763715 /* Common */,
 				A3DAD60C22E469E400F2C4CD /* Resources */,
@@ -825,6 +982,7 @@
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 				9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */,
+				5A39F42E239EC32B001F4607 /* Settings */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1228,6 +1386,7 @@
 				A3DAD60A22E458C100F2C4CD /* CodableExntension.swift in Sources */,
 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
 				9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */,
+				5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */,
 				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
@@ -1237,12 +1396,15 @@
 				9F589F0F238C7D15007FD759 /* LocalStorageTest.swift in Sources */,
 				32DCA17B0294558E2ADA998D /* bignum.c in Sources */,
 				9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */,
+				5A92607423A3C08200C2E9F4 /* KeySettingsItemTest.swift in Sources */,
 				32DCA3847AFB3D05608CB191 /* Core.swift in Sources */,
 				32DCA1D6067D3A5B9AF03635 /* CoreHost.swift in Sources */,
 				32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */,
 				9F589F1D238C8693007FD759 /* LogOutHandler.swift in Sources */,
+				5A39F43A239ECE13001F4607 /* Extensions.swift in Sources */,
 				9F589F20238C8A90007FD759 /* Token.swift in Sources */,
 				32DCAF683D87EA6221F71335 /* SequenceExtension.swift in Sources */,
+				5A92607523A3C09500C2E9F4 /* KeySettingsItem.swift in Sources */,
 				32DCA24159622E7442FF9459 /* AppErr.swift in Sources */,
 				9F589F11238C7DDC007FD759 /* User.swift in Sources */,
 			);
@@ -1258,6 +1420,7 @@
 				9F56BD3223438B5B00A7371A /* InboxCellNode.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
+				5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */,
 				9F268896237DDEB200428A94 /* SetupViewController+Setup.swift in Sources */,
 				9F56BD3623438B9D00A7371A /* TextCellNode.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
@@ -1268,13 +1431,18 @@
 				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
 				9F82779E23737E3800E19C07 /* TextSubjectNode.swift in Sources */,
 				9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */,
+				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				9F56BD3023438B4400A7371A /* ComposeButtonNode.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
+				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
+				5ADEDCC223A43C6800EC495E /* KeyTextCellNode.swift in Sources */,
+				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
+				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
 				9F56BD3423438B7100A7371A /* InboxCellNodeInput .swift in Sources */,
 				9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */,
 				9F589F13238C7DF2007FD759 /* User+Google.swift in Sources */,
@@ -1291,9 +1459,13 @@
 				9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */,
 				9F589F1F238C8A90007FD759 /* Token.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
+				5ADEDCB923A42B9400EC495E /* KeySettingsItemDecorator.swift in Sources */,
 				32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */,
+				5A39F434239EC61C001F4607 /* SettingsCellNode.swift in Sources */,
 				9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */,
 				9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */,
+				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
+				5A92607223A3C05300C2E9F4 /* KeySettingsItem.swift in Sources */,
 				9F1797712368EEE8002BF770 /* ButtonNode.swift in Sources */,
 				9F0C3C18231819B200299985 /* Logger.swift in Sources */,
 				32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */,
@@ -1303,19 +1475,24 @@
 				9FD364862381EFCB00657302 /* EnterPassPhraseViewController.swift in Sources */,
 				9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */,
 				9F0C3C2823194E8500299985 /* Extensions.swift in Sources */,
+				5ADEDCAF23A3EA9E00EC495E /* KeySettingsDecorator.swift in Sources */,
 				9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */,
 				9F3EF33123B1785600FA0CEF /* MessageHandlerViewConroller.swift in Sources */,
 				32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */,
 				9F4453C0236B894D005D7D05 /* TableNode.swift in Sources */,
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
-				9F17976A2368EE90002BF770 /* SetupButtonNode.swift in Sources */,
+				5ADEDCB123A3EAAF00EC495E /* KeySettingCellNode.swift in Sources */,
+				9F17976A2368EE90002BF770 /* ButtonCellNode.swift in Sources */,
 				32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */,
 				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
+				9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */,
+				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
 				9FDF3638235A0B3100614596 /* MenuNode.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				9F56BD3823438C7000A7371A /* DateFormatting.swift in Sources */,
 				9FEED1D0230DA9FF00700F8E /* UIStoyboardExtension.swift in Sources */,
+				5A92607723A3CA0F00C2E9F4 /* KeySettingsProvider.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
 				9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */,
 				9F31AB97232BF03D00CF87EA /* MenuHeaderViewModel.swift in Sources */,
@@ -1346,14 +1523,18 @@
 				9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				32DCAFF0DCBB2A52EF06CAB7 /* SequenceExtension.swift in Sources */,
+				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
+				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
 				32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */,
 				32DCAD9F3A6B6101B78F0918 /* AttesterApi.swift in Sources */,
 				9F82779423736EF100E19C07 /* MailDestination.swift in Sources */,
-				9F1F8A1F235F9618006463A1 /* SignInLinks.swift in Sources */,
+				9F1F8A1F235F9618006463A1 /* AppLinks.swift in Sources */,
 				9F95A3F52360778E00C80B64 /* LinkButtonNode.swift in Sources */,
 				32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */,
+				5A39F430239EC396001F4607 /* SettingsViewControllerDecorator.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupDecorator.swift in Sources */,
+				5ADEDCC023A43B0800EC495E /* KeyDetailInfoDecorator.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				9F56BD3A23438D3800A7371A /* StyleExtension.swift in Sources */,
 				9F82779A23737E1900E19C07 /* MessageSenderNode.swift in Sources */,

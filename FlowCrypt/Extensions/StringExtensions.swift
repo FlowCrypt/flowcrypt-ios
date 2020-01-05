@@ -20,3 +20,11 @@ extension String {
         return data(using: .utf8)!
     }
 }
+
+extension NSAttributedString {
+    static func +(_ lhs: NSAttributedString, _ rhs: NSAttributedString) -> NSAttributedString {
+        let mutable = NSMutableAttributedString(attributedString: lhs)
+        mutable.append(rhs)
+        return mutable
+    }
+}

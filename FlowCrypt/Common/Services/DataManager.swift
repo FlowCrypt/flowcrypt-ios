@@ -52,7 +52,8 @@ final class DataManager: DataManagerType {
 
     func keys() -> [PrvKeyInfo]? {
         guard let keys = encryptedStorage.keys() else { return nil }
-        return PrvKeyInfo.from(realm: keys)
+        return Array(keys)
+            .map(PrvKeyInfo.init)
     }
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {

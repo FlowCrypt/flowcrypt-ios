@@ -232,7 +232,7 @@ extension SetupViewController {
     private func handleButtonPressed() {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
-        guard !passPhrase.isEmpty else {
+        guard passPhrase.isNotEmpty else {
             showAlert(message: "setup_enter_pass_phrase".localized)
             return
         }
@@ -290,13 +290,13 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                     return true
                 }
             case .action:
-                return SetupButtonNode(
+                return ButtonCellNode(
                     title: self.decorator.titleForAction(button: self.setupAction),
                     insets: self.decorator.buttonInsets) { [weak self] in
                         self?.handleButtonPressed()
                 }
             case .optionalAction:
-                return SetupButtonNode(
+                return ButtonCellNode(
                     title: self.decorator.useAnotherAccountTitle,
                     insets: self.decorator.optionalButtonInsets,
                     color: .white) { [weak self] in
