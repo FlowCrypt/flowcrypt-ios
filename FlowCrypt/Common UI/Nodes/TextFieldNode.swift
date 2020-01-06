@@ -109,10 +109,13 @@ final class TextFieldNode: ASDisplayNode {
         )
     }
 
-    func firstResponder() {
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
-            self.textField.becomeFirstResponder()
+            super.becomeFirstResponder()
+            _ = self.textField.becomeFirstResponder()
         }
+        return true
     }
 }
 
