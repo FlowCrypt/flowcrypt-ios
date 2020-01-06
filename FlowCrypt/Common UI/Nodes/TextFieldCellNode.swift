@@ -43,6 +43,7 @@ final class TextFieldCellNode: CellNode {
     }
 
     private let input: Input
+   
     init(input: Input, action: TextFieldAction? = nil) {
         textField = TextFieldNode(prefferedHeight: input.height)
         self.input = input
@@ -56,11 +57,7 @@ final class TextFieldCellNode: CellNode {
 
         textField.delegate = self
     }
-
-    func firstResponder() {
-        textField.firstResponder()
-    }
-
+ 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(insets: input.insets, child: textField)
     }
@@ -68,6 +65,12 @@ final class TextFieldCellNode: CellNode {
     func onReturn(_ action: ((UITextField) -> (Bool))?) -> Self {
         shouldReturn = action
         return self
+    }
+    
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        textField.becomeFirstResponder()
+        return true
     }
 }
 

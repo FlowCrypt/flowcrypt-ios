@@ -245,12 +245,15 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
         .onReturn { [weak self] _ in
             guard let node = self?.node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return true }
-            node.firstResponder()
+            node.becomeFirstResponder()
             return true
         }
         .then {
             $0.isLowercased = true
             $0.attributedText = decorator.styledTitle(input.recipientReplyTitle)
+            if !self.input.isReply {
+                $0.becomeFirstResponder()
+            }
         }
     }
 
@@ -264,7 +267,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         .onReturn { [weak self] _ in
             guard let self = self else { return true }
             if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
-                node.firstResponder()
+                node.becomeFirstResponder()
             } else {
                 self.node.view.endEditing(true)
             }
@@ -283,6 +286,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         return TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight)) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.message = text?.string
+        }.then {
+            if self.input.isReply {
+                $0.becomeFirstResponder()
+            }
         }
     }
 }
