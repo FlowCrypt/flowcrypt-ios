@@ -8,17 +8,32 @@ xcschememanagement.plist
 
 *.xcbkptlist
 
+# Xcode private settings (window sizes, bookmarks, breakpoints, custom executables, smart groups)
 *.pbxuser
 *.mode1v3
 *.mode2v3
 *.perspectivev3
 *.xcuserstate
+!default.pbxuser
+!default.mode1v3
+!default.mode2v3
+!default.perspectivev3
+
+
+# OS X temporary files
 *.DS_Store
+*.swp
+*.lock
+profile
+.nib
+DerivedData/
+Builds/
+
+
 .idea/workspace.xml
 .idea
 
 # fastlane
-#
 
 fastlane/report.xml
 fastlane/Preview.html
