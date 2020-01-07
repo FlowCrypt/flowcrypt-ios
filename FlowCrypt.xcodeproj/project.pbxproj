@@ -863,8 +863,8 @@
 				9FDF3651235A1EDE00614596 /* XCUIApplicationBuilder.swift */,
 				9FDF3643235A1B0100614596 /* FlowCryptUITests.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
-				9FDF364C235A1CCD00614596 /* SignInViewControllerTest.swift */,
 				9FDF364F235A1D3F00614596 /* UITestHelper.swift */,
+				9FDF364C235A1CCD00614596 /* SignInViewControllerTest.swift */,
 			);
 			path = FlowCryptUITests;
 			sourceTree = "<group>";

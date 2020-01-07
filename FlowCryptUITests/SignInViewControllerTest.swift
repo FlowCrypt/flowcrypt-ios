@@ -27,12 +27,12 @@ class SignInViewControllerTest: XCTestCase {
 
     func test_existence_of_elements() {
         let elementsQuery = app.tables
-        XCTAssertTrue(wait(for: elementsQuery.buttons["privacy"], timeout: 5))
-        XCTAssertTrue(wait(for: elementsQuery.buttons["terms"], timeout: 5))
-        XCTAssertTrue(wait(for: elementsQuery.buttons["security"], timeout: 5))
-        XCTAssertTrue(wait(for: elementsQuery.buttons["gmail"], timeout: 5))
-        XCTAssertTrue(wait(for: elementsQuery.buttons["outlook"], timeout: 5))
-        XCTAssertTrue(wait(for: elementsQuery.staticTexts["description"], timeout: 5))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["privacy"], timeout: 2))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["terms"], timeout: 2))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["security"], timeout: 2))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["gmail"], timeout: 2))
+        XCTAssertTrue(wait(for: elementsQuery.buttons["outlook"], timeout: 2))
+        XCTAssertTrue(wait(for: elementsQuery.staticTexts["description"], timeout: 2))
     }
 
     func test_successful_gmail_login() {
