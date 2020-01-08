@@ -6,10 +6,14 @@ import Promises
 import UIKit
 
 final class Imap {
-    let inboxFolder = "INBOX"
+    static let shared: Imap = Imap()
+    
+    let helper: ImapHelperType
+    let messageKindProvider: MessageKindProviderType
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
-
+    
+    typealias ImapIndexSet = MCOIndexSet
     typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
 
@@ -40,10 +44,17 @@ final class Imap {
         return token
     }
 
-    init(userService: UserService = .shared, dataManager: DataManagerType = DataManager.shared) {
+    private init(
+        userService: UserService = .shared,
+        dataManager: DataManagerType = DataManager.shared,
+        helper: ImapHelperType = ImapHelper(),
+        messageKindProvider: MessageKindProviderType = MessageKindProvider()
+    ) {
         self.userService = userService
         self.dataManager = dataManager
-
+        self.helper = helper
+        self.messageKindProvider = messageKindProvider
+        
         setup()
     }
 

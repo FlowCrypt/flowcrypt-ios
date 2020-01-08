@@ -8,12 +8,12 @@
 
 import Foundation
 
-protocol MessageKindProvider {
+protocol MessageKindProviderType {
     var messagesRequestKind: Int { get }
     var imapMessagesRequestKind: MCOIMAPMessagesRequestKind { get }
 }
 
-struct DefaultMessageKindProvider: MessageKindProvider {
+struct MessageKindProvider: MessageKindProviderType {
     var messagesRequestKind: Int {
         return MCOIMAPMessagesRequestKind.headers.rawValue
             | MCOIMAPMessagesRequestKind.structure.rawValue

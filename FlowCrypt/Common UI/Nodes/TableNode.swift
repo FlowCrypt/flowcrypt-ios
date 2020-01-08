@@ -15,4 +15,12 @@ final class TableNode: ASTableNode {
         view.separatorStyle = .none
         view.keyboardDismissMode = .onDrag
     }
+    
+    var bounces: Bool = true {
+        didSet {
+            DispatchQueue.main.async {
+                self.view.bounces = self.bounces
+            }
+        }
+    }
 }
