@@ -231,19 +231,15 @@ extension InboxViewController {
     }
 }
 
-extension InboxViewController: MessageHandlerViewConroller {
-    func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
-        guard let index = messages.firstIndex(of: message) else { return }
-        switch operation {
-        case .markAsRead: markAsRead(message: message, at: index)
-        case .moveToTrash, .archive, .permanentlyDelete: delete(message: message, at: index)
-        }
+extension InboxViewController: MsgListViewConroller {
+
+    func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
+        return messages.firstIndex(of: message)
     }
 
-    private func delete(message _: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRemoved(message _: MCOIMAPMessage, at index: Int) {
         guard messages[safe: index] != nil else { return }
         messages.remove(at: index)
-
         if messages.isEmpty {
             state = .empty
             tableNode.reloadData()
@@ -255,7 +251,7 @@ extension InboxViewController: MessageHandlerViewConroller {
         }
     }
 
-    private func markAsRead(message: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRead(message: MCOIMAPMessage, at index: Int) {
         messages[index] = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
@@ -308,7 +304,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         tableNode.deselectRow(at: indexPath, animated: true)
         guard let message = messages[safe: indexPath.row] else { return }
 
-        openMessageIfPossible(with: message, path: viewModel.path)
+        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
     }
 }
 

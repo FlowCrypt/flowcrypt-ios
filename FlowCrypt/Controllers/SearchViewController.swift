@@ -96,34 +96,22 @@ extension SearchViewController {
 
 // MARK: - MessageHandlerViewConroller
 
-extension SearchViewController: MessageHandlerViewConroller {
-    func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
-        guard let index = state.messages.firstIndex(of: message) else { return }
-        
-        switch operation {
-        case .markAsRead:
-            markAsRead(message: message, at: index)
-        case .moveToTrash, .archive, .permanentlyDelete:
-            delete(message: message, at: index)
-        }
+extension SearchViewController: MsgListViewConroller {
+
+    func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
+        return state.messages.firstIndex(of: message)
     }
 
-    private func delete(message _: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRemoved(message _: MCOIMAPMessage, at index: Int) {
         var updatedMessages = state.messages
         guard updatedMessages[safe: index] != nil else { return }
         updatedMessages.remove(at: index)
-
-        if updatedMessages.isEmpty {
-            state = .empty
-        } else {
-            state = .fetched(updatedMessages, .removed(index))
-        }
+        state = updatedMessages.isEmpty ? .empty : .fetched(updatedMessages, .removed(index))
     }
 
-    private func markAsRead(message: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRead(message: MCOIMAPMessage, at index: Int) {
         var updatedMessages = state.messages
         updatedMessages[safe: index] = message
-        
         state = .fetched(updatedMessages, .added(index))
     }
 }
@@ -187,7 +175,7 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
         tableNode.deselectRow(at: indexPath, animated: false)
         guard let message = state.messages[safe: indexPath.row] else { return }
 
-        openMessageIfPossible(with: message, path: folderPath)
+        msgListOpenMsgElseShowToast(with: message, path: folderPath)
     }
 }
 
