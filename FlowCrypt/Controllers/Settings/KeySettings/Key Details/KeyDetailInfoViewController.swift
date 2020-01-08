@@ -19,17 +19,17 @@ final class KeyDetailInfoViewController: ASViewController<TableNode> {
     }
 
     private let decorator: KeyDetailInfoDecoratorType
-    private let details: [KeyId]
+    private let ids: [KeyId]
     private let date: Date
     private let user: String
 
     init(
-        details: [KeyId],
+        ids: [KeyId],
         date: Date,
         user: String,
         decorator: KeyDetailInfoDecoratorType = KeyDetailInfoDecorator()
     ) {
-        self.details = details
+        self.ids = ids
         self.decorator = decorator
         self.date = date
         self.user = user
@@ -52,7 +52,7 @@ final class KeyDetailInfoViewController: ASViewController<TableNode> {
 
 extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
-        details.count
+        ids.count
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
@@ -63,20 +63,20 @@ extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self,
                 let part = Parts(rawValue: indexPath.row),
-                let key = self.details[safe: indexPath.section]
+                let keyId = self.ids[safe: indexPath.section]
             else {
                 return ASCellNode()
             }
 
             let title = self.decorator.attributedTitle(
                 for: part,
-                details: key,
+                keyId: keyId,
                 date: self.date,
                 user: self.user
             )
 
             if part.isSeparator {
-                let isLastSection = indexPath.section == self.details.count - 1
+                let isLastSection = indexPath.section == self.ids.count - 1
                 let dividerHeight: CGFloat = isLastSection ? 0 : 1
                 return DividerNode(
                     inset: self.decorator.dividerInsets,

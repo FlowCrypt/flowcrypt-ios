@@ -14,11 +14,11 @@ final class KeyDetailViewController: ASViewController<TableNode> {
     }
 
     private let pasteboard: UIPasteboard
-    private let key: KeySettingsItem
+    private let key: KeyDetails
     private let decorator: KeySettingsItemDecoratorType
 
     init(
-        key: KeySettingsItem,
+        key: KeyDetails,
         pasteboard: UIPasteboard = UIPasteboard.general,
         decorator: KeySettingsItemDecoratorType = KeySettingsItemDecorator()
     ) {
@@ -73,20 +73,20 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
     private func handleTap(on part: Parts) {
         switch part {
         case .publicInfo:
-            let viewController = PublicKeyDetailViewController(text: key.publicKey)
+            let viewController = PublicKeyDetailViewController(text: key.public)
             navigationController?.pushViewController(viewController, animated: true)
         case .copy:
-            pasteboard.string = key.publicKey
+            pasteboard.string = key.public
             showToast("key_settings_detail_copy".localized)
         case .keyDetails:
             let viewController = KeyDetailInfoViewController(
-                details: key.details,
-                date: key.createdDate,
-                user: key.users
+                ids: key.ids,
+                date: key.created.toDate(),
+                user: key.users.joined(separator: " ")
             )
             navigationController?.pushViewController(viewController, animated: true)
         case .save:
-            let items = [key.publicKey]
+            let items = [key.public]
             let viewController = UIActivityViewController(
                 activityItems: items,
                 applicationActivities: nil

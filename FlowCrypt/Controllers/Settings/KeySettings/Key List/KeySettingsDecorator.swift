@@ -9,9 +9,9 @@
 import Foundation
 
 protocol KeySettingsDecoratorType {
-    func attributedTitle(for key: KeySettingsItem) -> NSAttributedString
-    func attributedSubTitle(for key: KeySettingsItem) -> NSAttributedString
-    func attributedDate(for key: KeySettingsItem) -> NSAttributedString
+    func attributedUsers(key: KeyDetails) -> NSAttributedString
+    func attributedKeyWords(key: KeyDetails) -> NSAttributedString
+    func attributedDateCreated(key: KeyDetails) -> NSAttributedString
 }
 
 struct KeySettingsDecorator: KeySettingsDecoratorType {
@@ -21,19 +21,21 @@ struct KeySettingsDecorator: KeySettingsDecoratorType {
         self.dateFormatter = dateFormatter
     }
 
-    func attributedTitle(for key: KeySettingsItem) -> NSAttributedString {
-        key.users.attributed(.medium(16))
+    func attributedUsers(key: KeyDetails) -> NSAttributedString {
+        return key.users
+            .joined(separator: " ")
+            .attributed(.medium(16))
     }
 
-    func attributedSubTitle(for key: KeySettingsItem) -> NSAttributedString {
-        key.details
+    func attributedKeyWords(key: KeyDetails) -> NSAttributedString {
+        key.ids
             .compactMap { $0.keywords }
             .joined(separator:"\n")
             .attributed(.regular(14), color: .main)
     }
 
-    func attributedDate(for key: KeySettingsItem) -> NSAttributedString {
-        dateFormatter.formatDate(key.createdDate)
+    func attributedDateCreated(key: KeyDetails) -> NSAttributedString {
+        return dateFormatter.formatDate(key.created.toDate())
             .attributed(.medium(16))
     }
 }
