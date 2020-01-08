@@ -32,4 +32,13 @@ struct XCUIApplicationBuilder {
     func build() -> XCUIApplication {
         app
     }
+    
+    
+}
+
+extension XCUIApplication {
+    func launched() -> XCUIApplication {
+        launch()
+        return self
+    }
 }

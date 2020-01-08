@@ -19,7 +19,7 @@ class SignInViewControllerTest: XCTestCase {
             .reset()
             .setupRegion()
             .build()
-        app.launch()
+            .launched()
     }
 
     override class func tearDown() {
