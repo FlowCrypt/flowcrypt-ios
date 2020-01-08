@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import Foundation
 
-final class TextCellNode: ASCellNode {
+final class TextCellNode: CellNode {
     private let spinner = SpinnerNode()
     private let text = ASTextNode()
     private let size: CGSize

@@ -149,7 +149,7 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
         let size = CGSize(width: tableNode.frame.size.width, height: height)
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
-
+            
             switch self.state {
             case .empty:
                 return TextCellNode(
@@ -184,7 +184,7 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        tableNode.deselectRow(at: indexPath, animated: true)
+        tableNode.deselectRow(at: indexPath, animated: false)
         guard let message = state.messages[safe: indexPath.row] else { return }
 
         openMessageIfPossible(with: message, path: folderPath)
@@ -209,6 +209,10 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
         update(searchController: searchController)
     }
  
+    func didDismissSearchController(_ searchController: UISearchController) {
+        searchController.searchBar.text = searchedExpression
+    }
+    
     private func update(searchController: UISearchController) {
         searchController.searchBar.textField?
             .attributedPlaceholder = "search_placeholder"
@@ -226,11 +230,16 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
 
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard searchController.isActive,
-            let searchText = searchText(for: searchController.searchBar),
-            searchedExpression != searchText
-        else {
+        guard searchController.isActive else {
             searchTask?.cancel()
+            return
+        }
+        guard let searchText = searchText(for: searchController.searchBar) else {
+            searchTask?.cancel()
+            state = .idle
+            return
+        }
+        guard searchedExpression != searchText else {
             return
         }
         
@@ -249,16 +258,11 @@ extension SearchViewController: UISearchResultsUpdating {
     
     private func searchText(for searchBar: UISearchBar) -> String? {
         guard let text = searchBar.text, text.isNotEmpty else { return nil }
-        switch state {
-        case .idle, .empty, .error:
-            state = .startFetching
-        default:
-            break
-        }
         return text
     }
     
     private func search(for searchText: String) {
+        state = .startFetching
         searchedExpression = searchText
         messageProvider.search(
             expression: searchText,
@@ -289,19 +293,25 @@ extension SearchViewController: UISearchResultsUpdating {
     
     private func updateState() {
         switch state {
-        case .empty, .error, .fetched(_, nil):
+        case .empty, .error:
             searchController.dismiss(animated: true, completion: nil)
             node.reloadData()
+            node.bounces = false
+        case .fetched(_, nil):
+            searchController.dismiss(animated: true, completion: nil)
+            node.reloadData()
+            node.bounces = true
         case let .fetched(_, .added(index)):
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 self?.node.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
             }
         case let .fetched(_, .removed(index)):
-            node.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-        case .startFetching:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                self?.node.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+            }
+        case .startFetching, .idle:
             node.reloadData()
-        case .idle:
-            node.reloadData()
+            node.bounces = false
         }
     }
 }
