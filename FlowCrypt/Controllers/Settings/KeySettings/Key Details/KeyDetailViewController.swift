@@ -79,11 +79,7 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
             pasteboard.string = key.public
             showToast("key_settings_detail_copy".localized)
         case .keyDetails:
-            let viewController = KeyDetailInfoViewController(
-                ids: key.ids,
-                date: key.created.toDate(),
-                user: key.users.joined(separator: " ")
-            )
+            let viewController = KeyDetailInfoViewController(key: key)
             navigationController?.pushViewController(viewController, animated: true)
         case .save:
             let items = [key.public]
