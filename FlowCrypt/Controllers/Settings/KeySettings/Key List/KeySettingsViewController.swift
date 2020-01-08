@@ -38,7 +38,6 @@ final class KeySettingsViewController: ASViewController<TableNode> {
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() {
         guard let keys = DataManager.shared.keys() else {
-            print("loading 1 fail")
             return showAlert(message: "Could not retrieve keys from DataManager. Please restart the app and try again.")
         }
         let keyDetailsArr = keys.compactMap { (privateKeys: PrvKeyInfo) -> [KeyDetails]? in
