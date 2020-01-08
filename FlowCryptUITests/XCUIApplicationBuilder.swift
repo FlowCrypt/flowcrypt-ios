@@ -22,7 +22,14 @@ struct XCUIApplicationBuilder {
         return self
     }
 
+    func setupRegion() -> XCUIApplicationBuilder {
+        app.launchArguments += ["-AppleLanguages", "(en-US)"]
+        app.launchArguments += ["-AppleLocale", "en-US"]
+        app.launchArguments += ProcessInfo().arguments
+        return self
+    }
+    
     func build() -> XCUIApplication {
-        return app
+        app
     }
 }

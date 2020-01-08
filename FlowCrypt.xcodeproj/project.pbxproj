@@ -1041,6 +1041,7 @@
 				9FDF363F235A1B0100614596 /* Resources */,
 				0CF02BEF6BCBCD8B43A732A5 /* [CP] Embed Pods Frameworks */,
 				2EA601B887F9BA327C9A5438 /* [CP] Copy Pods Resources */,
+				9F228BA023C65DE4005D2CB6 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1306,6 +1307,23 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		9F228BA023C65DE4005D2CB6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/bin/xcrun simctl uninstall booted com.flowcrypt.ios.debug\n/usr/bin/xcrun simctl uninstall booted com.flowcrypt.ios\n";
 		};
 		D9F6E3D61ED7342E00FD2848 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

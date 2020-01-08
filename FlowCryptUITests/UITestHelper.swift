@@ -43,23 +43,27 @@ final class Springboard {
      Terminate and delete the app via springboard
      */
     class func deleteApp() {
-        XCUIApplication().terminate()
-
-        springboard.activate()
-        let icons = springboard.icons.matching(identifier: "FlowCrypt")
-
-        let icon = icons.firstMatch
-        icon.press(forDuration: 1.3)
-
-        springboard.buttons["Rearrange Apps"].tap()
-
-        Thread.sleep(forTimeInterval: 1)
-
-        icon.buttons["DeleteButton"].tap()
-
-        let deleteButton = springboard.alerts.buttons["Delete"].firstMatch
-        XCTAssert(deleteButton.waitForExistence(timeout: 3))
-        deleteButton.tap()
+//        XCUIApplication().terminate()
+//
+//        springboard.activate()
+//        
+//        let icons = springboard.icons.matching(identifier: "FlowCrypt")
+//        let icon = icons.firstMatch
+//        if !icon.exists { return }
+//        
+//        XCUIDevice.shared
+//        
+//        icon.press(forDuration: 1.3)
+//
+//        springboard.buttons["Rearrange Apps"].tap()
+//
+//        Thread.sleep(forTimeInterval: 1)
+//
+//        icon.buttons["DeleteButton"].tap()
+//
+//        let deleteButton = springboard.alerts.buttons["Delete"].firstMatch
+//        XCTAssert(deleteButton.waitForExistence(timeout: 3))
+//        deleteButton.tap()
     }
 
     class func resetSettings() {

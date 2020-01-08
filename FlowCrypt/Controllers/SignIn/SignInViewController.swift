@@ -93,6 +93,9 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 
 extension SignInViewController {
     private func signInWithGmail() {
+        
+//        present(UIAlertController(title: "Som", message: "a", preferredStyle: .alert), animated: false, completion: nil)
+        
         logDebug(106, "GoogleApi.signIn")
         userService.signIn()
             .then(on: .main) { [weak self] _ in
