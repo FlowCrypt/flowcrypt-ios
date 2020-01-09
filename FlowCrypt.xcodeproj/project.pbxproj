@@ -79,6 +79,10 @@
 		9F17976D2368EEBD002BF770 /* SetupDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupDecorator.swift */; };
 		9F1797712368EEE8002BF770 /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797702368EEE8002BF770 /* ButtonNode.swift */; };
 		9F1F8A1F235F9618006463A1 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1F8A1E235F9618006463A1 /* AppLinks.swift */; };
+		9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA523C673AD005D2CB6 /* Springboard.swift */; };
+		9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA823C67587005D2CB6 /* UserCredentials.swift */; };
+		9F228BAA23C67729005D2CB6 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtension.swift */; };
+		9F228BAC23C7198F005D2CB6 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */; };
 		9F23EA4E237216FA0017DFED /* TextViewCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */; };
 		9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeDecorator.swift */; };
 		9F23EA522372175E0017DFED /* ComposeViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */; };
@@ -276,6 +280,9 @@
 		9F17976C2368EEBD002BF770 /* SetupDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupDecorator.swift; sourceTree = "<group>"; };
 		9F1797702368EEE8002BF770 /* ButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
 		9F1F8A1E235F9618006463A1 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
+		9F228BA523C673AD005D2CB6 /* Springboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Springboard.swift; sourceTree = "<group>"; };
+		9F228BA823C67587005D2CB6 /* UserCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCredentials.swift; sourceTree = "<group>"; };
+		9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
 		9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewCellNode.swift; sourceTree = "<group>"; };
 		9F23EA4F237217140017DFED /* ComposeDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeDecorator.swift; sourceTree = "<group>"; };
 		9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Setup.swift"; sourceTree = "<group>"; };
@@ -682,6 +689,17 @@
 			path = NavigationController;
 			sourceTree = "<group>";
 		};
+		9F228BA723C673C2005D2CB6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */,
+				9FDF364F235A1D3F00614596 /* UITestHelper.swift */,
+				9F228BA523C673AD005D2CB6 /* Springboard.swift */,
+				9F228BA823C67587005D2CB6 /* UserCredentials.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		9F268892237DC55E00428A94 /* ImportKey */ = {
 			isa = PBXGroup;
 			children = (
@@ -863,8 +881,8 @@
 				9FDF3651235A1EDE00614596 /* XCUIApplicationBuilder.swift */,
 				9FDF3643235A1B0100614596 /* FlowCryptUITests.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
-				9FDF364F235A1D3F00614596 /* UITestHelper.swift */,
 				9FDF364C235A1CCD00614596 /* SignInViewControllerTest.swift */,
+				9F228BA723C673C2005D2CB6 /* Resources */,
 			);
 			path = FlowCryptUITests;
 			sourceTree = "<group>";
@@ -1147,6 +1165,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F228BAC23C7198F005D2CB6 /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1367,6 +1386,9 @@
 				9FDF3644235A1B0100614596 /* FlowCryptUITests.swift in Sources */,
 				9FDF3650235A1D3F00614596 /* UITestHelper.swift in Sources */,
 				9FDF3658235A233400614596 /* AppReset.swift in Sources */,
+				9F228BAA23C67729005D2CB6 /* DataExtension.swift in Sources */,
+				9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */,
+				9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
