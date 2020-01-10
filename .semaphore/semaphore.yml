@@ -14,15 +14,21 @@ blocks:
     execution_time_limit:
       minutes: 25
     task:
+      secrets:
+        - name: flowcrypt-ios-ci-secrets
       env_vars:
         - name: LANG
           value: en_US.UTF-8
+        - name: SEMAPHORE_GIT_DIR
+          value: /home/semaphore/git/flowcrypt-ios
       prologue:
         commands:
           - checkout
+          - cd ~/git/flowcrypt-ios/
           - cache restore
           - bundle install --path vendor/bundle
           - cache store
+          - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
       jobs:
         - name: FlowCryptTests
           commands:
