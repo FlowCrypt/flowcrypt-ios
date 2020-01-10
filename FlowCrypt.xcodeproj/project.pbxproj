@@ -141,6 +141,7 @@
 		9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F823607C2900C80B64 /* SignInType.swift */; };
 		9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
 		9FB84728238FBD7400820C23 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F716304234FC7200031645E /* Localization.swift */; };
+		9FBE7D9923C8C925006552DA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
 		9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */; };
@@ -692,10 +693,11 @@
 		9F228BA723C673C2005D2CB6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */,
+				9FDF3651235A1EDE00614596 /* XCUIApplicationBuilder.swift */,
 				9FDF364F235A1D3F00614596 /* UITestHelper.swift */,
 				9F228BA523C673AD005D2CB6 /* Springboard.swift */,
 				9F228BA823C67587005D2CB6 /* UserCredentials.swift */,
+				9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -878,10 +880,9 @@
 		9FDF3642235A1B0100614596 /* FlowCryptUITests */ = {
 			isa = PBXGroup;
 			children = (
-				9FDF3651235A1EDE00614596 /* XCUIApplicationBuilder.swift */,
 				9FDF3643235A1B0100614596 /* FlowCryptUITests.swift */,
-				9FDF3645235A1B0100614596 /* Info.plist */,
 				9FDF364C235A1CCD00614596 /* SignInViewControllerTest.swift */,
+				9FDF3645235A1B0100614596 /* Info.plist */,
 				9F228BA723C673C2005D2CB6 /* Resources */,
 			);
 			path = FlowCryptUITests;
@@ -1342,7 +1343,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/xcrun simctl uninstall booted com.flowcrypt.ios.debug\n/usr/bin/xcrun simctl uninstall booted com.flowcrypt.ios\n";
+			shellScript = "make keyboard\nmake kill\n";
 		};
 		D9F6E3D61ED7342E00FD2848 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1382,6 +1383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FDF364D235A1CCD00614596 /* SignInViewControllerTest.swift in Sources */,
+				9FBE7D9923C8C925006552DA /* Extensions.swift in Sources */,
 				9FDF3652235A1EDE00614596 /* XCUIApplicationBuilder.swift in Sources */,
 				9FDF3644235A1B0100614596 /* FlowCryptUITests.swift in Sources */,
 				9FDF3650235A1D3F00614596 /* UITestHelper.swift in Sources */,

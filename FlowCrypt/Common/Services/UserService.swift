@@ -42,6 +42,8 @@ final class UserService: NSObject, UserServiceType {
     func setup() {
         logDebug(100, "GoogleApi.setup()")
         GIDSignIn.sharedInstance().delegate = self
+        GIDSignIn.sharedInstance()?.language = "en"
+        
         if let token = dataManager.currentToken {
             onNewToken?(token)
         }

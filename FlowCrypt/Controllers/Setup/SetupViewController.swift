@@ -285,6 +285,9 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
+                .then {
+                    $0.textField.accessibilityIdentifier = "Pass"
+                }
                 .onReturn { [weak self] _ in
                     self?.view.endEditing(true)
                     return true
@@ -292,8 +295,12 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .action:
                 return ButtonCellNode(
                     title: self.decorator.titleForAction(button: self.setupAction),
-                    insets: self.decorator.buttonInsets) { [weak self] in
+                    insets: self.decorator.buttonInsets
+                ) { [weak self] in
                         self?.handleButtonPressed()
+                }
+                .then {
+                    $0.button.accessibilityIdentifier = "Pass"
                 }
             case .optionalAction:
                 return ButtonCellNode(
