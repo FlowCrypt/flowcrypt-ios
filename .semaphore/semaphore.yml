@@ -20,7 +20,7 @@ blocks:
         - name: LANG
           value: en_US.UTF-8
         - name: SEMAPHORE_GIT_DIR
-          value: /home/semaphore/git/flowcrypt-ios
+          value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
           - checkout
