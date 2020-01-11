@@ -50,10 +50,10 @@ platform :ios do
 
   desc "Build app, run tests, run UI test"
   lane :do_everything do 
-    cocoapod_update
-    build
-    test
-    #test_ui
+    #cocoapod_update
+    #build
+    #test
+    test_ui
 
   end
 
