@@ -44,7 +44,7 @@ platform :ios do
       skip_archive: true,
       silent: true,
       clean: true,
-      export_xcargs: "-allowProvisioningUpdates"  
+      skip_codesigning: true
   )
 
   end
