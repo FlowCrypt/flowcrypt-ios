@@ -31,8 +31,9 @@ platform :ios do
   desc "Run Tests"
   lane :test do
     scan(
-      scheme: "FlowCryptTests"
-    )
+      scheme: "FlowCryptTests",
+      skip_build: true    
+  )
 
   end
 
@@ -53,8 +54,8 @@ platform :ios do
   desc "Build app, run tests, run UI test"
   lane :do_everything do 
     cocoapod_update
-    build
-    test
+#   build
+#   test
     test_ui
 
   end

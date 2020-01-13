@@ -12,28 +12,13 @@ class SignInViewControllerTest: XCTestCase {
     var app: XCUIApplication!
 
     override func setUp() { 
-//        Springboard.resetSafari()
-//        Springboard.deleteApp()
-//        continueAfterFailure = false
+        Springboard.resetSafari()
+        continueAfterFailure = false
         app = XCUIApplicationBuilder()
             .reset()
             .setupRegion()
             .build()
             .launched()
-    }
-
-    override class func tearDown() {
-        super.tearDown()
-    }
-
-    func test_existence_of_elements() {
-        let elementsQuery = app.tables
-        XCTAssertTrue(wait(for: elementsQuery.buttons["privacy"], timeout: 2))
-        XCTAssertTrue(wait(for: elementsQuery.buttons["terms"], timeout: 2))
-        XCTAssertTrue(wait(for: elementsQuery.buttons["security"], timeout: 2))
-        XCTAssertTrue(wait(for: elementsQuery.buttons["gmail"], timeout: 2))
-        XCTAssertTrue(wait(for: elementsQuery.buttons["outlook"], timeout: 2))
-        XCTAssertTrue(wait(for: elementsQuery.staticTexts["description"], timeout: 2))
     }
 
     func test_successful_gmail_login() {
