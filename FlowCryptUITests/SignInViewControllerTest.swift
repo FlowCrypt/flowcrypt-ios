@@ -81,7 +81,7 @@ class SignInViewControllerTest: XCTestCase {
         }()
         goButton.tap()
         
-        wait(5)
+        wait(10)
         
         let passPhraseTextField = app.tables.secureTextFields.firstMatch
         passPhraseTextField.tap()
