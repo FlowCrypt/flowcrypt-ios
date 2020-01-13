@@ -17,7 +17,7 @@ struct UserCredentials: Decodable {
     static private var empty = UserCredentials(email: "", password: "", pass: "", recovery: "")
     
     static var `default`: UserCredentials = {
-        guard let path = Bundle(for: FlowCryptUITests.self).path(forResource: "test-ci-secrets", ofType: "json") else {
+        guard let path = Bundle(for: SignInViewControllerTest.self).path(forResource: "test-ci-secrets", ofType: "json") else {
             assertionFailure("No credentials found")
             return .empty
         }

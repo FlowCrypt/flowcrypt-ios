@@ -31,7 +31,12 @@ class SignInViewControllerTest: XCTestCase {
         signInAlert.buttons["Continue"].tap()
 
         let webView = app.webViews
+        
+        
         let textField = webView.textFields.firstMatch
+        if !textField.exists {
+            assertionFailure("Google accounts are stored on a simulator")
+        }
         textField.tap()
         
         let user = UserCredentials.default
