@@ -44,7 +44,7 @@ platform :ios do
       skip_archive: true,
       silent: true,
       clean: true,
-      build_app(export_xcargs: "-allowProvisioningUpdates")  
+      export_xcargs: "-allowProvisioningUpdates"  
   )
 
   end
