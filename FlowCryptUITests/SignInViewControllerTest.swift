@@ -40,7 +40,7 @@ class SignInViewControllerTest: XCTestCase {
         textField.tap()
         
         let user = UserCredentials.default
-        textField.typeText(user.email)
+        textField.typeText("cryptup.tester@gmail.com")
         
         
         let returnButton: XCUIElement = {
