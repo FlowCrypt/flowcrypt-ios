@@ -18,6 +18,7 @@ platform :ios do
 
   desc "Run UI Tests"
   lane :test_ui do
+    reset_simulator_contents()
     scan(
       scheme: "FlowCryptUITests",
       clean: false,
@@ -29,7 +30,7 @@ platform :ios do
   end
 
   desc "Run Tests"
-  lane :test do
+  lane :test do 
     scan(
       scheme: "FlowCryptTests",
       skip_build: true    
