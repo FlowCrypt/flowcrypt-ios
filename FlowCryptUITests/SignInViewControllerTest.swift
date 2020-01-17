@@ -43,12 +43,6 @@ class SignInViewControllerTest: XCTestCase {
         let user = UserCredentials.default
         textField.typeText("cryptup.tester@gmail.com")
 
-
-        let isSlideKeyboard: Bool = app.buttons["continue"].exists
-        if isSlideKeyboard {
-            app.buttons["continue"].tap()
-        }
-
         let returnButton: XCUIElement = {
             if app.buttons["return"].exists {
                 return app.buttons["return"]
@@ -57,7 +51,7 @@ class SignInViewControllerTest: XCTestCase {
         }()
         returnButton.tap()
         
-        
+        wait(1)
         let passwordTextField = webView.secureTextFields.firstMatch
         passwordTextField.tap()
         passwordTextField.typeText(user.password)
