@@ -4,7 +4,7 @@
 
 import Promises
 import AsyncDisplayKit
-
+import CoreGraphics
 final class SetupViewController: ASViewController<ASTableNode> {
     private let imap: Imap
     private let userService: UserServiceType
