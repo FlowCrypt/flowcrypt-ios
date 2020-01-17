@@ -211,7 +211,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  cocoapods (= 1.7.5)
+  cocoapods
   fastlane (>= 2.134.0)
   fastlane-plugin-semaphore
   xcode-install (>= 2.6.1)
