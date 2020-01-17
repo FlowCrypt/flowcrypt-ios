@@ -69,13 +69,18 @@ class SignInViewControllerTest: XCTestCase {
             return app.buttons["Go"]
         }()
         goButton.tap()
-        
-//        wait(10)
-//        
+
+        wait(10)
+
+
+        XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
+        XCTAssert(app.tables.secureTextFields.firstMatch.exists, "secureTextFields does  not exist")
+
+
 //        let passPhraseTextField = app.tables.secureTextFields.firstMatch
 //        passPhraseTextField.tap()
 //        passPhraseTextField.typeText(user.pass)
-//        
+//
 //        app.tables.buttons["Load Account"].tap()
     }
                 
