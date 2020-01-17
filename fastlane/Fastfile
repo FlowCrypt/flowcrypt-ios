@@ -25,7 +25,7 @@ platform :ios do
       reset_simulator: true,
       reinstall_app: true,
       skip_build: true,    
-      disable_slide_to_type: true  
+      disable_slide_to_type: true,  
       devices: ["iPhone 11 Pro Max"]
 )
 
