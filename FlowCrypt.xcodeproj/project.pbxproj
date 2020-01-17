@@ -1340,7 +1340,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make keyboard\nmake kill\n";
+			shellScript = "make reset\n";
 		};
 		D9F6E3D61ED7342E00FD2848 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

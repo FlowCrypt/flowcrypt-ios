@@ -25,7 +25,8 @@ platform :ios do
       reset_simulator: true,
       reinstall_app: true,
       skip_build: true    
-  )
+      disable_slide_to_type: true  
+)
 
   end
 
@@ -52,13 +53,24 @@ platform :ios do
 
   end
 
+  desc "Record ui tests"
+  lane :record_tests do
+	reset_simulator        
+	sh("./record.sh")
+  end
+
   desc "Build app, run tests, run UI test"
   lane :do_everything do 
     cocoapod_update
 #   build
 #   test
     test_ui
+    # record_tests
+  end
 
+  desc "Reset simulator content"
+  lane :reset_simulator do
+	reset_simulator_contents()
   end
 
 end

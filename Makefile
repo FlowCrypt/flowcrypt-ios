@@ -1,10 +1,7 @@
 .PHONY: all
-all: keyboard
+all: reset 
 
-.PHONY: kill
+.PHONY: reset
 kill:
-	scripts/clean.sh
+	bundle exec fastlane reset_simulator 
 
-.PHONY: keyboard
-keyboard: 
-	scripts/keyboard.sh

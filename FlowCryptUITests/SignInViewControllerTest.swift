@@ -11,15 +11,17 @@ import XCTest
 class SignInViewControllerTest: XCTestCase {
     var app: XCUIApplication!
 
-    override func setUp() { 
-        Springboard.resetSafari()
+    override func setUp() {
         continueAfterFailure = false
+        Springboard.disableSlideToType()
+        
         app = XCUIApplicationBuilder()
             .reset()
             .setupRegion()
             .build()
             .launched()
     }
+
 
     func test_successful_gmail_login() {
         let gmailButton = app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
@@ -28,18 +30,25 @@ class SignInViewControllerTest: XCTestCase {
         let springboardApp = Springboard.springboard
         let signInAlert = springboardApp.alerts.element
 
-        signInAlert.buttons["Continue"].tap()
-
+        wait(1)
+        let continueButton = signInAlert.buttons["Continue"]
+        continueButton.tap()
+        wait(5)
         let webView = app.webViews
-        
+        print(webView)
         
         let textField = webView.textFields.firstMatch 
         textField.tap()
         
         let user = UserCredentials.default
         textField.typeText("cryptup.tester@gmail.com")
-        
-        
+
+
+        let isSlideKeyboard: Bool = app.buttons["continue"].exists
+        if isSlideKeyboard {
+            app.buttons["continue"].tap()
+        }
+
         let returnButton: XCUIElement = {
             if app.buttons["return"].exists {
                 return app.buttons["return"]

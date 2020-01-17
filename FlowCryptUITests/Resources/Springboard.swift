@@ -13,28 +13,16 @@ final class Springboard {
 
     static let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
  
-    class func deleteApp() {
-//        XCUIApplication().terminate()
-//
-//        springboard.activate()
-//
-//        let icons = springboard.icons.matching(identifier: "FlowCrypt")
-//        let icon = icons.firstMatch
-//        if !icon.exists { return }
-//
-//        XCUIDevice.shared
-//
-//        icon.press(forDuration: 1.3)
-//
-//        springboard.buttons["Rearrange Apps"].tap()
-//
-//        Thread.sleep(forTimeInterval: 1)
-//
-//        icon.buttons["DeleteButton"].tap()
-//
-//        let deleteButton = springboard.alerts.buttons["Delete"].firstMatch
-//        XCTAssert(deleteButton.waitForExistence(timeout: 3))
-//        deleteButton.tap()
+    class func disableSlideToType() {
+        XCUIDevice.shared.press(.home)
+        XCUIDevice.shared.press(.home)
+
+        // Wait some time for the animation end
+        Thread.sleep(forTimeInterval: 0.5)
+        settings.launch()
+
+        settings.tables.staticTexts["General"].tap()
+        
     }
 
     class func resetSettings() {
