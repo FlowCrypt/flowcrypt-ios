@@ -12,7 +12,7 @@ class SignInViewControllerTest: XCTestCase {
     var app: XCUIApplication!
 
     override func setUp() {
-        continueAfterFailure = false 
+        continueAfterFailure = false
         
         app = XCUIApplicationBuilder()
             .reset()
@@ -70,13 +70,13 @@ class SignInViewControllerTest: XCTestCase {
         }()
         goButton.tap()
         
-        wait(10)
-        
-        let passPhraseTextField = app.tables.secureTextFields.firstMatch
-        passPhraseTextField.tap()
-        passPhraseTextField.typeText(user.pass)
-        
-        app.tables.buttons["Load Account"].tap()
+//        wait(10)
+//        
+//        let passPhraseTextField = app.tables.secureTextFields.firstMatch
+//        passPhraseTextField.tap()
+//        passPhraseTextField.typeText(user.pass)
+//        
+//        app.tables.buttons["Load Account"].tap()
     }
                 
 }
