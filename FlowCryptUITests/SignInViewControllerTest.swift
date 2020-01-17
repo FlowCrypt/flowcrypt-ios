@@ -74,15 +74,10 @@ class SignInViewControllerTest: XCTestCase {
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
 
+
         XCTAssert(
-            app.tables.secureTextFields.firstMatch.exists,
-            """
-            SecureTextFields does not exist\n
-            tables.secureTextFields - \(app.tables.secureTextFields.allElementsBoundByAccessibilityElement)")\n
-            tables.textFields - \(app.tables.textFields.allElementsBoundByAccessibilityElement)")\n
-            tables.textViews - \(app.tables.textViews.allElementsBoundByAccessibilityElement)")\n
-            tables.buttons - \(app.tables.buttons.allElementsBoundByAccessibilityElement)")\n
-            """
+            app.tables.textFields.firstMatch.exists,
+            "STF \(app.tables.allElementsBoundByAccessibilityElement)"
         )
 
 
