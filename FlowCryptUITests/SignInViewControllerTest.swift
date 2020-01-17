@@ -12,8 +12,7 @@ class SignInViewControllerTest: XCTestCase {
     var app: XCUIApplication!
 
     override func setUp() {
-        continueAfterFailure = false
-        Springboard.disableSlideToType()
+        continueAfterFailure = false 
         
         app = XCUIApplicationBuilder()
             .reset()
