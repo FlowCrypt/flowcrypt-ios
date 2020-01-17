@@ -287,6 +287,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 }
                 .then {
                     $0.textField.accessibilityIdentifier = "Pass"
+                    $0.textField.becomeFirstResponder()
                 }
                 .onReturn { [weak self] _ in
                     self?.view.endEditing(true)

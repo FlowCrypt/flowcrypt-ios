@@ -74,12 +74,12 @@ class SignInViewControllerTest: XCTestCase {
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
 
+        app.typeText(user.pass)
 
-
-        XCTAssert(
-            app.tables.secureTextFields.firstMatch.exists,
-            "STF \(app.tables.allElementsBoundByAccessibilityElement)"
-        )
+//        XCTAssert(
+//            app.tables.secureTextFields.firstMatch.exists,
+//            "STF \(app.tables.allElementsBoundByAccessibilityElement)"
+//        )
 
 
 //        let passPhraseTextField = app.tables.secureTextFields.firstMatch
