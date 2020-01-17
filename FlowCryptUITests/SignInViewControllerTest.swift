@@ -72,9 +72,25 @@ class SignInViewControllerTest: XCTestCase {
 
         wait(10)
 
-
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
-        XCTAssert(app.tables.secureTextFields.firstMatch.exists, "SecureTextFields does  not exist \(app.tables.allElementsBoundByAccessibilityElement)")
+
+        XCTAssert(
+            app.tables.secureTextFields.firstMatch.exists,
+            """
+            SecureTextFields does not exist\n
+            tables.secureTextFields - \(app.tables.secureTextFields.allElementsBoundByAccessibilityElement)")\n
+            tables.textFields - \(app.tables.textFields.allElementsBoundByAccessibilityElement)")\n
+            tables.textViews - \(app.tables.textViews.allElementsBoundByAccessibilityElement)")\n
+            tables.buttons - \(app.tables.buttons.allElementsBoundByAccessibilityElement)")\n
+            """
+        )
+
+
+//        let passPhraseTextField = app.tables.secureTextFields.firstMatch
+//        passPhraseTextField.tap()
+//        passPhraseTextField.typeText(user.pass)
+//
+//        app.tables.buttons["Load Account"].tap()
     }
                 
 }
