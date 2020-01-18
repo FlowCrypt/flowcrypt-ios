@@ -42,12 +42,7 @@ class SignInViewControllerTest: XCTestCase {
         let user = UserCredentials.default
         textField.typeText("cryptup.tester@gmail.com")
 
-        let returnButton: XCUIElement = {
-            if app.buttons["return"].exists {
-                return app.buttons["return"]
-            }
-            return app.buttons["Return"]
-        }()
+        let returnButton = goKeyboardButton()
         returnButton.tap()
         
         wait(1)
@@ -55,19 +50,7 @@ class SignInViewControllerTest: XCTestCase {
         passwordTextField.tap()
         passwordTextField.typeText(user.password)
         
-        let goButton: XCUIElement = {
-            if app.buttons["return"].exists {
-                return app.buttons["return"]
-            }
-            if app.buttons["Return"].exists {
-                return app.buttons["Return"]
-            }
-            if app.buttons["go"].exists {
-                return app.buttons["go"]
-            }
-            
-            return app.buttons["Go"]
-        }()
+        let goButton = goKeyboardButton()
         goButton.tap()
 
         wait(10)
@@ -75,7 +58,22 @@ class SignInViewControllerTest: XCTestCase {
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
 
         app.typeText(user.pass)
-        app.tables.buttons["Load Account"].tap() 
+        let nextButton = goKeyboardButton()
+        nextButton.tap()
+        app.tables.buttons["Load Account"].tap()
     }
-                
+
+    private func goKeyboardButton() -> XCUIElement {
+        if app.buttons["return"].exists {
+            return app.buttons["return"]
+        }
+        if app.buttons["Return"].exists {
+            return app.buttons["Return"]
+        }
+        if app.buttons["go"].exists {
+            return app.buttons["go"]
+        }
+
+        return app.buttons["Go"]
+    }
 }
