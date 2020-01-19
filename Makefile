@@ -1,5 +1,5 @@
 .PHONY: all
-all: reset, keyboard 
+all: reset keyboard 
 
 .PHONY: reset
 kill:
@@ -7,4 +7,5 @@ kill:
 
 .PHONY: keyboard
 keyboard: 
-	defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false
+	chmod +x scripts/keyboard.sh
+	scripts/keyboard.sh
