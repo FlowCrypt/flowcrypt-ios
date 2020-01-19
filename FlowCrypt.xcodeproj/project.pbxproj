@@ -1340,7 +1340,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make reset\n";
+			shellScript = "make all\n";
 		};
 		D9F6E3D61ED7342E00FD2848 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
