@@ -117,6 +117,10 @@ extension SetupViewController {
             renderNoBackupsFoundOptions(msg)
         } else {
             subtitle = "Found \(self.fetchedEncryptedPrvs.count) key backup\(self.fetchedEncryptedPrvs.count > 1 ? "s" : "")"
+            node.visibleNodes
+                .compactMap { $0 as? TextFieldCellNode }
+                .first?
+                .becomeFirstResponder()
         }
     }
 
@@ -263,7 +267,7 @@ extension SetupViewController {
 
 extension SetupViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return Parts.allCases.count
+        Parts.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -287,7 +291,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 }
                 .then {
                     $0.textField.accessibilityIdentifier = "Pass"
-                    $0.textField.becomeFirstResponder()
+                    $0.becomeFirstResponder()
                 }
                 .onReturn { [weak self] _ in
                     self?.view.endEditing(true)
