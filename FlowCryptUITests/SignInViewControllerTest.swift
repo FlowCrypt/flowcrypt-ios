@@ -31,36 +31,36 @@ class SignInViewControllerTest: XCTestCase {
 
         wait(1)
         let continueButton = signInAlert.buttons["Continue"]
+        XCTAssert(continueButton.exists, "ContinueButton in Alert doesn't exist")
         continueButton.tap()
+
         wait(5)
         let webView = app.webViews
-        print(webView)
-        
         let textField = webView.textFields.firstMatch 
         textField.tap()
-        
         let user = UserCredentials.default
         textField.typeText("cryptup.tester@gmail.com")
-
         let returnButton = goKeyboardButton()
+
+        XCTAssert(returnButton.exists, "User keyboard button")
         returnButton.tap()
         
         wait(1)
         let passwordTextField = webView.secureTextFields.firstMatch
         passwordTextField.tap()
         passwordTextField.typeText(user.password)
-        
         let goButton = goKeyboardButton()
+
+        XCTAssert(goButton.exists, "Password keyboard button")
         goButton.tap()
 
         wait(10)
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
-
         app.typeText(user.pass)
         let nextButton = goKeyboardButton()
         XCTAssert(nextButton.exists, "Keyboard doesn't appear")
-        nextButton.tap() 
+        nextButton.tap()
     }
 
     private func goKeyboardButton() -> XCUIElement {
