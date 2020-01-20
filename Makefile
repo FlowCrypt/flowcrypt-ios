@@ -7,5 +7,7 @@ kill:
 
 .PHONY: keyboard
 keyboard: 
+	killall Simulator
+	defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false
 	chmod +x scripts/keyboard.sh
 	scripts/keyboard.sh
