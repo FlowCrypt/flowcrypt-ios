@@ -59,8 +59,8 @@ class SignInViewControllerTest: XCTestCase {
 
         app.typeText(user.pass)
         let nextButton = goKeyboardButton()
-        nextButton.tap()
-        app.tables.buttons["Load Account"].tap()
+        XCTAssert(nextButton.exists, "Keyboard doesn't appear")
+        nextButton.tap() 
     }
 
     private func goKeyboardButton() -> XCUIElement {
