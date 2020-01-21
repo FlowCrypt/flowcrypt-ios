@@ -59,9 +59,14 @@ class SignInViewControllerTest: XCTestCase {
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
         app.keys[user.pass]
-        let nextButton = goKeyboardButton()
-        XCTAssert(nextButton.exists, "Keyboard doesn't appear")
-        nextButton.tap()
+//        app.buttons["Return"].tap()
+
+        let passButton = app.tables/*@START_MENU_TOKEN@*/.buttons["Pass"]/*[[".cells",".buttons[\"Load Account\"]",".buttons[\"Pass\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
+        passButton.tap()
+
+//        let nextButton = goKeyboardButton()
+//        XCTAssert(nextButton.exists, "Keyboard doesn't appear")
+//        nextButton.tap()
     }
 
     private func goKeyboardButton() -> XCUIElement {
