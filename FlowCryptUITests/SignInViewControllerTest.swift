@@ -56,8 +56,10 @@ class SignInViewControllerTest: XCTestCase {
 
         wait(10)
 
+
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
-        app.typeText(user.pass)
+//        app.typeText(user.pass)
+        app.keys[user.pass]
 //        let nextButton = goKeyboardButton()
 //        XCTAssert(nextButton.exists, "Keyboard doesn't appear")
 //        nextButton.tap()
