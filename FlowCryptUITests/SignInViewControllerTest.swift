@@ -42,17 +42,17 @@ class SignInViewControllerTest: XCTestCase {
         textField.typeText("cryptup.tester@gmail.com")
         let returnButton = goKeyboardButton()
 //
-//        XCTAssert(returnButton.exists, "User keyboard button")
-//        returnButton.tap()
-//
-//        wait(1)
-//        let passwordTextField = webView.secureTextFields.firstMatch
-//        passwordTextField.tap()
-//        passwordTextField.typeText(user.password)
-//        let goButton = goKeyboardButton()
-//
-//        XCTAssert(goButton.exists, "Password keyboard button")
-//        goButton.tap()
+        XCTAssert(returnButton.exists, "User keyboard button")
+        returnButton.tap()
+
+        wait(1)
+        let passwordTextField = webView.secureTextFields.firstMatch
+        passwordTextField.tap()
+        passwordTextField.typeText(user.password)
+        let goButton = goKeyboardButton()
+
+        XCTAssert(goButton.exists, "Password keyboard button")
+        goButton.tap()
 //
 //        wait(10)
 //
