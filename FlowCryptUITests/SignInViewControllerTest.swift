@@ -66,8 +66,8 @@ class SignInViewControllerTest: XCTestCase {
 //        passButton.tap()
 
         wait(1)
-        app.tables/*@START_MENU_TOKEN@*/.buttons["load_account"]/*[[".cells",".buttons[\"Load Account\"]",".buttons[\"load_account\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
-
+//        app.tables/*@START_MENU_TOKEN@*/.buttons["load_account"]/*[[".cells",".buttons[\"Load Account\"]",".buttons[\"load_account\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app.typeText("\n")
 
 //        let nextButton = goKeyboardButton()
 //        XCTAssert(nextButton.exists, "Keyboard doesn't appear")
