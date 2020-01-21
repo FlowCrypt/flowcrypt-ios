@@ -29,22 +29,22 @@ class SignInViewControllerTest: XCTestCase {
         let springboardApp = Springboard.springboard
         let signInAlert = springboardApp.alerts.element
 
-//        wait(1)
-//        let continueButton = signInAlert.buttons["Continue"]
-//        XCTAssert(continueButton.exists, "ContinueButton in Alert doesn't exist")
-//        continueButton.tap()
-//
-//        wait(5)
-//        let webView = app.webViews
-//        let textField = webView.textFields.firstMatch 
-//        textField.tap()
-//        let user = UserCredentials.default
-//        textField.typeText("cryptup.tester@gmail.com")
-//        let returnButton = goKeyboardButton()
+        wait(1)
+        let continueButton = signInAlert.buttons["Continue"]
+        XCTAssert(continueButton.exists, "ContinueButton in Alert doesn't exist")
+        continueButton.tap()
+
+        wait(5)
+        let webView = app.webViews
+        let textField = webView.textFields.firstMatch
+        textField.tap()
+        let user = UserCredentials.default
+        textField.typeText("cryptup.tester@gmail.com")
+        let returnButton = goKeyboardButton()
 //
 //        XCTAssert(returnButton.exists, "User keyboard button")
 //        returnButton.tap()
-//        
+//
 //        wait(1)
 //        let passwordTextField = webView.secureTextFields.firstMatch
 //        passwordTextField.tap()
