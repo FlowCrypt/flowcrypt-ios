@@ -8,7 +8,7 @@
 
 import XCTest
 
-class SignInViewControllerTest: XCTestCase {
+class SignInTest: XCTestCase {
     var app: XCUIApplication!
 
     override func setUp() {
@@ -21,8 +21,8 @@ class SignInViewControllerTest: XCTestCase {
             .launched()
     }
 
-
     func test_successful_gmail_login() {
+        // tap on gmail button
         let gmailButton = app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
         gmailButton.tap()
 
@@ -30,48 +30,40 @@ class SignInViewControllerTest: XCTestCase {
         let signInAlert = springboardApp.alerts.element
 
         wait(1)
+
+        // continue on alert
         let continueButton = signInAlert.buttons["Continue"]
         XCTAssert(continueButton.exists, "ContinueButton in Alert doesn't exist")
         continueButton.tap()
 
         wait(5)
+
+        // enter user name
         let webView = app.webViews
         let textField = webView.textFields.firstMatch
         textField.tap()
         let user = UserCredentials.default
         textField.typeText("cryptup.tester@gmail.com")
         let returnButton = goKeyboardButton()
-//
         XCTAssert(returnButton.exists, "User keyboard button")
         returnButton.tap()
 
         wait(1)
+
+        // enter password
         let passwordTextField = webView.secureTextFields.firstMatch
         passwordTextField.tap()
         passwordTextField.typeText(user.password)
         let goButton = goKeyboardButton()
-
         XCTAssert(goButton.exists, "Password keyboard button")
         goButton.tap()
 
         wait(10)
 
-
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
-        app.keys[user.pass + "\n"]
-//        app.typeText(user.pass + "\n")
-//        app.buttons["Return"].tap()
 
-//        let passButton = app.tables.buttons["Pass"]
-//        passButton.tap()
-
-//        wait(1)
-//        app.tables/*@START_MENU_TOKEN@*/.buttons["load_account"]/*[[".cells",".buttons[\"Load Account\"]",".buttons[\"load_account\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        app.typeText("\n")
-
-//        let nextButton = goKeyboardButton()
-//        XCTAssert(nextButton.exists, "Keyboard doesn't appear")
-//        nextButton.tap()
+        // enter pass phrase and tap enter
+        _ = app.keys[user.pass + "\n"]
     }
 
     private func goKeyboardButton() -> XCUIElement {

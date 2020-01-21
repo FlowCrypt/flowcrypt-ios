@@ -148,7 +148,7 @@
 		9FD364862381EFCB00657302 /* EnterPassPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD364852381EFCB00657302 /* EnterPassPhraseViewController.swift */; };
 		9FDF3638235A0B3100614596 /* MenuNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* MenuNode.swift */; };
 		9FDF363A235A0B3B00614596 /* HeaderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3639235A0B3B00614596 /* HeaderNode.swift */; };
-		9FDF364D235A1CCD00614596 /* SignInViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF364C235A1CCD00614596 /* SignInViewControllerTest.swift */; };
+		9FDF364D235A1CCD00614596 /* SignInTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF364C235A1CCD00614596 /* SignInTest.swift */; };
 		9FDF3650235A1D3F00614596 /* UITestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF364F235A1D3F00614596 /* UITestHelper.swift */; };
 		9FDF3652235A1EDE00614596 /* XCUIApplicationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3651235A1EDE00614596 /* XCUIApplicationBuilder.swift */; };
 		9FDF3654235A218E00614596 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3653235A218E00614596 /* main.swift */; };
@@ -343,7 +343,7 @@
 		9FDF3639235A0B3B00614596 /* HeaderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderNode.swift; sourceTree = "<group>"; };
 		9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDF3645235A1B0100614596 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9FDF364C235A1CCD00614596 /* SignInViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewControllerTest.swift; sourceTree = "<group>"; };
+		9FDF364C235A1CCD00614596 /* SignInTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInTest.swift; sourceTree = "<group>"; };
 		9FDF364F235A1D3F00614596 /* UITestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestHelper.swift; sourceTree = "<group>"; };
 		9FDF3651235A1EDE00614596 /* XCUIApplicationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCUIApplicationBuilder.swift; sourceTree = "<group>"; };
 		9FDF3653235A218E00614596 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -878,7 +878,7 @@
 		9FDF3642235A1B0100614596 /* FlowCryptUITests */ = {
 			isa = PBXGroup;
 			children = (
-				9FDF364C235A1CCD00614596 /* SignInViewControllerTest.swift */,
+				9FDF364C235A1CCD00614596 /* SignInTest.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
 				9F228BA723C673C2005D2CB6 /* Resources */,
 			);
@@ -1380,7 +1380,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9FDF364D235A1CCD00614596 /* SignInViewControllerTest.swift in Sources */,
+				9FDF364D235A1CCD00614596 /* SignInTest.swift in Sources */,
 				9FBE7D9923C8C925006552DA /* Extensions.swift in Sources */,
 				9FDF3652235A1EDE00614596 /* XCUIApplicationBuilder.swift in Sources */,
 				9FDF3650235A1D3F00614596 /* UITestHelper.swift in Sources */,

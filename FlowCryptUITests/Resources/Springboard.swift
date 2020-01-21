@@ -12,18 +12,6 @@ import XCTest
 final class Springboard {
 
     static let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
- 
-    class func disableSlideToType() {
-        XCUIDevice.shared.press(.home)
-        XCUIDevice.shared.press(.home)
-
-        // Wait some time for the animation end
-        Thread.sleep(forTimeInterval: 0.5)
-        settings.launch()
-
-        settings.tables.staticTexts["General"].tap()
-        
-    }
 
     class func resetSettings() {
         XCUIDevice.shared.press(.home)
