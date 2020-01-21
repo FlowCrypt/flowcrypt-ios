@@ -290,7 +290,6 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                     self?.passPhrase = value
                 }
                 .then {
-                    $0.textField.accessibilityIdentifier = "Pass"
                     $0.becomeFirstResponder()
                 }
                 .onReturn { [weak self] _ in
@@ -302,10 +301,10 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                     title: self.decorator.titleForAction(button: self.setupAction),
                     insets: self.decorator.buttonInsets
                 ) { [weak self] in
-                        self?.handleButtonPressed()
+                    self?.handleButtonPressed()
                 }
                 .then {
-                    $0.button.accessibilityIdentifier = "Pass"
+                    $0.button.accessibilityIdentifier = "load_account"
                 }
             case .optionalAction:
                 return ButtonCellNode(
