@@ -21,13 +21,25 @@ class SignInTest: XCTestCase {
             .launched()
     }
 
+    func test_cancel_login() {
+        app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+            .tap()
+        wait(1)
+
+        let cancelButton = gmailAlert().buttons["Cancel"]
+        XCTAssert(cancelButton.exists, "Cancel in Alert doesn't exist")
+        cancelButton.tap()
+
+        wait(3)
+        let errorAlert = app.alerts["Error"]
+        XCTAssert(errorAlert.exists) 
+    }
+
     func test_successful_gmail_login() {
         // tap on gmail button
-        let gmailButton = app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-        gmailButton.tap()
-
-        let springboardApp = Springboard.springboard
-        let signInAlert = springboardApp.alerts.element
+        app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+            .tap()
+        let signInAlert = gmailAlert()
 
         wait(1)
 
@@ -65,6 +77,9 @@ class SignInTest: XCTestCase {
         // enter pass phrase and tap enter
         _ = app.keys[user.pass + "\n"]
     }
+}
+
+extension SignInTest {
 
     private func goKeyboardButton() -> XCUIElement {
         if app.buttons["return"].exists {
@@ -78,5 +93,9 @@ class SignInTest: XCTestCase {
         }
 
         return app.buttons["Go"]
+    }
+
+    private func gmailAlert() -> XCUIElement {
+        Springboard.springboard.alerts.element
     }
 }
