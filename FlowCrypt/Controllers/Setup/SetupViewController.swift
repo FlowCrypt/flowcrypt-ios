@@ -294,6 +294,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 }
                 .onReturn { [weak self] _ in
                     self?.view.endEditing(true)
+                    self?.handleButtonPressed()
                     return true
                 }
             case .action:

@@ -32,7 +32,12 @@ class SignInTest: XCTestCase {
 
         wait(3)
         let errorAlert = app.alerts["Error"]
-        XCTAssert(errorAlert.exists) 
+        XCTAssert(errorAlert.exists)
+
+
+
+
+        
     }
 
     func test_successful_gmail_login() {
@@ -70,12 +75,28 @@ class SignInTest: XCTestCase {
         XCTAssert(goButton.exists, "Password keyboard button")
         goButton.tap()
 
-        wait(10)
+        wait(5)
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
 
         // enter pass phrase and tap enter
-        _ = app.keys[user.pass + "\n"]
+
+        let button = goKeyboardButton()
+        if button.exists {
+            app.typeText(user.pass)
+            button.tap()
+        } else {
+            _ = app.keys[user.pass + "\n"]
+        }
+        wait(1)
+
+        XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
+
+        XCUIDevice.shared.press(.home)
+        XCUIApplication(bundleIdentifier: Bundle.main.bundleIdentifier!).launch()
+
+        wait(1)
+        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after login")
     }
 }
 
