@@ -81,12 +81,12 @@ class SignInTest: XCTestCase {
 
         // enter wrong pass phrase and tap enter
 
-        _ = app.keys[user.pass+"wooorng"]
+        _ = app.keys[user.pass+"wooorng"+"\n"]
         wait(0.2)
 //        app.keys[user.pass+"wooorng"].tap()
 //        wait(0.2)
-        app.buttons["Return"].tap()
-        wait(0.2)
+//        app.buttons["Return"].tap()
+//        wait(0.2)
         let errorAlert = app.alerts["Error"]
         XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
         errorAlert.scrollViews.otherElements.buttons["OK"].tap()
