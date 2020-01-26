@@ -79,7 +79,21 @@ class SignInTest: XCTestCase {
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
 
-        // enter pass phrase and tap enter
+        // enter wrong pass phrase and tap enter
+
+        _ = app.keys[user.pass+"wooorng"]
+        wait(0.2)
+        app.keys[user.pass+"wooorng"].tap()
+        wait(0.2)
+        app.buttons["Return"].tap()
+        wait(0.2)
+        let errorAlert = app.alerts["Error"]
+        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
+        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
+        wait(0.2)
+
+        app.tables.secureTextFields.firstMatch.tap()
+        wait(0.2)
 
         let button = goKeyboardButton()
         if button.exists {
