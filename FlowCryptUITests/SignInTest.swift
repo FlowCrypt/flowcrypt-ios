@@ -81,12 +81,14 @@ class SignInTest: XCTestCase {
 
         // enter wrong pass phrase and tap enter
 
-        _ = app.keys[user.pass+"wooorng"+"\n"]
+        _ = app.keys[user.pass+"wooorng"]
         wait(0.2)
-//        app.keys[user.pass+"wooorng"].tap()
-//        wait(0.2)
-//        app.buttons["Return"].tap()
-//        wait(0.2)
+
+        let loadButton = app.tables/*@START_MENU_TOKEN@*/.buttons["load_account"]/*[[".cells",".buttons[\"Load Account\"]",".buttons[\"load_account\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
+        XCTAssert(loadButton.exists, "Could not find load button")
+        loadButton.tap()
+
+        wait(0.2) 
         let errorAlert = app.alerts["Error"]
         XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
         errorAlert.scrollViews.otherElements.buttons["OK"].tap()
