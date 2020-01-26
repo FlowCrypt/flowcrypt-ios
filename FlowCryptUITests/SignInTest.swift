@@ -83,8 +83,8 @@ class SignInTest: XCTestCase {
 
         _ = app.keys[user.pass+"wooorng"]
         wait(0.2)
-        app.keys[user.pass+"wooorng"].tap()
-        wait(0.2)
+//        app.keys[user.pass+"wooorng"].tap()
+//        wait(0.2)
         app.buttons["Return"].tap()
         wait(0.2)
         let errorAlert = app.alerts["Error"]
