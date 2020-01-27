@@ -118,8 +118,8 @@ class SignInTest: XCTestCase {
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
 
         // MARK: - Check in sent mail box
-
-        app.navigationBars["Inbox"].buttons["menu icn"].tap()
+        let menuIcon = app.navigationBars["Inbox"].buttons["menu icn"]
+        menuIcon.tap()
         wait(0.3)
         app.tables.staticTexts["Sent Mail"].tap()
         wait(5)
@@ -127,11 +127,21 @@ class SignInTest: XCTestCase {
         app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
         wait(5)
 
-        XCTAssert(app.tables.staticTexts[user.email].exists, "")
-        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "")
-        XCTAssert(app.tables.staticTexts["Some text"].exists, "")
-    }
+        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recepient in sent message")
+        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
+        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
 
+
+        // MARK: - Delete
+        app.navigationBars.buttons["Delete"].tap()
+        wait(5)
+        app.navigationBars.buttons["menu icn"].tap()
+        app.tables.staticTexts["Trash"].tap()
+        wait(3)
+        XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in trash")
+ 
+
+    }
 }
 
 extension SignInTest {
