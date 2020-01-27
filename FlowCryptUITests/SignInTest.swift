@@ -102,7 +102,44 @@ class SignInTest: XCTestCase {
         XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
 
         // MARK: - Send message
-        // open compose
+        sendMessage()
+        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
+
+        // MARK: - Check in sent mail box
+        menuButton().tap()
+        wait(0.3)
+        app.tables.staticTexts["Sent Mail"].tap()
+        wait(5)
+
+        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
+        wait(7)
+
+        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recepient in sent message")
+        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
+        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
+
+
+        // MARK: - Delete
+        app.navigationBars.buttons["Delete"].tap()
+        wait(5)
+        menuButton().tap()
+        app.tables.staticTexts["Trash"].tap()
+        wait(2)
+        XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in trash")
+
+        // MARK: - Archive
+        menuButton().tap()
+        app.tables.staticTexts["Inbox"].tap()
+        wait(2)
+        sendMessage()
+        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
+        app.navigationBars.buttons["archive"].tap()
+        wait(3)
+        XCTAssert(app.navigationBars["Inbox"].exists, "Failed in sending message to archive")
+    }
+
+    // MARK: - Send message
+    private func sendMessage() {
         app.buttons["+"].tap()
         wait(0.2)
         app.typeText(user.email)
@@ -114,33 +151,6 @@ class SignInTest: XCTestCase {
         app.typeText("Some text")
         app.navigationBars["Inbox"].buttons["android send"].tap()
         wait(5)
-
-        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
-
-        // MARK: - Check in sent mail box
-        let menuIcon = app.navigationBars["Inbox"].buttons["menu icn"]
-        menuIcon.tap()
-        wait(0.3)
-        app.tables.staticTexts["Sent Mail"].tap()
-        wait(5)
-
-        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
-        wait(5)
-
-        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recepient in sent message")
-        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
-        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
-
-
-        // MARK: - Delete
-        app.navigationBars.buttons["Delete"].tap()
-        wait(5)
-        app.navigationBars.buttons["menu icn"].tap()
-        app.tables.staticTexts["Trash"].tap()
-        wait(3)
-        XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in trash")
- 
-
     }
 }
 
@@ -162,5 +172,9 @@ extension SignInTest {
 
     private func gmailAlert() -> XCUIElement {
         Springboard.springboard.alerts.element
+    }
+
+    private func menuButton() -> XCUIElement {
+        app.navigationBars.buttons["menu icn"]
     }
 }
