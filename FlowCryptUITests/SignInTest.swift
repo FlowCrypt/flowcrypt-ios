@@ -10,12 +10,12 @@ import XCTest
 
 class SignInTest: XCTestCase {
     var app: XCUIApplication!
+    let user = UserCredentials.default
 
     override func setUp() {
         continueAfterFailure = false
         
         app = XCUIApplicationBuilder()
-            .reset()
             .setupRegion()
             .build()
             .launched()
@@ -30,20 +30,15 @@ class SignInTest: XCTestCase {
         XCTAssert(cancelButton.exists, "Cancel in Alert doesn't exist")
         cancelButton.tap()
 
-        wait(3)
+        wait(1)
         let errorAlert = app.alerts["Error"]
-        XCTAssert(errorAlert.exists)
-
-
-
-
-        
+        XCTAssert(errorAlert.exists) 
     }
 
-    func test_successful_gmail_login() {
+    func test_gmail_login() {
         // tap on gmail button
-        app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-            .tap()
+        // MARK: - Google Login
+        app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
         let signInAlert = gmailAlert()
 
         wait(1)
@@ -58,9 +53,8 @@ class SignInTest: XCTestCase {
         // enter user name
         let webView = app.webViews
         let textField = webView.textFields.firstMatch
-        textField.tap()
-        let user = UserCredentials.default
-        textField.typeText("cryptup.tester@gmail.com")
+        wait(1)
+        textField.typeText(user.email)
         let returnButton = goKeyboardButton()
         XCTAssert(returnButton.exists, "User keyboard button")
         returnButton.tap()
@@ -79,24 +73,24 @@ class SignInTest: XCTestCase {
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
 
+
+        // MARK: - Wrong pass phrase
         // enter wrong pass phrase and tap enter
-
-//        _ = app.keys[user.pass+"wooorng"]
-//        wait(0.2)
-
-//        let loadButton = app.tables/*@START_MENU_TOKEN@*/.buttons["load_account"]/*[[".cells",".buttons[\"Load Account\"]",".buttons[\"load_account\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
-//        XCTAssert(loadButton.exists, "Could not find load button")
-//        loadButton.tap()
-//        wait(0.2)
-//        let errorAlert = app.alerts["Error"]
-//        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
-//        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
-//        wait(0.2)
-
-//        app.tables.secureTextFields.firstMatch.tap()
-//        wait(0.2)
-
         let button = goKeyboardButton()
+
+        app.typeText(user.pass + "wrong")
+        button.tap()
+
+        wait(0.2)
+        let errorAlert = app.alerts["Error"]
+        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
+        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
+        wait(0.2)
+        app.tables.secureTextFields.firstMatch.tap()
+
+
+        // MARK: - Coorect pass phrase
+        // enter correct pass phrase and tap enter
         if button.exists {
             app.typeText(user.pass)
             button.tap()
@@ -105,14 +99,39 @@ class SignInTest: XCTestCase {
         }
         wait(1)
 
-//        XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
-//
-//        XCUIDevice.shared.press(.home)
-//        XCUIApplication(bundleIdentifier: Bundle.main.bundleIdentifier!).launch()
-//
-//        wait(1)
-//        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after login")
+        XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
+
+        // MARK: - Send message
+        // open compose
+        app.buttons["+"].tap()
+        wait(0.2)
+        app.typeText(user.email)
+
+        app.tables/*@START_MENU_TOKEN@*/.textFields["Subject"]/*[[".cells.textFields[\"Subject\"]",".textFields[\"Subject\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app.typeText("Some Subject")
+        let nextCompose = goKeyboardButton()
+        nextCompose.tap()
+        app.typeText("Some text")
+        app.navigationBars["Inbox"].buttons["android send"].tap()
+        wait(5)
+
+        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
+
+        // MARK: - Check in sent mail box
+
+        app.navigationBars["Inbox"].buttons["menu icn"].tap()
+        wait(0.3)
+        app.tables.staticTexts["Sent Mail"].tap()
+        wait(5)
+
+        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
+        wait(5)
+
+        XCTAssert(app.tables.staticTexts[user.email].exists, "")
+        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "")
+        XCTAssert(app.tables.staticTexts["Some text"].exists, "")
     }
+
 }
 
 extension SignInTest {
