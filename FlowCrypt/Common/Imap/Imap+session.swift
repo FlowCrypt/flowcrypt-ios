@@ -55,6 +55,7 @@ extension Imap {
         return existingSess
     }
 
+    @discardableResult
     func renewSession() -> Promise<Void> {
         userService
             .renewAccessToken()
@@ -62,6 +63,7 @@ extension Imap {
                 self?.getImapSess(newAccessToken: token)
                 self?.getSmtpSess(newAccessToken: token)
             }
+            
     }
 
     func disconnect() {

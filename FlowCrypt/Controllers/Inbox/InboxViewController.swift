@@ -70,6 +70,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
         setupUI()
         setupNavigationBar()
+        fetchAndRenderEmails(nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -311,7 +312,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {
         switch state {
-        case .idle: return true
+        case .idle: return false
         case .fetched: return messages.count < state.total ?? 0
         case .error, .refresh, .fetching, .empty: return false
         }
@@ -325,11 +326,7 @@ extension InboxViewController {
     private func handleBeginFetching(_ context: ASBatchContext?) {
         switch state {
         case .idle:
-            fetchAndRenderEmails(context)
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.tableNode.reloadData()
-            }
+            break 
         case let .fetched(total):
             if messages.count != total {
                 loadMore(context)

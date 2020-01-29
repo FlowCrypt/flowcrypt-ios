@@ -9,7 +9,7 @@
 import Foundation
 
 protocol DataManagerType {
-    func startForNew(user: User?, with token: String?)
+    func startFor(user: User, with token: String?)
     
     var email: String? { get }
     var currentUser: User? { get }
@@ -19,6 +19,8 @@ protocol DataManagerType {
     func keys() -> [PrvKeyInfo]?
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func publicKey() -> String?
+
+    func logOutAndDestroyStorage()
 }
 
 final class DataManager: DataManagerType {
@@ -64,16 +66,18 @@ final class DataManager: DataManagerType {
         encryptedStorage.publicKey()
     }
 
-    func startForNew(user: User?, with token: String?) {
-        logOut()
-        encryptedStorage.encrypt()
+    func startFor(user: User, with token: String?) {
+        if currentUser != user {
+            logOutAndDestroyStorage()
+            encryptedStorage.encrypt()
+        }
         localStorage.saveCurrent(user: user)
         encryptedStorage.saveToken(with: token)
     }
 } 
 
-extension DataManager: LogOutHandler {
-    func logOut() {
+extension DataManager {
+    func logOutAndDestroyStorage() {
         [localStorage, encryptedStorage].map { $0 as LogOutHandler }.forEach {
             $0.logOut()
         }
