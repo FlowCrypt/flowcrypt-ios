@@ -52,11 +52,7 @@ struct RootAssembley: AppAssembley {
             if dataManager.isLogedIn {
                 let vc = BootstrapViewController()
                 vc.completion = { error in
-                    if error == nil {
-                        window.rootViewController = SideMenuNavigationController()
-                    } else {
-                        window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
-                    }
+                    window.rootViewController = SideMenuNavigationController()
                 }
                 return vc
             } else {

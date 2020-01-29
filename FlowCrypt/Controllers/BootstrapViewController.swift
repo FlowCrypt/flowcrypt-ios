@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Promises
 
 final class BootstrapViewController: UIViewController {
     let imap = Imap.shared
@@ -14,13 +15,16 @@ final class BootstrapViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        imap.renewSession()
-            .then(on: .main, {
-                self.completion?(nil)
-            })
-            .catch { error in
-                self.completion?(error)
-            }
+        view.backgroundColor = .white
+ 
+        do {
+            _ = try await(URLSession.shared.call("http://google.com"))
+            self.imap.renewSession()
+                .then(on: .main, {
+                    self.completion?(nil)
+                })
+        } catch {
+            self.completion?(AppErr.connection)
+        }
     }
 }

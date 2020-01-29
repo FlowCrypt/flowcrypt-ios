@@ -63,6 +63,7 @@ extension Imap {
                 self?.getImapSess(newAccessToken: token)
                 self?.getSmtpSess(newAccessToken: token)
             }
+            
     }
 
     func disconnect() {
