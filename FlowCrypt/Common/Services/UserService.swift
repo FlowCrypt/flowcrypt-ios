@@ -28,11 +28,11 @@ final class UserService: NSObject, UserServiceType {
     private var onLogOut: (() -> Void)?
 
     private let googleManager: GIDSignIn
-    private var dataManager: DataManagerType & LogOutHandler
+    private var dataManager: DataManagerType
 
     private init(
         googleManager: GIDSignIn = GIDSignIn.sharedInstance(),
-        dataManager: DataManagerType & LogOutHandler = DataManager.shared
+        dataManager: DataManagerType = DataManager.shared
     ) {
         self.googleManager = googleManager
         self.dataManager = dataManager
@@ -131,7 +131,7 @@ extension UserService: GIDSignInDelegate {
     func sign(_: GIDSignIn!, didDisconnectWith _: GIDGoogleUser!, withError _: Error!) {
         // will not wait until disconnected. errors ignored
         Imap.shared.disconnect()
-        dataManager.logOut()
+        dataManager.logOutAndDestroyStorage()
         onLogOut?()
     }
 }

@@ -19,6 +19,8 @@ protocol DataManagerType {
     func keys() -> [PrvKeyInfo]?
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func publicKey() -> String?
+
+    func logOutAndDestroyStorage()
 }
 
 final class DataManager: DataManagerType {
@@ -66,7 +68,7 @@ final class DataManager: DataManagerType {
 
     func startFor(user: User, with token: String?) {
         if currentUser != user {
-            logOut()
+            logOutAndDestroyStorage()
             encryptedStorage.encrypt()
         }
         localStorage.saveCurrent(user: user)
@@ -74,8 +76,8 @@ final class DataManager: DataManagerType {
     }
 } 
 
-extension DataManager: LogOutHandler {
-    func logOut() {
+extension DataManager {
+    func logOutAndDestroyStorage() {
         [localStorage, encryptedStorage].map { $0 as LogOutHandler }.forEach {
             $0.logOut()
         }

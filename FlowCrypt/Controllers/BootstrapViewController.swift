@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Promises
 
 final class BootstrapViewController: UIViewController {
     let imap = Imap.shared
@@ -16,15 +15,11 @@ final class BootstrapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
- 
-        do {
-            _ = try await(URLSession.shared.call("http://google.com"))
-            self.imap.renewSession()
-                .then(on: .main, {
-                    self.completion?(nil)
-                })
-        } catch {
-            self.completion?(AppErr.connection)
-        }
+
+        // googleManager.restorePreviousSignIn() doesn't return error if session can't be restored.
+        // should be reworked to have some failure callback and completion should be called after receiveing a new session
+        // or after receiving error
+        imap.renewSession()
+        completion?(nil)
     }
 }
