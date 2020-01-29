@@ -15,7 +15,7 @@ protocol MessageProvider {
 
 extension Imap: MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Promise<MessageContext> {
-        return Promise { [weak self] resolve, reject in
+        Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
             
             let folderInfo = try await(self.folderInfo(for: folder))

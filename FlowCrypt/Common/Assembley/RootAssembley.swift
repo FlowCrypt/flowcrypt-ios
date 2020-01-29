@@ -50,10 +50,17 @@ struct RootAssembley: AppAssembley {
  
         window.rootViewController = {
             if dataManager.isLogedIn {
-                return SideMenuNavigationController()
+                let vc = BootstrapViewController()
+                vc.completion = { error in
+                    if error == nil {
+                        window.rootViewController = SideMenuNavigationController()
+                    } else {
+                        window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
+                    }
+                }
+                return vc
             } else {
-                let root = SetupViewController()
-                return MainNavigationController(rootViewController: root)
+                return MainNavigationController(rootViewController: SetupViewController())
             }
         }()
         window.makeKeyAndVisible()
@@ -82,3 +89,4 @@ struct AssembleyFactory {
 protocol Assembley {
     func assemble()
 }
+

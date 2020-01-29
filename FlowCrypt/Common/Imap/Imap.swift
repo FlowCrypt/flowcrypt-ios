@@ -61,5 +61,6 @@ final class Imap {
     private func setup() {
         guard let token = accessToken else { return }
         getImapSess(newAccessToken: token)
+        getSmtpSess(newAccessToken: token)
     }
 }

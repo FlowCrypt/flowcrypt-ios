@@ -55,6 +55,7 @@ extension Imap {
         return existingSess
     }
 
+    @discardableResult
     func renewSession() -> Promise<Void> {
         userService
             .renewAccessToken()
