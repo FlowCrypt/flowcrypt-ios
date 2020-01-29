@@ -123,7 +123,7 @@ extension UserService: GIDSignInDelegate {
         }
 
         let user = User(user)
-        dataManager.startForNew(user: user, with: token)
+        dataManager.startFor(user: user, with: token)
         onNewToken?(token)
         onLogin?(user)
     }
