@@ -22,7 +22,7 @@ extension URLSession {
             let start = DispatchTime.now()
             self.dataTask(with: urlRequest) { data, response, error in
                 let res = response as? HTTPURLResponse
-                let status = res?.statusCode ?? Constants.Global.generalError
+                let status = res?.statusCode ?? GeneralConstants.Global.generalError
                 print("URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlRequest.httpMethod ?? "GET") \(urlRequest.url?.absoluteString ?? "??")")
                 let validStatusCode = 200 ... 299
                 let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)

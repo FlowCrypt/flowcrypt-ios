@@ -76,6 +76,12 @@
 "import_key_choose" = "Choose Another Key";
 "import_key_continue" = "Continue";
 
+// Search
+"search_title" = "Search";
+"search_placeholder" = "Search";
+"search_error" = "Error in searching";
+"search_empty" = "No messages found";
+
 // Settings
 "settings_screen_title" = "Settings";
 "settings_screen_backup" = "Backups";

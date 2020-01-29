@@ -9,7 +9,6 @@ import UIKit
 final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
         static let numberOfMessagesToLoad = 20
-        static let messageSizeLimit: Int = 5_000_000
     }
 
     enum State {
@@ -49,7 +48,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel = .empty,
-        messageProvider: MessageProvider = Imap()
+        messageProvider: MessageProvider = Imap.shared
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
@@ -120,7 +119,11 @@ extension InboxViewController {
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
         messageProvider
-            .fetchMessages(for: viewModel.path, count: Constants.numberOfMessagesToLoad, from: 0)
+            .fetchMessages(
+                for: viewModel.path,
+                count: Constants.numberOfMessagesToLoad,
+                from: 0
+            )
             .then { [weak self] context in
                 self?.handleEndFetching(with: context, context: batchContext)
             }
@@ -212,8 +215,8 @@ extension InboxViewController {
     }
 
     @objc private func handleSearchTap() {
-        #warning("ToDo")
-        showToast("Search not implemented yet")
+        let viewController = SearchViewController(folderPath: viewModel.path)
+        navigationController?.pushViewController(viewController, animated: false)
     }
 
     @objc private func refresh() {
@@ -228,36 +231,15 @@ extension InboxViewController {
     }
 }
 
-extension InboxViewController {
-    private func openMessageIfPossible(with message: MCOIMAPMessage) {
-        if Int(message.size) > Constants.messageSizeLimit {
-            showToast("Messages larger than 5MB are not supported yet")
-        } else {
-            let messageInput = MsgViewController.Input(
-                objMessage: message,
-                bodyMessage: nil,
-                path: viewModel.path
-            )
+extension InboxViewController: MsgListViewConroller {
 
-            let msgVc = MsgViewController(input: messageInput) { [weak self] operation, message in
-                self?.handleMessage(operation: operation, message: message)
-            }
-            navigationController?.pushViewController(msgVc, animated: true)
-        }
+    func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
+        return messages.firstIndex(of: message)
     }
 
-    private func handleMessage(operation: MsgViewController.MessageAction, message: MCOIMAPMessage) {
-        guard let index = messages.firstIndex(of: message) else { return }
-        switch operation {
-        case .markAsRead: markAsRead(message: message, at: index)
-        case .moveToTrash, .archive, .permanentlyDelete: delete(message: message, at: index)
-        }
-    }
-
-    private func delete(message _: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRemoved(message _: MCOIMAPMessage, at index: Int) {
         guard messages[safe: index] != nil else { return }
         messages.remove(at: index)
-
         if messages.isEmpty {
             state = .empty
             tableNode.reloadData()
@@ -269,7 +251,7 @@ extension InboxViewController {
         }
     }
 
-    private func markAsRead(message: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRead(message: MCOIMAPMessage, at index: Int) {
         messages[index] = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
@@ -322,7 +304,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         tableNode.deselectRow(at: indexPath, animated: true)
         guard let message = messages[safe: indexPath.row] else { return }
 
-        openMessageIfPossible(with: message)
+        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
     }
 }
 

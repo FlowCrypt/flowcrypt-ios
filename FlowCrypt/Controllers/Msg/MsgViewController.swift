@@ -17,7 +17,7 @@ final class MsgViewController: ASViewController<ASTableNode> {
     private var message: NSAttributedString
 
     init(
-        imap: Imap = Imap(),
+        imap: Imap = Imap.shared,
         decorator: MessageDecoratorType = MessageDecorator(dateFormatter: DateFormatter()),
         storage: DataManagerType = DataManager.shared,
         core: Core = Core.shared,
@@ -30,7 +30,10 @@ final class MsgViewController: ASViewController<ASTableNode> {
         self.dataManager = storage
         self.core = core
         self.onCompletion = completion
-        self.message = decorator.attributed(text: "loading_title".localized + "...", color: .lightGray)
+        self.message = decorator.attributed(
+            text: "loading_title".localized + "...",
+            color: .lightGray
+        )
 
         super.init(node: TableNode())
     }
