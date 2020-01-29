@@ -19,20 +19,14 @@ final class KeyDetailInfoViewController: ASViewController<TableNode> {
     }
 
     private let decorator: KeyDetailInfoDecoratorType
-    private let details: [KeyId]
-    private let date: Date
-    private let user: String
+    private let key: KeyDetails
 
     init(
-        details: [KeyId],
-        date: Date,
-        user: String,
+        key: KeyDetails,
         decorator: KeyDetailInfoDecoratorType = KeyDetailInfoDecorator()
     ) {
-        self.details = details
+        self.key = key
         self.decorator = decorator
-        self.date = date
-        self.user = user
         super.init(node: TableNode())
     }
 
@@ -52,7 +46,7 @@ final class KeyDetailInfoViewController: ASViewController<TableNode> {
 
 extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
-        details.count
+        key.ids.count
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
@@ -63,20 +57,20 @@ extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self,
                 let part = Parts(rawValue: indexPath.row),
-                let key = self.details[safe: indexPath.section]
+                let keyId = self.key.ids[safe: indexPath.section]
             else {
                 return ASCellNode()
             }
 
             let title = self.decorator.attributedTitle(
                 for: part,
-                details: key,
-                date: self.date,
-                user: self.user
+                keyId: keyId,
+                date: self.key.created.toDate(),
+                user: self.key.users.joined(separator: " ")
             )
 
             if part.isSeparator {
-                let isLastSection = indexPath.section == self.details.count - 1
+                let isLastSection = indexPath.section == self.key.ids.count - 1
                 let dividerHeight: CGFloat = isLastSection ? 0 : 1
                 return DividerNode(
                     inset: self.decorator.dividerInsets,
