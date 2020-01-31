@@ -23,7 +23,7 @@ struct KeyChainService: KeyChainServiceType {
 
     // the prefix ensures that we use a different keychain index after deleting the app
     // because keychain entries survive app uninstall
-    private var encryptionKeyTag: String = {
+    static private var encryptionKeyTag: String = {
         let userDefaults = UserDefaults.standard
         if let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) {
             return storedPrefix
@@ -49,7 +49,7 @@ struct KeyChainService: KeyChainServiceType {
         let key = Data(randomBytes)
         let query: [CFString : Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: encryptionKeyTag,
+            kSecAttrAccount: KeyChainService.encryptionKeyTag,
             kSecValueData: key
         ]
         let addOsStatus = SecItemAdd(query as CFDictionary, nil)
@@ -61,7 +61,7 @@ struct KeyChainService: KeyChainServiceType {
     func getStorageEncryptionKey() -> Data {
         let query: [CFString : Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: encryptionKeyTag,
+            kSecAttrAccount: KeyChainService.encryptionKeyTag,
             kSecReturnData: kCFBooleanTrue!,
             kSecMatchLimit: kSecMatchLimitOne
         ]
