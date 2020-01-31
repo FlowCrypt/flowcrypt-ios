@@ -40,10 +40,10 @@ final class EncryptedStorage: EncryptedStorageType {
             let realm = try Realm(configuration: configuration)
             return realm
         } catch let error {
-            // destroyEncryptedStorage()
-            // log()
-            // return nil
-            fatalError("Check Realm: \(error)")
+            // TODO: - Tom
+             destroyEncryptedStorage()
+             return nil
+//            fatalError("Check Realm: \(error)")
         }
     }
 

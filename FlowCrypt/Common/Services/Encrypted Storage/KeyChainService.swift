@@ -17,14 +17,29 @@ protocol KeyChainServiceType {
 }
 
 struct KeyChainService: KeyChainServiceType {
-    private let encryptionKeyTag: String
+    private enum Constants: String, CaseIterable {
+        case indexSecureKeychainPrefix = "indexSecureKeychainPrefix"
+    }
+
+    // the prefix ensures that we use a different keychain index after deleting the app
+    // because keychain entries survive app uninstall
+    private var encryptionKeyTag: String = {
+        let userDefaults = UserDefaults.standard
+        if let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) {
+            return storedPrefix
+        } else {
+            guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
+                fatalError("could not get secureKeychainPrefix random bytes")
+            }
+            let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
+            print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+            userDefaults.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
+            return prefix
+        }
+    }()
+    
     private let keyByteLen = 64
 
-    init() {
-        // the prefix ensures that we use a different keychain index after deleting the app
-        // because keychain entries survive app uninstall
-        encryptionKeyTag = "\(LocalStorage().secureKeychainPrefix())-flowcrypt-realm-encryption-key"
-    }
 
     private func generateAndSaveStorageEncryptionKey() {
         print("KeyChainService->generateAndSaveStorageEncryptionKey")
