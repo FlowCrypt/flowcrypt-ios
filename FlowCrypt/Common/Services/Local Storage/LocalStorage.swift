@@ -9,13 +9,16 @@
 import Foundation
 
 protocol LocalStorageType {
-    func saveCurrent(user: User?)
+    func saveCurrentUser(user: User?)
     func currentUser() -> User?
+    func secureKeychainPrefix() -> String
 }
 
 struct LocalStorage: LocalStorageType {
+
     private enum Constants: String, CaseIterable {
-        case userKey = "keyCurrentUser"
+        case indexCurrentUser = "indexCurrentUser"
+        case indexSecureKeychainPrefix = "indexSecureKeychainPrefix"
     }
 
     private let userDefaults: UserDefaults
@@ -26,23 +29,36 @@ struct LocalStorage: LocalStorageType {
 }
 
 extension LocalStorage {
-    func saveCurrent(user: User?) {
+    func saveCurrentUser(user: User?) {
         guard let user = user else {
             logOut()
             return
         }
-
         do {
             let encodedData = try PropertyListEncoder().encode(user)
-            userDefaults.set(encodedData, forKey: Constants.userKey.rawValue)
-        } catch {
-            assertionFailure("Could not save user")
+            userDefaults.set(encodedData, forKey: Constants.indexCurrentUser.rawValue)
+        } catch let error {
+            fatalError("Could not save user: \(error)")
         }
     }
 
     func currentUser() -> User? {
-        guard let data = userDefaults.object(forKey: Constants.userKey.rawValue) as? Data else { return nil }
+        guard let data = userDefaults.object(forKey: Constants.indexCurrentUser.rawValue) as? Data else { return nil }
         return try? PropertyListDecoder().decode(User.self, from: data)
+    }
+
+    func secureKeychainPrefix() -> String {
+        return "bogusprefix" // todo - the prefix should be auto-generated and stored, then reused, but implementation below doesn't work
+//        guard let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) else {
+//            guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
+//                fatalError("could not get secureKeychainPrefix random bytes")
+//            }
+//            let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
+//            print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+//            userDefaults.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
+//            return secureKeychainPrefix() // retrieve again after saving
+//        }
+//        return storedPrefix
     }
 }
 

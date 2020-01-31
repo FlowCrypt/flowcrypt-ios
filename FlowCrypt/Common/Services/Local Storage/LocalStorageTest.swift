@@ -9,16 +9,16 @@
 import XCTest
 
 class LocalStorageTest: XCTestCase {
-    var sut: LocalStorage!
+    var localStorage: LocalStorage!
 
     override func setUp() {
-        sut = LocalStorage(userDefaults: UserDefaults.standard)
+        localStorage = LocalStorage(userDefaults: UserDefaults.standard)
     }
 
     func test_save_user() {
         let user = User(email: "elonTesla@gmail.com", name: "ElonMask")
-        sut.saveCurrent(user: user)
-        let fetchedUser = sut.currentUser()
+        localStorage.saveCurrentUser(user: user)
+        let fetchedUser = localStorage.currentUser()
 
         XCTAssertNotNil(fetchedUser != nil)
         let expectationName = fetchedUser?.name == "ElonMask"
@@ -28,8 +28,8 @@ class LocalStorageTest: XCTestCase {
     }
 
     func test_save_nil_for_user() {
-        sut.saveCurrent(user: nil)
-        let fetchedUser = sut.currentUser()
+        localStorage.saveCurrentUser(user: nil)
+        let fetchedUser = localStorage.currentUser()
         XCTAssertNil(fetchedUser)
     }
 }

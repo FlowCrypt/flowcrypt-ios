@@ -69,9 +69,8 @@ final class DataManager: DataManagerType {
     func startFor(user: User, with token: String?) {
         if currentUser != user {
             logOutAndDestroyStorage()
-            encryptedStorage.encrypt()
         }
-        localStorage.saveCurrent(user: user)
+        localStorage.saveCurrentUser(user: user)
         encryptedStorage.saveToken(with: token)
     }
 } 
