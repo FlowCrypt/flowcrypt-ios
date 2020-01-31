@@ -33,8 +33,14 @@ final class EncryptedStorage: EncryptedStorageType {
     private var encryptedConfiguration: Realm.Configuration? {
         guard canHaveAccessToStorage else { return nil }
         let key = self.keychainService.getStorageEncryptionKey()
-        let configuration = Realm.Configuration(encryptionKey: key)
-        return configuration
+        if key == nil {
+            let message: String? =  nil
+            _ = message!
+            assertionFailure("Encryption key is not correst")
+            return nil
+        } else {
+            return Realm.Configuration(encryptionKey: key)
+        }
     }
 
     var storage: Realm? {
