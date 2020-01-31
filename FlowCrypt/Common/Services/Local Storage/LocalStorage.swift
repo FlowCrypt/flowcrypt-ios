@@ -9,13 +9,14 @@
 import Foundation
 
 protocol LocalStorageType {
-    func saveCurrent(user: User?)
+    func saveCurrentUser(user: User?)
     func currentUser() -> User?
 }
 
 struct LocalStorage: LocalStorageType {
+
     private enum Constants: String, CaseIterable {
-        case userKey = "keyCurrentUser"
+        case indexCurrentUser = "indexCurrentUser"
     }
 
     private let userDefaults: UserDefaults
@@ -26,22 +27,21 @@ struct LocalStorage: LocalStorageType {
 }
 
 extension LocalStorage {
-    func saveCurrent(user: User?) {
+    func saveCurrentUser(user: User?) {
         guard let user = user else {
             logOut()
             return
         }
-
         do {
             let encodedData = try PropertyListEncoder().encode(user)
-            userDefaults.set(encodedData, forKey: Constants.userKey.rawValue)
-        } catch {
-            assertionFailure("Could not save user")
+            userDefaults.set(encodedData, forKey: Constants.indexCurrentUser.rawValue)
+        } catch let error {
+            fatalError("Could not save user: \(error)")
         }
     }
 
     func currentUser() -> User? {
-        guard let data = userDefaults.object(forKey: Constants.userKey.rawValue) as? Data else { return nil }
+        guard let data = userDefaults.object(forKey: Constants.indexCurrentUser.rawValue) as? Data else { return nil }
         return try? PropertyListDecoder().decode(User.self, from: data)
     }
 }
