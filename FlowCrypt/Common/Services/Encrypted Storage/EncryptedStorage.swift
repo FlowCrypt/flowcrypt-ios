@@ -73,8 +73,7 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     func currentToken() -> String? {
-        guard canHaveAccessToStorage == true else { return nil }
-        return storage?.objects(EmailAccessToken.self).first?.value
+        storage?.objects(EmailAccessToken.self).first?.value
     }
 }
 
