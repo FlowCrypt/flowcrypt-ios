@@ -37,13 +37,11 @@ final class EncryptedStorage: EncryptedStorageType {
     var storage: Realm? {
         guard let configuration = self.encryptedConfiguration else { return nil }
         do {
-            let realm = try Realm(configuration: configuration)
-            return realm
+            return try Realm(configuration: configuration)
         } catch let error {
-            // TODO: - Tom
-             destroyEncryptedStorage()
-             return nil
-//            fatalError("Check Realm: \(error)")
+//             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
+//             return nil
+            fatalError("failed to initiate realm: \(error)")
         }
     }
 
