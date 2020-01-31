@@ -40,6 +40,9 @@ final class EncryptedStorage: EncryptedStorageType {
             let realm = try Realm(configuration: configuration)
             return realm
         } catch let error {
+            // destroyEncryptedStorage()
+            // log()
+            // return nil
             fatalError("Check Realm: \(error)")
         }
     }
@@ -79,6 +82,10 @@ final class EncryptedStorage: EncryptedStorageType {
 
 extension EncryptedStorage: LogOutHandler {
     func logOut() { // log out is not clear - should be called DestroyEncryptedStorage
+        destroyEncryptedStorage()
+    }
+
+    private func destroyEncryptedStorage() {
         do {
             if let oldPlainConfiguration = Realm.Configuration.defaultConfiguration.fileURL {
                 try FileManager.default.removeItem(at: oldPlainConfiguration)

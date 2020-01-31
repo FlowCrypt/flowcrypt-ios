@@ -48,17 +48,17 @@ extension LocalStorage {
     }
 
     func secureKeychainPrefix() -> String {
-        return "bogusprefix" // todo - the prefix should be auto-generated and stored, then reused, but implementation below doesn't work
-//        guard let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) else {
-//            guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
-//                fatalError("could not get secureKeychainPrefix random bytes")
-//            }
-//            let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
-//            print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
-//            userDefaults.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
-//            return secureKeychainPrefix() // retrieve again after saving
-//        }
-//        return storedPrefix
+        if let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) {
+            return storedPrefix
+        } else {
+            guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
+                fatalError("could not get secureKeychainPrefix random bytes")
+            }
+            let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
+            print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+            userDefaults.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
+            return prefix
+        }
     }
 }
 
