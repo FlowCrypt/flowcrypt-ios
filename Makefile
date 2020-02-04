@@ -1,13 +1,8 @@
 .PHONY: all
-all: reset keyboard 
+all: ui_tests
 
-.PHONY: reset
-kill:
-	bundle exec fastlane reset_simulator 
+dependencies:
+	bundle config set path 'vendor/bundle'
 
-.PHONY: keyboard
-keyboard: 
-	killall Simulator
-	defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false
-	chmod +x scripts/keyboard.sh
-	scripts/keyboard.sh
+ui_tests: dependencies
+	bundle exec fastlane test_ui --verbose
