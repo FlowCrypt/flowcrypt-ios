@@ -54,6 +54,10 @@ class SignInTest: XCTestCase {
         let webView = app.webViews
         let textField = webView.textFields.firstMatch
         wait(1)
+
+        textField.tap()
+
+
         textField.typeText(user.email)
         let returnButton = goKeyboardButton()
         XCTAssert(returnButton.exists, "User keyboard button")
