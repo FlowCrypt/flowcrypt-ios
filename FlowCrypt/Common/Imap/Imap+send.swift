@@ -7,7 +7,8 @@ import Promises
 
 extension Imap {
     func sendMail(mime: Data) -> Promise<Void> {
-        return Promise { resolve, reject in
+        Promise { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf) }
             self.getSmtpSess()
                 .sendOperation(with: mime)
                 .start(self.finalizeVoid("send", resolve, reject, retry: { self.sendMail(mime: mime) }))

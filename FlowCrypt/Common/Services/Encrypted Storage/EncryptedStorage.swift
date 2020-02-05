@@ -10,17 +10,15 @@ import Foundation
 import RealmSwift
 
 protocol EncryptedStorageType {
-    func encrypt()
-
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func saveToken(with string: String?)
-
     func currentToken() -> String?
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>?
 }
 
 final class EncryptedStorage: EncryptedStorageType {
+
     let keychainService: KeyChainServiceType
     private var canHaveAccessToStorage: Bool { accessCheck() }
     private let accessCheck: () -> (Bool)
@@ -33,31 +31,17 @@ final class EncryptedStorage: EncryptedStorageType {
     private var encryptedConfiguration: Realm.Configuration? {
         guard canHaveAccessToStorage else { return nil }
         let key = self.keychainService.getStorageEncryptionKey()
-        let configuration = Realm.Configuration(encryptionKey: key)
-        return configuration
+        return Realm.Configuration(encryptionKey: key)
     }
 
     var storage: Realm? {
+        guard let configuration = self.encryptedConfiguration else { return nil }
         do {
-            guard let configuration = self.encryptedConfiguration else { return nil }
-            let realm = try Realm(configuration: configuration)
-            return realm
+            return try Realm(configuration: configuration)
         } catch let error {
-            assertionFailure("Check Realm")
-            return nil
-        }
-    }
-
-    func encrypt() {
-        guard canHaveAccessToStorage else { return }
-        let status = keychainService.generateAndSaveStorageEncryptionKey()
-        
-        switch status {
-        case .success:
-            break
-        case .noData:
-            assertionFailure("Keychain could not save generated key")
-            logOut()
+//             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
+//             return nil
+            fatalError("failed to initiate realm: \(error)")
         }
     }
 
@@ -95,16 +79,26 @@ final class EncryptedStorage: EncryptedStorageType {
 }
 
 extension EncryptedStorage: LogOutHandler {
-    func logOut() {
+    func logOut() { // log out is not clear - should be called DestroyEncryptedStorage
+        destroyEncryptedStorage()
+    }
+
+    private func destroyEncryptedStorage() {
         do {
-            if let oldConfigurationURL = Realm.Configuration.defaultConfiguration.fileURL {
-                try FileManager.default.removeItem(at: oldConfigurationURL)
+            if let oldPlainConfiguration = Realm.Configuration.defaultConfiguration.fileURL {
+                try FileManager.default.removeItem(at: oldPlainConfiguration)
             }
+        } catch CocoaError.fileNoSuchFile {
+        } catch let error {
+            fatalError("Could not delete oldPlainConfiguration: \(error)")
+        }
+        do {
             if let url = encryptedConfiguration?.fileURL {
                 try FileManager.default.removeItem(at: url)
             }
+        } catch CocoaError.fileNoSuchFile {
         } catch let error {
-            print("^^ \(error)")
+            fatalError("Could not delete encryptedConfiguration: \(error)")
         }
     }
 }

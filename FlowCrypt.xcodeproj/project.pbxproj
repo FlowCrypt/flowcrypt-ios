@@ -50,10 +50,6 @@
 		5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */; };
 		5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */; };
 		5A5C234B23A042520015E705 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5C234A23A042520015E705 /* WebViewController.swift */; };
-		5A92607223A3C05300C2E9F4 /* KeySettingsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A92607123A3C05300C2E9F4 /* KeySettingsItem.swift */; };
-		5A92607423A3C08200C2E9F4 /* KeySettingsItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A92607323A3C08200C2E9F4 /* KeySettingsItemTest.swift */; };
-		5A92607523A3C09500C2E9F4 /* KeySettingsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A92607123A3C05300C2E9F4 /* KeySettingsItem.swift */; };
-		5A92607723A3CA0F00C2E9F4 /* KeySettingsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A92607623A3CA0F00C2E9F4 /* KeySettingsProvider.swift */; };
 		5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A948DC4239EF2F4006284D7 /* LegalViewController.swift */; };
 		5ADEDCAF23A3EA9E00EC495E /* KeySettingsDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */; };
 		5ADEDCB123A3EAAF00EC495E /* KeySettingCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */; };
@@ -70,7 +66,7 @@
 		9F0C3C122316DDA500299985 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C112316DDA500299985 /* DataManager.swift */; };
 		9F0C3C142316E69300299985 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
 		9F0C3C18231819B200299985 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C17231819B200299985 /* Logger.swift */; };
-		9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProvider.swift */; };
+		9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProviderType.swift */; };
 		9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C1B23186A5700299985 /* AuthAssembley.swift */; };
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F0C3C2823194E8500299985 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
@@ -97,6 +93,12 @@
 		9F31AB97232BF03D00CF87EA /* MenuHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB96232BF03D00CF87EA /* MenuHeaderViewModel.swift */; };
 		9F31AB9E232BF2A600CF87EA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
+		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
+		9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
+		9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */; };
+		9F3EF32B23B16ADE00FA0CEF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
+		9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */; };
+		9F3EF33123B1785600FA0CEF /* MsgListViewConroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */; };
 		9F4453C0236B894D005D7D05 /* TableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453BF236B894D005D7D05 /* TableNode.swift */; };
 		9F4453C2236B9273005D7D05 /* TextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C1236B9273005D7D05 /* TextFieldNode.swift */; };
 		9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerNode.swift */; };
@@ -140,6 +142,8 @@
 		9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */; };
 		9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F823607C2900C80B64 /* SignInType.swift */; };
 		9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
+		9F9ABC8523AC1E5700D560E3 /* Imap+search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */; };
+		9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */; };
 		9FB84728238FBD7400820C23 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F716304234FC7200031645E /* Localization.swift */; };
 		9FBE7D9923C8C925006552DA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
@@ -161,6 +165,9 @@
 		A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */; };
 		A350A5CC22E9F0E000427C6C /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
+		A37A1CF623C6254F001CF774 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtension.swift */; };
+		A37A1CF723C625D2001CF774 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtension.swift */; };
+		A37A1CF823C625D2001CF774 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtension.swift */; };
 		A3A680EC22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */; };
 		A3A680ED22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */; };
 		A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */; };
@@ -171,10 +178,11 @@
 		C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9B31EC2DBD800763715 /* AppDelegate.swift */; };
 		C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C132B9BA1EC2DBD800763715 /* Assets.xcassets */; };
 		C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */; };
-		C132B9CB1EC2DE6400763715 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* Constants.swift */; };
+		C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
 		C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9D81EC30E1D00763715 /* InboxViewController.swift */; };
 		C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupViewController.swift */; };
 		CB5986DFBB2B4FF4AD555821 /* Pods_FlowCryptUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */; };
+		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
 /* End PBXBuildFile section */
@@ -249,9 +257,6 @@
 		5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedViewController.swift; sourceTree = "<group>"; };
 		5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewControllersProvider.swift; sourceTree = "<group>"; };
 		5A5C234A23A042520015E705 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
-		5A92607123A3C05300C2E9F4 /* KeySettingsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsItem.swift; sourceTree = "<group>"; };
-		5A92607323A3C08200C2E9F4 /* KeySettingsItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsItemTest.swift; sourceTree = "<group>"; };
-		5A92607623A3CA0F00C2E9F4 /* KeySettingsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsProvider.swift; sourceTree = "<group>"; };
 		5A948DC4239EF2F4006284D7 /* LegalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewController.swift; sourceTree = "<group>"; };
 		5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsDecorator.swift; sourceTree = "<group>"; };
 		5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingCellNode.swift; sourceTree = "<group>"; };
@@ -271,7 +276,7 @@
 		9F0C3C112316DDA500299985 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9F0C3C132316E69300299985 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		9F0C3C17231819B200299985 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		9F0C3C19231819C500299985 /* MessageKindProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageKindProvider.swift; sourceTree = "<group>"; };
+		9F0C3C19231819C500299985 /* MessageKindProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageKindProviderType.swift; sourceTree = "<group>"; };
 		9F0C3C1B23186A5700299985 /* AuthAssembley.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAssembley.swift; sourceTree = "<group>"; };
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
 		9F0C3C2723194E8500299985 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -297,6 +302,10 @@
 		9F31AB96232BF03D00CF87EA /* MenuHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeaderViewModel.swift; sourceTree = "<group>"; };
 		9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
+		9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelper.swift; sourceTree = "<group>"; };
+		9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelperTest.swift; sourceTree = "<group>"; };
+		9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MsgListViewConroller.swift; sourceTree = "<group>"; };
 		9F4453BF236B894D005D7D05 /* TableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNode.swift; sourceTree = "<group>"; };
 		9F4453C1236B9273005D7D05 /* TextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNode.swift; sourceTree = "<group>"; };
 		9F4453C3236B96F9005D7D05 /* DividerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerNode.swift; sourceTree = "<group>"; };
@@ -335,6 +344,8 @@
 		9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninButtonNode.swift; sourceTree = "<group>"; };
 		9F95A3F823607C2900C80B64 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
 		9F9AAFFC2383E216000A00F1 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+search.swift"; sourceTree = "<group>"; };
+		9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContext.swift; sourceTree = "<group>"; };
 		9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarItemsView.swift; sourceTree = "<group>"; };
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
@@ -354,8 +365,12 @@
 		9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewModel.swift; sourceTree = "<group>"; };
 		A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flowcrypt-ios-icon.png"; sourceTree = "<group>"; };
 		A33BAA8822EDBF1A00CC1B5C /* gmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
+		A37A1CF523C6254F001CF774 /* IntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
 		A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libgmp-6.1.2-iPhoneOS-arm64.a"; sourceTree = "<group>"; };
 		A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCryptTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		A3B7C31523E436E10022D628 /* FlowCrypt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowCrypt.entitlements; sourceTree = "<group>"; };
+		A3B7C31623E437370022D628 /* FlowCryptRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowCryptRelease.entitlements; sourceTree = "<group>"; };
+		A3B7C31723E43B260022D628 /* FlowCryptTestFlight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowCryptTestFlight.entitlements; sourceTree = "<group>"; };
 		A3DAD5FB22E4574A00F2C4CD /* FlowCryptTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCryptCoreTests.swift; sourceTree = "<group>"; };
 		A3DAD5FF22E4574B00F2C4CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -367,10 +382,11 @@
 		C132B9BA1EC2DBD800763715 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C132B9BD1EC2DBD800763715 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C132B9BF1EC2DBD800763715 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C132B9CA1EC2DE6400763715 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralConstants.swift; sourceTree = "<group>"; };
 		C132B9D81EC30E1D00763715 /* InboxViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxViewController.swift; sourceTree = "<group>"; };
 		C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		C192421E1EC48B6900C3D251 /* SetupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
+		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MsgViewController.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -508,6 +524,7 @@
 				32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */,
 				9F56BD3923438D3700A7371A /* StyleExtension.swift */,
 				9F8277952373732000E19C07 /* UIImageExtension.swift */,
+				A37A1CF523C6254F001CF774 /* IntExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -576,21 +593,11 @@
 			path = Node;
 			sourceTree = "<group>";
 		};
-		5ADEDCB323A3EACE00EC495E /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				5A92607123A3C05300C2E9F4 /* KeySettingsItem.swift */,
-				5A92607623A3CA0F00C2E9F4 /* KeySettingsProvider.swift */,
-				5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */,
-			);
-			path = Helpers;
-			sourceTree = "<group>";
-		};
 		5ADEDCB423A4262600EC495E /* Key List */ = {
 			isa = PBXGroup;
 			children = (
 				5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */,
-				5ADEDCB323A3EACE00EC495E /* Helpers */,
+				5ADEDCAE23A3EA9E00EC495E /* KeySettingsDecorator.swift */,
 				5ADEDCB223A3EAC600EC495E /* Node */,
 			);
 			path = "Key List";
@@ -650,7 +657,7 @@
 				9F589F19238C82A1007FD759 /* Local Storage */,
 				9F0C3C0F2316DD5B00299985 /* UserService.swift */,
 				9F589F1B238C8693007FD759 /* LogOutHandler.swift */,
-				9F0C3C19231819C500299985 /* MessageKindProvider.swift */,
+				9F0C3C19231819C500299985 /* MessageKindProviderType.swift */,
 				9F0C3C17231819B200299985 /* Logger.swift */,
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 			);
@@ -739,6 +746,10 @@
 				32DCAF8424D0185FAA9401A7 /* Imap+send.swift */,
 				32DCA55C094E9745AA1FD210 /* Imap+msg.swift */,
 				9F56BD2B23438A8500A7371A /* Imap+messages.swift */,
+				9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */,
+				9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */,
+				9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */,
+				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 			);
 			path = Imap;
 			sourceTree = "<group>";
@@ -909,7 +920,6 @@
 				A3DAD5FF22E4574B00F2C4CD /* Info.plist */,
 				A3DAD60722E4588800F2C4CD /* TestData.swift */,
 				A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */,
-				5A92607323A3C08200C2E9F4 /* KeySettingsItemTest.swift */,
 			);
 			path = FlowCryptTests;
 			sourceTree = "<group>";
@@ -949,6 +959,9 @@
 		C132B9B21EC2DBD800763715 /* FlowCrypt */ = {
 			isa = PBXGroup;
 			children = (
+				A3B7C31723E43B260022D628 /* FlowCryptTestFlight.entitlements */,
+				A3B7C31623E437370022D628 /* FlowCryptRelease.entitlements */,
+				A3B7C31523E436E10022D628 /* FlowCrypt.entitlements */,
 				32DCA376D595968F13A3347A /* Core */,
 				A3D328BF22E1C640002888F4 /* Storyboards */,
 				C132B9C51EC2DCAB00763715 /* Controllers */,
@@ -979,7 +992,9 @@
 				9F268892237DC55E00428A94 /* ImportKey */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
+				9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */,
 				5A39F42E239EC32B001F4607 /* Settings */,
+				D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -992,7 +1007,7 @@
 				9F0C3C0E2316DD4B00299985 /* Handlers */,
 				9F0C3C1F23191F2000299985 /* Services */,
 				9F31AB8F232993AC00CF87EA /* Imap */,
-				C132B9CA1EC2DE6400763715 /* Constants.swift */,
+				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */,
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				32DCA4B11D4531B3B04D01D1 /* AppErr.swift */,
@@ -1010,6 +1025,7 @@
 				C132B9D81EC30E1D00763715 /* InboxViewController.swift */,
 				9FDF363B235A0B5B00614596 /* Nodes */,
 				9FD22A20230FF9BC005067A6 /* Model */,
+				9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */,
 			);
 			path = Inbox;
 			sourceTree = "<group>";
@@ -1355,6 +1371,7 @@
 				9F228BAA23C67729005D2CB6 /* DataExtension.swift in Sources */,
 				9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */,
 				9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */,
+				A37A1CF823C625D2001CF774 /* IntExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1363,6 +1380,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FB84728238FBD7400820C23 /* Localization.swift in Sources */,
+				9F3EF32B23B16ADE00FA0CEF /* Extensions.swift in Sources */,
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
 				9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
@@ -1370,7 +1388,9 @@
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				A3DAD60A22E458C100F2C4CD /* CodableExntension.swift in Sources */,
 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
+				9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */,
 				5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */,
+				A37A1CF723C625D2001CF774 /* IntExtension.swift in Sources */,
 				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
@@ -1379,7 +1399,7 @@
 				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */,
 				9F589F0F238C7D15007FD759 /* LocalStorageTest.swift in Sources */,
 				32DCA17B0294558E2ADA998D /* bignum.c in Sources */,
-				5A92607423A3C08200C2E9F4 /* KeySettingsItemTest.swift in Sources */,
+				9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */,
 				32DCA3847AFB3D05608CB191 /* Core.swift in Sources */,
 				32DCA1D6067D3A5B9AF03635 /* CoreHost.swift in Sources */,
 				32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */,
@@ -1387,7 +1407,6 @@
 				5A39F43A239ECE13001F4607 /* Extensions.swift in Sources */,
 				9F589F20238C8A90007FD759 /* Token.swift in Sources */,
 				32DCAF683D87EA6221F71335 /* SequenceExtension.swift in Sources */,
-				5A92607523A3C09500C2E9F4 /* KeySettingsItem.swift in Sources */,
 				32DCA24159622E7442FF9459 /* AppErr.swift in Sources */,
 				9F589F11238C7DDC007FD759 /* User.swift in Sources */,
 			);
@@ -1411,8 +1430,9 @@
 				9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */,
 				9F696295236091F4003712E1 /* SignInDescriptionNode.swift in Sources */,
 				9F696293236091DD003712E1 /* SignInImageNode.swift in Sources */,
-				C132B9CB1EC2DE6400763715 /* Constants.swift in Sources */,
+				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
 				9F82779E23737E3800E19C07 /* TextSubjectNode.swift in Sources */,
+				A37A1CF623C6254F001CF774 /* IntExtension.swift in Sources */,
 				9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */,
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
@@ -1433,6 +1453,7 @@
 				04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */,
 				9F8277962373732000E19C07 /* UIImageExtension.swift in Sources */,
 				32DCA1339D6857686ABD3FC4 /* UIVIewExtension.swift in Sources */,
+				9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */,
 				9F589F1C238C8693007FD759 /* LogOutHandler.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */,
@@ -1447,17 +1468,18 @@
 				9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */,
 				9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
-				5A92607223A3C05300C2E9F4 /* KeySettingsItem.swift in Sources */,
 				9F1797712368EEE8002BF770 /* ButtonNode.swift in Sources */,
 				9F0C3C18231819B200299985 /* Logger.swift in Sources */,
 				32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */,
 				9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */,
 				9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */,
+				9F9ABC8523AC1E5700D560E3 /* Imap+search.swift in Sources */,
 				9FD364862381EFCB00657302 /* EnterPassPhraseViewController.swift in Sources */,
 				9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */,
 				9F0C3C2823194E8500299985 /* Extensions.swift in Sources */,
 				5ADEDCAF23A3EA9E00EC495E /* KeySettingsDecorator.swift in Sources */,
 				9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */,
+				9F3EF33123B1785600FA0CEF /* MsgListViewConroller.swift in Sources */,
 				32DCA25E425D2A207CF2B764 /* StringExtensions.swift in Sources */,
 				9F4453C0236B894D005D7D05 /* TableNode.swift in Sources */,
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
@@ -1465,25 +1487,28 @@
 				5ADEDCB123A3EAAF00EC495E /* KeySettingCellNode.swift in Sources */,
 				9F17976A2368EE90002BF770 /* ButtonCellNode.swift in Sources */,
 				32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */,
-				9F0C3C1A231819C500299985 /* MessageKindProvider.swift in Sources */,
+				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
+				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
 				9FDF3638235A0B3100614596 /* MenuNode.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				9F56BD3823438C7000A7371A /* DateFormatting.swift in Sources */,
 				9FEED1D0230DA9FF00700F8E /* UIStoyboardExtension.swift in Sources */,
-				5A92607723A3CA0F00C2E9F4 /* KeySettingsProvider.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
 				9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */,
 				9F31AB97232BF03D00CF87EA /* MenuHeaderViewModel.swift in Sources */,
+				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
 				32DCA64A309E3C34D8C9039E /* DispatchTimeExtension.swift in Sources */,
 				9F268894237DD98900428A94 /* ImportKeyDecorator.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F82779C23737E2B00E19C07 /* MessageSubjectNode.swift in Sources */,
 				9F0C3C1C23186A5700299985 /* AuthAssembley.swift in Sources */,
+				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
 				9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */,
 				32DCAAD97FDEB229EA327DB5 /* SecPaddingExtension.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* UserService.swift in Sources */,
+				D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */,
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				9F8D5E62236B04E300186E43 /* CellNode.swift in Sources */,
@@ -1699,6 +1724,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = FlowCrypt/FlowCryptTestFlight.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W57XRJ27NX;
@@ -1958,6 +1984,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = FlowCrypt/FlowCrypt.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W57XRJ27NX;
@@ -2002,6 +2029,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = FlowCrypt/FlowCryptRelease.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W57XRJ27NX;

@@ -14,7 +14,7 @@ protocol KeyDetailInfoDecoratorType {
 
     func attributedTitle(
         for part: KeyDetailInfoViewController.Parts,
-        details: KeyId,
+        keyId: KeyId,
         date: Date,
         user: String
     ) -> NSAttributedString
@@ -26,7 +26,7 @@ struct KeyDetailInfoDecorator: KeyDetailInfoDecoratorType {
 
     func attributedTitle(
         for part: KeyDetailInfoViewController.Parts,
-        details: KeyId,
+        keyId: KeyId,
         date: Date,
         user: String
     ) -> NSAttributedString{
@@ -35,16 +35,16 @@ struct KeyDetailInfoDecorator: KeyDetailInfoDecoratorType {
         case .keyWord:
             title = "key_settings_detail_key_words".localized + ":" + " "
             return title.attributed(.medium(16))
-                + details.keywords.attributed(.regular(16), color: .main)
+                + keyId.keywords.attributed(.regular(16), color: .main)
         case .fingerptint:
             title = "key_settings_detail_fingerprint".localized + ":" + " "
 
             return title.attributed(.medium(16))
-                + details.fingerprint.attributed(.regular(16), color: .gray)
+                + keyId.fingerprint.attributed(.regular(16), color: .gray)
         case .longId:
             title = "key_settings_detail_long".localized + ":" + " "
             return title.attributed(.medium(16))
-                + details.longid.attributed(.regular(16))
+                + keyId.longid.attributed(.regular(16))
         case .date:
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .medium

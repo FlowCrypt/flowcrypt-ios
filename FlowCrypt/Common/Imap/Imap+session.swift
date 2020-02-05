@@ -55,13 +55,15 @@ extension Imap {
         return existingSess
     }
 
+    @discardableResult
     func renewSession() -> Promise<Void> {
-        return userService
+        userService
             .renewAccessToken()
             .then { [weak self] token -> Void in
                 self?.getImapSess(newAccessToken: token)
                 self?.getSmtpSess(newAccessToken: token)
             }
+            
     }
 
     func disconnect() {

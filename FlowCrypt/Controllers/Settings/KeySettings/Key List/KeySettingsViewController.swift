@@ -9,16 +9,13 @@
 import AsyncDisplayKit
 
 final class KeySettingsViewController: ASViewController<TableNode> {
-    private var keys: [KeySettingsItem] = []
+    private var keys: [KeyDetails] = []
     private let decorator: KeySettingsDecoratorType
-    private let provider: KeySettingsProviderType
 
     init(
-        decorator: KeySettingsDecorator = KeySettingsDecorator(),
-        provider: KeySettingsProviderType = KeySettingsProvider.shared
+        decorator: KeySettingsDecorator = KeySettingsDecorator()
     ) {
         self.decorator = decorator
-        self.provider = provider
         super.init(node: TableNode())
     }
 
@@ -34,29 +31,23 @@ final class KeySettingsViewController: ASViewController<TableNode> {
         node.dataSource = self
         node.reloadData()
 
-        fetchKeys()
+        loadKeysFromStorageAndRender()
     }
 }
 
 extension KeySettingsViewController {
-    private func fetchKeys() {
-        let result = provider.getPublicKeys()
-        switch result {
-        case let .failure(error): handle(error: error)
-        case let .success(keys): handle(fetched: keys)
+    private func loadKeysFromStorageAndRender() {
+        guard let keys = DataManager.shared.keys() else {
+            return showAlert(message: "Could not retrieve keys from DataManager. Please restart the app and try again.")
         }
-    }
-
-    private func handle(error: KeySettingsError) {
-        // TODO: - Handle possible errors
-        switch error {
-        case .fetching: break
-        case .parsing: break
+        let keyDetailsArr = keys.compactMap { (privateKeys: PrvKeyInfo) -> [KeyDetails]? in
+            let parsedKey = try? Core.shared.parseKeys(armoredOrBinary: privateKeys.private.data())
+            return parsedKey?.keyDetails
+        }.flatMap { $0 }
+        guard keyDetailsArr.count == keys.count else {
+            return showAlert(message: "Could not parse keys from storage. Please reinstall the app.")
         }
-    }
-
-    private func handle(fetched keys: [KeySettingsItem]) {
-        self.keys = keys
+        self.keys = keyDetailsArr
         node.reloadData()
     }
 }
@@ -74,9 +65,9 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             let input = KeySettingCellNode.Input(
-                title: self.decorator.attributedTitle(for: key),
-                subtitle: self.decorator.attributedSubTitle(for: key),
-                date: self.decorator.attributedDate(for: key)
+                title: self.decorator.attributedUsers(key: key),
+                subtitle: self.decorator.attributedKeyWords(key: key),
+                date: self.decorator.attributedDateCreated(key: key)
             )
             return KeySettingCellNode(with: input)
         }
