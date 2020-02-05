@@ -117,6 +117,10 @@ extension SetupViewController {
             renderNoBackupsFoundOptions(msg)
         } else {
             subtitle = "Found \(self.fetchedEncryptedPrvs.count) key backup\(self.fetchedEncryptedPrvs.count > 1 ? "s" : "")"
+            node.visibleNodes
+                .compactMap { $0 as? TextFieldCellNode }
+                .first?
+                .becomeFirstResponder()
         }
     }
 
@@ -263,7 +267,7 @@ extension SetupViewController {
 
 extension SetupViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return Parts.allCases.count
+        Parts.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -285,15 +289,23 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
+                .then {
+                    $0.becomeFirstResponder()
+                }
                 .onReturn { [weak self] _ in
                     self?.view.endEditing(true)
+                    self?.handleButtonPressed()
                     return true
                 }
             case .action:
                 return ButtonCellNode(
                     title: self.decorator.titleForAction(button: self.setupAction),
-                    insets: self.decorator.buttonInsets) { [weak self] in
-                        self?.handleButtonPressed()
+                    insets: self.decorator.buttonInsets
+                ) { [weak self] in
+                    self?.handleButtonPressed()
+                }
+                .then {
+                    $0.button.accessibilityIdentifier = "load_account"
                 }
             case .optionalAction:
                 return ButtonCellNode(

@@ -40,4 +40,5 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 fastlane/README.md
-test-ci-secrets.jsons
+
+test-ci-secrets.json

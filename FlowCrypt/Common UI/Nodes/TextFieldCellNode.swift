@@ -26,7 +26,7 @@ final class TextFieldCellNode: CellNode {
 
     typealias TextFieldAction = (TextFieldActionType) -> Void
 
-    private let textField: TextFieldNode
+    let textField: TextFieldNode
     private var textFiledAction: TextFieldAction?
     private var shouldReturn: ((UITextField) -> (Bool))?
 

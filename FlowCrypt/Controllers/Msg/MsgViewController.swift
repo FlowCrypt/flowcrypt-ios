@@ -62,15 +62,16 @@ final class MsgViewController: ASViewController<ASTableNode> {
         let archiveInput = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
         let trashInput = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
         let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
-        let buttons: [NavigationBarItemsView.Input]
-        switch input?.path {
-        case MailDestination.Gmail.trash.path:
-            buttons = [infoInput, trashInput]
-        case MailDestination.Gmail.inbox.path:
-            buttons = [infoInput, archiveInput, trashInput, mailInput]
-        default:
-            buttons = [infoInput, trashInput, mailInput]
-        }
+        let buttons: [NavigationBarItemsView.Input] = {
+            switch input?.path.lowercased() {
+            case MailDestination.Gmail.trash.path.lowercased():
+                return [infoInput, trashInput]
+            case MailDestination.Gmail.inbox.path.lowercased():
+                return [infoInput, archiveInput, trashInput, mailInput]
+            default:
+                return [infoInput, trashInput, mailInput]
+            }
+        }()
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
 }

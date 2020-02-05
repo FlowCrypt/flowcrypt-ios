@@ -17,6 +17,13 @@ final class NavigationBarItemsView: UIBarButtonItem {
     struct Input {
         let image: UIImage?
         let action: (target: Any?, selector: Selector)?
+        let accessibilityLabel: String?
+
+        init(image: UIImage?, action: (target: Any?, selector: Selector)?, accessibilityLabel: String? = nil) {
+            self.image = image
+            self.action = action
+            self.accessibilityLabel = accessibilityLabel
+        }
     }
 
     init(with input: [Input]) {
@@ -27,6 +34,7 @@ final class NavigationBarItemsView: UIBarButtonItem {
                 $0.frame.size = Constants.buttonSize
                 $0.imageView?.frame.size = Constants.buttonSize
                 $0.setImage(input.image, for: .normal)
+                $0.accessibilityLabel = self.accessibilityLabel
                 if let action = input.action {
                     $0.addTarget(action.target, action: action.selector, for: .touchUpInside)
                 }
