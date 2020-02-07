@@ -42,10 +42,9 @@ final class DefaultFlowController: FlowController {
             return
         }
 
-        let stepType = flow[index]
-        print("^^ \(#function) stepType=\(stepType)")
-
-        if let handler = factory.createFlowStep(for: stepType) {
+        let step = flow[index]
+        print("^^ \(#function)step\(step)")
+        if let handler = factory.createLaunchStepHandler(for: step) {
             currentStepHandler = handler
             let executionStarted = executeFlowStep(for: handler, with: index)
             assert(executionStarted, "Execution of flow step \(index) could not be started")

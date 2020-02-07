@@ -10,8 +10,16 @@ import Foundation
 
 // Holds all steps which will be executed during the launch of application
 enum LaunchStepType: CaseIterable {
-    case bootstrap
-    case mainSetup
+    /// Setup Core of the project
+    case core
+    /// Setup services required for user notification
+    case authentication
+    /// Setup database, encrypt and perform migration if needed
+    case dataBase
+    /// Setup a session. Create or renewe Imap session
+    case session
+    /// Presenting flow for user
+    case main
 }
 
 final class LaunchFlow {
@@ -31,3 +39,5 @@ final class LaunchFlow {
         return self
     }
 }
+
+

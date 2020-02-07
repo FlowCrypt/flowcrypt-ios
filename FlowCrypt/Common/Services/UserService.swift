@@ -12,7 +12,7 @@ import Promises
 import RealmSwift
 
 protocol UserServiceType {
-    func setup()
+//    func setup()
     func signOut() -> Promise<Void>
     func signIn() -> Promise<Void>
     func renewAccessToken() -> Promise<String>
@@ -37,13 +37,10 @@ final class UserService: NSObject, UserServiceType {
         self.googleManager = googleManager
         self.dataManager = dataManager
         super.init()
+        setup()
     }
 
-    func setup() {
-        logDebug(100, "GoogleApi.setup()")
-        GIDSignIn.sharedInstance().delegate = self
-        GIDSignIn.sharedInstance()?.language = "en"
-        
+    private func setup() {
         if let token = dataManager.currentToken {
             onNewToken?(token)
         }

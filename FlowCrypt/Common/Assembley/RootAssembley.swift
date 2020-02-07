@@ -8,6 +8,7 @@
 
 import UIKit
 
+#warning("Anton Remove")
 protocol AppAssembley {
     func assemble()
     func setupWindow() -> UIWindow

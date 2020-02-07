@@ -9,6 +9,7 @@
 import Foundation
 import GoogleSignIn
 
+#warning("Anton Remove")
 struct AuthAssembley: Assembley {
     private let service = UserService.shared
 
@@ -18,6 +19,6 @@ struct AuthAssembley: Assembley {
             "https://www.googleapis.com/auth/userinfo.profile",
             "https://mail.google.com/",
         ]
-        service.setup()
+//        service.setup()
     }
 }
