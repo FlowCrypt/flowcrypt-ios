@@ -182,6 +182,11 @@
 		C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9D81EC30E1D00763715 /* InboxViewController.swift */; };
 		C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupViewController.swift */; };
 		CB5986DFBB2B4FF4AD555821 /* Pods_FlowCryptUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */; };
+		D24BF1B523ED84E6001DF3D8 /* LaunchContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BF1B423ED84E6001DF3D8 /* LaunchContext.swift */; };
+		D24BF1B723ED84F6001DF3D8 /* LaunchFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BF1B623ED84F6001DF3D8 /* LaunchFlowController.swift */; };
+		D24BF1B923ED8525001DF3D8 /* FlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BF1B823ED8525001DF3D8 /* FlowController.swift */; };
+		D24BF1BC23ED8562001DF3D8 /* LaunchStepType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BF1BB23ED8562001DF3D8 /* LaunchStepType.swift */; };
+		D24BF1BE23ED858B001DF3D8 /* FlowStepHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BF1BD23ED858B001DF3D8 /* FlowStepHandler.swift */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
@@ -386,6 +391,11 @@
 		C132B9D81EC30E1D00763715 /* InboxViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxViewController.swift; sourceTree = "<group>"; };
 		C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		C192421E1EC48B6900C3D251 /* SetupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
+		D24BF1B423ED84E6001DF3D8 /* LaunchContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchContext.swift; sourceTree = "<group>"; };
+		D24BF1B623ED84F6001DF3D8 /* LaunchFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchFlowController.swift; sourceTree = "<group>"; };
+		D24BF1B823ED8525001DF3D8 /* FlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowController.swift; sourceTree = "<group>"; };
+		D24BF1BB23ED8562001DF3D8 /* LaunchStepType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchStepType.swift; sourceTree = "<group>"; };
+		D24BF1BD23ED858B001DF3D8 /* FlowStepHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowStepHandler.swift; sourceTree = "<group>"; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MsgViewController.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -974,6 +984,7 @@
 				9FDF3653235A218E00614596 /* main.swift */,
 				9FDF3655235A22DA00614596 /* AppReset.swift */,
 				C132B9B31EC2DBD800763715 /* AppDelegate.swift */,
+				D24BF1BA23ED854A001DF3D8 /* LaunchFlow */,
 				C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */,
 				C132B9BA1EC2DBD800763715 /* Assets.xcassets */,
 				949ED9412303E3B400530579 /* Colors.xcassets */,
@@ -1038,6 +1049,18 @@
 				9F8D5E63236B05B500186E43 /* Helpers */,
 			);
 			path = Setup;
+			sourceTree = "<group>";
+		};
+		D24BF1BA23ED854A001DF3D8 /* LaunchFlow */ = {
+			isa = PBXGroup;
+			children = (
+				D24BF1B623ED84F6001DF3D8 /* LaunchFlowController.swift */,
+				D24BF1B823ED8525001DF3D8 /* FlowController.swift */,
+				D24BF1B423ED84E6001DF3D8 /* LaunchContext.swift */,
+				D24BF1BB23ED8562001DF3D8 /* LaunchStepType.swift */,
+				D24BF1BD23ED858B001DF3D8 /* FlowStepHandler.swift */,
+			);
+			path = LaunchFlow;
 			sourceTree = "<group>";
 		};
 		D952B71B1ED0CB0100E5C02B /* Msg */ = {
@@ -1420,6 +1443,7 @@
 				9F92EE70236F144C009BE0D7 /* TextFieldCellNode.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
 				9F56BD3223438B5B00A7371A /* InboxCellNode.swift in Sources */,
+				D24BF1BC23ED8562001DF3D8 /* LaunchStepType.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */,
@@ -1431,6 +1455,7 @@
 				9F696295236091F4003712E1 /* SignInDescriptionNode.swift in Sources */,
 				9F696293236091DD003712E1 /* SignInImageNode.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
+				D24BF1B523ED84E6001DF3D8 /* LaunchContext.swift in Sources */,
 				9F82779E23737E3800E19C07 /* TextSubjectNode.swift in Sources */,
 				A37A1CF623C6254F001CF774 /* IntExtension.swift in Sources */,
 				9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */,
@@ -1456,6 +1481,7 @@
 				9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */,
 				9F589F1C238C8693007FD759 /* LogOutHandler.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
+				D24BF1BE23ED858B001DF3D8 /* FlowStepHandler.swift in Sources */,
 				9FD22A1A230FD781005067A6 /* NavigationBarItemsView.swift in Sources */,
 				9F4453C2236B9273005D7D05 /* TextFieldNode.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
@@ -1517,8 +1543,10 @@
 				9F23EA4E237216FA0017DFED /* TextViewCellNode.swift in Sources */,
 				32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */,
 				9F0C3C122316DDA500299985 /* DataManager.swift in Sources */,
+				D24BF1B923ED8525001DF3D8 /* FlowController.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
 				9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */,
+				D24BF1B723ED84F6001DF3D8 /* LaunchFlowController.swift in Sources */,
 				9F716305234FC7200031645E /* Localization.swift in Sources */,
 				9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */,
 				9F23EA522372175E0017DFED /* ComposeViewController+Setup.swift in Sources */,
