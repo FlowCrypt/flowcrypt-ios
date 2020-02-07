@@ -12,14 +12,15 @@ import Promises
 import RealmSwift
 
 protocol UserServiceType {
-//    func setup()
+    var isSessionValid: Bool { get }
+    var isLogedIn: Bool { get }
+
     func signOut() -> Promise<Void>
     func signIn() -> Promise<Void>
     func renewAccessToken() -> Promise<String>
-    func isSessionValid() -> Bool
 }
 
-final class UserService: NSObject, UserServiceType {
+final class UserService: NSObject  {
     static let shared = UserService()
 
     private var onLogin: ((User) -> Void)?
@@ -47,6 +48,16 @@ final class UserService: NSObject, UserServiceType {
         if let user = dataManager.currentUser {
             onLogin?(user)
         }
+    }
+}
+
+extension UserService: UserServiceType {
+    var isSessionValid: Bool {
+        dataManager.currentToken != nil && dataManager.currentUser != nil
+    }
+
+    var isLogedIn: Bool {
+        dataManager.isLogedIn
     }
 
     func renewAccessToken() -> Promise<String> {
@@ -102,10 +113,6 @@ final class UserService: NSObject, UserServiceType {
                 reject(AppErr(error))
             }
         }
-    }
-
-    func isSessionValid() -> Bool {
-        dataManager.currentToken != nil && dataManager.currentUser != nil
     }
 }
 

@@ -8,8 +8,8 @@
 
 import UIKit
 
-struct LaunchContext {
-    var window: UIWindow
+final class LaunchContext {
+    let window: UIWindow
     let aplication: UIApplication
     let launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 }

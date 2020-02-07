@@ -42,25 +42,25 @@ struct RootAssembley: AppAssembley {
     func setupWindow() -> UIWindow {
         let window = UIWindow(frame: UIScreen.main.bounds) 
 
-        guard userService.isSessionValid() else {
-            let root = SignInViewController()
-            window.rootViewController = MainNavigationController(rootViewController: root)
-            window.makeKeyAndVisible()
-            return window
-        }
- 
-        window.rootViewController = {
-            if dataManager.isLogedIn {
-                let vc = BootstrapViewController()
-                vc.completion = { error in
-                    window.rootViewController = SideMenuNavigationController()
-                }
-                return vc
-            } else {
-                return MainNavigationController(rootViewController: SetupViewController())
-            }
-        }()
-        window.makeKeyAndVisible()
+//        guard userService.isSessionValid() else {
+//            let root = SignInViewController()
+//            window.rootViewController = MainNavigationController(rootViewController: root)
+//            window.makeKeyAndVisible()
+//            return window
+//        }
+// 
+//        window.rootViewController = {
+//            if dataManager.isLogedIn {
+//                let vc = BootstrapViewController()
+//                vc.completion = { error in
+//                    window.rootViewController = SideMenuNavigationController()
+//                }
+//                return vc
+//            } else {
+//                return MainNavigationController(rootViewController: SetupViewController())
+//            }
+//        }()
+//        window.makeKeyAndVisible()
 
         return window
     }
