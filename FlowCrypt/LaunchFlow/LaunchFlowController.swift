@@ -23,7 +23,7 @@ struct LaunchFlowController {
     }
 
     func startFlow(with launchContext: LaunchContext) -> Bool {
-        return flowController.execute { completion in
+        return flowController.execute(with: launchContext) { completion in
             print("^^ \(#function)\n\(completion)")
         }
     }

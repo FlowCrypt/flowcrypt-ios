@@ -8,16 +8,13 @@
 
 import Foundation
 
-protocol Executable {
-    func execute(_ completion: @escaping (Bool) -> Void) -> Bool
-}
-
-protocol FlowController: Executable { }
+protocol FlowController: FlowStepHandler { }
 
 final class DefaultFlowController: FlowController {
     private let flow: [LaunchStepType]
     private let factory: LaunchFlowStepFactory
 
+    private var launchContext: LaunchContext?
     private var currentStepHandler: FlowStepHandler?
 
     private var completion: ((Bool) -> Void)?
@@ -27,8 +24,9 @@ final class DefaultFlowController: FlowController {
         self.factory = factory
     }
 
-    func execute(_ completion: @escaping (Bool) -> Void) -> Bool {
-        assert(self.completion == nil)
+    func execute(with launchContext: LaunchContext, completion: @escaping (Bool) -> Void) -> Bool {
+        assert(self.completion == nil && self.launchContext == nil)
+        self.launchContext = launchContext
         self.completion = completion
         startExecutingFlow()
         return true
@@ -57,7 +55,12 @@ final class DefaultFlowController: FlowController {
     }
 
     private func executeFlowStep(for handler: FlowStepHandler, with index: Int) -> Bool {
-        handler.execute { continueFlow in
+        guard let launchContext = launchContext else {
+            assertionFailure("No context provided")
+            return false
+        }
+
+        return handler.execute(with: launchContext) { continueFlow in
             if continueFlow {
                 DispatchQueue.main.async {
                     self.executeFlowStep(index + 1)
