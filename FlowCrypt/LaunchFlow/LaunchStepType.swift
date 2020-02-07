@@ -15,12 +15,15 @@ enum LaunchStepType: CaseIterable {
 }
 
 final class LaunchFlow {
+    static var `default`: LaunchFlow = LaunchFlow(steps: LaunchStepType.allCases)
+
     private(set) var steps: [LaunchStepType]
 
-    init(steps: [LaunchStepType] = LaunchStepType.allCases) {
+    private init(steps: [LaunchStepType]) {
         self.steps = steps
     }
 
+    // will be used to handle different app launches, like open from push notification or deeplink
     func except(after stepA: LaunchStepType, do stepB: LaunchStepType) -> LaunchFlow {
         if let i = steps.firstIndex(of: stepA) {
             steps.insert(stepB, at: i + 1)
@@ -28,5 +31,3 @@ final class LaunchFlow {
         return self
     }
 }
-
-

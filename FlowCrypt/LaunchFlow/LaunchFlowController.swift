@@ -11,7 +11,7 @@ import Foundation
 struct LaunchFlowController {
     static var `default`: LaunchFlowController = LaunchFlowController(
         flowController: DefaultFlowController(
-            flow: LaunchFlow().steps,
+            flow: LaunchFlow.default.steps,
             factory: LaunchFlowStepFactory()
         )
     )
@@ -24,7 +24,7 @@ struct LaunchFlowController {
 
     func startFlow(with launchContext: LaunchContext) -> Bool {
         return flowController.execute { completion in
-            print("^^ \(completion)")
+            print("^^ \(#function)\n\(completion)")
         }
     }
 }

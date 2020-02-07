@@ -18,9 +18,9 @@ final class DefaultFlowController: FlowController {
     private let flow: [LaunchStepType]
     private let factory: LaunchFlowStepFactory
 
-    private var currentStep: FlowStep?
+    private var currentStepHandler: FlowStepHandler?
 
-    var completion: ((Bool) -> Void)?
+    private var completion: ((Bool) -> Void)?
 
     init(flow: [LaunchStepType], factory: LaunchFlowStepFactory) {
         self.flow = flow
@@ -34,10 +34,6 @@ final class DefaultFlowController: FlowController {
         return true
     }
 
-    private func createStep(_ type: LaunchStepType) -> FlowStep? {
-        return factory.createFlowStep(for: type)
-    }
-
     private func startExecutingFlow() {
         executeFlowStep(0)
     }
@@ -49,24 +45,25 @@ final class DefaultFlowController: FlowController {
         }
 
         let stepType = flow[index]
+        print("^^ \(#function) stepType=\(stepType)")
 
-        if let nextStep = createStep(stepType) {
-            currentStep = nextStep
-            let executionStarted = executeFlowStep(index, flowStep: nextStep)
+        if let handler = factory.createFlowStep(for: stepType) {
+            currentStepHandler = handler
+            let executionStarted = executeFlowStep(for: handler, with: index)
             assert(executionStarted, "Execution of flow step \(index) could not be started")
         } else {
             executeFlowStep(index + 1)
         }
     }
 
-    private func executeFlowStep(_ index: Int, flowStep: FlowStep) -> Bool {
-        return flowStep.execute { continueFlow in
+    private func executeFlowStep(for handler: FlowStepHandler, with index: Int) -> Bool {
+        handler.execute { continueFlow in
             if continueFlow {
                 DispatchQueue.main.async {
                     self.executeFlowStep(index + 1)
                 }
             } else {
-                assertionFailure("Unexpected flow step failure")
+                assertionFailure("Unexpected flow step failure \(handler)")
                 self.complete(false)
             }
         }

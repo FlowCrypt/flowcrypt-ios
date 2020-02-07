@@ -14,16 +14,27 @@ protocol FlowStepHandler: Executable {
 
 // For every launch step creates Handler which will handle the executable step
 struct LaunchFlowStepFactory {
-    func createFlowStep(for type: LaunchStepType) -> FlowStepHandler? {
-        return nil
+    func createFlowStep(for step: LaunchStepType) -> FlowStepHandler? {
+        switch step {
+        case .bootstrap: return BootstrapFlowStep()
+        case .mainSetup: return MainFlowStep()
+        }
     }
 }
 
 // Example
-struct PushFlowStep: FlowStepHandler {
+struct BootstrapFlowStep: FlowStepHandler {
     func execute(_ completion: @escaping (Bool) -> Void) -> Bool {
+        completion(true)
         return true
     }
 }
 
+
+struct MainFlowStep: FlowStepHandler {
+    func execute(_ completion: @escaping (Bool) -> Void) -> Bool {
+        completion(false)
+        return true
+    }
+}
 
