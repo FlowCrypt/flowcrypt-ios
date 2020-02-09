@@ -12,9 +12,6 @@ import Promises
 import RealmSwift
 
 protocol UserServiceType {
-    var isSessionValid: Bool { get }
-    var isLogedIn: Bool { get }
-
     func signOut() -> Promise<Void>
     func signIn() -> Promise<Void>
     func renewAccessToken() -> Promise<String>
@@ -52,14 +49,6 @@ final class UserService: NSObject  {
 }
 
 extension UserService: UserServiceType {
-    var isSessionValid: Bool {
-        dataManager.currentToken != nil && dataManager.currentUser != nil
-    }
-
-    var isLogedIn: Bool {
-        dataManager.isLogedIn
-    }
-
     func renewAccessToken() -> Promise<String> {
         return Promise<String> { [weak self] resolve, reject in
             guard let self = self else { return }

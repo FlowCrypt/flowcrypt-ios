@@ -9,28 +9,28 @@
 import UIKit
 
 struct SessionLaunchStep: FlowStepHandler {
-    let userService: UserServiceType = UserService.shared
+    let dataManager: DataManagerType = DataManager.shared
+    let imap = Imap.shared
 
     func execute(with launchContext: LaunchContext, completion: @escaping (Bool) -> Void) -> Bool {
-        guard userService.isSessionValid else { return copmlete(with: completion) }
-
-        let vc = BootstrapViewController()
-        launchContext.window.rootViewController = vc
-
-        vc.completion = { error in
-            launchContext.window.rootViewController = SideMenuNavigationController()
-        }
-
-
-//        launchContext.isUserLogedIn = userService.isLogedIn
-
-        let vc = UIViewController()
-        vc.view.backgroundColor = .red
-        launchContext.window.rootViewController = vc
-        launchContext.window.makeKeyAndVisible()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        if dataManager.isSessionValid {
+            imap.setup()
+            
+            // googleManager.restorePreviousSignIn() doesn't return error if session can't be restored.
+            // should be reworked to have some failure callback and completion should be called after receiveing a new session
+            // or after receiving error
+            launchContext.window.rootViewController = BootstrapViewController()
+            imap.renewSession()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                completion(true)
+            }
+        } else {
+            let root = SignInViewController()
+            launchContext.window.rootViewController = MainNavigationController(rootViewController: root)
             completion(true)
         }
+
+        launchContext.window.makeKeyAndVisible()
         return true
     }
 }

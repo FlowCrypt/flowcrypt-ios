@@ -9,7 +9,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let assembley = RootAssembley()
     private lazy var appUrlHandler = AppUrlHandler()
 
-    private let launchFlowController = LaunchFlowController.default
+    let launchFlowController = LaunchFlowController.default
 
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
 

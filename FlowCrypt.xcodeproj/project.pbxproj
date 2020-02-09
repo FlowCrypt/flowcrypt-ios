@@ -1070,8 +1070,8 @@
 				D24BF1BB23ED8562001DF3D8 /* LaunchFlow.swift */,
 				D24BF1CD23EDE9A9001DF3D8 /* FlowStepHandler.swift */,
 				D24BF1C223EDE8AF001DF3D8 /* CoreLaunchStep.swift */,
-				D24BF1C823EDE8FA001DF3D8 /* SessionLaunchStep.swift */,
 				D24BF1C423EDE8C2001DF3D8 /* AuthLaunchStep.swift */,
+				D24BF1C823EDE8FA001DF3D8 /* SessionLaunchStep.swift */,
 				D24BF1C623EDE8E2001DF3D8 /* DataBaseLaunchStep.swift */,
 				D24BF1CA23EDE907001DF3D8 /* MainLaunchStep.swift */,
 			);

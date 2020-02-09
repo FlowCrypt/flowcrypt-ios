@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class LaunchContext {
+struct LaunchContext {
     let window: UIWindow
     let aplication: UIApplication
     let launchOptions: [UIApplication.LaunchOptionsKey: Any]?

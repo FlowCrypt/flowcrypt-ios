@@ -22,9 +22,10 @@ struct LaunchFlowController {
         self.flowController = flowController
     }
 
+    @discardableResult
     func startFlow(with launchContext: LaunchContext) -> Bool {
         return flowController.execute(with: launchContext) { completion in
-            print("^^ \(#function)\n\(completion)")
+            log("Luanch execution finished \(completion)")
         }
     }
 }

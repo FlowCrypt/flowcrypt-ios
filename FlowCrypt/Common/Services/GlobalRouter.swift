@@ -15,8 +15,15 @@ protocol GlobalRouterType {
 
 struct GlobalRouter: GlobalRouterType {
     func reset() {
-        guard let delegate = (UIApplication.shared.delegate as? AppDelegate) else { assertionFailure(); return }
-        // TODO: - Anton
-//        delegate.window = delegate.assembley.setupWindow()
+        let application = UIApplication.shared
+        guard let delegate = (application.delegate as? AppDelegate) else { assertionFailure(); return }
+
+        delegate.launchFlowController.startFlow(
+            with: LaunchContext(
+                window: delegate.window,
+                aplication: application,
+                launchOptions: nil
+            )
+        )
     }
 }

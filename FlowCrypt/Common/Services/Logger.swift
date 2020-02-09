@@ -8,7 +8,7 @@
 
 import Foundation
 
-func log(_ message: String, error: Error?, res: Any?, start: DispatchTime) {
+func log(_ message: String, error: Error? = nil, res: Any? = nil, start: DispatchTime = .now()) {
     Logger().log(message, error: error, res: res, start: start)
 }
 

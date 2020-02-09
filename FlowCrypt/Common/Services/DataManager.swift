@@ -14,6 +14,8 @@ protocol DataManagerType {
     var email: String? { get }
     var currentUser: User? { get }
     var currentToken: String? { get }
+
+    var isSessionValid: Bool { get }
     var isLogedIn: Bool { get }
 
     func keys() -> [PrvKeyInfo]?
@@ -32,6 +34,10 @@ final class DataManager: DataManagerType {
         return isUserStored && hasKey
     }
 
+    var isSessionValid: Bool {
+        currentToken != nil && currentUser != nil
+    }
+
     var email: String? {
         currentUser?.email
     }
@@ -43,7 +49,10 @@ final class DataManager: DataManagerType {
         get { encryptedStorage.currentToken() }
     }
 
-    private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(accessCheck: { self.email != nil })
+    private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(
+        accessCheck: { self.email != nil }
+    )
+
     private var localStorage: LocalStorageType & LogOutHandler
 
     private init(
@@ -80,5 +89,11 @@ extension DataManager {
         [localStorage, encryptedStorage].map { $0 as LogOutHandler }.forEach {
             $0.logOut()
         }
+    }
+}
+
+extension DataManager: DBMigration {
+    func performMigrationIfNeeded() {
+        encryptedStorage.performMigrationIfNeeded()
     }
 }
