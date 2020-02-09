@@ -12,14 +12,15 @@ import Security
 // keychain is used to generate and retrieve encryption key which is used to encrypt local DB
 // it does not contain any actual data or keys other than the db encryption key
 
+private enum Constants: String, CaseIterable {
+    case indexSecureKeychainPrefix = "indexSecureKeychainPrefix"
+}
+
 protocol KeyChainServiceType {
     func getStorageEncryptionKey() -> Data
 }
 
 struct KeyChainService: KeyChainServiceType {
-    private enum Constants: String, CaseIterable {
-        case indexSecureKeychainPrefix = "indexSecureKeychainPrefix"
-    }
 
     // the prefix ensures that we use a different keychain index after deleting the app
     // because keychain entries survive app uninstall
@@ -28,18 +29,11 @@ struct KeyChainService: KeyChainServiceType {
         if let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) {
             return storedPrefix
         } else {
-            guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
-                fatalError("could not get secureKeychainPrefix random bytes")
-            }
-            let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
-            print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
-            userDefaults.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
-            return prefix
+            return genertateAndSaveKey()
         }
     }()
     
     private let keyByteLen = 64
-
 
     private func generateAndSaveStorageEncryptionKey() {
         print("KeyChainService->generateAndSaveStorageEncryptionKey")
@@ -82,4 +76,20 @@ struct KeyChainService: KeyChainServiceType {
         }
         return validKey
     }
+
+    func generateNewKey() {
+        UserDefaults.standard.set(nil, forKey: Constants.indexSecureKeychainPrefix.rawValue)
+        genertateAndSaveKey()
+    }
+}
+
+@discardableResult
+fileprivate func genertateAndSaveKey() -> String {
+    guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
+        fatalError("could not get secureKeychainPrefix random bytes")
+    }
+    let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
+    print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+    UserDefaults.standard.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
+    return prefix
 }

@@ -23,7 +23,8 @@ protocol EncryptedStorageType: DBMigration {
 
 final class EncryptedStorage: EncryptedStorageType {
     enum Constants {
-        static let schemaVersion: UInt64 = 1
+        static let schemaVersion: UInt64 = 2
+        static let encryptedDBName = "encryptedDB.realm"
     }
 
     let keychainService: KeyChainServiceType
@@ -47,10 +48,28 @@ final class EncryptedStorage: EncryptedStorageType {
 
     private var encryptedConfiguration: Realm.Configuration? {
         guard canHaveAccessToStorage else { return nil }
-        return Realm.Configuration(encryptionKey: realmKey)
+        let isExsist = isEncryptedRealmExsist().0
+        if !isExsist {
+            performMigrationIfNeeded()
+            return Realm.Configuration(encryptionKey: realmKey)
+        } else {
+            guard let path = isEncryptedRealmExsist().path else {
+                fatalError("Path for encrypted Realm not exist")
+            }
+            return Realm.Configuration(
+                fileURL: URL(fileURLWithPath: path),
+                encryptionKey: realmKey,
+                schemaVersion: Constants.schemaVersion,
+                migrationBlock: { migration, oldSchemaVersion in
+                    log("oldSchemaVersion \(oldSchemaVersion)")
+                    log("Performing migration \(migration)")
+                }
+            )
+        }
+
     }
 
-    var storage: Realm? {
+    private var storage: Realm? {
         guard let configuration = self.encryptedConfiguration else { return nil }
         do {
             return try Realm(configuration: configuration)
@@ -70,7 +89,7 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     func publicKey() -> String? {
-        return storage?.objects(KeyInfo.self)
+        storage?.objects(KeyInfo.self)
             .map { $0.public }
             .first 
     }
@@ -121,15 +140,13 @@ extension EncryptedStorage: LogOutHandler {
 
 extension EncryptedStorage {
     func performMigrationIfNeeded() {
-        let encryptedConf = encryptedConfiguration
-
         guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
             assertionFailure("No path direction for documentDirectory")
             return
         }
 
         let unencryptedRealmPath = documentDirectory + "/default.realm"
-        let encryptedPath = documentDirectory + "/encrypted.realm"
+        let encryptedPath = documentDirectory + "/" + Constants.encryptedDBName
 
         let isUnencryptedRealmExsist = fileManager.fileExists(atPath: unencryptedRealmPath)
         let isEncryptedRealmExsist = fileManager.fileExists(atPath: encryptedPath)
@@ -160,43 +177,16 @@ extension EncryptedStorage {
         )
 
         _ = try! Realm(configuration: configuration)
+    }
 
+    private func isEncryptedRealmExsist() -> (Bool, path: String?) {
+        guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
+            assertionFailure("No path direction for documentDirectory")
+            return (false, nil)
+        }
 
+        let encryptedPath = documentDirectory + "/" + Constants.encryptedDBName
 
-
-        /*
-                // Get the encryptionKey
-                var realmKey = Keychain.realmKey
-                if realmKey == nil {
-                    var key = Data(count: 64)
-
-                    key.withUnsafeMutableBytes { (bytes) -> Void in
-                        _ = SecRandomCopyBytes(kSecRandomDefault, 64, bytes)
-                    }
-                    realmKey = key
-                    Keychain.realmKey = realmKey
-                }
-
-
-                // Check if the user has the unencrypted Realm
-                let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-                let fileManager = FileManager.default
-                let unencryptedRealmPath = "\(documentDirectory)/default.realm"
-                let encryptedPath = "\(documentDirectory)/default_new.realm"
-                let isUnencryptedRealmExsist = fileManager.fileExists(atPath: unencryptedRealmPath)
-                let isEncryptedRealmExsist = fileManager.fileExists(atPath: encryptedPath)
-
-
-                if isUnencryptedRealmExsist && !isEncryptedRealmExsist {
-                    let unencryptedRealm = try! Realm(configuration: Realm.Configuration(schemaVersion: 7))
-                    // if the user has unencrypted Realm write a copy to new path
-                    try? unencryptedRealm.writeCopy(toFile: URL(fileURLWithPath: encryptedPath), encryptionKey: realmKey)
-                }
-
-                // read from the new encrypted Realm path
-                let configuration = Realm.Configuration(fileURL: URL(fileURLWithPath: encryptedPath), encryptionKey: realmKey, schemaVersion: 7, migrationBlock: { migration, oldSchemaVersion in })
-
-                return try! Realm(configuration: configuration)
-                */
+        return (fileManager.fileExists(atPath: encryptedPath), encryptedPath)
     }
 }
