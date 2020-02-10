@@ -19,6 +19,7 @@ private enum Constants: String, CaseIterable {
 protocol KeyChainServiceType {
     func getStorageEncryptionKey() -> Data
     func generateNewKey()
+    func getOldKeychainKey() -> Data?
 }
 
 struct KeyChainService: KeyChainServiceType {
@@ -81,6 +82,25 @@ struct KeyChainService: KeyChainServiceType {
     func generateNewKey() {
         UserDefaults.standard.set(nil, forKey: Constants.indexSecureKeychainPrefix.rawValue)
         genertateAndSaveKey()
+    }
+
+    #warning("use only for migration purposes") 
+    func getOldKeychainKey() -> Data? {
+        let query: [CFString : Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrAccount: "flowcrypt-realm-encryption-key",
+            kSecReturnData: kCFBooleanTrue!,
+            kSecMatchLimit: kSecMatchLimitOne
+        ]
+
+        var dataTypeRef: AnyObject? = nil
+
+        let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+
+        guard status == noErr, let data = dataTypeRef as? Data else {
+            return nil
+        }
+        return data
     }
 }
 

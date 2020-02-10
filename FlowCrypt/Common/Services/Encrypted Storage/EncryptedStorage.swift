@@ -47,23 +47,12 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     private var encryptedConfiguration: Realm.Configuration? {
-        // guard canHaveAccessToStorage else { return nil }
+         guard canHaveAccessToStorage else { return nil }
 
+        let k = Realm.Configuration(encryptionKey: realmKey)
+        let d = Realm.Configuration.defaultConfiguration
 
-//        let realmDefault = Realm.Configuration.defaultConfiguration
-//        let realmWithKey = Realm.Configuration(encryptionKey: realmKey)
-//        let realmWithPath = Realm.Configuration(
-//            fileURL: URL(fileURLWithPath: isEncryptedRealmExsist().path ?? ""),
-//            encryptionKey: realmKey,
-//            schemaVersion: Constants.schemaVersion,
-//            migrationBlock: { migration, oldSchemaVersion in
-//                log("oldSchemaVersion \(oldSchemaVersion)")
-//                log("Performing migration \(migration)")
-//            })
-//
-//        print("^^ realmDefault \(realmDefault)")
-//        print("^^ realmWithKey \(realmWithKey)")
-//        print("^^ realmWithPath \(realmWithPath)")
+        return d
 
         let isExsist = isEncryptedRealmExsist().0
         if !isExsist {
@@ -181,21 +170,20 @@ extension EncryptedStorage {
 
         var oldRealm: Realm? = nil
         if let defaultRealm = try? Realm.init(configuration: Realm.Configuration.defaultConfiguration) {
-            print("^^ default config \(defaultRealm)")
+            debugPrint("^^ default config \(defaultRealm)")
             oldRealm = defaultRealm
         }
-        if let previouslyEncrypted = try? Realm(configuration: Realm.Configuration(encryptionKey: realmKey)) {
-            print("^^ previouslyEncrypted config \(previouslyEncrypted)")
-            oldRealm = previouslyEncrypted
-        }
-
-        if let someEncrypted = try? Realm() {
-            print("^^ previouslyEncrypted config \(someEncrypted)")
-            oldRealm = someEncrypted
+ 
+        if let key = keychainService.getOldKeychainKey() {
+            debugPrint("^^ old key exist")
+            if let previouslyEncrypted = try? Realm(configuration: Realm.Configuration(encryptionKey: key)) {
+                debugPrint("^^ previouslyEncrypted config \(previouslyEncrypted)")
+                oldRealm = previouslyEncrypted
+            }
         }
 
          guard let realm = oldRealm else {
-            debugPrint("Relam was not exist")
+            debugPrint("Relam was not exist. Migration not needed")
             return
         }
 
