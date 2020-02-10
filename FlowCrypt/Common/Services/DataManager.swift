@@ -93,7 +93,7 @@ extension DataManager {
 }
 
 extension DataManager: DBMigration {
-    func performMigrationIfNeeded() {
-        encryptedStorage.performMigrationIfNeeded()
+    func performMigrationIfNeeded(_ completion: @escaping () -> Void) {
+        encryptedStorage.performMigrationIfNeeded(completion)
     }
 }

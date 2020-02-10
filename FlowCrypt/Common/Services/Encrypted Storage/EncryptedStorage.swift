@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 protocol DBMigration {
-    func performMigrationIfNeeded()
+    func performMigrationIfNeeded(_ completion: @escaping () -> Void)
 }
 
 protocol EncryptedStorageType: DBMigration {
@@ -149,7 +149,7 @@ extension EncryptedStorage: LogOutHandler {
 }
 
 extension EncryptedStorage {
-    func performMigrationIfNeeded() {
+    func performMigrationIfNeeded(_ completion: @escaping () -> Void) {
         guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
             assertionFailure("No path direction for documentDirectory")
             return
@@ -163,6 +163,7 @@ extension EncryptedStorage {
 
         guard isUnencryptedRealmExsist && !isEncryptedRealmExsist else {
             debugPrint("Migration not needed")
+            completion()
             return
         }
 
@@ -184,6 +185,7 @@ extension EncryptedStorage {
 
          guard let realm = oldRealm else {
             debugPrint("Relam was not exist. Migration not needed")
+            completion()
             return
         }
 
@@ -203,6 +205,7 @@ extension EncryptedStorage {
             migrationBlock: { migration, oldSchemaVersion in
                 log("oldSchemaVersion \(oldSchemaVersion)")
                 log("Performing migration \(migration)")
+                completion()
             }
         )
 
