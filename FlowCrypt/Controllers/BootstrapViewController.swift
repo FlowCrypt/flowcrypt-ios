@@ -15,5 +15,9 @@ final class BootstrapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        let activityIndicator = UIActivityIndicatorView(style: .gray)
+        activityIndicator.startAnimating()
+        view.addSubview(activityIndicator)
+        activityIndicator.center = view.center
     }
 }

@@ -182,6 +182,7 @@
 		C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9D81EC30E1D00763715 /* InboxViewController.swift */; };
 		C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupViewController.swift */; };
 		CB5986DFBB2B4FF4AD555821 /* Pods_FlowCryptUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */; };
+		D227F59423F1EC6B005DF134 /* EncryptionStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227F59323F1EC6B005DF134 /* EncryptionStep.swift */; };
 		D24BF1B523ED84E6001DF3D8 /* LaunchContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BF1B423ED84E6001DF3D8 /* LaunchContext.swift */; };
 		D24BF1B723ED84F6001DF3D8 /* LaunchFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BF1B623ED84F6001DF3D8 /* LaunchFlowController.swift */; };
 		D24BF1B923ED8525001DF3D8 /* FlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24BF1B823ED8525001DF3D8 /* FlowController.swift */; };
@@ -396,6 +397,7 @@
 		C132B9D81EC30E1D00763715 /* InboxViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxViewController.swift; sourceTree = "<group>"; };
 		C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		C192421E1EC48B6900C3D251 /* SetupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
+		D227F59323F1EC6B005DF134 /* EncryptionStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionStep.swift; sourceTree = "<group>"; };
 		D24BF1B423ED84E6001DF3D8 /* LaunchContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchContext.swift; sourceTree = "<group>"; };
 		D24BF1B623ED84F6001DF3D8 /* LaunchFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchFlowController.swift; sourceTree = "<group>"; };
 		D24BF1B823ED8525001DF3D8 /* FlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowController.swift; sourceTree = "<group>"; };
@@ -1073,6 +1075,7 @@
 				D24BF1C423EDE8C2001DF3D8 /* AuthLaunchStep.swift */,
 				D24BF1C823EDE8FA001DF3D8 /* SessionLaunchStep.swift */,
 				D24BF1C623EDE8E2001DF3D8 /* DataBaseLaunchStep.swift */,
+				D227F59323F1EC6B005DF134 /* EncryptionStep.swift */,
 				D24BF1CA23EDE907001DF3D8 /* MainLaunchStep.swift */,
 			);
 			path = LaunchFlow;
@@ -1481,6 +1484,7 @@
 				9F56BD3023438B4400A7371A /* ComposeButtonNode.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
+				D227F59423F1EC6B005DF134 /* EncryptionStep.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,

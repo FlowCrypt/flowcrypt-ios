@@ -38,6 +38,9 @@ struct LaunchFlowStepFactory {
             return SessionLaunchStep()
         case .main:
             return MainLaunchStep()
+        case .encryption:
+            return EncryptionCheckLaunchStep()
         }
     }
 }
+

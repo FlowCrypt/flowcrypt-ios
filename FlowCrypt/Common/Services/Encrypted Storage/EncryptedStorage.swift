@@ -14,6 +14,8 @@ protocol DBMigration {
 }
 
 protocol EncryptedStorageType: DBMigration {
+    var isEncrypted: Bool { get }
+
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func saveToken(with string: String?)
     func currentToken() -> String?
@@ -31,6 +33,10 @@ final class EncryptedStorage: EncryptedStorageType {
     private var canHaveAccessToStorage: Bool { accessCheck() }
     private let accessCheck: () -> (Bool)
     private let fileManager: FileManager
+
+    var isEncrypted: Bool {
+        encryptedConfiguration?.encryptionKey != nil
+    }
 
     init(
         fileManager: FileManager = .default,

@@ -16,7 +16,7 @@ protocol LocalStorageType {
 struct LocalStorage: LocalStorageType {
 
     private enum Constants: String, CaseIterable {
-        case indexCurrentUser = "indexCurrentUser"
+        case indexCurrentUser = "keyCurrentUser"
     }
 
     private let userDefaults: UserDefaults

@@ -14,6 +14,7 @@ protocol DataManagerType {
     var email: String? { get }
     var currentUser: User? { get }
     var currentToken: String? { get }
+    var isEncrypted: Bool { get }
 
     var isSessionValid: Bool { get }
     var isLogedIn: Bool { get }
@@ -43,10 +44,15 @@ final class DataManager: DataManagerType {
     }
 
     var currentUser: User? {
-        get { localStorage.currentUser() }
+        localStorage.currentUser()
     }
+
     var currentToken: String? {
-        get { encryptedStorage.currentToken() }
+        encryptedStorage.currentToken()
+    }
+
+    var isEncrypted: Bool {
+        encryptedStorage.isEncrypted
     }
 
     private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(

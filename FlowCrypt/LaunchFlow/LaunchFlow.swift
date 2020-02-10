@@ -18,6 +18,8 @@ enum LaunchStepType: CaseIterable {
     case authentication
     /// Setup a session. Create or renewe Imap session
     case session
+    /// Check if user have encrypted realm storage
+    case encryption
     /// Presenting flow for user
     case main
 }
