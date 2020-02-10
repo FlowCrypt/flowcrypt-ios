@@ -25,7 +25,7 @@ final class DefaultFlowController: FlowController {
     }
 
     func execute(with launchContext: LaunchContext, completion: @escaping (Bool) -> Void) -> Bool {
-        assert(self.completion == nil && self.launchContext == nil)
+//        assert(self.completion == nil && self.launchContext == nil)
         self.launchContext = launchContext
         self.completion = completion
         startExecutingFlow()

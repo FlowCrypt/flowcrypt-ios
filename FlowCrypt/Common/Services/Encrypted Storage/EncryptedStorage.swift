@@ -156,7 +156,6 @@ extension EncryptedStorage {
 
         guard isUnencryptedRealmExsist && !isEncryptedRealmExsist else {
             debugPrint("Migration not needed")
-            storage
             completion()
             return
         }
@@ -184,10 +183,14 @@ extension EncryptedStorage {
         }
 
         // write copy of realm db
-        try? realm.writeCopy(
-            toFile: URL(fileURLWithPath: encryptedPath),
-            encryptionKey: realmKey
-        )
+        do {
+            try realm.writeCopy(
+                toFile: URL(fileURLWithPath: encryptedPath),
+                encryptionKey: realmKey
+            )
+        } catch let error {
+            print(error)
+        }
 
         let configuration = Realm.Configuration(
             fileURL: URL(fileURLWithPath: encryptedPath),
