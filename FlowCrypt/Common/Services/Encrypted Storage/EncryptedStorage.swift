@@ -156,6 +156,7 @@ extension EncryptedStorage {
 
         guard isUnencryptedRealmExsist && !isEncryptedRealmExsist else {
             debugPrint("Migration not needed")
+            storage
             completion()
             return
         }
@@ -201,7 +202,7 @@ extension EncryptedStorage {
 
 //        Realm.Configuration.defaultConfiguration = configuration
 
-//        _ = try! Realm(configuration: configuration)
+        _ = try! Realm(configuration: configuration)
     }
 
     private func isEncryptedRealmExsist() -> (Bool, path: String?) {
