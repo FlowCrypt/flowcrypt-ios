@@ -47,16 +47,9 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     private var encryptedConfiguration: Realm.Configuration? {
-         guard canHaveAccessToStorage else { return nil }
-
-        let k = Realm.Configuration(encryptionKey: realmKey)
-        let d = Realm.Configuration.defaultConfiguration
-
-        return d
-
         let isExsist = isEncryptedRealmExsist().0
         if !isExsist {
-            return Realm.Configuration(encryptionKey: realmKey)
+            return Realm.Configuration.defaultConfiguration
         } else {
             guard let path = isEncryptedRealmExsist().path else {
                 fatalError("Path for encrypted Realm not exist")
@@ -189,9 +182,6 @@ extension EncryptedStorage {
             return
         }
 
-        // generate new key for encrypting realm
-        keychainService.generateNewKey()
-
         // write copy of realm db
         try? realm.writeCopy(
             toFile: URL(fileURLWithPath: encryptedPath),
@@ -209,9 +199,9 @@ extension EncryptedStorage {
             }
         )
 
-        Realm.Configuration.defaultConfiguration = configuration
+//        Realm.Configuration.defaultConfiguration = configuration
 
-        _ = try! Realm(configuration: configuration)
+//        _ = try! Realm(configuration: configuration)
     }
 
     private func isEncryptedRealmExsist() -> (Bool, path: String?) {
