@@ -35,10 +35,9 @@ final class UserService: NSObject  {
         self.googleManager = googleManager
         self.dataManager = dataManager
         super.init()
-        setup()
     }
 
-    private func setup() {
+    func setup() {
         if let token = dataManager.currentToken {
             onNewToken?(token)
         }

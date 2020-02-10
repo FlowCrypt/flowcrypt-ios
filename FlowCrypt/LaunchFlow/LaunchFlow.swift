@@ -12,12 +12,12 @@ import Foundation
 enum LaunchStepType: CaseIterable {
     /// Setup Core of the project
     case core
+    /// Setup database, encrypt and perform migration if needed
+    case dataBase
     /// Setup services required for user notification
     case authentication
     /// Setup a session. Create or renewe Imap session
     case session
-    /// Setup database, encrypt and perform migration if needed
-    case dataBase
     /// Presenting flow for user
     case main
 }

@@ -12,7 +12,7 @@ struct DataBaseLaunchStep: FlowStepHandler {
     let dataManager = DataManager.shared
 
     func execute(with launchContext: LaunchContext, completion: @escaping (Bool) -> Void) -> Bool {
-        guard dataManager.isLogedIn else { return copmlete(with: completion) }
+//        guard dataManager.isLogedIn else { return copmlete(with: completion) }
         dataManager.performMigrationIfNeeded()
         
         return copmlete(with: completion)

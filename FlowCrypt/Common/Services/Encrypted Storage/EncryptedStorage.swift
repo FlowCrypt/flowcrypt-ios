@@ -47,28 +47,26 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     private var encryptedConfiguration: Realm.Configuration? {
-        guard canHaveAccessToStorage else { return nil }
-        performMigrationIfNeeded()
+        // guard canHaveAccessToStorage else { return nil }
 
 
-        let realmDefault = Realm.Configuration.defaultConfiguration
-        let realmWithKey = Realm.Configuration(encryptionKey: realmKey)
-        let realmWithPath = Realm.Configuration(
-            fileURL: URL(fileURLWithPath: isEncryptedRealmExsist().path ?? ""),
-            encryptionKey: realmKey,
-            schemaVersion: Constants.schemaVersion,
-            migrationBlock: { migration, oldSchemaVersion in
-                log("oldSchemaVersion \(oldSchemaVersion)")
-                log("Performing migration \(migration)")
-            })
-
-        print("^^ realmDefault \(realmDefault)")
-        print("^^ realmWithKey \(realmWithKey)")
-        print("^^ realmWithPath \(realmWithPath)")
+//        let realmDefault = Realm.Configuration.defaultConfiguration
+//        let realmWithKey = Realm.Configuration(encryptionKey: realmKey)
+//        let realmWithPath = Realm.Configuration(
+//            fileURL: URL(fileURLWithPath: isEncryptedRealmExsist().path ?? ""),
+//            encryptionKey: realmKey,
+//            schemaVersion: Constants.schemaVersion,
+//            migrationBlock: { migration, oldSchemaVersion in
+//                log("oldSchemaVersion \(oldSchemaVersion)")
+//                log("Performing migration \(migration)")
+//            })
+//
+//        print("^^ realmDefault \(realmDefault)")
+//        print("^^ realmWithKey \(realmWithKey)")
+//        print("^^ realmWithPath \(realmWithPath)")
 
         let isExsist = isEncryptedRealmExsist().0
         if !isExsist {
-            performMigrationIfNeeded()
             return Realm.Configuration(encryptionKey: realmKey)
         } else {
             guard let path = isEncryptedRealmExsist().path else {
@@ -180,7 +178,23 @@ extension EncryptedStorage {
         }
 
         debugPrint("Perform migration")
-        guard let realm = storage else {
+
+        var oldRealm: Realm? = nil
+        if let defaultRealm = try? Realm.init(configuration: Realm.Configuration.defaultConfiguration) {
+            print("^^ default config \(defaultRealm)")
+            oldRealm = defaultRealm
+        }
+        if let previouslyEncrypted = try? Realm(configuration: Realm.Configuration(encryptionKey: realmKey)) {
+            print("^^ previouslyEncrypted config \(previouslyEncrypted)")
+            oldRealm = previouslyEncrypted
+        }
+
+        if let someEncrypted = try? Realm() {
+            print("^^ previouslyEncrypted config \(someEncrypted)")
+            oldRealm = someEncrypted
+        }
+
+         guard let realm = oldRealm else {
             debugPrint("Relam was not exist")
             return
         }
