@@ -18,6 +18,7 @@ private enum Constants: String, CaseIterable {
 
 protocol KeyChainServiceType {
     func getStorageEncryptionKey() -> Data
+    func generateNewKey()
 }
 
 struct KeyChainService: KeyChainServiceType {

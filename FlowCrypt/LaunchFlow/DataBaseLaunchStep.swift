@@ -14,6 +14,7 @@ struct DataBaseLaunchStep: FlowStepHandler {
     func execute(with launchContext: LaunchContext, completion: @escaping (Bool) -> Void) -> Bool {
         guard dataManager.isLogedIn else { return copmlete(with: completion) }
         dataManager.performMigrationIfNeeded()
+        
         return copmlete(with: completion)
     }
 }
