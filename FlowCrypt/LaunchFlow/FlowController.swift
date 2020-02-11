@@ -25,7 +25,6 @@ final class DefaultFlowController: FlowController {
     }
 
     func execute(with launchContext: LaunchContext, completion: @escaping (Bool) -> Void) -> Bool {
-//        assert(self.completion == nil && self.launchContext == nil)
         self.launchContext = launchContext
         self.completion = completion
         startExecutingFlow()
@@ -43,7 +42,6 @@ final class DefaultFlowController: FlowController {
         }
 
         let step = flow[index]
-        print("^^ \(#function)step\(step)")
         if let handler = factory.createLaunchStepHandler(for: step) {
             currentStepHandler = handler
             let executionStarted = executeFlowStep(for: handler, with: index)

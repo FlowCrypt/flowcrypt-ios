@@ -25,7 +25,7 @@ protocol EncryptedStorageType: DBMigration {
 
 final class EncryptedStorage: EncryptedStorageType {
     enum Constants {
-        static let schemaVersion: UInt64 = 2
+        static let schemaVersion: UInt64 = 1
         static let encryptedDBName = "encrypted.realm"
     }
 
@@ -168,7 +168,7 @@ extension EncryptedStorage {
  
         if let key = keychainService.getOldKeychainKey() {
             if let previouslyEncrypted = try? Realm(configuration: Realm.Configuration(encryptionKey: key)) {
-                debugPrint("^^ previouslyEncrypted config \(previouslyEncrypted)")
+                debugPrint("use previouslyEncrypted config \(previouslyEncrypted) for migration")
                 oldRealm = previouslyEncrypted
             }
         }
@@ -197,12 +197,11 @@ extension EncryptedStorage {
             migrationBlock: { [weak self] migration, oldSchemaVersion in
                 debugPrint("oldSchemaVersion \(oldSchemaVersion)")
                 debugPrint("Performing migration \(migration)")
-                if let url = Realm.Configuration.defaultConfiguration.fileURL {
-                    self?.destroyStorage(at: url)
-                }
+                // delete previous configuration
+                try? self?.fileManager.removeItem(atPath: unencryptedRealmPath)
                 completion()
             }
-        )
+        ) 
 
         _ = try! Realm(configuration: configuration)
     }
