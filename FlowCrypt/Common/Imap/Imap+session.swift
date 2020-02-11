@@ -57,13 +57,18 @@ extension Imap {
 
     @discardableResult
     func renewSession() -> Promise<Void> {
-        userService
-            .renewAccessToken()
-            .then { [weak self] token -> Void in
-                self?.getImapSess(newAccessToken: token)
-                self?.getSmtpSess(newAccessToken: token)
-            }
-            
+//        Promise { resolve, reject in
+            self.userService
+                .renewAccessToken()
+                .then { [weak self] token -> Void in
+                    self?.getImapSess(newAccessToken: token)
+                    self?.getSmtpSess(newAccessToken: token)
+//                    resolve(())
+                }
+//            .catch { error in
+//                    reject(error)
+//                }
+//        }
     }
 
     func disconnect() {

@@ -26,7 +26,7 @@ protocol EncryptedStorageType: DBMigration {
 final class EncryptedStorage: EncryptedStorageType {
     enum Constants {
         static let schemaVersion: UInt64 = 2
-        static let encryptedDBName = "encr.realm"
+        static let encryptedDBName = "encrypted.realm"
     }
 
     let keychainService: KeyChainServiceType
@@ -53,24 +53,15 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     private var encryptedConfiguration: Realm.Configuration? {
-        let isExsist = isEncryptedRealmExsist().0
-        if !isExsist {
-            return Realm.Configuration.defaultConfiguration
-        } else {
-            guard let path = isEncryptedRealmExsist().path else {
-                fatalError("Path for encrypted Realm not exist")
-            }
-            return Realm.Configuration(
-                fileURL: URL(fileURLWithPath: path),
-                encryptionKey: realmKey,
-                schemaVersion: Constants.schemaVersion,
-                migrationBlock: { migration, oldSchemaVersion in
-                    log("oldSchemaVersion \(oldSchemaVersion)")
-                    log("Performing migration \(migration)")
-                }
-            )
+        guard let path = pathForEncryptedRealm() else {
+            fatalError("Path for encrypted Realm can't be created")
         }
 
+        return Realm.Configuration(
+            fileURL: URL(fileURLWithPath: path),
+            encryptionKey: realmKey,
+            schemaVersion: Constants.schemaVersion
+        )
     }
 
     private var storage: Realm? {
@@ -125,24 +116,18 @@ extension EncryptedStorage: LogOutHandler {
     private func destroyEncryptedStorage() {
         [Realm.Configuration.defaultConfiguration.fileURL, encryptedConfiguration?.fileURL]
             .compactMap { $0 }
-
-
-        do {
-            if let oldPlainConfiguration = Realm.Configuration.defaultConfiguration.fileURL {
-                try fileManager.removeItem(at: oldPlainConfiguration)
+            .forEach {
+                destroyStorage(at: $0)
             }
-        } catch CocoaError.fileNoSuchFile {
-        } catch let error {
-            fatalError("Could not delete oldPlainConfiguration: \(error)")
-        }
+    }
 
+    private func destroyStorage(at url: URL) {
         do {
-            if let url = encryptedConfiguration?.fileURL {
-                try fileManager.removeItem(at: url)
-            }
+            try fileManager.removeItem(at: url)
         } catch CocoaError.fileNoSuchFile {
+            debugPrint("Realm at url \(url) not existed")
         } catch let error {
-            fatalError("Could not delete encryptedConfiguration: \(error)")
+            fatalError("Could not delete configuration for \(url) with error: \(error)")
         }
     }
 }
@@ -166,16 +151,22 @@ extension EncryptedStorage {
             return
         }
 
-        debugPrint("Perform migration")
+        if !isEncryptedRealmExsist && !isUnencryptedRealmExsist {
+            debugPrint("Realm was not exist")
+            destroyEncryptedStorage()
+            completion()
+            return
+        }
+
+        debugPrint("Performing migration")
 
         var oldRealm: Realm? = nil
+
         if let defaultRealm = try? Realm.init(configuration: Realm.Configuration.defaultConfiguration) {
-            debugPrint("^^ default config \(defaultRealm)")
             oldRealm = defaultRealm
         }
  
         if let key = keychainService.getOldKeychainKey() {
-            debugPrint("^^ old key exist")
             if let previouslyEncrypted = try? Realm(configuration: Realm.Configuration(encryptionKey: key)) {
                 debugPrint("^^ previouslyEncrypted config \(previouslyEncrypted)")
                 oldRealm = previouslyEncrypted
@@ -195,33 +186,38 @@ extension EncryptedStorage {
                 encryptionKey: realmKey
             )
         } catch let error {
-            print(error)
+            debugPrint(error)
         }
 
+        // launch configuration and perform migration if needed
         let configuration = Realm.Configuration(
             fileURL: URL(fileURLWithPath: encryptedPath),
             encryptionKey: realmKey,
             schemaVersion: Constants.schemaVersion,
-            migrationBlock: { migration, oldSchemaVersion in
-                log("oldSchemaVersion \(oldSchemaVersion)")
-                log("Performing migration \(migration)")
+            migrationBlock: { [weak self] migration, oldSchemaVersion in
+                debugPrint("oldSchemaVersion \(oldSchemaVersion)")
+                debugPrint("Performing migration \(migration)")
+                if let url = Realm.Configuration.defaultConfiguration.fileURL {
+                    self?.destroyStorage(at: url)
+                }
                 completion()
             }
         )
 
-//        Realm.Configuration.defaultConfiguration = configuration
-
         _ = try! Realm(configuration: configuration)
     }
 
-    private func isEncryptedRealmExsist() -> (Bool, path: String?) {
+    private func isEncryptedRealmExsist() -> Bool {
+        guard let encryptedPath = pathForEncryptedRealm() else { return false }
+        return fileManager.fileExists(atPath: encryptedPath)
+    }
+
+    private func pathForEncryptedRealm() -> String? {
         guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
             assertionFailure("No path direction for documentDirectory")
-            return (false, nil)
+            return nil
         }
 
-        let encryptedPath = documentDirectory + "/" + Constants.encryptedDBName
-
-        return (fileManager.fileExists(atPath: encryptedPath), encryptedPath)
+        return documentDirectory + "/" + Constants.encryptedDBName
     }
 }

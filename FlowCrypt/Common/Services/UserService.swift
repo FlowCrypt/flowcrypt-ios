@@ -49,11 +49,11 @@ final class UserService: NSObject  {
 
 extension UserService: UserServiceType {
     func renewAccessToken() -> Promise<String> {
-        return Promise<String> { [weak self] resolve, reject in
+        Promise<String> { [weak self] resolve, reject in
             guard let self = self else { return }
 
             DispatchQueue.main.async {
-                self.googleManager.restorePreviousSignIn()
+
 
                 self.onNewToken = { token in
                     resolve(token)
@@ -62,6 +62,7 @@ extension UserService: UserServiceType {
                 self.onError = { error in
                     reject(error)
                 }
+                self.googleManager.restorePreviousSignIn()
             }
         }
     }

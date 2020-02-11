@@ -82,7 +82,7 @@ final class DataManager: DataManagerType {
     }
 
     func startFor(user: User, with token: String?) {
-        if currentUser != user {
+        if currentUser != user, currentUser != nil {
             logOutAndDestroyStorage()
         }
         localStorage.saveCurrentUser(user: user)

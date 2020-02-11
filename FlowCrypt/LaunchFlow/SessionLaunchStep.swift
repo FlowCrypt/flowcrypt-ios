@@ -16,14 +16,14 @@ struct SessionLaunchStep: FlowStepHandler {
         if dataManager.isSessionValid {
             imap.setup()
 
-            // googleManager.restorePreviousSignIn() doesn't return error if session can't be restored.
-            // should be reworked to have some failure callback and completion should be called after receiveing a new session
-            // or after receiving error
             launchContext.window.rootViewController = BootstrapViewController()
+
             imap.renewSession()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                completion(true)
-            }
+                .then(on: .main) {
+                    completion(true)
+                }.catch { _ in
+                    completion(false)
+                }
         } else {
             let root = SignInViewController()
             launchContext.window.rootViewController = MainNavigationController(rootViewController: root)
