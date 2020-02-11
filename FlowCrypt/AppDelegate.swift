@@ -6,7 +6,6 @@
 import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let assembley = RootAssembley()
     private lazy var appUrlHandler = AppUrlHandler()
 
     let launchFlowController = LaunchFlowController.default

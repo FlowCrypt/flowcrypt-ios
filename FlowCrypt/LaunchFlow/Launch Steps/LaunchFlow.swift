@@ -16,9 +16,9 @@ enum LaunchStepType: CaseIterable {
     case dataBase
     /// Setup services required for user notification
     case authentication
-    /// Setup a session. Create or renewe Imap session
+    /// Setup a session. Create or renew Imap session
     case session
-    /// Check if user have encrypted realm storage
+    /// Check if user has encrypted realm storage
     case encryption
     /// Presenting flow for user
     case main
