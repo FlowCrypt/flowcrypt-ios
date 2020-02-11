@@ -30,8 +30,6 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     let keychainService: KeyChainServiceType
-    private var canHaveAccessToStorage: Bool { accessCheck() }
-    private let accessCheck: () -> (Bool)
     private let fileManager: FileManager
 
     var isEncrypted: Bool {
@@ -40,12 +38,10 @@ final class EncryptedStorage: EncryptedStorageType {
 
     init(
         fileManager: FileManager = .default,
-        keychainHelper: KeyChainServiceType = KeyChainService(),
-        accessCheck: @escaping () -> (Bool)
+        keychainHelper: KeyChainServiceType = KeyChainService()
     ) {
         self.fileManager = fileManager
         self.keychainService = KeyChainService()
-        self.accessCheck = accessCheck
     }
 
     private var realmKey: Data {

@@ -55,15 +55,14 @@ final class DataManager: DataManagerType {
         encryptedStorage.isEncrypted
     }
 
-    private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(
-        accessCheck: { self.email != nil }
-    )
-
-    private var localStorage: LocalStorageType & LogOutHandler
+    private let encryptedStorage: EncryptedStorageType & LogOutHandler
+    private let localStorage: LocalStorageType & LogOutHandler
 
     private init(
+        encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
         localStorage: LocalStorageType & LogOutHandler = LocalStorage()
     ) {
+        self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
     }
 
