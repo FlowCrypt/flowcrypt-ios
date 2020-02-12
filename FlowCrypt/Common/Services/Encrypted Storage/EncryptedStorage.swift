@@ -121,7 +121,7 @@ extension EncryptedStorage: LogOutHandler {
         do {
             try fileManager.removeItem(at: url)
         } catch CocoaError.fileNoSuchFile {
-            debugPrint("Realm at url \(url) not existed")
+            debugPrint("Realm at url \(url) did not exist")
         } catch let error {
             fatalError("Could not delete configuration for \(url) with error: \(error)")
         }
@@ -136,19 +136,19 @@ extension EncryptedStorage {
         }
 
         let unencryptedRealmPath = documentDirectory + "/default.realm"
-        let encryptedPath = documentDirectory + "/" + Constants.encryptedDBName
+        let encryptedRealmPath = documentDirectory + "/" + Constants.encryptedDBName
 
-        let isUnencryptedRealmExsist = fileManager.fileExists(atPath: unencryptedRealmPath)
-        let isEncryptedRealmExsist = fileManager.fileExists(atPath: encryptedPath)
+        let doesUnencryptedRealmExist = fileManager.fileExists(atPath: unencryptedRealmPath)
+        let doesEncryptedRealmExist = fileManager.fileExists(atPath: encryptedRealmPath)
 
-        guard isUnencryptedRealmExsist && !isEncryptedRealmExsist else {
+        guard doesUnencryptedRealmExist && !doesEncryptedRealmExist else {
             debugPrint("Migration not needed")
             completion()
             return
         }
 
-        if !isEncryptedRealmExsist && !isUnencryptedRealmExsist {
-            debugPrint("Realm was not exist")
+        if !doesEncryptedRealmExist && !doesUnencryptedRealmExist {
+            debugPrint("No realm type existed")
             destroyEncryptedStorage()
             completion()
             return
@@ -170,7 +170,7 @@ extension EncryptedStorage {
         }
 
          guard let realm = oldRealm else {
-            debugPrint("Relam was not exist. Migration not needed")
+            debugPrint("oldRealm did not exist. Migration not needed")
             completion()
             return
         }
@@ -178,7 +178,7 @@ extension EncryptedStorage {
         // write copy of realm db
         do {
             try realm.writeCopy(
-                toFile: URL(fileURLWithPath: encryptedPath),
+                toFile: URL(fileURLWithPath: encryptedRealmPath),
                 encryptionKey: realmKey
             )
         } catch let error {
@@ -187,7 +187,7 @@ extension EncryptedStorage {
 
         // launch configuration and perform migration if needed
         let configuration = Realm.Configuration(
-            fileURL: URL(fileURLWithPath: encryptedPath),
+            fileURL: URL(fileURLWithPath: encryptedRealmPath),
             encryptionKey: realmKey,
             schemaVersion: Constants.schemaVersion,
             migrationBlock: { [weak self] migration, oldSchemaVersion in
@@ -202,7 +202,8 @@ extension EncryptedStorage {
         _ = try! Realm(configuration: configuration)
     }
 
-    private func isEncryptedRealmExsist() -> Bool {
+    // todo - it seems this is not getting called?
+    private func doesEncryptedRealmExist() -> Bool {
         guard let encryptedPath = pathForEncryptedRealm() else { return false }
         return fileManager.fileExists(atPath: encryptedPath)
     }

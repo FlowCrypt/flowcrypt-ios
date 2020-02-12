@@ -24,8 +24,9 @@ struct LaunchFlowController {
 
     @discardableResult
     func startFlow(with launchContext: LaunchContext) -> Bool {
+        let start = DispatchTime.now()
         return flowController.execute(with: launchContext) { completion in
-            log("Luanch execution finished \(completion)")
+            log("LaunchFlow execution finished", error: nil, res: completion, start: start)
         }
     }
 }
