@@ -108,7 +108,7 @@ extension ComposeViewController {
 extension ComposeViewController {
     @objc private func handleInfoTap() {
         #warning("ToDo")
-        showToast("Email us at human@flowcrypt.com")
+        showToast("Please email us at human@flowcrypt.com for help")
     }
 
     @objc private func handleAttachTap() {
@@ -130,37 +130,34 @@ extension ComposeViewController {
 
         showSpinner("sending_title".localized)
 
-        Promise<Void> { [weak self] in
-            try await(self!.sendMessage())
-        }.then(on: .main) { [weak self] in
-            self?.handleSuccessfullySentMessage()
+        Promise<Bool> { [weak self] in
+            return try await(self!.encryptAndSendMessage())
+        }.then(on: .main) { [weak self] sent in
+            if sent { // else it must have shown error to user
+                self?.handleSuccessfullySentMessage()
+            }
         }.catch(on: .main) { [weak self] error in
             self?.showAlert(error: error, message: "compose_error".localized)
         }
     }
 
-    private func sendMessage() -> Promise<Void> {
-        Promise { [weak self] in
-            guard let self = self else { return }
+    private func encryptAndSendMessage() -> Promise<Bool> {
+        Promise<Bool> { [weak self] () -> Bool in
+            guard let self = self else { return false }
             guard let email = self.contextToSend.resipient, let text = self.contextToSend.message else {
                 assertionFailure("Text and Email should not be nil at this point. Fail in checking");
-                return
+                return false
             }
-
-            let subject = self.input.subjectReplyTitle
-                ?? self.contextToSend.subject
-                ?? "(no subject)"
-
+            let subject = self.input.subjectReplyTitle ?? self.contextToSend.subject ?? "(no subject)"
             let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
-
             guard let recipientPubkey = lookupRes.armored else {
-                return self.showAlert(message: "compose_no_pub_recipient".localized)
+                self.showAlert(message: "compose_no_pub_recipient".localized)
+                return false
             }
-
             guard let myPubkey = self.dataManager.publicKey() else {
-                return self.showAlert(message: "compose_no_pub_sender".localized)
+                self.showAlert(message: "compose_no_pub_sender".localized)
+                return false
             }
-
             let encrypted = self.encryptMsg(
                 pubkeys: [myPubkey, recipientPubkey],
                 subject: subject,
@@ -168,12 +165,13 @@ extension ComposeViewController {
                 email: email
             )
             try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
+            return true
         }
     }
 
     private func handleSuccessfullySentMessage() {
         hideSpinner()
-        showToast(input.alertMessage)
+        showToast(input.successfullySentToast)
         navigationController?.popViewController(animated: true)
     }
 
