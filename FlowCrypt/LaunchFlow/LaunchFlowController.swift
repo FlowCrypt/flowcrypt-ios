@@ -10,15 +10,15 @@ import Foundation
 
 struct LaunchFlowController {
     static var `default`: LaunchFlowController = LaunchFlowController(
-        flowController: DefaultFlowController(
+        flowController: FlowController(
             flow: LaunchFlow.default.steps,
             factory: LaunchFlowStepFactory()
         )
     )
 
-    let flowController: FlowController
+    let flowController: FlowControllerType
 
-    init(flowController: FlowController) {
+    init(flowController: FlowControllerType) {
         self.flowController = flowController
     }
 

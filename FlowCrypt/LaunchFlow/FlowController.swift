@@ -8,9 +8,9 @@
 
 import Foundation
 
-protocol FlowController: FlowStepHandler { }
+protocol FlowControllerType: FlowStepHandler { }
 
-final class DefaultFlowController: FlowController {
+final class FlowController: FlowControllerType {
     private let flow: [LaunchStepType]
     private let factory: LaunchFlowStepFactory
 
