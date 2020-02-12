@@ -22,7 +22,6 @@ struct MainLaunchStep: FlowStepHandler {
 
         launchContext.window.makeKeyAndVisible()
 
-        completion(true)
-        return true
+        return complete(with: completion)
     }
 }
