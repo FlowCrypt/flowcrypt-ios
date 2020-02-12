@@ -17,19 +17,13 @@ extension Imap: BackupProvider {
     func searchBackups() -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
-            
-            guard let searchExpr = self.createSearchBackupExpression() else {
-                throw AppErr.general("could not create search expression")
-            }
             var folderPaths = try await(self.fetchFolders()).folders
                 .compactMap { $0.path }
-                .compactMap { (path: String) -> String? in
-                    path.isEmpty || path == GeneralConstants.Global.gmailRootPath
-                        ? nil : path
-                }
+                .compactMap { (path: String) -> String? in path.isEmpty || path == GeneralConstants.Global.gmailRootPath ? nil : path }
             if folderPaths.contains(GeneralConstants.Global.gmailAllMailPath) {
                 folderPaths = [GeneralConstants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
             }
+            let searchExpr = self.createSearchBackupExpression()
             let dataArr = try folderPaths
                 .compactMap { folder in UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr))) }
                 .filter { $0.uids.count() > 0 }
@@ -48,44 +42,38 @@ extension Imap: BackupProvider {
         }
     }
 
-    // todo - should be moved to a general Imap class or extension
     private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
-            Promise<Data> { [weak self] resolve, reject in
-                guard let self = self else { return reject(AppErr.nilSelf) }
-                self.getImapSess()
-                    .fetchMessageAttachmentOperation(
-                        withFolder: folder,
-                        uid: msgUid,
-                        partID: part.partID,
-                        encoding: part.encoding
-                    )
-                    .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
-                        self.fetchMsgAttribute(in: folder, msgUid: msgUid, part: part)
-                    }))
+        Promise<Data> { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf) }
+            self.getImapSess()
+                .fetchMessageAttachmentOperation(
+                    withFolder: folder,
+                    uid: msgUid,
+                    partID: part.partID,
+                    encoding: part.encoding
+                )
+                .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
+                    self.fetchMsgAttribute(in: folder, msgUid: msgUid, part: part)
+                }))
         }
     }
 
-    private func subjectsExpr() -> MCOIMAPSearchExpression? {
+    private func subjectsExpr() -> MCOIMAPSearchExpression {
         let expressions = GeneralConstants.EmailConstant
             .recoverAccountSearchSubject
             .compactMap { MCOIMAPSearchExpression.searchSubject($0) }
-        
         guard let expression = helper.createSearchExpressions(from: expressions) else {
-            return nil
+            fatalError("could not create search expression")
         }
-        
         return expression
     }
 
-    private func createSearchBackupExpression() -> MCOIMAPSearchExpression? {
-        guard let expression = subjectsExpr() else { return nil }
-        
+    private func createSearchBackupExpression() -> MCOIMAPSearchExpression {
         let fromToExpr = MCOIMAPSearchExpression.searchAnd(
             MCOIMAPSearchExpression.search(from: email),
             other: MCOIMAPSearchExpression.search(to: email)
         )
-        
-        return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: expression)
+        return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: subjectsExpr())
     }
 }
 
