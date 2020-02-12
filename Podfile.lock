@@ -97,7 +97,7 @@ DEPENDENCIES:
   - Toast (~> 4.0.0)
 
 SPEC REPOS:
-  trunk:
+  https://github.com/CocoaPods/Specs.git:
     - AppAuth
     - ENSwiftSideMenu
     - GoogleSignIn
@@ -107,7 +107,6 @@ SPEC REPOS:
     - mailcore2-ios
     - MBProgressHUD
     - PINCache
-    - PINOperation
     - PINRemoteImage
     - PromisesObjC
     - PromisesSwift
@@ -122,6 +121,8 @@ SPEC REPOS:
     - SwiftyRSA
     - Texture
     - Toast
+  trunk:
+    - PINOperation
 
 SPEC CHECKSUMS:
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
