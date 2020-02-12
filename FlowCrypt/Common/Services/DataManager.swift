@@ -100,8 +100,10 @@ extension DataManager {
 extension DataManager: DBMigration {
     func performMigrationIfNeeded(_ completion: @escaping () -> Void) {
         encryptedStorage.performMigrationIfNeeded { [weak self] in
-            self?.performLocalMigration()
-            completion()
+            DispatchQueue.main.async {
+                self?.performLocalMigration()
+                completion()
+            } 
         }
     }
 
