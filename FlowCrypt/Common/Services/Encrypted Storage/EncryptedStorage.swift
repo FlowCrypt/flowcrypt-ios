@@ -135,20 +135,20 @@ extension EncryptedStorage {
             return
         }
 
-        let unencryptedRealmPath = documentDirectory + "/default.realm"
+        let plainRealmPath = documentDirectory + "/default.realm"
         let encryptedRealmPath = documentDirectory + "/" + Constants.encryptedDBName
 
-        let doesUnencryptedRealmExist = fileManager.fileExists(atPath: unencryptedRealmPath)
+        let doesPlainRealmExist = fileManager.fileExists(atPath: plainRealmPath)
         let doesEncryptedRealmExist = fileManager.fileExists(atPath: encryptedRealmPath)
 
-        guard doesUnencryptedRealmExist && !doesEncryptedRealmExist else {
-            debugPrint("Migration not needed")
+        guard doesPlainRealmExist && !doesEncryptedRealmExist else {
+            debugPrint("Migration not needed - storage already encrypted")
             completion()
             return
         }
 
-        if !doesEncryptedRealmExist && !doesUnencryptedRealmExist {
-            debugPrint("No realm type existed")
+        if !doesEncryptedRealmExist && !doesPlainRealmExist {
+            debugPrint("Migration not needed - no realm type previously set up")
             destroyEncryptedStorage()
             completion()
             return
@@ -194,7 +194,7 @@ extension EncryptedStorage {
                 debugPrint("oldSchemaVersion \(oldSchemaVersion)")
                 debugPrint("Performing migration \(migration)")
                 // delete previous configuration
-                try? self?.fileManager.removeItem(atPath: unencryptedRealmPath)
+                try? self?.fileManager.removeItem(atPath: plainRealmPath)
                 completion()
             }
         ) 
