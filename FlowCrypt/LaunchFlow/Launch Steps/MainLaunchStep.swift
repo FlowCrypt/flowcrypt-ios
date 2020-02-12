@@ -16,7 +16,7 @@ struct MainLaunchStep: FlowStepHandler {
             return copmlete(with: completion)
         }
  
-        launchContext.window.rootViewController = dataManager.isLogedIn
+        launchContext.window.rootViewController = dataManager.isLoggedIn
             ? SideMenuNavigationController()
             : MainNavigationController(rootViewController: SetupViewController())
 

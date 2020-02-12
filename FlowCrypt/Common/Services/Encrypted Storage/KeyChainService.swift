@@ -30,12 +30,12 @@ struct KeyChainService: KeyChainServiceType {
         if let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) {
             return storedPrefix
         } else {
-            return KeyChainService.genertateAndSaveKey()
+            return KeyChainService.generateAndSaveKey()
         }
     }()
 
     @discardableResult
-    static private func genertateAndSaveKey() -> String {
+    static private func generateAndSaveKey() -> String {
         guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
             fatalError("could not get secureKeychainPrefix random bytes")
         }

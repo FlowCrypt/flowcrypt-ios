@@ -17,7 +17,7 @@ protocol DataManagerType {
     var isEncrypted: Bool { get }
 
     var isSessionValid: Bool { get }
-    var isLogedIn: Bool { get }
+    var isLoggedIn: Bool { get }
 
     func keys() -> [PrvKeyInfo]?
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
@@ -29,7 +29,7 @@ protocol DataManagerType {
 final class DataManager: DataManagerType {
     static let shared = DataManager()
 
-    var isLogedIn: Bool {
+    var isLoggedIn: Bool {
         let isUserStored = currentUser != nil && currentToken != nil
         let hasKey = (self.encryptedStorage.keys()?.count ?? 0) > 0
         return isUserStored && hasKey
@@ -99,6 +99,23 @@ extension DataManager {
 
 extension DataManager: DBMigration {
     func performMigrationIfNeeded(_ completion: @escaping () -> Void) {
-        encryptedStorage.performMigrationIfNeeded(completion)
+        encryptedStorage.performMigrationIfNeeded { [weak self] in
+            self?.performLocalMigration()
+            completion()
+        }
+    }
+
+    private func performLocalMigration() {
+        guard localStorage.currentUser() != nil else {
+            debugPrint("Local migration not needed. User was not stored")
+            return
+        }
+
+        guard let token = localStorage.storage.string(forKey: "keyCurrentToken") else {
+            debugPrint("Local migration not needed. Token was not saved")
+            return
+        }
+
+        encryptedStorage.saveToken(with: token)
     }
 }
