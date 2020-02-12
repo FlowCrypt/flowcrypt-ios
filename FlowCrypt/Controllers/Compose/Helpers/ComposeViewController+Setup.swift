@@ -29,7 +29,7 @@ extension ComposeViewController {
             isReply ? "Re: \(replyToSubject ?? "(no subject)")" : nil
         }
 
-        var alertMessage: String {
+        var successfullySentToast: String {
             isReply ? "compose_reply_successfull".localized : "compose_sent".localized
         }
     }
