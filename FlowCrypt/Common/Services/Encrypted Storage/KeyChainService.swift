@@ -18,7 +18,6 @@ private enum Constants: String, CaseIterable {
 
 protocol KeyChainServiceType {
     func getStorageEncryptionKey() -> Data
-    func generateNewKey()
 }
 
 struct KeyChainService: KeyChainServiceType {
@@ -88,11 +87,5 @@ struct KeyChainService: KeyChainServiceType {
         }
         return validKey
     }
-
-    func generateNewKey() { // todo - figure out how is this used, why not immediately needed
-        UserDefaults.standard.set(nil, forKey: Constants.indexSecureKeychainPrefix.rawValue)
-        KeyChainService.genertateAndSaveKey()
-    }
-
 }
 

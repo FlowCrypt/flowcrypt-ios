@@ -16,7 +16,7 @@ struct CoreLaunchStep: FlowStepHandler {
         DispatchQueue.promises = .global()
         core.startInBackgroundIfNotAlreadyRunning()
 
-        return copmlete(with: completion)
+        return complete(with: completion)
     }
 }
 

@@ -13,7 +13,7 @@ protocol FlowStepHandler {
 }
 
 extension FlowStepHandler {
-    func copmlete(with completion: @escaping (Bool) -> Void) -> Bool {
+    func complete(with completion: @escaping (Bool) -> Void) -> Bool {
         completion(true)
         return true
     }

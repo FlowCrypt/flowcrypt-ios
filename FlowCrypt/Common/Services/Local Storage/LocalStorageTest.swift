@@ -12,7 +12,7 @@ class LocalStorageTest: XCTestCase {
     var localStorage: LocalStorage!
 
     override func setUp() {
-        localStorage = LocalStorage(userDefaults: UserDefaults.standard)
+        localStorage = LocalStorage()
     }
 
     func test_save_user() {

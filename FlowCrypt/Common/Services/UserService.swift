@@ -54,7 +54,6 @@ extension UserService: UserServiceType {
 
             DispatchQueue.main.async {
 
-
                 self.onNewToken = { token in
                     resolve(token)
                 }

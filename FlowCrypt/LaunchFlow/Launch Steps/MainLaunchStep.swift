@@ -13,7 +13,7 @@ struct MainLaunchStep: FlowStepHandler {
 
     func execute(with launchContext: LaunchContext, completion: @escaping (Bool) -> Void) -> Bool {
         guard dataManager.isSessionValid else {
-            return copmlete(with: completion)
+            return complete(with: completion)
         }
  
         launchContext.window.rootViewController = dataManager.isLoggedIn

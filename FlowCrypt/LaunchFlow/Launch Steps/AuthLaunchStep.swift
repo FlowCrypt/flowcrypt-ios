@@ -27,6 +27,6 @@ struct AuthLaunchStep: FlowStepHandler {
         ]
 
         googleSignIn.delegate = userService
-        return copmlete(with: completion)
+        return complete(with: completion)
     }
 }
