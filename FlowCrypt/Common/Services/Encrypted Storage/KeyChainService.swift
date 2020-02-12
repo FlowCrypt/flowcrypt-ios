@@ -19,7 +19,6 @@ private enum Constants: String, CaseIterable {
 protocol KeyChainServiceType {
     func getStorageEncryptionKey() -> Data
     func generateNewKey()
-    func getOldKeychainKey() -> Data?
 }
 
 struct KeyChainService: KeyChainServiceType {
@@ -31,9 +30,20 @@ struct KeyChainService: KeyChainServiceType {
         if let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) {
             return storedPrefix
         } else {
-            return genertateAndSaveKey()
+            return KeyChainService.genertateAndSaveKey()
         }
     }()
+
+    @discardableResult
+    static private func genertateAndSaveKey() -> String {
+        guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
+            fatalError("could not get secureKeychainPrefix random bytes")
+        }
+        let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
+        print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+        UserDefaults.standard.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
+        return prefix
+    }
     
     private let keyByteLen = 64
 
@@ -79,38 +89,10 @@ struct KeyChainService: KeyChainServiceType {
         return validKey
     }
 
-    func generateNewKey() {
+    func generateNewKey() { // todo - figure out how is this used, why not immediately needed
         UserDefaults.standard.set(nil, forKey: Constants.indexSecureKeychainPrefix.rawValue)
-        genertateAndSaveKey()
+        KeyChainService.genertateAndSaveKey()
     }
 
-    #warning("use only for migration purposes") 
-    func getOldKeychainKey() -> Data? {
-        let query: [CFString : Any] = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: "flowcrypt-realm-encryption-key",
-            kSecReturnData: kCFBooleanTrue!,
-            kSecMatchLimit: kSecMatchLimitOne
-        ]
-
-        var dataTypeRef: AnyObject? = nil
-
-        let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
-
-        guard status == noErr, let data = dataTypeRef as? Data else {
-            return nil
-        }
-        return data
-    }
 }
 
-@discardableResult
-fileprivate func genertateAndSaveKey() -> String {
-    guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
-        fatalError("could not get secureKeychainPrefix random bytes")
-    }
-    let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
-    print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
-    UserDefaults.standard.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
-    return prefix
-}
