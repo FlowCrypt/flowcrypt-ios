@@ -16,14 +16,10 @@ protocol GlobalRouterType {
 struct GlobalRouter: GlobalRouterType {
     func reset() {
         let application = UIApplication.shared
-        guard let delegate = (application.delegate as? AppDelegate) else { assertionFailure(); return }
-
-        delegate.launchFlowController.startFlow(
-            with: LaunchContext(
-                window: delegate.window,
-                aplication: application,
-                launchOptions: nil
-            )
-        )
+        guard let delegate = (application.delegate as? AppDelegate) else {
+            assertionFailure("missing AppDelegate in GlobalRouter.reset()");
+            return;
+        }
+        AppStartup().initializeApp(window: delegate.window)
     }
 }

@@ -8,14 +8,13 @@
 
 import Foundation
 import RealmSwift
+import Promises
 
 protocol DBMigration {
-    func performMigrationIfNeeded(_ completion: @escaping () -> Void)
+    func performMigrationIfNeeded() -> Promise<Void>
 }
 
 protocol EncryptedStorageType: DBMigration {
-    var isEncrypted: Bool { get }
-
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func saveToken(with string: String?)
     func currentToken() -> String?
@@ -31,10 +30,6 @@ final class EncryptedStorage: EncryptedStorageType {
 
     let keychainService: KeyChainServiceType
     private let fileManager: FileManager
-
-    var isEncrypted: Bool {
-        encryptedConfiguration?.encryptionKey != nil
-    }
 
     init(
         fileManager: FileManager = .default,
@@ -118,7 +113,7 @@ extension EncryptedStorage: LogOutHandler {
         do {
             try fileManager.removeItem(at: url)
         } catch CocoaError.fileNoSuchFile {
-            debugPrint("Realm at url \(url) did not exist")
+//            debugPrint("Realm at url \(url) did not exist")
         } catch let error {
             fatalError("Could not delete configuration for \(url) with error: \(error)")
         }
@@ -126,46 +121,50 @@ extension EncryptedStorage: LogOutHandler {
 }
 
 extension EncryptedStorage {
-    func performMigrationIfNeeded(_ completion: @escaping () -> Void) {
+    func performMigrationIfNeeded() -> Promise<Void> {
         // current migration only does plain realm -> encrypted realm migration, with no database schema change
         // during next future migration, we can delete this and only focus on database schema migration
-        let documentDirectory = getDocumentDirectory()
+        let documentDirectory = self.getDocumentDirectory()
         let plainRealmPath = documentDirectory + "/default.realm"
         let encryptedRealmPath = documentDirectory + "/" + Constants.encryptedDbFilename
-        guard fileManager.fileExists(atPath: plainRealmPath) else {
+        guard self.fileManager.fileExists(atPath: plainRealmPath) else {
             debugPrint("Migration not needed: plain realm not used")
-            completion()
-            return
+            return Promise(())
         }
-        guard !fileManager.fileExists(atPath: encryptedRealmPath) else {
+        guard !self.fileManager.fileExists(atPath: encryptedRealmPath) else {
             debugPrint("Migration not needed: encrypted realm already set up")
-            completion()
-            return
+            return Promise(())
         }
         debugPrint("Performing migration from plain to encrypted Realm")
         guard let plainRealm = try? Realm.init(configuration: Realm.Configuration.defaultConfiguration) else {
             debugPrint("Failed to load plain realm, although the db file was present: destroying")
-            destroyEncryptedStorage() // destroys plain as well as encrypted realm (if one existed)
-            completion()
-            return
+            self.destroyEncryptedStorage() // destroys plain as well as encrypted realm (if one existed)
+            return Promise(())
         }
         // write encrypted copy of plain realm db
-        try! plainRealm.writeCopy(toFile: URL(fileURLWithPath: encryptedRealmPath), encryptionKey: realmKey) // encryptionKey is for the NEW copy
+        try! plainRealm.writeCopy(toFile: URL(fileURLWithPath: encryptedRealmPath), encryptionKey: self.realmKey) // encryptionKey is for the NEW copy
         // launch configuration and perform schema migration if needed
-        let configuration = Realm.Configuration(
-            fileURL: URL(fileURLWithPath: encryptedRealmPath),
-            encryptionKey: realmKey,
-            schemaVersion: Constants.schemaVersion,
-            migrationBlock: { [weak self] migration, oldSchemaVersion in
-                debugPrint("oldSchemaVersion \(oldSchemaVersion)")
-                debugPrint("Performing migration \(migration)")
-                // I'd rather the app crashes then to pretend it has removed the plain copy
-                // todo - remove the following line for migrations from 0.1.7 up
-                try! self!.fileManager.removeItem(atPath: plainRealmPath) // delete previous configuration
-                completion()
-            }
-        )
-        _ = try! Realm(configuration: configuration) // runs migration and calls completion block
+        return Promise<Void> { [weak self] resolve, reject in
+            guard let self = self else { throw AppErr.nilSelf }
+            let configuration = Realm.Configuration(
+                fileURL: URL(fileURLWithPath: encryptedRealmPath),
+                encryptionKey: self.realmKey,
+                schemaVersion: Constants.schemaVersion,
+                migrationBlock: { migration, oldSchemaVersion in
+                    do {
+                        debugPrint("oldSchemaVersion \(oldSchemaVersion)")
+                        debugPrint("Performing migration \(migration)")
+                        // I'd rather the app crashes then to pretend it has removed the plain copy
+                        // todo - remove the following line for migrations from 0.1.7 up
+                        try self.fileManager.removeItem(atPath: plainRealmPath) // delete previous configuration
+                        resolve(())
+                    } catch {
+                        reject(error)
+                    }
+                }
+            )
+            _ = try Realm(configuration: configuration) // runs migration and calls completion block
+        }
     }
 
     private func getDocumentDirectory() -> String {

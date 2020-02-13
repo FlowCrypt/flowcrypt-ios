@@ -28,6 +28,7 @@ profile
 .nib
 DerivedData/
 Builds/
+vendor/
 
 
 .idea/workspace.xml

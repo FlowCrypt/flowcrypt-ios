@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Promises
 
 protocol DataManagerType {
     func startFor(user: User, with token: String?)
@@ -14,7 +15,6 @@ protocol DataManagerType {
     var email: String? { get }
     var currentUser: User? { get }
     var currentToken: String? { get }
-    var isEncrypted: Bool { get }
 
     var isSessionValid: Bool { get }
     var isLoggedIn: Bool { get }
@@ -49,10 +49,6 @@ final class DataManager: DataManagerType {
 
     var currentToken: String? {
         encryptedStorage.currentToken()
-    }
-
-    var isEncrypted: Bool {
-        encryptedStorage.isEncrypted
     }
 
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
@@ -91,19 +87,17 @@ final class DataManager: DataManagerType {
 
 extension DataManager {
     func logOutAndDestroyStorage() {
-        [localStorage, encryptedStorage].map { $0 as LogOutHandler }.forEach {
-            $0.logOut()
-        }
+        localStorage.logOut()
+        encryptedStorage.logOut()
     }
 }
 
 extension DataManager: DBMigration {
-    func performMigrationIfNeeded(_ completion: @escaping () -> Void) {
-        encryptedStorage.performMigrationIfNeeded { [weak self] in
-            DispatchQueue.main.async {
-                self?.performLocalMigration()
-                completion()
-            } 
+    func performMigrationIfNeeded() -> Promise<Void> {
+        return Promise<Void> { [weak self] in
+            guard let self = self else { throw AppErr.nilSelf }
+            try await(self.encryptedStorage.performMigrationIfNeeded())
+            self.performLocalMigration()
         }
     }
 
@@ -112,12 +106,11 @@ extension DataManager: DBMigration {
             debugPrint("Local migration not needed. User was not stored")
             return
         }
-
         guard let token = localStorage.storage.string(forKey: "keyCurrentToken") else {
             debugPrint("Local migration not needed. Token was not saved")
             return
         }
-
+        // todo - token should be removed from localStorage else this will happen on every startup
         encryptedStorage.saveToken(with: token)
     }
 }
