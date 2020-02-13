@@ -29,21 +29,18 @@ struct KeyChainService: KeyChainServiceType {
         if let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) {
             return storedPrefix
         } else {
-            return KeyChainService.generateAndSaveKey()
+            guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
+                fatalError("could not get secureKeychainPrefix random bytes")
+            }
+            let prefix = Data(prefixBytes)
+                .base64EncodedString()
+                .replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
+            debugPrint("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+            UserDefaults.standard.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
+            return prefix
         }
     }()
 
-    @discardableResult
-    static private func generateAndSaveKey() -> String {
-        guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
-            fatalError("could not get secureKeychainPrefix random bytes")
-        }
-        let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
-        print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
-        UserDefaults.standard.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
-        return prefix
-    }
-    
     private let keyByteLen = 64
 
     private func generateAndSaveStorageEncryptionKey() {
