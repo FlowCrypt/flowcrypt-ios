@@ -16,8 +16,8 @@ protocol DataManagerType {
     var currentUser: User? { get }
     var currentToken: String? { get }
 
-    var isSessionValid: Bool { get }
     var isLoggedIn: Bool { get }
+    var isSetupFinished: Bool { get }
 
     func keys() -> [PrvKeyInfo]?
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
@@ -29,13 +29,11 @@ protocol DataManagerType {
 final class DataManager: DataManagerType {
     static let shared = DataManager()
 
-    var isLoggedIn: Bool {
-        let isUserStored = currentUser != nil && currentToken != nil
-        let hasKey = (self.encryptedStorage.keys()?.count ?? 0) > 0
-        return isUserStored && hasKey
+    var isSetupFinished: Bool {
+        return isLoggedIn && (self.encryptedStorage.keys()?.count ?? 0) > 0
     }
 
-    var isSessionValid: Bool {
+    var isLoggedIn: Bool {
         currentToken != nil && currentUser != nil
     }
 

@@ -43,17 +43,15 @@ class AppStartup {
     }
 
     private func renewSessionIfValid() -> Promise<Void> {
-        if DataManager.shared.isSessionValid {
-            Imap.shared.setup()
-            return Imap.shared.renewSession()
-        }
-        return Promise(())
+        guard DataManager.shared.isLoggedIn else { return Promise(()) }
+        Imap.shared.setup()
+        return Imap.shared.renewSession()
     }
 
     private func chooseView(window: UIWindow) {
-        if !DataManager.shared.isSessionValid {
+        if !DataManager.shared.isLoggedIn {
             window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
-        } else if DataManager.shared.isLoggedIn {
+        } else if DataManager.shared.isSetupFinished {
             window.rootViewController = SideMenuNavigationController()
         } else {
             window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
