@@ -43,7 +43,7 @@ final class EncryptedStorage: EncryptedStorageType {
         keychainService.getStorageEncryptionKey()
     }
 
-    private var encryptedConfiguration: Realm.Configuration? {
+    private var encryptedConfiguration: Realm.Configuration {
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
         return Realm.Configuration(
             fileURL: URL(fileURLWithPath: path),
@@ -52,10 +52,9 @@ final class EncryptedStorage: EncryptedStorageType {
         )
     }
 
-    private var storage: Realm? {
-        guard let configuration = self.encryptedConfiguration else { return nil }
+    private var storage: Realm {
         do {
-            return try Realm(configuration: configuration)
+            return try Realm(configuration: self.encryptedConfiguration)
         } catch let error {
 //             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
 //             return nil
@@ -64,21 +63,21 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        try! storage?.write {
+        try! storage.write {
             for k in keyDetails {
-                storage?.add(try! KeyInfo(k, passphrase: passPhrase, source: source))
+                storage.add(try! KeyInfo(k, passphrase: passPhrase, source: source))
             }
         }
     }
 
     func publicKey() -> String? {
-        storage?.objects(KeyInfo.self)
+        return storage.objects(KeyInfo.self)
             .map { $0.public }
             .first 
     }
 
     func keys() -> Results<KeyInfo>? {
-        storage?.objects(KeyInfo.self)
+        return storage.objects(KeyInfo.self)
     }
 
     func saveToken(with string: String?) {
@@ -86,27 +85,24 @@ final class EncryptedStorage: EncryptedStorageType {
             logOut()
             return
         }
-        try? storage?.write {
-            self.storage?.add(EmailAccessToken(value: token))
+        try! storage.write {
+            self.storage.add(EmailAccessToken(value: token))
         }
     }
 
     func currentToken() -> String? {
-        storage?.objects(EmailAccessToken.self).first?.value
+        storage.objects(EmailAccessToken.self).first?.value
     }
 }
 
 extension EncryptedStorage: LogOutHandler {
-    func logOut() { // log out is not clear - should be called DestroyEncryptedStorage
+    func logOut() { // todo - log out is not clear - should be called DestroyEncryptedStorage
         destroyEncryptedStorage()
     }
 
     private func destroyEncryptedStorage() {
-        [Realm.Configuration.defaultConfiguration.fileURL, encryptedConfiguration?.fileURL]
-            .compactMap { $0 }
-            .forEach {
-                destroyStorage(at: $0)
-            }
+        destroyStorage(at: Realm.Configuration.defaultConfiguration.fileURL!) // todo - remove this line in version 0.1.8
+        destroyStorage(at: self.encryptedConfiguration.fileURL!)
     }
 
     private func destroyStorage(at url: URL) {
