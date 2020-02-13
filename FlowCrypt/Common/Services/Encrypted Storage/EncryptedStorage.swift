@@ -96,7 +96,7 @@ final class EncryptedStorage: EncryptedStorageType {
 }
 
 extension EncryptedStorage: LogOutHandler {
-    func logOut() { // todo - log out is not clear - should be called DestroyEncryptedStorage
+    func logOut() { // todo - logOut is not clear - should be called onLogOut to make it clear it's responding to an event
         destroyEncryptedStorage()
     }
 
