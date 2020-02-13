@@ -17,14 +17,12 @@ class AppStartup {
         DispatchQueue.promises = .global()
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
-        Promise<Void> { [weak self] in
-            guard let self = self else { throw AppErr.nilSelf }
+        Promise<Void> {
             Core.shared.startInBackgroundIfNotAlreadyRunning()
             try self.setUpAuthentiation()
             try await(DataManager.shared.performMigrationIfNeeded())
             try await(self.renewSessionIfValid())
-        }.then(on: .main) { [weak self] in
-            guard let self = self else { throw AppErr.nilSelf }
+        }.then(on: .main) {
             self.chooseView(window: window)
             log("AppStartup", error: nil, res: nil, start: start)
         }.catch(on: .main) { err in

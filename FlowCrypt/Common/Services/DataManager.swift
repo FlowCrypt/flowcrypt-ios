@@ -102,15 +102,16 @@ extension DataManager: DBMigration {
     }
 
     private func performLocalMigration() {
+        let legacyTokenIndex = "keyCurrentToken"
         guard localStorage.currentUser() != nil else {
             debugPrint("Local migration not needed. User was not stored")
             return
         }
-        guard let token = localStorage.storage.string(forKey: "keyCurrentToken") else {
+        guard let token = localStorage.storage.string(forKey: legacyTokenIndex) else {
             debugPrint("Local migration not needed. Token was not saved")
             return
         }
-        // todo - token should be removed from localStorage else this will happen on every startup
         encryptedStorage.saveToken(with: token)
+        localStorage.storage.removeObject(forKey: legacyTokenIndex)
     }
 }
