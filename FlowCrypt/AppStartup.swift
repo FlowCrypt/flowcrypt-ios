@@ -15,20 +15,22 @@ class AppStartup {
     public func initializeApp(window: UIWindow) {
         let start = DispatchTime.now()
         DispatchQueue.promises = .global()
-        Promise<Void> {
+        window.rootViewController = BootstrapViewController()
+        window.makeKeyAndVisible()
+        Promise<Void> { [weak self] in
+            guard let self = self else { throw AppErr.nilSelf }
             Core.shared.startInBackgroundIfNotAlreadyRunning()
             try self.setUpAuthentiation()
             try await(DataManager.shared.performMigrationIfNeeded())
-            try await(self.renewSessionIfValid(window: window))
-        }.then(on: .main) {
+            try await(self.renewSessionIfValid())
+        }.then(on: .main) { [weak self] in
+            guard let self = self else { throw AppErr.nilSelf }
             self.chooseView(window: window)
             log("AppStartup", error: nil, res: nil, start: start)
         }.catch(on: .main) { err in
-            log("AppStartup", error: err, res: nil, start: start)
             let alert = UIAlertController(title: "Startup Error", message: "\(err)", preferredStyle: .alert)
             window.rootViewController?.present(alert, animated: true, completion: nil)
-        }.always(on: .main) {
-            window.makeKeyAndVisible()
+            log("AppStartup", error: err, res: nil, start: start)
         }
     }
 
@@ -42,12 +44,8 @@ class AppStartup {
         googleSignIn.delegate = UserService.shared
     }
 
-    private func renewSessionIfValid(window: UIWindow) -> Promise<Void> {
+    private func renewSessionIfValid() -> Promise<Void> {
         if DataManager.shared.isSessionValid {
-            DispatchQueue.main.async {
-                window.rootViewController = BootstrapViewController()
-                window.makeKeyAndVisible()
-            }
             Imap.shared.setup()
             return Imap.shared.renewSession()
         }
