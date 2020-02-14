@@ -6,16 +6,14 @@
 import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let assembley = RootAssembley()
     private lazy var appUrlHandler = AppUrlHandler()
 
-    var window: UIWindow?
+    let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
 
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        disableHardwareKeyboard()
-        assembley.assemble()
-        window = assembley.setupWindow()
-        return assembley.startFlow()
+    func application(_ aplication: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        disableHardwareKeyboardOnSimulator()
+        AppStartup().initializeApp(window: window)
+        return true
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
@@ -23,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-private func disableHardwareKeyboard() {
+private func disableHardwareKeyboardOnSimulator() {
     #if targetEnvironment(simulator)
     let setHardwareLayout = NSSelectorFromString("setHardwareLayout:")
     UITextInputMode.activeInputModes

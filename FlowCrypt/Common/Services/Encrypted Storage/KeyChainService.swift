@@ -17,29 +17,28 @@ protocol KeyChainServiceType {
 }
 
 struct KeyChainService: KeyChainServiceType {
-    private enum Constants: String, CaseIterable {
-        case indexSecureKeychainPrefix = "indexSecureKeychainPrefix"
-    }
 
     // the prefix ensures that we use a different keychain index after deleting the app
     // because keychain entries survive app uninstall
-    static private var encryptionKeyTag: String = {
-        let userDefaults = UserDefaults.standard
-        if let storedPrefix = userDefaults.string(forKey: Constants.indexSecureKeychainPrefix.rawValue) {
-            return storedPrefix
-        } else {
-            guard let prefixBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
-                fatalError("could not get secureKeychainPrefix random bytes")
-            }
-            let prefix = Data(prefixBytes).base64EncodedString().replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
-            print("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
-            userDefaults.set(prefix, forKey: Constants.indexSecureKeychainPrefix.rawValue)
-            return prefix
+    static private var keychainIndex: String = {
+        // todo - verify if this is indeed atomic (because static) or if there can be a race condition
+        let prefixStorageIndex = "indexSecureKeychainPrefix"
+        let storageEncryptionKeyIndexSuffix = "-indexStorageEncryptionKey"
+        if let storedPrefix = UserDefaults.standard.string(forKey: prefixStorageIndex) {
+            return storedPrefix + storageEncryptionKeyIndexSuffix
         }
+        guard let randomBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
+            fatalError("could not get secureKeychainPrefix random bytes")
+        }
+        let prefix = Data(randomBytes)
+            .base64EncodedString()
+            .replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
+        debugPrint("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+        UserDefaults.standard.set(prefix, forKey: prefixStorageIndex)
+        return prefix + storageEncryptionKeyIndexSuffix
     }()
-    
-    private let keyByteLen = 64
 
+    private let keyByteLen = 64
 
     private func generateAndSaveStorageEncryptionKey() {
         print("KeyChainService->generateAndSaveStorageEncryptionKey")
@@ -49,7 +48,7 @@ struct KeyChainService: KeyChainServiceType {
         let key = Data(randomBytes)
         let query: [CFString : Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: KeyChainService.encryptionKeyTag,
+            kSecAttrAccount: KeyChainService.keychainIndex,
             kSecValueData: key
         ]
         let addOsStatus = SecItemAdd(query as CFDictionary, nil)
@@ -61,7 +60,7 @@ struct KeyChainService: KeyChainServiceType {
     func getStorageEncryptionKey() -> Data {
         let query: [CFString : Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: KeyChainService.encryptionKeyTag,
+            kSecAttrAccount: KeyChainService.keychainIndex,
             kSecReturnData: kCFBooleanTrue!,
             kSecMatchLimit: kSecMatchLimitOne
         ]
@@ -83,3 +82,4 @@ struct KeyChainService: KeyChainServiceType {
         return validKey
     }
 }
+

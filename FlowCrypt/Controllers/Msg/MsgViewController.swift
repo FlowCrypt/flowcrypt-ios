@@ -95,7 +95,7 @@ extension MsgViewController {
     }
 
     private func fetchMessage() -> Promise<NSAttributedString> {
-        return Promise { [weak self] resolve, reject in
+        Promise { [weak self] resolve, reject in
             guard let self = self, let input = self.input else { return }
             let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
             self.input?.bodyMessage = rawMimeData

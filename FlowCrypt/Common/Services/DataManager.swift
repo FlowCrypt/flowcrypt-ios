@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Promises
 
 protocol DataManagerType {
     func startFor(user: User, with token: String?)
@@ -14,7 +15,9 @@ protocol DataManagerType {
     var email: String? { get }
     var currentUser: User? { get }
     var currentToken: String? { get }
-    var isLogedIn: Bool { get }
+
+    var isLoggedIn: Bool { get }
+    var isSetupFinished: Bool { get }
 
     func keys() -> [PrvKeyInfo]?
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
@@ -26,10 +29,12 @@ protocol DataManagerType {
 final class DataManager: DataManagerType {
     static let shared = DataManager()
 
-    var isLogedIn: Bool {
-        let isUserStored = currentUser != nil && currentToken != nil
-        let hasKey = (self.encryptedStorage.keys()?.count ?? 0) > 0
-        return isUserStored && hasKey
+    var isSetupFinished: Bool {
+        return isLoggedIn && (self.encryptedStorage.keys()?.count ?? 0) > 0
+    }
+
+    var isLoggedIn: Bool {
+        currentToken != nil && currentUser != nil
     }
 
     var email: String? {
@@ -37,18 +42,21 @@ final class DataManager: DataManagerType {
     }
 
     var currentUser: User? {
-        get { localStorage.currentUser() }
-    }
-    var currentToken: String? {
-        get { encryptedStorage.currentToken() }
+        localStorage.currentUser()
     }
 
-    private lazy var encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(accessCheck: { self.email != nil })
-    private var localStorage: LocalStorageType & LogOutHandler
+    var currentToken: String? {
+        encryptedStorage.currentToken()
+    }
+
+    private let encryptedStorage: EncryptedStorageType & LogOutHandler
+    private let localStorage: LocalStorageType & LogOutHandler
 
     private init(
+        encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
         localStorage: LocalStorageType & LogOutHandler = LocalStorage()
     ) {
+        self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
     }
 
@@ -67,7 +75,7 @@ final class DataManager: DataManagerType {
     }
 
     func startFor(user: User, with token: String?) {
-        if currentUser != user {
+        if currentUser != user, currentUser != nil {
             logOutAndDestroyStorage()
         }
         localStorage.saveCurrentUser(user: user)
@@ -77,8 +85,31 @@ final class DataManager: DataManagerType {
 
 extension DataManager {
     func logOutAndDestroyStorage() {
-        [localStorage, encryptedStorage].map { $0 as LogOutHandler }.forEach {
-            $0.logOut()
+        localStorage.logOut()
+        encryptedStorage.logOut()
+    }
+}
+
+extension DataManager: DBMigration {
+    func performMigrationIfNeeded() -> Promise<Void> {
+        return Promise<Void> { [weak self] in
+            guard let self = self else { throw AppErr.nilSelf }
+            try await(self.encryptedStorage.performMigrationIfNeeded())
+            self.performLocalMigration()
         }
+    }
+
+    private func performLocalMigration() {
+        let legacyTokenIndex = "keyCurrentToken"
+        guard localStorage.currentUser() != nil else {
+            debugPrint("Local migration not needed. User was not stored")
+            return
+        }
+        guard let token = localStorage.storage.string(forKey: legacyTokenIndex) else {
+            debugPrint("Local migration not needed. Token was not saved")
+            return
+        }
+        encryptedStorage.saveToken(with: token)
+        localStorage.storage.removeObject(forKey: legacyTokenIndex)
     }
 }

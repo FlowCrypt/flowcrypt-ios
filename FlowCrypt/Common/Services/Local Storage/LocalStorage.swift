@@ -9,6 +9,7 @@
 import Foundation
 
 protocol LocalStorageType {
+    var storage: UserDefaults { get }
     func saveCurrentUser(user: User?)
     func currentUser() -> User?
 }
@@ -16,13 +17,13 @@ protocol LocalStorageType {
 struct LocalStorage: LocalStorageType {
 
     private enum Constants: String, CaseIterable {
-        case indexCurrentUser = "indexCurrentUser"
+        case indexCurrentUser = "keyCurrentUser"
     }
 
-    private let userDefaults: UserDefaults
+    let storage: UserDefaults
 
-    init(userDefaults: UserDefaults = .standard) {
-        self.userDefaults = userDefaults
+    init(storage: UserDefaults = .standard) {
+        self.storage = storage
     }
 }
 
@@ -34,14 +35,14 @@ extension LocalStorage {
         }
         do {
             let encodedData = try PropertyListEncoder().encode(user)
-            userDefaults.set(encodedData, forKey: Constants.indexCurrentUser.rawValue)
+            storage.set(encodedData, forKey: Constants.indexCurrentUser.rawValue)
         } catch let error {
             fatalError("Could not save user: \(error)")
         }
     }
 
     func currentUser() -> User? {
-        guard let data = userDefaults.object(forKey: Constants.indexCurrentUser.rawValue) as? Data else { return nil }
+        guard let data = storage.object(forKey: Constants.indexCurrentUser.rawValue) as? Data else { return nil }
         return try? PropertyListDecoder().decode(User.self, from: data)
     }
 }
@@ -51,7 +52,7 @@ extension LocalStorage: LogOutHandler {
         Constants.allCases
             .compactMap { $0.rawValue }
             .forEach {
-                userDefaults.removeObject(forKey: $0)
+                storage.removeObject(forKey: $0)
             }
     }
 }

@@ -54,11 +54,9 @@ final class Imap {
         self.dataManager = dataManager
         self.helper = helper
         self.messageKindProvider = messageKindProvider
-        
-        setup()
     }
 
-    private func setup() {
+    func setup() {
         guard let token = accessToken else { return }
         getImapSess(newAccessToken: token)
         getSmtpSess(newAccessToken: token)

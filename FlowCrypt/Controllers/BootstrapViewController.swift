@@ -15,11 +15,9 @@ final class BootstrapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-
-        // googleManager.restorePreviousSignIn() doesn't return error if session can't be restored.
-        // should be reworked to have some failure callback and completion should be called after receiveing a new session
-        // or after receiving error
-        imap.renewSession()
-        completion?(nil)
+        let activityIndicator = UIActivityIndicatorView(style: .gray)
+        activityIndicator.startAnimating()
+        view.addSubview(activityIndicator)
+        activityIndicator.center = view.center
     }
 }
