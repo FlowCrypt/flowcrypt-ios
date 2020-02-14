@@ -31,7 +31,6 @@ platform :ios do
 
   desc "Prepare for UI tests"
   lane :test_ui_prepare do
-    sh("./prepareUITest.sh")
     reset_simulator_contents()
   end
   
