@@ -5,7 +5,7 @@
 import Promises
 import AsyncDisplayKit
 
-final class MsgViewController: ASViewController<ASTableNode> {
+final class MsgViewController: ASViewController<TableNode> {
     typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
     private let onCompletion: MsgViewControllerCompletion?
     private var input: MsgViewController.Input?
@@ -276,4 +276,25 @@ extension MsgViewController: ASTableDelegate, ASTableDataSource {
             }
         }
     }
+
+//    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+//        print("^^ \(indexPath)")
+//    }
+//
+//    func tableNode(_ tableNode: ASTableNode, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
+//        true
+//    }
+//
+//    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+//        print("^^ \(action)")
+//
+//        let s = super.canPerformAction(action, withSender: sender)
+//
+//
+//        return action == #selector(copy(_:)) || s
+//    }
+//
+//    func tableNode(_ tableNode: ASTableNode, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) {
+//        print("^^ tyt")
+//    }
 }

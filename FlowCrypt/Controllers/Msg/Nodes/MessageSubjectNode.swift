@@ -31,4 +31,25 @@ final class MessageSubjectNode: CellNode {
             )
         )
     }
+
+    override func canBecomeFirstResponder() -> Bool {
+        true
+    }
+
+    override func resignFirstResponder() -> Bool {
+        let menuController = UIMenuController.shared
+        if menuController.isMenuVisible {
+            menuController.setMenuVisible(false, animated: true)
+        }
+        return true
+    }
+
+    override func canPerformAction(_ action: Selector, withSender sender: Any) -> Bool {
+        print("^^ \(action)")
+        return true
+    }
+
+    func copy(_ sender: Any?) {
+        print("^^ \(sender)")
+    }
 }

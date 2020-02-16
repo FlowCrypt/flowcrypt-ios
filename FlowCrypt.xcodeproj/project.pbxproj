@@ -99,7 +99,7 @@
 		9F3EF33123B1785600FA0CEF /* MsgListViewConroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */; };
 		9F4453C0236B894D005D7D05 /* TableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453BF236B894D005D7D05 /* TableNode.swift */; };
 		9F4453C2236B9273005D7D05 /* TextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C1236B9273005D7D05 /* TextFieldNode.swift */; };
-		9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerNode.swift */; };
+		9F4453C4236B96F9005D7D05 /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
 		9F56BD2E23438ABA00A7371A /* Taptic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2D23438ABA00A7371A /* Taptic.swift */; };
 		9F56BD3023438B4400A7371A /* ComposeButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2F23438B4400A7371A /* ComposeButtonNode.swift */; };
@@ -182,6 +182,7 @@
 		C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupViewController.swift */; };
 		CB5986DFBB2B4FF4AD555821 /* Pods_FlowCryptUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
+		D2E9EA9A23F99AB8009EDFA4 /* TextNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E9EA9923F99AB8009EDFA4 /* TextNode.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
 /* End PBXBuildFile section */
@@ -305,7 +306,7 @@
 		9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MsgListViewConroller.swift; sourceTree = "<group>"; };
 		9F4453BF236B894D005D7D05 /* TableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNode.swift; sourceTree = "<group>"; };
 		9F4453C1236B9273005D7D05 /* TextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNode.swift; sourceTree = "<group>"; };
-		9F4453C3236B96F9005D7D05 /* DividerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerNode.swift; sourceTree = "<group>"; };
+		9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerCellNode.swift; sourceTree = "<group>"; };
 		9F56BD2B23438A8500A7371A /* Imap+messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+messages.swift"; sourceTree = "<group>"; };
 		9F56BD2D23438ABA00A7371A /* Taptic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taptic.swift; sourceTree = "<group>"; };
 		9F56BD2F23438B4400A7371A /* ComposeButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeButtonNode.swift; sourceTree = "<group>"; };
@@ -385,6 +386,7 @@
 		C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		C192421E1EC48B6900C3D251 /* SetupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
+		D2E9EA9923F99AB8009EDFA4 /* TextNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextNode.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MsgViewController.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -664,13 +666,14 @@
 		9F1797722368EF02002BF770 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				D2E9EA9923F99AB8009EDFA4 /* TextNode.swift */,
 				9F1797702368EEE8002BF770 /* ButtonNode.swift */,
-				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
-				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F4453BF236B894D005D7D05 /* TableNode.swift */,
 				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
+				9F8D5E61236B04E300186E43 /* CellNode.swift */,
+				9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */,
+				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
 				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
-				9F4453C3236B96F9005D7D05 /* DividerNode.swift */,
 				9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */,
 			);
 			path = Nodes;
@@ -1425,6 +1428,7 @@
 				9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */,
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
+				D2E9EA9A23F99AB8009EDFA4 /* TextNode.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				9F56BD3023438B4400A7371A /* ComposeButtonNode.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
@@ -1453,7 +1457,7 @@
 				5ADEDCB923A42B9400EC495E /* KeySettingsItemDecorator.swift in Sources */,
 				32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */,
 				5A39F434239EC61C001F4607 /* SettingsCellNode.swift in Sources */,
-				9F4453C4236B96F9005D7D05 /* DividerNode.swift in Sources */,
+				9F4453C4236B96F9005D7D05 /* DividerCellNode.swift in Sources */,
 				9FD22A1F230FEFC6005067A6 /* NavigationBarActionButton.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9F1797712368EEE8002BF770 /* ButtonNode.swift in Sources */,
