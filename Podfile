@@ -31,6 +31,11 @@ target 'FlowCryptTests' do
   inherit! :search_paths
 end
 
+target 'FlowCryptUI' do
+  use_frameworks!
+  pod 'Texture'
+end
+
 target 'FlowCryptUITests' do
   use_frameworks!
   pod 'GoogleSignIn'
