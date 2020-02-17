@@ -738,7 +738,6 @@
 				9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */,
 				9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */,
 				9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */,
-				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 			);
 			path = Imap;
 			sourceTree = "<group>";
@@ -766,7 +765,6 @@
 			isa = PBXGroup;
 			children = (
 				9F589F0C238C7A9B007FD759 /* LocalStorage.swift */,
-				9F589F0E238C7D15007FD759 /* LocalStorageTest.swift */,
 			);
 			path = "Local Storage";
 			sourceTree = "<group>";
@@ -904,6 +902,8 @@
 		A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */ = {
 			isa = PBXGroup;
 			children = (
+				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
+				9F589F0E238C7D15007FD759 /* LocalStorageTest.swift */,
 				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
 				A3DAD5FF22E4574B00F2C4CD /* Info.plist */,
