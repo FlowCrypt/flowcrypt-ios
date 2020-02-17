@@ -36,7 +36,7 @@ extension ComposeViewController {
 
     struct Context {
         var message: String?
-        var resipient: String?
+        var recipient: String?
         var subject: String?
     }
 }
