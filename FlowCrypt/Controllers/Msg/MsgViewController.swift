@@ -275,26 +275,5 @@ extension MsgViewController: ASTableDelegate, ASTableDataSource {
                 return TextSubjectNode(self.message)
             }
         }
-    }
-
-//    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-//        print("^^ \(indexPath)")
-//    }
-//
-//    func tableNode(_ tableNode: ASTableNode, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
-//        true
-//    }
-//
-//    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-//        print("^^ \(action)")
-//
-//        let s = super.canPerformAction(action, withSender: sender)
-//
-//
-//        return action == #selector(copy(_:)) || s
-//    }
-//
-//    func tableNode(_ tableNode: ASTableNode, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) {
-//        print("^^ tyt")
-//    }
+    } 
 }
