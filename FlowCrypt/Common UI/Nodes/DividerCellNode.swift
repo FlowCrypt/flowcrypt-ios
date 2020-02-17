@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-final class DividerNode: CellNode {
+final class DividerCellNode: CellNode {
     private let line = ASDisplayNode()
     private let inset: UIEdgeInsets
 

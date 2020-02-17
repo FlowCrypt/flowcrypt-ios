@@ -5,7 +5,7 @@
 import Promises
 import AsyncDisplayKit
 
-final class MsgViewController: ASViewController<ASTableNode> {
+final class MsgViewController: ASViewController<TableNode> {
     typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
     private let onCompletion: MsgViewControllerCompletion?
     private var input: MsgViewController.Input?
@@ -275,5 +275,5 @@ extension MsgViewController: ASTableDelegate, ASTableDataSource {
                 return TextSubjectNode(self.message)
             }
         }
-    }
+    } 
 }

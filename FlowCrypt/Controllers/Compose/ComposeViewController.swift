@@ -226,7 +226,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
-            case .recipientDivider, .subjectDivider: return DividerNode()
+            case .recipientDivider, .subjectDivider: return DividerCellNode()
             case .recipient: return self.recipientNode()
             case .subject: return self.subjectNode()
             case .text: return self.textNode(with: nodeHeight)
