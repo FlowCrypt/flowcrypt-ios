@@ -33,7 +33,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.decorator = decorator
         self.core = core
         if input.isReply {
-            contextToSend.resipient = input.recipientReplyTitle
+            contextToSend.recipient = input.recipientReplyTitle
             contextToSend.subject = input.replyToSubject
         }
         super.init(node: TableNode())
@@ -144,7 +144,7 @@ extension ComposeViewController {
     private func encryptAndSendMessage() -> Promise<Bool> {
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { return false }
-            guard let email = self.contextToSend.resipient, let text = self.contextToSend.message else {
+            guard let email = self.contextToSend.recipient, let text = self.contextToSend.message else {
                 assertionFailure("Text and Email should not be nil at this point. Fail in checking");
                 return false
             }
@@ -192,7 +192,7 @@ extension ComposeViewController {
     }
 
     private func isInputValid() -> Bool {
-        guard contextToSend.resipient?.hasContent ?? false else {
+        guard contextToSend.recipient?.hasContent ?? false else {
             showAlert(message: "compose_enter_recipient".localized)
             return false
         }
@@ -239,7 +239,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             input: decorator.styledTextFieldInput("compose_recipient".localized)
         ) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
-            self?.contextToSend.resipient = text
+            self?.contextToSend.recipient = text
         }
         .onReturn { [weak self] _ in
             guard let node = self?.node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return true }
