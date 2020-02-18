@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class EnterPassPhraseViewController: ASViewController<TableNode> {
     private enum Parts: Int, CaseIterable {

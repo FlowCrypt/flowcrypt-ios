@@ -8,11 +8,12 @@
 
 import AsyncDisplayKit
 
-final class DividerNode: CellNode {
+#warning("Should use Cell node instead of ASCellNode")
+final public class DividerNode: CellNode {
     private let line = ASDisplayNode()
     private let inset: UIEdgeInsets
 
-    init(
+    public init(
         inset: UIEdgeInsets = .zero,
         color: UIColor = .lightGray,
         height: CGFloat = 1
@@ -21,9 +22,10 @@ final class DividerNode: CellNode {
         super.init()
         line.style.preferredSize.height = height
         line.backgroundColor = color
+        backgroundColor = color
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(insets: inset, child: line)
     }
 }

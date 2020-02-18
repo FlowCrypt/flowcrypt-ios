@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FlowCryptUI
 
 protocol ImportKeyDecoratorType {
     var sceneTitle: String { get }

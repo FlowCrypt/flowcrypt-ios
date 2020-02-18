@@ -8,8 +8,8 @@
 
 import AsyncDisplayKit
 
-class CellNode: ASCellNode {
-    override init() {
+open class CellNode: ASCellNode {
+    public override init() {
         super.init()
         automaticallyManagesSubnodes = true
         selectionStyle = .none

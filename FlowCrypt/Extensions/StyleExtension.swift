@@ -29,7 +29,8 @@ extension NSAttributedString {
         ]
 
         if let alignment = alignment {
-            let paragraph = NSMutableParagraphStyle().then { $0.alignment = alignment }
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.alignment = alignment
             attributes[NSAttributedString.Key.paragraphStyle] = paragraph
         }
 

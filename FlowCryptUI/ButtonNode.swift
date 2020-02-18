@@ -9,10 +9,10 @@
 import AsyncDisplayKit
 
 // TODO: - Refactor with this button
-final class ButtonNode: ASButtonNode {
+final public class ButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
 
-    init(_ action: (() -> Void)?) {
+    public init(_ action: (() -> Void)?) {
         self.onTap = action
         super.init()
         addTarget(self, action: #selector(handleTap), forControlEvents: .touchUpInside)

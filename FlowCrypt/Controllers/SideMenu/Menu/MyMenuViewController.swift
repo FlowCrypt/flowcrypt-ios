@@ -5,6 +5,7 @@
 import UIKit
 import Promises
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
@@ -155,10 +156,14 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
             switch indexPath.section {
-            case Sections.header.rawValue: return HeaderNode(input: self.headerViewModel)
-            case Sections.folders.rawValue: return MenuNode(input: self.folders[safe: indexPath.row])
-            case Sections.service.rawValue: return MenuNode(input: self.serviceItems[safe: indexPath.row])
-            default: return ASCellNode()
+            case Sections.header.rawValue:
+                return HeaderNode(input: self.headerViewModel)
+            case Sections.folders.rawValue:
+                return MenuNode(input: self.folders[safe: indexPath.row].map(MenuNode.Input.init))
+            case Sections.service.rawValue:
+                return MenuNode(input: self.serviceItems[safe: indexPath.row].map(MenuNode.Input.init))
+            default:
+                return ASCellNode()
             } 
         }
 

@@ -8,12 +8,12 @@
 
 import AsyncDisplayKit
 
-final class TextFieldNode: ASDisplayNode {
+final public class TextFieldNode: ASDisplayNode {
     private var textField: UITextField {
         node.view as! UITextField
     }
 
-    var attributedPlaceholderText: NSAttributedString? {
+    public var attributedPlaceholderText: NSAttributedString? {
         didSet {
             DispatchQueue.main.async {
                 self.textField.attributedPlaceholder = self.attributedPlaceholderText
@@ -21,7 +21,7 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    var delegate: UITextFieldDelegate? {
+    public var delegate: UITextFieldDelegate? {
         didSet {
             DispatchQueue.main.async {
                 self.textField.delegate = self.delegate
@@ -29,7 +29,7 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    var isSecureTextEntry: Bool = false {
+    public var isSecureTextEntry: Bool = false {
         didSet {
             DispatchQueue.main.async {
                 self.textField.isSecureTextEntry = self.isSecureTextEntry
@@ -37,7 +37,7 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    var textAlignment: NSTextAlignment = .center {
+    public var textAlignment: NSTextAlignment = .center {
         didSet {
             DispatchQueue.main.async {
                 self.textField.textAlignment = self.textAlignment
@@ -45,7 +45,7 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    var textInsets: CGFloat = -7 {
+    public var textInsets: CGFloat = -7 {
         didSet {
             DispatchQueue.main.async {
                 self.textField.setTextInset(self.textInsets)
@@ -53,11 +53,11 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    var text: String {
+    public var text: String {
         textField.text ?? ""
     }
 
-    var attributedText: NSAttributedString? {
+    public var attributedText: NSAttributedString? {
         didSet {
             DispatchQueue.main.async {
                 self.textField.attributedText = self.attributedText
@@ -65,7 +65,7 @@ final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    var isLowercased = false {
+    public var isLowercased = false {
         didSet {
             DispatchQueue.main.async {
                 if self.isLowercased {
@@ -85,12 +85,12 @@ final class TextFieldNode: ASDisplayNode {
 
     private lazy var node = ASDisplayNode { UITextField() }
 
-    init(prefferedHeight: CGFloat?) {
+    public init(prefferedHeight: CGFloat?) {
         super.init()
         addSubnode(node)
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         node.style.preferredSize = CGSize(width: constrainedSize.max.width, height: height ?? 40.0)
         return ASInsetLayoutSpec(insets: .zero, child: node)
     }
@@ -110,7 +110,7 @@ final class TextFieldNode: ASDisplayNode {
     }
 
     @discardableResult
-    override func becomeFirstResponder() -> Bool {
+    override public func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
             super.becomeFirstResponder()
             _ = self.textField.becomeFirstResponder()

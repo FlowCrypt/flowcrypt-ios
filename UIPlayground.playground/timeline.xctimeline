@@ -2,5 +2,10 @@
 <Timeline
    version = "3.0">
    <TimelineItems>
+      <LoggerValueHistoryTimelineItem
+         documentLocation = "file:///Users/kharchevskyi/iOS/flowcrypt-ios/UIPlayground.playground#CharacterRangeLen=53&amp;CharacterRangeLoc=1598&amp;EndingColumnNumber=0&amp;EndingLineNumber=57&amp;StartingColumnNumber=0&amp;StartingLineNumber=56&amp;Timestamp=603747391.9611599"
+         selectedRepresentationIndex = "0"
+         shouldTrackSuperviewWidth = "NO">
+      </LoggerValueHistoryTimelineItem>
    </TimelineItems>
 </Timeline>

@@ -8,15 +8,15 @@
 
 import AsyncDisplayKit
 
-final class TableNode: ASTableNode {
-    override init(style: UITableView.Style) {
+final public class TableNode: ASTableNode {
+    override public init(style: UITableView.Style) {
         super.init(style: style)
         view.showsVerticalScrollIndicator = false
         view.separatorStyle = .none
         view.keyboardDismissMode = .onDrag
     }
     
-    var bounces: Bool = true {
+    public var bounces: Bool = true {
         didSet {
             DispatchQueue.main.async {
                 self.view.bounces = self.bounces

@@ -4,8 +4,9 @@
 
 import Promises
 import AsyncDisplayKit
+import FlowCryptUI
 
-final class MsgViewController: ASViewController<ASTableNode> {
+final class MsgViewController: ASViewController<TableNode> {
     typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
     private let onCompletion: MsgViewControllerCompletion?
     private var input: MsgViewController.Input?

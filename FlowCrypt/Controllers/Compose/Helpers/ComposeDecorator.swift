@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FlowCryptUI
 
 protocol ComposeDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input

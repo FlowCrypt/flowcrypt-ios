@@ -4,6 +4,7 @@
 
 import Promises
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class ComposeViewController: ASViewController<TableNode> {
     private let imap: Imap

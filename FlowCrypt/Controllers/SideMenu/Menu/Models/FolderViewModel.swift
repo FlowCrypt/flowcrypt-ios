@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FlowCryptUI
 
 struct FolderViewModel {
     enum ItemType {
@@ -41,9 +42,12 @@ extension FolderViewModel {
             FolderViewModel(name: "Settings", path: "", image: UIImage(named: "settings"), itemType: .settings),
             FolderViewModel(name: "Log out", path: "", image: UIImage(named: "exit"), itemType: .logOut),
         ]
-    }
+    } 
+}
 
-    func attributedTitle() -> NSAttributedString {
-        name.attributed(.regular(17))
+extension MenuNode.Input {
+    init(_ viewModel: FolderViewModel) {
+        self.init(attributedText: viewModel.name.attributed(.regular(17)), image: viewModel.image)
     }
 }
+

@@ -8,15 +8,15 @@
 
 import AsyncDisplayKit
 
-final class ButtonCellNode: CellNode {
+final public class ButtonCellNode: CellNode {
     private var onTap: (() -> Void)?
-    lazy var button = ButtonNode() { [weak self] in
+    public lazy var button = ButtonNode() { [weak self] in
         self?.onTap?()
     }
     private let insets: UIEdgeInsets
     private let buttonColor: UIColor?
 
-    var isButtonEnabled: Bool = true {
+    public var isButtonEnabled: Bool = true {
         didSet {
             button.isEnabled = isButtonEnabled
             let alpha: CGFloat = isButtonEnabled ? 1 : 0.5
@@ -26,7 +26,7 @@ final class ButtonCellNode: CellNode {
     }
 
 
-    init(title: NSAttributedString, insets: UIEdgeInsets, color: UIColor? = nil, action: (() -> Void)?) {
+    public init(title: NSAttributedString, insets: UIEdgeInsets, color: UIColor? = nil, action: (() -> Void)?) {
         self.onTap = action
         self.insets = insets
         self.buttonColor = color
@@ -37,7 +37,7 @@ final class ButtonCellNode: CellNode {
         button.setAttributedTitle(title, for: .normal)
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
             child: button

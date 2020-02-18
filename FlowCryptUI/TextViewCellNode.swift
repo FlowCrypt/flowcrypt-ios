@@ -8,24 +8,32 @@
 
 import AsyncDisplayKit
 
-final class TextViewCellNode: CellNode {
-    struct Input {
+final public class TextViewCellNode: CellNode {
+    public struct Input {
         var placeholder: NSAttributedString
         var prefferedHeight: CGFloat
+
+        public init(
+            placeholder: NSAttributedString,
+            prefferedHeight: CGFloat
+        ) {
+            self.placeholder = placeholder
+            self.prefferedHeight = prefferedHeight
+        }
     }
 
-    enum TextViewActionType {
+    public enum TextViewActionType {
         case didEndEditing(NSAttributedString?)
         case didBeginEditing(NSAttributedString?)
     }
 
-    typealias TextViewAction = (TextViewActionType) -> Void
+    public typealias TextViewAction = (TextViewActionType) -> Void
 
-    let textView = ASEditableTextNode()
+    public let textView = ASEditableTextNode()
     private let action: TextViewAction?
     private let height: CGFloat
 
-    init(_ input: Input, action: TextViewAction? = nil) {
+    public init(_ input: Input, action: TextViewAction? = nil) {
         self.action = action
         self.height = input.prefferedHeight
         super.init()
@@ -37,13 +45,13 @@ final class TextViewCellNode: CellNode {
         ]
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         textView.style.preferredSize.height = self.height
         return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8), child: textView)
     }
 
     @discardableResult
-    override func becomeFirstResponder() -> Bool {
+    override public func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
             _ = self.textView.textView.becomeFirstResponder()
         }
@@ -52,11 +60,11 @@ final class TextViewCellNode: CellNode {
 }
 
 extension TextViewCellNode: ASEditableTextNodeDelegate {
-    func editableTextNodeDidBeginEditing(_ editableTextNode: ASEditableTextNode) {
+    public func editableTextNodeDidBeginEditing(_ editableTextNode: ASEditableTextNode) {
         action?(.didBeginEditing(editableTextNode.attributedText))
     }
 
-    func editableTextNodeDidFinishEditing(_ editableTextNode: ASEditableTextNode) {
+    public func editableTextNodeDidFinishEditing(_ editableTextNode: ASEditableTextNode) {
         action?(.didEndEditing(editableTextNode.attributedText))
     }
 }
