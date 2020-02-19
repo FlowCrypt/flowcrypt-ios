@@ -1,9 +1,9 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, '12.2'
 
+use_frameworks!
 
 target 'FlowCrypt' do
-  use_frameworks!
   pod 'GoogleSignIn'
   pod 'mailcore2-ios'
   pod 'MBProgressHUD'
@@ -20,7 +20,6 @@ target 'FlowCrypt' do
 end
 
 target 'FlowCryptTests' do
-  use_frameworks!
   pod 'PromisesSwift'
   pod 'SwiftyRSA'
   pod 'RealmSwift'
@@ -31,13 +30,18 @@ target 'FlowCryptTests' do
   inherit! :search_paths
 end
 
-target 'FlowCryptUI' do
-  use_frameworks!
+def ui_pods 
   pod 'Texture'
 end
 
-target 'FlowCryptUITests' do
-  use_frameworks!
-  pod 'GoogleSignIn'
+target 'FlowCryptUI' do
+  ui_pods
+end
 
+target 'FlowCryptUIApplication' do
+  ui_pods
+end
+
+target 'FlowCryptUITests' do
+  pod 'GoogleSignIn'
 end

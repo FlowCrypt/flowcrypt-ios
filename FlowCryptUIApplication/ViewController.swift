@@ -1,11 +1,16 @@
-#warning("Add Comments")
+//
+//  ViewController.swift
+//  FlowCryptUIApplication
+//
+//  Created by Anton Kharchevskyi on 19/02/2020.
+//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
+//
 
 import UIKit
-import PlaygroundSupport
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class MyViewController: ASViewController<ASTableNode> {
+final class ViewController: ASViewController<ASTableNode> {
     enum Elements: Int, CaseIterable {
         case divider = 0
         case menu = 1
@@ -21,16 +26,15 @@ final class MyViewController: ASViewController<ASTableNode> {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         self.node.delegate = self
         self.node.dataSource = self
         self.node.reloadData()
     }
 }
 
-extension MyViewController: ASTableDelegate, ASTableDataSource {
+extension ViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        Elements.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -53,9 +57,3 @@ extension MyViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 }
-// Present the view controller in the Live View window
-PlaygroundPage.current.liveView = MyViewController()
-
-// TODO:
-// - Separate Extensions to Common Module
-// - prefferedHeight typo
