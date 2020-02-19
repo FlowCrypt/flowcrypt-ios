@@ -12,8 +12,9 @@ import FlowCryptUI
 
 final class ViewController: ASViewController<ASTableNode> {
     enum Elements: Int, CaseIterable {
-        case divider = 0
-        case menu = 1
+        case divider
+        case menu
+        case emailTextField
     }
 
     init() {
@@ -42,18 +43,26 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
             let element = Elements(rawValue: indexPath.row)!
             switch element {
             case .divider:
-                return DividerNode(color: .red, height: 10)
+                return DividerCellNode(color: .red, height: 50)
             case .menu:
                 let title = NSAttributedString(string: "tiasmfasfmasmftlmmme", attributes: [NSAttributedString.Key.foregroundColor : UIColor.red])
 
-                let input = MenuNode.Input(
+                let input = MenuCellNode.Input(
                     attributedText: title,
                     image: nil
                 )
-                let n = MenuNode(input: input)
+                let n = MenuCellNode(input: input)
                 print(n)
                 return n
+            case .emailTextField:
+                return RecipientsTextField()
             }
+        }
+    }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            tableNode.reloadData()
         }
     }
 }

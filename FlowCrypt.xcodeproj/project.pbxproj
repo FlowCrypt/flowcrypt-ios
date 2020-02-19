@@ -174,7 +174,7 @@
 		C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupViewController.swift */; };
 		CB5986DFBB2B4FF4AD555821 /* Pods_FlowCryptUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */; };
 		D204DBA223FB35700083B9D6 /* FlowCryptUI.h in Headers */ = {isa = PBXBuildFile; fileRef = D204DBA023FB35700083B9D6 /* FlowCryptUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D204DBA823FB35930083B9D6 /* RecipientTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D204DBA723FB35930083B9D6 /* RecipientTextField.swift */; };
+		D204DBA823FB35930083B9D6 /* RecipientsTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D204DBA723FB35930083B9D6 /* RecipientsTextField.swift */; };
 		D211CE6E23FC354200D1CE38 /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8D5E61236B04E300186E43 /* CellNode.swift */; };
 		D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797702368EEE8002BF770 /* ButtonNode.swift */; };
 		D211CE7023FC35AC00D1CE38 /* TableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453BF236B894D005D7D05 /* TableNode.swift */; };
@@ -188,8 +188,10 @@
 		D211CE7823FC36DE00D1CE38 /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3923438D3700A7371A /* StyleExtension.swift */; };
 		D211CE7923FC36FD00D1CE38 /* UIVIewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIVIewExtension.swift */; };
 		D211CE7A23FC370800D1CE38 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
-		D211CE7B23FC59ED00D1CE38 /* MenuNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* MenuNode.swift */; };
-		D23C46F623FB44D8008211FB /* DividerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerNode.swift */; };
+		D211CE7B23FC59ED00D1CE38 /* MenuCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* MenuCellNode.swift */; };
+		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
+		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
+		D24ABA6323FDB4FF002EE9DD /* TestElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA6223FDB4FF002EE9DD /* TestElement.swift */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
 		D2A1D3BA23FD64AB00D626D6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */; };
@@ -324,7 +326,7 @@
 		9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MsgListViewConroller.swift; sourceTree = "<group>"; };
 		9F4453BF236B894D005D7D05 /* TableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNode.swift; sourceTree = "<group>"; };
 		9F4453C1236B9273005D7D05 /* TextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNode.swift; sourceTree = "<group>"; };
-		9F4453C3236B96F9005D7D05 /* DividerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerNode.swift; sourceTree = "<group>"; };
+		9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerCellNode.swift; sourceTree = "<group>"; };
 		9F56BD2B23438A8500A7371A /* Imap+messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+messages.swift"; sourceTree = "<group>"; };
 		9F56BD2D23438ABA00A7371A /* Taptic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taptic.swift; sourceTree = "<group>"; };
 		9F56BD2F23438B4400A7371A /* ComposeButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeButtonNode.swift; sourceTree = "<group>"; };
@@ -366,7 +368,7 @@
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
 		9FD364852381EFCB00657302 /* EnterPassPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPassPhraseViewController.swift; sourceTree = "<group>"; };
-		9FDF3637235A0B3100614596 /* MenuNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuNode.swift; sourceTree = "<group>"; };
+		9FDF3637235A0B3100614596 /* MenuCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCellNode.swift; sourceTree = "<group>"; };
 		9FDF3639235A0B3B00614596 /* HeaderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderNode.swift; sourceTree = "<group>"; };
 		9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDF3645235A1B0100614596 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -408,7 +410,9 @@
 		D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlowCryptUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D204DBA023FB35700083B9D6 /* FlowCryptUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlowCryptUI.h; sourceTree = "<group>"; };
 		D204DBA123FB35700083B9D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D204DBA723FB35930083B9D6 /* RecipientTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientTextField.swift; sourceTree = "<group>"; };
+		D204DBA723FB35930083B9D6 /* RecipientsTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientsTextField.swift; sourceTree = "<group>"; };
+		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		D24ABA6223FDB4FF002EE9DD /* TestElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestElement.swift; sourceTree = "<group>"; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
 		D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowCryptUIApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1083,18 +1087,20 @@
 			children = (
 				D204DBA023FB35700083B9D6 /* FlowCryptUI.h */,
 				D204DBA123FB35700083B9D6 /* Info.plist */,
-				D204DBA723FB35930083B9D6 /* RecipientTextField.swift */,
-				9F4453C3236B96F9005D7D05 /* DividerNode.swift */,
-				9F1797702368EEE8002BF770 /* ButtonNode.swift */,
-				9F8D5E61236B04E300186E43 /* CellNode.swift */,
-				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
-				9F4453BF236B894D005D7D05 /* TableNode.swift */,
-				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
-				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
-				9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */,
-				9FDF3637235A0B3100614596 /* MenuNode.swift */,
+				D204DBA723FB35930083B9D6 /* RecipientsTextField.swift */,
+				D24ABA6123FDB275002EE9DD /* Resources */,
+				D2A1D3D223FD9AE600D626D6 /* Nodes */,
+				D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */,
 			);
 			path = FlowCryptUI;
+			sourceTree = "<group>";
+		};
+		D24ABA6123FDB275002EE9DD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D24ABA5F23FDB26C002EE9DD /* Helpers.swift */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */ = {
@@ -1103,11 +1109,35 @@
 				D2A1D3D023FD83B100D626D6 /* README.md */,
 				D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */,
 				D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */,
+				D24ABA6223FDB4FF002EE9DD /* TestElement.swift */,
 				D2A1D3C223FD64AD00D626D6 /* Assets.xcassets */,
 				D2A1D3C423FD64AD00D626D6 /* LaunchScreen.storyboard */,
 				D2A1D3C723FD64AD00D626D6 /* Info.plist */,
 			);
 			path = FlowCryptUIApplication;
+			sourceTree = "<group>";
+		};
+		D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				9F8D5E61236B04E300186E43 /* CellNode.swift */,
+				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
+				9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */,
+				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
+				9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */,
+				9FDF3637235A0B3100614596 /* MenuCellNode.swift */,
+			);
+			path = "Cell Nodes";
+			sourceTree = "<group>";
+		};
+		D2A1D3D223FD9AE600D626D6 /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				9F1797702368EEE8002BF770 /* ButtonNode.swift */,
+				9F4453BF236B894D005D7D05 /* TableNode.swift */,
+				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
+			);
+			path = Nodes;
 			sourceTree = "<group>";
 		};
 		D952B71B1ED0CB0100E5C02B /* Msg */ = {
@@ -1749,16 +1779,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				D211CE7923FC36FD00D1CE38 /* UIVIewExtension.swift in Sources */,
-				D204DBA823FB35930083B9D6 /* RecipientTextField.swift in Sources */,
+				D204DBA823FB35930083B9D6 /* RecipientsTextField.swift in Sources */,
 				D211CE7823FC36DE00D1CE38 /* StyleExtension.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
-				D211CE7B23FC59ED00D1CE38 /* MenuNode.swift in Sources */,
+				D211CE7B23FC59ED00D1CE38 /* MenuCellNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
 				D211CE7223FC35AC00D1CE38 /* TextFieldNode.swift in Sources */,
 				D211CE7023FC35AC00D1CE38 /* TableNode.swift in Sources */,
-				D23C46F623FB44D8008211FB /* DividerNode.swift in Sources */,
+				D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */,
 				D211CE7723FC36D800D1CE38 /* StringExtensions.swift in Sources */,
 				D211CE6E23FC354200D1CE38 /* CellNode.swift in Sources */,
+				D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */,
 				D211CE7523FC369D00D1CE38 /* UIColorExtension.swift in Sources */,
 				D211CE7323FC35AC00D1CE38 /* TextViewCellNode.swift in Sources */,
 				D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */,
@@ -1772,6 +1803,7 @@
 			files = (
 				D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */,
 				D2A1D3BA23FD64AB00D626D6 /* AppDelegate.swift in Sources */,
+				D24ABA6323FDB4FF002EE9DD /* TestElement.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

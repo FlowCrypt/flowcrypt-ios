@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 
-// TODO: - Refactor with this button
 final public class ButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
 

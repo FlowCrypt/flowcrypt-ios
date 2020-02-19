@@ -316,7 +316,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                         self?.useOtherAccount()
                 }
             case .divider:
-                return DividerNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
+                return DividerCellNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
             }
         }
     }

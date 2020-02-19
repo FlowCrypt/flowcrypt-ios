@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-public final class MenuNode: ASCellNode {
+public final class MenuCellNode: ASCellNode {
     public struct Input {
         let attributedText: NSAttributedString
         let image: UIImage?

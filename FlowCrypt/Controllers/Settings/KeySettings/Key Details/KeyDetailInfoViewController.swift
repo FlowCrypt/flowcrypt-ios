@@ -73,7 +73,7 @@ extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
             if part.isSeparator {
                 let isLastSection = indexPath.section == self.key.ids.count - 1
                 let dividerHeight: CGFloat = isLastSection ? 0 : 1
-                return DividerNode(
+                return DividerCellNode(
                     inset: self.decorator.dividerInsets,
                     height: dividerHeight
                 )

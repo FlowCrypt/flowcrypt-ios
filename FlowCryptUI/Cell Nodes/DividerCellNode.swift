@@ -8,8 +8,7 @@
 
 import AsyncDisplayKit
 
-#warning("Should use Cell node instead of ASCellNode")
-final public class DividerNode: CellNode {
+final public class DividerCellNode: CellNode {
     private let line = ASDisplayNode()
     private let inset: UIEdgeInsets
 
