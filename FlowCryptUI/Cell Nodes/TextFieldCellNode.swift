@@ -17,15 +17,17 @@ final public class TextFieldCellNode: CellNode {
         public var isLowercased = false
         public var insets: UIEdgeInsets = .zero
         public var height: CGFloat = 40
+        public var width: CGFloat?
 
         public init(
-            placeholder: NSAttributedString,
-            isSecureTextEntry: Bool,
-            textInsets: CGFloat,
-            textAlignment: NSTextAlignment,
+            placeholder: NSAttributedString = NSAttributedString(string: "PLACEHOLDER"),
+            isSecureTextEntry: Bool = false,
+            textInsets: CGFloat = .zero,
+            textAlignment: NSTextAlignment = .left,
             isLowercased: Bool = false,
             insets: UIEdgeInsets = .zero,
-            height: CGFloat = 40
+            height: CGFloat = 40,
+            width: CGFloat? = nil
         ) {
             self.placeholder = placeholder
             self.isSecureTextEntry = isSecureTextEntry
@@ -34,6 +36,7 @@ final public class TextFieldCellNode: CellNode {
             self.isLowercased = isLowercased
             self.insets = insets
             self.height = height
+            self.width = width
         }
     }
 
@@ -77,7 +80,11 @@ final public class TextFieldCellNode: CellNode {
     }
 
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(insets: input.insets, child: textField)
+        textField.style.preferredSize = CGSize(
+            width: input.width ?? constrainedSize.max.width,
+            height: input.height
+        )
+        return ASInsetLayoutSpec(insets: input.insets, child: textField)
     }
 
     public func onReturn(_ action: ((UITextField) -> (Bool))?) -> Self {

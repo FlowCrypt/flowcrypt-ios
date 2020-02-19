@@ -22,12 +22,20 @@ final public class RecipientsTextField: ASCellNode {
         var isSelected: Bool
     }
 
-    let collectionNode: ASCollectionNode = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 0
+    private enum Sections: Int, CaseIterable {
+        case emails, textField
+    }
+
+    let layout = UICollectionViewFlowLayout()
+
+    lazy var collectionNode: ASCollectionNode = {
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 1
+        layout.minimumLineSpacing = 1
+        layout.sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+
         let collectionNode = ASCollectionNode(collectionViewLayout: layout)
+//        let collectionNode = ASCollectionNode(layoutDelegate: ASCollectionFlowLayoutDelegate(), layoutFacilitator: nil)
         collectionNode.backgroundColor = .blue
         return collectionNode
     }()
@@ -45,13 +53,15 @@ final public class RecipientsTextField: ASCellNode {
         super.init()
         collectionNode.dataSource = self
         collectionNode.delegate = self
+
+
         backgroundColor = .red
 
         automaticallyManagesSubnodes = true
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        collectionNode.style.preferredSize.height = textSize.height * CGFloat(recipients.count)
+        collectionNode.style.preferredSize.height = textSize.height * CGFloat(recipients.count)// * 2
 
         collectionNode.style.preferredSize.width = constrainedSize.max.width
 
@@ -62,31 +72,49 @@ final public class RecipientsTextField: ASCellNode {
     }
 }
 
-//extension RecipientsTextField: ASCollectionDelegateFlowLayout {
-//    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//        .zero
-//    }
-//
-//    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-//        0
-//    }
-//
-//    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-//        0
-//    }
-//
-//}
-
 extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
+    public func numberOfSections(in collectionNode: ASCollectionNode) -> Int {
+        1//Sections.allCases.count
+    }
+
     public func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
-        recipients.count
+        guard let section = Sections(rawValue: section) else { assertionFailure(); return 0 }
+        switch section {
+        case .emails: return recipients.count
+        case .textField: return 1
+        }
     }
 
     public func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return {
-            let node = MenuCellNode(input: MenuCellNode.Input(attributedText: testAttributedText(), image: nil))
-            node.backgroundColor = .green
-            return node
+        let width = collectionNode.style.preferredSize.width
+        return { [weak self] in
+            guard let section = Sections(rawValue: indexPath.section) else { assertionFailure(); return ASCellNode() }
+
+            switch section {
+            case .emails:
+                guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
+                return EmailNode(input: recipient)
+            case .textField:
+                let node = TextFieldCellNode(input: TextFieldCellNode.Input(width: width)) { action in
+                    print(action)
+                }
+                return node
+            }
         }
+    }
+}
+
+
+final class EmailNode: CellNode {
+    let titleNode = ASTextNode()
+
+    init(input: RecipientsTextField.Recipient) {
+        super.init()
+        titleNode.attributedText = input.email
+        backgroundColor = .orange
+    }
+
+    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        return ASInsetLayoutSpec(insets: .zero, child: titleNode)
     }
 }
