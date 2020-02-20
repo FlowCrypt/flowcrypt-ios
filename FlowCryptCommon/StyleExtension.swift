@@ -8,11 +8,11 @@
 
 import UIKit
 
-extension NSAttributedString {
+public extension NSAttributedString {
     enum Style {
         case regular(CGFloat), medium(CGFloat), bold(CGFloat), thin(CGFloat)
 
-        var font: UIFont {
+        public var font: UIFont {
             switch self {
             case let .regular(size): return UIFont.systemFont(ofSize: size)
             case let .medium(size): return UIFont.systemFont(ofSize: size, weight: .medium)
@@ -38,7 +38,7 @@ extension NSAttributedString {
     }
 }
 
-extension String {
+public extension String {
     func attributed(_ style: NSAttributedString.Style, color: UIColor = .black, alignment: NSTextAlignment? = nil) -> NSAttributedString {
         return NSAttributedString.text(from: self, style: style, color: color, alignment: alignment)
     }

@@ -8,9 +8,10 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
+import FlowCryptCommon
 
-final public class RecipientsTextField: ASCellNode {
-    struct Style {
+final public class RecipientsTextField: CellNode {
+    struct Input {
         var insets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
         var cornerRadius: CGFloat = 8
         var borderColor: UIColor = .darkGray
@@ -29,13 +30,12 @@ final public class RecipientsTextField: ASCellNode {
     let layout = UICollectionViewFlowLayout()
 
     lazy var collectionNode: ASCollectionNode = {
-        layout.scrollDirection = .horizontal
+        layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 1
         layout.minimumLineSpacing = 1
         layout.sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
 
         let collectionNode = ASCollectionNode(collectionViewLayout: layout)
-//        let collectionNode = ASCollectionNode(layoutDelegate: ASCollectionFlowLayoutDelegate(), layoutFacilitator: nil)
         collectionNode.backgroundColor = .blue
         return collectionNode
     }()
@@ -54,14 +54,13 @@ final public class RecipientsTextField: ASCellNode {
         collectionNode.dataSource = self
         collectionNode.delegate = self
 
-
         backgroundColor = .red
 
         automaticallyManagesSubnodes = true
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        collectionNode.style.preferredSize.height = textSize.height * CGFloat(recipients.count)// * 2
+        collectionNode.style.preferredSize.height = textSize.height * CGFloat(recipients.count) * 2
 
         collectionNode.style.preferredSize.width = constrainedSize.max.width
 
@@ -74,7 +73,7 @@ final public class RecipientsTextField: ASCellNode {
 
 extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
     public func numberOfSections(in collectionNode: ASCollectionNode) -> Int {
-        1//Sections.allCases.count
+        2//Sections.allCases.count
     }
 
     public func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
@@ -93,10 +92,14 @@ extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
             switch section {
             case .emails:
                 guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
-                return EmailNode(input: recipient)
+//                return EmailNode(input: Recipient(email: NSAttributedString(string: "NSAttributedString \(indexPath.row)"), isSelected: false))
+                return EmailNode(input: EmailNode.Input(recipient: recipient, width: width))
             case .textField:
                 let node = TextFieldCellNode(input: TextFieldCellNode.Input(width: width)) { action in
-                    print(action)
+                    print("^^ \(action)")
+                }.onReturn { [weak self] textField -> Bool in
+                    self?.handleEndEditingAction(with: textField)
+                    return true
                 }
                 return node
             }
@@ -104,17 +107,50 @@ extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
     }
 }
 
+extension RecipientsTextField {
+    func attributedEmail(with string: String) -> NSAttributedString {
+        string.attributed(.bold(13))
+    }
+}
+
+extension RecipientsTextField {
+    private func handleEndEditingAction(with textField: UITextField) {
+        textField.resignFirstResponder()
+
+        guard let text = textField.text else {
+            print("^^ Empty")
+            return
+        }
+
+        print("^^  onReturn \(text)")
+        recipients.append(RecipientsTextField.Recipient(email: attributedEmail(with: text), isSelected: false))
+        collectionNode.reloadData()
+    }
+
+
+}
+
 
 final class EmailNode: CellNode {
-    let titleNode = ASTextNode()
+    struct Input {
+        let recipient: RecipientsTextField.Recipient
+        let width: CGFloat
+    }
 
-    init(input: RecipientsTextField.Recipient) {
+    let titleNode = ASTextNode()
+    let input: Input
+
+    init(input: Input) {
+        self.input = input
         super.init()
-        titleNode.attributedText = input.email
-        backgroundColor = .orange
+        self.titleNode.attributedText = input.recipient.email
+        self.backgroundColor = input.recipient.isSelected ? .red : .orange
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        titleNode.style.preferredSize.width = input.width
+        titleNode.style.preferredSize.height = input.recipient.email.size().height
         return ASInsetLayoutSpec(insets: .zero, child: titleNode)
     }
 }
+

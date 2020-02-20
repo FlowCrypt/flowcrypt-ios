@@ -8,9 +8,31 @@
 
 import AsyncDisplayKit
 
+public enum TextFieldActionType {
+    case didEndEditing(String?)
+    case didBeginEditing(String?)
+    case editingChanged(String?)
+    /// event fired on backspace tap with (isEmpty value)
+    case deleteBackward(Bool)
+}
+
+public typealias TextFieldAction = (TextFieldActionType) -> Void
+
+final class TextField: UITextField {
+    var onBackspaceTap: ((_ isEmpty: Bool) -> Void)?
+
+    override func deleteBackward() {
+        onBackspaceTap?(text == "")
+        super.deleteBackward()
+    }
+}
+
 final public class TextFieldNode: ASDisplayNode {
-    private var textField: UITextField {
-        node.view as! UITextField
+
+    public var shouldEndEditing: ((UITextField) -> (Bool))?
+
+    private var textField: TextField {
+        node.view as! TextField
     }
 
     public var attributedPlaceholderText: NSAttributedString? {
@@ -81,11 +103,31 @@ final public class TextFieldNode: ASDisplayNode {
         }
     }  
 
-    private lazy var node = ASDisplayNode { UITextField() }
+    var shouldReturn: ((UITextField) -> (Bool))?
 
-    public init(prefferedHeight: CGFloat?) {
+    private lazy var node = ASDisplayNode { TextField() }
+
+    private var textFiledAction: TextFieldAction?
+
+    public init(prefferedHeight: CGFloat?, action: TextFieldAction? = nil) {
         super.init()
         addSubnode(node)
+        textFiledAction = action
+        setupTextField()
+    }
+
+    private func setupTextField() {
+        DispatchQueue.main.async {
+            self.textField.delegate = self
+            self.textField.addTarget(
+                self,
+                action: #selector(self.onEditingChanged),
+                for: UIControl.Event.editingChanged
+            )
+            self.textField.onBackspaceTap = { [weak self] isEmpty in
+                self?.textFiledAction?(.deleteBackward(isEmpty))
+            }
+        }
     }
 
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
@@ -99,11 +141,15 @@ final public class TextFieldNode: ASDisplayNode {
     }
 
     @objc private func onEditingChanged() {
-        guard let attributedText = textField.attributedText, attributedText.string.isNotEmpty else { return }
-        textField.attributedText = NSAttributedString(
-            string: attributedText.string.lowercased(),
-            attributes: attributedText.attributes(at: 0, effectiveRange: nil)
-        )
+        textFiledAction?(.editingChanged(textField.attributedText?.string ?? textField.text))
+
+        if self.isLowercased {
+            guard let attributedText = textField.attributedText, attributedText.string.isNotEmpty else { return }
+            textField.attributedText = NSAttributedString(
+                string: attributedText.string.lowercased(),
+                attributes: attributedText.attributes(at: 0, effectiveRange: nil)
+            )
+        }
     }
 
     @discardableResult
@@ -116,3 +162,20 @@ final public class TextFieldNode: ASDisplayNode {
     }
 }
 
+extension TextFieldNode: UITextFieldDelegate {
+    public func textFieldDidBeginEditing(_ textField: UITextField) {
+        textFiledAction?(.didBeginEditing(textField.text))
+    }
+
+    public func textFieldDidEndEditing(_ textField: UITextField) {
+        textFiledAction?(.didEndEditing(textField.text))
+    }
+
+    public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        return shouldEndEditing?(textField) ?? true
+    }
+
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return shouldReturn?(textField) ?? true
+    }
+}

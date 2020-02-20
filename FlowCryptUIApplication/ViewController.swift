@@ -9,6 +9,7 @@
 import UIKit
 import AsyncDisplayKit
 import FlowCryptUI
+import FlowCryptCommon
 
 final class ViewController: ASViewController<ASTableNode> {
     enum Elements: Int, CaseIterable {
@@ -55,14 +56,26 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                 print(n)
                 return n
             case .emailTextField:
-                return RecipientsTextField()
+                let node = RecipientsTextField()
+                return node
             }
         }
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
+        let element = Elements(rawValue: indexPath.row)!
+
+        switch element {
+        case .divider:
             tableNode.reloadData()
+        case .menu:
+//            let node = (tableNode.nodeForRow(at: IndexPath(row: 2, section: 0)) as! RecipientsTextField).collectionNode
+////            node.reloadData()
+//            node.collectionViewLayout.invalidateLayout()
+//            node.invalidateCalculatedLayout()
+            break
+        default:
+            break
         }
     }
 }

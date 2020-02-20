@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptCommon
 
 final public class TextViewCellNode: CellNode {
     public struct Input {

@@ -40,18 +40,8 @@ final public class TextFieldCellNode: CellNode {
         }
     }
 
-    public enum TextFieldActionType {
-        case didEndEditing(String?)
-        case didBeginEditing(String?)
-    }
-
-    public typealias TextFieldAction = (TextFieldActionType) -> Void
-
     public let textField: TextFieldNode
     private var textFiledAction: TextFieldAction?
-    private var shouldReturn: ((UITextField) -> (Bool))?
-
-    public var shouldEndEditing: ((UITextField) -> (Bool))?
     public var attributedText: NSAttributedString? {
         didSet {
             textField.attributedText = attributedText
@@ -66,7 +56,7 @@ final public class TextFieldCellNode: CellNode {
     private let input: Input
 
     public init(input: Input, action: TextFieldAction? = nil) {
-        textField = TextFieldNode(prefferedHeight: input.height)
+        textField = TextFieldNode(prefferedHeight: input.height, action: action)
         self.input = input
         super.init()
         textFiledAction = action
@@ -75,8 +65,6 @@ final public class TextFieldCellNode: CellNode {
         textField.isSecureTextEntry = input.isSecureTextEntry
         textField.textAlignment = input.textAlignment
         textField.textInsets = input.textInsets
-
-        textField.delegate = self
     }
 
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
@@ -88,7 +76,7 @@ final public class TextFieldCellNode: CellNode {
     }
 
     public func onReturn(_ action: ((UITextField) -> (Bool))?) -> Self {
-        shouldReturn = action
+        textField.shouldReturn = action
         return self
     }
     
@@ -96,23 +84,5 @@ final public class TextFieldCellNode: CellNode {
     override public func becomeFirstResponder() -> Bool {
         textField.becomeFirstResponder()
         return true
-    }
-}
-
-extension TextFieldCellNode: UITextFieldDelegate {
-    public func textFieldDidBeginEditing(_ textField: UITextField) {
-        textFiledAction?(.didBeginEditing(textField.text))
-    }
-
-    public func textFieldDidEndEditing(_ textField: UITextField) {
-        textFiledAction?(.didEndEditing(textField.text))
-    }
-
-    public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        return shouldEndEditing?(textField) ?? true
-    }
-
-    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        return shouldReturn?(textField) ?? true
     }
 }

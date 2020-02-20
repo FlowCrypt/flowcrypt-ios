@@ -102,7 +102,6 @@
 		9F56BD3423438B7100A7371A /* InboxCellNodeInput .swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3323438B7100A7371A /* InboxCellNodeInput .swift */; };
 		9F56BD3623438B9D00A7371A /* TextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3523438B9D00A7371A /* TextCellNode.swift */; };
 		9F56BD3823438C7000A7371A /* DateFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormatting.swift */; };
-		9F56BD3A23438D3800A7371A /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3923438D3700A7371A /* StyleExtension.swift */; };
 		9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
 		9F589F0F238C7D15007FD759 /* LocalStorageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0E238C7D15007FD759 /* LocalStorageTest.swift */; };
 		9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
@@ -185,7 +184,6 @@
 		D211CE7523FC369D00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D211CE7723FC36D800D1CE38 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */; };
-		D211CE7823FC36DE00D1CE38 /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3923438D3700A7371A /* StyleExtension.swift */; };
 		D211CE7923FC36FD00D1CE38 /* UIVIewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIVIewExtension.swift */; };
 		D211CE7A23FC370800D1CE38 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* Extensions.swift */; };
 		D211CE7B23FC59ED00D1CE38 /* MenuCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* MenuCellNode.swift */; };
@@ -193,6 +191,8 @@
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
 		D24ABA6323FDB4FF002EE9DD /* TestElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA6223FDB4FF002EE9DD /* TestElement.swift */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
+		D2531F2F23FEEF52007E5198 /* FlowCryptCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D2531F3423FEEF5F007E5198 /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3923438D3700A7371A /* StyleExtension.swift */; };
 		D2A1D3BA23FD64AB00D626D6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */; };
 		D2A1D3C323FD64AD00D626D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2A1D3C223FD64AD00D626D6 /* Assets.xcassets */; };
@@ -414,6 +414,9 @@
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* TestElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestElement.swift; sourceTree = "<group>"; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
+		D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlowCryptCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlowCryptCommon.h; sourceTree = "<group>"; };
+		D2531F2E23FEEF52007E5198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowCryptUIApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -457,6 +460,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				85F56205E0D5F5F897ACF391 /* Pods_FlowCryptUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2531F2823FEEF52007E5198 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,7 +588,6 @@
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				9F0C3C2723194E8500299985 /* Extensions.swift */,
 				32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */,
-				9F56BD3923438D3700A7371A /* StyleExtension.swift */,
 				9F8277952373732000E19C07 /* UIImageExtension.swift */,
 				A37A1CF523C6254F001CF774 /* IntExtension.swift */,
 			);
@@ -981,6 +990,7 @@
 				9FDF3642235A1B0100614596 /* FlowCryptUITests */,
 				D204DB9F23FB35700083B9D6 /* FlowCryptUI */,
 				D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */,
+				D2531F2C23FEEF52007E5198 /* FlowCryptCommon */,
 				C132B9B11EC2DBD800763715 /* Products */,
 				E48A4865C8E7B2B971F5FC18 /* Frameworks */,
 			);
@@ -994,6 +1004,7 @@
 				9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */,
 				D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */,
 				D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */,
+				D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1103,6 +1114,16 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		D2531F2C23FEEF52007E5198 /* FlowCryptCommon */ = {
+			isa = PBXGroup;
+			children = (
+				D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */,
+				D2531F2E23FEEF52007E5198 /* Info.plist */,
+				9F56BD3923438D3700A7371A /* StyleExtension.swift */,
+			);
+			path = FlowCryptCommon;
+			sourceTree = "<group>";
+		};
 		D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */ = {
 			isa = PBXGroup;
 			children = (
@@ -1170,6 +1191,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D204DBA223FB35700083B9D6 /* FlowCryptUI.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2531F2623FEEF52007E5198 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2531F2F23FEEF52007E5198 /* FlowCryptCommon.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1257,6 +1286,24 @@
 			productReference = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		D2531F2A23FEEF52007E5198 /* FlowCryptCommon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2531F3323FEEF52007E5198 /* Build configuration list for PBXNativeTarget "FlowCryptCommon" */;
+			buildPhases = (
+				D2531F2623FEEF52007E5198 /* Headers */,
+				D2531F2723FEEF52007E5198 /* Sources */,
+				D2531F2823FEEF52007E5198 /* Frameworks */,
+				D2531F2923FEEF52007E5198 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FlowCryptCommon;
+			productName = FlowCryptCommon;
+			productReference = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		D2A1D3B623FD64AB00D626D6 /* FlowCryptUIApplication */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2A1D3C823FD64AD00D626D6 /* Build configuration list for PBXNativeTarget "FlowCryptUIApplication" */;
@@ -1304,6 +1351,9 @@
 						CreatedOnToolsVersion = 11.3.1;
 						LastSwiftMigration = 1130;
 					};
+					D2531F2A23FEEF52007E5198 = {
+						CreatedOnToolsVersion = 11.3.1;
+					};
 					D2A1D3B623FD64AB00D626D6 = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
@@ -1328,6 +1378,7 @@
 				9FDF3640235A1B0100614596 /* FlowCryptUITests */,
 				D204DB9D23FB35700083B9D6 /* FlowCryptUI */,
 				D2A1D3B623FD64AB00D626D6 /* FlowCryptUIApplication */,
+				D2531F2A23FEEF52007E5198 /* FlowCryptCommon */,
 			);
 		};
 /* End PBXProject section */
@@ -1363,6 +1414,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D204DB9C23FB35700083B9D6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2531F2923FEEF52007E5198 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1765,7 +1823,6 @@
 				9F17976D2368EEBD002BF770 /* SetupDecorator.swift in Sources */,
 				5ADEDCC023A43B0800EC495E /* KeyDetailInfoDecorator.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
-				9F56BD3A23438D3800A7371A /* StyleExtension.swift in Sources */,
 				9F82779A23737E1900E19C07 /* MessageSenderNode.swift in Sources */,
 				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
 				9F56BD2E23438ABA00A7371A /* Taptic.swift in Sources */,
@@ -1780,7 +1837,6 @@
 			files = (
 				D211CE7923FC36FD00D1CE38 /* UIVIewExtension.swift in Sources */,
 				D204DBA823FB35930083B9D6 /* RecipientsTextField.swift in Sources */,
-				D211CE7823FC36DE00D1CE38 /* StyleExtension.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
 				D211CE7B23FC59ED00D1CE38 /* MenuCellNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
@@ -1794,6 +1850,14 @@
 				D211CE7323FC35AC00D1CE38 /* TextViewCellNode.swift in Sources */,
 				D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */,
 				D211CE7A23FC370800D1CE38 /* Extensions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2531F2723FEEF52007E5198 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2531F3423FEEF5F007E5198 /* StyleExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2444,6 +2508,106 @@
 			};
 			name = TestFlight;
 		};
+		D2531F3023FEEF52007E5198 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = W57XRJ27NX;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = FlowCryptCommon/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.FlowCrypt.FlowCryptCommon;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		D2531F3123FEEF52007E5198 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = W57XRJ27NX;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = FlowCryptCommon/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.FlowCrypt.FlowCryptCommon;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		D2531F3223FEEF52007E5198 /* TestFlight */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = W57XRJ27NX;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = FlowCryptCommon/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.FlowCrypt.FlowCryptCommon;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = TestFlight;
+		};
 		D2A1D3C923FD64AD00D626D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 665165CEB9BB3DA16B5715D4 /* Pods-FlowCryptUIApplication.debug.xcconfig */;
@@ -2569,6 +2733,16 @@
 				D204DBA323FB35700083B9D6 /* Debug */,
 				D204DBA423FB35700083B9D6 /* Release */,
 				D204DBA523FB35700083B9D6 /* TestFlight */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2531F3323FEEF52007E5198 /* Build configuration list for PBXNativeTarget "FlowCryptCommon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2531F3023FEEF52007E5198 /* Debug */,
+				D2531F3123FEEF52007E5198 /* Release */,
+				D2531F3223FEEF52007E5198 /* TestFlight */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
