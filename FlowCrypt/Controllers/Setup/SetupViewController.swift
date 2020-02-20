@@ -293,7 +293,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 .then {
                     $0.becomeFirstResponder()
                 }
-                .onReturn { [weak self] _ in
+                .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
                     self?.handleButtonPressed()
                     return true

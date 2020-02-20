@@ -12,14 +12,14 @@ import FlowCryptCommon
 final public class TextViewCellNode: CellNode {
     public struct Input {
         var placeholder: NSAttributedString
-        var prefferedHeight: CGFloat
+        var preferredHeight: CGFloat
 
         public init(
             placeholder: NSAttributedString,
-            prefferedHeight: CGFloat
+            preferredHeight: CGFloat
         ) {
             self.placeholder = placeholder
-            self.prefferedHeight = prefferedHeight
+            self.preferredHeight = preferredHeight
         }
     }
 
@@ -36,7 +36,7 @@ final public class TextViewCellNode: CellNode {
 
     public init(_ input: Input, action: TextViewAction? = nil) {
         self.action = action
-        self.height = input.prefferedHeight
+        self.height = input.preferredHeight
         super.init()
         textView.delegate = self
         textView.attributedPlaceholderText = input.placeholder

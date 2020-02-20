@@ -19,7 +19,7 @@ struct ComposeDecorator: ComposeDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         return TextViewCellNode.Input(
             placeholder: "message_compose_secure".localized.attributed(.regular(17), color: .lightGray, alignment: .left),
-            prefferedHeight: height
+            preferredHeight: height
         )
     }
 

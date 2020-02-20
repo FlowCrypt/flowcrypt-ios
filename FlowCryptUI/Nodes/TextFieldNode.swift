@@ -12,22 +12,23 @@ public enum TextFieldActionType {
     case didEndEditing(String?)
     case didBeginEditing(String?)
     case editingChanged(String?)
-    /// event fired on backspace tap with (isEmpty value)
-    case deleteBackward(Bool)
+    case deleteBackward(UITextField)
 }
 
 public typealias TextFieldAction = (TextFieldActionType) -> Void
 
 final class TextField: UITextField {
-    var onBackspaceTap: ((_ isEmpty: Bool) -> Void)?
+    var onBackspaceTap: (() -> Void)?
 
     override func deleteBackward() {
-        onBackspaceTap?(text == "")
+        onBackspaceTap?()
         super.deleteBackward()
     }
 }
 
 final public class TextFieldNode: ASDisplayNode {
+    public typealias ShouldChangeAction = ((UITextField, String) -> (Bool))
+    public typealias ShouldReturnAction = (UITextField) -> (Bool)
 
     public var shouldEndEditing: ((UITextField) -> (Bool))?
 
@@ -103,13 +104,15 @@ final public class TextFieldNode: ASDisplayNode {
         }
     }  
 
-    var shouldReturn: ((UITextField) -> (Bool))?
+    var shouldReturn: ShouldReturnAction?
+
+    var shouldChangeCharacters: ShouldChangeAction?
 
     private lazy var node = ASDisplayNode { TextField() }
 
     private var textFiledAction: TextFieldAction?
 
-    public init(prefferedHeight: CGFloat?, action: TextFieldAction? = nil) {
+    public init(preferredHeight: CGFloat?, action: TextFieldAction? = nil) {
         super.init()
         addSubnode(node)
         textFiledAction = action
@@ -124,16 +127,34 @@ final public class TextFieldNode: ASDisplayNode {
                 action: #selector(self.onEditingChanged),
                 for: UIControl.Event.editingChanged
             )
-            self.textField.onBackspaceTap = { [weak self] isEmpty in
-                self?.textFiledAction?(.deleteBackward(isEmpty))
+            self.textField.onBackspaceTap = { [weak self] in
+                guard let self = self else { return }
+                self.textFiledAction?(.deleteBackward(self.textField))
             }
         }
     }
 
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        return ASInsetLayoutSpec(insets: .zero, child: node)
+        ASInsetLayoutSpec(insets: .zero, child: node)
     }
 
+    @discardableResult
+    override public func becomeFirstResponder() -> Bool {
+        DispatchQueue.main.async {
+            super.becomeFirstResponder()
+            _ = self.textField.becomeFirstResponder()
+        }
+        return true
+    }
+}
+
+extension TextFieldNode {
+    public func reset() {
+        (node.view as? TextField)?.text = nil
+    }
+}
+
+extension TextFieldNode {
     private func addTarget(_ target: Any?, action: Selector, for event: UIControl.Event) {
         DispatchQueue.main.async {
             self.textField.addTarget(target, action: action, for: event)
@@ -151,15 +172,6 @@ final public class TextFieldNode: ASDisplayNode {
             )
         }
     }
-
-    @discardableResult
-    override public func becomeFirstResponder() -> Bool {
-        DispatchQueue.main.async {
-            super.becomeFirstResponder()
-            _ = self.textField.becomeFirstResponder()
-        }
-        return true
-    }
 }
 
 extension TextFieldNode: UITextFieldDelegate {
@@ -172,10 +184,14 @@ extension TextFieldNode: UITextFieldDelegate {
     }
 
     public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        return shouldEndEditing?(textField) ?? true
+        shouldEndEditing?(textField) ?? true
     }
 
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        return shouldReturn?(textField) ?? true
+        shouldReturn?(textField) ?? true
+    }
+
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        shouldChangeCharacters?(textField, string) ?? true
     }
 }

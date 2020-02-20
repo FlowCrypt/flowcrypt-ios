@@ -242,7 +242,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.resipient = text
         }
-        .onReturn { [weak self] _ in
+        .onShouldReturn { [weak self] _ in
             guard let node = self?.node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return true }
             node.becomeFirstResponder()
             return true
@@ -263,7 +263,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.subject = text
         }
-        .onReturn { [weak self] _ in
+        .onShouldReturn { [weak self] _ in
             guard let self = self else { return true }
             if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
                 node.becomeFirstResponder()
@@ -280,9 +280,9 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
         let textFieldHeight = decorator.styledTextFieldInput("").height
         let dividerHeight: CGFloat = 1
-        let prefferedHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
+        let preferredHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
 
-        return TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight)) { [weak self] event in
+        return TextViewCellNode(decorator.styledTextViewInput(with: preferredHeight)) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.message = text?.string
         }.then {

@@ -40,23 +40,26 @@ final public class TextFieldCellNode: CellNode {
         }
     }
 
-    public let textField: TextFieldNode
     private var textFiledAction: TextFieldAction?
+
+    private let input: Input
+
+    public let textField: TextFieldNode
+
     public var attributedText: NSAttributedString? {
         didSet {
             textField.attributedText = attributedText
         }
     }
+
     public var isLowercased = false {
         didSet {
             self.textField.isLowercased = isLowercased
         }
     }
 
-    private let input: Input
-
     public init(input: Input, action: TextFieldAction? = nil) {
-        textField = TextFieldNode(prefferedHeight: input.height, action: action)
+        textField = TextFieldNode(preferredHeight: input.height, action: action)
         self.input = input
         super.init()
         textFiledAction = action
@@ -75,14 +78,21 @@ final public class TextFieldCellNode: CellNode {
         return ASInsetLayoutSpec(insets: input.insets, child: textField)
     }
 
-    public func onReturn(_ action: ((UITextField) -> (Bool))?) -> Self {
-        textField.shouldReturn = action
-        return self
-    }
-    
     @discardableResult
     override public func becomeFirstResponder() -> Bool {
         textField.becomeFirstResponder()
         return true
+    }
+}
+
+public extension TextFieldCellNode {
+    func onShouldReturn(_ action: TextFieldNode.ShouldReturnAction?) -> Self {
+        textField.shouldReturn = action
+        return self
+    }
+
+    func onShouldChangeCharacters(_ action: TextFieldNode.ShouldChangeAction?) -> Self {
+        textField.shouldChangeCharacters = action
+        return self
     }
 }
