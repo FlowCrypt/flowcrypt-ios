@@ -64,12 +64,13 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                 print(n)
                 return n
             case .emailRecipients:
-                let node = RecipientsTextField(recipients: self.recipients)
-                node.call = {
-//                    self.node.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .fade)
-//                    self.node.setNeedsLayout()
-                }
-                return node
+                return RecipientsTextField(recipients: self.recipients)
+                    .onItemSelect { [weak self] indexPath in
+                        guard let self = self else { return }
+                        self.recipients[indexPath.row].isSelected.toggle()
+                        self.node.reloadRows(at: [self.recipientsIndexPath], with: .fade)
+                        self.textField?.reset()
+                    }
             case .emailTextField:
                 let node = TextFieldCellNode(input: TextFieldCellNode.Input(width: width)) { [weak self] action in
                     self?.handleTextFieldAction(with: action)
@@ -92,10 +93,6 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
         case .divider:
             tableNode.reloadData()
         case .menu:
-//            let node = (tableNode.nodeForRow(at: IndexPath(row: 2, section: 0)) as! RecipientsTextField).collectionNode
-////            node.reloadData()
-//            node.collectionViewLayout.invalidateLayout()
-//            node.invalidateCalculatedLayout()
             break
         default:
             break
@@ -145,7 +142,6 @@ extension ViewController {
             handleEndEditingAction(with: text)
         case let .editingChanged(text):
             guard text == "," else { return }
-
         default:
             break
         }
@@ -161,15 +157,25 @@ extension ViewController {
     private func handleBackspaceAction(with textField: UITextField) {
         guard textField.text == "" else { return }
 
-        if let index = recipients.firstIndex(where: { $0.isSelected }) {
-            recipients.remove(at: index)
+        let selectedRecipients = recipients
+            .filter { $0.isSelected }
+
+        guard selectedRecipients.isEmpty else {
+            // remove selected recipients
+            recipients = recipients
+                .filter { !$0.isSelected }
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
-        } else if let lastRecipient = recipients.popLast() {
+            return
+        }
+
+        if let lastRecipient = recipients.popLast() {
+            // select last recipient in a list
             var last = lastRecipient
             last.isSelected = true
             recipients.append(last)
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
         } else {
+            // dismiss keyboard if no recipients left
             textField.resignFirstResponder()
         }
     }

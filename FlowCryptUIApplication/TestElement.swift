@@ -49,40 +49,31 @@ final public class RecipientsTextField: CellNode {
         automaticallyManagesSubnodes = true
     }
 
-    var call:(() -> Void)?
-    var height: CGFloat {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        guard recipients.isNotEmpty else {
+            return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
+        }
         let recipientNodeInset: CGFloat = 2
+        let textSize: CGSize = recipients.first?.email.size() ?? .zero
         let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
         let insets = Constants.minimumLineSpacing * CGFloat(recipients.count)
         let height = recipientsHeight + insets + Constants.sectionInset.width
-        return height
-    }
-    var shouldCall = false {
-        didSet {
-            if shouldCall {
-                DispatchQueue.main.async {
-                    self.call?()
-                }
-            }
-        }
-    }
-
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let minHeight = min(height, UIScreen.main.bounds.height * 0.3)
 
-        if height < UIScreen.main.bounds.height * 0.3 {
-            shouldCall = true
-            shouldCall = false
-        }
-
         collectionNode.style.preferredSize.height = minHeight
-        print("^^ \(minHeight)")
         collectionNode.style.preferredSize.width = constrainedSize.max.width
-        collectionNode.backgroundColor = .red
+
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8),
             child: collectionNode
         )
+    }
+
+    private var onSelect: ((IndexPath) -> Void)?
+
+    public func onItemSelect(_ action: ((IndexPath) -> Void)?) -> Self {
+        self.onSelect = action
+        return self
     }
 }
 
@@ -90,7 +81,7 @@ extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
     public func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
         recipients.count
     }
-    
+
     public func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
         let width = collectionNode.style.preferredSize.width
         return { [weak self] in
@@ -98,15 +89,11 @@ extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
             return RecipientEmailNode(input: RecipientEmailNode.Input(recipient: recipient, width: width))
         }
     }
-}
 
-extension RecipientsTextField {
-    var textSize: CGSize {
-        recipients.first?.email.size() ?? .zero
+    public func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
+        onSelect?(indexPath)
     }
-
 }
-
 
 
 
