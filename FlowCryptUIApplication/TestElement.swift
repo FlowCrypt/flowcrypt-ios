@@ -16,13 +16,17 @@ final public class RecipientsTextField: CellNode {
         static let minimumLineSpacing: CGFloat = 4
     }
 
-    struct Recipient {
+    public struct Recipient {
         let email: NSAttributedString
         var isSelected: Bool
-    }
 
-    private enum Sections: Int, CaseIterable {
-        case emails, textField
+        public init(
+            email: NSAttributedString,
+            isSelected: Bool
+        ) {
+            self.email = email
+            self.isSelected = isSelected
+        }
     }
 
     lazy var collectionNode: ASCollectionNode = {
@@ -35,12 +39,10 @@ final public class RecipientsTextField: CellNode {
         return collectionNode
     }()
 
+    public var recipients: [Recipient] = []
 
-    var recipients: [Recipient] = (1...10).map { _ in
-        Recipient(email: testAttributedText(), isSelected: false)
-    }
-
-    public override init() {
+    public init(recipients: [Recipient]) {
+        self.recipients = recipients
         super.init()
         collectionNode.dataSource = self
         collectionNode.delegate = self
@@ -59,8 +61,8 @@ final public class RecipientsTextField: CellNode {
         didSet {
             if shouldCall {
                 DispatchQueue.main.async {
-                           self.call?()
-                       }
+                    self.call?()
+                }
             }
         }
     }
@@ -85,39 +87,15 @@ final public class RecipientsTextField: CellNode {
 }
 
 extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
-    public func numberOfSections(in collectionNode: ASCollectionNode) -> Int {
-        2//Sections.allCases.count
-    }
-
     public func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
-        guard let section = Sections(rawValue: section) else { assertionFailure(); return 0 }
-        switch section {
-        case .emails: return recipients.count
-        case .textField: return 1
-        }
+        recipients.count
     }
-
+    
     public func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
         let width = collectionNode.style.preferredSize.width
         return { [weak self] in
-            guard let section = Sections(rawValue: indexPath.section) else { assertionFailure(); return ASCellNode() }
-
-            switch section {
-            case .emails:
-                guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
-                return RecipientEmailNode(input: RecipientEmailNode.Input(recipient: recipient, width: width))
-            case .textField:
-                let node = TextFieldCellNode(input: TextFieldCellNode.Input(width: width)) { [weak self] action in
-                    self?.handleTextFieldAction(with: action)
-                }
-                .onShouldReturn { [weak self] textField -> Bool in
-                    self?.shouldReturn(with: textField) ?? true
-                }
-                .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
-                    self?.shouldChange(with: textField, and: character) ?? true
-                }
-                return node
-            }
+            guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
+            return RecipientEmailNode(input: RecipientEmailNode.Input(recipient: recipient, width: width))
         }
     }
 }
@@ -127,73 +105,6 @@ extension RecipientsTextField {
         recipients.first?.email.size() ?? .zero
     }
 
-    var textField: TextFieldNode? {
-        (collectionNode.nodeForItem(at: IndexPath(row: 0, section: Sections.textField.rawValue)) as? TextFieldCellNode)?.textField
-    }
-
-    func attributedEmail(with string: String) -> NSAttributedString {
-        string.attributed(.bold(13), alignment: .center)
-    }
-}
-
-extension RecipientsTextField {
-    private func shouldReturn(with textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-
-    private func shouldChange(with textField: UITextField, and character: String) -> Bool {
-        guard let text = textField.text else { return true }
-
-        if text.isEmpty {
-            return true
-        } else if character == "," {
-            handleEndEditingAction(with: textField.text)
-            return false
-        } else {
-            return true
-        }
-
-    }
-
-    private func handleTextFieldAction(with action: TextFieldActionType) {
-        print("^^ \(action)")
-        switch action {
-        case let .deleteBackward(textField):
-            handleBackspaceAction(with: textField)
-        case let .didEndEditing(text):
-            handleEndEditingAction(with: text)
-        case let .editingChanged(text):
-            guard text == "," else { return }
-            
-        default:
-            break
-        }
-    }
-
-    private func handleEndEditingAction(with text: String?) {
-        guard let text = text, !text.isEmpty else { return }
-        recipients.append(RecipientsTextField.Recipient(email: attributedEmail(with: text), isSelected: false))
-        collectionNode.insertItems(at: [IndexPath(row: recipients.count - 1, section: 0)])
-        textField?.reset()
-    }
-
-    private func handleBackspaceAction(with textField: UITextField) {
-        guard textField.text == "" else { return }
-
-        if let index = recipients.firstIndex(where: { $0.isSelected }) {
-            recipients.remove(at: index)
-            collectionNode.deleteItems(at: [IndexPath(row: index, section: 0)])
-            setNeedsLayout()
-        } else if let lastRecipient = recipients.popLast() {
-            var last = lastRecipient
-            last.isSelected = true
-            recipients.append(last)
-            collectionNode.reloadItems(at: [IndexPath(row: recipients.count - 1, section: 0)])
-        } else {
-            textField.resignFirstResponder()
-        }
-    }
 }
 
 

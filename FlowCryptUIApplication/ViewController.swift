@@ -15,6 +15,7 @@ final class ViewController: ASViewController<ASTableNode> {
     enum Elements: Int, CaseIterable {
         case divider
         case menu
+        case emailRecipients
         case emailTextField
     }
 
@@ -32,6 +33,12 @@ final class ViewController: ASViewController<ASTableNode> {
         self.node.dataSource = self
         self.node.reloadData()
     }
+
+    // MARK: - Recipient Text Field
+
+    var recipients: [RecipientsTextField.Recipient] = (1...10).map { _ in
+        RecipientsTextField.Recipient(email: testAttributedText(), isSelected: false)
+    }
 }
 
 extension ViewController: ASTableDelegate, ASTableDataSource {
@@ -40,6 +47,7 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        let width = tableNode.style.preferredSize.width
         return {
             let element = Elements(rawValue: indexPath.row)!
             switch element {
@@ -55,11 +63,22 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                 let n = MenuCellNode(input: input)
                 print(n)
                 return n
-            case .emailTextField:
-                let node = RecipientsTextField()
+            case .emailRecipients:
+                let node = RecipientsTextField(recipients: self.recipients)
                 node.call = {
 //                    self.node.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .fade)
-                    self.node.setNeedsLayout()
+//                    self.node.setNeedsLayout()
+                }
+                return node
+            case .emailTextField:
+                let node = TextFieldCellNode(input: TextFieldCellNode.Input(width: width)) { [weak self] action in
+                    self?.handleTextFieldAction(with: action)
+                }
+                .onShouldReturn { [weak self] textField -> Bool in
+                    self?.shouldReturn(with: textField) ?? true
+                }
+                .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
+                    self?.shouldChange(with: textField, and: character) ?? true
                 }
                 return node
             }
@@ -80,6 +99,78 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
             break
         default:
             break
+        }
+    }
+}
+
+// MARK: - Recipient Text Field
+extension ViewController {
+    var textField: TextFieldNode? {
+        (node.nodeForRow(at: IndexPath(row: Elements.emailTextField.rawValue, section: 0)) as? TextFieldCellNode)?.textField
+    }
+
+    var recipientsIndexPath: IndexPath {
+        IndexPath(row: Elements.emailRecipients.rawValue, section: 0)
+    }
+
+    func attributedEmail(with string: String) -> NSAttributedString {
+        string.attributed(.bold(13), alignment: .center)
+    }
+
+    private func shouldReturn(with textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+
+    private func shouldChange(with textField: UITextField, and character: String) -> Bool {
+        guard let text = textField.text else { return true }
+
+        if text.isEmpty {
+            return true
+        } else if character == "," {
+            handleEndEditingAction(with: textField.text)
+            return false
+        } else {
+            return true
+        }
+
+    }
+
+    private func handleTextFieldAction(with action: TextFieldActionType) {
+        print("^^ \(action)")
+        switch action {
+        case let .deleteBackward(textField):
+            handleBackspaceAction(with: textField)
+        case let .didEndEditing(text):
+            handleEndEditingAction(with: text)
+        case let .editingChanged(text):
+            guard text == "," else { return }
+
+        default:
+            break
+        }
+    }
+
+    private func handleEndEditingAction(with text: String?) {
+        guard let text = text, !text.isEmpty else { return }
+        recipients.append(RecipientsTextField.Recipient(email: attributedEmail(with: text), isSelected: false))
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        textField?.reset()
+    }
+
+    private func handleBackspaceAction(with textField: UITextField) {
+        guard textField.text == "" else { return }
+
+        if let index = recipients.firstIndex(where: { $0.isSelected }) {
+            recipients.remove(at: index)
+            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        } else if let lastRecipient = recipients.popLast() {
+            var last = lastRecipient
+            last.isSelected = true
+            recipients.append(last)
+            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        } else {
+            textField.resignFirstResponder()
         }
     }
 }
