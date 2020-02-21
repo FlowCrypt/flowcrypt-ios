@@ -13,8 +13,8 @@ public func testAttributedText() -> NSAttributedString {
     return NSAttributedString(
         string: String((5...count).compactMap { _ in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".randomElement() }),
         attributes: [
-            NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 16),
-            NSAttributedString.Key.foregroundColor : UIColor.yellow
+            NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 13),
+            NSAttributedString.Key.foregroundColor : UIColor.black
         ]
     )
 }

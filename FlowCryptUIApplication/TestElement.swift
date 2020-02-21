@@ -11,11 +11,9 @@ import FlowCryptUI
 import FlowCryptCommon
 
 final public class RecipientsTextField: CellNode {
-    struct Input {
-        var insets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
-        var cornerRadius: CGFloat = 8
-        var borderColor: UIColor = .darkGray
-        var selectedColor: UIColor = .blue
+    enum Constants {
+        static let sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+        static let minimumLineSpacing: CGFloat = 4
     }
 
     struct Recipient {
@@ -27,16 +25,13 @@ final public class RecipientsTextField: CellNode {
         case emails, textField
     }
 
-    let layout = UICollectionViewFlowLayout()
-
     lazy var collectionNode: ASCollectionNode = {
+        let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 1
-        layout.minimumLineSpacing = 1
-        layout.sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-
+        layout.minimumLineSpacing = Constants.minimumLineSpacing
+        layout.sectionInset = Constants.sectionInset
         let collectionNode = ASCollectionNode(collectionViewLayout: layout)
-        collectionNode.backgroundColor = .blue
         return collectionNode
     }()
 
@@ -45,27 +40,45 @@ final public class RecipientsTextField: CellNode {
         Recipient(email: testAttributedText(), isSelected: false)
     }
 
-    var textSize: CGSize {
-        recipients.first?.email.size() ?? .zero
-    }
-
     public override init() {
         super.init()
         collectionNode.dataSource = self
         collectionNode.delegate = self
-
-        backgroundColor = .red
-
         automaticallyManagesSubnodes = true
     }
 
+    var call:(() -> Void)?
+    var height: CGFloat {
+        let recipientNodeInset: CGFloat = 2
+        let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
+        let insets = Constants.minimumLineSpacing * CGFloat(recipients.count)
+        let height = recipientsHeight + insets + Constants.sectionInset.width
+        return height
+    }
+    var shouldCall = false {
+        didSet {
+            if shouldCall {
+                DispatchQueue.main.async {
+                           self.call?()
+                       }
+            }
+        }
+    }
+
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        collectionNode.style.preferredSize.height = textSize.height * CGFloat(recipients.count) * 2
+        let minHeight = min(height, UIScreen.main.bounds.height * 0.3)
 
+        if height < UIScreen.main.bounds.height * 0.3 {
+            shouldCall = true
+            shouldCall = false
+        }
+
+        collectionNode.style.preferredSize.height = minHeight
+        print("^^ \(minHeight)")
         collectionNode.style.preferredSize.width = constrainedSize.max.width
-
+        collectionNode.backgroundColor = .red
         return ASInsetLayoutSpec(
-            insets: .zero,
+            insets: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8),
             child: collectionNode
         )
     }
@@ -92,7 +105,7 @@ extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
             switch section {
             case .emails:
                 guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
-                return EmailNode(input: EmailNode.Input(recipient: recipient, width: width))
+                return RecipientEmailNode(input: RecipientEmailNode.Input(recipient: recipient, width: width))
             case .textField:
                 let node = TextFieldCellNode(input: TextFieldCellNode.Input(width: width)) { [weak self] action in
                     self?.handleTextFieldAction(with: action)
@@ -110,12 +123,16 @@ extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
 }
 
 extension RecipientsTextField {
+    var textSize: CGSize {
+        recipients.first?.email.size() ?? .zero
+    }
+
     var textField: TextFieldNode? {
         (collectionNode.nodeForItem(at: IndexPath(row: 0, section: Sections.textField.rawValue)) as? TextFieldCellNode)?.textField
     }
 
     func attributedEmail(with string: String) -> NSAttributedString {
-        string.attributed(.bold(13))
+        string.attributed(.bold(13), alignment: .center)
     }
 }
 
@@ -167,6 +184,7 @@ extension RecipientsTextField {
         if let index = recipients.firstIndex(where: { $0.isSelected }) {
             recipients.remove(at: index)
             collectionNode.deleteItems(at: [IndexPath(row: index, section: 0)])
+            setNeedsLayout()
         } else if let lastRecipient = recipients.popLast() {
             var last = lastRecipient
             last.isSelected = true
@@ -179,26 +197,5 @@ extension RecipientsTextField {
 }
 
 
-final class EmailNode: CellNode {
-    struct Input {
-        let recipient: RecipientsTextField.Recipient
-        let width: CGFloat
-    }
 
-    let titleNode = ASTextNode()
-    let input: Input
-
-    init(input: Input) {
-        self.input = input
-        super.init()
-        self.titleNode.attributedText = input.recipient.email
-        self.backgroundColor = input.recipient.isSelected ? .red : .orange
-    }
-
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        titleNode.style.preferredSize.width = input.width
-        titleNode.style.preferredSize.height = input.recipient.email.size().height
-        return ASInsetLayoutSpec(insets: .zero, child: titleNode)
-    }
-}
 

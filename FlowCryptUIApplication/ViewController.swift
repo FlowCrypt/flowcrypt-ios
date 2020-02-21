@@ -57,6 +57,10 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                 return n
             case .emailTextField:
                 let node = RecipientsTextField()
+                node.call = {
+//                    self.node.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .fade)
+                    self.node.setNeedsLayout()
+                }
                 return node
             }
         }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension String {
+public extension String {
     var hasContent: Bool {
         return trimmingCharacters(in: .whitespaces).isEmpty == false
     }
@@ -21,7 +21,7 @@ extension String {
     }
 }
 
-extension NSAttributedString {
+public extension NSAttributedString {
     static func +(_ lhs: NSAttributedString, _ rhs: NSAttributedString) -> NSAttributedString {
         let mutable = NSMutableAttributedString(attributedString: lhs)
         mutable.append(rhs)

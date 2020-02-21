@@ -39,7 +39,7 @@ public extension NSAttributedString {
 }
 
 public extension String {
-    func attributed(_ style: NSAttributedString.Style, color: UIColor = .black, alignment: NSTextAlignment? = nil) -> NSAttributedString {
+    func attributed(_ style: NSAttributedString.Style = .regular(14), color: UIColor = .black, alignment: NSTextAlignment? = nil) -> NSAttributedString {
         return NSAttributedString.text(from: self, style: style, color: color, alignment: alignment)
     }
 }

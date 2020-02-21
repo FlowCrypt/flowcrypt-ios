@@ -10,7 +10,7 @@ import UIKit
 
 // MARK: - Collection
 
-extension Collection {
+public extension Collection {
     subscript(safe index: Index) -> Iterator.Element? {
         indices.contains(index)
             ? self[index]
@@ -37,7 +37,7 @@ public extension MutableCollection {
 
 // MARK: - UIView
 
-extension UIView {
+public extension UIView {
     func constraintsToEdges(to guide: UILayoutGuide) {
         translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -110,11 +110,11 @@ extension UIView {
 
 // MARK: - ReusableView
 
-protocol ReusableView: class {
+public protocol ReusableView: class {
     static var defaultReuseIdentifier: String { get }
 }
 
-extension ReusableView where Self: UIView {
+public extension ReusableView where Self: UIView {
     static var defaultReuseIdentifier: String {
         return String(describing: self)
     }
@@ -124,7 +124,7 @@ extension UITableViewCell: ReusableView {}
 
 extension UICollectionViewCell: ReusableView {}
 
-extension UICollectionView {
+public extension UICollectionView {
     func register<T: ReusableView>(cellType: T.Type = T.self, bundle: Bundle = Bundle.main) {
         let reuseIdentifier = cellType.defaultReuseIdentifier
         if bundle.path(forResource: reuseIdentifier, ofType: "nib") != nil {
@@ -143,7 +143,7 @@ extension UICollectionView {
     }
 }
 
-extension UITableView {
+public extension UITableView {
     func register<T: ReusableView>(cellType: T.Type = T.self, bundle: Bundle = Bundle.main) {
         let reuseIdentifier = cellType.defaultReuseIdentifier
         if bundle.path(forResource: reuseIdentifier, ofType: "nib") != nil {
@@ -162,7 +162,7 @@ extension UITableView {
     }
 }
 
-extension Array {
+public extension Array {
     func chunked(_ size: Int) -> [[Element]] {
         return stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
@@ -170,12 +170,16 @@ extension Array {
     }
 }
 
-extension UIEdgeInsets {
+public extension UIEdgeInsets {
     static var side: (CGFloat) -> UIEdgeInsets {
         return { side in UIEdgeInsets(top: side, left: side, bottom: side, right: side)}
     }
     
     var width: CGFloat {
-        self.left + self.right
+        left + right
+    }
+
+    var height: CGFloat {
+        top + bottom
     }
 }
