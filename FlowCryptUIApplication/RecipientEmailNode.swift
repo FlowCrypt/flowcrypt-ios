@@ -13,7 +13,7 @@ import FlowCryptCommon
 
 final class RecipientEmailNode: CellNode {
     struct Input {
-        let recipient: RecipientsTextField.Recipient
+        let recipient: RecipientEmailsCellNode.Recipient
         let width: CGFloat
     }
 

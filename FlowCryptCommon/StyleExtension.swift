@@ -22,7 +22,12 @@ public extension NSAttributedString {
         }
     }
 
-    static func text(from string: String, style: Style, color: UIColor = .black, alignment: NSTextAlignment? = nil) -> NSAttributedString {
+    static func text(
+        from string: String,
+        style: NSAttributedString.Style,
+        color: UIColor = .black,
+        alignment: NSTextAlignment? = nil
+    ) -> NSAttributedString {
         var attributes = [
             NSAttributedString.Key.font: style.font,
             NSAttributedString.Key.foregroundColor: color,
@@ -39,7 +44,11 @@ public extension NSAttributedString {
 }
 
 public extension String {
-    func attributed(_ style: NSAttributedString.Style = .regular(14), color: UIColor = .black, alignment: NSTextAlignment? = nil) -> NSAttributedString {
-        return NSAttributedString.text(from: self, style: style, color: color, alignment: alignment)
+    func attributed(
+        _ style: NSAttributedString.Style = .regular(14),
+        color: UIColor = .black,
+        alignment: NSTextAlignment? = nil
+    ) -> NSAttributedString {
+        NSAttributedString.text(from: self, style: style, color: color, alignment: alignment)
     }
 }

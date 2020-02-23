@@ -10,8 +10,8 @@ import AsyncDisplayKit
 import FlowCryptUI
 import FlowCryptCommon
 
-final public class RecipientsTextField: CellNode {
-    enum Constants {
+final public class RecipientEmailsCellNode: CellNode {
+    private enum Constants {
         static let sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
         static let minimumLineSpacing: CGFloat = 4
     }
@@ -28,6 +28,8 @@ final public class RecipientsTextField: CellNode {
             self.isSelected = isSelected
         }
     }
+
+    private var onSelect: ((IndexPath) -> Void)?
 
     lazy var collectionNode: ASCollectionNode = {
         let layout = UICollectionViewFlowLayout()
@@ -58,9 +60,8 @@ final public class RecipientsTextField: CellNode {
         let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
         let insets = Constants.minimumLineSpacing * CGFloat(recipients.count)
         let height = recipientsHeight + insets + Constants.sectionInset.width
-        let minHeight = min(height, UIScreen.main.bounds.height * 0.3)
 
-        collectionNode.style.preferredSize.height = minHeight
+        collectionNode.style.preferredSize.height = height
         collectionNode.style.preferredSize.width = constrainedSize.max.width
 
         return ASInsetLayoutSpec(
@@ -68,16 +69,16 @@ final public class RecipientsTextField: CellNode {
             child: collectionNode
         )
     }
+}
 
-    private var onSelect: ((IndexPath) -> Void)?
-
+extension RecipientEmailsCellNode {
     public func onItemSelect(_ action: ((IndexPath) -> Void)?) -> Self {
         self.onSelect = action
         return self
     }
 }
 
-extension RecipientsTextField: ASCollectionDelegate, ASCollectionDataSource {
+extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource {
     public func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
         recipients.count
     }

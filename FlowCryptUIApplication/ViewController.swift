@@ -11,7 +11,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import FlowCryptCommon
 
-final class ViewController: ASViewController<ASTableNode> {
+final class ViewController: ASViewController<TableNode> {
     enum Elements: Int, CaseIterable {
         case divider
         case menu
@@ -20,7 +20,7 @@ final class ViewController: ASViewController<ASTableNode> {
     }
 
     init() {
-        super.init(node: ASTableNode())
+        super.init(node: TableNode())
     }
 
     required init?(coder: NSCoder) {
@@ -35,9 +35,12 @@ final class ViewController: ASViewController<ASTableNode> {
     }
 
     // MARK: - Recipient Text Field
+    enum Constants {
+        static let endTypingCharacters = [",", " "]
+    }
 
-    var recipients: [RecipientsTextField.Recipient] = (1...10).map { _ in
-        RecipientsTextField.Recipient(email: testAttributedText(), isSelected: false)
+    var recipients: [RecipientEmailsCellNode.Recipient] = (1...10).map { _ in
+        RecipientEmailsCellNode.Recipient(email: testAttributedText(), isSelected: false)
     }
 }
 
@@ -52,9 +55,9 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
             let element = Elements(rawValue: indexPath.row)!
             switch element {
             case .divider:
-                return DividerCellNode(color: .red, height: 50)
+                return DividerCellNode(color: .black, height: 10)
             case .menu:
-                let title = NSAttributedString(string: "tiasmfasfmasmftlmmme", attributes: [NSAttributedString.Key.foregroundColor : UIColor.red])
+                let title = NSAttributedString(string: "Example of recipients text field", attributes: [NSAttributedString.Key.foregroundColor : UIColor.red])
 
                 let input = MenuCellNode.Input(
                     attributedText: title,
@@ -64,12 +67,9 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                 print(n)
                 return n
             case .emailRecipients:
-                return RecipientsTextField(recipients: self.recipients)
+                return RecipientEmailsCellNode(recipients: self.recipients)
                     .onItemSelect { [weak self] indexPath in
-                        guard let self = self else { return }
-                        self.recipients[indexPath.row].isSelected.toggle()
-                        self.node.reloadRows(at: [self.recipientsIndexPath], with: .fade)
-                        self.textField?.reset()
+                        self?.handleRecipientSelection(with: indexPath)
                     }
             case .emailTextField:
                 let node = TextFieldCellNode(input: TextFieldCellNode.Input(width: width)) { [weak self] action in
@@ -102,16 +102,22 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
 
 // MARK: - Recipient Text Field
 extension ViewController {
-    var textField: TextFieldNode? {
+    private var textField: TextFieldNode? {
         (node.nodeForRow(at: IndexPath(row: Elements.emailTextField.rawValue, section: 0)) as? TextFieldCellNode)?.textField
     }
 
-    var recipientsIndexPath: IndexPath {
+    private var recipientsIndexPath: IndexPath {
         IndexPath(row: Elements.emailRecipients.rawValue, section: 0)
     }
 
-    func attributedEmail(with string: String) -> NSAttributedString {
-        string.attributed(.bold(13), alignment: .center)
+    private func attributedEmail(with string: String) -> NSAttributedString {
+        NSAttributedString(
+            string: string,
+            attributes: [
+                NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 14),
+                NSAttributedString.Key.foregroundColor : UIColor.black
+            ]
+        )
     }
 
     private func shouldReturn(with textField: UITextField) -> Bool {
@@ -124,7 +130,7 @@ extension ViewController {
 
         if text.isEmpty {
             return true
-        } else if character == "," {
+        } else if Constants.endTypingCharacters.contains(character) {
             handleEndEditingAction(with: textField.text)
             return false
         } else {
@@ -134,14 +140,11 @@ extension ViewController {
     }
 
     private func handleTextFieldAction(with action: TextFieldActionType) {
-        print("^^ \(action)")
         switch action {
         case let .deleteBackward(textField):
             handleBackspaceAction(with: textField)
         case let .didEndEditing(text):
             handleEndEditingAction(with: text)
-        case let .editingChanged(text):
-            guard text == "," else { return }
         default:
             break
         }
@@ -149,8 +152,19 @@ extension ViewController {
 
     private func handleEndEditingAction(with text: String?) {
         guard let text = text, !text.isEmpty else { return }
-        recipients.append(RecipientsTextField.Recipient(email: attributedEmail(with: text), isSelected: false))
+        recipients = recipients.map { recipient in
+            var recipient = recipient
+            recipient.isSelected = false
+            return recipient
+        }
+        recipients.append(RecipientEmailsCellNode.Recipient(email: attributedEmail(with: text), isSelected: false))
         node.reloadRows(at: [recipientsIndexPath], with: .fade)
+
+        let endIndex = recipients.endIndex - 1
+        let collectionNode = (node.nodeForRow(at: recipientsIndexPath) as? RecipientEmailsCellNode)?.collectionNode
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            collectionNode?.scrollToItem(at: IndexPath(row: endIndex, section: 0), at: .bottom, animated: true)
+        }
         textField?.reset()
     }
 
@@ -162,8 +176,7 @@ extension ViewController {
 
         guard selectedRecipients.isEmpty else {
             // remove selected recipients
-            recipients = recipients
-                .filter { !$0.isSelected }
+            recipients = recipients.filter { !$0.isSelected }
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
             return
         }
@@ -178,5 +191,14 @@ extension ViewController {
             // dismiss keyboard if no recipients left
             textField.resignFirstResponder()
         }
+    }
+
+    private func handleRecipientSelection(with indexPath: IndexPath) {
+        recipients[indexPath.row].isSelected.toggle()
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        if !(textField?.isFirstResponder() ?? true) {
+            textField?.becomeFirstResponder()
+        }
+        textField?.reset()
     }
 }
