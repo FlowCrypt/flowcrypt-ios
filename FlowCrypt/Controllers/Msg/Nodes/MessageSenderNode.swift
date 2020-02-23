@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
+import FlowCryptCommon
 
 // TODO: ANTON - move
 final class MessageSenderNode: CellNode {

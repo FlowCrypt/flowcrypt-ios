@@ -19,13 +19,6 @@ public extension UIView {
     }
 }
 
-public func borderStyle(color: UIColor, width: CGFloat) -> (UIView) -> Void {
-  return {
-    $0.layer.borderColor = color.cgColor
-    $0.layer.borderWidth = width
-  }
-}
-
 public extension UIView {
     func constraintsToEdges(to guide: UILayoutGuide) {
         translatesAutoresizingMaskIntoConstraints = false
@@ -96,7 +89,6 @@ public extension UIView {
         subview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom).isActive = true
     }
 }
-
 
 // MARK: - UITextField
 public extension UITextField {

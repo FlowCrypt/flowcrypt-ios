@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
+import FlowCryptCommon
 
 final class SearchViewController: ASViewController<TableNode> {
     enum State {

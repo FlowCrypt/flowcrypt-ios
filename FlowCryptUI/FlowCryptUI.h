@@ -8,12 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-//! Project version number for FlowCryptUI.
+//  Project version number for FlowCryptUI.
 FOUNDATION_EXPORT double FlowCryptUIVersionNumber;
 
-//! Project version string for FlowCryptUI.
+// Project version string for FlowCryptUI.
 FOUNDATION_EXPORT const unsigned char FlowCryptUIVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <FlowCryptUI/PublicHeader.h>
-
-

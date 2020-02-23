@@ -12,7 +12,6 @@
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4B11D4531B3B04D01D1 /* AppErr.swift */; };
 		32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
-		32DCA1339D6857686ABD3FC4 /* UIVIewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */; };
 		32DCA1414EEA727B86C337D5 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		32DCA17B0294558E2ADA998D /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEB2BF97371D3A68E329 /* bignum.c */; };
 		32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA7E0AFE19FACB0F233ED /* URLSessionExtension.swift */; };
@@ -20,17 +19,14 @@
 		32DCA24159622E7442FF9459 /* AppErr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4B11D4531B3B04D01D1 /* AppErr.swift */; };
 		32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA377D22F4D67A8FA05EB /* Imap.swift */; };
 		32DCA3847AFB3D05608CB191 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
-		32DCA4F8E74975F0393FA29C /* SecPaddingExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */; };
 		32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
 		32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */; };
 		32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
-		32DCA64A309E3C34D8C9039E /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC9C0512037018F434A1 /* BackendApi.swift */; };
 		32DCA89EEE54530F9A2C50F9 /* CodableExntension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntension.swift */; };
 		32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEB2BF97371D3A68E329 /* bignum.c */; };
 		32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
-		32DCAAD97FDEB229EA327DB5 /* SecPaddingExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */; };
 		32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtension.swift */; };
 		32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAF8424D0185FAA9401A7 /* Imap+send.swift */; };
@@ -118,7 +114,6 @@
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
 		9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779123736BF700E19C07 /* MsgViewController+Setup.swift */; };
 		9F82779423736EF100E19C07 /* MailDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779323736EF100E19C07 /* MailDestination.swift */; };
-		9F8277962373732000E19C07 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtension.swift */; };
 		9F82779823737E0900E19C07 /* MessageDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageDecorator.swift */; };
 		9F82779A23737E1900E19C07 /* MessageSenderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779923737E1900E19C07 /* MessageSenderNode.swift */; };
 		9F82779C23737E2B00E19C07 /* MessageSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */; };
@@ -145,14 +140,10 @@
 		9FDF3658235A233400614596 /* AppReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3655235A22DA00614596 /* AppReset.swift */; };
 		9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE743062347AA54005E2DBB /* MainNavigationController.swift */; };
 		9FEED1B8230C08D700700F8E /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */; };
-		9FEED1D0230DA9FF00700F8E /* UIStoyboardExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */; };
 		9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */; };
 		A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */; };
 		A350A5CC22E9F0E000427C6C /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
-		A37A1CF623C6254F001CF774 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtension.swift */; };
-		A37A1CF723C625D2001CF774 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtension.swift */; };
-		A37A1CF823C625D2001CF774 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtension.swift */; };
 		A3A680EC22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */; };
 		A3A680ED22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */; };
 		A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B7C31823F576BA0022D628 /* AppStartup.swift */; };
@@ -189,14 +180,15 @@
 		D2531F3623FFEDA2007E5198 /* RecipientEmailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */; };
 		D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* CommonExtensions.swift */; };
 		D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */; };
-		D2531F3E24000E39007E5198 /* UIVIewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */; };
 		D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */; };
-		D2531F4124000E78007E5198 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */; };
 		D2531F462402C62D007E5198 /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F452402C62D007E5198 /* CollectionExtensions.swift */; };
+		D2531F472402C9DE007E5198 /* IntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtensions.swift */; };
 		D2A1D3BA23FD64AB00D626D6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */; };
 		D2A1D3C323FD64AD00D626D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2A1D3C223FD64AD00D626D6 /* Assets.xcassets */; };
 		D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D2A1D3C423FD64AD00D626D6 /* LaunchScreen.storyboard */; };
+		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
+		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
 /* End PBXBuildFile section */
@@ -243,7 +235,6 @@
 		32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
-		32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecPaddingExtension.swift; sourceTree = "<group>"; };
 		32DCA377D22F4D67A8FA05EB /* Imap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Imap.swift; sourceTree = "<group>"; };
 		32DCA38E87F2B7196E0E1F1F /* CodableExntension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableExntension.swift; sourceTree = "<group>"; };
 		32DCA4B11D4531B3B04D01D1 /* AppErr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppErr.swift; sourceTree = "<group>"; };
@@ -349,7 +340,7 @@
 		9F71630B234FC7500031645E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9F82779123736BF700E19C07 /* MsgViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MsgViewController+Setup.swift"; sourceTree = "<group>"; };
 		9F82779323736EF100E19C07 /* MailDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailDestination.swift; sourceTree = "<group>"; };
-		9F8277952373732000E19C07 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
+		9F8277952373732000E19C07 /* UIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
 		9F82779723737E0900E19C07 /* MessageDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDecorator.swift; sourceTree = "<group>"; };
 		9F82779923737E1900E19C07 /* MessageSenderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderNode.swift; sourceTree = "<group>"; };
 		9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSubjectNode.swift; sourceTree = "<group>"; };
@@ -379,11 +370,10 @@
 		9FDF3655235A22DA00614596 /* AppReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReset.swift; sourceTree = "<group>"; };
 		9FE743062347AA54005E2DBB /* MainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationController.swift; sourceTree = "<group>"; };
 		9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
-		9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStoyboardExtension.swift; sourceTree = "<group>"; };
 		9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewModel.swift; sourceTree = "<group>"; };
 		A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flowcrypt-ios-icon.png"; sourceTree = "<group>"; };
 		A33BAA8822EDBF1A00CC1B5C /* gmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
-		A37A1CF523C6254F001CF774 /* IntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
+		A37A1CF523C6254F001CF774 /* IntExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtensions.swift; sourceTree = "<group>"; };
 		A3A680EB22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libgmp-6.1.2-iPhoneOS-arm64.a"; sourceTree = "<group>"; };
 		A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCryptTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		A3B7C31523E436E10022D628 /* FlowCrypt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowCrypt.entitlements; sourceTree = "<group>"; };
@@ -581,14 +571,9 @@
 				32DCA7E0AFE19FACB0F233ED /* URLSessionExtension.swift */,
 				32DCA38E87F2B7196E0E1F1F /* CodableExntension.swift */,
 				32DCAEFF16F5D91A35791730 /* DataExtension.swift */,
-				32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */,
-				32DCA22065E606F68EC53221 /* SecPaddingExtension.swift */,
 				9FEED1B7230C08D700700F8E /* UIViewControllerExtension.swift */,
-				9FEED1CF230DA9FF00700F8E /* UIStoyboardExtension.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				32DCA058652FD4616FB04FB6 /* SequenceExtension.swift */,
-				9F8277952373732000E19C07 /* UIImageExtension.swift */,
-				A37A1CF523C6254F001CF774 /* IntExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1123,6 +1108,9 @@
 				32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */,
 				32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */,
 				D2531F452402C62D007E5198 /* CollectionExtensions.swift */,
+				A37A1CF523C6254F001CF774 /* IntExtensions.swift */,
+				32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */,
+				9F8277952373732000E19C07 /* UIImageExtensions.swift */,
 			);
 			path = FlowCryptCommon;
 			sourceTree = "<group>";
@@ -1669,7 +1657,6 @@
 				9F228BAA23C67729005D2CB6 /* DataExtension.swift in Sources */,
 				9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */,
 				9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */,
-				A37A1CF823C625D2001CF774 /* IntExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1688,12 +1675,10 @@
 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
 				9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */,
 				5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */,
-				A37A1CF723C625D2001CF774 /* IntExtension.swift in Sources */,
 				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
-				32DCA4F8E74975F0393FA29C /* SecPaddingExtension.swift in Sources */,
 				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */,
 				9F589F0F238C7D15007FD759 /* LocalStorageTest.swift in Sources */,
 				32DCA17B0294558E2ADA998D /* bignum.c in Sources */,
@@ -1728,7 +1713,6 @@
 				9F696293236091DD003712E1 /* SignInImageNode.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
 				9F82779E23737E3800E19C07 /* TextSubjectNode.swift in Sources */,
-				A37A1CF623C6254F001CF774 /* IntExtension.swift in Sources */,
 				9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */,
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
@@ -1746,8 +1730,6 @@
 				9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */,
 				9F589F13238C7DF2007FD759 /* User+Google.swift in Sources */,
 				04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */,
-				9F8277962373732000E19C07 /* UIImageExtension.swift in Sources */,
-				32DCA1339D6857686ABD3FC4 /* UIVIewExtensions.swift in Sources */,
 				9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */,
 				9F589F1C238C8693007FD759 /* LogOutHandler.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
@@ -1762,7 +1744,6 @@
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9F0C3C18231819B200299985 /* Logger.swift in Sources */,
 				32DCACB1AA1A298DFD8B2E22 /* DataExtension.swift in Sources */,
-				D2531F4124000E78007E5198 /* StringExtensions.swift in Sources */,
 				9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */,
 				9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */,
 				9F9ABC8523AC1E5700D560E3 /* Imap+search.swift in Sources */,
@@ -1781,19 +1762,16 @@
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				9F56BD3823438C7000A7371A /* DateFormatting.swift in Sources */,
-				9FEED1D0230DA9FF00700F8E /* UIStoyboardExtension.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
 				9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */,
 				9F31AB97232BF03D00CF87EA /* MenuHeaderViewModel.swift in Sources */,
 				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
-				32DCA64A309E3C34D8C9039E /* DispatchTimeExtension.swift in Sources */,
 				9F268894237DD98900428A94 /* ImportKeyDecorator.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F82779C23737E2B00E19C07 /* MessageSubjectNode.swift in Sources */,
 				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
 				9FD22A1C230FE7D0005067A6 /* Then.swift in Sources */,
-				32DCAAD97FDEB229EA327DB5 /* SecPaddingExtension.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* UserService.swift in Sources */,
 				D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */,
 				D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */,
@@ -1836,7 +1814,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2531F3E24000E39007E5198 /* UIVIewExtensions.swift in Sources */,
 				D204DBA823FB35930083B9D6 /* RecipientsTextField.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
 				D211CE7B23FC59ED00D1CE38 /* MenuCellNode.swift in Sources */,
@@ -1858,7 +1835,10 @@
 			files = (
 				D2531F462402C62D007E5198 /* CollectionExtensions.swift in Sources */,
 				D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */,
+				D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */,
+				D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */,
 				D2531F3423FEEF5F007E5198 /* StyleExtension.swift in Sources */,
+				D2531F472402C9DE007E5198 /* IntExtensions.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
 				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,
 			);
@@ -2539,6 +2519,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.FlowCrypt.FlowCryptCommon;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -2572,6 +2553,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.FlowCrypt.FlowCryptCommon;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -2605,6 +2587,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.FlowCrypt.FlowCryptCommon;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

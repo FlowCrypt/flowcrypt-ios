@@ -6,7 +6,7 @@ import Foundation
 
 public extension String {
     var hasContent: Bool {
-        return trimmingCharacters(in: .whitespaces).isEmpty == false
+        trimmingCharacters(in: .whitespaces).isEmpty == false
     }
 
     var trimLeadingSlash: String {
@@ -17,7 +17,7 @@ public extension String {
     }
 
     func data() -> Data {
-        return data(using: .utf8)!
+        data(using: .utf8)!
     }
 }
 

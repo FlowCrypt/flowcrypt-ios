@@ -4,6 +4,7 @@
 
 import Foundation
 import Promises
+import FlowCryptCommon
 
 struct HttpRes {
     let status: Int

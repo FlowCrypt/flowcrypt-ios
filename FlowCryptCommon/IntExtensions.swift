@@ -8,8 +8,8 @@
 
 import Foundation
 
-extension Int {
+public extension Int {
     func toDate() -> Date {
-        return Date(timeIntervalSince1970: TimeInterval(self))
+        Date(timeIntervalSince1970: TimeInterval(self))
     }
 }

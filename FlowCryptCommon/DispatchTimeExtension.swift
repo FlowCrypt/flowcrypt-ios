@@ -4,8 +4,8 @@
 
 import Foundation
 
-extension DispatchTime {
+public extension DispatchTime {
     var millisecondsSince: UInt64 {
-        return (DispatchTime.now().uptimeNanoseconds - uptimeNanoseconds) / 1_000_000
+        (DispatchTime.now().uptimeNanoseconds - uptimeNanoseconds) / 1_000_000
     }
 }
