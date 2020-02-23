@@ -8,20 +8,6 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C132B9AF1EC2DBD800763715"
-               BuildableName = "FlowCrypt.app"
-               BlueprintName = "FlowCrypt"
-               ReferencedContainer = "container:FlowCrypt.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
             buildForAnalyzing = "NO">
@@ -72,6 +58,20 @@
                BlueprintIdentifier = "D204DB9D23FB35700083B9D6"
                BuildableName = "FlowCryptUI.framework"
                BlueprintName = "FlowCryptUI"
+               ReferencedContainer = "container:FlowCrypt.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C132B9AF1EC2DBD800763715"
+               BuildableName = "FlowCrypt.app"
+               BlueprintName = "FlowCrypt"
                ReferencedContainer = "container:FlowCrypt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
