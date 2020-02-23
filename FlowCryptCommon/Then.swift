@@ -9,9 +9,9 @@
 import Foundation
 import UIKit
 
-protocol Then {}
+public protocol Then {}
 
-extension Then where Self: Any {
+public extension Then where Self: Any {
     /// Makes it available to set properties with closures just after initializing and copying the value types.
     ///
     ///     let frame = CGRect().with {
@@ -36,7 +36,7 @@ extension Then where Self: Any {
     }
 }
 
-extension Then where Self: AnyObject {
+public extension Then where Self: AnyObject {
     /// Makes it available to set properties with closures just after initializing.
     ///
     ///     let label = UILabel().then {
@@ -50,7 +50,7 @@ extension Then where Self: AnyObject {
     }
 }
 
-extension Then where Self: AnyObject {
+public extension Then where Self: AnyObject {
     func setup(_ block: (Self) -> Void) {
         _ = then(block)
     }

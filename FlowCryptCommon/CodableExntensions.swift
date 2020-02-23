@@ -4,9 +4,9 @@
 
 import Foundation
 
-extension Encodable {
+public extension Encodable {
     func toJsonData() throws -> Data {
-        return try JSONEncoder().encode(self)
+        try JSONEncoder().encode(self)
     }
 
     func toDict() throws -> [String: Any] {

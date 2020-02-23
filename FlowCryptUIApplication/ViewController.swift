@@ -129,7 +129,18 @@ extension ViewController {
         guard let text = textField.text else { return true }
 
         if text.isEmpty {
-            return true
+            // Pasted string
+            let recipients = Constants.endTypingCharacters.map(Character.init)
+                .flatMap { character.split(separator: $0) }
+                .dropFirst()
+                .map { String($0) }
+                .filter { !Constants.endTypingCharacters.contains($0) }
+
+            guard recipients.isNotEmpty else { return true }
+            recipients.forEach {
+                handleEndEditingAction(with: $0)
+            }
+            return false
         } else if Constants.endTypingCharacters.contains(character) {
             handleEndEditingAction(with: textField.text)
             return false

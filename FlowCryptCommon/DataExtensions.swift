@@ -4,9 +4,9 @@
 
 import Foundation
 
-extension Data {
+public extension Data {
     func decodeJson<T>(as _: T.Type) throws -> T where T: Decodable {
-        return try JSONDecoder().decode(T.self, from: self)
+        try JSONDecoder().decode(T.self, from: self)
     }
 
     static func joined(_ dataArray: [Data]) -> Data {
