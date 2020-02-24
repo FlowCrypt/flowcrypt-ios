@@ -17,28 +17,38 @@ protocol ComposeDecoratorType {
 
 struct ComposeDecorator: ComposeDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
-        return TextViewCellNode.Input(
+        TextViewCellNode.Input(
             placeholder: "message_compose_secure".localized.attributed(.regular(17), color: .lightGray, alignment: .left),
             preferredHeight: height
         )
     }
 
     var styledTextFieldInput: (String) -> TextFieldCellNode.Input {
-        return {
+        {
             TextFieldCellNode.Input(
                 placeholder: $0.localized.attributed(.regular(17), color: .lightGray, alignment: .left),
                 isSecureTextEntry: false,
-                textInsets: -7,
+                textInsets: -8,
                 textAlignment: .left,
-                height: 40
+                height: 40,
+                width: UIScreen.main.bounds.width
             )
         }
     }
 
     var styledTitle: (String?) -> (NSAttributedString?) {
-        return { string in
+        { string in
             guard let string = string else { return nil }
             return string.attributed(.regular(17))
         }
+    }
+}
+
+extension RecipientEmailsCellNode.Input {
+    init(_ recipient: ComposeViewController.Recipient) {
+        self.init(
+            email: recipient.email.lowercased().attributed(.regular(17), color: .black, alignment: .left),
+            isSelected: recipient.isSelected
+        )
     }
 }

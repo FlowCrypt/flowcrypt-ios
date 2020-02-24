@@ -112,7 +112,6 @@ extension SetupViewController {
     private func handleBackupsFetchResult() {
         hideSpinner()
         if fetchedEncryptedPrvs.isEmpty {
-            // TODO: Anton -
             let user = DataManager.shared.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             renderNoBackupsFoundOptions(msg)
@@ -202,7 +201,6 @@ extension SetupViewController {
     }
 
     private func getUserId() throws -> UserId {
-        // TODO: Anton -
         guard let email = DataManager.shared.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
         guard let name = DataManager.shared.email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
         return UserId(email: email, name: name)

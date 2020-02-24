@@ -23,16 +23,19 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let userService: UserServiceType
     private let router: GlobalRouterType
 
-    private lazy var headerViewModel: MenuHeaderViewModel = {
+    private lazy var headerViewModel: HeaderNode.Input = {
         let name = dataManager.currentUser?.name
             .split(separator: " ")
             .first
             .map(String.init) ?? ""
 
         let email = dataManager.email?
-            .replacingOccurrences(of: "@gmail.com", with: "")
+            .replacingOccurrences(of: "@gmail.com", with: "") ?? ""
 
-        return MenuHeaderViewModel(title: name, subtitle: email)
+        return HeaderNode.Input(
+            title: name.attributed(.bold(20), color: .white, alignment: .left),
+            subtitle: email.attributed(.medium(16), color: .white, alignment: .left)
+        )
     }()
 
     private var folders: [FolderViewModel] = []
@@ -44,13 +47,13 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         dataManager: DataManagerType = DataManager.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
-        tabelNode: ASTableNode = TableNode()
+        tableNode: ASTableNode = TableNode()
     ) {
         self.foldersProvider = foldersProvider
         self.dataManager = dataManager
         self.userService = userService
         self.router = globalRouter
-        self.tableNode = tabelNode
+        self.tableNode = tableNode
         super.init(node: ASDisplayNode())
     }
 

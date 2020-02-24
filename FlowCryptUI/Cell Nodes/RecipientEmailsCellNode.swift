@@ -7,18 +7,17 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 import FlowCryptCommon
 
 final public class RecipientEmailsCellNode: CellNode {
     private enum Constants {
-        static let sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+        static let sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)
         static let minimumLineSpacing: CGFloat = 4
     }
 
-    public struct Recipient {
-        let email: NSAttributedString
-        var isSelected: Bool
+    public struct Input {
+        public let email: NSAttributedString
+        public var isSelected: Bool
 
         public init(
             email: NSAttributedString,
@@ -31,7 +30,7 @@ final public class RecipientEmailsCellNode: CellNode {
 
     private var onSelect: ((IndexPath) -> Void)?
 
-    lazy var collectionNode: ASCollectionNode = {
+    public lazy var collectionNode: ASCollectionNode = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 1
@@ -41,9 +40,9 @@ final public class RecipientEmailsCellNode: CellNode {
         return collectionNode
     }()
 
-    public var recipients: [Recipient] = []
+    public var recipients: [Input] = []
 
-    public init(recipients: [Recipient]) {
+    public init(recipients: [Input]) {
         self.recipients = recipients
         super.init()
         collectionNode.dataSource = self
@@ -55,9 +54,9 @@ final public class RecipientEmailsCellNode: CellNode {
         guard recipients.isNotEmpty else {
             return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
         }
-        let recipientNodeInset: CGFloat = 2
+        let recipientNodeInset: CGFloat = 1
         let textSize: CGSize = recipients.first?.email.size() ?? .zero
-        let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
+        let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count - 1)
         let insets = Constants.minimumLineSpacing * CGFloat(recipients.count)
         let height = recipientsHeight + insets + Constants.sectionInset.width
 

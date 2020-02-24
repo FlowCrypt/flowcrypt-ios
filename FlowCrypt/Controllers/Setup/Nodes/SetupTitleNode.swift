@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-// TODO: ANTON - move
+// TODO: ANTON - Move to FlowCryptUI
 final class SetupTitleNode: CellNode {
     private let textNode = ASTextNode()
     private let insets: UIEdgeInsets

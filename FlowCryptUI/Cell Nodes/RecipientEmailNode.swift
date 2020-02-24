@@ -7,13 +7,12 @@
 //
 
 import UIKit
-import FlowCryptUI
 import AsyncDisplayKit
 import FlowCryptCommon
 
 final class RecipientEmailNode: CellNode {
     struct Input {
-        let recipient: RecipientEmailsCellNode.Recipient
+        let recipient: RecipientEmailsCellNode.Input
         let width: CGFloat
     }
 

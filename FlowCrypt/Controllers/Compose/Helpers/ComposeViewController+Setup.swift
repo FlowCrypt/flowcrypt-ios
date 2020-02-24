@@ -10,7 +10,7 @@ import Foundation
 
 extension ComposeViewController {
     enum Parts: Int, CaseIterable {
-           case recipient, recipientDivider, subject, subjectDivider, text
+           case recipient, recipientsInput, recipientDivider, subject, subjectDivider, text
        }
     
     struct Input {
@@ -34,9 +34,23 @@ extension ComposeViewController {
         }
     }
 
+    struct Recipient {
+        let email: String
+        var isSelected: Bool
+
+        init(
+            email: String,
+            isSelected: Bool = false
+        ) {
+            self.email = email
+            self.isSelected = isSelected
+        }
+    }
+
     struct Context {
         var message: String?
-        var resipient: String?
+        var recipients: [Recipient] = []
         var subject: String?
     }
 }
+

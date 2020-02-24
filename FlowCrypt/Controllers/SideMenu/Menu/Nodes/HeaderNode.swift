@@ -9,12 +9,22 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-// TODO: ANTON - move
-final class HeaderNode: CellNode {
+// TODO: ANTON - Move to FlowCryptUI
+public final class HeaderNode: CellNode {
+    public struct Input {
+        public let title: NSAttributedString
+        public let subtitle: NSAttributedString?
+
+        public init(title: NSAttributedString, subtitle: NSAttributedString?) {
+            self.title = title
+            self.subtitle = subtitle
+        }
+    }
+
     private let titleNode = ASTextNode()
     private let subTitleNode = ASTextNode()
 
-    init(input: MenuHeaderViewModel?) {
+    public init(input: HeaderNode.Input?) {
         super.init()
         automaticallyManagesSubnodes = true
 
@@ -23,8 +33,8 @@ final class HeaderNode: CellNode {
         backgroundColor = .main
     }
 
-    override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        return ASInsetLayoutSpec(
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+        ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16),
             child: ASStackLayoutSpec.vertical().then {
                 $0.spacing = 8
