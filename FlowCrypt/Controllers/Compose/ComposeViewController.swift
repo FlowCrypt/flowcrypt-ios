@@ -7,8 +7,52 @@ import AsyncDisplayKit
 import FlowCryptUI
 
 final class ComposeViewController: ASViewController<TableNode> {
-    enum Constants {
+    struct Input {
+        static let empty = Input(isReply: false, replyToRecipient: nil, replyToSubject: nil, replyToMime: nil)
+
+        let isReply: Bool
+        let replyToRecipient: MCOAddress?
+        let replyToSubject: String?
+        let replyToMime: Data?
+
+        var recipientReplyTitle: String? {
+            isReply ? replyToRecipient?.mailbox : nil
+        }
+
+        var subjectReplyTitle: String? {
+            isReply ? "Re: \(replyToSubject ?? "(no subject)")" : nil
+        }
+
+        var successfullySentToast: String {
+            isReply ? "compose_reply_successfull".localized : "compose_sent".localized
+        }
+    }
+
+    struct Recipient {
+        let email: String
+        var isSelected: Bool
+
+        init(
+            email: String,
+            isSelected: Bool = false
+        ) {
+            self.email = email
+            self.isSelected = isSelected
+        }
+    }
+
+    private struct Context {
+        var message: String?
+        var recipients: [Recipient] = []
+        var subject: String?
+    }
+    
+    private enum Constants {
         static let endTypingCharacters = [",", " "]
+    }
+
+    private enum Parts: Int, CaseIterable {
+        case recipient, recipientsInput, recipientDivider, subject, subjectDivider, text
     }
 
     private let imap: Imap
@@ -179,26 +223,23 @@ extension ComposeViewController {
                 return false
             }
 
-            // TODO: ANTON -
             guard let myPubkey = self.dataManager.publicKey() else {
                 self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }
 
-            let encryptedMessages = lookupRes.compactMap { (searchResult: PubkeySearchResult) -> CoreRes.ComposeEmail? in
-                guard let armored = searchResult.armored else { assertionFailure(); return nil }
-                return self.encryptMsg(
-                    pubkeys: [myPubkey, armored],
-                    subject: subject,
-                    message: text,
-                    email: searchResult.email
-                )
-            }.map { $0.mimeEncoded }
-
-
-            let sentResult = encryptedMessages.map {
-                self.imap.sendMail(mime: $0)
-            }
+            let sentResult = lookupRes
+                .compactMap { (searchResult: PubkeySearchResult) -> CoreRes.ComposeEmail? in
+                    guard let armored = searchResult.armored else { assertionFailure(); return nil }
+                    return self.encryptMsg(
+                        pubkeys: [myPubkey, armored],
+                        subject: subject,
+                        message: text,
+                        email: searchResult.email
+                    )
+                }
+                .map { $0.mimeEncoded }
+                .map { self.imap.sendMail(mime: $0) }
 
             _ = try await(all(sentResult))
 

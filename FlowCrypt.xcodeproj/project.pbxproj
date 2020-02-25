@@ -68,7 +68,6 @@
 		9F228BAA23C67729005D2CB6 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
 		9F228BAC23C7198F005D2CB6 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */; };
 		9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeDecorator.swift */; };
-		9F23EA522372175E0017DFED /* ComposeViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */; };
 		9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268890237DC55600428A94 /* ImportKeyViewController.swift */; };
 		9F268894237DD98900428A94 /* ImportKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268893237DD98900428A94 /* ImportKeyDecorator.swift */; };
 		9F268896237DDEB200428A94 /* SetupViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268895237DDEB200428A94 /* SetupViewController+Setup.swift */; };
@@ -298,7 +297,6 @@
 		9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
 		9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewCellNode.swift; sourceTree = "<group>"; };
 		9F23EA4F237217140017DFED /* ComposeDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeDecorator.swift; sourceTree = "<group>"; };
-		9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Setup.swift"; sourceTree = "<group>"; };
 		9F268890237DC55600428A94 /* ImportKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportKeyViewController.swift; sourceTree = "<group>"; };
 		9F268893237DD98900428A94 /* ImportKeyDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportKeyDecorator.swift; sourceTree = "<group>"; };
 		9F268895237DDEB200428A94 /* SetupViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SetupViewController+Setup.swift"; sourceTree = "<group>"; };
@@ -494,7 +492,7 @@
 			isa = PBXGroup;
 			children = (
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
-				9F8277902373446300E19C07 /* Helpers */,
+				9F23EA4F237217140017DFED /* ComposeDecorator.swift */,
 			);
 			path = Compose;
 			sourceTree = "<group>";
@@ -832,15 +830,6 @@
 				9F95A3F823607C2900C80B64 /* SignInType.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		9F8277902373446300E19C07 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				9F23EA512372175E0017DFED /* ComposeViewController+Setup.swift */,
-				9F23EA4F237217140017DFED /* ComposeDecorator.swift */,
-			);
-			path = Helpers;
 			sourceTree = "<group>";
 		};
 		9F82779F23737E5500E19C07 /* Nodes */ = {
@@ -1778,7 +1767,6 @@
 				9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */,
 				9F716305234FC7200031645E /* Localization.swift in Sources */,
 				9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */,
-				9F23EA522372175E0017DFED /* ComposeViewController+Setup.swift in Sources */,
 				9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
