@@ -54,9 +54,9 @@ final public class RecipientEmailsCellNode: CellNode {
         guard recipients.isNotEmpty else {
             return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
         }
-        let recipientNodeInset: CGFloat = 1
+        let recipientNodeInset: CGFloat = 2
         let textSize: CGSize = recipients.first?.email.size() ?? .zero
-        let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count - 1)
+        let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
         let insets = Constants.minimumLineSpacing * CGFloat(recipients.count)
         let height = recipientsHeight + insets + Constants.sectionInset.width
 

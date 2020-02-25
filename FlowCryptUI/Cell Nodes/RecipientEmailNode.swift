@@ -25,9 +25,10 @@ final class RecipientEmailNode: CellNode {
         super.init()
         titleNode.attributedText = "  ".attributed() + input.recipient.email + "  ".attributed()
         titleNode.backgroundColor = input.recipient.isSelected
-            ? UIColor.black.withAlphaComponent(0.2)
+            ? UIColor.black.withAlphaComponent(0.1)
             : UIColor.white.withAlphaComponent(0.9)
         titleNode.cornerRadius = 8
+        titleNode.clipsToBounds = true
         titleNode.borderWidth = 1
         titleNode.borderColor = input.recipient.isSelected
             ? UIColor.black.withAlphaComponent(0.4).cgColor

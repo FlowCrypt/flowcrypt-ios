@@ -316,34 +316,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    private func recipientsNode() -> RecipientEmailsCellNode {
-        RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
-            .onItemSelect { [weak self] indexPath in
-                self?.handleRecipientSelection(with: indexPath)
-            }
-    }
-
-    private func recipientInput() -> ASCellNode {
-        TextFieldCellNode(
-            input: decorator.styledTextFieldInput("compose_recipient".localized)
-        ) { [weak self] action in
-            self?.handleTextFieldAction(with: action)
-        }
-        .onShouldReturn { [weak self] textField -> Bool in
-            self?.shouldReturn(with: textField) ?? true
-        }
-        .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
-            self?.shouldChange(with: textField, and: character) ?? true
-        }
-        .then {
-            $0.isLowercased = true
-            $0.attributedText = decorator.styledTitle(input.recipientReplyTitle)
-            if !self.input.isReply {
-                $0.becomeFirstResponder()
-            }
-        }
-    }
-
     private func subjectNode() -> ASCellNode {
         TextFieldCellNode(
             input: decorator.styledTextFieldInput("compose_subject".localized)
@@ -381,17 +353,45 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 }
 
+// MARK: - Recipients
 extension ComposeViewController {
-    private var recipients: [ComposeViewController.Recipient] {
-        contextToSend.recipients
-    }
-
     private var textField: TextFieldNode? {
         (node.nodeForRow(at: IndexPath(row: Parts.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
     }
 
     private var recipientsIndexPath: IndexPath {
         IndexPath(row: Parts.recipient.rawValue, section: 0)
+    }
+
+    private func recipientsNode() -> RecipientEmailsCellNode {
+        RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
+            .onItemSelect { [weak self] indexPath in
+                self?.handleRecipientSelection(with: indexPath)
+            }
+    }
+
+    private func recipientInput() -> TextFieldCellNode {
+        TextFieldCellNode(
+            input: decorator.styledTextFieldInput("compose_recipient".localized)
+        ) { [weak self] action in
+            self?.handleTextFieldAction(with: action)
+        }
+        .onShouldReturn { [weak self] textField -> Bool in
+            self?.shouldReturn(with: textField) ?? true
+        }
+        .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
+            self?.shouldChange(with: textField, and: character) ?? true
+        }
+        .then {
+            $0.isLowercased = true
+            if !self.input.isReply {
+                $0.becomeFirstResponder()
+            }
+        }
+    }
+
+    private var recipients: [ComposeViewController.Recipient] {
+        contextToSend.recipients
     }
 
     private func shouldReturn(with textField: UITextField) -> Bool {
@@ -407,14 +407,10 @@ extension ComposeViewController {
 
         guard let text = textField.text else { nextResponder(); return true }
 
-        if text.isEmpty {
+        if text.isEmpty, character.count > 1 {
             // Pasted string
-            let recipients = Constants.endTypingCharacters.map(Character.init)
-                .flatMap { character.split(separator: $0) }
-                .dropFirst()
-                .map { String($0) }
-                .filter { !Constants.endTypingCharacters.contains($0) }
-
+            let characterSet = CharacterSet(charactersIn: Constants.endTypingCharacters.joined())
+            let recipients = character.components(separatedBy: characterSet)
             guard recipients.count > 1 else { return true }
             recipients.forEach {
                 handleEndEditingAction(with: $0)

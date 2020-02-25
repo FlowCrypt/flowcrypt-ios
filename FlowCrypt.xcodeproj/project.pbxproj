@@ -1139,9 +1139,9 @@
 		D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */,
 				D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */,
-				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
 				9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */,
 				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
