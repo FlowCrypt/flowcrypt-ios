@@ -48,7 +48,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     }
     
     private enum Constants {
-        static let endTypingCharacters = [",", " "]
+        static let endTypingCharacters = [",", " ", "\n", ";"]
     }
 
     private enum Parts: Int, CaseIterable {

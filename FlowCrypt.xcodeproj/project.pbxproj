@@ -187,6 +187,10 @@
 		D2CDC3D62402D565002B045F /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */; };
 		D2CDC3D824047066002B045F /* RecipientEmailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */; };
+		D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; };
+		D2CDC3DE24052D50002B045F /* FlowCryptUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
+		D2CDC3E324052D54002B045F /* FlowCryptCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
 /* End PBXBuildFile section */
@@ -206,15 +210,31 @@
 			remoteGlobalIDString = C132B9AF1EC2DBD800763715;
 			remoteInfo = FlowCrypt;
 		};
+		D2CDC3DB24052D0F002B045F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C132B9A81EC2DBD800763715 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2531F2A23FEEF52007E5198;
+			remoteInfo = FlowCryptCommon;
+		};
+		D2CDC3DF24052D50002B045F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C132B9A81EC2DBD800763715 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D204DB9D23FB35700083B9D6;
+			remoteInfo = FlowCryptUI;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		A32A4D3F22E38F180091BC5F /* Embed Frameworks */ = {
+		D2CDC3E124052D50002B045F /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				D2CDC3E324052D54002B045F /* FlowCryptCommon.framework in Embed Frameworks */,
+				D2CDC3DE24052D50002B045F /* FlowCryptUI.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -438,6 +458,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */,
+				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
 				A3A680EC22EE0C2A00905813 /* libgmp-6.1.2-iPhoneOS-arm64.a in Frameworks */,
 				A40B9DB9E27967AC623BA60B /* Pods_FlowCrypt.framework in Frameworks */,
 			);
@@ -1232,13 +1254,15 @@
 				C132B9AC1EC2DBD800763715 /* Sources */,
 				C132B9AD1EC2DBD800763715 /* Frameworks */,
 				C132B9AE1EC2DBD800763715 /* Resources */,
-				A32A4D3F22E38F180091BC5F /* Embed Frameworks */,
 				527B6FD5C3E83A37AEA8D0A3 /* [CP] Embed Pods Frameworks */,
 				F5FDFD02C616C6B2DEBEEFCA /* [CP] Copy Pods Resources */,
+				D2CDC3E124052D50002B045F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D2CDC3DC24052D0F002B045F /* PBXTargetDependency */,
+				D2CDC3E024052D50002B045F /* PBXTargetDependency */,
 			);
 			name = FlowCrypt;
 			productName = FlowCrypt;
@@ -1851,6 +1875,16 @@
 			isa = PBXTargetDependency;
 			target = C132B9AF1EC2DBD800763715 /* FlowCrypt */;
 			targetProxy = A3DAD60022E4574B00F2C4CD /* PBXContainerItemProxy */;
+		};
+		D2CDC3DC24052D0F002B045F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2531F2A23FEEF52007E5198 /* FlowCryptCommon */;
+			targetProxy = D2CDC3DB24052D0F002B045F /* PBXContainerItemProxy */;
+		};
+		D2CDC3E024052D50002B045F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D204DB9D23FB35700083B9D6 /* FlowCryptUI */;
+			targetProxy = D2CDC3DF24052D50002B045F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
