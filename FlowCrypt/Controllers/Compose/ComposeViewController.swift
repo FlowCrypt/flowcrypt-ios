@@ -4,8 +4,57 @@
 
 import Promises
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class ComposeViewController: ASViewController<TableNode> {
+    struct Input {
+        static let empty = Input(isReply: false, replyToRecipient: nil, replyToSubject: nil, replyToMime: nil)
+
+        let isReply: Bool
+        let replyToRecipient: MCOAddress?
+        let replyToSubject: String?
+        let replyToMime: Data?
+
+        var recipientReplyTitle: String? {
+            isReply ? replyToRecipient?.mailbox : nil
+        }
+
+        var subjectReplyTitle: String? {
+            isReply ? "Re: \(replyToSubject ?? "(no subject)")" : nil
+        }
+
+        var successfullySentToast: String {
+            isReply ? "compose_reply_successfull".localized : "compose_sent".localized
+        }
+    }
+
+    struct Recipient {
+        let email: String
+        var isSelected: Bool
+
+        init(
+            email: String,
+            isSelected: Bool = false
+        ) {
+            self.email = email
+            self.isSelected = isSelected
+        }
+    }
+
+    private struct Context {
+        var message: String?
+        var recipients: [Recipient] = []
+        var subject: String?
+    }
+    
+    private enum Constants {
+        static let endTypingCharacters = [",", " ", "\n", ";"]
+    }
+
+    private enum Parts: Int, CaseIterable {
+        case recipient, recipientsInput, recipientDivider, subject, subjectDivider, text
+    }
+
     private let imap: Imap
     private let notificationCenter: NotificationCenter
     private let dataManager: DataManagerType
@@ -33,7 +82,9 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.decorator = decorator
         self.core = core
         if input.isReply {
-            contextToSend.recipient = input.recipientReplyTitle
+            if let email = input.recipientReplyTitle {
+                contextToSend.recipients.append(Recipient(email: email))
+            }
             contextToSend.subject = input.replyToSubject
         }
         super.init(node: TableNode())
@@ -158,27 +209,53 @@ extension ComposeViewController {
     private func encryptAndSendMessage() -> Promise<Bool> {
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { return false }
-            guard let email = self.contextToSend.recipient, let text = self.contextToSend.message else {
+
+            let recipients = self.contextToSend.recipients
+
+            guard recipients.isNotEmpty else {
+                assertionFailure("Recipients should not be empty. Fail in checking");
+                return false
+            }
+
+            guard let text = self.contextToSend.message else {
                 assertionFailure("Text and Email should not be nil at this point. Fail in checking");
                 return false
             }
-            let subject = self.input.subjectReplyTitle ?? self.contextToSend.subject ?? "(no subject)"
-            let lookupRes = try await(self.attesterApi.lookupEmail(email: email))
-            guard let recipientPubkey = lookupRes.armored else {
-                self.showAlert(message: "compose_no_pub_recipient".localized)
+
+            let subject = self.input.subjectReplyTitle
+                ?? self.contextToSend.subject
+                ?? "(no subject)"
+
+
+            let lookup = recipients.map {
+                self.attesterApi.lookupEmail(email: $0.email)
+            }
+
+            let lookupRes = try await(all(lookup))
+            let allRecipientPubs = lookupRes.compactMap { $0.armored }
+
+            guard allRecipientPubs.count == recipients.count else {
+                let message = recipients.count == 1
+                    ? "compose_no_pub_recipient".localized
+                    : "compose_no_pub_multiple".localized
+                self.showAlert(message: message)
                 return false
             }
-            guard let myPubkey = self.dataManager.publicKey() else {
+
+            guard let myPubKey = self.dataManager.publicKey() else {
                 self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }
+
             let encrypted = self.encryptMsg(
-                pubkeys: [myPubkey, recipientPubkey],
+                pubkeys: allRecipientPubs + [myPubKey],
                 subject: subject,
                 message: text,
-                email: email
+                to: recipients.map { $0.email }
             )
+
             try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
+
             return true
         }
     }
@@ -189,24 +266,35 @@ extension ComposeViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    private func encryptMsg(pubkeys: [String], subject: String, message: String, email: String) -> CoreRes.ComposeEmail {
+    private func encryptMsg(
+        pubkeys: [String],
+        subject: String,
+        message: String,
+        to: [String],
+        cc: [String] = [],
+        bcc: [String] = [],
+        atts: [SendableMsg.Att] = []
+    ) -> CoreRes.ComposeEmail {
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
         let msg = SendableMsg(
             text: message,
-            to: [email],
-            cc: [],
-            bcc: [],
+            to: to,
+            cc: cc,
+            bcc: bcc,
             from: dataManager.email ?? "",
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
-            atts: []
+            atts: atts
         )
         return try! core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
     }
 
     private func isInputValid() -> Bool {
-        guard contextToSend.recipient?.hasContent ?? false else {
+        let emails = recipients.map { $0.email }
+        let hasContent = emails.filter { $0.hasContent }
+
+        guard emails.count == hasContent.count else {
             showAlert(message: "compose_enter_recipient".localized)
             return false
         }
@@ -229,7 +317,7 @@ extension ComposeViewController {
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return Parts.allCases.count
+        Parts.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -241,30 +329,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .recipientDivider, .subjectDivider: return DividerCellNode()
-            case .recipient: return self.recipientNode()
+            case .recipientsInput: return self.recipientInput()
+            case .recipient: return self.recipientsNode()
             case .subject: return self.subjectNode()
             case .text: return self.textNode(with: nodeHeight)
-            }
-        }
-    }
-
-    private func recipientNode() -> ASCellNode {
-        TextFieldCellNode(
-            input: decorator.styledTextFieldInput("compose_recipient".localized)
-        ) { [weak self] event in
-            guard case let .didEndEditing(text) = event else { return }
-            self?.contextToSend.recipient = text
-        }
-        .onReturn { [weak self] _ in
-            guard let node = self?.node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return true }
-            node.becomeFirstResponder()
-            return true
-        }
-        .then {
-            $0.isLowercased = true
-            $0.attributedText = decorator.styledTitle(input.recipientReplyTitle)
-            if !self.input.isReply {
-                $0.becomeFirstResponder()
             }
         }
     }
@@ -276,7 +344,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.subject = text
         }
-        .onReturn { [weak self] _ in
+        .onShouldReturn { [weak self] _ in
             guard let self = self else { return true }
             if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
                 node.becomeFirstResponder()
@@ -293,9 +361,9 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
         let textFieldHeight = decorator.styledTextFieldInput("").height
         let dividerHeight: CGFloat = 1
-        let prefferedHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
+        let preferredHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
 
-        return TextViewCellNode(decorator.styledTextViewInput(with: prefferedHeight)) { [weak self] event in
+        return TextViewCellNode(decorator.styledTextViewInput(with: preferredHeight)) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.message = text?.string
         }.then {
@@ -303,5 +371,142 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 $0.becomeFirstResponder()
             }
         }
+    }
+}
+
+// MARK: - Recipients
+extension ComposeViewController {
+    private var textField: TextFieldNode? {
+        (node.nodeForRow(at: IndexPath(row: Parts.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
+    }
+
+    private var recipientsIndexPath: IndexPath {
+        IndexPath(row: Parts.recipient.rawValue, section: 0)
+    }
+
+    private func recipientsNode() -> RecipientEmailsCellNode {
+        RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
+            .onItemSelect { [weak self] indexPath in
+                self?.handleRecipientSelection(with: indexPath)
+            }
+    }
+
+    private func recipientInput() -> TextFieldCellNode {
+        TextFieldCellNode(
+            input: decorator.styledTextFieldInput("compose_recipient".localized)
+        ) { [weak self] action in
+            self?.handleTextFieldAction(with: action)
+        }
+        .onShouldReturn { [weak self] textField -> Bool in
+            self?.shouldReturn(with: textField) ?? true
+        }
+        .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
+            self?.shouldChange(with: textField, and: character) ?? true
+        }
+        .then {
+            $0.isLowercased = true
+            if !self.input.isReply {
+                $0.becomeFirstResponder()
+            }
+        }
+    }
+
+    private var recipients: [ComposeViewController.Recipient] {
+        contextToSend.recipients
+    }
+
+    private func shouldReturn(with textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+
+    private func shouldChange(with textField: UITextField, and character: String) -> Bool {
+        func nextResponder() {
+            guard let node = node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return }
+            node.becomeFirstResponder()
+        }
+
+        guard let text = textField.text else { nextResponder(); return true }
+
+        if text.isEmpty, character.count > 1 {
+            // Pasted string
+            let characterSet = CharacterSet(charactersIn: Constants.endTypingCharacters.joined())
+            let recipients = character.components(separatedBy: characterSet)
+            guard recipients.count > 1 else { return true }
+            recipients.forEach {
+                handleEndEditingAction(with: $0)
+            }
+            return false
+        } else if Constants.endTypingCharacters.contains(character) {
+            handleEndEditingAction(with: textField.text)
+            nextResponder()
+            return false
+        } else {
+            return true
+        }
+    }
+
+    private func handleTextFieldAction(with action: TextFieldActionType) {
+        switch action {
+        case let .deleteBackward(textField):
+            handleBackspaceAction(with: textField)
+        case let .didEndEditing(text):
+            handleEndEditingAction(with: text)
+        default:
+            break
+        }
+    }
+
+    private func handleEndEditingAction(with text: String?) {
+        guard let text = text, text.isNotEmpty else { return }
+
+        contextToSend.recipients = recipients.map { recipient in
+            var recipient = recipient
+            recipient.isSelected = false
+            return recipient
+        }
+        contextToSend.recipients.append(Recipient(email: text))
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+
+        let endIndex = recipients.endIndex - 1
+        let collectionNode = (node.nodeForRow(at: recipientsIndexPath) as? RecipientEmailsCellNode)?.collectionNode
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            collectionNode?.scrollToItem(at: IndexPath(row: endIndex, section: 0), at: .bottom, animated: true)
+        }
+        textField?.reset()
+    }
+
+    private func handleBackspaceAction(with textField: UITextField) {
+        guard textField.text == "" else { return }
+
+        let selectedRecipients = recipients
+            .filter { $0.isSelected }
+
+        guard selectedRecipients.isEmpty else {
+            // remove selected recipients
+            contextToSend.recipients = recipients.filter { !$0.isSelected }
+            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+            return
+        }
+
+        if let lastRecipient = contextToSend.recipients.popLast() {
+            // select last recipient in a list
+            var last = lastRecipient
+            last.isSelected = true
+            contextToSend.recipients.append(last)
+            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        } else {
+            // dismiss keyboard if no recipients left
+            textField.resignFirstResponder()
+        }
+    }
+
+    private func handleRecipientSelection(with indexPath: IndexPath) {
+        contextToSend.recipients[indexPath.row].isSelected.toggle()
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        if !(textField?.isFirstResponder() ?? true) {
+            textField?.becomeFirstResponder()
+        }
+        textField?.reset()
     }
 }

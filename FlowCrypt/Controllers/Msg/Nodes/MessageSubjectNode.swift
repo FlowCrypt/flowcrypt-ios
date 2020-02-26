@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class MessageSubjectNode: CellNode {
     private let textNode = ASTextNode()

@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import Foundation
+import FlowCryptUI
 
 final class TextCellNode: CellNode {
     private let spinner = SpinnerNode()

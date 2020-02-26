@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class EnterPassPhraseViewController: ASViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
@@ -128,7 +129,7 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                     guard case let .didEndEditing(text) = action else { return }
                     self?.passPhrase = text
                 }
-                .onReturn { [weak self] _ in
+                .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
                     return true
                 } 

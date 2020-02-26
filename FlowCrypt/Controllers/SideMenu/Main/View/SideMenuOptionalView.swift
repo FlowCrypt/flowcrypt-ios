@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FlowCryptCommon
 
 final class SideMenuOptionalView: UIView {
     private let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))

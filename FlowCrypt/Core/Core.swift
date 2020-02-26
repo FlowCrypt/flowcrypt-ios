@@ -3,6 +3,7 @@
 //
 
 import JavaScriptCore
+import FlowCryptCommon
 
 enum CoreError: Error {
     case exception(String)

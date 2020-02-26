@@ -31,6 +31,7 @@
 // Compose
 "compose_enter_recipient" = "Enter recipient";
 "compose_no_pub_recipient" = "Recipient doesn't seem to have encryption set up";
+"compose_no_pub_multiple" = "Some recipients don't have encryption set up";
 "compose_no_pub_sender" = "Missing sender public key. Is FlowCrypt iOS app well set up?";
 "compose_error" = "Could not compose message";
 "compose_reply_successfull" = "Reply successfully sent";
