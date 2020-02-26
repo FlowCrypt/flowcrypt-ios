@@ -23,8 +23,6 @@ target 'FlowCryptTests' do
   pod 'RealmSwift'
   pod 'IDZSwiftCommonCrypto'
   pod 'mailcore2-ios'
-  pod 'RxBlocking', '~> 5'
-  pod 'RxTest', '~> 5'
   inherit! :search_paths
 end
 
