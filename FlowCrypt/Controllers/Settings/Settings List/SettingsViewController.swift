@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class SettingsViewController: ASViewController<TableNode> {
     private enum Settings: Int, CaseIterable {

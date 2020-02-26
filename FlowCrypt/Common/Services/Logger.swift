@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FlowCryptCommon
 
 func log(_ message: String, error: Error?, res: Any?, start: DispatchTime) {
     Logger().log(message, error: error, res: res, start: start)

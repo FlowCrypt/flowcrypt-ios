@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FlowCryptUI
 
 protocol SetupDecoratorType {
     var title: NSAttributedString { get }
@@ -45,7 +46,7 @@ struct SetupDecorator: SetupDecoratorType {
 }
 
 enum SetupCommonStyle {
-    static let passPhraseTextFieldStyle = TextFieldCellNode.Input(
+    static let passPhraseTextFieldStyle: TextFieldCellNode.Input = TextFieldCellNode.Input(
         placeholder: "setup_enter".localized.attributed(.bold(16), color: .lightGray, alignment: .center),
         isSecureTextEntry: true,
         textInsets: 0,

@@ -4,6 +4,7 @@
 
 import Promises
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class SetupViewController: ASViewController<ASTableNode> {
     private let imap: Imap
@@ -111,7 +112,6 @@ extension SetupViewController {
     private func handleBackupsFetchResult() {
         hideSpinner()
         if fetchedEncryptedPrvs.isEmpty {
-            // TODO: Anton -
             let user = DataManager.shared.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             renderNoBackupsFoundOptions(msg)
@@ -201,7 +201,6 @@ extension SetupViewController {
     }
 
     private func getUserId() throws -> UserId {
-        // TODO: Anton -
         guard let email = DataManager.shared.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
         guard let name = DataManager.shared.email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
         return UserId(email: email, name: name)
@@ -292,7 +291,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 .then {
                     $0.becomeFirstResponder()
                 }
-                .onReturn { [weak self] _ in
+                .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
                     self?.handleButtonPressed()
                     return true

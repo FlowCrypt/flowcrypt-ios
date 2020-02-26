@@ -6,6 +6,7 @@ import Foundation
 import Promises
 
 struct PubkeySearchResult {
+    let email: String
     let armored: String?
 }
 
@@ -25,11 +26,12 @@ final class AttesterApi: AttesterApiType {
     func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
         return Promise { () -> PubkeySearchResult in
             let res = try await(URLSession.shared.call(AttesterApi.urlPub(emailOrLongid: email), tolerateStatus: [404]))
+            
             if res.status >= 200, res.status <= 299 {
-                return PubkeySearchResult(armored: res.data.toStr())
+                return PubkeySearchResult(email: email, armored: res.data.toStr())
             }
             if res.status == 404 {
-                return PubkeySearchResult(armored: nil)
+                return PubkeySearchResult(email: email, armored: nil)
             }
             // programming error because should never happen
             throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
@@ -70,7 +72,7 @@ final class AttesterApi: AttesterApiType {
     }
 
     private static func urlPub(emailOrLongid: String) -> String {
-        return "\(AttesterApi.url)pub/\(AttesterApi.normalize(emailOrLongid))"
+        "\(AttesterApi.url)pub/\(AttesterApi.normalize(emailOrLongid))"
     }
 
     private static func normalize(_ email: String) -> String {
