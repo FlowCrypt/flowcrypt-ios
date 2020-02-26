@@ -91,18 +91,18 @@ extension SetupViewController {
             object: nil,
             queue: .main) { [weak self] notification in
                 guard let self = self else { return }
-                self.adjustKeyboard(height: self.keyboardHeight(from: notification))
+                self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
             }
 
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil,
             queue: .main) { [weak self] notification in
-                self?.adjustKeyboard(height: 0)
+                self?.adjustForKeyboard(height: 0)
             }
     }
 
-    private func adjustKeyboard(height: CGFloat) {
+    private func adjustForKeyboard(height: CGFloat) {
         let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
         node.contentInset = insets
         node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
