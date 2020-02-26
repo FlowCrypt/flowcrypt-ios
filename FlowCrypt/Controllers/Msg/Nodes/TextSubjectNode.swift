@@ -10,11 +10,15 @@ import AsyncDisplayKit
 import FlowCryptUI
 
 final class TextSubjectNode: CellNode {
-    private let textNode = ASTextNode()
+    private let textNode = ASEditableTextNode()
 
     init(_ text: NSAttributedString?) {
         super.init()
         textNode.attributedText = text
+        DispatchQueue.main.async {
+            self.textNode.textView.isSelectable = true
+            self.textNode.textView.isEditable = false
+        }
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

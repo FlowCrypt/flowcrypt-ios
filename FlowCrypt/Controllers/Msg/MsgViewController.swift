@@ -276,5 +276,5 @@ extension MsgViewController: ASTableDelegate, ASTableDataSource {
                 return TextSubjectNode(self.message)
             }
         }
-    }
+    } 
 }
