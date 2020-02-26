@@ -196,7 +196,9 @@ extension ComposeViewController {
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { return false }
 
-            guard self.contextToSend.recipients.isNotEmpty else {
+            let recipients = self.contextToSend.recipients
+
+            guard recipients.isNotEmpty else {
                 assertionFailure("Recipients should not be empty. Fail in checking");
                 return false
             }
@@ -210,38 +212,35 @@ extension ComposeViewController {
                 ?? self.contextToSend.subject
                 ?? "(no subject)"
 
-            let lookup = self.contextToSend.recipients.map {
+
+            let lookup = recipients.map {
                 self.attesterApi.lookupEmail(email: $0.email)
             }
 
             let lookupRes = try await(all(lookup))
+            let allRecipientPubs = lookupRes.compactMap { $0.armored }
 
-            let armoredKeys = lookupRes.map { $0.armored }
-
-            if armoredKeys.contains(nil) {
-                self.showAlert(message: "compose_no_pub_recipient".localized)
+            guard allRecipientPubs.count == recipients.count else {
+                let message = recipients.count == 1
+                    ? "compose_no_pub_recipient".localized
+                    : "compose_no_pub_multiple".localized
+                self.showAlert(message: message)
                 return false
             }
 
-            guard let myPubkey = self.dataManager.publicKey() else {
+            guard let myPubKey = self.dataManager.publicKey() else {
                 self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }
 
-            let sentResult = lookupRes
-                .compactMap { (searchResult: PubkeySearchResult) -> CoreRes.ComposeEmail? in
-                    guard let armored = searchResult.armored else { assertionFailure(); return nil }
-                    return self.encryptMsg(
-                        pubkeys: [myPubkey, armored],
-                        subject: subject,
-                        message: text,
-                        email: searchResult.email
-                    )
-                }
-                .map { $0.mimeEncoded }
-                .map { self.imap.sendMail(mime: $0) }
+            let encrypted = self.encryptMsg(
+                pubkeys: allRecipientPubs + [myPubKey],
+                subject: subject,
+                message: text,
+                email: recipients.map { $0.email }
+            )
 
-            _ = try await(all(sentResult))
+            try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
 
             return true
         }
@@ -253,12 +252,12 @@ extension ComposeViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    private func encryptMsg(pubkeys: [String], subject: String, message: String, email: String) -> CoreRes.ComposeEmail {
+    private func encryptMsg(pubkeys: [String], subject: String, message: String, email: [String]) -> CoreRes.ComposeEmail {
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
         let msg = SendableMsg(
             text: message,
-            to: [email],
+            to: email,
             cc: [],
             bcc: [],
             from: dataManager.email ?? "",
