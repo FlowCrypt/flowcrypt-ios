@@ -58,6 +58,10 @@ final class ComposeViewController: ASViewController<TableNode> {
         super.viewWillDisappear(animated)
         node.view.endEditing(true)
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 // MARK: - Setup UI
@@ -86,14 +90,24 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func observeKeyboardNotifications() {
-        _ = keyboardHeight
-            .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 8, right: 0) }
-            .subscribe(onNext: {  [weak self] insets in
-                self?.adjustForKeyboard(insets: insets)
-            })
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillShowNotification,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                guard let self = self else { return }
+                self.adjustKeyboard(height: self.keyboardHeight(from: notification))
+            }
+
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillHideNotification,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                self?.adjustKeyboard(height: 0)
+            }
     }
 
-    @objc private func adjustForKeyboard(insets: UIEdgeInsets) {
+    private func adjustKeyboard(height: CGFloat) {
+        let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 8, right: 0)
         node.contentInset = insets
 
         guard let textView = node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first?.textView.textView else { return }

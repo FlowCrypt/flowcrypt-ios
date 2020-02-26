@@ -71,13 +71,34 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         node.contentInset.top = view.safeAreaInsets.top
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+
+// MARK: - Keyboard
+
+extension EnterPassPhraseViewController {
     private func observeKeyboardNotifications() {
-        _ = keyboardHeight
-            .map { UIEdgeInsets(top: self.node.contentInset.top, left: 0, bottom: $0 + 10, right: 0) }
-            .subscribe(onNext: { [weak self] inset in
-                self?.node.contentInset = inset
-                self?.node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
-            })
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillShowNotification,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                guard let self = self else { return }
+                self.adjustKeyboard(height: self.keyboardHeight(from: notification))
+            }
+
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillHideNotification,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                self?.adjustKeyboard(height: 0)
+            }
+    }
+
+    private func adjustKeyboard(height: CGFloat) {
+        node.contentInset = UIEdgeInsets(top: node.contentInset.top, left: 0, bottom: height + 10, right: 0)
+        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
     }
 }
 

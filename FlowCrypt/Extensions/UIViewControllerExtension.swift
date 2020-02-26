@@ -8,8 +8,6 @@
 
 import MBProgressHUD
 import Promises
-import RxCocoa
-import RxSwift
 import Toast
 import UIKit
 
@@ -63,27 +61,7 @@ extension UIViewController {
             CSToastManager.setTapToDismissEnabled(true)
         }
     }
-}
-
-extension UIViewController {
-    /// Observable keyboard height from willShow and willHide notifications
-    /// deliver signals on main queue.
-    var keyboardHeight: Observable<CGFloat> {
-        let willShowNotification = NotificationCenter.default.rx
-            .notification(UIResponder.keyboardWillShowNotification)
-            .map { notification in
-                (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
-            }
-        let willHideNotification = NotificationCenter.default.rx
-            .notification(UIResponder.keyboardWillHideNotification)
-            .map { _ in CGFloat(0) }
-
-        return Observable.from([willShowNotification, willHideNotification])
-            .merge()
-            .observeOn(MainScheduler.instance)
-            .takeUntil(rx.deallocated)
-    }
-}
+} 
 
 extension UIViewController {
     var safeAreaWindowInsets: UIEdgeInsets {
@@ -181,6 +159,10 @@ extension UIViewController {
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in resolve(true) }))
             self.present(alert, animated: true, completion: nil)
         }
+    }
+
+    func keyboardHeight(from notification: Notification) -> CGFloat {
+        (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
     }
 }
 
