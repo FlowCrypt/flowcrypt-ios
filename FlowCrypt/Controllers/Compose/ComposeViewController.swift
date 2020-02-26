@@ -237,7 +237,7 @@ extension ComposeViewController {
                 pubkeys: allRecipientPubs + [myPubKey],
                 subject: subject,
                 message: text,
-                email: recipients.map { $0.email }
+                to: recipients.map { $0.email }
             )
 
             try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
@@ -252,18 +252,26 @@ extension ComposeViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    private func encryptMsg(pubkeys: [String], subject: String, message: String, email: [String]) -> CoreRes.ComposeEmail {
+    private func encryptMsg(
+        pubkeys: [String],
+        subject: String,
+        message: String,
+        to: [String],
+        cc: [String] = [],
+        bcc: [String] = [],
+        atts: [SendableMsg.Att] = []
+    ) -> CoreRes.ComposeEmail {
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
         let msg = SendableMsg(
             text: message,
-            to: email,
-            cc: [],
-            bcc: [],
+            to: to,
+            cc: cc,
+            bcc: bcc,
             from: dataManager.email ?? "",
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
-            atts: []
+            atts: atts
         )
         return try! core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
     }
