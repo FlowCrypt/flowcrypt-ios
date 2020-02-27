@@ -69,6 +69,10 @@ final class SetupViewController: ASViewController<ASTableNode> {
         super.viewDidAppear(animated)
         fetchBackupsAndRenderResult()
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 // MARK: - Setup
@@ -83,12 +87,26 @@ extension SetupViewController {
     }
 
     private func observeKeyboardNotifications() {
-        _ = keyboardHeight
-            .map { UIEdgeInsets(top: 0, left: 0, bottom: $0 + 5, right: 0) }
-            .subscribe(onNext: { [weak self] inset in
-                self?.node.contentInset = inset
-                self?.node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
-            })
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillShowNotification,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                guard let self = self else { return }
+                self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
+            }
+
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillHideNotification,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                self?.adjustForKeyboard(height: 0)
+            }
+    }
+
+    private func adjustForKeyboard(height: CGFloat) {
+        let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
+        node.contentInset = insets
+        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
     }
 }
 

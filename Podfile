@@ -14,8 +14,6 @@ target 'FlowCrypt' do
   pod 'IDZSwiftCommonCrypto'
   pod 'Toast', '~> 4.0.0'
   pod 'ENSwiftSideMenu', '~> 0.1.4'
-  pod 'RxSwift', '~> 5'
-  pod 'RxCocoa', '~> 5'
   pod 'Texture'
 end
 
@@ -25,8 +23,6 @@ target 'FlowCryptTests' do
   pod 'RealmSwift'
   pod 'IDZSwiftCommonCrypto'
   pod 'mailcore2-ios'
-  pod 'RxBlocking', '~> 5'
-  pod 'RxTest', '~> 5'
   inherit! :search_paths
 end
 
