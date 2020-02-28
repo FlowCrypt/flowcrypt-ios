@@ -64,7 +64,7 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                     image: nil
                 )
                 let n = MenuCellNode(input: input)
-                print(n)
+                debugPrint(n)
                 return n
             case .emailRecipients:
                 return RecipientEmailsCellNode(recipients: self.recipients)

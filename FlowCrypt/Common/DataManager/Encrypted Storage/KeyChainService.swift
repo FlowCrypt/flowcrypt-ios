@@ -41,7 +41,7 @@ struct KeyChainService: KeyChainServiceType {
     private let keyByteLen = 64
 
     private func generateAndSaveStorageEncryptionKey() {
-        print("KeyChainService->generateAndSaveStorageEncryptionKey")
+        debugPrint("KeyChainService->generateAndSaveStorageEncryptionKey")
         guard let randomBytes = CoreHost().getSecureRandomByteNumberArray(keyByteLen) else {
             fatalError("KeyChainServiceType generateAndSaveStorageEncryptionKey getSecureRandomByteNumberArray bytes are nil")
         }

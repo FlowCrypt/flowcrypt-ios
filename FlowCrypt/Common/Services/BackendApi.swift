@@ -11,10 +11,10 @@ final class BackendApi {
     private init() {}
 
     private static func url(endpoint: String) -> String {
-        return "https://flowcrypt.com/api/\(endpoint)"
+        "https://flowcrypt.com/api/\(endpoint)"
     }
 
     private static func normalize(_ email: String) -> String {
-        return email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }

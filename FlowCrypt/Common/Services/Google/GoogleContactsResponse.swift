@@ -44,8 +44,7 @@ struct GoogleContactsResponse : Decodable {
                 names.append(try resultContainer.decode(String.self, forKey: .address))
             }
             self.emails = names
-        } catch let error {
-            assertionFailure(error.localizedDescription)
+        } catch {
             self.emails = []
         }
     }

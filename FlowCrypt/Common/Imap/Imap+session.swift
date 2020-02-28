@@ -13,7 +13,7 @@ extension Imap {
     @discardableResult
     func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession {
         guard let existingImapSess = imapSess, newAccessToken == nil else {
-            print("IMAP: creating a new session")
+            debugPrint("IMAP: creating a new session")
             let newImapSess = MCOIMAPSession()
             newImapSess.hostname = "imap.gmail.com"
             newImapSess.port = 993
@@ -27,7 +27,7 @@ extension Imap {
 //            newImapSess.connectionLogger = {(connectionID, type, data) in
 //                if data != nil {
 //                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
-//                        print("IMAP:\(type):\(string)")
+//                        debugPrint("IMAP:\(type):\(string)")
 //                    }
 //                }
 //            }
@@ -40,7 +40,7 @@ extension Imap {
     @discardableResult
     func getSmtpSess(newAccessToken: String? = nil) -> MCOSMTPSession {
         guard let existingSess = smtpSess, newAccessToken == nil else {
-            print("SMTP: creating a new session")
+            debugPrint("SMTP: creating a new session")
             let newSmtpSess = MCOSMTPSession()
             newSmtpSess.hostname = "smtp.gmail.com"
             newSmtpSess.port = 465

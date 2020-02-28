@@ -154,7 +154,7 @@ class FlowCryptCoreTests: XCTestCase {
             _ = try core.decryptKey(armoredPrv: "not really a key", passphrase: "whatnot")
             XCTFail("Should have thrown above")
         } catch let CoreError.exception(message) {
-            print(message)
+            debugPrint(message)
             XCTAssertNotNil(message.range(of: "Error: Misformed armored text"))
         }
     }

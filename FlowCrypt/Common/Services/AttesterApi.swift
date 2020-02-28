@@ -24,7 +24,7 @@ final class AttesterApi: AttesterApiType {
     private init() {}
 
     func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
-        return Promise { () -> PubkeySearchResult in
+        Promise { () -> PubkeySearchResult in
             let res = try await(URLSession.shared.call(AttesterApi.urlPub(emailOrLongid: email), tolerateStatus: [404]))
             
             if res.status >= 200, res.status <= 299 {
@@ -40,7 +40,7 @@ final class AttesterApi: AttesterApiType {
 
     @discardableResult
     func updateKey(email: String, pubkey: String) -> Promise<String> {
-        return Promise { () -> String in
+        Promise { () -> String in
             var req = URLRequest(url: URL(string: AttesterApi.urlPub(emailOrLongid: email))!)
             req.httpMethod = "PUT"
             req.httpBody = pubkey.data()
@@ -51,7 +51,7 @@ final class AttesterApi: AttesterApiType {
 
     @discardableResult
     func replaceKey(email: String, pubkey: String) -> Promise<String> {
-        return Promise { () -> String in
+        Promise { () -> String in
             var req = URLRequest(url: URL(string: AttesterApi.urlPub(emailOrLongid: email))!)
             req.httpMethod = "POST"
             req.httpBody = pubkey.data()
@@ -76,6 +76,6 @@ final class AttesterApi: AttesterApiType {
     }
 
     private static func normalize(_ email: String) -> String {
-        return email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
