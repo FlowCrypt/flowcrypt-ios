@@ -8,8 +8,8 @@
 
 import UIKit.UINotificationFeedbackGenerator
 
-enum TapTicFeedback {
-    static func generate(_ ticType: TapTicType) {
+public enum TapTicFeedback {
+    public static func generate(_ ticType: TapTicType) {
         switch ticType {
         case .error:
             let generator = UINotificationFeedbackGenerator()
@@ -40,6 +40,6 @@ enum TapTicFeedback {
     }
 }
 
-enum TapTicType {
+public enum TapTicType {
     case error, warning, success, light, medium, heavy, changed
 }

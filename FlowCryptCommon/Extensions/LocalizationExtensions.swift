@@ -16,7 +16,7 @@ import Foundation
     return localize(key)
 }
 
-extension String {
+public extension String {
     var localized: String {
         return LocalizedString(self)
     }

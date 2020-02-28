@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension DateFormatter {
+public extension DateFormatter {
     func formatDate(_ date: Date) -> String {
         let dateFormater = DateFormatter()
         if Calendar.current.isDateInToday(date) {

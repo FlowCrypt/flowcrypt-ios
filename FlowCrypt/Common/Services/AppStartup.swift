@@ -8,9 +8,15 @@
 
 import Foundation
 import Promises
-import GoogleSignIn
 
-class AppStartup {
+struct AppStartup {
+    let googleService: GoogleServiceType
+
+    init(
+        googleService: GoogleServiceType = GoogleService()
+    ) {
+        self.googleService = googleService
+    }
 
     public func initializeApp(window: UIWindow) {
         let start = DispatchTime.now()
@@ -18,10 +24,10 @@ class AppStartup {
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
         Promise<Void> {
-            Core.shared.startInBackgroundIfNotAlreadyRunning()
-            try self.setUpAuthentiation()
-            try await(DataManager.shared.performMigrationIfNeeded())
-            try await(self.renewSessionIfValid())
+            self.setupCore()
+            try self.setUpAuthentication()
+            try self.setupMigrationIfNeeded()
+            try self.setupSession()
         }.then(on: .main) {
             self.chooseView(window: window)
             log("AppStartup", error: nil, res: nil, start: start)
@@ -32,14 +38,20 @@ class AppStartup {
         }
     }
 
-    private func setUpAuthentiation() throws {
-        guard let googleSignIn = GIDSignIn.sharedInstance() else { throw AppErr.general("Unexpected nil GIDSignIn") }
-        googleSignIn.clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
-        googleSignIn.scopes = [
-            "https://www.googleapis.com/auth/userinfo.profile",
-            "https://mail.google.com/",
-        ]
-        googleSignIn.delegate = UserService.shared
+    private func setupCore() {
+        Core.shared.startInBackgroundIfNotAlreadyRunning()
+    }
+
+    private func setUpAuthentication() throws {
+        try googleService.setUpAuthentication()
+    }
+
+    private func setupMigrationIfNeeded() throws {
+        try await(DataManager.shared.performMigrationIfNeeded())
+    }
+
+    private func setupSession() throws {
+        try await(self.renewSessionIfValid())
     }
 
     private func renewSessionIfValid() -> Promise<Void> {
@@ -57,5 +69,4 @@ class AppStartup {
             window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
         }
     }
-
 }

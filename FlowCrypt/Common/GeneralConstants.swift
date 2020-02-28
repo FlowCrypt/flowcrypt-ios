@@ -22,3 +22,16 @@ enum GeneralConstants {
         ]
     }
 }
+
+enum MailDestination {
+    enum Gmail {
+        case trash, inbox
+
+        var path: String {
+            switch self {
+            case .trash: return "[Gmail]/Trash"
+            case .inbox: return "Inbox"
+            }
+        }
+    }
+}

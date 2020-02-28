@@ -4,8 +4,8 @@
 
 import AsyncDisplayKit
 import Promises
-import UIKit
 import FlowCryptUI
+import FlowCryptCommon
 
 final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
