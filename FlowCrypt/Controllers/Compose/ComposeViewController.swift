@@ -61,6 +61,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let attesterApi: AttesterApiType
     private let decorator: ComposeDecoratorType
     private let core: Core
+    private let googleService: GoogleServiceType
 
     private var input: Input
     private var contextToSend = Context()
@@ -72,7 +73,8 @@ final class ComposeViewController: ASViewController<TableNode> {
         attesterApi: AttesterApiType = AttesterApi.shared,
         decorator: ComposeDecoratorType = ComposeDecorator(),
         input: ComposeViewController.Input = .empty,
-        core: Core = Core.shared
+        core: Core = Core.shared,
+        googleService: GoogleServiceType = GoogleService()
     ) {
         self.imap = imap
         self.notificationCenter = notificationCenter
@@ -81,6 +83,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.input = input
         self.decorator = decorator
         self.core = core
+        self.googleService = googleService
         if input.isReply {
             if let email = input.recipientReplyTitle {
                 contextToSend.recipients.append(Recipient(email: email))
@@ -113,31 +116,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = "www.google.com"
-        components.path = "/m8/feeds/contacts/default/thin"
-        components.queryItems = [
-            URLQueryItem(name: "q", value: "anton"),
-            URLQueryItem(name: "access_token", value: DataManager.shared.currentToken!),
-            URLQueryItem(name: "start-index", value: "10")
-        ]
-
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        print("^^ \(components.url!)")
-        var request = URLRequest(url: components.url!)
-        request.addValue(DataManager.shared.currentToken!, forHTTPHeaderField: "Authorization")
-
-        URLSession.shared.call(request)
-            .then(on: .main) { data in
-                print("^^ \(data)")
-        }.catch(on: .main) { error in
-            print("^^ \(error)")
-        }
-//        https://github.com/FlowCrypt/flowcrypt-ios/issues/204
-//        https://github.com/FlowCrypt/flowcrypt-browser/blob/master/extension/js/common/api/google.ts#L44
-//        https://developers.google.com/contacts/v3
-//        https://stackoverflow.com/questions/37295159/how-to-query-the-inbox-content-of-gmail-by-gmail-api-in-swift
+        googleService.searchContacts(query: "tom")
     }
 
     deinit {

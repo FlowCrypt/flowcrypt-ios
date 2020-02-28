@@ -9,10 +9,6 @@
 import Foundation
 import Promises
 
-protocol LogOutHandler {
-    func logOut()
-}
-
 protocol DataManagerType {
     func startFor(user: User, with token: String?)
     

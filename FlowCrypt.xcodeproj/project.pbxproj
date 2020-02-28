@@ -171,6 +171,9 @@
 		D254AA6024092AB80041CAE0 /* TapTicFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2D23438ABA00A7371A /* TapTicFeedback.swift */; };
 		D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F716304234FC7200031645E /* LocalizationExtensions.swift */; };
 		D29AFFED24092D7900C1387D /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFEC24092D7900C1387D /* GoogleService.swift */; };
+		D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
+		D29AFFF42409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
+		D29AFFF6240939AE00C1387D /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		D2A1D3BA23FD64AB00D626D6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */; };
 		D2A1D3C323FD64AD00D626D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2A1D3C223FD64AD00D626D6 /* Assets.xcassets */; };
@@ -181,7 +184,6 @@
 		D2CDC3D22402D4DA002B045F /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */; };
 		D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
 		D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */; };
-		D2CDC3D62402D565002B045F /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */; };
 		D2CDC3D824047066002B045F /* RecipientEmailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */; };
 		D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; };
@@ -421,6 +423,7 @@
 		D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailNode.swift; sourceTree = "<group>"; };
 		D2531F452402C62D007E5198 /* CollectionExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionExtensions.swift; sourceTree = "<group>"; };
 		D29AFFEC24092D7900C1387D /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
+		D29AFFF22409370300C1387D /* LogOutHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutHandler.swift; sourceTree = "<group>"; };
 		D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowCryptUIApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -495,7 +498,7 @@
 			path = Lib;
 			sourceTree = "<group>";
 		};
-		04B4728A1ECE29D200B8266F /* Model */ = {
+		04B4728A1ECE29D200B8266F /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
@@ -503,7 +506,7 @@
 				9F589F12238C7DF2007FD759 /* User+Google.swift */,
 				9F589F1E238C8A90007FD759 /* Token.swift */,
 			);
-			path = Model;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		04B4728F1ECE29F600B8266F /* Compose */ = {
@@ -519,6 +522,7 @@
 			isa = PBXGroup;
 			children = (
 				9F31AB9A232BF08600CF87EA /* Menu */,
+				9F31AB9C232BF0A100CF87EA /* Models */,
 				9F2A939F23363D2400014A92 /* Main */,
 				9F1F8A1D235F84D6006463A1 /* NavigationController */,
 			);
@@ -797,7 +801,6 @@
 			isa = PBXGroup;
 			children = (
 				04B472921ECE29F600B8266F /* MyMenuViewController.swift */,
-				9F31AB9C232BF0A100CF87EA /* Models */,
 				9FDF363C235A0B6F00614596 /* Nodes */,
 			);
 			path = Menu;
@@ -931,14 +934,6 @@
 			path = Pgp;
 			sourceTree = "<group>";
 		};
-		A3D328BF22E1C640002888F4 /* Storyboards */ = {
-			isa = PBXGroup;
-			children = (
-				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
-			);
-			path = Storyboards;
-			sourceTree = "<group>";
-		};
 		A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -956,6 +951,7 @@
 		A3DAD60C22E469E400F2C4CD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
 				32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
@@ -998,9 +994,8 @@
 				A3B7C31623E437370022D628 /* FlowCryptRelease.entitlements */,
 				A3B7C31523E436E10022D628 /* FlowCrypt.entitlements */,
 				32DCA376D595968F13A3347A /* Core */,
-				A3D328BF22E1C640002888F4 /* Storyboards */,
 				C132B9C51EC2DCAB00763715 /* Controllers */,
-				04B4728A1ECE29D200B8266F /* Model */,
+				04B4728A1ECE29D200B8266F /* Models */,
 				9FD22A1D230FEEC8005067A6 /* Common UI */,
 				32DCAEF9FEEF84D4F0D4A516 /* Extensions */,
 				C132B9C61EC2DCC000763715 /* Common */,
@@ -1027,9 +1022,9 @@
 				9F268892237DC55E00428A94 /* ImportKey */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
-				9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */,
+				D29AFFF02409300600C1387D /* Search */,
 				5A39F42E239EC32B001F4607 /* Settings */,
-				D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */,
+				D29AFFF12409301300C1387D /* Bootstrap */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1037,8 +1032,8 @@
 		C132B9C61EC2DCC000763715 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				D29AFFEE24092F4900C1387D /* DataManager */,
 				A370EAB6238697E000685215 /* Pgp */,
+				D29AFFEE24092F4900C1387D /* DataManager */,
 				9F0C3C0E2316DD4B00299985 /* Handlers */,
 				9F0C3C1F23191F2000299985 /* Services */,
 				9F31AB8F232993AC00CF87EA /* Imap */,
@@ -1118,8 +1113,8 @@
 				9F8277952373732000E19C07 /* UIImageExtensions.swift */,
 				32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */,
 				32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */,
-				32DCAEFF16F5D91A35791730 /* DataExtensions.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
+				32DCAEFF16F5D91A35791730 /* DataExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1128,10 +1123,27 @@
 			isa = PBXGroup;
 			children = (
 				9F0C3C112316DDA500299985 /* DataManager.swift */,
+				D29AFFF22409370300C1387D /* LogOutHandler.swift */,
 				9F589F1A238C85B0007FD759 /* Encrypted Storage */,
 				9F589F19238C82A1007FD759 /* Local Storage */,
 			);
 			path = DataManager;
+			sourceTree = "<group>";
+		};
+		D29AFFF02409300600C1387D /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		D29AFFF12409301300C1387D /* Bootstrap */ = {
+			isa = PBXGroup;
+			children = (
+				D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */,
+			);
+			path = Bootstrap;
 			sourceTree = "<group>";
 		};
 		D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */ = {
@@ -1689,6 +1701,7 @@
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
 				9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
+				D29AFFF42409370300C1387D /* LogOutHandler.swift in Sources */,
 				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				A3DAD60A22E458C100F2C4CD /* CodableExntensions.swift in Sources */,
@@ -1740,6 +1753,7 @@
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
+				D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MsgViewController.swift in Sources */,
 				5ADEDCC223A43C6800EC495E /* KeyTextCellNode.swift in Sources */,
@@ -1850,8 +1864,8 @@
 				D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */,
 				D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */,
 				D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */,
-				D2CDC3D62402D565002B045F /* Then.swift in Sources */,
 				D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */,
+				D29AFFF6240939AE00C1387D /* Then.swift in Sources */,
 				D2531F3423FEEF5F007E5198 /* StyleExtension.swift in Sources */,
 				D254AA6024092AB80041CAE0 /* TapTicFeedback.swift in Sources */,
 				D2531F472402C9DE007E5198 /* IntExtensions.swift in Sources */,

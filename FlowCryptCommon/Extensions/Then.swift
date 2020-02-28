@@ -64,3 +64,4 @@ extension CGVector: Then {}
 extension UIEdgeInsets: Then {}
 extension UIOffset: Then {}
 extension UIRectEdge: Then {}
+extension URLComponents: Then {}
