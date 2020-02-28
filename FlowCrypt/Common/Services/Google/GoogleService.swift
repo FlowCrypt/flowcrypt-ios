@@ -8,10 +8,11 @@
 
 import Foundation
 import GoogleSignIn
+import Promises
 
 protocol GoogleServiceType {
     func setUpAuthentication() throws
-    func searchContacts(query: String)
+    func searchContacts(query: String) -> Promise<[String]>
 }
 
 final class GoogleService {
@@ -63,10 +64,10 @@ extension GoogleService: GoogleServiceType {
         googleSignIn.delegate = UserService.shared
     }
 
-    func searchContacts(query: String) {
+    func searchContacts(query: String) -> Promise<[String]> {
         guard let token = token else {
             assertionFailure("token should not be nil")
-            return
+            return Promise(AppErr.unexpected("Missing token"))
         }
 
         var searchComponents = components(for: Constants.searchPath)
@@ -80,40 +81,18 @@ extension GoogleService: GoogleServiceType {
 
         guard let url = searchComponents.url else {
             assertionFailure("Url should not be nil")
-            return
+            return Promise(AppErr.unexpected("Missing url"))
         }
 
-        URLSession.shared.call(URLRequest(url: url))
-            .then(on: .main) { res in
-                do {
-                    let encoded = try JSONDecoder().decode(Feed.self, from: res.data)
-                    print(encoded)
-//                    print(String(decoding: encoded, as: ContactsResponse.self))
-                } catch {
-                    print(error)
-                }
-
-        }.catch(on: .main) { error in
-            print("^^ \(error)")
+        return Promise<[String]> { () -> [String] in
+            let response = try await(URLSession.shared.call(URLRequest(url: url)))
+            let emails = try JSONDecoder().decode(GoogleContactsResponse.self, from: response.data).emails
+            return emails
         }
     }
 }
 
-struct Feed: Codable {
-    let feed: Entry
-
-    struct Entry: Codable {
-
-    }
-}
-
-struct EmailEntry: Codable {
-//    let address: String
-}
-
-struct Adress: Codable {
-    let address: String
-}
 
 
-// compose_enable_search
+
+

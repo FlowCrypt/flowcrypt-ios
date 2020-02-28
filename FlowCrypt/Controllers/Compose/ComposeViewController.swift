@@ -117,6 +117,9 @@ final class ComposeViewController: ASViewController<TableNode> {
         super.viewDidAppear(animated)
 
         googleService.searchContacts(query: "tom")
+            .then(on: .main) { emails in
+                print(emails)
+            }
     }
 
     deinit {
