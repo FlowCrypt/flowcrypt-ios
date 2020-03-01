@@ -157,7 +157,7 @@
 		D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* ButtonCellNode.swift */; };
 		D211CE7523FC369D00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
-		D211CE7B23FC59ED00D1CE38 /* MenuCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* MenuCellNode.swift */; };
+		D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* InfoCellNode.swift */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
@@ -375,7 +375,7 @@
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
 		9FD364852381EFCB00657302 /* EnterPassPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPassPhraseViewController.swift; sourceTree = "<group>"; };
-		9FDF3637235A0B3100614596 /* MenuCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCellNode.swift; sourceTree = "<group>"; };
+		9FDF3637235A0B3100614596 /* InfoCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoCellNode.swift; sourceTree = "<group>"; };
 		9FDF3639235A0B3B00614596 /* HeaderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderNode.swift; sourceTree = "<group>"; };
 		9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDF3645235A1B0100614596 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1184,7 +1184,7 @@
 				9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */,
 				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
 				9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */,
-				9FDF3637235A0B3100614596 /* MenuCellNode.swift */,
+				9FDF3637235A0B3100614596 /* InfoCellNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -1858,7 +1858,7 @@
 				D204DBA823FB35930083B9D6 /* RecipientsTextField.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
-				D211CE7B23FC59ED00D1CE38 /* MenuCellNode.swift in Sources */,
+				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
 				D211CE7223FC35AC00D1CE38 /* TextFieldNode.swift in Sources */,
 				D2CDC3D824047066002B045F /* RecipientEmailNode.swift in Sources */,

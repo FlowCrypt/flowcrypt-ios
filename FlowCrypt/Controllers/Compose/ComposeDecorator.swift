@@ -11,36 +11,53 @@ import FlowCryptUI
 
 protocol ComposeDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
-    var styledTextFieldInput: (String) -> TextFieldCellNode.Input { get }
-    var styledTitle: (String?) -> (NSAttributedString?) { get }
+    func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
+    func styledRecipientInfo(with email: String) -> InfoCellNode.Input
+    func styledTitle(with text:String?) -> NSAttributedString?
 }
 
 struct ComposeDecorator: ComposeDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
-            placeholder: "message_compose_secure".localized.attributed(.regular(17), color: .lightGray, alignment: .left),
+            placeholder: "message_compose_secure".localized.attributed(
+                .regular(17),
+                color: .lightGray,
+                alignment: .left
+            ),
             preferredHeight: height
         )
     }
 
-    var styledTextFieldInput: (String) -> TextFieldCellNode.Input {
-        {
-            TextFieldCellNode.Input(
-                placeholder: $0.localized.attributed(.regular(17), color: .lightGray, alignment: .left),
-                isSecureTextEntry: false,
-                textInsets: -8,
-                textAlignment: .left,
-                height: 40,
-                width: UIScreen.main.bounds.width
-            )
-        }
+    func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input {
+        TextFieldCellNode.Input(
+            placeholder: text.localized.attributed(
+                .regular(17),
+                color: .lightGray,
+                alignment: .left
+            ),
+            isSecureTextEntry: false,
+            textInsets: -8,
+            textAlignment: .left,
+            height: 40,
+            width: UIScreen.main.bounds.width
+        )
     }
 
-    var styledTitle: (String?) -> (NSAttributedString?) {
-        { string in
-            guard let string = string else { return nil }
-            return string.attributed(.regular(17))
-        }
+    func styledTitle(with text:String?) -> NSAttributedString? {
+        guard let text = text else { return nil }
+        return text.attributed(.regular(17))
+    }
+
+    func styledRecipientInfo(with email: String) -> InfoCellNode.Input {
+        InfoCellNode.Input(
+            attributedText: email.attributed(
+                .medium(17),
+                color: UIColor.black.withAlphaComponent(0.8),
+                alignment: .left
+            ),
+            image: nil,
+            insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        )
     }
 }
 

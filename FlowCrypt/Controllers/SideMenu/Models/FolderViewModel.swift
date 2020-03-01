@@ -45,7 +45,7 @@ extension FolderViewModel {
     } 
 }
 
-extension MenuCellNode.Input {
+extension InfoCellNode.Input {
     init(_ viewModel: FolderViewModel) {
         self.init(attributedText: viewModel.name.attributed(.regular(17)), image: viewModel.image)
     }

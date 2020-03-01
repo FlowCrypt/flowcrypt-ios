@@ -8,28 +8,34 @@
 
 import AsyncDisplayKit
 
-public final class MenuCellNode: ASCellNode {
+/// Node for representing text and optional image
+public final class InfoCellNode: ASCellNode {
     public struct Input {
         let attributedText: NSAttributedString
         let image: UIImage?
+        let insets: UIEdgeInsets
 
         public init(
             attributedText: NSAttributedString,
-            image: UIImage?
+            image: UIImage?,
+            insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         ) {
             self.attributedText = attributedText
             self.image = image
+            self.insets = insets
         }
     }
 
     private let textNode = ASTextNode()
     private let imageNode = ASImageNode()
+    private let input: Input?
 
     public init(input: Input?) {
+        self.input = input
         super.init()
-        textNode.attributedText = input?.attributedText
-        imageNode.image = input?.image
-        automaticallyManagesSubnodes = true
+        self.textNode.attributedText = input?.attributedText
+        self.imageNode.image = input?.image
+        self.automaticallyManagesSubnodes = true
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
@@ -44,7 +50,7 @@ public final class MenuCellNode: ASCellNode {
         stack.children = [imageNode, textNode]
 
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            insets: input?.insets ?? .zero,
             child: stack
         )
     }

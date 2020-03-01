@@ -53,7 +53,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     }
 
     enum State {
-        case main, searchEmails([String]) // add reply state
+        case main, searchEmails([String])
     }
 
     private enum RecipientParts: Int, CaseIterable {
@@ -365,52 +365,66 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 case .recipientsInput: return self.recipientInput()
                 case .recipient: return self.recipientsNode()
                 }
-//                return ASCellNode()
             case (.main, 1):
                 guard let composePart = ComposeParts(rawValue: indexPath.row) else { return ASCellNode() }
                 switch composePart {
                 case .subject: return self.subjectNode()
                 case .text: return self.textNode(with: nodeHeight)
                 case .subjectDivider: return DividerCellNode()
-                default: return ASCellNode()
                 }
-//                return ASCellNode()
+            case (.searchEmails(let emails), 1):
+                return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
                 return ASCellNode()
             }
         }
     }
 
-    private func subjectNode() -> ASCellNode {
-        TextFieldCellNode(
-            input: decorator.styledTextFieldInput("compose_subject".localized)
-        ) { [weak self] event in
-            guard case let .didEndEditing(text) = event else { return }
-            self?.contextToSend.subject = text
-        }
-        .onShouldReturn { [weak self] _ in
-            guard let self = self else { return true }
-            if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
-                node.becomeFirstResponder()
-            } else {
-                self.node.view.endEditing(true)
-            }
-            return true
-        }
-        .then {
-            $0.attributedText = decorator.styledTitle(input.subjectReplyTitle)
-        }
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard case let .searchEmails(emails) = state,
+            indexPath.section == 1,
+            let selectedEmail = emails[safe: indexPath.row]
+        else { return }
+
+        handleEndEditingAction(with: selectedEmail)
     }
+}
+
+// MARK: - Nodes
+extension ComposeViewController {
+    private func subjectNode() -> ASCellNode {
+           TextFieldCellNode(
+               input: decorator.styledTextFieldInput(with: "compose_subject".localized)
+           ) { [weak self] event in
+               guard case let .didEndEditing(text) = event else { return }
+               self?.contextToSend.subject = text
+           }
+           .onShouldReturn { [weak self] _ in
+               guard let self = self else { return true }
+               if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
+                   node.becomeFirstResponder()
+               } else {
+                   self.node.view.endEditing(true)
+               }
+               return true
+           }
+           .then {
+               $0.attributedText = decorator.styledTitle(with: input.subjectReplyTitle)
+           }
+       }
 
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
-        let textFieldHeight = decorator.styledTextFieldInput("").height
+        let textFieldHeight = decorator.styledTextFieldInput(with: "").height
         let dividerHeight: CGFloat = 1
         let preferredHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
 
-        return TextViewCellNode(decorator.styledTextViewInput(with: preferredHeight)) { [weak self] event in
+        return TextViewCellNode(
+            decorator.styledTextViewInput(with: preferredHeight)
+        ) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.message = text?.string
-        }.then {
+        }
+        .then {
             if self.input.isReply {
                 $0.becomeFirstResponder()
             }
@@ -426,7 +440,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     private func recipientInput() -> TextFieldCellNode {
         TextFieldCellNode(
-            input: decorator.styledTextFieldInput("compose_recipient".localized)
+            input: decorator.styledTextFieldInput(with: "compose_recipient".localized)
         ) { [weak self] action in
             self?.handleTextFieldAction(with: action)
         }
@@ -445,7 +459,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 }
 
-// MARK: - Recipients
+// MARK: - Recipients Input
 extension ComposeViewController {
     private var textField: TextFieldNode? {
         (node.nodeForRow(at: IndexPath(row: RecipientParts.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
@@ -466,9 +480,8 @@ extension ComposeViewController {
 
     private func shouldChange(with textField: UITextField, and character: String) -> Bool {
         func nextResponder() {
-            // TODO: ANTON -
-//            guard let node = node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return }
-//            node.becomeFirstResponder()
+            guard let node = node.visibleNodes[safe: ComposeParts.subject.rawValue] as? TextFieldCellNode else { return }
+            node.becomeFirstResponder()
         }
 
         guard let text = textField.text else { nextResponder(); return true }
@@ -496,7 +509,7 @@ extension ComposeViewController {
         case let .deleteBackward(textField): handleBackspaceAction(with: textField)
         case let .didEndEditing(text): handleEndEditingAction(with: text)
         case let .editingChanged(text): handleEditingChanged(with: text)
-        default: break
+        case .didBeginEditing: handleDidBeginEditing()
         }
     }
 
@@ -517,8 +530,9 @@ extension ComposeViewController {
             collectionNode?.scrollToItem(at: IndexPath(row: endIndex, section: 0), at: .bottom, animated: true)
         }
         textField?.reset()
+        node.view.keyboardDismissMode = .interactive
 
-//        updateState(with: .main)
+        updateState(with: .main)
     }
 
     private func handleBackspaceAction(with textField: UITextField) {
@@ -556,29 +570,35 @@ extension ComposeViewController {
     }
 
     private func handleEditingChanged(with text: String?) {
-        guard let text = text else { return }
+        guard let text = text, text.isNotEmpty else {
+            updateState(with: .main)
+            return
+        }
 
         searchThrottler.throttle { [weak self] in
             self?.searchEmail(with: text)
         }
     }
+
+    private func handleDidBeginEditing() {
+        node.view.keyboardDismissMode = .none
+    }
 }
 
 extension ComposeViewController {
     private func searchEmail(with query: String) {
-        print("^^ \(query)")
         googleService.searchContacts(query: query)
             .then(on: .main) { [weak self] emails in
-                self?.updateState(with: .searchEmails(emails))
+                let state: State = emails.isNotEmpty
+                    ? .searchEmails(emails)
+                    : .main
+                self?.updateState(with: state)
             }
     }
 }
 
 extension ComposeViewController {
     private func updateState(with newState: State) {
-
-
-
         state = newState
         node.reloadSections(IndexSet(integer: 1), with: .fade)
     }
