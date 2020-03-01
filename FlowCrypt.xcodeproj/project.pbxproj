@@ -689,12 +689,12 @@
 			path = Nodes;
 			sourceTree = "<group>";
 		};
-		9F0C3C0E2316DD4B00299985 /* Handlers */ = {
+		9F0C3C0E2316DD4B00299985 /* AppUrlHandler */ = {
 			isa = PBXGroup;
 			children = (
 				9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */,
 			);
-			path = Handlers;
+			path = AppUrlHandler;
 			sourceTree = "<group>";
 		};
 		9F0C3C1F23191F2000299985 /* Services */ = {
@@ -995,7 +995,7 @@
 			children = (
 				A370EAB6238697E000685215 /* Pgp */,
 				D29AFFEE24092F4900C1387D /* DataManager */,
-				9F0C3C0E2316DD4B00299985 /* Handlers */,
+				9F0C3C0E2316DD4B00299985 /* AppUrlHandler */,
 				9F0C3C1F23191F2000299985 /* Services */,
 				9F31AB8F232993AC00CF87EA /* Imap */,
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
