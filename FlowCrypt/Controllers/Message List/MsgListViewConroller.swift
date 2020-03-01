@@ -16,7 +16,6 @@ protocol MsgListViewConroller {
 }
 
 extension MsgListViewConroller where Self: UIViewController {
-
     func msgListOpenMsgElseShowToast(with message: MCOIMAPMessage, path: String) {
         if Int(message.size) > GeneralConstants.Global.messageSizeLimit {
             showToast("Messages larger than 5MB are not supported yet")

@@ -9,6 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+// TODO: ANTON - Move to FlowCryptUI
 final class MessageSubjectNode: CellNode {
     private let textNode = ASTextNode()
     private let timeNode = ASTextNode()

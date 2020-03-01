@@ -100,7 +100,7 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
 
     func sideMenuWillOpen() {
         addGestureView()
-        gestureView.animate(to: .oppened, with: Constants.animationDuration)
+        gestureView.animate(to: .opened, with: Constants.animationDuration)
         updateNavigationItems(isShown: false)
     }
 

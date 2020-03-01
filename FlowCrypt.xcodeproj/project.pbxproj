@@ -70,7 +70,6 @@
 		9F23EA50237217140017DFED /* ComposeDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeDecorator.swift */; };
 		9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268890237DC55600428A94 /* ImportKeyViewController.swift */; };
 		9F268894237DD98900428A94 /* ImportKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268893237DD98900428A94 /* ImportKeyDecorator.swift */; };
-		9F268896237DDEB200428A94 /* SetupViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268895237DDEB200428A94 /* SetupViewController+Setup.swift */; };
 		9F2A939E23350D9E00014A92 /* SideMenuOptionalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */; };
 		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
@@ -103,7 +102,6 @@
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
-		9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779123736BF700E19C07 /* MsgViewController+Setup.swift */; };
 		9F82779823737E0900E19C07 /* MessageDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageDecorator.swift */; };
 		9F82779A23737E1900E19C07 /* MessageSenderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779923737E1900E19C07 /* MessageSenderNode.swift */; };
 		9F82779C23737E2B00E19C07 /* MessageSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */; };
@@ -321,7 +319,6 @@
 		9F23EA4F237217140017DFED /* ComposeDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeDecorator.swift; sourceTree = "<group>"; };
 		9F268890237DC55600428A94 /* ImportKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportKeyViewController.swift; sourceTree = "<group>"; };
 		9F268893237DD98900428A94 /* ImportKeyDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportKeyDecorator.swift; sourceTree = "<group>"; };
-		9F268895237DDEB200428A94 /* SetupViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SetupViewController+Setup.swift"; sourceTree = "<group>"; };
 		9F2A939D23350D9E00014A92 /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
 		9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+retry.swift"; sourceTree = "<group>"; };
 		9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+folders.swift"; sourceTree = "<group>"; };
@@ -355,7 +352,6 @@
 		9F716304234FC7200031645E /* LocalizationExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationExtensions.swift; sourceTree = "<group>"; };
 		9F716309234FC73E0031645E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9F71630B234FC7500031645E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		9F82779123736BF700E19C07 /* MsgViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MsgViewController+Setup.swift"; sourceTree = "<group>"; };
 		9F8277952373732000E19C07 /* UIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
 		9F82779723737E0900E19C07 /* MessageDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDecorator.swift; sourceTree = "<group>"; };
 		9F82779923737E1900E19C07 /* MessageSenderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderNode.swift; sourceTree = "<group>"; };
@@ -506,10 +502,14 @@
 		04B4728A1ECE29D200B8266F /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				D29A0005240C14EB00C1387D /* Folder Models */,
+				9F6962972360925B003712E1 /* SignIn Models */,
+				9FD22A20230FF9BC005067A6 /* Inbox Models */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				9F0C3C132316E69300299985 /* User.swift */,
 				9F589F12238C7DF2007FD759 /* User+Google.swift */,
 				9F589F1E238C8A90007FD759 /* Token.swift */,
+				9F9AAFFC2383E216000A00F1 /* Document.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -527,7 +527,6 @@
 			isa = PBXGroup;
 			children = (
 				9F31AB9A232BF08600CF87EA /* Menu */,
-				9F31AB9C232BF0A100CF87EA /* Models */,
 				9F2A939F23363D2400014A92 /* Main */,
 				9F1F8A1D235F84D6006463A1 /* NavigationController */,
 			);
@@ -581,7 +580,6 @@
 			isa = PBXGroup;
 			children = (
 				32DCA9701B2D5052225A0414 /* SignInViewController.swift */,
-				9F6962972360925B003712E1 /* Models */,
 				9F69629623609229003712E1 /* Nodes */,
 			);
 			path = SignIn;
@@ -620,6 +618,8 @@
 		5A39F43B239ECFA0001F4607 /* KeySettings */ = {
 			isa = PBXGroup;
 			children = (
+				D29A0002240C140500C1387D /* Key Detail Info */,
+				D29A0003240C141200C1387D /* Public Key */,
 				5ADEDCB423A4262600EC495E /* Key List */,
 				5ADEDCB723A426E900EC495E /* Key Details */,
 			);
@@ -629,8 +629,8 @@
 		5A5C234723A042070015E705 /* KeyLegal */ = {
 			isa = PBXGroup;
 			children = (
-				5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */,
 				5A948DC4239EF2F4006284D7 /* LegalViewController.swift */,
+				5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */,
 			);
 			path = KeyLegal;
 			sourceTree = "<group>";
@@ -675,21 +675,10 @@
 			isa = PBXGroup;
 			children = (
 				5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */,
-				5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */,
-				5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */,
-				5ADEDCBA23A42CE300EC495E /* Helpers */,
+				5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */,
 				5ADEDCC323A43C8600EC495E /* Nodes */,
 			);
 			path = "Key Details";
-			sourceTree = "<group>";
-		};
-		5ADEDCBA23A42CE300EC495E /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				5ADEDCB823A42B9400EC495E /* KeySettingsItemDecorator.swift */,
-				5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */,
-			);
-			path = Helpers;
 			sourceTree = "<group>";
 		};
 		5ADEDCC323A43C8600EC495E /* Nodes */ = {
@@ -730,13 +719,6 @@
 			path = Nodes;
 			sourceTree = "<group>";
 		};
-		9F1797722368EF02002BF770 /* Nodes */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Nodes;
-			sourceTree = "<group>";
-		};
 		9F1F8A1D235F84D6006463A1 /* NavigationController */ = {
 			isa = PBXGroup;
 			children = (
@@ -760,10 +742,8 @@
 		9F268892237DC55E00428A94 /* ImportKey */ = {
 			isa = PBXGroup;
 			children = (
-				9F268890237DC55600428A94 /* ImportKeyViewController.swift */,
-				9F9AAFFC2383E216000A00F1 /* Document.swift */,
-				9F268893237DD98900428A94 /* ImportKeyDecorator.swift */,
-				9FD364852381EFCB00657302 /* EnterPassPhraseViewController.swift */,
+				D29A0000240C133E00C1387D /* Import Key */,
+				D29AFFFF240C133800C1387D /* Enter Pass Phrase */,
 			);
 			path = ImportKey;
 			sourceTree = "<group>";
@@ -813,14 +793,6 @@
 			path = Menu;
 			sourceTree = "<group>";
 		};
-		9F31AB9C232BF0A100CF87EA /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				9F0C3C2523194E0A00299985 /* FolderViewModel.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
 		9F589F19238C82A1007FD759 /* Local Storage */ = {
 			isa = PBXGroup;
 			children = (
@@ -849,13 +821,13 @@
 			path = Nodes;
 			sourceTree = "<group>";
 		};
-		9F6962972360925B003712E1 /* Models */ = {
+		9F6962972360925B003712E1 /* SignIn Models */ = {
 			isa = PBXGroup;
 			children = (
 				9F1F8A1E235F9618006463A1 /* AppLinks.swift */,
 				9F95A3F823607C2900C80B64 /* SignInType.swift */,
 			);
-			path = Models;
+			path = "SignIn Models";
 			sourceTree = "<group>";
 		};
 		9F82779F23737E5500E19C07 /* Nodes */ = {
@@ -868,41 +840,22 @@
 			path = Nodes;
 			sourceTree = "<group>";
 		};
-		9F8277A023737E6000E19C07 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				9F82779123736BF700E19C07 /* MsgViewController+Setup.swift */,
-				9F82779723737E0900E19C07 /* MessageDecorator.swift */,
-			);
-			path = Helpers;
-			sourceTree = "<group>";
-		};
-		9F8D5E63236B05B500186E43 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				9F268895237DDEB200428A94 /* SetupViewController+Setup.swift */,
-				9F17976C2368EEBD002BF770 /* SetupDecorator.swift */,
-			);
-			path = Helpers;
-			sourceTree = "<group>";
-		};
 		9FD22A1D230FEEC8005067A6 /* Common UI */ = {
 			isa = PBXGroup;
 			children = (
 				5A5C234923A0422C0015E705 /* View Controllers */,
 				5A5C234823A042260015E705 /* Views */,
-				9F1797722368EF02002BF770 /* Nodes */,
 			);
 			path = "Common UI";
 			sourceTree = "<group>";
 		};
-		9FD22A20230FF9BC005067A6 /* Model */ = {
+		9FD22A20230FF9BC005067A6 /* Inbox Models */ = {
 			isa = PBXGroup;
 			children = (
 				9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */,
 				9F56BD3323438B7100A7371A /* InboxCellNodeInput .swift */,
 			);
-			path = Model;
+			path = "Inbox Models";
 			sourceTree = "<group>";
 		};
 		9FDF363B235A0B5B00614596 /* Nodes */ = {
@@ -1028,6 +981,7 @@
 				C192421D1EC48B5600C3D251 /* Setup */,
 				9F268892237DC55E00428A94 /* ImportKey */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
+				D29A0001240C137700C1387D /* Message List */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 				D29AFFF02409300600C1387D /* Search */,
 				5A39F42E239EC32B001F4607 /* Settings */,
@@ -1055,8 +1009,6 @@
 			children = (
 				C132B9D81EC30E1D00763715 /* InboxViewController.swift */,
 				9FDF363B235A0B5B00614596 /* Nodes */,
-				9FD22A20230FF9BC005067A6 /* Model */,
-				9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */,
 			);
 			path = Inbox;
 			sourceTree = "<group>";
@@ -1065,8 +1017,8 @@
 			isa = PBXGroup;
 			children = (
 				C192421E1EC48B6900C3D251 /* SetupViewController.swift */,
+				9F17976C2368EEBD002BF770 /* SetupDecorator.swift */,
 				9F17976B2368EEAF002BF770 /* Nodes */,
-				9F8D5E63236B05B500186E43 /* Helpers */,
 			);
 			path = Setup;
 			sourceTree = "<group>";
@@ -1125,6 +1077,48 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		D29A0000240C133E00C1387D /* Import Key */ = {
+			isa = PBXGroup;
+			children = (
+				9F268890237DC55600428A94 /* ImportKeyViewController.swift */,
+				9F268893237DD98900428A94 /* ImportKeyDecorator.swift */,
+			);
+			path = "Import Key";
+			sourceTree = "<group>";
+		};
+		D29A0001240C137700C1387D /* Message List */ = {
+			isa = PBXGroup;
+			children = (
+				9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */,
+			);
+			path = "Message List";
+			sourceTree = "<group>";
+		};
+		D29A0002240C140500C1387D /* Key Detail Info */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */,
+				5ADEDCBF23A43B0800EC495E /* KeyDetailInfoDecorator.swift */,
+			);
+			path = "Key Detail Info";
+			sourceTree = "<group>";
+		};
+		D29A0003240C141200C1387D /* Public Key */ = {
+			isa = PBXGroup;
+			children = (
+				5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */,
+			);
+			path = "Public Key";
+			sourceTree = "<group>";
+		};
+		D29A0005240C14EB00C1387D /* Folder Models */ = {
+			isa = PBXGroup;
+			children = (
+				9F0C3C2523194E0A00299985 /* FolderViewModel.swift */,
+			);
+			path = "Folder Models";
+			sourceTree = "<group>";
+		};
 		D29AFFEE24092F4900C1387D /* DataManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -1159,6 +1153,14 @@
 				D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */,
 			);
 			path = Google;
+			sourceTree = "<group>";
+		};
+		D29AFFFF240C133800C1387D /* Enter Pass Phrase */ = {
+			isa = PBXGroup;
+			children = (
+				9FD364852381EFCB00657302 /* EnterPassPhraseViewController.swift */,
+			);
+			path = "Enter Pass Phrase";
 			sourceTree = "<group>";
 		};
 		D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */ = {
@@ -1203,7 +1205,7 @@
 			isa = PBXGroup;
 			children = (
 				D952B71C1ED0CB2500E5C02B /* MsgViewController.swift */,
-				9F8277A023737E6000E19C07 /* Helpers */,
+				9F82779723737E0900E19C07 /* MessageDecorator.swift */,
 				9F82779F23737E5500E19C07 /* Nodes */,
 			);
 			path = Msg;
@@ -1752,7 +1754,6 @@
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */,
-				9F268896237DDEB200428A94 /* SetupViewController+Setup.swift in Sources */,
 				9F56BD3623438B9D00A7371A /* TextCellNode.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
@@ -1761,7 +1762,6 @@
 				9F696293236091DD003712E1 /* SignInImageNode.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
 				9F82779E23737E3800E19C07 /* TextSubjectNode.swift in Sources */,
-				9F82779223736BF700E19C07 /* MsgViewController+Setup.swift in Sources */,
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,

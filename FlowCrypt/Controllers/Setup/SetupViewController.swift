@@ -7,6 +7,18 @@ import AsyncDisplayKit
 import FlowCryptUI
 
 final class SetupViewController: ASViewController<ASTableNode> {
+    private enum Parts: Int, CaseIterable {
+        case title, description, passPhrase, divider, action, optionalAction
+    }
+
+    enum SetupAction { // importing key is in different VC: ImportKeyViewController
+        case recoverKey, createKey
+    }
+
+    enum SetupButtonType {
+        case loadAccount, createKey
+    }
+
     private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType

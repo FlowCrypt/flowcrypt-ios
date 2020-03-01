@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 
+// TODO: ANTON - Move to FlowCryptUI
 final class SignInImageNode: ASCellNode {
     private let imageNode = ASImageNode()
     private var imageHeight: CGFloat = .zero

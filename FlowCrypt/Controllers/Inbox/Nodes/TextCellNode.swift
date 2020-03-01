@@ -10,6 +10,7 @@ import AsyncDisplayKit
 import Foundation
 import FlowCryptUI
 
+// TODO: ANTON - Move to FlowCryptUI
 final class TextCellNode: CellNode {
     private let spinner = SpinnerNode()
     private let text = ASTextNode()

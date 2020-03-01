@@ -7,6 +7,42 @@ import AsyncDisplayKit
 import FlowCryptUI
 
 final class MsgViewController: ASViewController<TableNode> {
+    struct Input {
+        var objMessage = MCOIMAPMessage()
+        var bodyMessage: Data?
+        var path = ""
+    }
+
+    enum Parts: Int, CaseIterable {
+        case sender, subject, text
+
+        var indexPath: IndexPath {
+            IndexPath(row: rawValue, section: 0)
+        }
+    }
+
+    enum MessageAction {
+        case moveToTrash, archive, markAsRead, permanentlyDelete
+
+        var text: String? {
+            switch self {
+            case .moveToTrash: return "email_removed".localized
+            case .archive: return "email_archived".localized
+            case .permanentlyDelete: return "email_deleted".localized
+            case .markAsRead: return nil
+            }
+        }
+
+        var error: String? {
+            switch self {
+            case .moveToTrash: return "error_move_trash".localized
+            case .archive: return "error_archive".localized
+            case .permanentlyDelete: return "error_permanently_delete".localized
+            case .markAsRead: return nil
+            }
+        }
+    }
+
     typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
     private let onCompletion: MsgViewControllerCompletion?
     private var input: MsgViewController.Input?

@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 
+// TODO: ANTON - Move to FlowCryptUI
 final class SigninButtonNode: ASCellNode {
     private let button = ASButtonNode()
     private var onTap: (() -> ())?

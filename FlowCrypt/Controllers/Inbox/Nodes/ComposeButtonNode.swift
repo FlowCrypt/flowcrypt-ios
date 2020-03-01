@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 
+// TODO: ANTON - Move to FlowCryptUI
 final class ComposeButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
 
