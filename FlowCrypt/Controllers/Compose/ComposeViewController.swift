@@ -50,6 +50,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
+        static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
     }
 
     enum State {
@@ -72,6 +73,8 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let core: Core
     private let googleService: GoogleServiceType
     private let searchThrottler = Throttler(seconds: 1)
+    private let userDefaults: UserDefaults
+    private let globalRouter: GlobalRouterType
 
     private var input: Input
     private var contextToSend = Context()
@@ -86,7 +89,9 @@ final class ComposeViewController: ASViewController<TableNode> {
         decorator: ComposeDecoratorType = ComposeDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
-        googleService: GoogleServiceType = GoogleService()
+        googleService: GoogleServiceType = GoogleService(),
+        userDefaults: UserDefaults = .standard,
+        globalRouter: GlobalRouterType = GlobalRouter()
     ) {
         self.imap = imap
         self.notificationCenter = notificationCenter
@@ -96,6 +101,8 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.decorator = decorator
         self.core = core
         self.googleService = googleService
+        self.userDefaults = userDefaults
+        self.globalRouter = globalRouter
         if input.isReply {
             if let email = input.recipientReplyTitle {
                 contextToSend.recipients.append(Recipient(email: email))
@@ -125,6 +132,11 @@ final class ComposeViewController: ASViewController<TableNode> {
         node.view.endEditing(true)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        showScopeAlertIfNeeded()
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -148,6 +160,33 @@ extension ComposeViewController {
             $0.delegate = self
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
+        }
+    }
+
+    private func showScopeAlertIfNeeded() {
+        if googleService.shouldRenewToken(for: [.mail]) &&
+            !userDefaults.bool(forKey: Constants.shouldShowScopeAlertIndex)
+        {
+            userDefaults.set(true, forKey: Constants.shouldShowScopeAlertIndex)
+            let alert = UIAlertController(
+                title: "",
+                message: "compose_enable_search".localized,
+                preferredStyle: .alert
+            )
+            let okAction = UIAlertAction(
+                title: "Log out",
+                style: .default) { _ in
+                    self.globalRouter.wipeOutAndReset()
+                }
+            let cancelAction = UIAlertAction(
+                title: "Cancel",
+                style: .destructive) { _ in
+
+                }
+            alert.addAction(okAction)
+            alert.addAction(cancelAction)
+
+            present(alert, animated: true, completion: nil)
         }
     }
 }

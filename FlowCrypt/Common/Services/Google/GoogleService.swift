@@ -13,6 +13,7 @@ import Promises
 protocol GoogleServiceType {
     func setUpAuthentication() throws
     func searchContacts(query: String) -> Promise<[String]>
+    func shouldRenewToken(for scopes: [GoogleService.Scope]) -> Bool
 }
 
 final class GoogleService {
@@ -24,12 +25,11 @@ final class GoogleService {
     }
 
     enum Scope: CaseIterable {
-        case userInfo, mail, feed, contacts
+        case userInfo, mail, contacts
         var value: String {
             switch self {
             case .userInfo: return "https://www.googleapis.com/auth/userinfo.profile"
             case .mail: return "https://mail.google.com/"
-            case .feed: return "https://www.google.com/m8/feeds"
             case .contacts: return "https://www.googleapis.com/auth/contacts.readonly"
             }
         }

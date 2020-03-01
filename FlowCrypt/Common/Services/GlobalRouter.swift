@@ -11,6 +11,7 @@ import UIKit
 
 protocol GlobalRouterType {
     func reset()
+    func wipeOutAndReset()
 }
 
 struct GlobalRouter: GlobalRouterType {
@@ -21,5 +22,12 @@ struct GlobalRouter: GlobalRouterType {
             return;
         }
         AppStartup().initializeApp(window: delegate.window)
+    }
+
+    func wipeOutAndReset() {
+        UserService.shared.signOut()
+            .then(on: .main) {
+                self.reset()
+            }
     }
 }
