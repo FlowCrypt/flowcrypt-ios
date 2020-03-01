@@ -958,7 +958,7 @@
 				04B4728A1ECE29D200B8266F /* Models */,
 				9FD22A1D230FEEC8005067A6 /* Common UI */,
 				32DCAEF9FEEF84D4F0D4A516 /* Extensions */,
-				C132B9C61EC2DCC000763715 /* Common */,
+				C132B9C61EC2DCC000763715 /* Functionality */,
 				A3DAD60C22E469E400F2C4CD /* Resources */,
 				04B472541ECE29B200B8266F /* Lib */,
 				9FDF3653235A218E00614596 /* main.swift */,
@@ -990,7 +990,7 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
-		C132B9C61EC2DCC000763715 /* Common */ = {
+		C132B9C61EC2DCC000763715 /* Functionality */ = {
 			isa = PBXGroup;
 			children = (
 				A370EAB6238697E000685215 /* Pgp */,
@@ -1001,7 +1001,7 @@
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				32DCA4B11D4531B3B04D01D1 /* AppErr.swift */,
 			);
-			path = Common;
+			path = Functionality;
 			sourceTree = "<group>";
 		};
 		C132B9D71EC30E0B00763715 /* Inbox */ = {
