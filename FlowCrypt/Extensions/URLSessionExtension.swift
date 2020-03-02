@@ -24,7 +24,7 @@ extension URLSession {
             self.dataTask(with: urlRequest) { data, response, error in
                 let res = response as? HTTPURLResponse
                 let status = res?.statusCode ?? GeneralConstants.Global.generalError
-//                debugPrint("URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlRequest.httpMethod ?? "GET") \(urlRequest.url?.absoluteString ?? "??")")
+                debugPrint("URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlRequest.httpMethod ?? "GET") \(urlRequest.url?.absoluteString ?? "??")")
                 let validStatusCode = 200 ... 299
                 let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
                 let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes
