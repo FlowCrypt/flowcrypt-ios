@@ -5,6 +5,7 @@
 import Promises
 import AsyncDisplayKit
 import FlowCryptUI
+import FlowCryptCommon
 
 final class ComposeViewController: ASViewController<TableNode> {
     struct Input {
@@ -49,10 +50,19 @@ final class ComposeViewController: ASViewController<TableNode> {
     
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
+        static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
     }
 
-    private enum Parts: Int, CaseIterable {
-        case recipient, recipientsInput, recipientDivider, subject, subjectDivider, text
+    enum State {
+        case main, searchEmails([String])
+    }
+
+    private enum RecipientParts: Int, CaseIterable {
+        case recipient, recipientsInput, recipientDivider
+    }
+
+    private enum ComposeParts: Int, CaseIterable {
+        case subject, subjectDivider, text
     }
 
     private let imap: Imap
@@ -61,9 +71,15 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let attesterApi: AttesterApiType
     private let decorator: ComposeDecoratorType
     private let core: Core
+    private let googleService: GoogleServiceType
+    private let searchThrottler = Throttler(seconds: 1)
+    private let userDefaults: UserDefaults
+    private let globalRouter: GlobalRouterType
 
     private var input: Input
     private var contextToSend = Context()
+
+    private var state: State = .main
 
     init(
         imap: Imap = Imap.shared,
@@ -72,7 +88,10 @@ final class ComposeViewController: ASViewController<TableNode> {
         attesterApi: AttesterApiType = AttesterApi.shared,
         decorator: ComposeDecoratorType = ComposeDecorator(),
         input: ComposeViewController.Input = .empty,
-        core: Core = Core.shared
+        core: Core = Core.shared,
+        googleService: GoogleServiceType = GoogleService(),
+        userDefaults: UserDefaults = .standard,
+        globalRouter: GlobalRouterType = GlobalRouter()
     ) {
         self.imap = imap
         self.notificationCenter = notificationCenter
@@ -81,6 +100,9 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.input = input
         self.decorator = decorator
         self.core = core
+        self.googleService = googleService
+        self.userDefaults = userDefaults
+        self.globalRouter = globalRouter
         if input.isReply {
             if let email = input.recipientReplyTitle {
                 contextToSend.recipients.append(Recipient(email: email))
@@ -110,6 +132,11 @@ final class ComposeViewController: ASViewController<TableNode> {
         node.view.endEditing(true)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        showScopeAlertIfNeeded()
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -133,6 +160,33 @@ extension ComposeViewController {
             $0.delegate = self
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
+        }
+    }
+
+    private func showScopeAlertIfNeeded() {
+        if googleService.shouldRenewToken(for: [.mail]) &&
+            !userDefaults.bool(forKey: Constants.shouldShowScopeAlertIndex)
+        {
+            userDefaults.set(true, forKey: Constants.shouldShowScopeAlertIndex)
+            let alert = UIAlertController(
+                title: "",
+                message: "compose_enable_search".localized,
+                preferredStyle: .alert
+            )
+            let okAction = UIAlertAction(
+                title: "Log out",
+                style: .default) { _ in
+                    self.globalRouter.wipeOutAndReset()
+                }
+            let cancelAction = UIAlertAction(
+                title: "Cancel",
+                style: .destructive) { _ in
+
+                }
+            alert.addAction(okAction)
+            alert.addAction(cancelAction)
+
+            present(alert, animated: true, completion: nil)
         }
     }
 }
@@ -315,9 +369,23 @@ extension ComposeViewController {
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
+    func numberOfSections(in tableNode: ASTableNode) -> Int {
+        2
+    }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        Parts.allCases.count
+        switch (state, section) {
+        case (.main, 0):
+            return RecipientParts.allCases.count
+        case (.main, 1):
+            return ComposeParts.allCases.count
+        case (.searchEmails, 0):
+            return RecipientParts.allCases.count
+        case (.searchEmails(let emails), 1):
+            return emails.count
+        default:
+            return 0
+        }
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -326,62 +394,80 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             - safeAreaWindowInsets.top
             - safeAreaWindowInsets.bottom
         return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
-            switch part {
-            case .recipientDivider, .subjectDivider: return DividerCellNode()
-            case .recipientsInput: return self.recipientInput()
-            case .recipient: return self.recipientsNode()
-            case .subject: return self.subjectNode()
-            case .text: return self.textNode(with: nodeHeight)
+            guard let self = self else { return ASCellNode() }
+
+            switch (self.state, indexPath.section) {
+            case (_, 0):
+                guard let part = RecipientParts(rawValue: indexPath.row) else { return ASCellNode() }
+                switch part {
+                case .recipientDivider: return DividerCellNode()
+                case .recipientsInput: return self.recipientInput()
+                case .recipient: return self.recipientsNode()
+                }
+            case (.main, 1):
+                guard let composePart = ComposeParts(rawValue: indexPath.row) else { return ASCellNode() }
+                switch composePart {
+                case .subject: return self.subjectNode()
+                case .text: return self.textNode(with: nodeHeight)
+                case .subjectDivider: return DividerCellNode()
+                }
+            case (.searchEmails(let emails), 1):
+                return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
+            default:
+                return ASCellNode()
             }
         }
     }
 
-    private func subjectNode() -> ASCellNode {
-        TextFieldCellNode(
-            input: decorator.styledTextFieldInput("compose_subject".localized)
-        ) { [weak self] event in
-            guard case let .didEndEditing(text) = event else { return }
-            self?.contextToSend.subject = text
-        }
-        .onShouldReturn { [weak self] _ in
-            guard let self = self else { return true }
-            if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
-                node.becomeFirstResponder()
-            } else {
-                self.node.view.endEditing(true)
-            }
-            return true
-        }
-        .then {
-            $0.attributedText = decorator.styledTitle(input.subjectReplyTitle)
-        }
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard case let .searchEmails(emails) = state,
+            indexPath.section == 1,
+            let selectedEmail = emails[safe: indexPath.row]
+        else { return }
+
+        handleEndEditingAction(with: selectedEmail)
     }
+}
+
+// MARK: - Nodes
+extension ComposeViewController {
+    private func subjectNode() -> ASCellNode {
+           TextFieldCellNode(
+               input: decorator.styledTextFieldInput(with: "compose_subject".localized)
+           ) { [weak self] event in
+               guard case let .didEndEditing(text) = event else { return }
+               self?.contextToSend.subject = text
+           }
+           .onShouldReturn { [weak self] _ in
+               guard let self = self else { return true }
+               if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
+                   node.becomeFirstResponder()
+               } else {
+                   self.node.view.endEditing(true)
+               }
+               return true
+           }
+           .then {
+               $0.attributedText = decorator.styledTitle(with: input.subjectReplyTitle)
+           }
+       }
 
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
-        let textFieldHeight = decorator.styledTextFieldInput("").height
+        let textFieldHeight = decorator.styledTextFieldInput(with: "").height
         let dividerHeight: CGFloat = 1
         let preferredHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
 
-        return TextViewCellNode(decorator.styledTextViewInput(with: preferredHeight)) { [weak self] event in
+        return TextViewCellNode(
+            decorator.styledTextViewInput(with: preferredHeight)
+        ) { [weak self] event in
             guard case let .didEndEditing(text) = event else { return }
             self?.contextToSend.message = text?.string
-        }.then {
+        }
+        .then {
             if self.input.isReply {
                 $0.becomeFirstResponder()
             }
         }
-    }
-}
-
-// MARK: - Recipients
-extension ComposeViewController {
-    private var textField: TextFieldNode? {
-        (node.nodeForRow(at: IndexPath(row: Parts.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
-    }
-
-    private var recipientsIndexPath: IndexPath {
-        IndexPath(row: Parts.recipient.rawValue, section: 0)
     }
 
     private func recipientsNode() -> RecipientEmailsCellNode {
@@ -393,7 +479,7 @@ extension ComposeViewController {
 
     private func recipientInput() -> TextFieldCellNode {
         TextFieldCellNode(
-            input: decorator.styledTextFieldInput("compose_recipient".localized)
+            input: decorator.styledTextFieldInput(with: "compose_recipient".localized)
         ) { [weak self] action in
             self?.handleTextFieldAction(with: action)
         }
@@ -410,6 +496,17 @@ extension ComposeViewController {
             }
         }
     }
+}
+
+// MARK: - Recipients Input
+extension ComposeViewController {
+    private var textField: TextFieldNode? {
+        (node.nodeForRow(at: IndexPath(row: RecipientParts.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
+    }
+
+    private var recipientsIndexPath: IndexPath {
+        IndexPath(row: RecipientParts.recipient.rawValue, section: 0)
+    }
 
     private var recipients: [ComposeViewController.Recipient] {
         contextToSend.recipients
@@ -422,7 +519,7 @@ extension ComposeViewController {
 
     private func shouldChange(with textField: UITextField, and character: String) -> Bool {
         func nextResponder() {
-            guard let node = node.visibleNodes[safe: Parts.subject.rawValue] as? TextFieldCellNode else { return }
+            guard let node = node.visibleNodes[safe: ComposeParts.subject.rawValue] as? TextFieldCellNode else { return }
             node.becomeFirstResponder()
         }
 
@@ -448,12 +545,10 @@ extension ComposeViewController {
 
     private func handleTextFieldAction(with action: TextFieldActionType) {
         switch action {
-        case let .deleteBackward(textField):
-            handleBackspaceAction(with: textField)
-        case let .didEndEditing(text):
-            handleEndEditingAction(with: text)
-        default:
-            break
+        case let .deleteBackward(textField): handleBackspaceAction(with: textField)
+        case let .didEndEditing(text): handleEndEditingAction(with: text)
+        case let .editingChanged(text): handleEditingChanged(with: text)
+        case .didBeginEditing: handleDidBeginEditing()
         }
     }
 
@@ -474,6 +569,9 @@ extension ComposeViewController {
             collectionNode?.scrollToItem(at: IndexPath(row: endIndex, section: 0), at: .bottom, animated: true)
         }
         textField?.reset()
+        node.view.keyboardDismissMode = .interactive
+
+        updateState(with: .main)
     }
 
     private func handleBackspaceAction(with textField: UITextField) {
@@ -508,5 +606,39 @@ extension ComposeViewController {
             textField?.becomeFirstResponder()
         }
         textField?.reset()
+    }
+
+    private func handleEditingChanged(with text: String?) {
+        guard let text = text, text.isNotEmpty else {
+            updateState(with: .main)
+            return
+        }
+
+        searchThrottler.throttle { [weak self] in
+            self?.searchEmail(with: text)
+        }
+    }
+
+    private func handleDidBeginEditing() {
+        node.view.keyboardDismissMode = .none
+    }
+}
+
+extension ComposeViewController {
+    private func searchEmail(with query: String) {
+        googleService.searchContacts(query: query)
+            .then(on: .main) { [weak self] emails in
+                let state: State = emails.isNotEmpty
+                    ? .searchEmails(emails)
+                    : .main
+                self?.updateState(with: state)
+            }
+    }
+}
+
+extension ComposeViewController {
+    private func updateState(with newState: State) {
+        state = newState
+        node.reloadSections(IndexSet(integer: 1), with: .fade)
     }
 }

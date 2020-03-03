@@ -4,8 +4,8 @@
 
 import AsyncDisplayKit
 import Promises
-import UIKit
 import FlowCryptUI
+import FlowCryptCommon
 
 final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
@@ -86,7 +86,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
         composeButton.frame = CGRect(
             x: node.bounds.maxX - offset - size.width,
-            y: node.bounds.maxY - offset - size.height,
+            y: node.bounds.maxY - offset - size.height - safeAreaWindowInsets.bottom,
             width: size.width,
             height: size.height
         )

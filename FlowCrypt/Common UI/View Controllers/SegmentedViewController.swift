@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 
+// TODO: ANTON - Move to FlowCryptUI
 struct Segment {
     let viewController: UIViewController
     let title: NSAttributedString

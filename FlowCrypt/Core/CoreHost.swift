@@ -31,7 +31,7 @@ final class CoreHost: NSObject, CoreHostExports {
     //  -> b) produceHashedIteratedS2k below takes 300ms for two keys, could be 100ms or so
 
     func log(_ message: String) {
-        print(message.split(separator: "\n").map { "Js: \($0)" }.joined(separator: "\n"))
+        debugPrint(message.split(separator: "\n").map { "Js: \($0)" }.joined(separator: "\n"))
     }
 
     // brings total decryption time from 200->30ms (rsa2048), 3900->420ms (rsa4096)
@@ -42,8 +42,8 @@ final class CoreHost: NSObject, CoreHostExports {
             let decrypted = try rsaEncrypted.decrypted(with: rsaPrv, padding: .NONE)
             return decrypted.base64String
         } catch {
-            print("decryptRsaNoPadding error")
-            print(error)
+            debugPrint("decryptRsaNoPadding error")
+            debugPrint(error)
             return ""
         }
     }

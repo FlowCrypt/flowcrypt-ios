@@ -128,15 +128,15 @@ extension SignInViewController {
                 msgPwd: nil,
                 isEmail: false
             )
-            print(decrypted)
-            print("decrypted \(start.millisecondsSince)")
-            //            print("text: \(decrypted.text)")
+            debugPrint(decrypted)
+            debugPrint("decrypted \(start.millisecondsSince)")
+            //            debugPrint("text: \(decrypted.text)")
         } catch CoreError.exception {
-            print("catch exception")
-            //            print(msg)
+            debugPrint("catch exception")
+            //            debugPrint(msg)
         } catch {
-            print("catch generic")
-            print(error)
+            debugPrint("catch generic")
+            debugPrint(error)
         }
     }
 

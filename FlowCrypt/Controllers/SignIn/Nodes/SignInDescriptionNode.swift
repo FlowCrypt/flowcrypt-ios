@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 
+// TODO: ANTON - Move to FlowCryptUI
 final class SignInDescriptionNode: ASCellNode {
     private let textNode = ASTextNode()
 

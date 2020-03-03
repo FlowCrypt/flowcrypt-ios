@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 
+// TODO: ANTON - Move to FlowCryptUI
 final class LinkButtonNode: ASCellNode {
     typealias Action = (AppLinks) -> ()
 

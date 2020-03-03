@@ -92,7 +92,7 @@ final class Core {
                 let jsFileSrc = try? String(contentsOfFile: jsFile)
                 self.context = JSContext(virtualMachine: self.vm)!
                 self.context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
-                self.context!.exceptionHandler = { _, exception in print("Js.exception: \(String(describing: exception))") }
+                self.context!.exceptionHandler = { _, exception in debugPrint("Js.exception: \(String(describing: exception))") }
                 self.context!.evaluateScript("const APP_VERSION = 'iOS 0.2';")
                 self.context!.evaluateScript(jsFileSrc)
                 self.jsEndpointListener = self.context!.objectForKeyedSubscript("handleRequestFromHost")
@@ -100,7 +100,7 @@ final class Core {
                 let cb_last_value_filler: @convention(block) ([NSObject]) -> Void = { values in self.cb_last_value = values }
                 self.context!.setObject(unsafeBitCast(cb_last_value_filler, to: AnyObject.self), forKeyedSubscript: "engine_host_cb_catcher" as (NSCopying & NSObjectProtocol)?)
                 self.ready = true
-                print("JsContext took \(start.millisecondsSince)ms to start")
+                debugPrint("JsContext took \(start.millisecondsSince)ms to start")
             }
         }
     }
@@ -138,7 +138,7 @@ final class Core {
         let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
         if error != nil {
             let errMsg = "------ js err -------\nCore \(endpoint):\n\(error!.error.message)\n\(error!.error.stack ?? "no stack")\n------- end js err -----"
-            print(errMsg)
+            debugPrint(errMsg)
             throw CoreError.exception(errMsg)
         }
         return RawRes(json: resJsonData, data: Data(rawResponse[(separatorIndex + 1)...]))

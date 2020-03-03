@@ -8,6 +8,7 @@
 
 import UIKit
 
+// TODO: ANTON - Move to FlowCryptUI
 final class NavigationBarItemsView: UIBarButtonItem {
     private enum Constants {
         static let buttonSize = CGSize(width: 30, height: 30)

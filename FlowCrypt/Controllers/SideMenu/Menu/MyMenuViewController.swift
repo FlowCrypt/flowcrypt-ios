@@ -162,9 +162,11 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
             case Sections.header.rawValue:
                 return HeaderNode(input: self.headerViewModel)
             case Sections.folders.rawValue:
-                return MenuCellNode(input: self.folders[safe: indexPath.row].map(MenuCellNode.Input.init))
+                return InfoCellNode(input: self.folders[safe: indexPath.row]
+                    .map(InfoCellNode.Input.init))
             case Sections.service.rawValue:
-                return MenuCellNode(input: self.serviceItems[safe: indexPath.row].map(MenuCellNode.Input.init))
+                return InfoCellNode(input: self.serviceItems[safe: indexPath.row]
+                    .map(InfoCellNode.Input.init))
             default:
                 return ASCellNode()
             } 

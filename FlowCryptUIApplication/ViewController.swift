@@ -59,12 +59,12 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
             case .menu:
                 let title = NSAttributedString(string: "Example of recipients text field", attributes: [NSAttributedString.Key.foregroundColor : UIColor.red])
 
-                let input = MenuCellNode.Input(
+                let input = InfoCellNode.Input(
                     attributedText: title,
                     image: nil
                 )
-                let n = MenuCellNode(input: input)
-                print(n)
+                let n = InfoCellNode(input: input)
+                debugPrint(n)
                 return n
             case .emailRecipients:
                 return RecipientEmailsCellNode(recipients: self.recipients)

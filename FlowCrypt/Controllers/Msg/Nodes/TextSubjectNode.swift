@@ -9,6 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+// TODO: ANTON - Move to FlowCryptUI
 final class TextSubjectNode: CellNode {
     private let textNode = ASEditableTextNode()
 

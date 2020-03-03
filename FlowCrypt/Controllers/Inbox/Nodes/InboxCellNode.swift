@@ -10,6 +10,7 @@ import AsyncDisplayKit
 import Foundation
 import FlowCryptUI
 
+// TODO: ANTON - Move to FlowCryptUI
 final class InboxCellNode: CellNode {
     private let emailNode = ASTextNode()
     private let dateNode = ASTextNode()
