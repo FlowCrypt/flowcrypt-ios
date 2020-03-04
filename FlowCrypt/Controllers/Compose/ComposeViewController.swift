@@ -8,26 +8,6 @@ import FlowCryptUI
 import FlowCryptCommon
 
 final class ComposeViewController: ASViewController<TableNode> {
-    struct Input {
-        static let empty = Input(isReply: false, replyToRecipient: nil, replyToSubject: nil, replyToMime: nil)
-
-        let isReply: Bool
-        let replyToRecipient: MCOAddress?
-        let replyToSubject: String?
-        let replyToMime: Data?
-
-        var recipientReplyTitle: String? {
-            isReply ? replyToRecipient?.mailbox : nil
-        }
-
-        var subjectReplyTitle: String? {
-            isReply ? "Re: \(replyToSubject ?? "(no subject)")" : nil
-        }
-
-        var successfullySentToast: String {
-            isReply ? "compose_reply_successfull".localized : "compose_sent".localized
-        }
-    }
 
     struct Recipient {
         let email: String
@@ -103,11 +83,11 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.googleService = googleService
         self.userDefaults = userDefaults
         self.globalRouter = globalRouter
+        self.contextToSend.subject = input.subject
         if input.isReply {
             if let email = input.recipientReplyTitle {
                 contextToSend.recipients.append(Recipient(email: email))
             }
-            contextToSend.subject = input.replyToSubject
         }
         super.init(node: TableNode())
     }
@@ -466,6 +446,7 @@ extension ComposeViewController {
         .then {
             if self.input.isReply {
                 $0.becomeFirstResponder()
+                $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
             }
         }
     }

@@ -260,14 +260,20 @@ extension MsgViewController {
 
     private func handleReplyTap() {
         guard let input = input else { return }
-        let viewModel = ComposeViewController.Input(
-            isReply: true,
-            replyToRecipient: input.objMessage.header.from,
-            replyToSubject: input.objMessage.header.subject,
-            replyToMime: input.bodyMessage
+        let replyInfo = ComposeViewController.Input.ReplyInfo(
+            recipient: input.objMessage.header.from,
+            subject: input.objMessage.header.subject,
+            mime: input.bodyMessage
         )
-        let replyVc = ComposeViewController(input: viewModel)
-        navigationController?.pushViewController(replyVc, animated: true)
+        
+        navigationController?.pushViewController(
+            ComposeViewController(
+                input: ComposeViewController.Input(
+                    type: .reply(replyInfo)
+                )
+            ),
+            animated: true
+        )
     }
 }
 

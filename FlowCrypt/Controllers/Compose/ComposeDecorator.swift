@@ -13,7 +13,8 @@ protocol ComposeDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
     func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
     func styledRecipientInfo(with email: String) -> InfoCellNode.Input
-    func styledTitle(with text:String?) -> NSAttributedString?
+    func styledTitle(with text: String?) -> NSAttributedString?
+    func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString
 }
 
 struct ComposeDecorator: ComposeDecoratorType {
@@ -58,6 +59,20 @@ struct ComposeDecorator: ComposeDecoratorType {
             image: nil,
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         )
+    }
+
+    func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString {
+        let date = "2019-11-21"
+        let time = "12:11"
+        let from = input.replyToRecipient?.displayName
+            ?? input.replyToRecipient?.mailbox
+            ?? "no subject"
+
+        let text = "\n\n"
+            + "compose_reply_from_title".localized
+            + "\n"
+            + "compose_reply_from".localizeWithArguments(date, time, from)
+        return text.attributed(.medium(17), color: .black)
     }
 }
 

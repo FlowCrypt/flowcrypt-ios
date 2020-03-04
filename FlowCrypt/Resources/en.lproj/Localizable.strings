@@ -35,6 +35,8 @@
 "compose_no_pub_sender" = "Missing sender public key. Is FlowCrypt iOS app well set up?";
 "compose_error" = "Could not compose message";
 "compose_reply_successfull" = "Reply successfully sent";
+"compose_reply_from_title" = "Reply from iOS";
+"compose_reply_from" = "On %@ at %@ %@ wrote:"; // Date, time, subject
 "compose_sent" = "Encrypted message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
