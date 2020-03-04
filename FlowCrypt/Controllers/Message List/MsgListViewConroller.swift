@@ -20,19 +20,19 @@ extension MsgListViewConroller where Self: UIViewController {
         if Int(message.size) > GeneralConstants.Global.messageSizeLimit {
             showToast("Messages larger than 5MB are not supported yet")
         } else {
-            let messageInput = MsgViewController.Input(
+            let messageInput = MessageViewController.Input(
                 objMessage: message,
                 bodyMessage: nil,
                 path: path
             )
-            let msgVc = MsgViewController(input: messageInput) { [weak self] operation, message in
+            let msgVc = MessageViewController(input: messageInput) { [weak self] operation, message in
                 self?.msgListHandleOperation(message: message, operation: operation)
             }
             navigationController?.pushViewController(msgVc, animated: true)
         }
     }
 
-    private func msgListHandleOperation(message: MCOIMAPMessage, operation: MsgViewController.MessageAction) {
+    private func msgListHandleOperation(message: MCOIMAPMessage, operation: MessageViewController.MessageAction) {
         guard let index = self.msgListGetIndex(message: message) else { return }
         switch operation {
         case .markAsRead: self.msgListRenderAsRead(message: message, at: index)

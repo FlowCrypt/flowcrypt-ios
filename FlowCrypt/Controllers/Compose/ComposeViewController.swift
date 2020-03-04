@@ -69,7 +69,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let notificationCenter: NotificationCenter
     private let dataService: DataServiceType
     private let attesterApi: AttesterApiType
-    private let decorator: ComposeDecoratorType
+    private let decorator: ComposeViewDecoratorType
     private let core: Core
     private let googleService: GoogleServiceType
     private let searchThrottler = Throttler(seconds: 1)
@@ -86,7 +86,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         notificationCenter: NotificationCenter = .default,
         dataService: DataServiceType = DataService.shared,
         attesterApi: AttesterApiType = AttesterApi.shared,
-        decorator: ComposeDecoratorType = ComposeDecorator(),
+        decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
         googleService: GoogleServiceType = GoogleService(),

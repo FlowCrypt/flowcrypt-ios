@@ -23,7 +23,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let userService: UserServiceType
     private let router: GlobalRouterType
     private let storage: DataServiceType
-    private let decorator: SetupDecoratorType
+    private let decorator: SetupViewDecoratorType
     private let core: Core
     private let keyMethods: KeyMethodsType
 
@@ -48,7 +48,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType = DataService.shared,
-        decorator: SetupDecoratorType = SetupDecorator(),
+        decorator: SetupViewDecoratorType = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(core: .shared)
     ) {

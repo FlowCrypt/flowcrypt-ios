@@ -8,13 +8,13 @@
 
 import Foundation
 
-protocol KeySettingsDecoratorType {
+protocol KeySettingsViewDecoratorType {
     func attributedUsers(key: KeyDetails) -> NSAttributedString
     func attributedKeyWords(key: KeyDetails) -> NSAttributedString
     func attributedDateCreated(key: KeyDetails) -> NSAttributedString
 }
 
-struct KeySettingsDecorator: KeySettingsDecoratorType {
+struct KeySettingsViewDecorator: KeySettingsViewDecoratorType {
     private let dateFormatter: DateFormatter
 
     init(dateFormatter: DateFormatter = DateFormatter()) {

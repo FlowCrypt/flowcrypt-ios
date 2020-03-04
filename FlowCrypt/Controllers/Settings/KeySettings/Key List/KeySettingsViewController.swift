@@ -11,10 +11,10 @@ import FlowCryptUI
 
 final class KeySettingsViewController: ASViewController<TableNode> {
     private var keys: [KeyDetails] = []
-    private let decorator: KeySettingsDecoratorType
+    private let decorator: KeySettingsViewDecoratorType
 
     init(
-        decorator: KeySettingsDecorator = KeySettingsDecorator()
+        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
     ) {
         self.decorator = decorator
         super.init(node: TableNode())

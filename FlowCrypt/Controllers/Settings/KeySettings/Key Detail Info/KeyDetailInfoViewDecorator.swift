@@ -9,7 +9,7 @@
 import UIKit
 import FlowCryptCommon
 
-protocol KeyDetailInfoDecoratorType {
+protocol KeyDetailInfoViewDecoratorType {
     var insets: UIEdgeInsets { get }
     var dividerInsets: UIEdgeInsets { get }
 
@@ -21,7 +21,7 @@ protocol KeyDetailInfoDecoratorType {
     ) -> NSAttributedString
 }
 
-struct KeyDetailInfoDecorator: KeyDetailInfoDecoratorType {
+struct KeyDetailInfoViewDecorator: KeyDetailInfoViewDecoratorType {
     let insets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
     let dividerInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
 

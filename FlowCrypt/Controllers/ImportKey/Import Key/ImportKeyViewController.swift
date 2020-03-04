@@ -19,7 +19,7 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         }
     }
 
-    private let decorator: ImportKeyDecoratorType
+    private let decorator: EnterPassPhraseViewDecoratorType
     private let pasteboard: UIPasteboard
     private let dataService: DataServiceType
     private let core: Core
@@ -29,7 +29,7 @@ final class ImportKeyViewController: ASViewController<TableNode> {
     }
 
     init(
-        decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
+        decorator: EnterPassPhraseViewDecoratorType = EnterPassPhraseViewDecorator(),
         pasteboard: UIPasteboard = UIPasteboard.general,
         core: Core = Core.shared,
         dataService: DataServiceType = DataService.shared

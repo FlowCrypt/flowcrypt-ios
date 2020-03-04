@@ -7,10 +7,12 @@ All **ViewControllers** should be located inside the `Controllers` folder.
 Each ViewController should have a dedicated folder or located in folder which represents one flow. 
 For example, Settings folder contains all controllers for the settings menu in the application. 
  
-**ViewControllerDecorator** - to separate part of UI logic from ViewController itself. 
+**ViewDecorator** - to separate part of UI logic from ViewController itself. 
 Decorator used to parse/map raw data to user representable format. 
 For example String to NSAttributedString underlined with red line, etc... Or from raw business  model to Node acceptable **Input.** 
 Decorator should be located in the same folder as ViewController
+
+
 
 **ViewControllerProvider** - Separated part of ViewController which represents it's DataSource object. 
 For example LegalViewControllersProvider - is data source for LegalViewController which creates and provides it with proper Segments. 

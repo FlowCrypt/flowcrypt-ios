@@ -9,7 +9,7 @@
 import UIKit
 import FlowCryptUI
 
-protocol SetupDecoratorType {
+protocol SetupViewDecoratorType {
     var title: NSAttributedString { get }
     var useAnotherAccountTitle: NSAttributedString { get }
     var titleInset: UIEdgeInsets { get }
@@ -21,7 +21,7 @@ protocol SetupDecoratorType {
     func titleForAction(button: SetupViewController.SetupAction) -> NSAttributedString
 }
 
-struct SetupDecorator: SetupDecoratorType {
+struct SetupViewDecorator: SetupViewDecoratorType {
     let title = "setup_title".localized.attributed(.bold(35), color: .black, alignment: .center)
     let useAnotherAccountTitle = "setup_use_another".localized.attributed(.regular(15), color: .blueColor, alignment: .center)
     var subtitleStyle: (String) -> NSAttributedString {

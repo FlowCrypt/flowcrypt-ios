@@ -6,7 +6,7 @@ import Promises
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class MsgViewController: ASViewController<TableNode> {
+final class MessageViewController: ASViewController<TableNode> {
     struct Input {
         var objMessage = MCOIMAPMessage()
         var bodyMessage: Data?
@@ -45,9 +45,9 @@ final class MsgViewController: ASViewController<TableNode> {
 
     typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
     private let onCompletion: MsgViewControllerCompletion?
-    private var input: MsgViewController.Input?
+    private var input: MessageViewController.Input?
     private let imap: Imap
-    private let decorator: MessageDecoratorType
+    private let decorator: MessageViewDecoratorType
     private let dataService: DataServiceType
     private let core: Core
 
@@ -55,10 +55,10 @@ final class MsgViewController: ASViewController<TableNode> {
 
     init(
         imap: Imap = Imap.shared,
-        decorator: MessageDecoratorType = MessageDecorator(dateFormatter: DateFormatter()),
+        decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType = DataService.shared,
         core: Core = Core.shared,
-        input: MsgViewController.Input,
+        input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
         self.imap = imap
@@ -115,7 +115,7 @@ final class MsgViewController: ASViewController<TableNode> {
 
 // MARK: - Message
 
-extension MsgViewController {
+extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
         guard let input = input else { return }
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
@@ -208,7 +208,7 @@ extension MsgViewController {
 
 // MARK: - Handle Actions
 
-extension MsgViewController {
+extension MessageViewController {
     @objc private func handleInfoTap() {
         showToast("Email us at human@flowcrypt.com")
     }
@@ -273,7 +273,7 @@ extension MsgViewController {
 
 // MARK: - NavigationChildController
 
-extension MsgViewController: NavigationChildController {
+extension MessageViewController: NavigationChildController {
     func handleBackButtonTap() {
         guard let message = input?.objMessage else { return }
         onCompletion?(MessageAction.markAsRead, message)
@@ -283,7 +283,7 @@ extension MsgViewController: NavigationChildController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension MsgViewController: ASTableDelegate, ASTableDataSource {
+extension MessageViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         return Parts.allCases.count
     }
