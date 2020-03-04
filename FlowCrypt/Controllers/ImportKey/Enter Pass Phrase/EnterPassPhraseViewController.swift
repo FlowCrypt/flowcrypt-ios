@@ -22,7 +22,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let storage: DataManagerType
+    private let storage: DataServiceType
     private let router: GlobalRouterType
 
     private var passPhrase: String?
@@ -30,7 +30,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     init(
         decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(core: .shared),
-        storage: DataManagerType = DataManager.shared,
+        storage: DataServiceType = DataService.shared,
         router: GlobalRouterType = GlobalRouter(),
         email: String,
         fetchedKeys: [KeyDetails]

@@ -48,7 +48,7 @@ final class MsgViewController: ASViewController<TableNode> {
     private var input: MsgViewController.Input?
     private let imap: Imap
     private let decorator: MessageDecoratorType
-    private let dataManager: DataManagerType
+    private let dataService: DataServiceType
     private let core: Core
 
     private var message: NSAttributedString
@@ -56,7 +56,7 @@ final class MsgViewController: ASViewController<TableNode> {
     init(
         imap: Imap = Imap.shared,
         decorator: MessageDecoratorType = MessageDecorator(dateFormatter: DateFormatter()),
-        storage: DataManagerType = DataManager.shared,
+        storage: DataServiceType = DataService.shared,
         core: Core = Core.shared,
         input: MsgViewController.Input,
         completion: MsgViewControllerCompletion?
@@ -64,7 +64,7 @@ final class MsgViewController: ASViewController<TableNode> {
         self.imap = imap
         self.input = input
         self.decorator = decorator
-        self.dataManager = storage
+        self.dataService = storage
         self.core = core
         self.onCompletion = completion
         self.message = decorator.attributed(
@@ -137,7 +137,7 @@ extension MsgViewController {
             let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
             self.input?.bodyMessage = rawMimeData
 
-            guard let keys = self.dataManager.keys() else {
+            guard let keys = self.dataService.keys() else {
                 reject(CoreError.notReady("Could not fetch keys"))
                 return
             }

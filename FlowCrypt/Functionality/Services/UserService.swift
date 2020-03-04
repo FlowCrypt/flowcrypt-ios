@@ -26,22 +26,22 @@ final class UserService: NSObject  {
     private var onLogOut: (() -> Void)?
 
     private let googleManager: GIDSignIn
-    private var dataManager: DataManagerType
+    private var dataService: DataServiceType
 
     private init(
         googleManager: GIDSignIn = GIDSignIn.sharedInstance(),
-        dataManager: DataManagerType = DataManager.shared
+        dataService: DataServiceType = DataService.shared
     ) {
         self.googleManager = googleManager
-        self.dataManager = dataManager
+        self.dataService = dataService
         super.init()
     }
 
     func setup() {
-        if let token = dataManager.currentToken {
+        if let token = dataService.currentToken {
             onNewToken?(token)
         }
-        if let user = dataManager.currentUser {
+        if let user = dataService.currentUser {
             onLogin?(user)
         }
     }
@@ -95,7 +95,7 @@ extension UserService: GIDSignInDelegate {
             return
         }
         let user = User(user)
-        dataManager.startFor(user: user, with: token)
+        dataService.startFor(user: user, with: token)
         onNewToken?(token)
         onLogin?(user)
     }
@@ -103,7 +103,7 @@ extension UserService: GIDSignInDelegate {
     func sign(_: GIDSignIn!, didDisconnectWith _: GIDGoogleUser!, withError _: Error!) {
         // will not wait until disconnected. errors ignored
         Imap.shared.disconnect()
-        dataManager.logOutAndDestroyStorage()
+        dataService.logOutAndDestroyStorage()
         onLogOut?()
     }
 }

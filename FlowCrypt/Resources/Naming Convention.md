@@ -21,11 +21,10 @@ That's why IMAP service divided with protocols base on it's main responsibility 
 For example, `UserService` - responsible for part related with user actions, like getting or renewing tokens, sign in or sign out. 
 `GoogleService` - part of functionality related to Google authentication, getting google contacts, google scopes and so on. 
 Each service should have protocol that describes it's functionality and should be named as `ServiceType`, for example, `UserServiceType`.  
-Should be located in **Functionality** folder 
-
-**DataManager** - Part of application mostly responsible for storing information, like tokens, keys and so on. 
+*DataService* - Part of application mostly responsible for storing information, like tokens, keys and so on. 
 Data can be stored in encrypted or local storages. 
 Should be located in **Functionality** folder 
+ 
 
 All other parts related to app functionality should be located **Functionality** folder, with the exception of **Core** folder, which should be a separate folder in root of the project. 
 
