@@ -445,7 +445,6 @@ extension ComposeViewController {
         }
         .then {
             guard self.input.isReply else { return }
-
             $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
             $0.becomeFirstResponder()
         }

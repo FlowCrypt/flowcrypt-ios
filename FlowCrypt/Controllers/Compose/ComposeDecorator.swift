@@ -74,15 +74,11 @@ struct ComposeDecorator: ComposeDecoratorType {
         dateFormatter.timeStyle = .short
         let time = dateFormatter.string(from: info.sentDate)
 
-        let from = info.recipient?.displayName
-            ?? info.recipient?.mailbox
-            ?? "no subject"
+        let from = info.recipient?.mailbox ?? "unknown sender"
 
         let text: String = "\n\n"
-            + "compose_reply_from_title".localized
-            + "\n"
             + "compose_reply_from".localizeWithArguments(date, time, from)
-            + "\n\n"
+            + "\n"
 
         let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
 
