@@ -16,6 +16,8 @@ extension ComposeViewController {
             let recipient: MCOAddress?
             let subject: String?
             let mime: Data?
+            let sentDate: Date
+            let message: String
         }
 
         enum InputType: Equatable {

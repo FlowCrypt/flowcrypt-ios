@@ -62,17 +62,31 @@ struct ComposeDecorator: ComposeDecoratorType {
     }
 
     func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString {
-        let date = "2019-11-21"
-        let time = "12:11"
-        let from = input.replyToRecipient?.displayName
-            ?? input.replyToRecipient?.mailbox
+        guard case let .reply(info) = input.type else { return NSAttributedString(string: "") }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .none
+
+        let date = dateFormatter.string(from: info.sentDate)
+
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
+        let time = dateFormatter.string(from: info.sentDate)
+
+        let from = info.recipient?.displayName
+            ?? info.recipient?.mailbox
             ?? "no subject"
 
-        let text = "\n\n"
+        let text: String = "\n\n"
             + "compose_reply_from_title".localized
             + "\n"
             + "compose_reply_from".localizeWithArguments(date, time, from)
-        return text.attributed(.medium(17), color: .black)
+            + "\n\n"
+
+        let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
+
+        return (text + message).attributed(.regular(17), color: .black)
     }
 }
 

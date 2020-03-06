@@ -444,10 +444,10 @@ extension ComposeViewController {
             self?.contextToSend.message = text?.string
         }
         .then {
-            if self.input.isReply {
-                $0.becomeFirstResponder()
-                $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
-            }
+            guard self.input.isReply else { return }
+
+            $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
+            $0.becomeFirstResponder()
         }
     }
 

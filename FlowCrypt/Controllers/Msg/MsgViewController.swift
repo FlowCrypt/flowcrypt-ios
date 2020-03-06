@@ -263,7 +263,9 @@ extension MsgViewController {
         let replyInfo = ComposeViewController.Input.ReplyInfo(
             recipient: input.objMessage.header.from,
             subject: input.objMessage.header.subject,
-            mime: input.bodyMessage
+            mime: input.bodyMessage,
+            sentDate: input.objMessage.header.date,
+            message: self.message.string
         )
         
         navigationController?.pushViewController(
