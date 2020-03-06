@@ -168,6 +168,7 @@
 		D2531F472402C9DE007E5198 /* IntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtensions.swift */; };
 		D254AA6024092AB80041CAE0 /* TapTicFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2D23438ABA00A7371A /* TapTicFeedback.swift */; };
 		D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F716304234FC7200031645E /* LocalizationExtensions.swift */; };
+		D269E02724103A20000495C3 /* ComposeViewControllerInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */; };
 		D29AFFED24092D7900C1387D /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFEC24092D7900C1387D /* GoogleService.swift */; };
 		D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
 		D29AFFF42409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
@@ -421,6 +422,7 @@
 		D2531F2E23FEEF52007E5198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailNode.swift; sourceTree = "<group>"; };
 		D2531F452402C62D007E5198 /* CollectionExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionExtensions.swift; sourceTree = "<group>"; };
+		D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewControllerInput.swift; sourceTree = "<group>"; };
 		D29AFFEC24092D7900C1387D /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		D29AFFF22409370300C1387D /* LogOutHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutHandler.swift; sourceTree = "<group>"; };
 		D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleContactsResponse.swift; sourceTree = "<group>"; };
@@ -518,6 +520,7 @@
 			isa = PBXGroup;
 			children = (
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
+				D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */,
 				9F23EA4F237217140017DFED /* ComposeDecorator.swift */,
 			);
 			path = Compose;
@@ -1808,6 +1811,7 @@
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				9F56BD3823438C7000A7371A /* DateFormattingExtensions.swift in Sources */,
+				D269E02724103A20000495C3 /* ComposeViewControllerInput.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
 				9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */,
 				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
