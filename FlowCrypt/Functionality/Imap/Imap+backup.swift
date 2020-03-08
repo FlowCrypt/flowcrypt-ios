@@ -17,27 +17,54 @@ extension Imap: BackupProvider {
     func searchBackups() -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
-            var folderPaths = try await(self.fetchFolders()).folders
+            var folderPaths = try await(self.fetchFolders())
+                .folders
                 .compactMap { $0.path }
-                .compactMap { (path: String) -> String? in path.isEmpty || path == GeneralConstants.Global.gmailRootPath ? nil : path }
+
+            if folderPaths.isEmpty {
+                throw AppErr.unexpected("Error while fetching folders")
+            }
+
             if folderPaths.contains(GeneralConstants.Global.gmailAllMailPath) {
                 folderPaths = [GeneralConstants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
             }
+
             let searchExpr = self.createSearchBackupExpression()
-            let dataArr = try folderPaths
-                .compactMap { folder in UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr))) }
-                .filter { $0.uids.count() > 0 }
-                .flatMap { uidsContext -> [MsgContext] in
-                    let msgs = try await(self.fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
-                    return msgs.map { msg in MsgContext(path: uidsContext.path, msg: msg) }
-                }
-                .flatMap { msgContext -> [AttContext] in
-                    guard let parts = msgContext.msg.attachments() as? [MCOIMAPPart] else { assertionFailure(); return [] }
-                    return parts.map { part in AttContext(path: msgContext.path, msg: msgContext.msg, part: part) }
-                }
-                .map { attContext -> Data in
-                    try await(self.fetchMsgAttribute(in: attContext.path, msgUid: attContext.msg.uid, part: attContext.part)) + [10] // newline
-                }
+
+            let uidsForFolders = try folderPaths.compactMap { folder in
+                UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr)))
+            }
+
+            if uidsForFolders.isEmpty {
+                throw AppErr.unexpected("Error while fetching uids")
+            }
+
+            let messageContexts = try uidsForFolders.flatMap { uidsContext -> [MsgContext] in
+                let msgs = try await(self.fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
+                return msgs.map { msg in MsgContext(path: uidsContext.path, msg: msg) }
+            }
+
+            if messageContexts.isEmpty {
+                throw AppErr.unexpected("Error while fetching messages")
+            }
+
+            let attContext = messageContexts.flatMap { msgContext -> [AttContext] in
+                guard let parts = msgContext.msg.attachments() as? [MCOIMAPPart] else { assertionFailure(); return [] }
+                return parts.map { part in AttContext(path: msgContext.path, msg: msgContext.msg, part: part) }
+            }
+
+            if attContext.isEmpty {
+                throw AppErr.unexpected("Error while fetching attributes")
+            }
+
+            let dataArr = try attContext.map { attContext -> Data in
+                try await(self.fetchMsgAttribute(
+                    in: attContext.path,
+                    msgUid: attContext.msg.uid,
+                    part: attContext.part)
+                ) + [10] // newline
+            }
+
             return Data.joined(dataArr)
         }
     }
