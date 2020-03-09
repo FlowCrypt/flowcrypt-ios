@@ -8,14 +8,14 @@
 
 import UIKit
 
-protocol MessageDecoratorType {
+protocol MessageViewDecoratorType {
     func attributed(title: String) -> NSAttributedString
     func attributed(subject: String) -> NSAttributedString
     func attributed(date: Date?) -> NSAttributedString
     func attributed(text: String?, color: UIColor) -> NSAttributedString
 }
 
-struct MessageDecorator: MessageDecoratorType {
+struct MessageViewDecorator: MessageViewDecoratorType {
     let dateFormatter: DateFormatter
 
     func attributed(title: String) -> NSAttributedString {
