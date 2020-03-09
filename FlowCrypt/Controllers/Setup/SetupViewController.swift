@@ -22,8 +22,8 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType
-    private let storage: DataManagerType
-    private let decorator: SetupDecoratorType
+    private let storage: DataServiceType
+    private let decorator: SetupViewDecoratorType
     private let core: Core
     private let keyMethods: KeyMethodsType
 
@@ -47,8 +47,8 @@ final class SetupViewController: ASViewController<ASTableNode> {
         imap: Imap = Imap.shared,
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
-        storage: DataManagerType = DataManager.shared,
-        decorator: SetupDecoratorType = SetupDecorator(),
+        storage: DataServiceType = DataService.shared,
+        decorator: SetupViewDecoratorType = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(core: .shared)
     ) {
@@ -142,7 +142,7 @@ extension SetupViewController {
     private func handleBackupsFetchResult() {
         hideSpinner()
         if fetchedEncryptedPrvs.isEmpty {
-            let user = DataManager.shared.email ?? "unknown_title".localized
+            let user = DataService.shared.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             renderNoBackupsFoundOptions(msg)
         } else {
@@ -231,8 +231,8 @@ extension SetupViewController {
     }
 
     private func getUserId() throws -> UserId {
-        guard let email = DataManager.shared.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
-        guard let name = DataManager.shared.email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
+        guard let email = DataService.shared.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
+        guard let name = DataService.shared.email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
         return UserId(email: email, name: name)
     }
 

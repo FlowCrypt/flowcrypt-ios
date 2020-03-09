@@ -9,7 +9,7 @@
 import UIKit
 import FlowCryptUI
 
-protocol ImportKeyDecoratorType {
+protocol EnterPassPhraseViewDecoratorType {
     var sceneTitle: String { get }
     var title: NSAttributedString { get }
     var fileImportTitle: NSAttributedString { get }
@@ -26,7 +26,7 @@ protocol ImportKeyDecoratorType {
     var passPhraseTextFieldStyle: TextFieldCellNode.Input { get }
 }
 
-struct ImportKeyDecorator: ImportKeyDecoratorType {
+struct EnterPassPhraseViewDecorator: EnterPassPhraseViewDecoratorType {
     let sceneTitle = "import_key_title".localized
 
     var title: NSAttributedString {

@@ -16,12 +16,12 @@ final class KeyDetailViewController: ASViewController<TableNode> {
 
     private let pasteboard: UIPasteboard
     private let key: KeyDetails
-    private let decorator: KeySettingsItemDecoratorType
+    private let decorator: KeyDetailViewDecoratorType
 
     init(
         key: KeyDetails,
         pasteboard: UIPasteboard = UIPasteboard.general,
-        decorator: KeySettingsItemDecoratorType = KeySettingsItemDecorator()
+        decorator: KeyDetailViewDecoratorType = KeyDetailViewDecorator()
     ) {
         self.key = key
         self.pasteboard = pasteboard

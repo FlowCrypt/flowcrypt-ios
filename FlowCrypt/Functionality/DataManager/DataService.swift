@@ -1,5 +1,5 @@
 //
-//  DataManager.swift
+//  DataService.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 8/28/19.
@@ -9,7 +9,7 @@
 import Foundation
 import Promises
 
-protocol DataManagerType {
+protocol DataServiceType {
     func startFor(user: User, with token: String?)
     
     var email: String? { get }
@@ -26,8 +26,8 @@ protocol DataManagerType {
     func logOutAndDestroyStorage()
 }
 
-final class DataManager: DataManagerType {
-    static let shared = DataManager()
+final class DataService: DataServiceType {
+    static let shared = DataService()
 
     var isSetupFinished: Bool {
         return isLoggedIn && (self.encryptedStorage.keys()?.count ?? 0) > 0
@@ -83,14 +83,14 @@ final class DataManager: DataManagerType {
     }
 } 
 
-extension DataManager {
+extension DataService {
     func logOutAndDestroyStorage() {
         localStorage.logOut()
         encryptedStorage.logOut()
     }
 }
 
-extension DataManager: DBMigration {
+extension DataService: DBMigration {
     func performMigrationIfNeeded() -> Promise<Void> {
         return Promise<Void> { [weak self] in
             guard let self = self else { throw AppErr.nilSelf }

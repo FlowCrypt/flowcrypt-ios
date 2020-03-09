@@ -27,10 +27,10 @@ final class SettingsViewController: ASViewController<TableNode> {
         }
     }
     
-    private let decorator: SettingsViewControllerDecoratorType
+    private let decorator: SettingsViewDecoratorType
     
     init(
-        decorator: SettingsViewControllerDecoratorType = SettingsViewControllerDecorator()
+        decorator: SettingsViewDecoratorType = SettingsViewDecorator()
     ) {
         self.decorator = decorator
         super.init(node: TableNode())

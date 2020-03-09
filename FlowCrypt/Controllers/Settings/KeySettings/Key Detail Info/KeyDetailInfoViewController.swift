@@ -19,12 +19,12 @@ final class KeyDetailInfoViewController: ASViewController<TableNode> {
         }
     }
 
-    private let decorator: KeyDetailInfoDecoratorType
+    private let decorator: KeyDetailInfoViewDecoratorType
     private let key: KeyDetails
 
     init(
         key: KeyDetails,
-        decorator: KeyDetailInfoDecoratorType = KeyDetailInfoDecorator()
+        decorator: KeyDetailInfoViewDecoratorType = KeyDetailInfoViewDecorator()
     ) {
         self.key = key
         self.decorator = decorator

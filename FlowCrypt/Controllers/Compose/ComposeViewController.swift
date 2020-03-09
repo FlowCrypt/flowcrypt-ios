@@ -47,9 +47,9 @@ final class ComposeViewController: ASViewController<TableNode> {
 
     private let imap: Imap
     private let notificationCenter: NotificationCenter
-    private let dataManager: DataManagerType
+    private let dataService: DataServiceType
     private let attesterApi: AttesterApiType
-    private let decorator: ComposeDecoratorType
+    private let decorator: ComposeViewDecoratorType
     private let core: Core
     private let googleService: GoogleServiceType
     private let searchThrottler = Throttler(seconds: 1)
@@ -64,9 +64,9 @@ final class ComposeViewController: ASViewController<TableNode> {
     init(
         imap: Imap = Imap.shared,
         notificationCenter: NotificationCenter = .default,
-        dataManager: DataManagerType = DataManager.shared,
+        dataService: DataServiceType = DataService.shared,
         attesterApi: AttesterApiType = AttesterApi.shared,
-        decorator: ComposeDecoratorType = ComposeDecorator(),
+        decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
         googleService: GoogleServiceType = GoogleService(),
@@ -75,7 +75,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     ) {
         self.imap = imap
         self.notificationCenter = notificationCenter
-        self.dataManager = dataManager
+        self.dataService = dataService
         self.attesterApi = attesterApi
         self.input = input
         self.decorator = decorator
@@ -276,7 +276,7 @@ extension ComposeViewController {
                 return false
             }
 
-            guard let myPubKey = self.dataManager.publicKey() else {
+            guard let myPubKey = self.dataService.publicKey() else {
                 self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }
@@ -316,7 +316,7 @@ extension ComposeViewController {
             to: to,
             cc: cc,
             bcc: bcc,
-            from: dataManager.email ?? "",
+            from: dataService.email ?? "",
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: atts
