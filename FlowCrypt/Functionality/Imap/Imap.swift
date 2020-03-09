@@ -20,25 +20,25 @@ final class Imap {
     var lastErr: [String: AppErr] = [:]
 
     let userService: UserServiceType
-    let dataManager: DataManagerType
+    let dataService: DataServiceType
 
     // TODO: Anton - show login flow instead of fatal error
     var email: String {
-        guard let email = dataManager.currentUser?.email else {
+        guard let email = dataService.currentUser?.email else {
             fatalError("Can't use Imap without user data")
         }
         return email
     }
 
     var name: String {
-        guard let name = dataManager.currentUser?.name else {
+        guard let name = dataService.currentUser?.name else {
             fatalError("Can't use Imap without user data")
         }
         return name
     }
 
     var accessToken: String? {
-        guard let token = dataManager.currentToken else {
+        guard let token = dataService.currentToken else {
             fatalError("Can't use Imap without user data")
         }
         return token
@@ -46,12 +46,12 @@ final class Imap {
 
     private init(
         userService: UserService = .shared,
-        dataManager: DataManagerType = DataManager.shared,
+        dataService: DataServiceType = DataService.shared,
         helper: ImapHelperType = ImapHelper(),
         messageKindProvider: MessageKindProviderType = MessageKindProvider()
     ) {
         self.userService = userService
-        self.dataManager = dataManager
+        self.dataService = dataService
         self.helper = helper
         self.messageKindProvider = messageKindProvider
     }

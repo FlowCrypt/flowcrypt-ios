@@ -8,13 +8,13 @@
 
 import UIKit
 
-protocol SettingsViewControllerDecoratorType {
+protocol SettingsViewDecoratorType {
     var sceneTitle: String { get }
     var insets: UIEdgeInsets { get }
     func attributedSetting(_ title: String) -> NSAttributedString
 }
 
-struct SettingsViewControllerDecorator: SettingsViewControllerDecoratorType {
+struct SettingsViewDecorator: SettingsViewDecoratorType {
     let sceneTitle = "settings_screen_title".localized
     let insets = UIEdgeInsets.side(16)
     

@@ -20,7 +20,7 @@ extension KeyDetailViewController.Parts {
     }
 }
 
-protocol KeySettingsItemDecoratorType {
+protocol KeyDetailViewDecoratorType {
     var buttonInsets: UIEdgeInsets { get }
     var titleInsets: UIEdgeInsets { get }
 
@@ -28,7 +28,7 @@ protocol KeySettingsItemDecoratorType {
     func attributedTitle(for keyDetailPart: KeyDetailViewController.Parts) -> NSAttributedString
 }
 
-struct KeySettingsItemDecorator: KeySettingsItemDecoratorType {
+struct KeyDetailViewDecorator: KeyDetailViewDecoratorType {
     let titleInsets = UIEdgeInsets.side(16)
     let buttonInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
 
