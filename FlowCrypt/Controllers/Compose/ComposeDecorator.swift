@@ -13,7 +13,8 @@ protocol ComposeDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
     func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
     func styledRecipientInfo(with email: String) -> InfoCellNode.Input
-    func styledTitle(with text:String?) -> NSAttributedString?
+    func styledTitle(with text: String?) -> NSAttributedString?
+    func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString
 }
 
 struct ComposeDecorator: ComposeDecoratorType {
@@ -58,6 +59,30 @@ struct ComposeDecorator: ComposeDecoratorType {
             image: nil,
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         )
+    }
+
+    func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString {
+        guard case let .reply(info) = input.type else { return NSAttributedString(string: "") }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .none
+
+        let date = dateFormatter.string(from: info.sentDate)
+
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
+        let time = dateFormatter.string(from: info.sentDate)
+
+        let from = info.recipient?.mailbox ?? "unknown sender"
+
+        let text: String = "\n\n"
+            + "compose_reply_from".localizeWithArguments(date, time, from)
+            + "\n"
+
+        let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
+
+        return (text + message).attributed(.regular(17), color: .black)
     }
 }
 
