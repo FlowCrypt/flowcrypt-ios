@@ -9,7 +9,7 @@
 import UIKit
 import FlowCryptUI
 
-protocol ComposeDecoratorType {
+protocol ComposeViewDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
     func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
     func styledRecipientInfo(with email: String) -> InfoCellNode.Input
@@ -17,7 +17,7 @@ protocol ComposeDecoratorType {
     func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString
 }
 
-struct ComposeDecorator: ComposeDecoratorType {
+struct ComposeViewDecorator: ComposeViewDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
             placeholder: "message_compose_secure".localized.attributed(

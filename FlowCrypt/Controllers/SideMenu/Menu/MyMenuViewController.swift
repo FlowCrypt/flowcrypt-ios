@@ -19,17 +19,17 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     }
 
     private let foldersProvider: FoldersProvider
-    private let dataManager: DataManagerType
+    private let dataService: DataServiceType
     private let userService: UserServiceType
     private let router: GlobalRouterType
 
     private lazy var headerViewModel: HeaderNode.Input = {
-        let name = dataManager.currentUser?.name
+        let name = dataService.currentUser?.name
             .split(separator: " ")
             .first
             .map(String.init) ?? ""
 
-        let email = dataManager.email?
+        let email = dataService.email?
             .replacingOccurrences(of: "@gmail.com", with: "") ?? ""
 
         return HeaderNode.Input(
@@ -44,13 +44,13 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
 
     init(
         foldersProvider: FoldersProvider = Imap.shared,
-        dataManager: DataManagerType = DataManager.shared,
+        dataService: DataServiceType = DataService.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
         tableNode: ASTableNode = TableNode()
     ) {
         self.foldersProvider = foldersProvider
-        self.dataManager = dataManager
+        self.dataService = dataService
         self.userService = userService
         self.router = globalRouter
         self.tableNode = tableNode

@@ -19,9 +19,9 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         }
     }
 
-    private let decorator: ImportKeyDecoratorType
+    private let decorator: EnterPassPhraseViewDecoratorType
     private let pasteboard: UIPasteboard
-    private let dataManager: DataManagerType
+    private let dataService: DataServiceType
     private let core: Core
 
     private var userInfoMessage = "" {
@@ -29,14 +29,14 @@ final class ImportKeyViewController: ASViewController<TableNode> {
     }
 
     init(
-        decorator: ImportKeyDecoratorType = ImportKeyDecorator(),
+        decorator: EnterPassPhraseViewDecoratorType = EnterPassPhraseViewDecorator(),
         pasteboard: UIPasteboard = UIPasteboard.general,
         core: Core = Core.shared,
-        dataManager: DataManagerType = DataManager.shared
+        dataService: DataServiceType = DataService.shared
     ) {
         self.pasteboard = pasteboard
         self.decorator = decorator
-        self.dataManager = dataManager
+        self.dataService = dataService
         self.core = core
         super.init(node: TableNode())
     }
@@ -150,7 +150,7 @@ extension ImportKeyViewController {
         do {
             let keys = try core.parseKeys(armoredOrBinary: keyData)
             let privateKey = keys.keyDetails.filter { $0.private != nil }
-            let user = dataManager.email ?? "unknown_title".localized
+            let user = dataService.email ?? "unknown_title".localized
 
             if privateKey.isEmpty {
                 userInfoMessage = "import_no_backups_clipboard".localized + user
