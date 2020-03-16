@@ -157,7 +157,7 @@ extension SetupViewController {
     private func renderNoBackupsFoundOptions(_ msg: String, error: Error? = nil) {
         let errStr = error != nil ? "\n\n\(error!)" : ""
         let alert = UIAlertController(title: "Notice", message: msg + errStr, preferredStyle: .alert)
-        if error == nil { // no backous found, not an error: show option to create a key or import key
+        if error == nil { // no backups found, not an error: show option to create a key or import key
             alert.addAction(UIAlertAction(title: "Import existing Private Key", style: .default) { [weak self] _ in
                 self?.handleImportKey()
             })
