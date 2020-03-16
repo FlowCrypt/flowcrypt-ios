@@ -60,7 +60,12 @@ extension GoogleService: GoogleServiceType {
     func setUpAuthentication() throws {
         guard let googleSignIn = instance else { throw AppErr.general("Unexpected nil GIDSignIn") }
         googleSignIn.clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
-        googleSignIn.scopes = Scope.allCases.compactMap { $0.value }
+
+        // temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
+        // let scopes = Scope.allCases.compactMap { $0.value }
+
+        let scopes = [Scope.mail, Scope.userInfo].compactMap { $0.value }
+        googleSignIn.scopes = scopes
         googleSignIn.delegate = UserService.shared
     }
 

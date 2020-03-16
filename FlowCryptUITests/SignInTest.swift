@@ -147,6 +147,7 @@ class SignInTest: XCTestCase {
         app.buttons["+"].tap()
         wait(0.2)
         app.typeText(user.email)
+        app.tables/*@START_MENU_TOKEN@*/.textFields["Subject"]/*[[".cells.textFields[\"Subject\"]",".textFields[\"Subject\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
 
         app.tables/*@START_MENU_TOKEN@*/.textFields["Subject"]/*[[".cells.textFields[\"Subject\"]",".textFields[\"Subject\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
         app.typeText("Some Subject")
