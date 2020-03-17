@@ -13,7 +13,7 @@ class SignInTest: XCTestCase {
     let user = UserCredentials.default
 
     override func setUp() {
-        continueAfterFailure = false
+        continueAfterFailure = true
         
         app = XCUIApplicationBuilder()
             .setupRegion()
@@ -118,7 +118,7 @@ class SignInTest: XCTestCase {
         app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
         wait(7)
 
-        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recepient in sent message")
+        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
         XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
         XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
 
@@ -131,6 +131,24 @@ class SignInTest: XCTestCase {
         wait(2)
         XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in trash")
 
+ //        let cellsQuery = tablesQuery.cells
+//        cellsQuery.otherElements.containing(.staticText, identifier:"5:44 PM").staticTexts["cryptup.tester@gmail.com"].tap()
+//
+//        let trashNavigationBar = app.navigationBars["Trash"]
+//        trashNavigationBar.buttons["help icn"].tap()
+//        trashNavigationBar.buttons["arrow left c"].tap()
+//        trashNavigationBar.buttons["menu icn"].tap()
+//        tablesQuery/*@START_MENU_TOKEN@*/.staticTexts["Starred"]/*[[".cells.staticTexts[\"Starred\"]",".staticTexts[\"Starred\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+//        tablesQuery/*@START_MENU_TOKEN@*/.staticTexts["Encrypted message sent"]/*[[".cells.staticTexts[\"Encrypted message sent\"]",".staticTexts[\"Encrypted message sent\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+//
+//        let starredNavigationBar = app.navigationBars["Starred"]
+//        starredNavigationBar.buttons["arrow left c"].tap()
+//        starredNavigationBar.buttons["menu icn"].tap()
+//        tablesQuery/*@START_MENU_TOKEN@*/.staticTexts["Inbox"]/*[[".cells.staticTexts[\"Inbox\"]",".staticTexts[\"Inbox\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+//        cellsQuery.otherElements.containing(.staticText, identifier:"16 Mar").staticTexts["Google"].tap()
+//        inboxNavigationBar.buttons["archive"].tap()
+
+
         // MARK: - Archive
         menuButton().tap()
         app.tables.staticTexts["Inbox"].tap()
@@ -140,6 +158,23 @@ class SignInTest: XCTestCase {
         app.navigationBars.buttons["archive"].tap()
         wait(3)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed in sending message to archive")
+    }
+
+    func test_navigation_bar_in_trash_folder() {
+        menuButton().tap()
+        wait(0.5)
+        app.tables.staticTexts["Trash"].tap()
+        wait(1)
+        app.tables.cells.allElementsBoundByIndex.filter { $0.frame.origin.x >= 0 }.first?.tap()
+        wait(1)
+
+        let buttons = app.navigationBars.buttons
+
+
+        XCTAssert(buttons["Delete"].exists, "Navigation bar should contain delete button")
+        XCTAssert(buttons["help icn"].exists, "Navigation bar should contain help button")
+        XCTAssert(buttons["arrow left c"].exists, "Navigation bar should contain back button")
+        XCTAssert(buttons.count == 3, "")
     }
 
     // MARK: - Send message
