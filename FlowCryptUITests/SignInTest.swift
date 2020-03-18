@@ -13,7 +13,7 @@ class SignInTest: XCTestCase {
     let user = UserCredentials.default
 
     override func setUp() {
-        continueAfterFailure = true
+        continueAfterFailure = false
         
         app = XCUIApplicationBuilder()
             .setupRegion()
@@ -22,7 +22,7 @@ class SignInTest: XCTestCase {
     }
 
     func test_cancel_login() {
-        app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app.tables.buttons["gmail"].tap()
         wait(1)
 
         let cancelButton = gmailAlert.buttons["Cancel"]
@@ -37,7 +37,7 @@ class SignInTest: XCTestCase {
     func test_gmail_login() {
         // tap on gmail button
         // MARK: - Google Login
-        app.tables/*@START_MENU_TOKEN@*/.buttons["gmail"]/*[[".cells.buttons[\"gmail\"]",".buttons[\"gmail\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app.tables.buttons["gmail"].tap()
         let signInAlert = gmailAlert
 
         wait(1)
