@@ -93,7 +93,7 @@ class SignInTest: XCTestCase {
         app.tables.secureTextFields.firstMatch.tap()
 
 
-        // MARK: - Coorect pass phrase
+        // MARK: - Correct pass phrase
         // enter correct pass phrase and tap enter
         if button.exists {
             app.typeText(user.pass)
@@ -121,63 +121,67 @@ class SignInTest: XCTestCase {
         XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
         XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
         XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
+    }
 
-
-        // MARK: - Delete
+    func test_move_msg_to_trash() {
+        // Move msg to Trash
+        wait(2)
+        cells.first?.tap()
+        wait(1)
         app.navigationBars.buttons["Delete"].tap()
-        wait(5)
+        wait(1)
+
+        // Verify in Trash
         menuButton().tap()
         app.tables.staticTexts["Trash"].tap()
-        wait(2)
+        wait(1)
         XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in trash")
+        cells.first?.tap()
+        wait(1)
 
- //        let cellsQuery = tablesQuery.cells
-//        cellsQuery.otherElements.containing(.staticText, identifier:"5:44 PM").staticTexts["cryptup.tester@gmail.com"].tap()
-//
-//        let trashNavigationBar = app.navigationBars["Trash"]
-//        trashNavigationBar.buttons["help icn"].tap()
-//        trashNavigationBar.buttons["arrow left c"].tap()
-//        trashNavigationBar.buttons["menu icn"].tap()
-//        tablesQuery/*@START_MENU_TOKEN@*/.staticTexts["Starred"]/*[[".cells.staticTexts[\"Starred\"]",".staticTexts[\"Starred\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        tablesQuery/*@START_MENU_TOKEN@*/.staticTexts["Encrypted message sent"]/*[[".cells.staticTexts[\"Encrypted message sent\"]",".staticTexts[\"Encrypted message sent\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-//
-//        let starredNavigationBar = app.navigationBars["Starred"]
-//        starredNavigationBar.buttons["arrow left c"].tap()
-//        starredNavigationBar.buttons["menu icn"].tap()
-//        tablesQuery/*@START_MENU_TOKEN@*/.staticTexts["Inbox"]/*[[".cells.staticTexts[\"Inbox\"]",".staticTexts[\"Inbox\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-//        cellsQuery.otherElements.containing(.staticText, identifier:"16 Mar").staticTexts["Google"].tap()
-//        inboxNavigationBar.buttons["archive"].tap()
+        let buttons = app.navigationBars.buttons
+        let backButton = buttons["arrow left c"]
 
+        // Verify buttons in Trash folder
+        XCTAssert(buttons["Delete"].exists, "Navigation bar should contain delete button")
+        XCTAssert(buttons["help icn"].exists, "Navigation bar should contain help button")
+        XCTAssert(backButton.exists, "Navigation bar should contain back button")
+        XCTAssert(buttons.count == 3, "")
 
-        // MARK: - Archive
+        // Open following first msg
+        backButton.tap()
         menuButton().tap()
         app.tables.staticTexts["Inbox"].tap()
+        wait(1)
+        cells.first?.tap()
+        wait(1)
+    }
+
+    func test_move_msg_to_archive() {
         wait(2)
         sendMessage()
         app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
         app.navigationBars.buttons["archive"].tap()
-        wait(3)
+        wait(2)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed in sending message to archive")
-    }
 
-    func test_navigation_bar_in_trash_folder() {
         menuButton().tap()
-        wait(0.5)
-        app.tables.staticTexts["Trash"].tap()
-        wait(1)
-        app.tables.cells.allElementsBoundByIndex.filter { $0.frame.origin.x >= 0 }.first?.tap()
-        wait(1)
+        app.tables.staticTexts["All Mail"].tap()
+        wait(2)
+        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
+        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject") 
+    }
+}
 
-        let buttons = app.navigationBars.buttons
-
-
-        XCTAssert(buttons["Delete"].exists, "Navigation bar should contain delete button")
-        XCTAssert(buttons["help icn"].exists, "Navigation bar should contain help button")
-        XCTAssert(buttons["arrow left c"].exists, "Navigation bar should contain back button")
-        XCTAssert(buttons.count == 3, "")
+extension SignInTest {
+    private var cells: [XCUIElement] {
+        app.tables
+            .cells
+            .allElementsBoundByIndex
+            .filter { $0.frame.origin.x >= 0 }
+            .sorted(by: { $0.frame.origin.x > $1.frame.origin.x })
     }
 
-    // MARK: - Send message
     private func sendMessage() {
         app.buttons["+"].tap()
         wait(0.2)
@@ -192,9 +196,6 @@ class SignInTest: XCTestCase {
         app.navigationBars["Inbox"].buttons["android send"].tap()
         wait(5)
     }
-}
-
-extension SignInTest {
 
     private func goKeyboardButton() -> XCUIElement {
         if app.buttons["return"].exists {
@@ -217,4 +218,5 @@ extension SignInTest {
     private func menuButton() -> XCUIElement {
         app.navigationBars.buttons["menu icn"]
     }
+
 }
