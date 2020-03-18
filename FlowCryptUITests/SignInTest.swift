@@ -109,7 +109,7 @@ class SignInTest: XCTestCase {
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
 
         // MARK: - Check in sent mail box
-        menuButton().tap()
+        menuButton.tap()
         tapOnMenu(folder: "Sent Mail")
         wait(3)
 
@@ -130,7 +130,7 @@ class SignInTest: XCTestCase {
         wait(1)
 
         // Verify in Trash
-        menuButton().tap()
+        menuButton.tap()
         tapOnMenu(folder: "Trash")
         XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in trash")
 
@@ -146,7 +146,7 @@ class SignInTest: XCTestCase {
 
         // Open following first msg
         backButton.tap()
-        menuButton().tap()
+        menuButton.tap()
         tapOnMenu(folder: "Inbox")
 
         tapOnCell()
@@ -160,7 +160,7 @@ class SignInTest: XCTestCase {
         wait(2)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed in sending message to archive")
 
-        menuButton().tap()
+        menuButton.tap()
         tapOnMenu(folder: "All Mail")
         wait(1)
 
@@ -204,7 +204,7 @@ extension SignInTest {
         Springboard.springboard.alerts.element
     }
 
-    private func menuButton() -> XCUIElement {
+    private var menuButton: XCUIElement {
         app.navigationBars.buttons["menu icn"]
     }
 
