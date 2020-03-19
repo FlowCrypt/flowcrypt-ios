@@ -7,9 +7,7 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 
-// TODO: ANTON - Move to FlowCryptUI
 public final class HeaderNode: CellNode {
     public struct Input {
         public let title: NSAttributedString

@@ -10,14 +10,26 @@ import UIKit
 
 extension UIColor {
     static var main: UIColor {
-        return UIColor(named: "mainGreenColor")!
+        UIColor(named: "mainGreenColor")!
     }
 
     static var textColor: UIColor {
-        return UIColor(named: "additionalInfoLabelColor")!
+        UIColor(named: "additionalInfoLabelColor")!
+    }
+
+    static var mainTextColor: UIColor {
+        UIColor(named: "mainTextColor")!
+    }
+
+    static var backgroundColor: UIColor {
+        UIColor(named: "backgroundColor")!
+    }
+
+    static var dividerColor: UIColor {
+        UIColor(named: "dividerColor")!
     }
 
     static var blueColor: UIColor {
-        return UIColor(red: 0, green: 120/255, blue: 1, alpha: 1)
+        UIColor(red: 0, green: 120/255, blue: 1, alpha: 1)
     }
 }

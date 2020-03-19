@@ -35,19 +35,3 @@ extension FolderViewModel {
         self.itemType = itemType
     }
 }
-
-extension FolderViewModel {
-    static func menuItems() -> [FolderViewModel] {
-        return [
-            FolderViewModel(name: "Settings", path: "", image: UIImage(named: "settings"), itemType: .settings),
-            FolderViewModel(name: "Log out", path: "", image: UIImage(named: "exit"), itemType: .logOut),
-        ]
-    } 
-}
-
-extension InfoCellNode.Input {
-    init(_ viewModel: FolderViewModel) {
-        self.init(attributedText: viewModel.name.attributed(.regular(17)), image: viewModel.image)
-    }
-}
-

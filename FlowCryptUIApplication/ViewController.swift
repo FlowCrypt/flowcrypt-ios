@@ -13,6 +13,7 @@ import FlowCryptCommon
 
 final class ViewController: ASViewController<TableNode> {
     enum Elements: Int, CaseIterable {
+        case header
         case divider
         case menu
         case emailRecipients
@@ -54,6 +55,8 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
         return {
             let element = Elements(rawValue: indexPath.row)!
             switch element {
+            case .header:
+                return HeaderNode(input: nil)
             case .divider:
                 return DividerCellNode(color: .black, height: 10)
             case .menu:
