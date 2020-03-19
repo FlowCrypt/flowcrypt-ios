@@ -422,8 +422,8 @@
 		D2531F2E23FEEF52007E5198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailNode.swift; sourceTree = "<group>"; };
 		D2531F452402C62D007E5198 /* CollectionExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionExtensions.swift; sourceTree = "<group>"; };
-		D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewControllerInput.swift; sourceTree = "<group>"; };
 		D269E025240EAD9A000495C3 /* Naming Convention.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Naming Convention.md"; sourceTree = "<group>"; };
+		D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewControllerInput.swift; sourceTree = "<group>"; };
 		D29AFFEC24092D7900C1387D /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		D29AFFF22409370300C1387D /* LogOutHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutHandler.swift; sourceTree = "<group>"; };
 		D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleContactsResponse.swift; sourceTree = "<group>"; };
@@ -522,7 +522,6 @@
 			children = (
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
 				D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */,
-				9F23EA4F237217140017DFED /* ComposeDecorator.swift */,
 				9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */,
 			);
 			path = Compose;
@@ -2132,7 +2131,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/FlowCrypt/Lib/Bignum",
 				);
-				MARKETING_VERSION = 0.1.7;
+				MARKETING_VERSION = 0.1.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.testflight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2392,7 +2391,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/FlowCrypt/Lib/Bignum",
 				);
-				MARKETING_VERSION = 0.1.7;
+				MARKETING_VERSION = 0.1.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.debug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2437,7 +2436,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/FlowCrypt/Lib/Bignum",
 				);
-				MARKETING_VERSION = 0.1.7;
+				MARKETING_VERSION = 0.1.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
