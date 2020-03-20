@@ -20,6 +20,20 @@
                ReferencedContainer = "container:FlowCrypt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D2531F2A23FEEF52007E5198"
+               BuildableName = "FlowCryptCommon.framework"
+               BlueprintName = "FlowCryptCommon"
+               ReferencedContainer = "container:FlowCrypt.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

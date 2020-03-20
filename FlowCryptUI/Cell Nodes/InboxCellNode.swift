@@ -7,17 +7,30 @@
 //
 
 import AsyncDisplayKit
-import Foundation
-import FlowCryptUI
 
-// TODO: ANTON - Move to FlowCryptUI
-final class InboxCellNode: CellNode {
+public final class InboxCellNode: CellNode {
+    public struct Input {
+        public let emailText: NSAttributedString
+        public let dateText: NSAttributedString
+        public let messageText: NSAttributedString
+
+        public init(
+            emailText: NSAttributedString,
+            dateText: NSAttributedString,
+            messageText: NSAttributedString
+        ) {
+            self.emailText = emailText
+            self.dateText = dateText
+            self.messageText = messageText
+        }
+    }
+
     private let emailNode = ASTextNode()
     private let dateNode = ASTextNode()
     private let messageNode = ASTextNode()
     private let separatorNode = ASDisplayNode()
 
-    init(message: InboxCellNodeInput) {
+    public init(message: Input) {
         super.init()  
         emailNode.attributedText = message.emailText
         dateNode.attributedText = message.dateText
@@ -33,7 +46,7 @@ final class InboxCellNode: CellNode {
         separatorNode.backgroundColor = .lightGray
     }
 
-    override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let nameLocationStack = ASStackLayoutSpec.vertical()
         nameLocationStack.spacing = 6
         nameLocationStack.style.flexShrink = 1.0
@@ -60,3 +73,4 @@ final class InboxCellNode: CellNode {
         )
     }
 }
+

@@ -1,24 +1,23 @@
 //
 //  SideMenuOptionalView.swift
-//  FlowCrypt
+//  FlowCryptUI
 //
-//  Created by Anton Kharchevskyi on 9/20/19.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Created by Anton Kharchevskyi on 19/03/2020.
+//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
 import UIKit
-import FlowCryptCommon
 
-final class SideMenuOptionalView: UIView {
+public final class SideMenuOptionalView: UIView {
     private let visualView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-    typealias Action = () -> Void
+    public typealias Action = () -> Void
     private var onAction: Action?
 
-    enum State {
+    public enum State {
         case opened, closed
     }
 
-    init(_ action: Action?) {
+    public init(_ action: Action?) {
         super.init(frame: .zero)
         onAction = action
         setupUI()
@@ -41,7 +40,7 @@ final class SideMenuOptionalView: UIView {
         onAction?()
     }
 
-    func animate(to state: State, with duration: TimeInterval) {
+    public func animate(to state: State, with duration: TimeInterval) {
         let alpha: CGFloat = {
             switch state {
             case .opened: return 0.8

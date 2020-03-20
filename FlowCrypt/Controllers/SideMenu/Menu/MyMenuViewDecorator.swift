@@ -10,10 +10,15 @@ import UIKit
 import FlowCryptUI
 
 protocol MyMenuViewDecoratorType {
+    var dividerColor: UIColor { get }
+    var backgroundColor: UIColor { get }
     func header(for user: String?, email: String?) -> HeaderNode.Input
 }
 
 struct MyMenuViewDecorator: MyMenuViewDecoratorType {
+    var dividerColor: UIColor { .dividerColor }
+    var backgroundColor: UIColor { .backgroundColor }
+
     func header(for user: String?, email: String?) -> HeaderNode.Input {
         let name = user?
             .split(separator: " ")

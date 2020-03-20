@@ -29,6 +29,14 @@ extension UIColor {
         UIColor(named: "dividerColor")!
     }
 
+    static var mainTextUnreadColor: UIColor {
+        UIColor(named: "mainTextUnreadColor")!
+    }
+
+    static var activityIndicatorColor: UIColor {
+        UIColor(named: "activityIndicatorColor")!
+    }
+
     static var blueColor: UIColor {
         UIColor(red: 0, green: 120/255, blue: 1, alpha: 1)
     }

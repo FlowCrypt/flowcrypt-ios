@@ -87,7 +87,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
             }
             $0.view.alwaysBounceVertical = false
             $0.view.alwaysBounceHorizontal = false
-            $0.backgroundColor = .backgroundColor
+            $0.backgroundColor = decorator.backgroundColor
             $0.reloadData()
         }
     }
@@ -195,7 +195,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
             let divider = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 16, height: 1))
             $0.addSubview(divider)
             $0.backgroundColor = .clear
-            divider.backgroundColor = .dividerColor
+            divider.backgroundColor = decorator.dividerColor
         }
     }
 

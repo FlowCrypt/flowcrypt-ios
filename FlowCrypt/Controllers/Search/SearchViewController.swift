@@ -143,32 +143,44 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
             switch self.state {
             case .empty:
                 return TextCellNode(
-                    title: "search_empty".localized,
-                    withSpinner: false,
-                    size: size
+                    input: TextCellNode.Input(
+                        backgroundColor: .backgroundColor,
+                        title: "search_empty".localized,
+                        withSpinner: false,
+                        size: size
+                    )
                 )
             case .startFetching:
                 return TextCellNode(
-                    title: "",
-                    withSpinner: true,
-                    size: size
+                    input: TextCellNode.Input(
+                        backgroundColor: .backgroundColor,
+                        title: "",
+                        withSpinner: true,
+                        size: size
+                    )
                 )
             case .idle:
                 return TextCellNode(
-                    title: "",
-                    withSpinner: false,
-                    size: size
+                    input: TextCellNode.Input(
+                        backgroundColor: .backgroundColor,
+                        title: "",
+                        withSpinner: false,
+                        size: size
+                    )
                 )
             case .fetched:
                 return InboxCellNode(
-                    message: InboxCellNodeInput(self.state.messages[indexPath.row])
+                    message: InboxCellNode.Input(self.state.messages[indexPath.row])
                 )
             case let .error(message):
                 return TextCellNode(
-                    title: message,
-                    withSpinner: false,
-                    size: size
-                )
+                    input: TextCellNode.Input(
+                        backgroundColor: .backgroundColor,
+                        title: message,
+                        withSpinner: false,
+                        size: size
+                    )
+                ) 
             }
         }
     }
