@@ -25,6 +25,7 @@ final class WebViewController: UIViewController {
     
     override func loadView() {
         self.view = webView
+        webView.backgroundColor = .backgroundColor
     }
     
     override func viewDidLoad() {

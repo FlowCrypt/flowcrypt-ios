@@ -46,9 +46,18 @@ public extension NSAttributedString {
 public extension String {
     func attributed(
         _ style: NSAttributedString.Style = .regular(14),
-        color: UIColor = .black,
+        color: UIColor = .textColor,
         alignment: NSTextAlignment? = nil
     ) -> NSAttributedString {
         NSAttributedString.text(from: self, style: style, color: color, alignment: alignment)
+    }
+}
+
+public extension UIColor {
+    static var textColor: UIColor {
+        UIColor.colorFor(
+            darkStyle: .white,
+            lightStyle: .black
+        )
     }
 }

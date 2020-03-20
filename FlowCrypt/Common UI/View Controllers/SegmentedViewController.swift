@@ -77,8 +77,8 @@ final class SegmentedViewController: ASViewController<ASDisplayNode> {
             $0.delegate = self
         }
         backgroundBar.backgroundColor = style.tabTintColor
-        segmentView.backgroundColor = .white
-        node.backgroundColor = .white
+        segmentView.backgroundColor = .backgroundColor
+        node.backgroundColor = .backgroundColor
     }
     
     override func viewDidLayoutSubviews() {

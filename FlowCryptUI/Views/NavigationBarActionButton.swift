@@ -8,15 +8,14 @@
 
 import UIKit
 
-// TODO: ANTON - Move to FlowCryptUI
-final class NavigationBarActionButton: UIBarButtonItem {
+public final class NavigationBarActionButton: UIBarButtonItem {
     private enum Constants {
         static let buttonSize = CGSize(width: 44, height: 44)
     }
 
     private var onAction: (() -> Void)?
 
-    convenience init(_ image: UIImage?, action: (() -> Void)?) {
+    public convenience init(_ image: UIImage?, action: (() -> Void)?) {
         self.init()
         onAction = action
         customView = LeftAlignedIconButton(type: .system).with {

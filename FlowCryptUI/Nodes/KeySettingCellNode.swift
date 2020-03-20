@@ -7,19 +7,28 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 
-// TODO: ANTON - Move to FlowCryptUI
-final class KeySettingCellNode: CellNode {
-    struct Input {
+public final class KeySettingCellNode: CellNode {
+    public struct Input {
         let title, subtitle, date: NSAttributedString
+
+        public init(
+            title: NSAttributedString,
+            subtitle: NSAttributedString,
+            date: NSAttributedString
+        ) {
+            self.title = title
+            self.subtitle = subtitle
+            self.date = date
+        }
     }
+    
     private let titleNode = ASTextNode()
     private let dateNode = ASTextNode()
     private let subTitleNode = ASTextNode()
     private let separatorNode = ASDisplayNode()
 
-    init(with input: KeySettingCellNode.Input) {
+    public init(with input: KeySettingCellNode.Input) {
         titleNode.attributedText = input.title
         dateNode.attributedText = input.date
         subTitleNode.attributedText = input.subtitle
@@ -34,7 +43,7 @@ final class KeySettingCellNode: CellNode {
         separatorNode.backgroundColor = .lightGray
     }
 
-    override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let nameLocationStack = ASStackLayoutSpec.vertical()
         nameLocationStack.spacing = 6
         nameLocationStack.style.flexShrink = 1.0
