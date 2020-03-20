@@ -91,7 +91,6 @@ final class MessageViewController: ASViewController<TableNode> {
             $0.delegate = self
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
-            $0.backgroundColor = .backgroundColor
         }
     }
 

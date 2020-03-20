@@ -14,6 +14,7 @@ final public class TableNode: ASTableNode {
         view.showsVerticalScrollIndicator = false
         view.separatorStyle = .none
         view.keyboardDismissMode = .onDrag
+        backgroundColor = .backgroundColor
     }
     
     public var bounces: Bool = true {

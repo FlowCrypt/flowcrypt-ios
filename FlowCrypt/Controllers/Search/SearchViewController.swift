@@ -69,7 +69,6 @@ extension SearchViewController {
         title = "search_title".localized
         node.delegate = self
         node.dataSource = self
-        node.backgroundColor = .backgroundColor
     }
 
     private func setupSearch() {

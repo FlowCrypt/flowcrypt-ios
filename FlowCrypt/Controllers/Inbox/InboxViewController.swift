@@ -103,7 +103,6 @@ extension InboxViewController {
 
         node.addSubnode(tableNode)
         node.addSubnode(composeButton)
-        tableNode.backgroundColor = .backgroundColor
 
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         tableNode.view.refreshControl = refreshControl

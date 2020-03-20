@@ -19,6 +19,6 @@ struct SettingsViewDecorator: SettingsViewDecoratorType {
     let insets = UIEdgeInsets.side(16)
     
     func attributedSetting(_ title: String) -> NSAttributedString {
-        title.attributed(.regular(16))
+        title.attributed(.regular(16), color: .mainTextColor)
     }
 }
