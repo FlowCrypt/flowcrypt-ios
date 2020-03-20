@@ -7,13 +7,11 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 
-// TODO: ANTON - Move to FlowCryptUI
-final class TextSubjectNode: CellNode {
+public final class MessageTextSubjectNode: CellNode {
     private let textNode = ASEditableTextNode()
 
-    init(_ text: NSAttributedString?) {
+    public init(_ text: NSAttributedString?) {
         super.init()
         textNode.attributedText = text
         DispatchQueue.main.async {
@@ -22,7 +20,7 @@ final class TextSubjectNode: CellNode {
         }
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),

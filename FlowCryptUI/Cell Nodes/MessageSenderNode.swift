@@ -7,18 +7,16 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 import FlowCryptCommon
 
-// TODO: ANTON - Move to FlowCryptUI
-final class MessageSenderNode: CellNode {
-    typealias ButtonAction = () -> Void
+public final class MessageSenderNode: CellNode {
+    public typealias ButtonAction = () -> Void
 
     private let textNode = ASTextNode()
     private let buttonNode = ASButtonNode()
     private let onTap: ButtonAction?
 
-    init(_ text: NSAttributedString? = nil, action: ButtonAction? = nil) {
+    public init(_ text: NSAttributedString? = nil, action: ButtonAction? = nil) {
         self.onTap = action
         super.init()
         textNode.attributedText = text
@@ -30,7 +28,7 @@ final class MessageSenderNode: CellNode {
         onTap?()
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
         buttonNode.style.preferredSize = CGSize(width: 50, height: 50)
         return ASInsetLayoutSpec(

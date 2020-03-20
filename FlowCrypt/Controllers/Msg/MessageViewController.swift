@@ -91,6 +91,7 @@ final class MessageViewController: ASViewController<TableNode> {
             $0.delegate = self
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
+            $0.backgroundColor = .backgroundColor
         }
     }
 
@@ -161,7 +162,7 @@ extension MessageViewController {
             } else {
                 message = self.decorator.attributed(
                     text: decrypted.text,
-                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.black
+                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.mainTextColor
                 )
             }
             resolve(message)
@@ -317,7 +318,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             case .subject:
                 return MessageSubjectNode(subject, time: time)
             case .text:
-                return TextSubjectNode(self.message)
+                return MessageTextSubjectNode(self.message)
             }
         }
     } 
