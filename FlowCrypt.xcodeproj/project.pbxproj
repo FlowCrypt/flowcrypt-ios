@@ -958,11 +958,11 @@
 				04B4728F1ECE29F600B8266F /* Compose */,
 				C192421D1EC48B5600C3D251 /* Setup */,
 				9F268892237DC55E00428A94 /* ImportKey */,
-				D29A0001240C137700C1387D /* Message List */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 				D29AFFF02409300600C1387D /* Search */,
 				5A39F42E239EC32B001F4607 /* Settings */,
 				D29AFFF12409301300C1387D /* Bootstrap */,
+				D29A0001240C137700C1387D /* Message List Extension */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1073,12 +1073,12 @@
 			path = "Import Key";
 			sourceTree = "<group>";
 		};
-		D29A0001240C137700C1387D /* Message List */ = {
+		D29A0001240C137700C1387D /* Message List Extension */ = {
 			isa = PBXGroup;
 			children = (
 				9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */,
 			);
-			path = "Message List";
+			path = "Message List Extension";
 			sourceTree = "<group>";
 		};
 		D29A0002240C140500C1387D /* Key Detail Info */ = {
