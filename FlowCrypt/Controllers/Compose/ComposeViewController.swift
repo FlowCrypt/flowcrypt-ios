@@ -119,6 +119,11 @@ final class ComposeViewController: ASViewController<TableNode> {
         // showScopeAlertIfNeeded()
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -142,6 +147,7 @@ extension ComposeViewController {
             $0.delegate = self
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
+            $0.backgroundColor = .backgroundColor
         }
     }
 

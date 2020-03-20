@@ -13,13 +13,16 @@ final public class TextViewCellNode: CellNode {
     public struct Input {
         var placeholder: NSAttributedString
         var preferredHeight: CGFloat
+        let textColor: UIColor
 
         public init(
             placeholder: NSAttributedString,
-            preferredHeight: CGFloat
+            preferredHeight: CGFloat,
+            textColor: UIColor
         ) {
             self.placeholder = placeholder
             self.preferredHeight = preferredHeight
+            self.textColor = textColor
         }
     }
 
@@ -42,7 +45,7 @@ final public class TextViewCellNode: CellNode {
         textView.attributedPlaceholderText = input.placeholder
         textView.typingAttributes = [
             NSAttributedString.Key.font.rawValue: NSAttributedString.Style.regular(17).font,
-            NSAttributedString.Key.foregroundColor.rawValue: UIColor.black
+            NSAttributedString.Key.foregroundColor.rawValue: input.textColor
         ]
     }
 

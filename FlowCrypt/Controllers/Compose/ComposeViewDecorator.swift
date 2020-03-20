@@ -25,7 +25,8 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
                 color: .lightGray,
                 alignment: .left
             ),
-            preferredHeight: height
+            preferredHeight: height,
+            textColor: .mainTextColor
         )
     }
 
@@ -89,7 +90,11 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
 extension RecipientEmailsCellNode.Input {
     init(_ recipient: ComposeViewController.Recipient) {
         self.init(
-            email: recipient.email.lowercased().attributed(.regular(17), color: .black, alignment: .left),
+            email: recipient.email.lowercased().attributed(
+                .regular(17),
+                color: .mainTextColor,
+                alignment: .left
+            ),
             isSelected: recipient.isSelected
         )
     }

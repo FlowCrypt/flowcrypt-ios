@@ -167,6 +167,7 @@
 		D271774A242558DA00BDA9A9 /* MessageSenderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779923737E1900E19C07 /* MessageSenderNode.swift */; };
 		D271774B242558DA00BDA9A9 /* MessageSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */; };
 		D271774C242558DA00BDA9A9 /* MessageTextSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */; };
+		D271774E24255F1100BDA9A9 /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */; };
 		D28655912423B4580066F52E /* HeaderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3639235A0B3B00614596 /* HeaderNode.swift */; };
 		D28655932423B4EE0066F52E /* MyMenuViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */; };
 		D28655952423BFF60066F52E /* SideMenuOptionalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28655942423BFF60066F52E /* SideMenuOptionalView.swift */; };
@@ -427,6 +428,7 @@
 		D269E025240EAD9A000495C3 /* Naming Convention.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Naming Convention.md"; sourceTree = "<group>"; };
 		D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewControllerInput.swift; sourceTree = "<group>"; };
 		D27177482424D73000BDA9A9 /* InboxViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewDecorator.swift; sourceTree = "<group>"; };
+		D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
 		D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMenuViewDecorator.swift; sourceTree = "<group>"; };
 		D28655942423BFF60066F52E /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
 		D29AFFEC24092D7900C1387D /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
@@ -1049,6 +1051,7 @@
 				32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				32DCAEFF16F5D91A35791730 /* DataExtensions.swift */,
+				D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1879,6 +1882,7 @@
 				D254AA6024092AB80041CAE0 /* TapTicFeedback.swift in Sources */,
 				D2531F472402C9DE007E5198 /* IntExtensions.swift in Sources */,
 				D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */,
+				D271774E24255F1100BDA9A9 /* UIColorExtensions.swift in Sources */,
 				D29AFFFE240990BE00C1387D /* Throttler.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
 				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,
