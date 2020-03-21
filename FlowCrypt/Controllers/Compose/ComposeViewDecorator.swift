@@ -83,7 +83,7 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
 
         let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
 
-        return (text + message).attributed(.regular(17), color: .black)
+        return (text + message).attributed(.regular(17))
     }
 }
 
