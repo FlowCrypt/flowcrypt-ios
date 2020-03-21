@@ -186,6 +186,8 @@
 		D2A9CA3F24261A4600E1D898 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA3E24261A4600E1D898 /* SignInType.swift */; };
 		D2A9CA4224261DBC00E1D898 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA4124261DBC00E1D898 /* AppLinks.swift */; };
 		D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
+		D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */; };
+		D2A9CA472426244600E1D898 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
 		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		D2CDC3CF2402D4AD002B045F /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */; };
@@ -444,6 +446,7 @@
 		D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewDecorator.swift; sourceTree = "<group>"; };
 		D2A9CA3E24261A4600E1D898 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
 		D2A9CA4124261DBC00E1D898 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
+		D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralConstantsTest.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -825,6 +828,7 @@
 				A3DAD5FF22E4574B00F2C4CD /* Info.plist */,
 				A3DAD60722E4588800F2C4CD /* TestData.swift */,
 				A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */,
+				D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */,
 			);
 			path = FlowCryptTests;
 			sourceTree = "<group>";
@@ -1674,6 +1678,7 @@
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
 				9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
+				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
 				D29AFFF42409370300C1387D /* LogOutHandler.swift in Sources */,
 				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
@@ -1697,6 +1702,7 @@
 				32DCAF683D87EA6221F71335 /* SequenceExtensions.swift in Sources */,
 				32DCA24159622E7442FF9459 /* AppErr.swift in Sources */,
 				9F589F11238C7DDC007FD759 /* User.swift in Sources */,
+				D2A9CA472426244600E1D898 /* GeneralConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
