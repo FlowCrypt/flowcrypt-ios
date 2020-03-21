@@ -93,6 +93,11 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
         composeButton.cornerRadius = size.width / 2
         tableNode.frame = node.bounds
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        tableNode.reloadData()
+    }
 }
 
 extension InboxViewController {
