@@ -52,6 +52,11 @@ final class ViewController: ASViewController<TableNode> {
         composeButton.cornerRadius = size.width / 2
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
+
     // MARK: - Recipient Text Field
     enum Constants {
         static let endTypingCharacters = [",", " "]

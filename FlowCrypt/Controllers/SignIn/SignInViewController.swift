@@ -56,6 +56,11 @@ final class SignInViewController: ASViewController<ASTableNode> {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource

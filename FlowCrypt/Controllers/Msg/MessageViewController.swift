@@ -111,6 +111,11 @@ final class MessageViewController: ASViewController<TableNode> {
         }()
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
 }
 
 // MARK: - Message

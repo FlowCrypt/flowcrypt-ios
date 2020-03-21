@@ -59,6 +59,11 @@ final class SearchViewController: ASViewController<TableNode> {
             searchController.isActive = true
         }
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
 }
 
 // MARK: - Setup
