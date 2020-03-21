@@ -57,7 +57,7 @@ struct EnterPassPhraseViewDecorator: EnterPassPhraseViewDecoratorType {
     }
 
     private func attributed(title: String) -> NSAttributedString {
-        title.localized.attributed(.bold(35), color: .black, alignment: .center)
+        title.localized.attributed(.bold(35), alignment: .center)
     }
 
     private func attributed(subTitle: String, color: UIColor = .white) -> NSAttributedString {

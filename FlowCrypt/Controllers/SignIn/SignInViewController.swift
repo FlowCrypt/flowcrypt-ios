@@ -77,7 +77,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
                     self?.handle(option: appLink)
                 }
             case .logo:
-                return SignInImageNode(UIImage(named: "full-logo"), height: imageHeight)
+                return SignInImageNode(self.decorator.logo, height: imageHeight)
             case .description:
                 return SignInDescriptionNode(self.decorator.description)
             case .gmail:

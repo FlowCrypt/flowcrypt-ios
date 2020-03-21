@@ -12,6 +12,7 @@ import FlowCryptCommon
 
 protocol SignInViewDecoratorType {
     var description: NSAttributedString { get }
+    var logo: UIImage? { get }
 }
 
 struct SignInViewDecorator: SignInViewDecoratorType {
@@ -23,6 +24,17 @@ struct SignInViewDecorator: SignInViewDecoratorType {
                 color: UIColor.colorFor(darkStyle: .mainTextColor, lightStyle: .textColor),
                 alignment: .center
         )
+    }
+
+    var logo: UIImage? {
+        if #available(iOS 13.0, *) {
+            switch UITraitCollection.current.userInterfaceStyle {
+            case .dark: return UIImage(named: "full-logo")?.tinted(.white)
+            default: return UIImage(named: "full-logo")
+            }
+        } else {
+            return UIImage(named: "full-logo")
+        }
     }
 }
 
