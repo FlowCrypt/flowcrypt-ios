@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptUI
 
 // TODO: ANTON - Move to FlowCryptUI
 struct Segment {

@@ -7,16 +7,14 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 
-// TODO: ANTON - Move to FlowCryptUI
-final class SetupTitleNode: CellNode {
+public final class SetupTitleNode: CellNode {
     private let textNode = ASTextNode()
     private let insets: UIEdgeInsets
     private let selectedNode = ASDisplayNode()
     private var selectedLineColor: UIColor?
     
-    init(
+    public init(
         title: NSAttributedString,
         insets: UIEdgeInsets,
         selectedLineColor: UIColor? = nil
@@ -27,7 +25,7 @@ final class SetupTitleNode: CellNode {
         textNode.attributedText = title
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let layout = ASInsetLayoutSpec(
             insets: insets,
             child: ASCenterLayoutSpec(
@@ -51,7 +49,7 @@ final class SetupTitleNode: CellNode {
         }
     }
     
-    override var isSelected: Bool {
+    public override var isSelected: Bool {
         didSet {
             selectedNode.backgroundColor = isSelected ? selectedLineColor : .clear
         }
