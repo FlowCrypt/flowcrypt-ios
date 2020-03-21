@@ -8,17 +8,29 @@
 
 import AsyncDisplayKit
 
-// TODO: ANTON - Move to FlowCryptUI
-final class SigninButtonNode: ASCellNode {
-    private let button = ASButtonNode()
+public final class SigninButtonNode: ASCellNode {
+    public struct Input {
+        let title: NSAttributedString
+        let image: UIImage?
+
+        public init(
+            title: NSAttributedString,
+            image: UIImage?
+        ) {
+            self.title = title
+            self.image = image
+        }
+    }
+
+    public let button = ASButtonNode()
     private var onTap: (() -> ())?
     
-    init(title: NSAttributedString, image: UIImage?, onTap: (() -> Void)?) {
+    public init(input: Input, onTap: (() -> Void)?) {
         super.init()
         self.onTap = onTap
         automaticallyManagesSubnodes = true
-        button.setAttributedTitle(title, for: .normal)
-        button.setImage(image, for: .normal)
+        button.setAttributedTitle(input.title, for: .normal)
+        button.setImage(input.image, for: .normal)
         button.addTarget(self, action: #selector(tapHandle), forControlEvents: .touchUpInside)
 
         button.style.preferredSize.height = 50
@@ -28,17 +40,12 @@ final class SigninButtonNode: ASCellNode {
         selectionStyle = .none
     }
 
-    convenience init(_ buttonType: SignInType, onTap: (() -> Void)?) {
-        self.init(title: buttonType.attributedTitle, image: buttonType.image, onTap: onTap)
-        button.accessibilityLabel = buttonType.rawValue
-    }
-
     @objc private func tapHandle() {
         onTap?()
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        return ASInsetLayoutSpec(
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16),
             child: button
         )

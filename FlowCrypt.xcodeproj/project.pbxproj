@@ -59,7 +59,6 @@
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F1797662368EE50002BF770 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
 		9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */; };
-		9F1F8A1F235F9618006463A1 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1F8A1E235F9618006463A1 /* AppLinks.swift */; };
 		9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA523C673AD005D2CB6 /* Springboard.swift */; };
 		9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA823C67587005D2CB6 /* UserCredentials.swift */; };
 		9F228BAA23C67729005D2CB6 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
@@ -88,8 +87,6 @@
 		9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F14238C8249007FD759 /* KeyChainService.swift */; };
 		9F589F1F238C8A90007FD759 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F1E238C8A90007FD759 /* Token.swift */; };
 		9F589F20238C8A90007FD759 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F1E238C8A90007FD759 /* Token.swift */; };
-		9F696293236091DD003712E1 /* SignInImageNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F696292236091DD003712E1 /* SignInImageNode.swift */; };
-		9F696295236091F4003712E1 /* SignInDescriptionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F696294236091F4003712E1 /* SignInDescriptionNode.swift */; };
 		9F716308234FC73E0031645E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9F71630A234FC73E0031645E /* Localizable.strings */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
@@ -97,9 +94,6 @@
 		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F953E08238310D500AEB98B /* KeyMethods.swift */; };
-		9F95A3F52360778E00C80B64 /* LinkButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */; };
-		9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */; };
-		9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F823607C2900C80B64 /* SignInType.swift */; };
 		9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
 		9F9ABC8523AC1E5700D560E3 /* Imap+search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */; };
 		9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */; };
@@ -185,6 +179,13 @@
 		D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */; };
 		D2A1D3C323FD64AD00D626D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2A1D3C223FD64AD00D626D6 /* Assets.xcassets */; };
 		D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D2A1D3C423FD64AD00D626D6 /* LaunchScreen.storyboard */; };
+		D2A9CA38242618DF00E1D898 /* LinkButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */; };
+		D2A9CA392426197400E1D898 /* SigninButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */; };
+		D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F696294236091F4003712E1 /* SignInDescriptionNode.swift */; };
+		D2A9CA3B242619A400E1D898 /* SignInImageNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F696292236091DD003712E1 /* SignInImageNode.swift */; };
+		D2A9CA3D242619EC00E1D898 /* SignInViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */; };
+		D2A9CA3F24261A4600E1D898 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA3E24261A4600E1D898 /* SignInType.swift */; };
+		D2A9CA4224261DBC00E1D898 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA4124261DBC00E1D898 /* AppLinks.swift */; };
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
 		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		D2CDC3CF2402D4AD002B045F /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */; };
@@ -317,7 +318,6 @@
 		9F1797692368EE90002BF770 /* ButtonCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonCellNode.swift; sourceTree = "<group>"; };
 		9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupViewDecorator.swift; sourceTree = "<group>"; };
 		9F1797702368EEE8002BF770 /* ButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
-		9F1F8A1E235F9618006463A1 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		9F228BA523C673AD005D2CB6 /* Springboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Springboard.swift; sourceTree = "<group>"; };
 		9F228BA823C67587005D2CB6 /* UserCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCredentials.swift; sourceTree = "<group>"; };
 		9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
@@ -367,7 +367,6 @@
 		9F953E08238310D500AEB98B /* KeyMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMethods.swift; sourceTree = "<group>"; };
 		9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkButtonNode.swift; sourceTree = "<group>"; };
 		9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninButtonNode.swift; sourceTree = "<group>"; };
-		9F95A3F823607C2900C80B64 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
 		9F9AAFFC2383E216000A00F1 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		9F9ABC8423AC1E5700D560E3 /* Imap+search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+search.swift"; sourceTree = "<group>"; };
 		9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContext.swift; sourceTree = "<group>"; };
@@ -442,6 +441,9 @@
 		D2A1D3C523FD64AD00D626D6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D2A1D3C723FD64AD00D626D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2A1D3D023FD83B100D626D6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewDecorator.swift; sourceTree = "<group>"; };
+		D2A9CA3E24261A4600E1D898 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
+		D2A9CA4124261DBC00E1D898 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -515,8 +517,8 @@
 		04B4728A1ECE29D200B8266F /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				D2A9CA4024261A4D00E1D898 /* SignIn Models */,
 				D29A0005240C14EB00C1387D /* Folder Models */,
-				9F6962972360925B003712E1 /* SignIn Models */,
 				9FD22A20230FF9BC005067A6 /* Inbox Models */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				9F0C3C132316E69300299985 /* User.swift */,
@@ -594,7 +596,7 @@
 			isa = PBXGroup;
 			children = (
 				32DCA9701B2D5052225A0414 /* SignInViewController.swift */,
-				9F69629623609229003712E1 /* Nodes */,
+				D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */,
 			);
 			path = SignIn;
 			sourceTree = "<group>";
@@ -787,26 +789,6 @@
 			path = "Encrypted Storage";
 			sourceTree = "<group>";
 		};
-		9F69629623609229003712E1 /* Nodes */ = {
-			isa = PBXGroup;
-			children = (
-				9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */,
-				9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */,
-				9F696294236091F4003712E1 /* SignInDescriptionNode.swift */,
-				9F696292236091DD003712E1 /* SignInImageNode.swift */,
-			);
-			path = Nodes;
-			sourceTree = "<group>";
-		};
-		9F6962972360925B003712E1 /* SignIn Models */ = {
-			isa = PBXGroup;
-			children = (
-				9F1F8A1E235F9618006463A1 /* AppLinks.swift */,
-				9F95A3F823607C2900C80B64 /* SignInType.swift */,
-			);
-			path = "SignIn Models";
-			sourceTree = "<group>";
-		};
 		9FD22A1D230FEEC8005067A6 /* Common UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -924,16 +906,16 @@
 			isa = PBXGroup;
 			children = (
 				04B472911ECE29F600B8266F /* SideMenu */,
-				C132B9D71EC30E0B00763715 /* Inbox */,
-				D952B71B1ED0CB0100E5C02B /* Msg */,
-				04B4728F1ECE29F600B8266F /* Compose */,
+				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 				C192421D1EC48B5600C3D251 /* Setup */,
 				9F268892237DC55E00428A94 /* ImportKey */,
-				32DCA8D5AF0A43354CC7F58B /* SignIn */,
+				D29AFFF12409301300C1387D /* Bootstrap */,
+				C132B9D71EC30E0B00763715 /* Inbox */,
+				04B4728F1ECE29F600B8266F /* Compose */,
+				D952B71B1ED0CB0100E5C02B /* Msg */,
 				D29AFFF02409300600C1387D /* Search */,
 				5A39F42E239EC32B001F4607 /* Settings */,
-				D29AFFF12409301300C1387D /* Bootstrap */,
-				D29A0001240C137700C1387D /* Message List Extension */,
+				D29A0001240C137700C1387D /* MessageList Extension */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1046,12 +1028,12 @@
 			path = "Import Key";
 			sourceTree = "<group>";
 		};
-		D29A0001240C137700C1387D /* Message List Extension */ = {
+		D29A0001240C137700C1387D /* MessageList Extension */ = {
 			isa = PBXGroup;
 			children = (
 				9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */,
 			);
-			path = "Message List Extension";
+			path = "MessageList Extension";
 			sourceTree = "<group>";
 		};
 		D29A0002240C140500C1387D /* Key Detail Info */ = {
@@ -1160,6 +1142,10 @@
 		D2A1D3D223FD9AE600D626D6 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				9F696292236091DD003712E1 /* SignInImageNode.swift */,
+				9F696294236091F4003712E1 /* SignInDescriptionNode.swift */,
+				9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */,
+				9F95A3F42360778E00C80B64 /* LinkButtonNode.swift */,
 				5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */,
 				5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */,
 				9F56BD2F23438B4400A7371A /* ComposeButtonNode.swift */,
@@ -1169,6 +1155,15 @@
 				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
 			);
 			path = Nodes;
+			sourceTree = "<group>";
+		};
+		D2A9CA4024261A4D00E1D898 /* SignIn Models */ = {
+			isa = PBXGroup;
+			children = (
+				D2A9CA3E24261A4600E1D898 /* SignInType.swift */,
+				D2A9CA4124261DBC00E1D898 /* AppLinks.swift */,
+			);
+			path = "SignIn Models";
 			sourceTree = "<group>";
 		};
 		D952B71B1ED0CB0100E5C02B /* Msg */ = {
@@ -1718,6 +1713,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */,
+				D2A9CA3D242619EC00E1D898 /* SignInViewDecorator.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
@@ -1725,12 +1721,11 @@
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */,
-				9F696295236091F4003712E1 /* SignInDescriptionNode.swift in Sources */,
-				9F696293236091DD003712E1 /* SignInImageNode.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
+				D2A9CA4224261DBC00E1D898 /* AppLinks.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
@@ -1750,6 +1745,7 @@
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
+				D2A9CA3F24261A4600E1D898 /* SignInType.swift in Sources */,
 				9F0C3C18231819B200299985 /* LoggerService.swift in Sources */,
 				9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */,
 				9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */,
@@ -1770,7 +1766,6 @@
 				9F56BD3823438C7000A7371A /* DateFormattingExtensions.swift in Sources */,
 				D269E02724103A20000495C3 /* ComposeViewControllerInput.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
-				9F95A3F923607C2900C80B64 /* SignInType.swift in Sources */,
 				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
@@ -1789,7 +1784,6 @@
 				32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */,
 				9F0C3C122316DDA500299985 /* DataService.swift in Sources */,
 				32DCA8AE3C32013152FCDD2A /* bignum.c in Sources */,
-				9F95A3F723607C0900C80B64 /* SigninButtonNode.swift in Sources */,
 				9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
@@ -1797,8 +1791,6 @@
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
 				32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */,
 				32DCAD9F3A6B6101B78F0918 /* AttesterApi.swift in Sources */,
-				9F1F8A1F235F9618006463A1 /* AppLinks.swift in Sources */,
-				9F95A3F52360778E00C80B64 /* LinkButtonNode.swift in Sources */,
 				32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */,
 				5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */,
@@ -1819,11 +1811,14 @@
 				D271774A242558DA00BDA9A9 /* MessageSenderNode.swift in Sources */,
 				D204DBA823FB35930083B9D6 /* RecipientsTextField.swift in Sources */,
 				D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */,
+				D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
+				D2A9CA38242618DF00E1D898 /* LinkButtonNode.swift in Sources */,
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
 				D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */,
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
+				D2A9CA3B242619A400E1D898 /* SignInImageNode.swift in Sources */,
 				D211CE7223FC35AC00D1CE38 /* TextFieldNode.swift in Sources */,
 				D28655912423B4580066F52E /* HeaderNode.swift in Sources */,
 				D271774C242558DA00BDA9A9 /* MessageTextSubjectNode.swift in Sources */,
@@ -1839,6 +1834,7 @@
 				D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */,
 				D211CE7523FC369D00D1CE38 /* UIColorExtension.swift in Sources */,
 				D211CE7323FC35AC00D1CE38 /* TextViewCellNode.swift in Sources */,
+				D2A9CA392426197400E1D898 /* SigninButtonNode.swift in Sources */,
 				D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

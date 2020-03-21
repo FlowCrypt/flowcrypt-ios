@@ -15,13 +15,17 @@ final class SignInViewController: ASViewController<ASTableNode> {
 
     private let userService: UserServiceType
     private let core: Core
+    private let decorator: SignInViewDecoratorType
 
     init(
         userService: UserServiceType = UserService.shared,
-        core: Core = Core.shared
+        core: Core = Core.shared,
+        decorator: SignInViewDecoratorType = SignInViewDecorator()
     ) {
         self.core = core
         self.userService = userService
+        self.decorator = decorator
+
         super.init(node: TableNode())
         node.delegate = self
         node.dataSource = self
@@ -58,7 +62,7 @@ final class SignInViewController: ASViewController<ASTableNode> {
 
 extension SignInViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return Parts.allCases.count
+        Parts.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -68,16 +72,14 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .links:
-                return LinkButtonNode(AppLinks.allCases) { [weak self] action in
-                    self?.handle(option: action)
+                return LinkButtonNode(AppLinks.allCases) { [weak self] identifier in
+                    guard let appLink = AppLinks(rawValue: identifier) else { return }
+                    self?.handle(option: appLink)
                 }
             case .logo:
                 return SignInImageNode(UIImage(named: "full-logo"), height: imageHeight)
             case .description:
-                let title = "sign_in_description"
-                    .localized
-                    .attributed(.medium(13), color: .textColor, alignment: .center)
-                return SignInDescriptionNode(title)
+                return SignInDescriptionNode(self.decorator.description)
             case .gmail:
                 return SigninButtonNode(.gmail) { [weak self] in
                     self?.signInWithGmail()

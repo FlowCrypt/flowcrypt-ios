@@ -1,9 +1,9 @@
 //
-//  SignInButton.swift
+//  SignInType.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 23.10.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Created by Anton Kharchevskyi on 21/03/2020.
+//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
 import UIKit
@@ -23,9 +23,9 @@ enum SignInType: String {
         case .gmail: return UIImage(named: "gmail_icn")
         case .outlook: return UIImage(named: "outlook_icn")
         }
-    } 
+    }
 
     var attributedTitle: NSAttributedString {
-        return NSAttributedString.text(from: title, style: .medium(17), color: .black)
+        NSAttributedString.text(from: title, style: .medium(17), color: .mainTextColor)
     }
 }
