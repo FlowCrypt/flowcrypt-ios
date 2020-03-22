@@ -25,16 +25,9 @@ struct SignInViewDecorator: SignInViewDecoratorType {
                 alignment: .center
         )
     }
-
+    
     var logo: UIImage? {
-        if #available(iOS 13.0, *) {
-            switch UITraitCollection.current.userInterfaceStyle {
-            case .dark: return UIImage(named: "full-logo")?.tinted(.white)
-            default: return UIImage(named: "full-logo")
-            }
-        } else {
-            return UIImage(named: "full-logo")
-        }
+        UIImage(named: "full-logo")
     }
 }
 
@@ -62,11 +55,11 @@ extension AppLinks: Link {
         case .security: return "sign_in_security".localized
         }
     }
-
+    
     var attributedTitle: NSAttributedString {
         NSAttributedString.text(from: title, style: .medium(17), color: .mainTextColor)
     }
-
+    
     var url: URL? {
         switch self {
         case .privacy: return URL(string: "https://flowcrypt.com/privacy")
