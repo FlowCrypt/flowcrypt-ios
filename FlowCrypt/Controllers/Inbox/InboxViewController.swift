@@ -17,7 +17,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
         case idle
         /// Fetched without any messages
         case empty
-        /// Performing fertching of new messages
+        /// Performing fetching of new messages
         case fetching
         /// Performing refreshing
         case refresh
@@ -92,6 +92,11 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
         )
         composeButton.cornerRadius = size.width / 2
         tableNode.frame = node.bounds
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        tableNode.reloadData()
     }
 }
 
@@ -286,18 +291,47 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
             switch self.state {
             case .empty:
-                return TextCellNode(title: "\(text) is empty", withSpinner: false, size: size)
+                return TextCellNode(
+                    input: TextCellNode.Input(
+                        backgroundColor: .backgroundColor,
+                        title: "\(text) is empty",
+                        withSpinner: false,
+                        size: size
+                    )
+                )
             case .idle:
-                return TextCellNode(title: "", withSpinner: true, size: size)
+                return TextCellNode(
+                    input: TextCellNode.Input(
+                        backgroundColor: .backgroundColor,
+                        title: "",
+                        withSpinner: true,
+                        size: size
+                    )
+                )
             case .fetched, .refresh:
-                return InboxCellNode(message: InboxCellNodeInput(self.messages[indexPath.row]))
+                return InboxCellNode(message: InboxCellNode.Input(self.messages[indexPath.row]))
+                    .then { $0.backgroundColor = .backgroundColor }
             case .fetching:
                 guard let message = self.messages[safe: indexPath.row] else {
-                    return TextCellNode(title: "Loading ...", withSpinner: true, size: CGSize(width: 44, height: 44))
+                    return TextCellNode(
+                        input: TextCellNode.Input(
+                            backgroundColor: .backgroundColor,
+                            title: "Loading ...",
+                            withSpinner: true,
+                            size: CGSize(width: 44, height: 44)
+                        )
+                    )
                 }
-                return InboxCellNode(message: InboxCellNodeInput(message))
+                return InboxCellNode(message: InboxCellNode.Input(message))
             case let .error(message):
-                return TextCellNode(title: message, withSpinner: false, size: size)
+                return TextCellNode(
+                    input: TextCellNode.Input(
+                        backgroundColor: .backgroundColor,
+                        title: message,
+                        withSpinner: false,
+                        size: size
+                    )
+                ) 
             }
         }
     }
@@ -350,5 +384,4 @@ extension InboxViewController {
             break
         }
     }
-
 }

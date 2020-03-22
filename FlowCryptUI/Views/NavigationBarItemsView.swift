@@ -8,26 +8,25 @@
 
 import UIKit
 
-// TODO: ANTON - Move to FlowCryptUI
-final class NavigationBarItemsView: UIBarButtonItem {
+public final class NavigationBarItemsView: UIBarButtonItem {
     private enum Constants {
         static let buttonSize = CGSize(width: 30, height: 30)
         static let interItemSpacing: CGFloat = 16
     }
 
-    struct Input {
+    public struct Input {
         let image: UIImage?
         let action: (target: Any?, selector: Selector)?
         let accessibilityLabel: String?
 
-        init(image: UIImage?, action: (target: Any?, selector: Selector)?, accessibilityLabel: String? = nil) {
+        public init(image: UIImage?, action: (target: Any?, selector: Selector)?, accessibilityLabel: String? = nil) {
             self.image = image
             self.action = action
             self.accessibilityLabel = accessibilityLabel
         }
     }
 
-    init(with input: [Input]) {
+    public init(with input: [Input]) {
         super.init()
 
         let buttons = input.map { (input: Input) -> UIButton in

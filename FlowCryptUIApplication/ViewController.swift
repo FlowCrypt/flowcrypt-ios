@@ -6,17 +6,21 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import AsyncDisplayKit
 import FlowCryptUI
 import FlowCryptCommon
 
 final class ViewController: ASViewController<TableNode> {
     enum Elements: Int, CaseIterable {
+        case header
         case divider
         case menu
         case emailRecipients
         case emailTextField
+    }
+
+    private lazy var composeButton = ComposeButtonNode { [weak self] in
+        print("Tapped")
     }
 
     init() {
@@ -34,13 +38,32 @@ final class ViewController: ASViewController<TableNode> {
         self.node.reloadData()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let offset: CGFloat = 16
+        let size = CGSize(width: 50, height: 50)
+
+        composeButton.frame = CGRect(
+            x: node.bounds.maxX - offset - size.width,
+            y: node.bounds.maxY - offset - size.height - 40,
+            width: size.width,
+            height: size.height
+        )
+        composeButton.cornerRadius = size.width / 2
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
+
     // MARK: - Recipient Text Field
     enum Constants {
         static let endTypingCharacters = [",", " "]
     }
 
-    var recipients: [RecipientEmailsCellNode.Recipient] = (1...10).map { _ in
-        RecipientEmailsCellNode.Recipient(email: testAttributedText(), isSelected: false)
+    var recipients: [RecipientEmailsCellNode.Input] = (1...10).map { _ in
+        RecipientEmailsCellNode.Input(email: testAttributedText(), isSelected: false)
     }
 }
 
@@ -54,6 +77,8 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
         return {
             let element = Elements(rawValue: indexPath.row)!
             switch element {
+            case .header:
+                return HeaderNode(input: nil)
             case .divider:
                 return DividerCellNode(color: .black, height: 10)
             case .menu:
@@ -168,7 +193,7 @@ extension ViewController {
             recipient.isSelected = false
             return recipient
         }
-        recipients.append(RecipientEmailsCellNode.Recipient(email: attributedEmail(with: text), isSelected: false))
+        recipients.append(RecipientEmailsCellNode.Input(email: attributedEmail(with: text), isSelected: false))
         node.reloadRows(at: [recipientsIndexPath], with: .fade)
 
         let endIndex = recipients.endIndex - 1

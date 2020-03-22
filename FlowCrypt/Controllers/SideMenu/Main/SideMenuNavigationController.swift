@@ -4,6 +4,7 @@
 
 import ENSwiftSideMenu
 import UIKit
+import FlowCryptUI
 
 protocol NavigationChildController {
     func handleBackButtonTap()

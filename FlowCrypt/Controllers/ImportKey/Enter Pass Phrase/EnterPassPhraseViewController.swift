@@ -60,6 +60,11 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         navigationController?.navigationBar.barStyle = .black
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
+
     private func setupUI() {
         node.delegate = self
         node.dataSource = self

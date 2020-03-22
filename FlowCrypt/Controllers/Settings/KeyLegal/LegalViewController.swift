@@ -35,6 +35,7 @@ final class LegalViewController: UIViewController {
         edgesForExtendedLayout = [.top]
         addChild(segment)
         view.addSubview(segment.node.view)
+        view.backgroundColor = .backgroundColor
         segment.didMove(toParent: self)
     }
     

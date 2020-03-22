@@ -8,14 +8,20 @@
 
 import AsyncDisplayKit
 
-// TODO: ANTON - Move to FlowCryptUI
-final class LinkButtonNode: ASCellNode {
-    typealias Action = (AppLinks) -> ()
+public protocol Link {
+    var url: URL? { get }
+    var attributedTitle: NSAttributedString { get }
+    var title: String { get }
+    var rawValue: String { get }
+}
+
+public final class LinkButtonNode: ASCellNode {
+    public typealias Action = (String) -> ()
 
     private let buttons: [ASButtonNode]
     private var tapAction: Action?
 
-    init(_ inputs: [AppLinks], action: Action?) {
+    public init(_ inputs: [Link], action: Action?) {
         tapAction = action
         buttons = inputs.map {
             let button = ASButtonNode()
@@ -30,11 +36,11 @@ final class LinkButtonNode: ASCellNode {
     }
 
     @objc private func onTap(_ sender: ASButtonNode) {
-        guard let identifier = sender.accessibilityLabel, let button = AppLinks(rawValue: identifier) else { return }
-        tapAction?(button)
+        guard let identifier = sender.accessibilityLabel else { return }
+        tapAction?(identifier)
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 30, left: 16, bottom: 8, right: 18),
             child: ASCenterLayoutSpec(

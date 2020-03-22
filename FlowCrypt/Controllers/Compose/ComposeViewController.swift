@@ -119,6 +119,11 @@ final class ComposeViewController: ASViewController<TableNode> {
         // showScopeAlertIfNeeded()
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }

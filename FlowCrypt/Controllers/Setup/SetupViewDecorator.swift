@@ -8,6 +8,7 @@
 
 import UIKit
 import FlowCryptUI
+import FlowCryptCommon
 
 protocol SetupViewDecoratorType {
     var title: NSAttributedString { get }
@@ -22,8 +23,18 @@ protocol SetupViewDecoratorType {
 }
 
 struct SetupViewDecorator: SetupViewDecoratorType {
-    let title = "setup_title".localized.attributed(.bold(35), color: .black, alignment: .center)
-    let useAnotherAccountTitle = "setup_use_another".localized.attributed(.regular(15), color: .blueColor, alignment: .center)
+    var title: NSAttributedString {
+        "setup_title".localized.attributed(.bold(35), color: .mainTextColor, alignment: .center)
+    }
+
+    var useAnotherAccountTitle: NSAttributedString {
+        "setup_use_another".localized.attributed(
+            .regular(15),
+            color: UIColor.colorFor(darkStyle: .black, lightStyle: .blueColor),
+            alignment: .center
+        )
+    }
+
     var subtitleStyle: (String) -> NSAttributedString {
         { $0.attributed(.regular(17)) }
     }

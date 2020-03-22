@@ -8,11 +8,10 @@
 
 import AsyncDisplayKit
 
-// TODO: ANTON - Move to FlowCryptUI
-final class SignInDescriptionNode: ASCellNode {
+public final class SignInDescriptionNode: ASCellNode {
     private let textNode = ASTextNode()
 
-    init(_ title: NSAttributedString?) {
+    public init(_ title: NSAttributedString?) {
         super.init()
         textNode.attributedText = title
         textNode.accessibilityLabel = "description"
@@ -20,7 +19,7 @@ final class SignInDescriptionNode: ASCellNode {
         selectionStyle = .none
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 30, left: 16, bottom: 55, right: 16),
             child: ASCenterLayoutSpec(

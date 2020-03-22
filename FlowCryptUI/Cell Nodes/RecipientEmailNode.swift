@@ -25,14 +25,15 @@ final class RecipientEmailNode: CellNode {
         super.init()
         titleNode.attributedText = "  ".attributed() + input.recipient.email + "  ".attributed()
         titleNode.backgroundColor = input.recipient.isSelected
-            ? UIColor.black.withAlphaComponent(0.1)
-            : UIColor.white.withAlphaComponent(0.9)
+            ? .titleNodeBackgroundColor
+            : .titleNodeBackgroundColorSelected
+
         titleNode.cornerRadius = 8
         titleNode.clipsToBounds = true
         titleNode.borderWidth = 1
         titleNode.borderColor = input.recipient.isSelected
-            ? UIColor.black.withAlphaComponent(0.4).cgColor
-            : UIColor.black.withAlphaComponent(0.3).cgColor
+            ? UIColor.borderColor.cgColor
+            : UIColor.borderColorSelected.cgColor
 
         displayNode.backgroundColor = .clear
     }
@@ -47,6 +48,36 @@ final class RecipientEmailNode: CellNode {
         return ASInsetLayoutSpec(
             insets: .zero,
             child: spec
+        )
+    }
+}
+
+fileprivate extension UIColor {
+    static var titleNodeBackgroundColorSelected: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.darkGray.withAlphaComponent(0.5),
+            lightStyle: UIColor.white.withAlphaComponent(0.9)
+        )
+    }
+
+    static var titleNodeBackgroundColor: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.lightGray,
+            lightStyle: UIColor.black.withAlphaComponent(0.1)
+        )
+    }
+
+    static var borderColorSelected: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.white.withAlphaComponent(0.5),
+            lightStyle: UIColor.black.withAlphaComponent(0.3)
+        )
+    }
+
+    static var borderColor: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.white.withAlphaComponent(0.5),
+            lightStyle: black.withAlphaComponent(0.4)
         )
     }
 }

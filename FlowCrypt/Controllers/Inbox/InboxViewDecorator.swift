@@ -1,18 +1,15 @@
 //
-//  InboxCellNodeInput .swift
+//  InboxViewDecorator.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 01.10.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Created by Anton Kharchevskyi on 20/03/2020.
+//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptUI
 import UIKit
 
-struct InboxCellNodeInput {
-    let emailText: NSAttributedString
-    let dateText: NSAttributedString
-    let messageText: NSAttributedString
-
+extension InboxCellNode.Input {
     init(_ message: MCOIMAPMessage) {
         let email = message.header.from.displayName ?? message.header.sender.mailbox ?? "(unknown sender)"
         let date = DateFormatter().formatDate(message.header.date)
@@ -29,10 +26,12 @@ struct InboxCellNodeInput {
 
         let textColor: UIColor = isMessageRead
             ? .lightGray
-            : .black
-
-        emailText = NSAttributedString.text(from: email, style: style, color: textColor)
-        dateText = NSAttributedString.text(from: date, style: style, color: dateColor)
-        messageText = NSAttributedString.text(from: msg, style: style, color: textColor)
+            : .mainTextUnreadColor
+        
+        self.init(
+            emailText: NSAttributedString.text(from: email, style: style, color: textColor),
+            dateText: NSAttributedString.text(from: date, style: style, color: dateColor),
+            messageText: NSAttributedString.text(from: msg, style: style, color: textColor)
+        )
     }
 }

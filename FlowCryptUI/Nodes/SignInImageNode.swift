@@ -8,12 +8,11 @@
 
 import AsyncDisplayKit
 
-// TODO: ANTON - Move to FlowCryptUI
-final class SignInImageNode: ASCellNode {
+public final class SignInImageNode: ASCellNode {
     private let imageNode = ASImageNode()
     private var imageHeight: CGFloat = .zero
 
-    init(_ image: UIImage?, height: CGFloat?) {
+    public init(_ image: UIImage?, height: CGFloat?) {
         super.init()
         imageNode.image = image
         imageNode.contentMode = .scaleAspectFit
@@ -23,7 +22,7 @@ final class SignInImageNode: ASCellNode {
         selectionStyle = .none
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize.height = imageHeight
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20),

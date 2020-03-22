@@ -7,16 +7,14 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 
-// TODO: ANTON - Move to FlowCryptUI
-final class KeyTextCellNode: CellNode {
+public final class KeyTextCellNode: CellNode {
     private let textNode = ASTextNode()
     private let selectedNode = ASDisplayNode()
 
     private let insets: UIEdgeInsets
 
-    init(
+    public init(
         title: NSAttributedString,
         insets: UIEdgeInsets
     ) {
@@ -25,7 +23,7 @@ final class KeyTextCellNode: CellNode {
         textNode.attributedText = title
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
             child: textNode

@@ -61,6 +61,11 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         userInfoMessage = ""
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
+
     private func setupUI() {
         node.delegate = self
         node.dataSource = self

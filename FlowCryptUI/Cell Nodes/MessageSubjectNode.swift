@@ -7,23 +7,21 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 
-// TODO: ANTON - Move to FlowCryptUI
-final class MessageSubjectNode: CellNode {
+public final class MessageSubjectNode: CellNode {
     private let textNode = ASTextNode()
     private let timeNode = ASTextNode()
 
-    init(_ text: NSAttributedString?, time: NSAttributedString?) {
+    public init(_ text: NSAttributedString?, time: NSAttributedString?) {
         super.init()
         textNode.attributedText = text
         timeNode.attributedText = time
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 2, left: 8, bottom: 0, right: 8),
+            insets: UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8),
             child: ASStackLayoutSpec(
                 direction: .horizontal,
                 spacing: 8,

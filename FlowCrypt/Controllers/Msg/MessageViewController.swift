@@ -111,6 +111,11 @@ final class MessageViewController: ASViewController<TableNode> {
         }()
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
 }
 
 // MARK: - Message
@@ -161,7 +166,7 @@ extension MessageViewController {
             } else {
                 message = self.decorator.attributed(
                     text: decrypted.text,
-                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.black
+                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.mainTextColor
                 )
             }
             resolve(message)
@@ -317,7 +322,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             case .subject:
                 return MessageSubjectNode(subject, time: time)
             case .text:
-                return TextSubjectNode(self.message)
+                return MessageTextSubjectNode(self.message)
             }
         }
     } 

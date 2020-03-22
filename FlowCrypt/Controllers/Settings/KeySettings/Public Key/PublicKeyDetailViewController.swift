@@ -29,6 +29,11 @@ final class PublicKeyDetailViewController: ASViewController<TableNode> {
         node.dataSource = self
         node.reloadData()
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
 }
 
 extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {

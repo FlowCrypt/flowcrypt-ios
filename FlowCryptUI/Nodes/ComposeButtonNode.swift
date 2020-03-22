@@ -8,11 +8,10 @@
 
 import AsyncDisplayKit
 
-// TODO: ANTON - Move to FlowCryptUI
-final class ComposeButtonNode: ASButtonNode {
+public final class ComposeButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
 
-    init(_ action: (() -> Void)?) {
+    public init(_ action: (() -> Void)?) {
         super.init()
         onTap = action
         backgroundColor = .main

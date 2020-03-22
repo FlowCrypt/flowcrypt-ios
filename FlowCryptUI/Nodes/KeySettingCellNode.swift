@@ -1,39 +1,49 @@
 //
-//  InboxCellNode.swift
+//  KeySettingCellNode.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 01.10.2019.
+//  Created by Anton Kharchevskyi on 12/13/19.
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
 import AsyncDisplayKit
-import Foundation
-import FlowCryptUI
 
-// TODO: ANTON - Move to FlowCryptUI
-final class InboxCellNode: CellNode {
-    private let emailNode = ASTextNode()
+public final class KeySettingCellNode: CellNode {
+    public struct Input {
+        let title, subtitle, date: NSAttributedString
+
+        public init(
+            title: NSAttributedString,
+            subtitle: NSAttributedString,
+            date: NSAttributedString
+        ) {
+            self.title = title
+            self.subtitle = subtitle
+            self.date = date
+        }
+    }
+    
+    private let titleNode = ASTextNode()
     private let dateNode = ASTextNode()
-    private let messageNode = ASTextNode()
+    private let subTitleNode = ASTextNode()
     private let separatorNode = ASDisplayNode()
 
-    init(message: InboxCellNodeInput) {
-        super.init()  
-        emailNode.attributedText = message.emailText
-        dateNode.attributedText = message.dateText
-        messageNode.attributedText = message.messageText
+    public init(with input: KeySettingCellNode.Input) {
+        titleNode.attributedText = input.title
+        dateNode.attributedText = input.date
+        subTitleNode.attributedText = input.subtitle
 
-        emailNode.maximumNumberOfLines = 1
+        titleNode.maximumNumberOfLines = 0
         dateNode.maximumNumberOfLines = 1
-        messageNode.maximumNumberOfLines = 1
+        subTitleNode.maximumNumberOfLines = 0
 
-        emailNode.truncationMode = .byTruncatingTail
-        messageNode.truncationMode = .byTruncatingTail
+        titleNode.truncationMode = .byTruncatingTail
+        subTitleNode.truncationMode = .byTruncatingTail
 
         separatorNode.backgroundColor = .lightGray
     }
 
-    override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let nameLocationStack = ASStackLayoutSpec.vertical()
         nameLocationStack.spacing = 6
         nameLocationStack.style.flexShrink = 1.0
@@ -41,7 +51,7 @@ final class InboxCellNode: CellNode {
         separatorNode.style.flexGrow = 1.0
         separatorNode.style.preferredSize.height = 1.0
 
-        nameLocationStack.children = [emailNode, messageNode]
+        nameLocationStack.children = [titleNode, subTitleNode]
 
         let headerStackSpec = ASStackLayoutSpec(
             direction: .horizontal,

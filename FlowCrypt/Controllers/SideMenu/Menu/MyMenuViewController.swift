@@ -22,24 +22,11 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let dataService: DataServiceType
     private let userService: UserServiceType
     private let router: GlobalRouterType
-
-    private lazy var headerViewModel: HeaderNode.Input = {
-        let name = dataService.currentUser?.name
-            .split(separator: " ")
-            .first
-            .map(String.init) ?? ""
-
-        let email = dataService.email?
-            .replacingOccurrences(of: "@gmail.com", with: "") ?? ""
-
-        return HeaderNode.Input(
-            title: name.attributed(.bold(20), color: .white, alignment: .left),
-            subtitle: email.attributed(.medium(16), color: .white, alignment: .left)
-        )
-    }()
+    private let decorator: MyMenuViewDecoratorType
 
     private var folders: [FolderViewModel] = []
-    private var serviceItems: [FolderViewModel] = FolderViewModel.menuItems()
+    private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems
+    }
     private let tableNode: ASTableNode
 
     init(
@@ -47,12 +34,14 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         dataService: DataServiceType = DataService.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
+        decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
         self.foldersProvider = foldersProvider
         self.dataService = dataService
         self.userService = userService
         self.router = globalRouter
+        self.decorator = decorator
         self.tableNode = tableNode
         super.init(node: ASDisplayNode())
     }
@@ -98,6 +87,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
             }
             $0.view.alwaysBounceVertical = false
             $0.view.alwaysBounceHorizontal = false
+            $0.backgroundColor = decorator.backgroundColor
             $0.reloadData()
         }
     }
@@ -139,6 +129,11 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         }
 
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        tableNode.reloadData()
+    }
 }
 
 extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
@@ -160,13 +155,21 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
             guard let self = self else { return ASCellNode() }
             switch indexPath.section {
             case Sections.header.rawValue:
-                return HeaderNode(input: self.headerViewModel)
+                return HeaderNode(
+                    input: self.decorator.header(
+                        for: self.dataService.currentUser?.name,
+                        email: self.dataService.email)
+                    )
             case Sections.folders.rawValue:
-                return InfoCellNode(input: self.folders[safe: indexPath.row]
-                    .map(InfoCellNode.Input.init))
+                return InfoCellNode(
+                    input: self.folders[safe: indexPath.row]
+                        .map(InfoCellNode.Input.init)
+                    )
             case Sections.service.rawValue:
-                return InfoCellNode(input: self.serviceItems[safe: indexPath.row]
-                    .map(InfoCellNode.Input.init))
+                return InfoCellNode(
+                    input: self.serviceItems[safe: indexPath.row]
+                        .map(InfoCellNode.Input.init)
+                    )
             default:
                 return ASCellNode()
             } 
@@ -192,7 +195,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
             let divider = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 16, height: 1))
             $0.addSubview(divider)
             $0.backgroundColor = .clear
-            divider.backgroundColor = UIColor(white: 0, alpha: 0.1)
+            divider.backgroundColor = decorator.dividerColor
         }
     }
 

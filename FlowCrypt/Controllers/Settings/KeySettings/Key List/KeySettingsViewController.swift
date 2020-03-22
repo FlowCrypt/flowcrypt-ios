@@ -34,6 +34,11 @@ final class KeySettingsViewController: ASViewController<TableNode> {
 
         loadKeysFromStorageAndRender()
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
 }
 
 extension KeySettingsViewController {

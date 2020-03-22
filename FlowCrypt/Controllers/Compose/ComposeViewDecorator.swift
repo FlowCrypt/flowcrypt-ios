@@ -25,7 +25,8 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
                 color: .lightGray,
                 alignment: .left
             ),
-            preferredHeight: height
+            preferredHeight: height,
+            textColor: .mainTextColor
         )
     }
 
@@ -82,14 +83,18 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
 
         let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
 
-        return (text + message).attributed(.regular(17), color: .black)
+        return (text + message).attributed(.regular(17))
     }
 }
 
 extension RecipientEmailsCellNode.Input {
     init(_ recipient: ComposeViewController.Recipient) {
         self.init(
-            email: recipient.email.lowercased().attributed(.regular(17), color: .black, alignment: .left),
+            email: recipient.email.lowercased().attributed(
+                .regular(17),
+                color: .mainTextColor,
+                alignment: .left
+            ),
             isSelected: recipient.isSelected
         )
     }
