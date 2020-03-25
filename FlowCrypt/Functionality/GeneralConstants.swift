@@ -14,11 +14,11 @@ enum GeneralConstants {
 
     enum EmailConstant {
         static let recoverAccountSearchSubject = [
-            "1Your FlowCrypt Backup",
-            "1Your CryptUp Backup",
-            "1Your CryptUP Backup",
-            "1CryptUP Account Backup",
-            "1All you need to know about CryptUP (contains a backup)",
+            "Your FlowCrypt Backup",
+            "Your CryptUp Backup",
+            "Your CryptUP Backup",
+            "CryptUP Account Backup",
+            "All you need to know about CryptUP (contains a backup)",
         ]
     }
 }

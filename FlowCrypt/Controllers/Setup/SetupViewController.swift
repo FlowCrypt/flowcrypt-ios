@@ -107,6 +107,8 @@ extension SetupViewController {
         node.delegate = self
         node.dataSource = self
         observeKeyboardNotifications()
+
+        state = .idle
     }
 
     private func observeKeyboardNotifications() {
@@ -140,10 +142,11 @@ extension SetupViewController {
         hideSpinner()
         switch newState {
         case .idle:
-            return
+            node.reloadData()
         case .searchingBackups:
             searchBackups()
         case let .backups(data):
+            reloadNodes()
             fetchEnctyptedKeys(with: data)
         case let .fetchedEncrypted(details):
             handleBackupsFetchResult(with: details)
@@ -154,33 +157,16 @@ extension SetupViewController {
         }
     }
 
-    private func handleError(with error: SetupError) {
-        // TODO: ANTON -
-        switch error {
-        case .emptyFetchedKeys:
-            let user = DataService.shared.email ?? "unknown_title".localized
-            let msg = "setup_no_backups".localized + user
-            break
-        case .noBackups:
-            showSearchBackupError()
-        case .parseKey(let error):
-            handleBackupsFoundError("setup_action_failed".localized, error: error)
-        }
-    }
-}
-
-// MARK: - Key Setup
-
-extension SetupViewController {
     private func searchBackups() {
         showSpinner()
 
-        guard let data = try? await(self.imap.searchBackups()) else {
-            state = .error(.noBackups)
-            return
-        }
-
-        state = .backups(data)
+        self.imap.searchBackups()
+            .then(on: .main) { [weak self] data in
+                self?.state = .backups(data)
+            }
+            .catch(on: .main) { [weak self] _ in
+                self?.state = .error(.noBackups)
+            }
     }
 
     private func fetchEnctyptedKeys(with backupData: Data) {
@@ -201,6 +187,8 @@ extension SetupViewController {
             return
         }
 
+        reloadNodes()
+
         node.visibleNodes
             .compactMap { $0 as? TextFieldCellNode }
             .first?
@@ -208,6 +196,10 @@ extension SetupViewController {
     }
 
     private func handleCreateKey() {
+        reloadNodes()
+    }
+
+    private func reloadNodes() {
         let indexes =  [
             IndexPath(row: Parts.action.rawValue, section: 0),
             IndexPath(row: Parts.description.rawValue, section: 0)
@@ -215,6 +207,79 @@ extension SetupViewController {
         node.reloadRows(at: indexes, with: .fade)
     }
 }
+
+// MARK: - Error Handling
+
+extension SetupViewController {
+    private func handleError(with error: SetupError) {
+        switch error {
+        case .emptyFetchedKeys:
+            let user = DataService.shared.email ?? "unknown_title".localized
+            let msg = "setup_no_backups".localized + user
+            showSearchBackupError(with: msg)
+        case .noBackups:
+            showSearchBackupError(with: "setup_action_failed".localized)
+        case .parseKey(let error):
+            showErrorAlert(with: "setup_action_failed".localized, error: error)
+        }
+    }
+
+    private func errorAlert(with message: String) -> UIAlertController {
+        let alert = UIAlertController(title: "Notice", message: message, preferredStyle: .alert)
+
+        let useOtherAccountAction = UIAlertAction(
+            title: "setup_use_otherAccount".localized,
+            style: .default) { [weak self] _ in
+                self?.handleOtherAccount()
+            }
+
+        let retryAction = UIAlertAction(
+            title: "Retry",
+            style: .default) { [weak self] _ in
+                self?.state = .idle
+            }
+
+        alert.addAction(useOtherAccountAction)
+        alert.addAction(retryAction)
+
+        return alert
+    }
+
+    private func showErrorAlert(with msg: String, error: Error? = nil) {
+        hideSpinner()
+
+        let errStr: String = {
+            guard let err = error else { return "" }
+            return "\n\n\(err)"
+        }()
+
+        let alert = errorAlert(with: msg + errStr)
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func showSearchBackupError(with message: String) {
+        let alert = errorAlert(with: message)
+
+        let importAction = UIAlertAction(
+            title: "setup_action_import".localized,
+            style: .default) { [weak self] _ in
+                self?.handleImportKey()
+            }
+
+        let createNewPrivateKeyAction = UIAlertAction(
+            title: "setup_action_create_new".localized,
+            style: .default) { [weak self] _ in
+                self?.state = .createKey
+            }
+
+        alert.addAction(importAction)
+        alert.addAction(createNewPrivateKeyAction)
+
+        present(alert, animated: true, completion: nil)
+    }
+}
+
 
 // MARK: - Recover account
 
@@ -285,61 +350,6 @@ extension SetupViewController {
 
     private func storePrvs(prvs: [KeyDetails], passPhrase: String, source: KeySource) throws {
         storage.addKeys(keyDetails: prvs, passPhrase: passPhrase, source: source)
-    }
-}
-
-// MARK: - Alerts
-extension SetupViewController {
-
-    private func errorAlert(with message: String) -> UIAlertController {
-        let alert = UIAlertController(title: "Notice", message: message, preferredStyle: .alert)
-
-        let useOtherAccountAction = UIAlertAction(
-            title: "setup_use_otherAccount".localized,
-            style: .default) { [weak self] _ in
-                self?.handleOtherAccount()
-            }
-
-        let retryAction = UIAlertAction(
-            title: "Retry",
-            style: .default) { [weak self] _ in
-                self?.state = .idle
-            }
-
-        alert.addAction(useOtherAccountAction)
-        alert.addAction(retryAction)
-
-        return alert
-    }
-
-    private func handleBackupsFoundError(_ msg: String, error: Error? = nil) {
-        hideSpinner()
-
-        let errStr: String = {
-            guard let err = error else { return "" }
-            return "\n\n\(err)"
-        }()
-
-        let alert = errorAlert(with: msg + errStr)
-
-        present(alert, animated: true, completion: nil)
-    }
-
-    private func showSearchBackupError() {
-        let alert = errorAlert(with: "setup_action_failed".localized)
-
-        let importAction = UIAlertAction(title: "setup_action_import".localized, style: .default) { [weak self] _ in
-            self?.handleImportKey()
-        }
-
-        let createNewPrivateKeyAction = UIAlertAction(title: "setup_action_create_new".localized, style: .default) { [weak self] _ in
-            self?.state = .createKey
-        }
-
-        alert.addAction(importAction)
-        alert.addAction(createNewPrivateKeyAction)
-
-        present(alert, animated: true, completion: nil)
     }
 }
 
