@@ -8,27 +8,42 @@
 
 import Foundation
 
-struct UserCredentials: Decodable {
+struct UserCredentials: Codable, Equatable {
     let email: String
     let password: String
     let pass: String
     let recovery: String
      
-    static private var empty = UserCredentials(email: "", password: "", pass: "", recovery: "")
+    static var empty = UserCredentials(email: "", password: "", pass: "", recovery: "")
     
-    static var `default`: UserCredentials = {
-        guard let path = Bundle(for: SignInTest.self).path(forResource: "test-ci-secrets", ofType: "json") else {
-            assertionFailure("No credentials found")
-            return .empty
-        }
-        
-        do {
-            return try Data(contentsOf: URL(fileURLWithPath: path))
-                .decodeJson(as: UserCredentials.self)
-        } catch {
-            assertionFailure("Wrong format for credentials")
-            return .empty
-        }
+    static var main: UserCredentials = {
+        Credentials.default
+            .users
+            .first(where: { $0.email == "cryptup.tester@gmail.com" })!
+    }()
+
+    static var noKeyBackUp: UserCredentials = {
+        Credentials.default
+            .users
+            .first(where: { $0.email == "flowcrypt.test.anton@gmail.com" })!
     }()
 }
 
+struct Credentials: Codable {
+    let users: [UserCredentials]
+
+    static var `default`: Credentials = {
+        guard let path = Bundle(for: SignInTest.self).path(forResource: "test-ci-secrets", ofType: "json") else {
+            assertionFailure("No credentials found")
+            return Credentials(users: [])
+        }
+
+        do {
+            return try Data(contentsOf: URL(fileURLWithPath: path))
+                .decodeJson(as: Credentials.self)
+        } catch {
+            assertionFailure("Wrong format for credentials")
+            return Credentials(users: [])
+        }
+    }()
+}
