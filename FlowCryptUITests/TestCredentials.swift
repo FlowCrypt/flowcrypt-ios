@@ -10,9 +10,9 @@ import XCTest
 
 class TestCredentials: XCTestCase {
 
-    func testExample() {
+    func test_user_credentials() {
         XCTAssert(UserCredentials.main != UserCredentials.empty)
         XCTAssert(UserCredentials.noKeyBackUp != UserCredentials.empty)
+        XCTAssert(!UserCredentials.noKeyBackUp.privateKey.isEmpty)
     }
-
 }

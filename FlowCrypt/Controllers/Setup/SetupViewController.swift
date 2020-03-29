@@ -138,7 +138,6 @@ extension SetupViewController {
 // MARK: - State Handling
 extension SetupViewController {
     private func handle(newState: State) {
-        print("^^ newState \(newState)")
         hideSpinner()
         switch newState {
         case .idle:
@@ -237,6 +236,7 @@ extension SetupViewController {
             title: "Retry",
             style: .default) { [weak self] _ in
                 self?.state = .idle
+                self?.state = .searchingBackups
             }
 
         alert.addAction(useOtherAccountAction)

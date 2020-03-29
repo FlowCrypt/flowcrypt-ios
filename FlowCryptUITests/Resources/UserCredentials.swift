@@ -13,8 +13,9 @@ struct UserCredentials: Codable, Equatable {
     let password: String
     let pass: String
     let recovery: String
+    let privateKey: String
      
-    static var empty = UserCredentials(email: "", password: "", pass: "", recovery: "")
+    static var empty = UserCredentials(email: "", password: "", pass: "", recovery: "", privateKey: "")
     
     static var main: UserCredentials = {
         Credentials.default
@@ -41,8 +42,8 @@ struct Credentials: Codable {
         do {
             return try Data(contentsOf: URL(fileURLWithPath: path))
                 .decodeJson(as: Credentials.self)
-        } catch {
-            assertionFailure("Wrong format for credentials")
+        } catch let error {
+            assertionFailure("Wrong format for credentials\(error)")
             return Credentials(users: [])
         }
     }()

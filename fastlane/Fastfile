@@ -25,7 +25,8 @@ platform :ios do
       reinstall_app: true,
       skip_build: true,    
       disable_slide_to_type: true,  
-      force_quit_simulator: true
+      force_quit_simulator: true,
+      reset_simulator: true
   )
   end
 
