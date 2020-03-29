@@ -10,7 +10,7 @@ import XCTest
 
 class SignInTest: XCTestCase {
     var app: XCUIApplication!
-    let user = UserCredentials.default
+    let user = UserCredentials.main
 
     override func setUp() {
         continueAfterFailure = false
@@ -31,10 +31,12 @@ class SignInTest: XCTestCase {
 
         wait(1)
         let errorAlert = app.alerts["Error"]
-        XCTAssert(errorAlert.exists) 
+        XCTAssert(errorAlert.exists)
     }
 
     func test_gmail_login() {
+        let user = UserCredentials.main
+
         // tap on gmail button
         // MARK: - Google Login
         app.tables.buttons["gmail"].tap()
