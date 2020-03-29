@@ -138,7 +138,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
 
 extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
-        return Sections.allCases.count
+        Sections.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {

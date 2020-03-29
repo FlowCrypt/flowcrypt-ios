@@ -10,7 +10,7 @@ import FlowCryptCommon
 
 final class SignInViewController: ASViewController<ASTableNode> {
     enum Parts: Int, CaseIterable {
-        case links, logo, description, gmail, outlook
+        case links, logo, description, gmail, other
     }
 
     private let userService: UserServiceType
@@ -89,9 +89,9 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
                 return SigninButtonNode(.gmail) { [weak self] in
                     self?.signInWithGmail()
                 }
-            case .outlook:
-                return SigninButtonNode(.outlook) { [weak self] in
-                    self?.signInWithOutlook()
+            case .other:
+                return SigninButtonNode(.other) { [weak self] in
+                    self?.proceedToOtherProvider()
                 }
             }
         }
@@ -117,34 +117,9 @@ extension SignInViewController {
         navigationController?.pushViewController(setupViewController, animated: true)
     }
 
-    private func signInWithOutlook() {
-        showToast("Outlook sign in not implemented yet")
-        // below for debugging
-        do {
-            let start = DispatchTime.now()
-            //            let decrypted = try Core.decryptKey(armoredPrv: TestData.k3rsa4096.prv, passphrase: TestData.k3rsa4096.passphrase)
-            let keys = [PrvKeyInfo(private: TestData.k3rsa4096.prv, longid: TestData.k3rsa4096.longid, passphrase: TestData.k3rsa4096.passphrase)]
-
-            guard let encrypted = TestData.matchingEncryptedMsg.data(using: .utf8) else {
-                assertionFailure(); return
-            }
-
-            let decrypted = try core.parseDecryptMsg(
-                encrypted: encrypted,
-                keys: keys,
-                msgPwd: nil,
-                isEmail: false
-            )
-            debugPrint(decrypted)
-            debugPrint("decrypted \(start.millisecondsSince)")
-            //            debugPrint("text: \(decrypted.text)")
-        } catch CoreError.exception {
-            debugPrint("catch exception")
-            //            debugPrint(msg)
-        } catch {
-            debugPrint("catch generic")
-            debugPrint(error)
-        }
+    private func proceedToOtherProvider() {
+        let setupViewController = EmailProviderViewController()
+        navigationController?.pushViewController(setupViewController, animated: true)
     }
 
     private func handle(option: AppLinks) {
