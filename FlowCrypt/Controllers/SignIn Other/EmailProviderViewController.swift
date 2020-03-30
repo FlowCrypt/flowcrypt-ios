@@ -18,12 +18,18 @@ final class EmailProviderViewController: ASViewController<TableNode> {
 
         static let numberOfSections: Int = 4
 
-        static func numberOfItems(for section: Int) -> Int {
-            switch section {
-            case 0: return AccountPart.allCases.count
-            case 1, 2: return ServerPart.allCases.count
-            case 3: return OtherSMTP.allCases.count
-            default: return 0
+        static func numberOfItems(for section: Int, state: State) -> Int {
+            switch (section, state) {
+            case (0, _):
+                return AccountPart.allCases.count
+            case (1, _), (2, _):
+                return ServerPart.allCases.count
+            case (3, .idle):
+                return 1
+            case (3, .extended):
+                return OtherSMTP.allCases.count
+            default:
+                return 0
             }
         }
 
@@ -58,6 +64,12 @@ final class EmailProviderViewController: ASViewController<TableNode> {
     enum OtherSMTP: Int, CaseIterable {
         case title, name, password
     }
+
+    enum State: Equatable {
+        case idle, extended
+    }
+
+    private var state: State = .idle
 
     private let decorator: EmailProviderViewDecoratorType
 
@@ -119,6 +131,20 @@ extension EmailProviderViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         node.reloadData()
     }
+
+    private func update(for newState: State) {
+        state = newState
+
+        node.reloadSections(
+            IndexSet(arrayLiteral: 3),
+            with: .fade
+        )
+        node.scrollToRow(
+            at: IndexPath(row: 2, section: 3),
+            at: .bottom,
+            animated: true
+        )
+    }
 }
 
 extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
@@ -127,7 +153,7 @@ extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        Section.numberOfItems(for: section)
+        Section.numberOfItems(for: section, state: state)
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -166,8 +192,11 @@ extension EmailProviderViewController {
     }
 
     private func switchNode() -> SwitchCellNode {
-        SwitchCellNode(input: decorator.switchInput()) { isOn in
-
+        SwitchCellNode(input: decorator.switchInput(isOn: state == .extended)) { isOn in
+            let newState: State = isOn
+                ? .extended
+                : .idle
+            self.update(for: newState)
         }
     }
 }

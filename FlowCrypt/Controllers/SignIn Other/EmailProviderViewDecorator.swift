@@ -12,7 +12,7 @@ import FlowCryptUI
 protocol EmailProviderViewDecoratorType {
     func title(for section: EmailProviderViewController.Section) -> InfoCellNode.Input
     func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input?
-    func switchInput() -> SwitchCellNode.Input
+    func switchInput(isOn: Bool) -> SwitchCellNode.Input
 }
 
 struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
@@ -45,8 +45,9 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
         )
     }
 
-    func switchInput() -> SwitchCellNode.Input {
+    func switchInput(isOn: Bool) -> SwitchCellNode.Input {
         SwitchCellNode.Input(
+            isOn: isOn,
             attributedText: "other_provider_other_smtp_title"
                 .localized
                 .attributed(.bold(17), color: titleColor),

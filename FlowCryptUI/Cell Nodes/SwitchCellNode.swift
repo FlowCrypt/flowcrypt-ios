@@ -14,8 +14,10 @@ public final class SwitchCellNode: ASCellNode {
         let attributedText: NSAttributedString
         let insets: UIEdgeInsets
         let backgroundColor: UIColor?
+        let isOn: Bool
 
         public init(
+            isOn: Bool,
             attributedText: NSAttributedString,
             insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
             backgroundColor: UIColor? = nil
@@ -23,12 +25,14 @@ public final class SwitchCellNode: ASCellNode {
             self.attributedText = attributedText
             self.insets = insets
             self.backgroundColor = backgroundColor
+            self.isOn = isOn
         }
     }
 
     private let textNode = ASTextNode()
     private lazy var switchNode = ASDisplayNode { () -> UIView in
         let view = UISwitch()
+        view.isOn = self.input?.isOn ?? false
         view.addTarget(self, action: #selector(self.handleAction(_:)), for: .valueChanged)
         return view
     }
