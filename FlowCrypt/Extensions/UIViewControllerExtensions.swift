@@ -162,7 +162,7 @@ extension UIViewController {
     }
 
     func keyboardHeight(from notification: Notification) -> CGFloat {
-        (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
+        (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
     }
 }
 

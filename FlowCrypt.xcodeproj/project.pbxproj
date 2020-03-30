@@ -201,6 +201,7 @@
 		D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D2CDC3E324052D54002B045F /* FlowCryptCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2F6D12A24311E5300DB4065 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2F6D12924311E5300DB4065 /* Colors.xcassets */; };
+		D2F6D12F24324ACC00DB4065 /* SwitchCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */; };
 		D2FF6966243115EC007182F0 /* EmailProviderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */; };
 		D2FF6968243115F9007182F0 /* EmailProviderViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */; };
@@ -451,6 +452,7 @@
 		D2A9CA4124261DBC00E1D898 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralConstantsTest.swift; sourceTree = "<group>"; };
 		D2F6D12924311E5300DB4065 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchCellNode.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderViewDecorator.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
@@ -1139,6 +1141,7 @@
 				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
 				9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */,
 				9FDF3637235A0B3100614596 /* InfoCellNode.swift */,
+				D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -1831,6 +1834,7 @@
 				D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
 				D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */,
+				D2F6D12F24324ACC00DB4065 /* SwitchCellNode.swift in Sources */,
 				D2A9CA38242618DF00E1D898 /* LinkButtonNode.swift in Sources */,
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
 				D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */,

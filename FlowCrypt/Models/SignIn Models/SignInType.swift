@@ -23,7 +23,7 @@ enum SignInType: String {
         switch self {
         case .gmail: return UIImage(named: "gmail_icn")
         case .outlook: return UIImage(named: "microsoft-outlook")
-        case .other: return UIImage(named: "email_icn")
+        case .other: return UIImage(named: "email_icn")?.tinted(.mainTextColor)
         }
     }
 

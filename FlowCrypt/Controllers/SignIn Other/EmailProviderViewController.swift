@@ -74,6 +74,51 @@ final class EmailProviderViewController: ASViewController<TableNode> {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+
+extension EmailProviderViewController {
+    private func setupUI() {
+        title = "Email Provider"
+        observeKeyboardNotifications()
+    }
+
+    private func observeKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillShowNotification,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                guard let self = self else { return }
+                self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
+            }
+
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillHideNotification,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                self?.adjustForKeyboard(height: 0)
+            }
+    }
+
+    private func adjustForKeyboard(height: CGFloat) {
+        let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
+        node.contentInset = insets
+        // TODO: ANTON -
+//        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        node.reloadData()
+    }
 }
 
 extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
@@ -93,8 +138,8 @@ extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
             case .account(.title): return self.titleNode(for: indexPath)
             case .imap(.title): return self.titleNode(for: indexPath)
             case .smtp(.title): return self.titleNode(for: indexPath)
-            case .other(.title): return self.titleNode(for: indexPath)
-            default: return ASCellNode()
+            case .other(.title): return self.switchNode()
+            default: return self.textFieldNode(for: indexPath)
             }
         }
     }
@@ -102,12 +147,27 @@ extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
 
 extension EmailProviderViewController {
     private func titleNode(for indexPath: IndexPath) -> ASCellNode {
-        guard let section = Section(indexPath: indexPath) else { assertionFailure(); return ASCellNode() }
-        let input = InfoCellNode.Input(
-            attributedText: decorator.title(for: section),
-            image: nil
-        )
+        guard let section = Section(indexPath: indexPath) else {
+            assertionFailure()
+            return ASCellNode()
+        }
+
+        let input = decorator.title(for: section)
         
         return InfoCellNode(input: input)
+    }
+
+    private func textFieldNode(for indexPath: IndexPath) -> ASCellNode {
+        guard let section = Section(indexPath: indexPath),
+            let input = decorator.textFieldInput(for: section)
+        else { assertionFailure(); return ASCellNode() }
+
+        return TextFieldCellNode(input: input)
+    }
+
+    private func switchNode() -> SwitchCellNode {
+        SwitchCellNode(input: decorator.switchInput()) { isOn in
+
+        }
     }
 }
