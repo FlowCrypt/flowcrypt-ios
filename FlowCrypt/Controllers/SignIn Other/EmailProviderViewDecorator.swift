@@ -14,13 +14,17 @@ protocol EmailProviderViewDecoratorType {
 
 struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
     func title(for section: EmailProviderViewController.Section) -> NSAttributedString {
-        switch section {
-        case .account(.title): return "other_provider_account_title".attributed()
-        case .imap(.title): return "other_provider_imap_title".attributed()
-        case .smtp(.title): return "other_provider_smtp_title".attributed()
-        case .other(.title): return "other_provider_other_smtp_title".attributed()
-        default: assertionFailure(); return "".attributed()
-        }
+        let title: String = {
+            switch section {
+            case .account(.title): return "other_provider_account_title"
+            case .imap(.title): return "other_provider_imap_title"
+            case .smtp(.title): return "other_provider_smtp_title"
+            case .other(.title): return "other_provider_other_smtp_title"
+            default: assertionFailure(); return ""
+            }
+        }()
+
+        return title.localized.attributed(.medium(17), color: .red)
     }
 }
 

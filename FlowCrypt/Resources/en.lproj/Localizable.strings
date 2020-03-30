@@ -53,6 +53,7 @@
 "sign_in_security" = "Security";
 "sign_in_description" = "Connect your email account\nto send encrypted messages";
 "sign_in_gmail" = "Continue with Gmail";
+"sign_in_outlook" = "Continue with Outlook";
 "sign_in_other" = "Other email provider";
 
 // Setup
