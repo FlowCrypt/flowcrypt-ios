@@ -72,7 +72,7 @@ extension Imap: BackupProvider {
     private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
         Promise<Data> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            self.getImapSess()
+            self.imapSess?
                 .fetchMessageAttachmentOperation(
                     withFolder: folder,
                     uid: msgUid,

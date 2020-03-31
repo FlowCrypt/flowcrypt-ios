@@ -102,9 +102,6 @@ final class ComposeViewController: ASViewController<TableNode> {
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
-
-        // establish session before user taps send, so that sending msg is faster once the user does tap it
-        imap.getSmtpSess()
     }
 
     override func viewWillDisappear(_ animated: Bool) {

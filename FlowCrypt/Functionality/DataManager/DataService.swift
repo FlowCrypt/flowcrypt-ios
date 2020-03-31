@@ -24,6 +24,10 @@ protocol DataServiceType {
     func publicKey() -> String?
 
     func logOutAndDestroyStorage()
+
+    //Session
+    func imapSession() -> IMAPSession
+    func smtpSession() -> SMTPSession
 }
 
 final class DataService: DataServiceType {

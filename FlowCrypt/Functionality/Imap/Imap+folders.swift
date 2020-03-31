@@ -31,7 +31,7 @@ protocol FoldersProvider {
 extension Imap: FoldersProvider {
     func fetchFolders() -> Promise<FoldersContext> {
         return Promise { [weak self] resolve, reject in
-            self?.getImapSess()
+            self?.imapSess?
                 .fetchAllFoldersOperation()
                 .start { [weak self] error, value in
                     guard let self = self else { return reject(AppErr.nilSelf) }
@@ -53,7 +53,7 @@ extension Imap: FoldersProvider {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
            
-            self.getImapSess()
+            self.imapSess?
                 .expungeOperation(folder)
                 .start(self.finalizeVoid("expungeMsgs", resolve, reject, retry: { self.expungeMsgs(folder: folder) }))
         }
@@ -88,7 +88,7 @@ extension Imap: FoldersProvider {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            self.getImapSess()
+            self.imapSess?
                 .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
                 .start { error, msgs, _ in
                     guard self.notRetrying("fetchMsgs", error, resolve, reject, retry: {

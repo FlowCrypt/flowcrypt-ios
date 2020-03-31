@@ -17,11 +17,17 @@ protocol EmailProviderViewDecoratorType {
 
 struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
     private var titleColor: UIColor {
-        .colorFor(darkStyle: .white, lightStyle: .black)
+        .colorFor(
+            darkStyle: .white,
+            lightStyle: .darkGray
+        )
     }
 
     private var backgroundColor: UIColor {
-        .colorFor(darkStyle: .backgroundColor, lightStyle: .white)
+        .colorFor(
+            darkStyle: .backgroundColor,
+            lightStyle: UIColor(white: 0.9, alpha: 1)
+        )
     }
 
     func title(for section: EmailProviderViewController.Section) -> InfoCellNode.Input {
@@ -112,7 +118,9 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
             placeholder: placeholderString.attributed(.medium(17), color: .lightGray),
             isSecureTextEntry: isSecure,
             insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
-            backgroundColor: UIColor.colorFor(darkStyle: .darkGray, lightStyle: UIColor(white: 0.8, alpha: 1))
+            backgroundColor: UIColor.colorFor(
+                darkStyle: .darkGray,
+                lightStyle: UIColor(white: 1, alpha: 1))
         )
     }
 }

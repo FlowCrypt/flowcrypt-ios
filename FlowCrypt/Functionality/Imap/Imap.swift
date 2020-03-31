@@ -57,8 +57,9 @@ final class Imap {
     }
 
     func setup() {
-        guard let token = accessToken else { return }
-        getImapSess(newAccessToken: token)
-        getSmtpSess(newAccessToken: token)
+        createNewConnection(
+            imapSession: dataService.imapSession(),
+            smtpSession: dataService.smtpSession()
+        )
     }
 }

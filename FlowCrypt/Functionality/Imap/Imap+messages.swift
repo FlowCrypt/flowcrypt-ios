@@ -35,7 +35,7 @@ extension Imap: MessageProvider {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
             
-            self.getImapSess()
+            self.imapSess?
                 .folderInfoOperation(path)
                 .start(self.finalize("folderInfo", resolve, reject, retry: {
                     self.folderInfo(for: path)
@@ -51,7 +51,7 @@ extension Imap: MessageProvider {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
             
-            self.getImapSess()
+            self.imapSess?
                 .fetchMessagesByNumberOperation(
                     withFolder: folder,
                     requestKind: kind,
@@ -73,7 +73,7 @@ extension Imap: MessageProvider {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
             
-            self.getImapSess()
+            self.imapSess?
                 .fetchMessagesByUIDOperation(
                     withFolder: folder,
                     requestKind: kind,
