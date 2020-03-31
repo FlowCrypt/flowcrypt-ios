@@ -190,6 +190,6 @@ extension EnterPassPhraseViewController {
     }
 
     private func moveToMainFlow() {
-        router.reset()
+        router.proceed()
     }
 }

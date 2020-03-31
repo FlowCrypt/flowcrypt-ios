@@ -148,8 +148,7 @@ extension SignInViewController {
     }
 
     private func proceedToRecover() {
-        let setupViewController = SetupViewController()
-        navigationController?.pushViewController(setupViewController, animated: true)
+        GlobalRouter().proceed() 
     }
 
     private func proceedToOtherProvider() {

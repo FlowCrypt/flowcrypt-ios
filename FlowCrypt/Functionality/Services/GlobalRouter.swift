@@ -10,24 +10,33 @@
 import UIKit
 
 protocol GlobalRouterType {
-    func reset()
+    func proceed()
     func wipeOutAndReset()
 }
 
 struct GlobalRouter: GlobalRouterType {
-    func reset() {
+    private var keyWindow: UIWindow {
         let application = UIApplication.shared
         guard let delegate = (application.delegate as? AppDelegate) else {
-            assertionFailure("missing AppDelegate in GlobalRouter.reset()");
-            return;
+            fatalError("missing AppDelegate in GlobalRouter.reset()");
         }
-        AppStartup().initializeApp(window: delegate.window)
+        return delegate.window
+    }
+
+    /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
+    func proceed() {
+        AppStartup().initializeApp(window: keyWindow)
     }
 
     func wipeOutAndReset() {
         UserService.shared.signOut()
             .then(on: .main) {
-                self.reset()
+                self.proceed()
+            }
+            .catch(on: .main) { error in
+                self.keyWindow
+                    .rootViewController?
+                    .showAlert(error: error, message: "Could not log out")
             }
     }
 }

@@ -213,12 +213,7 @@ extension MyMenuViewController {
         case .settings:
             sideMenuController()?.setContentViewController(SettingsViewController())
         case .logOut:
-            userService.signOut()
-                .then(on: .main) { [weak self] _ in
-                    self?.router.reset()
-                }.catch(on: .main) { [weak self] error in
-                    self?.showAlert(error: error, message: "Could not log out")
-                }
+            self.router.wipeOutAndReset()
         }
     }
 }

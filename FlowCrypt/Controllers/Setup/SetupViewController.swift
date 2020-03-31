@@ -381,14 +381,14 @@ extension SetupViewController {
     private func handleOtherAccount() {
         userService.signOut()
             .then(on: .main) { [weak self] _ in
-                self?.router.reset()
+                self?.router.proceed()
             }.catch(on: .main) { [weak self] error in
                 self?.showAlert(error: error, message: "Could not switch accounts")
             }
     }
 
     private func moveToMainFlow() {
-        GlobalRouter().reset()
+        GlobalRouter().proceed()
     }
 }
 
