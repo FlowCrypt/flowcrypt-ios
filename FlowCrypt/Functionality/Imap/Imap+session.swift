@@ -14,7 +14,7 @@ extension Imap {
         if let imap = imapSession {
             debugPrint("IMAP: creating a new session")
             let newImapSession = MCOIMAPSession(session: imap)
-            // logConnection(for: newImapSession)
+            logConnection(for: newImapSession)
             imapSess = newImapSession
         }
 
@@ -26,7 +26,7 @@ extension Imap {
     }
 
     private func logConnection(for session: MCOIMAPSession) {
-        session.connectionLogger = {(connectionID, type, data) in
+        session.connectionLogger = { (connectionID, type, data) in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
             debugPrint("IMAP:\(type):\(string)")
         }

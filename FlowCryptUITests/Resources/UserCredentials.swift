@@ -28,6 +28,12 @@ struct UserCredentials: Codable, Equatable {
             .users
             .first(where: { $0.email == "flowcrypt.test.anton@gmail.com" })!
     }()
+
+    static var yahoo: UserCredentials = {
+        Credentials.default
+            .users
+            .first(where: { $0.email == "antonflowcrypt@yahoo.com" })!
+    }()
 }
 
 struct Credentials: Codable {

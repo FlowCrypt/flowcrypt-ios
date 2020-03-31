@@ -17,11 +17,12 @@ extension MCOIMAPSession {
         username = session.username
         password = session.password
         oAuth2Token = session.oAuth2Token
-        authType = {
-            switch session.authType {
-            case .oAuth2: return .xoAuth2
-            }
-        }()
+//        authType = {
+//            return [MCOAuthType(rawValue: 0)]
+//            switch session.authType {
+//            case .oAuth2: return .xoAuth2
+//            }
+//        }()
         connectionType = {
             switch session.connectionType {
             case .tls: return .TLS
@@ -39,11 +40,12 @@ extension MCOSMTPSession {
         username = session.username
         password = session.password
         oAuth2Token = session.oAuth2Token
-        authType = {
-            switch session.authType {
-            case .oAuth2: return .xoAuth2
-            }
-        }()
+//        authType = {
+//            return [MCOAuthType.saslLogin]
+//            switch session.authType {
+//            case .oAuth2: return .xoAuth2
+//            }
+//        }()
         connectionType = {
             switch session.connectionType {
             case .tls: return .TLS

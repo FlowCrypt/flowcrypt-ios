@@ -122,6 +122,17 @@ extension DataService: DBMigration {
 
 extension DataService: SessionProvider {
     func imapSession() -> IMAPSession {
+        return IMAPSession(
+            hostname: "imap.mail.yahoo.com",
+            port: 993,
+            username: "antonflowcrypt@yahoo.com",
+            password: "flowcryptpassword123",
+            oAuth2Token: "NO ACCESS TOKEN",
+            authType: .oAuth2,
+            connectionType: .tls
+        )
+
+
         guard let username = email, let accessToken = currentToken else {
             fatalError("Can't get IMAP Session without user data")
         }
@@ -138,6 +149,16 @@ extension DataService: SessionProvider {
     }
 
     func smtpSession() -> SMTPSession {
+        return SMTPSession(
+            hostname: "smtp.mail.yahoo.com",
+            port: 465,
+            username: "antonflowcrypt@yahoo.com",
+            password: "flowcryptpassword123",
+            oAuth2Token: "NO ACCESS TOKEN",
+            authType: .oAuth2,
+            connectionType: .tls
+        )
+
         guard let username = email, let accessToken = currentToken else {
             fatalError("Can't get SMTP Session without user data")
         }
