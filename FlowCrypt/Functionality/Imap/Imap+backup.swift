@@ -10,11 +10,11 @@ import Foundation
 import Promises
 
 protocol BackupProvider {
-    func searchBackups() -> Promise<Data>
+    func searchBackups(for email: String) -> Promise<Data>
 }
 
 extension Imap: BackupProvider {
-    func searchBackups() -> Promise<Data> {
+    func searchBackups(for email: String) -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
             var folderPaths = try await(self.fetchFolders())
@@ -29,7 +29,7 @@ extension Imap: BackupProvider {
                 folderPaths = [GeneralConstants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
             }
 
-            let searchExpr = self.createSearchBackupExpression()
+            let searchExpr = self.createSearchBackupExpression(for: email)
 
             let uidsForFolders = try folderPaths.compactMap { folder in
                 UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr)))
@@ -95,7 +95,7 @@ extension Imap: BackupProvider {
         return expression
     }
 
-    private func createSearchBackupExpression() -> MCOIMAPSearchExpression {
+    private func createSearchBackupExpression(for email: String) -> MCOIMAPSearchExpression {
         let fromToExpr = MCOIMAPSearchExpression.searchAnd(
             MCOIMAPSearchExpression.search(from: email),
             other: MCOIMAPSearchExpression.search(to: email)

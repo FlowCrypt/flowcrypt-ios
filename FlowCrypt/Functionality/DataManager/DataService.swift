@@ -24,8 +24,9 @@ protocol DataServiceType {
     func publicKey() -> String?
 
     func logOutAndDestroyStorage()
+}
 
-    //Session
+protocol SessionProvider {
     func imapSession() -> IMAPSession
     func smtpSession() -> SMTPSession
 }
@@ -115,5 +116,40 @@ extension DataService: DBMigration {
         }
         encryptedStorage.saveToken(with: token)
         localStorage.storage.removeObject(forKey: legacyTokenIndex)
+    }
+}
+
+
+extension DataService: SessionProvider {
+    func imapSession() -> IMAPSession {
+        guard let username = email, let accessToken = currentToken else {
+            fatalError("Can't get IMAP Session without user data")
+        }
+
+        return IMAPSession(
+            hostname: "imap.gmail.com",
+            port: 993,
+            username: username,
+            password: nil,
+            oAuth2Token: accessToken,
+            authType: .oAuth2,
+            connectionType: .tls
+        )
+    }
+
+    func smtpSession() -> SMTPSession {
+        guard let username = email, let accessToken = currentToken else {
+            fatalError("Can't get SMTP Session without user data")
+        }
+
+        return SMTPSession(
+            hostname: "smtp.gmail.com",
+            port: 465,
+            username: username,
+            password: nil,
+            oAuth2Token: accessToken,
+            authType: .oAuth2,
+            connectionType: .tls
+        )
     }
 }

@@ -157,9 +157,14 @@ extension SetupViewController {
     }
 
     private func searchBackups() {
+        guard let email = storage.email else {
+            assertionFailure(); return
+        }
+        
         showSpinner()
 
-        self.imap.searchBackups()
+
+        self.imap.searchBackups(for: email)
             .then(on: .main) { [weak self] data in
                 self?.state = .backups(data)
             }
