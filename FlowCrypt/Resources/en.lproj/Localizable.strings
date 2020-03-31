@@ -65,6 +65,9 @@
 "setup_use_another" = "Use Another Account";
 "setup_no_backups" = "No backups found on account: \n";
 "setup_action_failed" = "Action failed";
+"setup_action_import" = "Import existing Private Key";
+"setup_action_create_new" = "Create new Private Key";
+"setup_action_create_new_subtitle" = "Create a new OpenPGP Private Key";
 "setup_use_otherAccount" = "Use other account";
 "setup_enter_pass_phrase" = "Enter pass phrase";
 "setup_wrong_pass_phrase_retry" = "Wrong pass phrase, please try again";
