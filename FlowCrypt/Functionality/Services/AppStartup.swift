@@ -26,6 +26,11 @@ struct AppStartup {
             Imap.shared.fetchFolders()
             .then { print($0) }
             .catch { print($0) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                       Imap.shared.fetchFolders()
+                       .then { print($0) }
+                       .catch { print($0) }
+                   }
         }
 
 //        let start = DispatchTime.now()

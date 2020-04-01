@@ -14,8 +14,8 @@ extension Imap {
         if let imap = imapSession {
             debugPrint("IMAP: creating a new session")
             let newImapSession = MCOIMAPSession(session: imap)
-            logConnection(for: newImapSession)
             imapSess = newImapSession
+            logConnection(for: imapSess!)
         }
 
         if let smtp = smtpSession {

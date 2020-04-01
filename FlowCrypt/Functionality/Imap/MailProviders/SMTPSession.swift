@@ -1,5 +1,5 @@
 //
-//  IMAPSession.swift
+//  SMTPSession.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 31/03/2020.
@@ -8,21 +8,13 @@
 
 import Foundation
 
-enum ConnectionType {
-    case tls
-}
-
-enum AuthType {
-    case oAuth2
-}
-
-struct IMAPSession {
+struct SMTPSession {
     let hostname: String
     let port: Int
     let username: String
     let password: String?
     let oAuth2Token: String
 
-    let authType: AuthType
-    let connectionType: ConnectionType
+    let authType: MCOAuthType
+    let connectionType: MCOConnectionType
 }

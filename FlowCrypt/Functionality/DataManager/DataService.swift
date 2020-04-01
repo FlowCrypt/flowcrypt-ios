@@ -122,14 +122,16 @@ extension DataService: DBMigration {
 
 extension DataService: SessionProvider {
     func imapSession() -> IMAPSession {
+        let imap = MailProvidersService().getImapSession(for: "antonflowcrypt@yahoo.com")!
+
         return IMAPSession(
-            hostname: "imap.mail.yahoo.com",
-            port: 993,
+            hostname: imap.hostName!,
+            port: imap.port,
             username: "antonflowcrypt@yahoo.com",
             password: "flowcryptpassword123",
             oAuth2Token: "NO ACCESS TOKEN",
-            authType: .oAuth2,
-            connectionType: .tls
+            authType: .xoAuth2,
+            connectionType: imap.connectionType
         )
 
 
@@ -143,20 +145,22 @@ extension DataService: SessionProvider {
             username: username,
             password: nil,
             oAuth2Token: accessToken,
-            authType: .oAuth2,
-            connectionType: .tls
+            authType: .xoAuth2,
+            connectionType: .TLS
         )
     }
 
     func smtpSession() -> SMTPSession {
+        let smtp = MailProvidersService().getSmtpSession(for: "antonflowcrypt@yahoo.com")!
+
         return SMTPSession(
-            hostname: "smtp.mail.yahoo.com",
-            port: 465,
+            hostname: smtp.hostName!,
+            port: smtp.port,
             username: "antonflowcrypt@yahoo.com",
             password: "flowcryptpassword123",
             oAuth2Token: "NO ACCESS TOKEN",
-            authType: .oAuth2,
-            connectionType: .tls
+            authType: .xoAuth2,
+            connectionType: smtp.connectionType
         )
 
         guard let username = email, let accessToken = currentToken else {
@@ -169,8 +173,8 @@ extension DataService: SessionProvider {
             username: username,
             password: nil,
             oAuth2Token: accessToken,
-            authType: .oAuth2,
-            connectionType: .tls
+            authType: .xoAuth2,
+            connectionType: .TLS
         )
     }
 }
