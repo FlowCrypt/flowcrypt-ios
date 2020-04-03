@@ -15,6 +15,23 @@ struct SMTPSession {
     let password: String?
     let oAuth2Token: String
 
-    let authType: MCOAuthType
-    let connectionType: MCOConnectionType
+    let authType: AuthType
+    let connectionType: ConnectionType
 }
+
+extension MCOSMTPSession {
+    convenience init(session: SMTPSession) {
+        self.init()
+
+        hostname = session.hostname
+        port = UInt32(session.port)
+        username = session.username
+        password = session.password
+
+        if case .oAuth = session.authType {
+            authType = .xoAuth2
+        }
+        connectionType = MCOConnectionType(session.connectionType)
+    }
+}
+

@@ -10,7 +10,14 @@ import Foundation
 import Promises
 
 extension Imap {
-    func createNewConnection(imapSession: IMAPSession?, smtpSession: SMTPSession?) {
+    func setupSession() {
+           createNewConnection(
+               imapSession: dataService.imapSession(),
+               smtpSession: dataService.smtpSession()
+           )
+       }
+
+    private func createNewConnection(imapSession: IMAPSession?, smtpSession: SMTPSession?) {
         if let imap = imapSession {
             debugPrint("IMAP: creating a new session")
             let newImapSession = MCOIMAPSession(session: imap)
@@ -34,10 +41,10 @@ extension Imap {
 
     @discardableResult
     func renewSession() -> Promise<Void> {
-        return userService
-            .renewAccessToken()
-            .then { [weak self] token -> Void in
-                self?.setup()
+        userService
+            .renewSession()
+            .then { [weak self] _ in
+                self?.setupSession()
             }
     }
 

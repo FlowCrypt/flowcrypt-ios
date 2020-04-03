@@ -6,7 +6,7 @@ import Promises
 import UIKit
 
 final class Imap {
-    typealias Injection = DataServiceType & SessionProvider
+    typealias Injection = DataServiceType & ImapSessionProvider
     static let shared: Imap = Imap()
     
     let helper: ImapHelperType
@@ -33,12 +33,5 @@ final class Imap {
         self.dataService = dataService
         self.helper = helper
         self.messageKindProvider = messageKindProvider
-    }
-
-    func setup() {
-        createNewConnection(
-            imapSession: dataService.imapSession(),
-            smtpSession: dataService.smtpSession()
-        )
     }
 }

@@ -11,13 +11,13 @@ import Foundation
 struct ImapNetService {
     let hostName: String?
     let port: Int
-    let connectionType: MCOConnectionType
+    let connectionType: ConnectionType
 }
 
 extension ImapNetService {
     init(_ service: MCONetService) {
         self.hostName = service.hostname
         self.port = Int(service.port)
-        self.connectionType = service.connectionType
+        self.connectionType = ConnectionType(service.connectionType)
     }
 }

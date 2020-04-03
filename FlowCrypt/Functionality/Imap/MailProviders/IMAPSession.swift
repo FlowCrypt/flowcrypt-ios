@@ -15,6 +15,22 @@ struct IMAPSession {
     let password: String?
     let oAuth2Token: String
 
-    let authType: MCOAuthType
-    let connectionType: MCOConnectionType
+    let authType: AuthType
+    let connectionType: ConnectionType
+}
+
+extension MCOIMAPSession {
+    convenience init(session: IMAPSession) {
+        self.init()
+
+        hostname = session.hostname
+        port = UInt32(session.port)
+        username = session.username
+        password = session.password
+        oAuth2Token = session.oAuth2Token
+        if case .oAuth = session.authType {
+            authType = .xoAuth2
+        }
+        connectionType = MCOConnectionType(session.connectionType)
+    }
 }

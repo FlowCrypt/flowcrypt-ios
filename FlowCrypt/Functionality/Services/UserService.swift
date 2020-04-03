@@ -14,7 +14,7 @@ import RealmSwift
 protocol UserServiceType {
     func signOut() -> Promise<Void>
     func signIn() -> Promise<Void>
-    func renewAccessToken() -> Promise<String>
+    func renewSession() -> Promise<String>
 }
 
 final class UserService: NSObject  {
@@ -49,7 +49,7 @@ final class UserService: NSObject  {
 
 extension UserService: UserServiceType {
 
-    func renewAccessToken() -> Promise<String> {
+    func renewSession() -> Promise<String> {
         return Promise<String> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
             DispatchQueue.main.async {

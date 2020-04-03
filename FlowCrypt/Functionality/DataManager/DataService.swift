@@ -26,11 +26,6 @@ protocol DataServiceType {
     func logOutAndDestroyStorage()
 }
 
-protocol SessionProvider {
-    func imapSession() -> IMAPSession
-    func smtpSession() -> SMTPSession
-}
-
 final class DataService: DataServiceType {
     static let shared = DataService()
 
@@ -54,8 +49,8 @@ final class DataService: DataServiceType {
         encryptedStorage.currentToken()
     }
 
-    private let encryptedStorage: EncryptedStorageType & LogOutHandler
-    private let localStorage: LocalStorageType & LogOutHandler
+    let encryptedStorage: EncryptedStorageType & LogOutHandler
+    let localStorage: LocalStorageType & LogOutHandler
 
     private init(
         encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
@@ -92,89 +87,5 @@ extension DataService {
     func logOutAndDestroyStorage() {
         localStorage.logOut()
         encryptedStorage.logOut()
-    }
-}
-
-extension DataService: DBMigration {
-    func performMigrationIfNeeded() -> Promise<Void> {
-        return Promise<Void> { [weak self] in
-            guard let self = self else { throw AppErr.nilSelf }
-            try await(self.encryptedStorage.performMigrationIfNeeded())
-            self.performLocalMigration()
-        }
-    }
-
-    private func performLocalMigration() {
-        let legacyTokenIndex = "keyCurrentToken"
-        guard localStorage.currentUser() != nil else {
-            debugPrint("Local migration not needed. User was not stored")
-            return
-        }
-        guard let token = localStorage.storage.string(forKey: legacyTokenIndex) else {
-            debugPrint("Local migration not needed. Token was not saved")
-            return
-        }
-        encryptedStorage.saveToken(with: token)
-        localStorage.storage.removeObject(forKey: legacyTokenIndex)
-    }
-}
-
-
-extension DataService: SessionProvider {
-    func imapSession() -> IMAPSession {
-        let imap = MailProvidersService().getImapSession(for: "antonflowcrypt@yahoo.com")!
-
-        return IMAPSession(
-            hostname: imap.hostName!,
-            port: imap.port,
-            username: "antonflowcrypt@yahoo.com",
-            password: "flowcryptpassword123",
-            oAuth2Token: "NO ACCESS TOKEN",
-            authType: .xoAuth2,
-            connectionType: imap.connectionType
-        )
-
-
-        guard let username = email, let accessToken = currentToken else {
-            fatalError("Can't get IMAP Session without user data")
-        }
-
-        return IMAPSession(
-            hostname: "imap.gmail.com",
-            port: 993,
-            username: username,
-            password: nil,
-            oAuth2Token: accessToken,
-            authType: .xoAuth2,
-            connectionType: .TLS
-        )
-    }
-
-    func smtpSession() -> SMTPSession {
-        let smtp = MailProvidersService().getSmtpSession(for: "antonflowcrypt@yahoo.com")!
-
-        return SMTPSession(
-            hostname: smtp.hostName!,
-            port: smtp.port,
-            username: "antonflowcrypt@yahoo.com",
-            password: "flowcryptpassword123",
-            oAuth2Token: "NO ACCESS TOKEN",
-            authType: .xoAuth2,
-            connectionType: smtp.connectionType
-        )
-
-        guard let username = email, let accessToken = currentToken else {
-            fatalError("Can't get SMTP Session without user data")
-        }
-
-        return SMTPSession(
-            hostname: "smtp.gmail.com",
-            port: 465,
-            username: username,
-            password: nil,
-            oAuth2Token: accessToken,
-            authType: .xoAuth2,
-            connectionType: .TLS
-        )
     }
 }
