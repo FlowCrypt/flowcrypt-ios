@@ -6,7 +6,6 @@ import Promises
 import UIKit
 
 final class Imap {
-    typealias Injection = DataServiceType & ImapSessionProvider
     static let shared: Imap = Imap()
     
     let helper: ImapHelperType
@@ -21,17 +20,20 @@ final class Imap {
     var lastErr: [String: AppErr] = [:]
 
     let userService: UserServiceType
-    let dataService: Injection
+    let dataService: DataServiceType
+    let sessionProvider: ImapSessionProvider
 
     private init(
         userService: UserService = .shared,
-        dataService: Injection = DataService.shared,
+        dataService: DataServiceType = DataService.shared,
         helper: ImapHelperType = ImapHelper(),
-        messageKindProvider: MessageKindProviderType = MessageKindProvider()
+        messageKindProvider: MessageKindProviderType = MessageKindProvider(),
+        sessionProvider: ImapSessionProvider = ImapSessionService()
     ) {
         self.userService = userService
         self.dataService = dataService
         self.helper = helper
         self.messageKindProvider = messageKindProvider
+        self.sessionProvider = sessionProvider
     }
 }

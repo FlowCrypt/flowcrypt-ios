@@ -9,10 +9,10 @@
 import Foundation
 
 enum AuthType {
-    case oAuth, none
+    case oAuth(String), password(String)
 }
 
-enum ConnectionType {
+enum ConnectionType: String {
     case tls, startls
 }
 

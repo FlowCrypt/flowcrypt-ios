@@ -12,9 +12,6 @@ struct IMAPSession {
     let hostname: String
     let port: Int
     let username: String
-    let password: String?
-    let oAuth2Token: String
-
     let authType: AuthType
     let connectionType: ConnectionType
 }
@@ -26,11 +23,14 @@ extension MCOIMAPSession {
         hostname = session.hostname
         port = UInt32(session.port)
         username = session.username
-        password = session.password
-        oAuth2Token = session.oAuth2Token
-        if case .oAuth = session.authType {
-            authType = .xoAuth2
-        }
         connectionType = MCOConnectionType(session.connectionType)
+
+        switch session.authType {
+        case let .oAuth(token):
+            authType = .xoAuth2
+            oAuth2Token = token
+        case let .password(userPassword):
+            password = userPassword
+        }
     }
 }

@@ -20,24 +20,21 @@ protocol EncryptedStorageType: DBMigration {
     func currentToken() -> String?
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>?
+
+    func getUser() -> UserObject?
 }
 
 final class EncryptedStorage: EncryptedStorageType {
     enum Constants {
+        // Encrypted schema version
         static let schemaVersion: UInt64 = 1
+        // User object added to schema
+        static let schemaVersionUser: UInt64 = 2
         static let encryptedDbFilename = "encrypted.realm"
     }
 
-    let keychainService: KeyChainServiceType
+    private let keychainService: KeyChainServiceType
     private let fileManager: FileManager
-
-    init(
-        fileManager: FileManager = .default,
-        keychainHelper: KeyChainServiceType = KeyChainService()
-    ) {
-        self.fileManager = fileManager
-        self.keychainService = KeyChainService()
-    }
 
     private var realmKey: Data {
         keychainService.getStorageEncryptionKey()
@@ -48,7 +45,7 @@ final class EncryptedStorage: EncryptedStorageType {
         return Realm.Configuration(
             fileURL: URL(fileURLWithPath: path),
             encryptionKey: realmKey,
-            schemaVersion: Constants.schemaVersion
+            schemaVersion: Constants.schemaVersionUser
         )
     }
 
@@ -62,39 +59,16 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        try! storage.write {
-            for k in keyDetails {
-                storage.add(try! KeyInfo(k, passphrase: passPhrase, source: source))
-            }
-        }
-    }
-
-    func publicKey() -> String? {
-        return storage.objects(KeyInfo.self)
-            .map { $0.public }
-            .first 
-    }
-
-    func keys() -> Results<KeyInfo>? {
-        return storage.objects(KeyInfo.self)
-    }
-
-    func saveToken(with string: String?) {
-        guard let token = string else {
-            logOut()
-            return
-        }
-        try! storage.write {
-            self.storage.add(EmailAccessToken(value: token))
-        }
-    }
-
-    func currentToken() -> String? {
-        storage.objects(EmailAccessToken.self).first?.value
+    init(
+        fileManager: FileManager = .default,
+        keychainHelper: KeyChainServiceType = KeyChainService()
+    ) {
+        self.fileManager = fileManager
+        self.keychainService = KeyChainService()
     }
 }
 
+// MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
     func logOut() { // todo - logOut is not clear - should be called onLogOut to make it clear it's responding to an event
         destroyEncryptedStorage()
@@ -116,6 +90,7 @@ extension EncryptedStorage: LogOutHandler {
     }
 }
 
+// MARK: - Migration
 extension EncryptedStorage {
     func performMigrationIfNeeded() -> Promise<Void> {
         // current migration only does plain realm -> encrypted realm migration, with no database schema change
@@ -169,5 +144,50 @@ extension EncryptedStorage {
         }
         return documentDirectory
     }
+}
 
+// MARK: - Keys
+extension EncryptedStorage {
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        try! storage.write {
+            for k in keyDetails {
+                storage.add(try! KeyInfo(k, passphrase: passPhrase, source: source))
+            }
+        }
+    }
+
+    func keys() -> Results<KeyInfo>? {
+        storage.objects(KeyInfo.self)
+    }
+
+    func publicKey() -> String? {
+        return storage.objects(KeyInfo.self)
+            .map { $0.public }
+            .first
+    }
+}
+
+// MARK: - Token
+extension EncryptedStorage {
+    func saveToken(with string: String?) {
+        guard let token = string else {
+            logOut()
+            return
+        }
+        try! storage.write {
+            self.storage.add(EmailAccessToken(value: token))
+        }
+    }
+
+    func currentToken() -> String? {
+        storage.objects(EmailAccessToken.self).first?.value
+    }
+}
+
+// MARK: - User
+
+extension EncryptedStorage {
+    func getUser() -> UserObject? {
+        storage.objects(UserObject.self).first
+    }
 }
