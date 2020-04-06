@@ -21,14 +21,14 @@ final class Imap {
 
     let userService: UserServiceType
     let dataService: DataServiceType
-    let sessionProvider: ImapSessionProvider
+    let sessionProvider: SessionCredentialsProvider
 
     private init(
         userService: UserService = .shared,
         dataService: DataServiceType = DataService.shared,
         helper: ImapHelperType = ImapHelper(),
         messageKindProvider: MessageKindProviderType = MessageKindProvider(),
-        sessionProvider: ImapSessionProvider = ImapSessionService()
+        sessionProvider: SessionCredentialsProvider = ImapSessionService()
     ) {
         self.userService = userService
         self.dataService = dataService

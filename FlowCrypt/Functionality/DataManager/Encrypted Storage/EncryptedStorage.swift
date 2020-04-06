@@ -16,12 +16,12 @@ protocol DBMigration {
 
 protocol EncryptedStorageType: DBMigration {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-    func saveToken(with string: String?)
     func currentToken() -> String?
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>?
 
     func getUser() -> UserObject?
+    func saveUser(with user: UserObject)
 }
 
 final class EncryptedStorage: EncryptedStorageType {
@@ -161,7 +161,7 @@ extension EncryptedStorage {
     }
 
     func publicKey() -> String? {
-        return storage.objects(KeyInfo.self)
+        storage.objects(KeyInfo.self)
             .map { $0.public }
             .first
     }
@@ -169,16 +169,7 @@ extension EncryptedStorage {
 
 // MARK: - Token
 extension EncryptedStorage {
-    func saveToken(with string: String?) {
-        guard let token = string else {
-            logOut()
-            return
-        }
-        try! storage.write {
-            self.storage.add(EmailAccessToken(value: token))
-        }
-    }
-
+    @available(*, deprecated, message: "Use information from UserObject")
     func currentToken() -> String? {
         storage.objects(EmailAccessToken.self).first?.value
     }
@@ -189,5 +180,11 @@ extension EncryptedStorage {
 extension EncryptedStorage {
     func getUser() -> UserObject? {
         storage.objects(UserObject.self).first
+    }
+
+    func saveUser(with user: UserObject) {
+        try! storage.write {
+            self.storage.add(user)
+        }
     }
 }

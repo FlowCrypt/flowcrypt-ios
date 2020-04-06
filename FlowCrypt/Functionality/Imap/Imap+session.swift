@@ -11,10 +11,11 @@ import Promises
 
 extension Imap {
     func setupSession() {
-        createNewConnection(
-            imapSession: sessionProvider.imapSession(),
-            smtpSession: sessionProvider.smtpSession()
-        )
+        // TODO: ANTON - Create new session
+//        createNewConnection(
+//            imapSession: sessionProvider.imapSession(),
+//            smtpSession: sessionProvider.smtpSession()
+//        )
     }
 
     private func createNewConnection(imapSession: IMAPSession?, smtpSession: SMTPSession?) {

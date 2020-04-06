@@ -38,13 +38,21 @@ final class UserService: NSObject  {
     }
 
     func setup() {
-        if let token = dataService.currentToken {
-            onNewToken?(token)
+        guard let authType = dataService.currentAuthType else {
+            assertionFailure("User should be authenticated on this step")
+            return
         }
-        if let user = dataService.currentUser {
-            onLogin?(user)
+        switch authType {
+        case let .oAuth(token):
+            onNewToken?(token)
+            if let user = dataService.currentUser {
+                onLogin?(user)
+            }
+        case let .password(password):
+            assertionFailure("Implement this one")
         }
     }
+
 }
 
 extension UserService: UserServiceType {
