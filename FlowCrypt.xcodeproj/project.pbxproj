@@ -207,7 +207,7 @@
 		D2F6D1332433753100DB4065 /* IMAPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1322433753100DB4065 /* IMAPSession.swift */; };
 		D2F6D1352433753B00DB4065 /* SMTPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1342433753B00DB4065 /* SMTPSession.swift */; };
 		D2F6D13E2434FF1400DB4065 /* providers.json in Resources */ = {isa = PBXBuildFile; fileRef = D2F6D13D2434FF1400DB4065 /* providers.json */; };
-		D2F6D1402435008500DB4065 /* ImapSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D13F2435008500DB4065 /* ImapSessionProvider.swift */; };
+		D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */; };
 		D2F6D147243506DA00DB4065 /* ImapCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D146243506DA00DB4065 /* ImapCredentials.swift */; };
 		D2FF6966243115EC007182F0 /* EmailProviderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */; };
 		D2FF6968243115F9007182F0 /* EmailProviderViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */; };
@@ -465,7 +465,7 @@
 		D2F6D1322433753100DB4065 /* IMAPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMAPSession.swift; sourceTree = "<group>"; };
 		D2F6D1342433753B00DB4065 /* SMTPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMTPSession.swift; sourceTree = "<group>"; };
 		D2F6D13D2434FF1400DB4065 /* providers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = providers.json; sourceTree = "<group>"; };
-		D2F6D13F2435008500DB4065 /* ImapSessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapSessionProvider.swift; sourceTree = "<group>"; };
+		D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCredentialsProvider.swift; sourceTree = "<group>"; };
 		D2F6D146243506DA00DB4065 /* ImapCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapCredentials.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderViewDecorator.swift; sourceTree = "<group>"; };
@@ -1192,7 +1192,7 @@
 		D2F6D141243500B400DB4065 /* MailProviders */ = {
 			isa = PBXGroup;
 			children = (
-				D2F6D13F2435008500DB4065 /* ImapSessionProvider.swift */,
+				D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */,
 				D2F6D1322433753100DB4065 /* IMAPSession.swift */,
 				D2F6D1342433753B00DB4065 /* SMTPSession.swift */,
 				D2F6D146243506DA00DB4065 /* ImapCredentials.swift */,
@@ -1823,7 +1823,7 @@
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
 				9F268894237DD98900428A94 /* EnterPassPhraseViewDecorator.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
-				D2F6D1402435008500DB4065 /* ImapSessionProvider.swift in Sources */,
+				D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */,
 				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* UserService.swift in Sources */,
 				D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */,

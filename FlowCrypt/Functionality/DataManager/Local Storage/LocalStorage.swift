@@ -30,7 +30,7 @@ struct LocalStorage: LocalStorageType {
 extension LocalStorage {
     func saveCurrentUser(user: User?) {
         guard let user = user else {
-            logOut()
+            storage.set(nil, forKey: Constants.indexCurrentUser.rawValue)
             return
         }
         do {

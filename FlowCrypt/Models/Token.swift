@@ -70,4 +70,3 @@ final class SessionObject: Object {
         self.connectionType = connectionType
     }
 }
-

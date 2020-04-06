@@ -13,12 +13,9 @@ protocol SessionCredentialsProvider {
     func getSmtpCredentials(for email: String) -> ImapCredentials?
 }
 
-struct ImapSessionService {
+struct SessionCredentialsService: SessionCredentialsProvider {
     let manager = MCOMailProvidersManager.shared()
-}
 
-// MARK: - EmailSessionProvider
-extension ImapSessionService: SessionCredentialsProvider {
     func getImapCredentials(for email: String) -> ImapCredentials? {
         let providers = manager?.provider(forEmail: email)
 

@@ -102,6 +102,7 @@ extension UserService: GIDSignInDelegate {
             onError?(AppErr.general("could not save user or retrieve token"))
             return
         }
+        // TODO: ANTON - Save google credentials for imap
         let user = User(user)
         dataService.startFor(user: user, with: token)
         onNewToken?(token)
