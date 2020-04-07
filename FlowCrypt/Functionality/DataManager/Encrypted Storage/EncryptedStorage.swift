@@ -184,6 +184,7 @@ extension EncryptedStorage {
 
     func saveUser(with user: UserObject) {
         try! storage.write {
+            self.storage.delete(storage.objects(UserObject.self))
             self.storage.add(user)
         }
     }

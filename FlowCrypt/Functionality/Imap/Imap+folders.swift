@@ -37,7 +37,7 @@ extension Imap: FoldersProvider {
                     guard let self = self else { return reject(AppErr.nilSelf) }
                     guard self.notRetrying("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
                         return
-                    }
+                    } 
                     if let error = error {
                         reject(AppErr(error))
                     } else if let folders = value as? [MCOIMAPFolder] {

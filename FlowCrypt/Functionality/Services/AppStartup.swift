@@ -71,7 +71,7 @@ struct AppStartup {
     private func renewSessionIfValid() -> Promise<Void> {
         guard DataService.shared.isLoggedIn else { return Promise(()) }
         Imap.shared.setupSession()
-        return Imap.shared.renewSession()
+        return Promise(())
     }
 
     private func chooseView(window: UIWindow) {

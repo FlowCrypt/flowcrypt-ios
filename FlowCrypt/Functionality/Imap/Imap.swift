@@ -8,7 +8,7 @@ import UIKit
 final class Imap {
     typealias Injection = ImapSessionProvider & DataServiceType
     static let shared: Imap = Imap()
-    
+
     let helper: ImapHelperType
     let messageKindProvider: MessageKindProviderType
     var imapSess: MCOIMAPSession?

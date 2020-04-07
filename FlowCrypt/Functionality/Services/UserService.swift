@@ -14,15 +14,15 @@ import RealmSwift
 protocol UserServiceType {
     func signOut() -> Promise<Void>
     func signIn() -> Promise<Void>
-    func renewSession() -> Promise<String>
+    func renewSession() -> Promise<Void>
 }
 
 final class UserService: NSObject  {
     static let shared = UserService()
 
-    private var onLogin: ((User) -> Void)?
+    private var onLogin: (() -> Void)?
     private var onError: ((AppErr) -> Void)?
-    private var onNewToken: ((String) -> Void)?
+    private var onNewSession: (() -> Void)?
     private var onLogOut: (() -> Void)?
 
     private let googleManager: GIDSignIn
@@ -43,10 +43,10 @@ final class UserService: NSObject  {
             return
         }
         switch authType {
-        case let .oAuth(token):
-            onNewToken?(token)
-            if let user = dataService.currentUser {
-                onLogin?(user)
+        case .oAuth:
+//            onNewSession?(token)
+            if dataService.isLoggedIn {
+                onLogin?()
             }
         case let .password(password):
             assertionFailure("Implement this one")
@@ -57,11 +57,11 @@ final class UserService: NSObject  {
 
 extension UserService: UserServiceType {
 
-    func renewSession() -> Promise<String> {
-        return Promise<String> { [weak self] resolve, reject in
+    func renewSession() -> Promise<Void> {
+        Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
             DispatchQueue.main.async {
-                self.onNewToken = { token in resolve(token) }
+                self.onNewSession = { resolve(()) }
                 self.onError = { error in reject(error) }
                 self.googleManager.restorePreviousSignIn()
             }
@@ -69,10 +69,10 @@ extension UserService: UserServiceType {
     }
 
     func signIn() -> Promise<Void> {
-        return Promise { [weak self] resolve, reject in
+        Promise { [weak self] resolve, reject in
             guard let self = self else { return }
             DispatchQueue.main.async {
-                self.onLogin = { _ in resolve(()) }
+                self.onLogin = { resolve(()) }
                 self.onError = { error in reject(AppErr(error)) }
                 self.googleManager.signIn()
             }
@@ -80,7 +80,7 @@ extension UserService: UserServiceType {
     }
 
     func signOut() -> Promise<Void> {
-        return Promise<Void> { [weak self] resolve, reject in
+        Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.googleManager.signOut()
@@ -102,11 +102,19 @@ extension UserService: GIDSignInDelegate {
             onError?(AppErr.general("could not save user or retrieve token"))
             return
         }
-        // TODO: ANTON - Save google credentials for imap
+
         let user = User(user)
-        dataService.startFor(user: user, with: token)
-        onNewToken?(token)
-        onLogin?(user)
+
+        dataService.save(
+            user: UserObject.googleUser(
+                name: user.name,
+                email: user.email,
+                token: token
+            )
+        )
+
+//        onNewToken?(token)
+        onLogin?()
     }
 
     func sign(_: GIDSignIn!, didDisconnectWith _: GIDGoogleUser!, withError _: Error!) {

@@ -11,7 +11,7 @@ import Foundation
 struct SMTPSession {
     let hostname: String
     let port: Int
-    let username: String
+    let email: String
     let authType: AuthType
     let connectionType: ConnectionType
 }
@@ -22,7 +22,7 @@ extension MCOSMTPSession {
 
         hostname = session.hostname
         port = UInt32(session.port)
-        username = session.username
+        username = session.email
         connectionType = MCOConnectionType(session.connectionType)
 
        switch session.authType {

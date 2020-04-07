@@ -10,7 +10,7 @@ import Foundation
 import Promises
 
 protocol DataServiceType {
-    func startFor(user: User, with token: String?)
+    func save(user userObject: UserObject)
     
     var email: String? { get }
     var currentUser: User? { get }
@@ -39,7 +39,7 @@ final class DataService: DataServiceType {
     }
 
     var isLoggedIn: Bool {
-        currentAuthType != nil
+        currentUser != nil
     }
 
     var email: String? {
@@ -47,21 +47,21 @@ final class DataService: DataServiceType {
     }
 
     var currentUser: User? {
-        localStorage.currentUser()
+        guard let userObject = self.encryptedStorage.getUser() else {
+            return nil
+        }
+        return User(userObject)
     }
 
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
     private let localStorage: LocalStorageType & LogOutHandler
-    private let sessionProvider: SessionCredentialsProvider
 
     private init(
         encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
-        localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
-        sessionProvider: SessionCredentialsProvider = SessionCredentialsService()
+        localStorage: LocalStorageType & LogOutHandler = LocalStorage()
     ) {
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
-        self.sessionProvider = sessionProvider
     }
 } 
 
@@ -94,13 +94,13 @@ extension DataService {
         encryptedStorage.publicKey()
     }
 
-    // TODO: ANTON - save user session credentials
-    func startFor(user: User, with token: String?) {
-//        if currentUser != user, currentUser != nil {
-//            logOutAndDestroyStorage()
-//        }
-//        localStorage.saveCurrentUser(user: user)
-//        encryptedStorage.saveToken(with: token)
+    /// Save user and user session credentials
+    func save(user userObject: UserObject) {
+        if let currentUser = currentUser, currentUser.email != userObject.email {
+            logOutAndDestroyStorage()
+        }
+
+        encryptedStorage.saveUser(with: userObject)
     }
 }
 
@@ -155,29 +155,7 @@ extension DataService: DBMigration {
             return
         }
 
-        let imapCreds = sessionProvider.getImapCredentials(for: user.email)
-        let smtpCreds = sessionProvider.getImapCredentials(for: user.email)
-
-        let userObject = UserObject(
-            name: user.name,
-            email: user.email,
-            imap: SessionObject(
-                hostname: imapCreds?.hostName ?? "imap.gmail.com",
-                port: imapCreds?.port ?? 993,
-                username: user.email,
-                password: nil,
-                oAuth2Token: token,
-                connectionType: ConnectionType.tls.rawValue
-            ),
-            smtp: SessionObject(
-                hostname: smtpCreds?.hostName ?? "smtp.gmail.com",
-                port: smtpCreds?.port ?? 465,
-                username: user.email,
-                password: nil,
-                oAuth2Token: token,
-                connectionType: ConnectionType.tls.rawValue
-            )
-        )
+        let userObject = UserObject.googleUser(name: user.name, email: user.email, token: token)
 
         encryptedStorage.saveUser(with: userObject)
         localStorage.saveCurrentUser(user: nil)
@@ -225,7 +203,7 @@ extension DataService: ImapSessionProvider {
         return IMAPSession(
             hostname: imap.hostname,
             port: imap.port,
-            username: user.name,
+            email: user.email,
             authType: auth,
             connectionType: connection
         )
@@ -260,7 +238,7 @@ extension DataService: ImapSessionProvider {
         return SMTPSession(
             hostname: smtp.hostname,
             port: smtp.port,
-            username: user.name,
+            email: user.email,
             authType: auth,
             connectionType: connection
         )

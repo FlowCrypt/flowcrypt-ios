@@ -44,6 +44,7 @@ extension Imap {
         }
     }
 
+    /// renew user session on error
     @discardableResult
     func renewSession() -> Promise<Void> {
         userService

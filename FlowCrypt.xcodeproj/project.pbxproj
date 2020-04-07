@@ -202,6 +202,8 @@
 		D2CDC3DE24052D50002B045F /* FlowCryptUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D2CDC3E324052D54002B045F /* FlowCryptCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2F41371243CC76F0066AFB5 /* SessionObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F41370243CC76E0066AFB5 /* SessionObject.swift */; };
+		D2F41373243CC7990066AFB5 /* UserObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F41372243CC7990066AFB5 /* UserObject.swift */; };
 		D2F6D12A24311E5300DB4065 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2F6D12924311E5300DB4065 /* Colors.xcassets */; };
 		D2F6D12F24324ACC00DB4065 /* SwitchCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */; };
 		D2F6D1332433753100DB4065 /* IMAPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1322433753100DB4065 /* IMAPSession.swift */; };
@@ -460,6 +462,8 @@
 		D2A9CA3E24261A4600E1D898 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
 		D2A9CA4124261DBC00E1D898 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralConstantsTest.swift; sourceTree = "<group>"; };
+		D2F41370243CC76E0066AFB5 /* SessionObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionObject.swift; sourceTree = "<group>"; };
+		D2F41372243CC7990066AFB5 /* UserObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserObject.swift; sourceTree = "<group>"; };
 		D2F6D12924311E5300DB4065 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchCellNode.swift; sourceTree = "<group>"; };
 		D2F6D1322433753100DB4065 /* IMAPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMAPSession.swift; sourceTree = "<group>"; };
@@ -550,6 +554,8 @@
 				9F589F12238C7DF2007FD759 /* User+Google.swift */,
 				9F589F1E238C8A90007FD759 /* Token.swift */,
 				9F9AAFFC2383E216000A00F1 /* Document.swift */,
+				D2F41370243CC76E0066AFB5 /* SessionObject.swift */,
+				D2F41372243CC7990066AFB5 /* UserObject.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1781,6 +1787,7 @@
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
+				D2F41373243CC7990066AFB5 /* UserObject.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
 				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
@@ -1821,6 +1828,7 @@
 				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
+				D2F41371243CC76F0066AFB5 /* SessionObject.swift in Sources */,
 				9F268894237DD98900428A94 /* EnterPassPhraseViewDecorator.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */,
