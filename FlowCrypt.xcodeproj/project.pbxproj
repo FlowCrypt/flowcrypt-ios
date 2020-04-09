@@ -1148,6 +1148,7 @@
 		D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F1797652368EE50002BF770 /* SetupTitleNode.swift */,
 				5A39F433239EC61C001F4607 /* SettingsCellNode.swift */,
 				9F82779923737E1900E19C07 /* MessageSenderNode.swift */,
@@ -1155,7 +1156,6 @@
 				9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */,
 				9F56BD3123438B5B00A7371A /* InboxCellNode.swift */,
 				9F56BD3523438B9D00A7371A /* TextCellNode.swift */,
-				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */,
 				D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */,
 				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,

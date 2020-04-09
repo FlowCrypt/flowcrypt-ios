@@ -21,35 +21,36 @@ struct AppStartup {
     public func initializeApp(window: UIWindow) {
         #warning("Do not forget")
 
-//        Imap.shared.setupSession()
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//            Imap.shared.fetchFolders()
-//            .then { print($0) }
-//            .catch { print($0) }
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-//                       Imap.shared.fetchFolders()
-//                       .then { print($0) }
-//                       .catch { print($0) }
-//                   }
-//        }
-
-        let start = DispatchTime.now()
-        DispatchQueue.promises = .global()
-        window.rootViewController = BootstrapViewController()
-        window.makeKeyAndVisible()
-        Promise<Void> {
-            self.setupCore()
-            try self.setUpAuthentication()
-            try self.setupMigrationIfNeeded()
-            try self.setupSession()
-        }.then(on: .main) {
-            self.chooseView(window: window)
-            log("AppStartup", error: nil, res: nil, start: start)
-        }.catch(on: .main) { err in
-            let alert = UIAlertController(title: "Startup Error", message: "\(err)", preferredStyle: .alert)
-            window.rootViewController?.present(alert, animated: true, completion: nil)
-            log("AppStartup", error: err, res: nil, start: start)
+        DataService.shared.logOutAndDestroyStorage()
+        Imap.shared.setupSession()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            Imap.shared.fetchFolders()
+            .then { print($0) }
+            .catch { print($0) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                       Imap.shared.fetchFolders()
+                       .then { print($0) }
+                       .catch { print($0) }
+                   }
         }
+
+//        let start = DispatchTime.now()
+//        DispatchQueue.promises = .global()
+//        window.rootViewController = BootstrapViewController()
+//        window.makeKeyAndVisible()
+//        Promise<Void> {
+//            self.setupCore()
+//            try self.setUpAuthentication()
+//            try self.setupMigrationIfNeeded()
+//            try self.setupSession()
+//        }.then(on: .main) {
+//            self.chooseView(window: window)
+//            log("AppStartup", error: nil, res: nil, start: start)
+//        }.catch(on: .main) { err in
+//            let alert = UIAlertController(title: "Startup Error", message: "\(err)", preferredStyle: .alert)
+//            window.rootViewController?.present(alert, animated: true, completion: nil)
+//            log("AppStartup", error: err, res: nil, start: start)
+//        }
     }
 
     private func setupCore() {

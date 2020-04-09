@@ -162,8 +162,24 @@ extension DataService: DBMigration {
     }
 }
 
+// MARK: - DBMigration
 extension DataService: ImapSessionProvider {
     func imapSession() -> IMAPSession? {
+
+        let net = SessionCredentialsService()
+        let email = "cryptup.tester@ukr.net"
+        let password = "HHjjdDVWqVZW96jP"
+        let imapCred = net.getImapCredentials(for: email)!
+        print("^^ imapCred \(imapCred)")
+
+        return IMAPSession(
+            hostname: imapCred.hostName!,
+            port: imapCred.port,
+            email: email,
+            authType: .password(password),
+            connectionType: .tls
+        )
+
 
         //        return IMAPSession(
         //            hostname: imap.hostName!,
@@ -210,6 +226,21 @@ extension DataService: ImapSessionProvider {
     }
 
     func smtpSession() -> SMTPSession? {
+        let net = SessionCredentialsService()
+        let email = "cryptup.tester@ukr.net"
+        let password = "HHjjdDVWqVZW96jP"
+        let smtpCred = net.getSmtpCredentials(for: email)!
+        print("^^ smtpCred \(smtpCred)")
+
+        return SMTPSession(
+            hostname: smtpCred.hostName!,
+            port: smtpCred.port,
+            email: email,
+            authType: .password(password),
+            connectionType: .tls
+        )
+
+
         guard let user = encryptedStorage.getUser() else {
             assertionFailure("Can't get SMTP Session without user data")
             return nil
