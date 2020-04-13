@@ -262,7 +262,6 @@ extension EmailProviderViewController {
 
     private func setPicker(for section: Section, and node: TextFieldCellNode) {
         DispatchQueue.main.async {
-            self.selectedSection = section
             node.textField.setPicker(view: self.decorator.pickerView(for: section, delegate: self, dataSource: self))
         }
     }
@@ -276,20 +275,19 @@ extension EmailProviderViewController {
 
     private func handleTextField(_ action: TextFieldActionType, for indexPath: IndexPath) {
         guard let section = Section(indexPath: indexPath) else { return }
-
+        selectedSection = section
+        
         switch (section, action) {
         case (.account(.email), .editingChanged(let email)):
             updateForEmailChanges(with: email)
+        case (.imap(.security), .didBeginEditing):
+            user.imap?.connectionType = connections[0].rawValue
         case (.imap(.security), .didEndEditing):
-            node.reloadRows(
-                at: [IndexPath(row: ServerPart.security.rawValue, section: Section.imap(.security).section)],
-                with: .none
-            )
+            reloadSessionCredentials()
+        case (.smtp(.security), .didBeginEditing):
+            user.smtp?.connectionType = connections[0].rawValue
         case (.smtp(.security), .didEndEditing):
-            node.reloadRows(
-                at: [IndexPath(row: ServerPart.security.rawValue, section: Section.smtp(.security).section)],
-                with: .none
-            )
+            reloadSessionCredentials()
 
 //        case .account(.password):
 //        case .account(.username):

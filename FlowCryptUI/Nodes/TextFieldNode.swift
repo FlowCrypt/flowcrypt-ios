@@ -207,6 +207,11 @@ extension TextFieldNode: UITextFieldDelegate {
 extension TextFieldNode {
     public func setPicker(view: UIPickerView?, withToolbar: Bool = true) {
         DispatchQueue.main.async {
+            guard let view = view else {
+                self.textField.inputView = nil
+                self.textField.inputAccessoryView = nil
+                return
+            }
             self.textField.inputView = view
 
             if withToolbar {
