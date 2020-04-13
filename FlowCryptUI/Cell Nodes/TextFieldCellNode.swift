@@ -19,6 +19,7 @@ final public class TextFieldCellNode: CellNode {
         public var height: CGFloat = 40
         public var width: CGFloat?
         public var backgroundColor: UIColor?
+        public var keyboardType: UIKeyboardType
 
         public init(
             placeholder: NSAttributedString = NSAttributedString(string: "PLACEHOLDER"),
@@ -29,7 +30,8 @@ final public class TextFieldCellNode: CellNode {
             insets: UIEdgeInsets = .zero,
             height: CGFloat = 40,
             width: CGFloat? = nil,
-            backgroundColor: UIColor? = nil
+            backgroundColor: UIColor? = nil,
+            keyboardType: UIKeyboardType = .default
         ) {
             self.placeholder = placeholder
             self.isSecureTextEntry = isSecureTextEntry
@@ -40,6 +42,7 @@ final public class TextFieldCellNode: CellNode {
             self.height = height
             self.width = width
             self.backgroundColor = backgroundColor
+            self.keyboardType = keyboardType
         }
     }
 
@@ -71,7 +74,7 @@ final public class TextFieldCellNode: CellNode {
         textField.isSecureTextEntry = input.isSecureTextEntry
         textField.textAlignment = input.textAlignment
         textField.textInsets = input.textInsets
-
+        textField.keyboardType = input.keyboardType
         if let color = input.backgroundColor {
             backgroundColor = color
         }

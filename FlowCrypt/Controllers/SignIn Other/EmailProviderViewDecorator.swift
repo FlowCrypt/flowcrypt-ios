@@ -13,6 +13,7 @@ protocol EmailProviderViewDecoratorType {
     func title(for section: EmailProviderViewController.Section) -> InfoCellNode.Input
     func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input?
     func stringFor(user: UserObject, for section: EmailProviderViewController.Section) -> NSAttributedString?
+    func pickerView(for section: EmailProviderViewController.Section, delegate: UIPickerViewDelegate, dataSource: UIPickerViewDataSource) -> UIPickerView?
     func switchInput(isOn: Bool) -> SwitchCellNode.Input
 }
 
@@ -65,12 +66,14 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
     func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input? {
         let placeholder: String?
         var isSecure = false
+        var keyboardType: UIKeyboardType = .default
 
         switch section {
         case let .account(part):
             switch part {
             case .email:
                 placeholder = "Email"
+                keyboardType = .emailAddress
             case .password:
                 placeholder = "Password"
                 isSecure = true
@@ -83,6 +86,7 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
             switch part {
             case .port:
                 placeholder = "IMAP port"
+                keyboardType = .numberPad
             case .security:
                 placeholder = "Security type"
             case .server:
@@ -94,6 +98,7 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
             switch part {
             case .port:
                 placeholder = "SMTP port"
+                keyboardType = .numberPad
             case .security:
                 placeholder = "Security type"
             case .server:
@@ -123,7 +128,9 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
             insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
             backgroundColor: UIColor.colorFor(
                 darkStyle: .darkGray,
-                lightStyle: UIColor(white: 1, alpha: 1))
+                lightStyle: UIColor(white: 1, alpha: 1)
+            ),
+            keyboardType: keyboardType
         )
     }
 
@@ -180,6 +187,22 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
             case .title:
                 return nil
             }
+        default:
+            return nil
+        }
+    }
+
+    func pickerView(
+        for section: EmailProviderViewController.Section,
+        delegate: UIPickerViewDelegate,
+        dataSource: UIPickerViewDataSource
+    ) -> UIPickerView? {
+        switch section {
+        case .imap(.security), .smtp(.security):
+            let picker = UIPickerView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 200))
+            picker.delegate = delegate
+            picker.dataSource = dataSource
+            return picker
         default:
             return nil
         }

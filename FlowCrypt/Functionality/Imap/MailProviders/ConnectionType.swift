@@ -12,7 +12,7 @@ enum AuthType {
     case oAuth(String), password(String)
 }
 
-enum ConnectionType: String {
+enum ConnectionType: String, CaseIterable {
     case tls, startls
 }
 

@@ -102,7 +102,15 @@ final public class TextFieldNode: ASDisplayNode {
                 }
             }
         }
-    }  
+    }
+
+    public var keyboardType: UIKeyboardType = .default {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.keyboardType = self.keyboardType
+            }
+        }
+    }
 
     var shouldReturn: ShouldReturnAction?
 
@@ -193,5 +201,30 @@ extension TextFieldNode: UITextFieldDelegate {
 
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         shouldChangeCharacters?(textField, string) ?? true
+    }
+}
+
+extension TextFieldNode {
+    public func setPicker(view: UIPickerView?, withToolbar: Bool = true) {
+        DispatchQueue.main.async {
+            self.textField.inputView = view
+
+            if withToolbar {
+                let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 40))
+                self.textField.sizeToFit()
+                let doneButton = UIBarButtonItem(
+                    barButtonSystemItem: .done,
+                    target: self,
+                    action: #selector(self.dismiss)
+                )
+                toolBar.setItems([doneButton], animated: false)
+                toolBar.isUserInteractionEnabled = true
+                self.textField.inputAccessoryView = toolBar
+            }
+        }
+    }
+
+    @objc private func dismiss() {
+        textField.endEditing(true)
     }
 }

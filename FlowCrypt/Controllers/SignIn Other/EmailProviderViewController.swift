@@ -86,10 +86,10 @@ final class EmailProviderViewController: ASViewController<TableNode> {
     }
 
     private var state: State = .idle
+    private var selectedSection: Section?
 
     private let decorator: EmailProviderViewDecoratorType
     private let sessionCredentials: SessionCredentialsProvider
-
     private var user = UserObject.empty
 
     init(
@@ -218,6 +218,7 @@ extension EmailProviderViewController {
             self?.handleTextField(action, for: indexPath)
         }.then {
             $0.textField.attributedText = self.decorator.stringFor(user: self.user, for: section)
+            self.setPicker(for: section, and: $0)
         }
     }
 
@@ -244,6 +245,10 @@ extension EmailProviderViewController {
 
 // MARK: - Helpers
 extension EmailProviderViewController {
+    private var connections: [ConnectionType] {
+        ConnectionType.allCases
+    }
+
     private var userNameIndexPath: IndexPath {
         IndexPath(row: AccountPart.username.rawValue, section: Section.account(.username).section)
     }
@@ -253,6 +258,13 @@ extension EmailProviderViewController {
             IndexSet(integersIn: Section.imap(.port).section...Section.smtp(.port).section),
             with: .none
         )
+    }
+
+    private func setPicker(for section: Section, and node: TextFieldCellNode) {
+        DispatchQueue.main.async {
+            self.selectedSection = section
+            node.textField.setPicker(view: self.decorator.pickerView(for: section, delegate: self, dataSource: self))
+        }
     }
 }
 
@@ -268,6 +280,17 @@ extension EmailProviderViewController {
         switch (section, action) {
         case (.account(.email), .editingChanged(let email)):
             updateForEmailChanges(with: email)
+        case (.imap(.security), .didEndEditing):
+            node.reloadRows(
+                at: [IndexPath(row: ServerPart.security.rawValue, section: Section.imap(.security).section)],
+                with: .none
+            )
+        case (.smtp(.security), .didEndEditing):
+            node.reloadRows(
+                at: [IndexPath(row: ServerPart.security.rawValue, section: Section.smtp(.security).section)],
+                with: .none
+            )
+
 //        case .account(.password):
 //        case .account(.username):
 //        case .imap(.port):
@@ -321,4 +344,33 @@ extension EmailProviderViewController {
         reloadSessionCredentials()
     }
 
+}
+
+extension EmailProviderViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        1
+    }
+
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        ConnectionType.allCases.count
+    }
+
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        connections[row].rawValue.attributed()
+    }
+
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        50
+    }
+
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        switch selectedSection {
+        case .imap(.security):
+            user.imap?.connectionType = connections[row].rawValue
+        case .smtp(.security):
+            user.smtp?.connectionType = connections[row].rawValue
+        default:
+            return
+        }
+    }
 }
