@@ -13,22 +13,21 @@ extension UserObject {
         UserObject(
             name: "",
             email: "",
-            imap: SessionObject(
-                hostname: "",
-                port: 0,
-                username: "",
-                password: nil,
-                oAuth2Token: nil,
-                connectionType: ""
-            ),
-            smtp: SessionObject(
-                hostname: "",
-                port: 0,
-                username: "",
-                password: nil,
-                oAuth2Token: nil,
-                connectionType: ""
-            )
+            imap: .empty,
+            smtp: .empty
+        )
+    }
+}
+
+extension SessionObject {
+    static var empty: SessionObject {
+        SessionObject(
+            hostname: "",
+            port: 0,
+            username: "",
+            password: nil,
+            oAuth2Token: nil,
+            connectionType: ""
         )
     }
 }

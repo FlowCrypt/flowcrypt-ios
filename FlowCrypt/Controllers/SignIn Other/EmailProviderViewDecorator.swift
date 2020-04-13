@@ -12,6 +12,7 @@ import FlowCryptUI
 protocol EmailProviderViewDecoratorType {
     func title(for section: EmailProviderViewController.Section) -> InfoCellNode.Input
     func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input?
+    func stringFor(user: UserObject, for section: EmailProviderViewController.Section) -> NSAttributedString?
     func switchInput(isOn: Bool) -> SwitchCellNode.Input
 }
 
@@ -124,5 +125,63 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
                 darkStyle: .darkGray,
                 lightStyle: UIColor(white: 1, alpha: 1))
         )
+    }
+
+    func stringFor(user: UserObject, for section: EmailProviderViewController.Section) -> NSAttributedString? {
+        switch section {
+        case let .account(part):
+            switch part {
+            case .email:
+                guard user.email.isNotEmpty else { return nil }
+                return user.email.attributed()
+            case .username:
+                guard user.name.isNotEmpty else { return nil }
+                return user.name.attributed()
+            case .password, .title:
+                return nil
+            }
+        case let .imap(part):
+            switch part {
+            case .port:
+                guard let port = user.imap?.port, port != UserObject.empty.imap?.port else {
+                    return nil
+                }
+                return "\(port)".attributed()
+            case .security:
+                guard let connection = user.imap?.connectionType else {
+                    return nil
+                }
+                return connection.attributed()
+            case .server:
+                guard let host = user.imap?.hostname, host.isNotEmpty else {
+                    return nil
+                }
+                return host.attributed()
+            case .title:
+                return nil
+            }
+        case let .smtp(part):
+            switch part {
+            case .port:
+                guard let port = user.smtp?.port, port != UserObject.empty.smtp?.port else {
+                    return nil
+                }
+                return "\(port)".attributed()
+            case .security:
+                guard let connection = user.smtp?.connectionType else {
+                    return nil
+                }
+                return connection.attributed()
+            case .server:
+                guard let host = user.smtp?.hostname, host.isNotEmpty else {
+                    return nil
+                }
+                return host.attributed()
+            case .title:
+                return nil
+            }
+        default:
+            return nil
+        }
     }
 }

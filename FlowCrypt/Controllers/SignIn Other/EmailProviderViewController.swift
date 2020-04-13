@@ -36,10 +36,13 @@ final class EmailProviderViewController: ASViewController<TableNode> {
             }
         }
 
-        var indexPath: IndexPath {
+        var section: Int {
             switch self {
-            case .account(.username): return IndexPath(row: AccountPart.username.rawValue, section: 0)
-            default: assertionFailure("Not implemented"); return IndexPath(row: 0, section: 0)
+            case .account: return 0
+            case .imap: return 1
+            case .smtp: return 2
+            case .other: return 3
+            case .connect: return 4
             }
         }
 
@@ -214,7 +217,7 @@ extension EmailProviderViewController {
         return TextFieldCellNode(input: input) { [weak self] action in
             self?.handleTextField(action, for: indexPath)
         }.then {
-            $0.textField.attributedText = self.userDataFor(section: section)
+            $0.textField.attributedText = self.decorator.stringFor(user: self.user, for: section)
         }
     }
 
@@ -229,11 +232,27 @@ extension EmailProviderViewController {
 
     private func buttonNode() -> ButtonCellNode {
         ButtonCellNode(
-            title: "Connect".attributed(.bold(20), color: .textColor, alignment: .center),
+            title: "other_provider_connect"
+                .localized
+                .attributed(.bold(20), color: .white, alignment: .center),
             insets: UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 10)
         ) { [weak self] in
             self?.handleConnect()
         }
+    }
+}
+
+// MARK: - Helpers
+extension EmailProviderViewController {
+    private var userNameIndexPath: IndexPath {
+        IndexPath(row: AccountPart.username.rawValue, section: Section.account(.username).section)
+    }
+
+    private func reloadSessionCredentials() {
+        node.reloadSections(
+            IndexSet(integersIn: Section.imap(.port).section...Section.smtp(.port).section),
+            with: .none
+        )
     }
 }
 
@@ -246,8 +265,9 @@ extension EmailProviderViewController {
     private func handleTextField(_ action: TextFieldActionType, for indexPath: IndexPath) {
         guard let section = Section(indexPath: indexPath) else { return }
 
-        switch section {
-        case .account(.email): handle(email: action)
+        switch (section, action) {
+        case (.account(.email), .editingChanged(let email)):
+            updateForEmailChanges(with: email)
 //        case .account(.password):
 //        case .account(.username):
 //        case .imap(.port):
@@ -257,58 +277,48 @@ extension EmailProviderViewController {
         }
     }
 
-    private func handle(email action: TextFieldActionType) {
-        switch action {
-        case let .editingChanged(text):
-            guard let email = text, email.isNotEmpty else {
-                user.name = ""
-                node.reloadRows(at: [Section.account(.username).indexPath], with: .fade)
-                return
-            }
-
-            let parts = email.split(separator: "@").map(String.init)
-
-            if let username = parts.first {
-                user.name = username
-                node.reloadRows(at: [Section.account(.username).indexPath], with: .fade)
-            }
-
-            // username@email.com
-            // 1 - username, 2 - email, 3 - com
-            guard let provider = parts[safe: 1] else { return }
-
-            let providerParts = provider.split(separator: ".").map(String.init)
-            guard providerParts.count > 1 else { return }
-
-            if let imap = sessionCredentials.getImapCredentials(for: email) {
-                user.imap?.port = imap.port
-                node.reloadSections(IndexSet(integer: 1), with: .fade)
-            }
-            if let smtp = sessionCredentials.getSmtpCredentials(for: email) {
-
-            }
-
-//            if let imap =
-//            sessionCredentials.getImapCredentials(for: email)
-        default:
-            break
+    private func updateForEmailChanges(with text: String?) {
+        guard let email = text, email.isNotEmpty else {
+            user = UserObject.empty
+            node.reloadData()
+            return
         }
+
+        let parts = email.split(separator: "@").map(String.init)
+
+        if let username = parts.first {
+            user.name = username
+            node.reloadRows(at: [userNameIndexPath], with: .none)
+        }
+
+        guard let provider = parts[safe: 1] else { return }
+
+        let providerParts = provider.split(separator: ".").map(String.init)
+        guard providerParts.count > 1 else {
+            user.imap = .empty
+            user.smtp = .empty
+            reloadSessionCredentials()
+            return
+        }
+
+        if let imap = sessionCredentials.getImapCredentials(for: email) {
+            user.imap?.port = imap.port
+            user.imap?.connectionType = imap.connectionType.rawValue
+            user.imap?.hostname = imap.hostName ?? ""
+        } else {
+            user.imap?.connectionType = ConnectionType.tls.rawValue
+            user.imap?.hostname = "imap.\(provider)"
+        }
+        if let smtp = sessionCredentials.getSmtpCredentials(for: email) {
+            user.smtp?.port = smtp.port
+            user.smtp?.connectionType = smtp.connectionType.rawValue
+            user.smtp?.hostname = smtp.hostName ?? ""
+        } else {
+            user.smtp?.connectionType = ConnectionType.tls.rawValue
+            user.smtp?.hostname = "smtp.\(provider)"
+        }
+
+        reloadSessionCredentials()
     }
 
-    private func userDataFor(section: Section) -> NSAttributedString? {
-        switch section {
-        case .account(.username):
-            if user.name.isEmpty {
-                return nil
-            }
-            return NSAttributedString(string: self.user.name)
-        case .imap(.port):
-            if let port = user.imap?.port, port != UserObject.empty.imap?.port {
-                return "\(port)".attributed()
-            }
-            return nil
-        default:
-            return nil
-        }
-    }
 }

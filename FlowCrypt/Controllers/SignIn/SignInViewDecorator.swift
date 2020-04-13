@@ -20,7 +20,7 @@ struct SignInViewDecorator: SignInViewDecoratorType {
         "sign_in_description"
             .localized
             .attributed(
-                .medium(13),
+                .medium(15),
                 color: UIColor.colorFor(darkStyle: .mainTextColor, lightStyle: .textColor),
                 alignment: .center
         )

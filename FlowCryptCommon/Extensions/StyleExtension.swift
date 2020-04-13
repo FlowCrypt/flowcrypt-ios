@@ -45,7 +45,7 @@ public extension NSAttributedString {
 
 public extension String {
     func attributed(
-        _ style: NSAttributedString.Style = .regular(14),
+        _ style: NSAttributedString.Style = .medium(15),
         color: UIColor = .textColor,
         alignment: NSTextAlignment? = nil
     ) -> NSAttributedString {
