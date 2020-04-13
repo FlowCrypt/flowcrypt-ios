@@ -110,6 +110,8 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
             case .title:
                 placeholder = nil
             }
+        case .connect:
+            return nil
         }
 
         guard let placeholderString = placeholder else { assertionFailure(); return nil }

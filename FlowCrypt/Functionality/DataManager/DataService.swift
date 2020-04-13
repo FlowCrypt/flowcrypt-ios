@@ -10,28 +10,39 @@ import Foundation
 import Promises
 
 protocol DataServiceType {
-    func save(user userObject: UserObject)
-    
+    // data
     var email: String? { get }
     var currentUser: User? { get }
-
     var isLoggedIn: Bool { get }
     var isSetupFinished: Bool { get }
     var currentAuthType: AuthType? { get }
 
-    func keys() -> [PrvKeyInfo]?
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-    func publicKey() -> String?
+    // data
+    var keys: [PrvKeyInfo]? { get }
+    var publicKey: String? { get }
 
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
+
+    // login / logout
+    func startFor(user type: SessionType)
     func logOutAndDestroyStorage()
 }
+
 
 protocol ImapSessionProvider {
     func imapSession() -> IMAPSession?
     func smtpSession() -> SMTPSession?
 }
 
+
+enum SessionType {
+    case google(_ email: String, name: String, token: String)
+    case session(_ userObject: UserObject)
+}
+
 final class DataService: DataServiceType {
+
+
     static let shared = DataService()
 
     var isSetupFinished: Bool {
@@ -80,7 +91,7 @@ extension DataService {
 
 // MARK: - Data
 extension DataService {
-    func keys() -> [PrvKeyInfo]? {
+    var keys: [PrvKeyInfo]? {
         guard let keys = encryptedStorage.keys() else { return nil }
         return Array(keys)
             .map(PrvKeyInfo.init)
@@ -90,12 +101,12 @@ extension DataService {
         encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
     }
 
-    func publicKey() -> String? {
+    var publicKey: String? {
         encryptedStorage.publicKey()
     }
 
     /// Save user and user session credentials
-    func save(user userObject: UserObject) {
+    private func save(user userObject: UserObject) {
         if let currentUser = currentUser, currentUser.email != userObject.email {
             logOutAndDestroyStorage()
         }
@@ -112,7 +123,7 @@ extension DataService {
     }
 }
 
-// MARK: - DBMigration
+// MARK: - Migration
 extension DataService: DBMigration {
     /// Perform all kind of migrations
     func performMigrationIfNeeded() -> Promise<Void> {
@@ -162,23 +173,23 @@ extension DataService: DBMigration {
     }
 }
 
-// MARK: - DBMigration
+// MARK: - SessionProvider
 extension DataService: ImapSessionProvider {
     func imapSession() -> IMAPSession? {
 
-        let net = SessionCredentialsService()
-        let email = "cryptup.tester@ukr.net"
-        let password = "HHjjdDVWqVZW96jP"
-        let imapCred = net.getImapCredentials(for: email)!
-        print("^^ imapCred \(imapCred)")
-
-        return IMAPSession(
-            hostname: imapCred.hostName!,
-            port: imapCred.port,
-            email: email,
-            authType: .password(password),
-            connectionType: .tls
-        )
+//        let net = SessionCredentialsService()
+//        let email = "cryptup.tester@ukr.net"
+//        let password = "HHjjdDVWqVZW96jP"
+//        let imapCred = net.getImapCredentials(for: email)!
+//        print("^^ imapCred \(imapCred)")
+//
+//        return IMAPSession(
+//            hostname: imapCred.hostName!,
+//            port: imapCred.port,
+//            email: email,
+//            authType: .password(password),
+//            connectionType: .tls
+//        )
 
 
         //        return IMAPSession(
@@ -201,17 +212,7 @@ extension DataService: ImapSessionProvider {
             return nil
         }
 
-        let authType: AuthType? = {
-            if let password = user.password {
-                return .password(password)
-            }
-            if let token = imap.oAuth2Token {
-                return .oAuth(token)
-            }
-            return nil
-        }()
-
-        guard let auth = authType, let connection = ConnectionType(rawValue: imap.connectionType) else {
+        guard let auth = user.authType, let connection = ConnectionType(rawValue: imap.connectionType) else {
             assertionFailure("Authentication type should be defined on this step")
             return nil
         }
@@ -226,19 +227,19 @@ extension DataService: ImapSessionProvider {
     }
 
     func smtpSession() -> SMTPSession? {
-        let net = SessionCredentialsService()
-        let email = "cryptup.tester@ukr.net"
-        let password = "HHjjdDVWqVZW96jP"
-        let smtpCred = net.getSmtpCredentials(for: email)!
-        print("^^ smtpCred \(smtpCred)")
-
-        return SMTPSession(
-            hostname: smtpCred.hostName!,
-            port: smtpCred.port,
-            email: email,
-            authType: .password(password),
-            connectionType: .tls
-        )
+//        let net = SessionCredentialsService()
+//        let email = "cryptup.tester@ukr.net"
+//        let password = "HHjjdDVWqVZW96jP"
+//        let smtpCred = net.getSmtpCredentials(for: email)!
+//        print("^^ smtpCred \(smtpCred)")
+//
+//        return SMTPSession(
+//            hostname: smtpCred.hostName!,
+//            port: smtpCred.port,
+//            email: email,
+//            authType: .password(password),
+//            connectionType: .tls
+//        )
 
 
         guard let user = encryptedStorage.getUser() else {
@@ -251,17 +252,7 @@ extension DataService: ImapSessionProvider {
             return nil
         }
 
-        let authType: AuthType? = {
-            if let password = user.password {
-                return .password(password)
-            }
-            if let token = smtp.oAuth2Token {
-                return .oAuth(token)
-            }
-            return nil
-        }()
-
-        guard let auth = authType, let connection = ConnectionType(rawValue: smtp.connectionType) else {
+        guard let auth = user.authType, let connection = ConnectionType(rawValue: smtp.connectionType) else {
             assertionFailure("Authentication type should be defined on this step")
             return nil
         }
@@ -273,5 +264,23 @@ extension DataService: ImapSessionProvider {
             authType: auth,
             connectionType: connection
         )
+    }
+}
+
+extension DataService {
+    func startFor(user type: SessionType) {
+        switch type {
+        case let .google(email, name, token):
+            let user = UserObject.googleUser(
+                name: name,
+                email: email,
+                token: token
+            )
+            save(user: user)
+        case let .session(userObject):
+            // TODO: ANTON - Create user object here
+            save(user: userObject)
+            break
+        }
     }
 }

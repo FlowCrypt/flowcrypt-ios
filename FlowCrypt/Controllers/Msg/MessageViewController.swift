@@ -142,7 +142,7 @@ extension MessageViewController {
             let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
             self.input?.bodyMessage = rawMimeData
 
-            guard let keys = self.dataService.keys() else {
+            guard let keys = self.dataService.keys else {
                 reject(CoreError.notReady("Could not fetch keys"))
                 return
             }

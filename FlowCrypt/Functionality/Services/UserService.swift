@@ -103,17 +103,7 @@ extension UserService: GIDSignInDelegate {
             return
         }
 
-        let user = User(user)
-
-        dataService.save(
-            user: UserObject.googleUser(
-                name: user.name,
-                email: user.email,
-                token: token
-            )
-        )
-
-//        onNewToken?(token)
+        dataService.startFor(user: .google(user.profile.email, name: user.profile.name, token: token))
         onLogin?()
     }
 

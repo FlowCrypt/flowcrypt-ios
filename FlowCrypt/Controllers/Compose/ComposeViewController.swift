@@ -280,7 +280,7 @@ extension ComposeViewController {
                 return false
             }
 
-            guard let myPubKey = self.dataService.publicKey() else {
+            guard let myPubKey = self.dataService.publicKey else {
                 self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }

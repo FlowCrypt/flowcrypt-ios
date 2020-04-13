@@ -44,6 +44,18 @@ extension UserObject {
     }
 }
 
+extension UserObject {
+    var authType: AuthType? {
+        if let password = password {
+            return .password(password)
+        }
+        if let token = smtp?.oAuth2Token {
+            return .oAuth(token)
+        }
+        return nil
+    }
+}
+
 extension User {
     init(_ userObject: UserObject) {
         self.name = userObject.name
