@@ -42,7 +42,6 @@ enum SessionType {
 
 final class DataService: DataServiceType {
 
-
     static let shared = DataService()
 
     var isSetupFinished: Bool {
@@ -103,15 +102,6 @@ extension DataService {
 
     var publicKey: String? {
         encryptedStorage.publicKey()
-    }
-
-    /// Save user and user session credentials
-    private func save(user userObject: UserObject) {
-        if let currentUser = currentUser, currentUser.email != userObject.email {
-            logOutAndDestroyStorage()
-        }
-
-        encryptedStorage.saveUser(with: userObject)
     }
 }
 
@@ -176,32 +166,6 @@ extension DataService: DBMigration {
 // MARK: - SessionProvider
 extension DataService: ImapSessionProvider {
     func imapSession() -> IMAPSession? {
-
-//        let net = SessionCredentialsService()
-//        let email = "cryptup.tester@ukr.net"
-//        let password = "HHjjdDVWqVZW96jP"
-//        let imapCred = net.getImapCredentials(for: email)!
-//        print("^^ imapCred \(imapCred)")
-//
-//        return IMAPSession(
-//            hostname: imapCred.hostName!,
-//            port: imapCred.port,
-//            email: email,
-//            authType: .password(password),
-//            connectionType: .tls
-//        )
-
-
-        //        return IMAPSession(
-        //            hostname: imap.hostName!,
-        //            port: imap.port,
-        //            username: "antonflowcrypt@yahoo.com",
-        //            password: "flowcryptpassword123",
-        //            oAuth2Token: "NO ACCESS TOKEN",
-        //            authType: .xoAuth2,
-        //            connectionType: imap.connectionType
-        //        )
-
         guard let user = encryptedStorage.getUser() else {
             assertionFailure("Can't get IMAP Session without user data")
             return nil
@@ -227,21 +191,6 @@ extension DataService: ImapSessionProvider {
     }
 
     func smtpSession() -> SMTPSession? {
-//        let net = SessionCredentialsService()
-//        let email = "cryptup.tester@ukr.net"
-//        let password = "HHjjdDVWqVZW96jP"
-//        let smtpCred = net.getSmtpCredentials(for: email)!
-//        print("^^ smtpCred \(smtpCred)")
-//
-//        return SMTPSession(
-//            hostname: smtpCred.hostName!,
-//            port: smtpCred.port,
-//            email: email,
-//            authType: .password(password),
-//            connectionType: .tls
-//        )
-
-
         guard let user = encryptedStorage.getUser() else {
             assertionFailure("Can't get SMTP Session without user data")
             return nil
@@ -271,16 +220,21 @@ extension DataService {
     func startFor(user type: SessionType) {
         switch type {
         case let .google(email, name, token):
+            // for google authentication this method will be called also on renewing access token
+            // destroy storage in case a new user logged in
+            if let currentUser = currentUser, currentUser.email != email {
+                logOutAndDestroyStorage()
+            }
+            // save new user data
             let user = UserObject.googleUser(
                 name: name,
                 email: email,
                 token: token
             )
-            save(user: user)
-        case let .session(userObject):
-            // TODO: ANTON - Create user object here
-            save(user: userObject)
-            break
+            encryptedStorage.saveUser(with: user)
+        case let .session(user):
+            logOutAndDestroyStorage()
+            encryptedStorage.saveUser(with: user)
         }
     }
 }

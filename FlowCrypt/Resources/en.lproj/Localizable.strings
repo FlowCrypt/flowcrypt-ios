@@ -133,3 +133,4 @@
 "other_provider_smtp_title" = "Outgoing mail settings";
 "other_provider_other_smtp_title" = "Set different credentials for SMTP";
 "other_provider_connect" = "Connect";
+"other_provider_error_password" = "Password must not be empty";

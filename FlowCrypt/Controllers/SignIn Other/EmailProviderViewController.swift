@@ -85,20 +85,29 @@ final class EmailProviderViewController: ASViewController<TableNode> {
         case idle, extended
     }
 
+    private enum UserError: Error {
+        case password
+        case empty
+    }
+
     private var state: State = .idle
     private var selectedSection: Section?
 
+    private let dataService: DataServiceType
+    
     private let decorator: EmailProviderViewDecoratorType
     private let sessionCredentials: SessionCredentialsProvider
     private var user = UserObject.empty
 
     init(
+        dataService: DataServiceType = DataService.shared,
         decorator: EmailProviderViewDecoratorType = EmailProviderViewDecorator(),
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService()
     ) {
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials
-        
+        self.dataService = dataService
+
         super.init(node: TableNode())
         node.delegate = self
         node.dataSource = self
@@ -238,7 +247,7 @@ extension EmailProviderViewController {
                 .attributed(.bold(20), color: .white, alignment: .center),
             insets: UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 10)
         ) { [weak self] in
-            self?.handleConnect()
+            self?.connect()
         }
     }
 }
@@ -269,8 +278,25 @@ extension EmailProviderViewController {
 
 // MARK: - Actions
 extension EmailProviderViewController {
-    private func handleConnect() {
+    private func connect() {
+        let result = checkCurrentUser()
+        switch result {
+        case .failure(.empty):
+            break
+        case .failure(.password):
+            showToast("other_provider_error_password".localized)
+        case let .success(user):
+            dataService.startFor(user: .session(user))
+//        let email = "cryptup.tester@ukr.net"
+//        let password = "HHjjdDVWqVZW96jP"
+            GlobalRouter().proceed()
+        }
+    }
 
+    private func checkCurrentUser() -> Result<UserObject, UserError> {
+        guard user != UserObject.empty else { return .failure(.empty) }
+        guard let password = user.password, password.isNotEmpty else { return .failure(.password) }
+        return .success(user)
     }
 
     private func handleTextField(_ action: TextFieldActionType, for indexPath: IndexPath) {
@@ -280,6 +306,8 @@ extension EmailProviderViewController {
         switch (section, action) {
         case (.account(.email), .editingChanged(let email)):
             updateForEmailChanges(with: email)
+        case (.account(.password), .didEndEditing(let password)):
+            user.imap?.password = password
         case (.imap(.security), .didBeginEditing):
             user.imap?.connectionType = connections[0].rawValue
         case (.imap(.security), .didEndEditing):
@@ -288,12 +316,6 @@ extension EmailProviderViewController {
             user.smtp?.connectionType = connections[0].rawValue
         case (.smtp(.security), .didEndEditing):
             updateSmtpCredentials()
-
-//        case .account(.password):
-//        case .account(.username):
-//        case .imap(.port):
-//        case .imap(.server):
-//        case .imap(.security):
         default: break
         }
     }
