@@ -276,18 +276,18 @@ extension EmailProviderViewController {
     private func handleTextField(_ action: TextFieldActionType, for indexPath: IndexPath) {
         guard let section = Section(indexPath: indexPath) else { return }
         selectedSection = section
-        
+
         switch (section, action) {
         case (.account(.email), .editingChanged(let email)):
             updateForEmailChanges(with: email)
         case (.imap(.security), .didBeginEditing):
             user.imap?.connectionType = connections[0].rawValue
         case (.imap(.security), .didEndEditing):
-            reloadSessionCredentials()
+            updateImapCredentials()
         case (.smtp(.security), .didBeginEditing):
             user.smtp?.connectionType = connections[0].rawValue
         case (.smtp(.security), .didEndEditing):
-            reloadSessionCredentials()
+            updateSmtpCredentials()
 
 //        case .account(.password):
 //        case .account(.username):
@@ -322,18 +322,15 @@ extension EmailProviderViewController {
             return
         }
 
-        if let imap = sessionCredentials.getImapCredentials(for: email) {
-            user.imap?.port = imap.port
-            user.imap?.connectionType = imap.connectionType.rawValue
-            user.imap?.hostname = imap.hostName ?? ""
+        if let imapSetting = sessionCredentials.getImapCredentials(for: email) {
+            updateUser(imap: imapSetting)
         } else {
             user.imap?.connectionType = ConnectionType.tls.rawValue
             user.imap?.hostname = "imap.\(provider)"
         }
-        if let smtp = sessionCredentials.getSmtpCredentials(for: email) {
-            user.smtp?.port = smtp.port
-            user.smtp?.connectionType = smtp.connectionType.rawValue
-            user.smtp?.hostname = smtp.hostName ?? ""
+
+        if let smtpSetting = sessionCredentials.getSmtpCredentials(for: email) {
+            updateUser(smtp: smtpSetting)
         } else {
             user.smtp?.connectionType = ConnectionType.tls.rawValue
             user.smtp?.hostname = "smtp.\(provider)"
@@ -342,6 +339,49 @@ extension EmailProviderViewController {
         reloadSessionCredentials()
     }
 
+    private func updateImapCredentials() {
+        guard let connectionType = ConnectionType(rawValue: user.imap?.connectionType ?? "") else {
+            reloadSessionCredentials()
+            return
+        }
+        let settings = sessionCredentials.imapFor(connection: connectionType, email: user.email)
+
+        switch settings {
+        case let .failure(.notFound(defaultPort)):
+            user.imap?.port = defaultPort
+        case let .success(imapSetting):
+            updateUser(imap: imapSetting)
+        }
+        reloadSessionCredentials()
+    }
+
+    private func updateSmtpCredentials() {
+        guard let connectionType = ConnectionType(rawValue: user.smtp?.connectionType ?? "") else {
+            reloadSessionCredentials()
+            return
+        }
+        let settings = sessionCredentials.smtpFor(connection: connectionType, email: user.email)
+
+        switch settings {
+        case let .failure(.notFound(defaultPort)):
+            user.smtp?.port = defaultPort
+        case let .success(imapSetting):
+            updateUser(smtp: imapSetting)
+        }
+        reloadSessionCredentials()
+    }
+
+    private func updateUser(imap settings: MailSettingsCredentials) {
+        user.imap?.port = settings.port
+        user.imap?.connectionType = settings.connectionType.rawValue
+        user.imap?.hostname = settings.hostName ?? ""
+    }
+
+    private func updateUser(smtp settings: MailSettingsCredentials) {
+        user.smtp?.port = settings.port
+        user.smtp?.connectionType = settings.connectionType.rawValue
+        user.smtp?.hostname = settings.hostName ?? ""
+    }
 }
 
 extension EmailProviderViewController: UIPickerViewDelegate, UIPickerViewDataSource {

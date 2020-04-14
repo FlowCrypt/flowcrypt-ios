@@ -8,13 +8,13 @@
 
 import Foundation
 
-struct ImapCredentials {
+struct MailSettingsCredentials {
     let hostName: String?
     let port: Int
     let connectionType: ConnectionType
 }
 
-extension ImapCredentials {
+extension MailSettingsCredentials {
     init(_ service: MCONetService) {
         self.hostName = service.hostname
         self.port = Int(service.port)

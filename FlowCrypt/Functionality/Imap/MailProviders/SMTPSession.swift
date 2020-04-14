@@ -23,7 +23,9 @@ extension MCOSMTPSession {
         hostname = session.hostname
         port = UInt32(session.port)
         username = session.email
-        connectionType = MCOConnectionType(session.connectionType)
+        if let type = MCOConnectionType(session.connectionType) {
+            connectionType = type
+        }
 
        switch session.authType {
         case let .oAuth(token):

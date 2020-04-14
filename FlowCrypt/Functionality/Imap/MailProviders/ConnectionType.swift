@@ -13,14 +13,15 @@ enum AuthType {
 }
 
 enum ConnectionType: String, CaseIterable {
-    case tls, startls
+    case none, tls, startls
 }
 
 extension MCOConnectionType {
-    init(_ connectionType: ConnectionType) {
+    init?(_ connectionType: ConnectionType) {
         switch connectionType {
         case .tls: self = .TLS
         case .startls: self = .startTLS
+        case .none: return nil
         }
     }
 }
