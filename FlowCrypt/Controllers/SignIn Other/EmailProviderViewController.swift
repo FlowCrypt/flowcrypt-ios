@@ -278,27 +278,6 @@ extension EmailProviderViewController {
 
 // MARK: - Actions
 extension EmailProviderViewController {
-    private func connect() {
-        let result = checkCurrentUser()
-        switch result {
-        case .failure(.empty):
-            break
-        case .failure(.password):
-            showToast("other_provider_error_password".localized)
-        case let .success(user):
-            dataService.startFor(user: .session(user))
-//        let email = "cryptup.tester@ukr.net"
-//        let password = "HHjjdDVWqVZW96jP"
-            GlobalRouter().proceed()
-        }
-    }
-
-    private func checkCurrentUser() -> Result<UserObject, UserError> {
-        guard user != UserObject.empty else { return .failure(.empty) }
-        guard let password = user.password, password.isNotEmpty else { return .failure(.password) }
-        return .success(user)
-    }
-
     private func handleTextField(_ action: TextFieldActionType, for indexPath: IndexPath) {
         guard let section = Section(indexPath: indexPath) else { return }
         selectedSection = section
@@ -311,11 +290,11 @@ extension EmailProviderViewController {
         case (.imap(.security), .didBeginEditing):
             user.imap?.connectionType = connections[0].rawValue
         case (.imap(.security), .didEndEditing):
-            updateImapCredentials()
+            updateUserImapCredentials()
         case (.smtp(.security), .didBeginEditing):
             user.smtp?.connectionType = connections[0].rawValue
         case (.smtp(.security), .didEndEditing):
-            updateSmtpCredentials()
+            updateUserSmtpCredentials()
         default: break
         }
     }
@@ -361,7 +340,7 @@ extension EmailProviderViewController {
         reloadSessionCredentials()
     }
 
-    private func updateImapCredentials() {
+    private func updateUserImapCredentials() {
         guard let connectionType = ConnectionType(rawValue: user.imap?.connectionType ?? "") else {
             reloadSessionCredentials()
             return
@@ -377,7 +356,7 @@ extension EmailProviderViewController {
         reloadSessionCredentials()
     }
 
-    private func updateSmtpCredentials() {
+    private func updateUserSmtpCredentials() {
         guard let connectionType = ConnectionType(rawValue: user.smtp?.connectionType ?? "") else {
             reloadSessionCredentials()
             return
@@ -406,6 +385,32 @@ extension EmailProviderViewController {
     }
 }
 
+// MARK: - Connect
+extension EmailProviderViewController {
+    private func connect() {
+            let result = checkCurrentUser()
+            switch result {
+            case .failure(.empty):
+                break
+            case .failure(.password):
+                showToast("other_provider_error_password".localized)
+            case let .success(user):
+                dataService.startFor(user: .session(user))
+    //        let email = "cryptup.tester@ukr.net"
+    //        let password = "HHjjdDVWqVZW96jP"
+                GlobalRouter().proceed()
+            }
+        }
+
+        private func checkCurrentUser() -> Result<UserObject, UserError> {
+            guard user != UserObject.empty else { return .failure(.empty) }
+            guard let password = user.password, password.isNotEmpty else { return .failure(.password) }
+            return .success(user)
+        }
+
+}
+
+// MARK: - Picker
 extension EmailProviderViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         1
