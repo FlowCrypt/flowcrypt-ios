@@ -46,6 +46,17 @@ final class EmailProviderViewController: ASViewController<TableNode> {
             }
         }
 
+        var indexPath: IndexPath {
+            let row: Int
+            switch self {
+            case let .account(part): row = part.rawValue
+            case let .imap(part): row = part.rawValue
+            case let .smtp(part): row = part.rawValue
+            case let .other(part): row = part.rawValue
+            case .connect: row = 0
+            }
+            return IndexPath(row: row, section: self.section)
+        }
 
         init?(indexPath: IndexPath) {
             switch indexPath.section {
@@ -226,7 +237,11 @@ extension EmailProviderViewController {
 
         return TextFieldCellNode(input: input) { [weak self] action in
             self?.handleTextField(action, for: indexPath)
-        }.then {
+        }
+        .onShouldReturn { [weak self] _ in
+            self?.textFieldShouldReturn() ?? true
+        }
+        .then {
             $0.textField.attributedText = self.decorator.stringFor(user: self.user, for: section)
             self.setPicker(for: section, and: $0)
         }
@@ -272,7 +287,16 @@ extension EmailProviderViewController {
 
     private func setPicker(for section: Section, and node: TextFieldCellNode) {
         DispatchQueue.main.async {
-            node.textField.setPicker(view: self.decorator.pickerView(for: section, delegate: self, dataSource: self))
+            if let picker = self.decorator.pickerView(for: section, delegate: self, dataSource: self) {
+                node.textField.setPicker(view: picker) {
+                    self.textFieldShouldReturn()
+                }
+            }
+            if self.decorator.shouldAddToolBar(for: section) {
+                node.textField.setToolbar {
+                    self.textFieldShouldReturn()
+                }
+            }
         }
     }
 }
@@ -390,6 +414,41 @@ extension EmailProviderViewController {
         user.smtp?.port = settings.port
         user.smtp?.connectionType = settings.connectionType.rawValue
         user.smtp?.hostname = settings.hostName ?? ""
+    }
+
+    @discardableResult
+    private func textFieldShouldReturn() -> Bool {
+        guard let selectedSection = selectedSection else {
+            assertionFailure("Check selected section property")
+            view.endEditing(true)
+            return true
+        }
+
+        let currentIndexPath = selectedSection.indexPath
+        let numberOfRowsInSelectedSection = node.numberOfRows(inSection: currentIndexPath.section)
+        let nextIndexPath: IndexPath = {
+            let nextRow = currentIndexPath.row + 1
+            if nextRow < numberOfRowsInSelectedSection {
+                let next = IndexPath(row: nextRow, section: currentIndexPath.section)
+                print("^^ in section \(next)")
+                return next
+            } else {
+
+                let next = IndexPath(row: 1, section: currentIndexPath.section + 1)
+                print("^^ next section \(next)")
+                return next
+            }
+        }()
+        guard let nextTextField = node.nodeForRow(at: nextIndexPath) as? TextFieldCellNode else {
+            view.endEditing(true)
+            return true
+        }
+
+        DispatchQueue.main.async {
+            nextTextField.becomeFirstResponder()
+        }
+
+        return true
     }
 }
 

@@ -15,6 +15,7 @@ protocol EmailProviderViewDecoratorType {
     func stringFor(user: UserObject, for section: EmailProviderViewController.Section) -> NSAttributedString?
     func pickerView(for section: EmailProviderViewController.Section, delegate: UIPickerViewDelegate, dataSource: UIPickerViewDataSource) -> UIPickerView?
     func switchInput(isOn: Bool) -> SwitchCellNode.Input
+    func shouldAddToolBar(for section: EmailProviderViewController.Section) -> Bool
 }
 
 struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
@@ -205,6 +206,18 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
             return picker
         default:
             return nil
+        }
+    }
+
+    func shouldAddToolBar(for section: EmailProviderViewController.Section) -> Bool {
+        switch section {
+        case .imap(.security),
+             .smtp(.security),
+             .imap(.port),
+             .smtp(.port):
+            return true
+        default:
+            return false
         }
     }
 }
