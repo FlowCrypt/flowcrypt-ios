@@ -27,12 +27,17 @@ extension Imap: BackupProvider {
 
             if folderPaths.contains(GeneralConstants.Global.gmailAllMailPath) {
                 folderPaths = [GeneralConstants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
+            } else if let inbox = folderPaths.first(where: { $0.caseInsensitiveCompare("inbox") == .orderedSame }) {
+                // TODO: ANTON - Check without
+                folderPaths = [inbox]
             }
+
 
             let searchExpr = self.createSearchBackupExpression(for: email)
 
-            let uidsForFolders = try folderPaths.compactMap { folder in
-                UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr)))
+            let uidsForFolders = try folderPaths.compactMap { folder -> UidsContext in
+                let uids = try await(self.fetchUids(folder: folder, expr: searchExpr))
+                return UidsContext(path: folder, uids: uids)
             }
 
             if uidsForFolders.isEmpty {

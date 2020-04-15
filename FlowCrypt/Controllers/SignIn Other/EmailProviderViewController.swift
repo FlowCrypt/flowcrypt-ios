@@ -10,6 +10,51 @@ import AsyncDisplayKit
 import FlowCryptUI
 
 final class EmailProviderViewController: ASViewController<TableNode> {
+    private enum UserError: Error {
+        case password
+        case empty
+        case email
+    }
+
+    private var state: State = .idle
+    private var selectedSection: Section?
+
+    private let dataService: DataServiceType
+    
+    private let decorator: EmailProviderViewDecoratorType
+    private let sessionCredentials: SessionCredentialsProvider
+    private var user = UserObject.empty
+
+    init(
+        dataService: DataServiceType = DataService.shared,
+        decorator: EmailProviderViewDecoratorType = EmailProviderViewDecorator(),
+        sessionCredentials: SessionCredentialsProvider = SessionCredentialsService()
+    ) {
+        self.decorator = decorator
+        self.sessionCredentials = sessionCredentials
+        self.dataService = dataService
+
+        super.init(node: TableNode())
+        node.delegate = self
+        node.dataSource = self
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+
+// MARK: - Parts
+extension EmailProviderViewController {
     enum Section {
         case account(AccountPart)
         case imap(ServerPart)
@@ -95,48 +140,6 @@ final class EmailProviderViewController: ASViewController<TableNode> {
     enum State: Equatable {
         case idle, extended
     }
-
-    private enum UserError: Error {
-        case password
-        case empty
-        case email
-    }
-
-    private var state: State = .idle
-    private var selectedSection: Section?
-
-    private let dataService: DataServiceType
-    
-    private let decorator: EmailProviderViewDecoratorType
-    private let sessionCredentials: SessionCredentialsProvider
-    private var user = UserObject.empty
-
-    init(
-        dataService: DataServiceType = DataService.shared,
-        decorator: EmailProviderViewDecoratorType = EmailProviderViewDecorator(),
-        sessionCredentials: SessionCredentialsProvider = SessionCredentialsService()
-    ) {
-        self.decorator = decorator
-        self.sessionCredentials = sessionCredentials
-        self.dataService = dataService
-
-        super.init(node: TableNode())
-        node.delegate = self
-        node.dataSource = self
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
 }
 
 // MARK: - Setup
@@ -166,8 +169,6 @@ extension EmailProviderViewController {
     private func adjustForKeyboard(height: CGFloat) {
         let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
         node.contentInset = insets
-        // TODO: ANTON -
-//        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -360,6 +361,7 @@ extension EmailProviderViewController {
         } else {
             user.imap?.connectionType = ConnectionType.tls.rawValue
             user.imap?.hostname = "imap.\(provider)"
+            // TODO: ANTON -
         }
 
         if let smtpSetting = sessionCredentials.getSmtpCredentials(for: email) {
@@ -367,6 +369,7 @@ extension EmailProviderViewController {
         } else {
             user.smtp?.connectionType = ConnectionType.tls.rawValue
             user.smtp?.hostname = "smtp.\(provider)"
+            // TODO: ANTON -
         }
 
         reloadSessionCredentials()
@@ -430,15 +433,13 @@ extension EmailProviderViewController {
             let nextRow = currentIndexPath.row + 1
             if nextRow < numberOfRowsInSelectedSection {
                 let next = IndexPath(row: nextRow, section: currentIndexPath.section)
-                print("^^ in section \(next)")
                 return next
             } else {
-
                 let next = IndexPath(row: 1, section: currentIndexPath.section + 1)
-                print("^^ next section \(next)")
                 return next
             }
         }()
+
         guard let nextTextField = node.nodeForRow(at: nextIndexPath) as? TextFieldCellNode else {
             view.endEditing(true)
             return true
@@ -464,10 +465,17 @@ extension EmailProviderViewController {
             case .failure(.email):
                 showToast("other_provider_error_email".localized)
             case let .success(user):
+                // TODO: ANTON - Check connection. Show spinners
                 dataService.startFor(user: .session(user))
-    //        let email = "cryptup.tester@ukr.net"
-    //        let password = "HHjjdDVWqVZW96jP"
-                GlobalRouter().proceed()
+                Imap.shared.setupSession()
+                Imap.shared.fetchFolders()
+                    .then { folders in
+                        print("^^ \(folders)")
+                        GlobalRouter().proceed()
+                    }
+                    .catch { error in
+                        print("^^ \(error)")
+                    }
             }
         }
 
