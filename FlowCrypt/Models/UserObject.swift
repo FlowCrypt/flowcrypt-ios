@@ -10,7 +10,12 @@ import Foundation
 import RealmSwift
 
 final class UserObject: Object {
-    @objc dynamic var name: String = ""
+    @objc dynamic var name: String = "" {
+        didSet {
+            imap?.username = name
+            smtp?.username = name
+        }
+    }
     @objc dynamic var email: String = ""
     @objc dynamic var imap: SessionObject?
     @objc dynamic var smtp: SessionObject?

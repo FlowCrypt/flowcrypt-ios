@@ -88,6 +88,7 @@ final class EmailProviderViewController: ASViewController<TableNode> {
     private enum UserError: Error {
         case password
         case empty
+        case email
     }
 
     private var state: State = .idle
@@ -287,6 +288,7 @@ extension EmailProviderViewController {
             updateForEmailChanges(with: email)
         case (.account(.password), .didEndEditing(let password)):
             user.imap?.password = password
+            user.smtp?.password = password
         case (.imap(.security), .didBeginEditing):
             user.imap?.connectionType = connections[0].rawValue
         case (.imap(.security), .didEndEditing):
@@ -295,6 +297,10 @@ extension EmailProviderViewController {
             user.smtp?.connectionType = connections[0].rawValue
         case (.smtp(.security), .didEndEditing):
             updateUserSmtpCredentials()
+        case (.other(.name), .didEndEditing(let name)):
+            user.smtp?.username = name ?? user.name
+        case (.other(.password), .didEndEditing(let password)):
+            user.smtp?.password = password ?? user.password
         default: break
         }
     }
@@ -305,6 +311,7 @@ extension EmailProviderViewController {
             node.reloadData()
             return
         }
+        user.email = email
 
         let parts = email.split(separator: "@").map(String.init)
 
@@ -316,6 +323,7 @@ extension EmailProviderViewController {
         guard let provider = parts[safe: 1] else { return }
 
         let providerParts = provider.split(separator: ".").map(String.init)
+
         guard providerParts.count > 1 else {
             user.imap = .empty
             user.smtp = .empty
@@ -394,6 +402,8 @@ extension EmailProviderViewController {
                 break
             case .failure(.password):
                 showToast("other_provider_error_password".localized)
+            case .failure(.email):
+                showToast("other_provider_error_email".localized)
             case let .success(user):
                 dataService.startFor(user: .session(user))
     //        let email = "cryptup.tester@ukr.net"
@@ -402,11 +412,13 @@ extension EmailProviderViewController {
             }
         }
 
-        private func checkCurrentUser() -> Result<UserObject, UserError> {
-            guard user != UserObject.empty else { return .failure(.empty) }
-            guard let password = user.password, password.isNotEmpty else { return .failure(.password) }
-            return .success(user)
-        }
+    private func checkCurrentUser() -> Result<UserObject, UserError> {
+        guard user != UserObject.empty else { return .failure(.empty) }
+        guard user.email != UserObject.empty.email else { return .failure(.email) }
+        guard let password = user.password, password.isNotEmpty else { return .failure(.password) }
+
+        return .success(user)
+    }
 
 }
 
