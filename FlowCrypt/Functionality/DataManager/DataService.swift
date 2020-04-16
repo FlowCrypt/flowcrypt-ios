@@ -63,6 +63,10 @@ final class DataService: DataServiceType {
         return User(userObject)
     }
 
+    var currentAuthType: AuthType? {
+        encryptedStorage.getUser()?.authType
+    }
+
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
     private let localStorage: LocalStorageType & LogOutHandler
 
@@ -73,20 +77,7 @@ final class DataService: DataServiceType {
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
     }
-} 
-
-extension DataService {
-    var currentAuthType: AuthType? {
-        // encrypted
-        if let token = encryptedStorage.currentToken() {
-            return .oAuth(token)
-        }
-        if let user = encryptedStorage.getUser(), let userPassword = user.password  {
-            return .password(userPassword)
-        }
-        return nil
-    }
-}
+}  
 
 // MARK: - Data
 extension DataService {
@@ -129,11 +120,11 @@ extension DataService: DBMigration {
     private func performTokenEncryptedMigration() {
         let legacyTokenIndex = "keyCurrentToken"
         guard localStorage.currentUser() != nil else {
-            debugPrint("Local migration not needed. User was not stored")
+            debugPrint("Local migration not needed. User was not stored in local storage")
             return
         }
         guard let token = localStorage.storage.string(forKey: legacyTokenIndex) else {
-            debugPrint("Local migration not needed. Token was not saved")
+            debugPrint("Local migration not needed. Token was not saved in local storage")
             return
         }
         performSessionMigration(with: token)
@@ -143,7 +134,7 @@ extension DataService: DBMigration {
     /// Perform migration from google signing to generic session
     private func performUserSessionMigration() {
         guard let token = encryptedStorage.currentToken() else {
-            debugPrint("User migration not needed. Token was not stored")
+            debugPrint("User migration not needed. Token was not stored or migration already finished")
             return
         }
 

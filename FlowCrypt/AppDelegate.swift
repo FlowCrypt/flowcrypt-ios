@@ -12,7 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ aplication: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         disableHardwareKeyboardOnSimulator()
-        AppStartup().initializeApp(window: window)
+        GlobalRouter().proceed()
         return true
     }
 

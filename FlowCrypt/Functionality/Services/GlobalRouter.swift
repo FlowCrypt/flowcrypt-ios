@@ -58,6 +58,8 @@ struct GlobalRouter: GlobalRouterType {
 
     private func logOutUserSession() {
         dataService.logOutAndDestroyStorage()
-        proceed()
+        DispatchQueue.main.async {
+            self.proceed()
+        }
     }
 }
