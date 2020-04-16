@@ -127,6 +127,7 @@ extension DataService: DBMigration {
             debugPrint("Local migration not needed. Token was not saved in local storage")
             return
         }
+
         performSessionMigration(with: token)
         localStorage.storage.removeObject(forKey: legacyTokenIndex)
     }
@@ -146,7 +147,7 @@ extension DataService: DBMigration {
             debugPrint("User migration not needed. User was not stored or migration already finished")
             return
         }
-
+        debugPrint("Perform user migration for token")
         let userObject = UserObject.googleUser(name: user.name, email: user.email, token: token)
 
         encryptedStorage.saveUser(with: userObject)
