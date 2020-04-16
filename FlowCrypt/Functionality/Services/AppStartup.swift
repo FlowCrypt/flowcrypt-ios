@@ -18,22 +18,7 @@ struct AppStartup {
         self.googleService = googleService
     }
 
-    public func initializeApp(window: UIWindow) {
-        #warning("Do not forget")
-
-//        DataService.shared.logOutAndDestroyStorage()
-//        Imap.shared.setupSession()
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//            Imap.shared.fetchFolders()
-//            .then { print($0) }
-//            .catch { print($0) }
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-//                       Imap.shared.fetchFolders()
-//                       .then { print($0) }
-//                       .catch { print($0) }
-//                   }
-//        }
-
+    public func initializeApp(window: UIWindow) { 
         let start = DispatchTime.now()
         DispatchQueue.promises = .global()
         window.rootViewController = BootstrapViewController()

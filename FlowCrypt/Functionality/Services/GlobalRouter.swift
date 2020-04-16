@@ -14,7 +14,10 @@ protocol GlobalRouterType {
     func wipeOutAndReset()
 }
 
+// TODO: -
 struct GlobalRouter: GlobalRouterType {
+    private let dataService: DataServiceType = DataService.shared
+
     private var keyWindow: UIWindow {
         let application = UIApplication.shared
         guard let delegate = (application.delegate as? AppDelegate) else {
@@ -29,14 +32,32 @@ struct GlobalRouter: GlobalRouterType {
     }
 
     func wipeOutAndReset() {
-        UserService.shared.signOut()
+        switch dataService.currentAuthType {
+        case .oAuth:
+            logOutGmailSession()
+        case .password:
+            logOutUserSession()
+        default:
+            assertionFailure("User is not logged in")
+            break
+        }
+    }
+
+    private func logOutGmailSession() {
+        UserService.shared
+            .signOut()
             .then(on: .main) {
                 self.proceed()
             }
             .catch(on: .main) { error in
                 self.keyWindow
-                    .rootViewController?
-                    .showAlert(error: error, message: "Could not log out")
+                .rootViewController?
+                .showAlert(error: error, message: "Could not log out")
             }
+    }
+
+    private func logOutUserSession() {
+        dataService.logOutAndDestroyStorage()
+        proceed()
     }
 }

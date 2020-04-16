@@ -23,16 +23,19 @@ final class EmailProviderViewController: ASViewController<TableNode> {
     
     private let decorator: EmailProviderViewDecoratorType
     private let sessionCredentials: SessionCredentialsProvider
+    private let imap: Imap
     private var user = UserObject.empty
 
     init(
         dataService: DataServiceType = DataService.shared,
         decorator: EmailProviderViewDecoratorType = EmailProviderViewDecorator(),
-        sessionCredentials: SessionCredentialsProvider = SessionCredentialsService()
+        sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
+        imap: Imap = Imap.shared
     ) {
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials
         self.dataService = dataService
+        self.imap = imap
 
         super.init(node: TableNode())
         node.delegate = self
@@ -318,10 +321,12 @@ extension EmailProviderViewController {
             user.imap?.connectionType = connections[0].rawValue
         case (.imap(.security), .didEndEditing):
             updateUserImapCredentials()
+            reloadSessionCredentials()
         case (.smtp(.security), .didBeginEditing):
             user.smtp?.connectionType = connections[0].rawValue
         case (.smtp(.security), .didEndEditing):
             updateUserSmtpCredentials()
+            reloadSessionCredentials()
         case (.other(.name), .didEndEditing(let name)):
             user.smtp?.username = name ?? user.name
         case (.other(.password), .didEndEditing(let password)):
@@ -361,7 +366,7 @@ extension EmailProviderViewController {
         } else {
             user.imap?.connectionType = ConnectionType.tls.rawValue
             user.imap?.hostname = "imap.\(provider)"
-            // TODO: ANTON -
+            updateUserImapCredentials()
         }
 
         if let smtpSetting = sessionCredentials.getSmtpCredentials(for: email) {
@@ -369,7 +374,7 @@ extension EmailProviderViewController {
         } else {
             user.smtp?.connectionType = ConnectionType.tls.rawValue
             user.smtp?.hostname = "smtp.\(provider)"
-            // TODO: ANTON -
+            updateUserSmtpCredentials()
         }
 
         reloadSessionCredentials()
@@ -388,7 +393,6 @@ extension EmailProviderViewController {
         case let .success(imapSetting):
             updateUser(imap: imapSetting)
         }
-        reloadSessionCredentials()
     }
 
     private func updateUserSmtpCredentials() {
@@ -404,7 +408,6 @@ extension EmailProviderViewController {
         case let .success(imapSetting):
             updateUser(smtp: imapSetting)
         }
-        reloadSessionCredentials()
     }
 
     private func updateUser(imap settings: MailSettingsCredentials) {
@@ -456,28 +459,33 @@ extension EmailProviderViewController {
 // MARK: - Connect
 extension EmailProviderViewController {
     private func connect() {
-            let result = checkCurrentUser()
-            switch result {
-            case .failure(.empty):
-                break
-            case .failure(.password):
-                showToast("other_provider_error_password".localized)
-            case .failure(.email):
-                showToast("other_provider_error_email".localized)
-            case let .success(user):
-                // TODO: ANTON - Check connection. Show spinners
-                dataService.startFor(user: .session(user))
-                Imap.shared.setupSession()
-                Imap.shared.fetchFolders()
-                    .then { folders in
-                        print("^^ \(folders)")
-                        GlobalRouter().proceed()
-                    }
-                    .catch { error in
-                        print("^^ \(error)")
-                    }
-            }
+        let result = checkCurrentUser()
+        switch result {
+        case .failure(.empty):
+            break
+        case .failure(.password):
+            showToast("other_provider_error_password".localized)
+        case .failure(.email):
+            showToast("other_provider_error_email".localized)
+        case let .success(user):
+            dataService.startFor(user: .session(user))
+            checkImapSession()
         }
+    }
+
+    private func checkImapSession() {
+        showSpinner()
+        imap.setupSession()
+        imap.fetchFolders()
+            .then(on: .main) { [weak self] _ in
+                self?.hideSpinner()
+                GlobalRouter().proceed()
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.hideSpinner()
+                self?.showToast("\(error)")
+            }
+    }
 
     private func checkCurrentUser() -> Result<UserObject, UserError> {
         guard user != UserObject.empty else { return .failure(.empty) }
