@@ -34,7 +34,15 @@ struct ImapHelper: ImapHelperType {
         if diff < 0 {
             diff = 1
         }
-        let range = MCORange(location: UInt64(diff), length: UInt64(length))
+
+        var location = length
+
+        if numberOfMessages > total, total >= 1 {
+            location = total - 1
+        }
+
+        let range = MCORange(location: UInt64(diff), length: UInt64(location))
+
         return MCOIndexSet(range: range)
     }
 

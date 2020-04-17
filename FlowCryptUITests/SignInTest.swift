@@ -109,27 +109,6 @@ extension SignInTest {
         wait(0.2)
 
         app.tables.buttons["Use Another Account"].tap()
-
-
-        /*
-                // MARK: - Send message
-                sendMessage(to: user.email)
-                XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
-
-                // MARK: - Check in sent mail box
-                menuButton.tap()
-                tapOnMenu(folder: "Sent Mail")
-                wait(3)
-
-                app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
-                wait(5)
-
-                XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
-                XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
-                XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
-         */
-        
-
     }
 
     /// log in -> approve -> loaded 1 backup -> good pass phrase -> inbox
@@ -153,21 +132,27 @@ extension SignInTest {
 
     // send new msg -> inbox -> switch to sent -> open sent msg and verify content, recipient, subject
     func test_5_send_message() {
+        // send message
         sendMessage(to: compatibilityUser.email)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
-         
-        //
-        //        // MARK: - Check in sent mail box
-        //        menuButton.tap()
-        //        tapOnMenu(folder: "Sent Mail")
-        //        wait(3)
-        //
-        //        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
-        //        wait(5)
-        //
-        //        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
-        //        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
-        //        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
+//
+//        // switch to sent
+        menuButton.tap()
+        app.tables
+            .staticTexts
+            .allElementsBoundByIndex
+            .first(where: { $0.label.contains("Sent" )})?
+            .tap()
+
+        wait(3)
+
+        // TODO: ANTON - 
+//        app.tables.cells.otherElements.staticTexts[compatibilityUser.email].firstMatch.tap()
+//        wait(5)
+//
+//        XCTAssert(app.tables.staticTexts[compatibilityUser.email].exists, "Wrong recipient in sent message")
+//        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
+//        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
     }
 }
 

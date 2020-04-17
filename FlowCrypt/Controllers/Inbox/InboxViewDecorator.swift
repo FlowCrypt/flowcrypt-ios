@@ -11,7 +11,8 @@ import UIKit
 
 extension InboxCellNode.Input {
     init(_ message: MCOIMAPMessage) {
-        let email = message.header.from.displayName ?? message.header.sender.mailbox ?? "(unknown sender)"
+        // TODO: ANTON - displayName
+        let email = message.header.from.mailbox ?? message.header.sender.mailbox ?? "(unknown sender)"
         let date = DateFormatter().formatDate(message.header.date)
         let msg = message.header.subject ?? "No subject"
         let isMessageRead = message.flags.rawValue != 0

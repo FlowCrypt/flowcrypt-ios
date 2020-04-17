@@ -303,6 +303,25 @@
         },
         "domain-match":["ukr.net"]
     },
+    "outlook": {
+        "servers":{
+            "imap":[
+                {
+                    "port":993,
+                    "hostname":"outlook.office365.com",
+                    "tls":true
+                }
+            ],
+            "smtp":[
+                {
+                    "port":587,
+                    "hostname":"smtp.office365.com",
+                    "starttls":true
+                }
+            ]
+        },
+        "domain-match":["outlook.com"]
+    },
     "gmail":{
         "servers":{
             "imap":[

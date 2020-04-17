@@ -476,8 +476,8 @@ extension EmailProviderViewController {
     private func checkImapSession() {
         showSpinner()
         imap.setupSession()
-        imap.fetchFolders()
-            .then(on: .main) { [weak self] _ in
+        imap.connectSession()
+            .then(on: .main) { [weak self] in
                 self?.hideSpinner()
                 GlobalRouter().proceed()
             }

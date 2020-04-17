@@ -27,7 +27,7 @@ extension Imap {
             debugPrint("IMAP: creating a new session")
             let newImapSession = MCOIMAPSession(session: imap)
             imapSess = newImapSession
-            // logConnection(for: imapSess!)
+//            logConnection(for: imapSess!)
         }
 
         if let smtp = smtpSession {
@@ -52,6 +52,17 @@ extension Imap {
             .then { [weak self] _ in
                 self?.setupSession()
             }
+    }
+
+    func connectSession() -> Promise<Void> {
+         Promise { [weak self] resolve, reject in
+            self?.imapSess?
+                .connectOperation()?
+                .start { error in
+                    guard let error = error else { resolve(()); return }
+                    reject(AppErr(error))
+                }
+        }
     }
 
     func disconnect() {
