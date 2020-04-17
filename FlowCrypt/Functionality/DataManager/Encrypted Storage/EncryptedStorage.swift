@@ -75,8 +75,19 @@ extension EncryptedStorage: LogOutHandler {
     }
 
     private func destroyEncryptedStorage() {
-        destroyStorage(at: Realm.Configuration.defaultConfiguration.fileURL!) // todo - remove this line in version 0.1.8
-        destroyStorage(at: self.encryptedConfiguration.fileURL!)
+        do {
+            try storage.write {
+                storage.deleteAll()
+            }
+        } catch let error {
+            assertionFailure("Error while deleting the objects from the storage \(error)")
+        }
+
+        // Remove configuration if user still on plain realm
+        if let defaultPath = Realm.Configuration.defaultConfiguration.fileURL,
+            defaultPath != self.encryptedConfiguration.fileURL {
+            destroyStorage(at: defaultPath)
+        }
     }
 
     private func destroyStorage(at url: URL) {

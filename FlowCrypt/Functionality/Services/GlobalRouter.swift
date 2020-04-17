@@ -28,7 +28,7 @@ struct GlobalRouter: GlobalRouterType {
 
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        AppStartup().initializeApp(window: keyWindow)
+        AppStartup.shared.initializeApp(window: keyWindow)
     }
 
     func wipeOutAndReset() {
@@ -57,8 +57,9 @@ struct GlobalRouter: GlobalRouterType {
     }
 
     private func logOutUserSession() {
+        Imap.shared.disconnect()
         dataService.logOutAndDestroyStorage()
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.proceed()
         }
     }

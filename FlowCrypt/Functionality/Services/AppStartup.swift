@@ -10,9 +10,11 @@ import Foundation
 import Promises
 
 struct AppStartup {
-    let googleService: GoogleServiceType
+    static var shared: AppStartup = AppStartup()
 
-    init(
+    let googleService: GoogleServiceType
+    
+    private init(
         googleService: GoogleServiceType = GoogleService()
     ) {
         self.googleService = googleService
