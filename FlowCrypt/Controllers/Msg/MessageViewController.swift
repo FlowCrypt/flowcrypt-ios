@@ -302,8 +302,11 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        // TODO: ANTON - input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
+        // crash because sender is nil
+
         let senderTitle = decorator.attributed(
-            title: input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
+            title: input?.objMessage.header.from.mailbox ?? "(unknown sender)"
         )
         let subject = decorator.attributed(
             subject: input?.objMessage.header.subject ?? "(no subject)"

@@ -135,8 +135,8 @@ extension SignInTest {
         // send message
         sendMessage(to: compatibilityUser.email)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
-//
-//        // switch to sent
+
+        // switch to sent
         menuButton.tap()
         app.tables
             .staticTexts
@@ -146,13 +146,13 @@ extension SignInTest {
 
         wait(3)
 
-        // TODO: ANTON - 
-//        app.tables.cells.otherElements.staticTexts[compatibilityUser.email].firstMatch.tap()
-//        wait(5)
-//
-//        XCTAssert(app.tables.staticTexts[compatibilityUser.email].exists, "Wrong recipient in sent message")
-//        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
-//        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
+        // open message
+        tapOnCell()
+        wait(5)
+
+        XCTAssert(app.tables.staticTexts[compatibilityUser.email].exists, "Wrong recipient in sent message")
+        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
+        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
     }
 }
 
