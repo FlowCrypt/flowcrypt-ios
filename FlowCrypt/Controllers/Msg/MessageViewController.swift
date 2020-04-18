@@ -236,7 +236,8 @@ extension MessageViewController {
                 try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
                 try await(self.imap.expungeMsgs(folder: input.path))
             } else {
-                try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path))
+                let path = try await(self.imap.trashFolderPath())
+                try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: path))
             }
             return true
         }.then(on: .main) { [weak self] didPerformOp in

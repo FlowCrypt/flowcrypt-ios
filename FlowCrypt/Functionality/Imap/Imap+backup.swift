@@ -27,7 +27,7 @@ extension Imap: BackupProvider {
 
             if folderPaths.contains(GeneralConstants.Global.gmailAllMailPath) {
                 folderPaths = [GeneralConstants.Global.gmailAllMailPath]
-            } else if let inbox = folderPaths.first(where: { $0.caseInsensitiveCompare("inbox") == .orderedSame }) {
+            } else if let inbox = folderPaths.firstCaseInsensitive("inbox") {
                 folderPaths = [inbox]
             }
 

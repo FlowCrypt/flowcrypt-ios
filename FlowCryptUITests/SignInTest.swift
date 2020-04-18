@@ -154,6 +154,11 @@ extension SignInTest {
         XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
         XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
     }
+
+    // move msg to archive -> verify in archive
+    func test_6_move_msg_archive() {
+
+    }
 }
 
 extension SignInTest {
@@ -267,7 +272,7 @@ extension SignInTest {
 
 
  send new msg -> no pubkey
- move msg to archive -> verify in archive
+
  move msg to Trash -> verify in trash -> verify no bin button on moved msg
  inbox -> open first msg -> to trash -> inbox -> open following first msg (to prevent crash as in #119)
  */

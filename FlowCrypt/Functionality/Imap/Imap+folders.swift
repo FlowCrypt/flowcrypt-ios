@@ -26,11 +26,13 @@ protocol FoldersProvider {
         kind: MCOIMAPMessagesRequestKind,
         uids: MCOIndexSet
     ) -> Promise<[MCOIMAPMessage]>
+
+    func trashFolderPath() -> Promise<String>
 }
 
 extension Imap: FoldersProvider {
     func fetchFolders() -> Promise<FoldersContext> {
-        return Promise { [weak self] resolve, reject in
+        Promise { [weak self] resolve, reject in
             self?.imapSess?
                 .fetchAllFoldersOperation()
                 .start { [weak self] error, value in
@@ -45,9 +47,28 @@ extension Imap: FoldersProvider {
                     } else {
                         reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
                     }
-                }
+            }
         }
     }
+
+    func trashFolderPath() -> Promise<String> {
+        Promise { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf )}
+
+            if self.dataService.email?.contains("gmail") ?? false {
+                 resolve(MailDestination.Gmail.trash.path)
+            } else {
+                let context = try await(self.fetchFolders())
+                let folders = context.folders.compactMap { $0.path }
+                guard let path = folders.firstCaseInsensitive("trash") ?? folders.firstCaseInsensitive("deleted") else {
+                    assertionFailure("Trash folder not found")
+                    return reject(AppErr.unexpected("Trash folder not found"))
+                }
+                resolve(path)
+            }
+        }
+    }
+
 
     func expungeMsgs(folder: String) -> Promise<Void> {
         return Promise { [weak self] resolve, reject in
