@@ -8,10 +8,11 @@
 
 import XCTest
 
-class SignInTest: XCTestCase {
+// MARK: - Compatibility account
+
+class SignInTest: XCTestCase, AppTest {
     var app: XCUIApplication!
-    private let googleUser = UserCredentials.main
-    private let compatibilityUser = UserCredentials.compatibility
+    private let user = UserCredentials.compatibility
 
     override func setUp() {
         continueAfterFailure = false
@@ -20,68 +21,9 @@ class SignInTest: XCTestCase {
             .setupRegion()
             .build()
             .launched()
-    }
-
-
-//    }
-//
-//    func test_move_msg_to_trash() {
-//        // Move msg to Trash
-//        wait(2)
-//        tapOnCell()
-//
-//        app.navigationBars.buttons["Delete"].tap()
-//        wait(1)
-//
-//        // Verify in Trash
-//        menuButton.tap()
-//        tapOnMenu(folder: "Trash")
-//        XCTAssert(app.tables.cells.otherElements.staticTexts[googleUser.email].exists, "There is no message in trash")
-//
-//        tapOnCell()
-//        let buttons = app.navigationBars.buttons
-//        let backButton = buttons["arrow left c"]
-//
-//        // Verify buttons in Trash folder
-//        XCTAssert(buttons["Delete"].exists, "Navigation bar should contain delete button")
-//        XCTAssert(buttons["help icn"].exists, "Navigation bar should contain help button")
-//        XCTAssert(backButton.exists, "Navigation bar should contain back button")
-//        XCTAssert(buttons.count == 3, "")
-//
-//        // Open following first msg
-//        backButton.tap()
-//        menuButton.tap()
-//        tapOnMenu(folder: "Inbox")
-//
-//        tapOnCell()
-//    }
-//
-//    func test_move_msg_to_archive() {
-//        wait(2)
-//        sendMessage(to: googleUser.email)
-//        app.tables.cells.otherElements.staticTexts[googleUser.email].firstMatch.tap()
-//        app.navigationBars.buttons["archive"].tap()
-//        wait(2)
-//        XCTAssert(app.navigationBars["Inbox"].exists, "Failed in sending message to archive")
-//
-//        menuButton.tap()
-//        tapOnMenu(folder: "All Mail")
-//        wait(1)
-//
-//        XCTAssert(app.tables.staticTexts[googleUser.email].exists, "Wrong recipient in sent message")
-//        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
-//    }
-//
-//    func test_send_message_no_pub_key() {
-//        wait(2)
-//        sendMessage(to: "flowcrypt.nopubkey@gmail.com")
-//        wait(3)
-//        let errorAlert = app.alerts["Error"]
-//        XCTAssert(errorAlert.exists)
-//    }
+    } 
 }
 
-// MARK: - Compatibility account
 extension SignInTest {
     /// log in -> cancel
     func test_1_login_cancel() {
@@ -99,7 +41,7 @@ extension SignInTest {
         login()
 
         passPhraseTextField.tap()
-        passPhraseTextField.typeText(compatibilityUser.pass + "wrong")
+        passPhraseTextField.typeText(user.pass + "wrong")
         tapOnGoButton()
 
         wait(0.2)
@@ -116,7 +58,7 @@ extension SignInTest {
         login()
 
         passPhraseTextField.tap()
-        passPhraseTextField.typeText(compatibilityUser.pass)
+        passPhraseTextField.typeText(user.pass)
 
         tapOnGoButton()
 
@@ -133,7 +75,7 @@ extension SignInTest {
     // send new msg -> inbox -> switch to sent -> open sent msg and verify content, recipient, subject
     func test_5_send_message() {
         // send message
-        sendMessage(to: compatibilityUser.email)
+        sendMessage(to: user.email)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
 
         // switch to sent
@@ -150,7 +92,7 @@ extension SignInTest {
         tapOnCell()
         wait(5)
 
-        XCTAssert(app.tables.staticTexts[compatibilityUser.email].exists, "Wrong recipient in sent message")
+        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
         XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
         XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
     }
@@ -170,95 +112,17 @@ extension SignInTest {
         // email
         let emailTextField = app.tables.textFields["Email"]
         emailTextField.tap()
-        emailTextField.typeText(compatibilityUser.email)
+        emailTextField.typeText(user.email)
 
         // password
         let passwordTextField = app.tables.secureTextFields["Password"]
         passwordTextField.tap()
-        passwordTextField.typeText(compatibilityUser.password)
+        passwordTextField.typeText(user.password)
 
         // connect
         passwordTextField.swipeUp()
         app.tables.buttons["Connect"].tap()
         wait(7)
-    }
-}
-
-// MARK: - Helpers
-extension SignInTest {
-    private var cells: [XCUIElement] {
-        app.tables
-            .cells
-            .allElementsBoundByIndex
-            .filter { $0.frame.origin.x >= 0 }
-            .sorted(by: { $0.frame.origin.x > $1.frame.origin.x })
-    }
-
-    private var goKeyboardButton: XCUIElement {
-        if app.buttons["return"].exists {
-            return app.buttons["return"]
-        }
-        if app.buttons["Return"].exists {
-            return app.buttons["Return"]
-        }
-        if app.buttons["go"].exists {
-            return app.buttons["go"]
-        }
-
-        return app.buttons["Go"]
-    }
-
-    private var gmailAlert: XCUIElement {
-        Springboard.springboard.alerts.element
-    }
-
-    private var menuButton: XCUIElement {
-        app.navigationBars.buttons["menu icn"]
-    }
-
-    private var passPhraseTextField: XCUIElement {
-        app.tables.secureTextFields["Enter your pass phrase"]
-    }
-}
-
-// MARK: - Actions
-extension SignInTest {
-    private func sendMessage(to recipient: String ) {
-        tapOnCompose()
-        app.typeText(recipient)
-        app.tables.textFields["Subject"].tap()
-
-        app.tables.textFields["Subject"].tap()
-        app.typeText("Some Subject")
-
-        goKeyboardButton.tap()
-        app.typeText("Some text")
-        app.navigationBars["Inbox"].buttons["android send"].tap()
-        wait(5)
-    }
-
-    private func tapOnCompose() {
-        app.buttons["+"].tap()
-        wait(0.2)
-    }
-
-    private func tapOnCell() {
-        cells.first?.tap()
-        wait(0.5)
-    }
-
-    private func tapOnMenu(folder: String) {
-        app.tables.staticTexts[folder].tap()
-        wait(1)
-    }
-
-    private func tapOnGoButton() {
-        let button = goKeyboardButton
-        if button.exists {
-            button.tap()
-        } else {
-            _ = app.keys["\n"]
-        }
     }
 }
 
