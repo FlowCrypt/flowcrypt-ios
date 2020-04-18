@@ -97,9 +97,65 @@ extension SignInTest {
         XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
     }
 
-    // move msg to archive -> verify in archive
-    func test_6_move_msg_archive() {
 
+    // move msg to trash -> verify in trash
+    func test_6_delete_msg() {
+        // Move msg to Trash
+        sendMessage(to: user.email)
+        tapOnCell()
+
+        app.navigationBars.buttons["Delete"].tap()
+        wait(1)
+
+        // Verify in Trash
+        menuButton.tap()
+        tapOnMenu(folder: "Deleted")
+        XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in deleted")
+
+        tapOnCell()
+        let buttons = app.navigationBars.buttons
+        let backButton = buttons["arrow left c"]
+
+        // Verify buttons in Trash folder
+        XCTAssert(buttons["Delete"].exists, "Navigation bar should contain delete button")
+        XCTAssert(buttons["help icn"].exists, "Navigation bar should contain help button")
+        XCTAssert(backButton.exists, "Navigation bar should contain back button")
+
+        // TODO: ANTON - remove unread in trash(deleted)
+        XCTAssert(buttons.count == 4, "back, info, delete, unread buttons should be only")
+
+        // Open following first msg
+        backButton.tap()
+        menuButton.tap()
+        tapOnMenu(folder: "Inbox")
+
+        tapOnCell()
+    }
+
+    // move msg to archive -> verify in archive
+    func test_7_archive() {
+        sendMessage(to: user.email)
+        tapOnCell()
+        app.navigationBars.buttons["archive"].tap()
+        wait(2)
+        XCTAssert(app.navigationBars["Inbox"].exists, "Failed in sending message to archive")
+
+        menuButton.tap()
+        // TODO: ANTON - Archive
+//        tapOnMenu(folder: "All Mail")
+//        wait(1)
+//
+//        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
+//        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
+    }
+
+    // send new msg -> no pubkey
+    func test_8_send_message_no_pub_key() {
+        wait(2)
+        sendMessage(to: "flowcrypt.nopubkey@gmail.com")
+        wait(3)
+        let errorAlert = app.alerts["Error"]
+        XCTAssert(errorAlert.exists)
     }
 }
 
@@ -132,11 +188,4 @@ extension SignInTest {
  log in -> approve -> no backups -> generate pubkey -> good pass phrase -> wrong repeat
  log in -> approve -> no backups -> generate pubkey -> good pass phrase -> correct repeat -> create key
  log in -> approve -> no backups -> generate pubkey -> switch accounts
-
-
-
- send new msg -> no pubkey
-
- move msg to Trash -> verify in trash -> verify no bin button on moved msg
- inbox -> open first msg -> to trash -> inbox -> open following first msg (to prevent crash as in #119)
  */

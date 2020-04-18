@@ -225,7 +225,6 @@ extension MessageViewController {
     @objc private func handleTrashTap() {
         showSpinner()
 
-
         imap.trashFolderPath()
             .then { [weak self] trashPath in
                 guard let self = self, let input = self.input else { return }
@@ -238,7 +237,7 @@ extension MessageViewController {
                 self.showToast(error.localizedDescription)
             }
     }
-    
+
     private func permanentlyDelete() {
         guard let input = input else { return hideSpinner() }
         input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
