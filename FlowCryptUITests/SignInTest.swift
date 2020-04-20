@@ -110,6 +110,7 @@ extension SignInTest {
 
         snapshot("compose")
         app.navigationBars.buttons["arrow left c"].tap()
+        wait(1)
 
         tapOnCell()
         snapshot("message")
