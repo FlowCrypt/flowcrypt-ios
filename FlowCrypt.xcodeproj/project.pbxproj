@@ -79,7 +79,6 @@
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
 		9F56BD3823438C7000A7371A /* DateFormattingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */; };
 		9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
-		9F589F0F238C7D15007FD759 /* LocalStorageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0E238C7D15007FD759 /* LocalStorageTest.swift */; };
 		9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
 		9F589F11238C7DDC007FD759 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
 		9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F14238C8249007FD759 /* KeyChainService.swift */; };
@@ -363,7 +362,6 @@
 		9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormattingExtensions.swift; sourceTree = "<group>"; };
 		9F56BD3923438D3700A7371A /* StyleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleExtension.swift; sourceTree = "<group>"; };
 		9F589F0C238C7A9B007FD759 /* LocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
-		9F589F0E238C7D15007FD759 /* LocalStorageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTest.swift; sourceTree = "<group>"; };
 		9F589F14238C8249007FD759 /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
 		9F589F1E238C8A90007FD759 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		9F696292236091DD003712E1 /* SignInImageNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInImageNode.swift; sourceTree = "<group>"; };
@@ -857,7 +855,6 @@
 			isa = PBXGroup;
 			children = (
 				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
-				9F589F0E238C7D15007FD759 /* LocalStorageTest.swift */,
 				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
 				A3DAD5FF22E4574B00F2C4CD /* Info.plist */,
@@ -1757,7 +1754,6 @@
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				32DCA62579786A8090EAFEE3 /* flowcrypt-ios-prod.js.txt in Sources */,
-				9F589F0F238C7D15007FD759 /* LocalStorageTest.swift in Sources */,
 				D29AFFFA2409767F00C1387D /* GoogleContactsResponse.swift in Sources */,
 				32DCA17B0294558E2ADA998D /* bignum.c in Sources */,
 				9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */,

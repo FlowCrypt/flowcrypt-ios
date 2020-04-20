@@ -27,6 +27,7 @@ struct ImapHelper: ImapHelperType {
         from: Int
     ) -> MCOIndexSet {
         var length = numberOfMessages - 1
+
         if length < 0 {
             length = 0
         }

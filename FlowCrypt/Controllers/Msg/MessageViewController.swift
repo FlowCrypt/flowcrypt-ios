@@ -48,7 +48,7 @@ final class MessageViewController: ASViewController<TableNode> {
     private var input: MessageViewController.Input?
     private let imap: Imap
     private let decorator: MessageViewDecoratorType
-    private let dataService: DataServiceType
+    private var dataService: DataServiceType
     private let core: Core
 
     private var message: NSAttributedString
@@ -99,17 +99,27 @@ final class MessageViewController: ASViewController<TableNode> {
         let archiveInput = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
         let trashInput = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
         let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
-        let buttons: [NavigationBarItemsView.Input] = {
-            switch input?.path.lowercased() {
-            case MailDestination.Gmail.trash.path.lowercased():
-                return [infoInput, trashInput]
-            case MailDestination.Gmail.inbox.path.lowercased():
-                return [infoInput, archiveInput, trashInput, mailInput]
-            default:
-                return [infoInput, trashInput, mailInput]
+
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: [infoInput])
+
+        imap.trashFolderPath()
+            .then(on: .main) { [weak self] path in
+                guard let self = self else { return }
+                switch self.input?.path.lowercased() {
+                case path?.lowercased():
+                    self.navigationItem.rightBarButtonItem = NavigationBarItemsView(
+                        with: [infoInput, trashInput]
+                    )
+                case MailDestination.Gmail.inbox.path.lowercased():
+                    self.navigationItem.rightBarButtonItem = NavigationBarItemsView(
+                        with: [infoInput, archiveInput, trashInput, mailInput]
+                    )
+                default:
+                    self.navigationItem.rightBarButtonItem = NavigationBarItemsView(
+                        with: [infoInput, trashInput, mailInput]
+                    )
+                }
             }
-        }()
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -227,11 +237,14 @@ extension MessageViewController {
 
         imap.trashFolderPath()
             .then { [weak self] trashPath in
-                guard let self = self, let input = self.input else { return }
+                guard let strongSelf = self, let input = strongSelf.input, let path = trashPath else {
+                    self?.permanentlyDelete()
+                    return
+                }
 
                 input.path == trashPath
-                    ? self.permanentlyDelete()
-                    : self.moveToTrash(with: trashPath)
+                    ? strongSelf.permanentlyDelete()
+                    : strongSelf.moveToTrash(with: path)
             }
             .catch(on: .main) { error in
                 self.showToast(error.localizedDescription)

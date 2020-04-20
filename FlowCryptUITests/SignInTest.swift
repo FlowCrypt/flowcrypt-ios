@@ -116,13 +116,12 @@ extension SignInTest {
         let buttons = app.navigationBars.buttons
         let backButton = buttons["arrow left c"]
 
+        wait(3)
         // Verify buttons in Trash folder
         XCTAssert(buttons["Delete"].exists, "Navigation bar should contain delete button")
         XCTAssert(buttons["help icn"].exists, "Navigation bar should contain help button")
         XCTAssert(backButton.exists, "Navigation bar should contain back button")
-
-        // TODO: ANTON - remove unread in trash(deleted)
-        XCTAssert(buttons.count == 4, "back, info, delete, unread buttons should be only")
+        XCTAssert(buttons.count == 3, "back, info, delete buttons should be only")
 
         // Open following first msg
         backButton.tap()

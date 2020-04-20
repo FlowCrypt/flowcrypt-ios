@@ -16,10 +16,13 @@ protocol DataServiceType {
     var isLoggedIn: Bool { get }
     var isSetupFinished: Bool { get }
     var currentAuthType: AuthType? { get }
-
-    // data
     var keys: [PrvKeyInfo]? { get }
     var publicKey: String? { get }
+
+
+    // Local data
+    var trashFolderPath: String? { get }
+    func saveTrashFolder(path: String?)
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
 
@@ -79,7 +82,7 @@ final class DataService: DataServiceType {
     }
 
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
-    private let localStorage: LocalStorageType & LogOutHandler
+    private(set) var localStorage: LocalStorageType & LogOutHandler
 
     private init(
         encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
@@ -113,7 +116,7 @@ extension DataService: DBMigration {
     /// Perform migration for users which has token saved in non encrypted storage
     private func performTokenEncryptedMigration() {
         let legacyTokenIndex = "keyCurrentToken"
-        guard localStorage.currentUser() != nil else {
+        guard previouslyStoredUser() != nil else {
             debugPrint("Local migration not needed. User was not stored in local storage")
             return
         }
@@ -137,7 +140,7 @@ extension DataService: DBMigration {
     }
 
     private func performSessionMigration(with token: String) {
-        guard let user = localStorage.currentUser() else {
+        guard let user = previouslyStoredUser() else {
             debugPrint("User migration not needed. User was not stored or migration already finished")
             return
         }
@@ -145,7 +148,13 @@ extension DataService: DBMigration {
         let userObject = UserObject.googleUser(name: user.name, email: user.email, token: token)
 
         encryptedStorage.saveUser(with: userObject)
-        localStorage.saveCurrentUser(user: nil)
+        UserDefaults.standard.set(nil, forKey: legacyCurrentUserIndex)
+    }
+
+    var legacyCurrentUserIndex: String { "keyCurrentUser" }
+    private func previouslyStoredUser() -> User? {
+        guard let data = UserDefaults.standard.object(forKey: legacyCurrentUserIndex) as? Data else { return nil }
+        return try? PropertyListDecoder().decode(User.self, from: data)
     }
 }
 
@@ -202,6 +211,7 @@ extension DataService: ImapSessionProvider {
     }
 }
 
+// MARK: -
 extension DataService {
     func startFor(user type: SessionType) {
         switch type {
@@ -226,5 +236,15 @@ extension DataService {
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
         encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
+    }
+}
+
+extension DataService {
+    var trashFolderPath: String? {
+        localStorage.trashFolderPath
+    }
+
+    func saveTrashFolder(path: String?) {
+        localStorage.trashFolderPath = path
     }
 }

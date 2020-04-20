@@ -27,7 +27,7 @@ protocol FoldersProvider {
         uids: MCOIndexSet
     ) -> Promise<[MCOIMAPMessage]>
 
-    func trashFolderPath() -> Promise<String>
+    func trashFolderPath() -> Promise<String?>
 }
 
 extension Imap: FoldersProvider {
@@ -43,6 +43,7 @@ extension Imap: FoldersProvider {
                     if let error = error {
                         reject(AppErr(error))
                     } else if let folders = value as? [MCOIMAPFolder] {
+                        self.saveTrashFolderPath(with: folders)
                         resolve(FoldersContext(folders: folders))
                     } else {
                         reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
@@ -51,24 +52,31 @@ extension Imap: FoldersProvider {
         }
     }
 
-    func trashFolderPath() -> Promise<String> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf )}
-
-            if self.dataService.email?.contains("gmail") ?? false {
-                 resolve(MailDestination.Gmail.trash.path)
-            } else {
-                let context = try await(self.fetchFolders())
-                let folders = context.folders.compactMap { $0.path }
-                guard let path = folders.firstCaseInsensitive("trash") ?? folders.firstCaseInsensitive("deleted") else {
-                    assertionFailure("Trash folder not found")
-                    return reject(AppErr.unexpected("Trash folder not found"))
-                }
-                resolve(path)
+    private func saveTrashFolderPath(with folders: [MCOIMAPFolder]) {
+        if dataService.email?.contains("gmail") ?? false {
+            dataService.saveTrashFolder(path: MailDestination.Gmail.trash.path)
+        } else {
+            let paths = folders.compactMap { $0.path }
+            guard let path = paths.firstCaseInsensitive("trash") ?? paths.firstCaseInsensitive("deleted") else {
+                assertionFailure("Trash folder not found")
+                return
             }
+            dataService.saveTrashFolder(path: path)
         }
     }
 
+    func trashFolderPath() -> Promise<String?> {
+        Promise { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf )}
+
+            if let path = self.dataService.trashFolderPath {
+                resolve(path)
+            } else {
+                _ = try await(self.fetchFolders())
+                resolve(self.dataService.trashFolderPath)
+            }
+        }
+    }
 
     func expungeMsgs(folder: String) -> Promise<Void> {
         return Promise { [weak self] resolve, reject in
