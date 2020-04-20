@@ -59,7 +59,10 @@ struct AppStartup {
     private func renewSessionIfValid() -> Promise<Void> {
         Promise {
             guard DataService.shared.isLoggedIn else { return }
-            Imap.shared.setupSession()
+            switch DataService.shared.currentAuthType {
+            case .oAuth: try await(Imap.shared.renewSession())
+            default: Imap.shared.setupSession()
+            }
         }
     }
 
