@@ -20,17 +20,43 @@ class SignInTest: XCTestCase, AppTest {
         app = XCUIApplicationBuilder()
             .setupRegion()
             .build()
+            .addSnapshot()
             .launched()
     } 
 }
 
 extension SignInTest {
+
     /// log in -> cancel
+    func test_1_login_cancel_gmail() {
+        let otherEmailButton = app.tables.buttons["Other email provider"]
+
+        // Check which screen we are now
+        guard otherEmailButton.exists else {
+            let otherAccountButton = app.tables.buttons["Use Another Account"]
+            if otherAccountButton.exists {
+                otherAccountButton.tap()
+            } else {
+                menuButton.tap()
+                tapOnMenu(folder: "Log out")
+                login()
+            }
+            return
+        }
+
+        snapshot("splash")
+
+        app.tables.buttons["gmail"].tap()
+        wait(1)
+
+        snapshot("auth")
+    }
     func test_1_login_cancel() {
         login()
 
         let useAnotherAccountButton = app.tables.buttons["Use Another Account"]
         useAnotherAccountButton.tap()
+
 
         wait(1)
         XCTAssert(app.tables.buttons["Other email provider"].exists)
@@ -60,6 +86,7 @@ extension SignInTest {
         passPhraseTextField.tap()
         passPhraseTextField.typeText(user.pass)
 
+        snapshot("recover")
         tapOnGoButton()
 
         wait(1)
@@ -70,6 +97,31 @@ extension SignInTest {
     func test_4_restart_app_load_inbox() {
         wait(1)
         XCTAssert(app.navigationBars["Inbox"].exists, "Inbox is not found after restarting the app")
+        snapshot("inbox")
+
+        tapOnCompose()
+        wait(0.3)
+
+        app.typeText("ElonMusk@gmail.com")
+        app.tables.textFields["Subject"].tap()
+
+        app.tables.textFields["Subject"].tap()
+        app.typeText("SpaceX")
+
+        snapshot("compose")
+        app.navigationBars.buttons["arrow left c"].tap()
+
+        tapOnCell()
+        snapshot("message")
+        app.navigationBars.buttons["arrow left c"].tap()
+
+        wait(1)
+
+        menuButton.tap()
+        snapshot("menu")
+
+        tapOnMenu(folder: "Settings")
+        snapshot("7_Settings")
     }
 
     // send new msg -> inbox -> switch to sent -> open sent msg and verify content, recipient, subject
@@ -80,6 +132,7 @@ extension SignInTest {
 
         // switch to sent
         menuButton.tap()
+
         app.tables
             .staticTexts
             .allElementsBoundByIndex
@@ -162,6 +215,18 @@ extension SignInTest {
     private func login() {
         // other account
         let otherEmailButton = app.tables.buttons["Other email provider"]
+
+        guard otherEmailButton.exists else {
+            let otherAccountButton = app.tables.buttons["Use Another Account"]
+            if otherAccountButton.exists {
+                otherAccountButton.tap()
+            } else {
+                menuButton.tap()
+                tapOnMenu(folder: "Log out")
+                login()
+            }
+            return
+        }
         otherEmailButton.tap()
 
         // email

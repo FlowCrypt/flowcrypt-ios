@@ -66,7 +66,16 @@ extension AppTest {
     }
 
     func tapOnCompose() {
-        app.buttons["+"].tap()
+        let plusButton = app.buttons["tap"]
+
+        if plusButton.exists {
+            plusButton.tap()
+        } else {
+            // for iPhone X
+            XCUIDevice.shared.orientation = .landscapeLeft
+            app.buttons["+"].tap()
+            XCUIDevice.shared.orientation = .portrait
+        }
         wait(0.2)
     }
 
