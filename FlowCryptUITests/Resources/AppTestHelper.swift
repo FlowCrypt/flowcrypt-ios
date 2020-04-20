@@ -97,4 +97,37 @@ extension AppTest {
             _ = app.keys["\n"]
         }
     }
+
+    func login(_ user: UserCredentials) {
+        // other account
+        let otherEmailButton = app.tables.buttons["Other email provider"]
+
+        guard otherEmailButton.exists else {
+            let otherAccountButton = app.tables.buttons["Use Another Account"]
+            if otherAccountButton.exists {
+                otherAccountButton.tap()
+            } else {
+                menuButton.tap()
+                tapOnMenu(folder: "Log out")
+                login(user)
+            }
+            return
+        }
+        otherEmailButton.tap()
+
+        // email
+        let emailTextField = app.tables.textFields["Email"]
+        emailTextField.tap()
+        emailTextField.typeText(user.email)
+
+        // password
+        let passwordTextField = app.tables.secureTextFields["Password"]
+        passwordTextField.tap()
+        passwordTextField.typeText(user.password)
+
+        // connect
+        passwordTextField.swipeUp()
+        app.tables.buttons["Connect"].tap()
+        wait(7)
+    }
 }

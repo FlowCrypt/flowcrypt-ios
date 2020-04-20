@@ -39,7 +39,7 @@ extension SignInTest {
             } else {
                 menuButton.tap()
                 tapOnMenu(folder: "Log out")
-                login()
+                login(user)
             }
             return
         }
@@ -51,8 +51,9 @@ extension SignInTest {
 
         snapshot("auth")
     }
+
     func test_1_login_cancel() {
-        login()
+        login(user)
 
         let useAnotherAccountButton = app.tables.buttons["Use Another Account"]
         useAnotherAccountButton.tap()
@@ -64,7 +65,7 @@ extension SignInTest {
 
     /// log in -> approve -> bad pass phrase
     func test_2_login_bad_pass() {
-        login()
+        login(user)
 
         passPhraseTextField.tap()
         passPhraseTextField.typeText(user.pass + "wrong")
@@ -81,7 +82,7 @@ extension SignInTest {
 
     /// log in -> approve -> loaded 1 backup -> good pass phrase -> inbox
     func test_3_login_good_pass() {
-        login()
+        login(user)
 
         passPhraseTextField.tap()
         passPhraseTextField.typeText(user.pass)
@@ -122,7 +123,7 @@ extension SignInTest {
         snapshot("menu")
 
         tapOnMenu(folder: "Settings")
-        snapshot("7_Settings")
+        snapshot("settings")
     }
 
     // send new msg -> inbox -> switch to sent -> open sent msg and verify content, recipient, subject
@@ -211,41 +212,7 @@ extension SignInTest {
         XCTAssert(errorAlert.exists)
     }
 }
-
-extension SignInTest {
-    private func login() {
-        // other account
-        let otherEmailButton = app.tables.buttons["Other email provider"]
-
-        guard otherEmailButton.exists else {
-            let otherAccountButton = app.tables.buttons["Use Another Account"]
-            if otherAccountButton.exists {
-                otherAccountButton.tap()
-            } else {
-                menuButton.tap()
-                tapOnMenu(folder: "Log out")
-                login()
-            }
-            return
-        }
-        otherEmailButton.tap()
-
-        // email
-        let emailTextField = app.tables.textFields["Email"]
-        emailTextField.tap()
-        emailTextField.typeText(user.email)
-
-        // password
-        let passwordTextField = app.tables.secureTextFields["Password"]
-        passwordTextField.tap()
-        passwordTextField.typeText(user.password)
-
-        // connect
-        passwordTextField.swipeUp()
-        app.tables.buttons["Connect"].tap()
-        wait(7)
-    }
-}
+ 
 
 /*
  log in -> approve -> no backups -> switch email
