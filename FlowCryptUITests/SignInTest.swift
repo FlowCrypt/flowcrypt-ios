@@ -26,24 +26,28 @@ class SignInTest: XCTestCase, AppTest {
 }
 
 extension SignInTest {
+    // log in -> approve -> no backups -> switch email
+    func test_1_login_approve_no_backups() {
+        // login with user without key backup
+        login(UserCredentials.noKeyBackUp)
+        wait(1)
 
-    /// log in -> cancel
+        // retry
+        let buttons = app.alerts.scrollViews.otherElements.buttons
+        buttons["Retry"].tap()
+        wait(1)
+
+        // switch to a new account
+        buttons["Use other account"].tap()
+        wait(2)
+
+        // login
+        test_3_login_good_pass()
+    }
+
+    // log in -> cancel for gmail
     func test_1_login_cancel_gmail() {
-        let otherEmailButton = app.tables.buttons["Other email provider"]
-
-        // Check which screen we are now
-        guard otherEmailButton.exists else {
-            let otherAccountButton = app.tables.buttons["Use Another Account"]
-            if otherAccountButton.exists {
-                otherAccountButton.tap()
-            } else {
-                menuButton.tap()
-                tapOnMenu(folder: "Log out")
-                login(user)
-            }
-            return
-        }
-
+        logOutIfNeeded()
         snapshot("splash")
 
         app.tables.buttons["gmail"].tap()
@@ -52,6 +56,7 @@ extension SignInTest {
         snapshot("auth")
     }
 
+    // log in -> cancel
     func test_1_login_cancel() {
         login(user)
 
@@ -63,7 +68,7 @@ extension SignInTest {
         XCTAssert(app.tables.buttons["Other email provider"].exists)
     }
 
-    /// log in -> approve -> bad pass phrase
+    // log in -> approve -> bad pass phrase
     func test_2_login_bad_pass() {
         login(user)
 
@@ -80,7 +85,7 @@ extension SignInTest {
         app.tables.buttons["Use Another Account"].tap()
     }
 
-    /// log in -> approve -> loaded 1 backup -> good pass phrase -> inbox
+    // log in -> approve -> loaded 1 backup -> good pass phrase -> inbox
     func test_3_login_good_pass() {
         login(user)
 
@@ -152,7 +157,6 @@ extension SignInTest {
         XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
     }
 
-
     // move msg to trash -> verify in trash
     func test_6_delete_msg() {
         // Move msg to Trash
@@ -212,6 +216,7 @@ extension SignInTest {
         XCTAssert(errorAlert.exists)
     }
 }
+
  
 
 /*

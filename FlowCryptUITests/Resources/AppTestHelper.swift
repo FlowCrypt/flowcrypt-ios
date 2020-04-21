@@ -100,19 +100,10 @@ extension AppTest {
 
     func login(_ user: UserCredentials) {
         // other account
-        let otherEmailButton = app.tables.buttons["Other email provider"]
+        logOutIfNeeded()
+        wait(0.3)
 
-        guard otherEmailButton.exists else {
-            let otherAccountButton = app.tables.buttons["Use Another Account"]
-            if otherAccountButton.exists {
-                otherAccountButton.tap()
-            } else {
-                menuButton.tap()
-                tapOnMenu(folder: "Log out")
-                login(user)
-            }
-            return
-        }
+        let otherEmailButton = app.tables.buttons["Other email provider"]
         otherEmailButton.tap()
 
         // email
@@ -129,5 +120,22 @@ extension AppTest {
         passwordTextField.swipeUp()
         app.tables.buttons["Connect"].tap()
         wait(7)
+    }
+
+    func logOutIfNeeded() {
+        let otherEmailButton = app.tables.buttons["Other email provider"]
+
+        // Check which screen we are now
+        guard !otherEmailButton.exists else {
+            return
+        }
+
+        let otherAccountButton = app.tables.buttons["Use Another Account"]
+        if otherAccountButton.exists {
+            otherAccountButton.tap()
+        } else {
+            menuButton.tap()
+            tapOnMenu(folder: "Log out")
+        }
     }
 }
