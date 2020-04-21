@@ -45,7 +45,7 @@ extension SignInTest {
         test_3_login_good_pass()
     }
 
-    func test_1_login_no_backups_generate() {
+    func test_2_login_no_backups_generate() {
         // log in -> approve -> no backups -> generate pubkey -> weak pass phrase
         login(UserCredentials.noKeyBackUp)
         wait(1)
@@ -112,7 +112,7 @@ extension SignInTest {
     }
 
     // log in -> cancel for gmail
-    func test_1_login_cancel_gmail() {
+    func test_3_login_cancel_gmail() {
         logOutIfNeeded()
         snapshot("splash")
 
@@ -123,7 +123,7 @@ extension SignInTest {
     }
 
     // log in -> cancel
-    func test_1_login_cancel() {
+    func test_4_login_cancel() {
         login(user)
 
         let useAnotherAccountButton = app.tables.buttons["Use Another Account"]
@@ -134,7 +134,7 @@ extension SignInTest {
     }
 
     // log in -> approve -> bad pass phrase
-    func test_2_login_bad_pass() {
+    func test_5_login_bad_pass() {
         login(user)
 
         passPhraseTextField.tap()
@@ -151,7 +151,7 @@ extension SignInTest {
     }
 
     // log in -> approve -> loaded 1 backup -> good pass phrase -> inbox
-    func test_3_login_good_pass() {
+    func test_6_login_good_pass() {
         login(user)
 
         passPhraseTextField.tap()
@@ -165,7 +165,7 @@ extension SignInTest {
     }
 
     // restart app -> loads inbox
-    func test_4_restart_app_load_inbox() {
+    func test_7_restart_app_load_inbox() {
         wait(1)
         XCTAssert(app.navigationBars["Inbox"].exists, "Inbox is not found after restarting the app")
         snapshot("inbox")
@@ -197,7 +197,7 @@ extension SignInTest {
     }
 
     // send new msg -> inbox -> switch to sent -> open sent msg and verify content, recipient, subject
-    func test_5_send_message() {
+    func test_8_send_message() {
         // send message
         sendMessage(to: user.email)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
@@ -223,7 +223,7 @@ extension SignInTest {
     }
 
     // move msg to trash -> verify in trash
-    func test_6_delete_msg() {
+    func test_9_delete_msg() {
         // Move msg to Trash
         sendMessage(to: user.email)
         tapOnCell()
@@ -256,7 +256,7 @@ extension SignInTest {
     }
 
     // move msg to archive -> verify in archive
-    func test_7_archive() {
+    func test_10_archive() {
         sendMessage(to: user.email)
         tapOnCell()
         app.navigationBars.buttons["archive"].tap()
@@ -273,7 +273,7 @@ extension SignInTest {
     }
 
     // send new msg -> no pubkey
-    func test_8_send_message_no_pub_key() {
+    func test_11_send_message_no_pub_key() {
         wait(2)
         sendMessage(to: "flowcrypt.nopubkey@gmail.com")
         wait(3)
