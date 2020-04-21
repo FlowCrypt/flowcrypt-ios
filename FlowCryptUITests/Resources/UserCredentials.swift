@@ -28,7 +28,7 @@ struct UserCredentials: Codable, Equatable {
     static var noKeyBackUp: UserCredentials = {
         Credentials.default
             .users
-            .first(where: { $0.email == "flowcrypt.compatibility@mail.com" })!
+            .first(where: { $0.email == "flowcrypt.compatibility.ios.nokey@outlook.com" })!
     }()
 
     static var compatibility: UserCredentials = {

@@ -85,10 +85,12 @@ extension SignInTest {
         let secureTextField = app.alerts["Pass Phrase"].scrollViews.otherElements.collectionViews.cells.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 1).children(matching: .secureTextField).element
         secureTextField.typeText(pass)
         app.alerts["Pass Phrase"].scrollViews.otherElements.buttons["OK"].tap()
-        wait(1)
+        wait(10)
         // Temporary confirm on error alert.
-        app.alerts["Error"].scrollViews.otherElements.buttons["OK"].tap()
-        wait(2)
+        if app.alerts["Error"].exists {
+            app.alerts["Error"].scrollViews.otherElements.buttons["OK"].tap()
+            wait(2)
+        }
 
         // delete backups to trash
         cells.forEach { _ in
@@ -99,11 +101,11 @@ extension SignInTest {
 
         // permanently delete backups
         menuButton.tap()
-        tapOnMenu(folder: "Trash")
+        tapOnMenu(folder: "Deleted")
 
         cells.forEach { _ in
             tapOnCell()
-            self.app.navigationBars["Trash"].buttons["Delete"].tap()
+            self.app.navigationBars["Deleted"].buttons["Delete"].tap()
             self.app.alerts["Are you sure?"].scrollViews.otherElements.buttons["OK"].tap()
             wait(2)
         }
