@@ -27,7 +27,7 @@ class SignInTest: XCTestCase, AppTest {
 
 extension SignInTest {
     // log in -> approve -> no backups -> switch email
-    func test_1_login_approve_no_backups() {
+    func test_1_login_no_backups() {
         // login with user without key backup
         login(UserCredentials.noKeyBackUp)
         wait(1)
@@ -43,6 +43,70 @@ extension SignInTest {
 
         // login
         test_3_login_good_pass()
+    }
+
+    func test_1_login_no_backups_generate() {
+        // log in -> approve -> no backups -> generate pubkey -> weak pass phrase
+        login(UserCredentials.noKeyBackUp)
+        wait(1)
+
+        let alertButtons = app.alerts.scrollViews.otherElements.buttons
+        alertButtons["Create new Private Key"].tap()
+
+        passPhraseTextField.tap()
+        passPhraseTextField.typeText("Password")
+        goKeyboardButton.tap()
+        wait(2)
+
+        XCTAssert(app.alerts["Error"].exists, "Error alert for weak pass phrase should exist")
+
+        app.alerts["Error"].scrollViews.otherElements.buttons["OK"].tap()
+        wait(0.1)
+
+        // log in -> approve -> no backups -> generate pubkey -> good pass phrase -> wrong repeat
+        passPhraseTextField.tap()
+        passPhraseTextField.typeText(user.pass)
+        goKeyboardButton.tap()
+        wait(2)
+
+        app.alerts["Pass Phrase"].scrollViews.otherElements.buttons["OK"].tap()
+        XCTAssert(app.alerts["Error"].exists, "Error alert for wrong repeat pass phrase should exist")
+
+        app.alerts["Error"].scrollViews.otherElements.buttons["OK"].tap()
+
+        // log in -> approve -> no backups -> generate pubkey -> good pass phrase -> correct repeat -> create key
+        passPhraseTextField.tap()
+        let pass = user.pass.replacingOccurrences(of: " ", with: "")
+        passPhraseTextField.typeText(pass)
+        goKeyboardButton.tap()
+        wait(2)
+
+        // TODO: ANTON - fix this
+        let secureTextField = app.alerts["Pass Phrase"].scrollViews.otherElements.collectionViews.cells.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 1).children(matching: .secureTextField).element
+        secureTextField.typeText(pass)
+        app.alerts["Pass Phrase"].scrollViews.otherElements.buttons["OK"].tap()
+        wait(1)
+        // Temporary confirm on error alert.
+        app.alerts["Error"].scrollViews.otherElements.buttons["OK"].tap()
+        wait(2)
+
+        // delete backups to trash
+        cells.forEach { _ in
+            tapOnCell()
+            app.navigationBars["Inbox"].buttons["Delete"].tap()
+            wait(2)
+        }
+
+        // permanently delete backups
+        menuButton.tap()
+        tapOnMenu(folder: "Trash")
+
+        cells.forEach { _ in
+            tapOnCell()
+            self.app.navigationBars["Trash"].buttons["Delete"].tap()
+            self.app.alerts["Are you sure?"].scrollViews.otherElements.buttons["OK"].tap()
+            wait(2)
+        }
     }
 
     // log in -> cancel for gmail
@@ -62,7 +126,6 @@ extension SignInTest {
 
         let useAnotherAccountButton = app.tables.buttons["Use Another Account"]
         useAnotherAccountButton.tap()
-
 
         wait(1)
         XCTAssert(app.tables.buttons["Other email provider"].exists)
@@ -220,9 +283,5 @@ extension SignInTest {
  
 
 /*
- log in -> approve -> no backups -> switch email
- log in -> approve -> no backups -> generate pubkey -> weak pass phrase
- log in -> approve -> no backups -> generate pubkey -> good pass phrase -> wrong repeat
- log in -> approve -> no backups -> generate pubkey -> good pass phrase -> correct repeat -> create key
  log in -> approve -> no backups -> generate pubkey -> switch accounts
  */
