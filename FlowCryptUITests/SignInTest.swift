@@ -42,7 +42,7 @@ extension SignInTest {
         wait(2)
 
         // login
-        test_3_login_good_pass()
+        test_6_login_good_pass()
     }
 
     func test_2_login_no_backups_generate() {
