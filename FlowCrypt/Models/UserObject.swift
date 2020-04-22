@@ -36,6 +36,10 @@ final class UserObject: Object {
         self.imap = imap
         self.smtp = smtp
     }
+
+    override class func primaryKey() -> String? {
+        "email"
+    }
 }
 
 extension UserObject {

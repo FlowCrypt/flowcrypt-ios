@@ -130,7 +130,7 @@ extension DataService: DBMigration {
     }
 
     /// Perform migration from google signing to generic session
-    private func performUserSessionMigration() {
+    private func performUserSessionMigration() { 
         guard let token = encryptedStorage.currentToken() else {
             debugPrint("User migration not needed. Token was not stored or migration already finished")
             return
