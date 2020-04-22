@@ -15,19 +15,6 @@ final public class RecipientEmailsCellNode: CellNode {
         static let minimumLineSpacing: CGFloat = 4
     }
 
-    public struct Input {
-        public let email: NSAttributedString
-        public var isSelected: Bool
-
-        public init(
-            email: NSAttributedString,
-            isSelected: Bool
-        ) {
-            self.email = email
-            self.isSelected = isSelected
-        }
-    }
-
     private var onSelect: ((IndexPath) -> Void)?
 
     public lazy var collectionNode: ASCollectionNode = {
@@ -95,6 +82,3 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
         onSelect?(indexPath)
     }
 }
-
-
-

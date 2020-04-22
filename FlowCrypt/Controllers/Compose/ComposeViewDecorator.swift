@@ -10,6 +10,12 @@ import UIKit
 import FlowCryptUI
 
 protocol ComposeViewDecoratorType {
+    var recipientIdleState: RecipientEmailsCellNode.Input.State { get }
+    var recipientSelectedState: RecipientEmailsCellNode.Input.State { get }
+    var recipientKeyFoundState: RecipientEmailsCellNode.Input.State { get }
+    var recipientKeyNotFoundState: RecipientEmailsCellNode.Input.State { get }
+    var recipientErrorState: RecipientEmailsCellNode.Input.State { get }
+    
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
     func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
     func styledRecipientInfo(with email: String) -> InfoCellNode.Input
@@ -17,7 +23,14 @@ protocol ComposeViewDecoratorType {
     func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString
 }
 
+// MARK: - ComposeViewDecorator
 struct ComposeViewDecorator: ComposeViewDecoratorType {
+    let recipientIdleState: RecipientEmailsCellNode.Input.State = .idle(.titleNodeBackgroundColor, .borderColor, .mainTextColor)
+    let recipientSelectedState: RecipientEmailsCellNode.Input.State = .selected(.titleNodeBackgroundColorSelected, .borderColorSelected, .white)
+    let recipientKeyFoundState: RecipientEmailsCellNode.Input.State = .keyFound(.main, .borderColor, .white)
+    let recipientKeyNotFoundState: RecipientEmailsCellNode.Input.State = .keyNotFound(.red, .borderColor, .white)
+    let recipientErrorState: RecipientEmailsCellNode.Input.State = .error(.red, .borderColor, .white)
+
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
             placeholder: "message_compose_secure".localized.attributed(
@@ -87,15 +100,48 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
     }
 }
 
+// MARK: - Color
+private extension UIColor {
+    static var titleNodeBackgroundColorSelected: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.lightGray,
+            lightStyle: UIColor.black.withAlphaComponent(0.1)
+        )
+    }
+
+    static var titleNodeBackgroundColor: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.darkGray.withAlphaComponent(0.5),
+            lightStyle: UIColor.white.withAlphaComponent(0.9)
+        )
+    }
+
+    static var borderColorSelected: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.white.withAlphaComponent(0.5),
+            lightStyle: black.withAlphaComponent(0.4)
+        )
+    }
+
+    static var borderColor: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.white.withAlphaComponent(0.5),
+            lightStyle: UIColor.black.withAlphaComponent(0.3)
+        )
+    }
+}
+
+// MARK: - RecipientEmailsCellNode.Input
 extension RecipientEmailsCellNode.Input {
     init(_ recipient: ComposeViewController.Recipient) {
         self.init(
             email: recipient.email.lowercased().attributed(
                 .regular(17),
-                color: .mainTextColor,
+                color: recipient.state.textColor,
                 alignment: .left
             ),
-            isSelected: recipient.isSelected
+            state: recipient.state
         )
     }
 }
+

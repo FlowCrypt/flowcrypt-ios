@@ -11,14 +11,14 @@ final class ComposeViewController: ASViewController<TableNode> {
 
     struct Recipient {
         let email: String
-        var isSelected: Bool
+        var state: RecipientEmailsCellNode.Input.State
 
         init(
             email: String,
-            isSelected: Bool = false
+            state: RecipientEmailsCellNode.Input.State
         ) {
             self.email = email
-            self.isSelected = isSelected
+            self.state = state
         }
     }
 
@@ -86,7 +86,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.contextToSend.subject = input.subject
         if input.isReply {
             if let email = input.recipientReplyTitle {
-                contextToSend.recipients.append(Recipient(email: email))
+                contextToSend.recipients.append(Recipient(email: email, state: decorator.recipientIdleState))
             }
         }
         super.init(node: TableNode())
@@ -419,25 +419,25 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 // MARK: - Nodes
 extension ComposeViewController {
     private func subjectNode() -> ASCellNode {
-           TextFieldCellNode(
-               input: decorator.styledTextFieldInput(with: "compose_subject".localized)
-           ) { [weak self] event in
-               guard case let .didEndEditing(text) = event else { return }
-               self?.contextToSend.subject = text
-           }
-           .onShouldReturn { [weak self] _ in
-               guard let self = self else { return true }
-               if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
-                   node.becomeFirstResponder()
-               } else {
-                   self.node.view.endEditing(true)
-               }
-               return true
-           }
-           .then {
-               $0.attributedText = decorator.styledTitle(with: input.subjectReplyTitle)
-           }
-       }
+        TextFieldCellNode(
+            input: decorator.styledTextFieldInput(with: "compose_subject".localized)
+        ) { [weak self] event in
+            guard case let .didEndEditing(text) = event else { return }
+            self?.contextToSend.subject = text
+        }
+        .onShouldReturn { [weak self] _ in
+            guard let self = self else { return true }
+            if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
+                node.becomeFirstResponder()
+            } else {
+                self.node.view.endEditing(true)
+            }
+            return true
+        }
+        .then {
+            $0.attributedText = decorator.styledTitle(with: input.subjectReplyTitle)
+        }
+    }
 
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
         let textFieldHeight = decorator.styledTextFieldInput(with: "").height
@@ -459,6 +459,11 @@ extension ComposeViewController {
 
     private func recipientsNode() -> RecipientEmailsCellNode {
         RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
+//            .then { node in
+//                DispatchQueue.main.async {
+//                    node.collectionNode.reloadData()
+//                }
+//            }
             .onItemSelect { [weak self] indexPath in
                 self?.handleRecipientSelection(with: indexPath)
             }
@@ -542,19 +547,27 @@ extension ComposeViewController {
     private func handleEndEditingAction(with text: String?) {
         guard let text = text, text.isNotEmpty else { return }
 
+        // Set all recipients to idle state
         contextToSend.recipients = recipients.map { recipient in
             var recipient = recipient
-            recipient.isSelected = false
+            recipient.state = self.decorator.recipientIdleState
             return recipient
         }
-        contextToSend.recipients.append(Recipient(email: text))
-        node.reloadRows(at: [recipientsIndexPath], with: .fade)
 
+        // add new recipient
+        let newRecipient = Recipient(email: text, state: decorator.recipientIdleState)
+        contextToSend.recipients.append(newRecipient)
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        evaluate(recipient: newRecipient)
+
+        // scroll to the latest recipient
         let endIndex = recipients.endIndex - 1
         let collectionNode = (node.nodeForRow(at: recipientsIndexPath) as? RecipientEmailsCellNode)?.collectionNode
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             collectionNode?.scrollToItem(at: IndexPath(row: endIndex, section: 0), at: .bottom, animated: true)
         }
+
+        // reset textfield
         textField?.reset()
         node.view.keyboardDismissMode = .interactive
 
@@ -565,11 +578,11 @@ extension ComposeViewController {
         guard textField.text == "" else { return }
 
         let selectedRecipients = recipients
-            .filter { $0.isSelected }
+            .filter { $0.state.isSelected }
 
         guard selectedRecipients.isEmpty else {
             // remove selected recipients
-            contextToSend.recipients = recipients.filter { !$0.isSelected }
+            contextToSend.recipients = recipients.filter { !$0.state.isSelected }
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
             return
         }
@@ -577,7 +590,7 @@ extension ComposeViewController {
         if let lastRecipient = contextToSend.recipients.popLast() {
             // select last recipient in a list
             var last = lastRecipient
-            last.isSelected = true
+            last.state = self.decorator.recipientSelectedState
             contextToSend.recipients.append(last)
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
         } else {
@@ -587,7 +600,15 @@ extension ComposeViewController {
     }
 
     private func handleRecipientSelection(with indexPath: IndexPath) {
-        contextToSend.recipients[indexPath.row].isSelected.toggle()
+        var recipient = contextToSend.recipients[indexPath.row]
+
+        if recipient.state.isSelected {
+            recipient.state = decorator.recipientIdleState // TODO: ANTON -
+            contextToSend.recipients[indexPath.row].state = decorator.recipientIdleState
+        } else {
+            contextToSend.recipients[indexPath.row].state = decorator.recipientSelectedState
+        }
+        
         node.reloadRows(at: [recipientsIndexPath], with: .fade)
         if !(textField?.isFirstResponder() ?? true) {
             textField?.becomeFirstResponder()
@@ -622,6 +643,15 @@ extension ComposeViewController {
                 self?.updateState(with: state)
             }
     }
+
+    private func evaluate(recipient: Recipient) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            var evaluated = recipient
+            evaluated.state = self.decorator.recipientErrorState
+            self.contextToSend.recipients = [evaluated]
+            self.node.reloadRows(at: [self.recipientsIndexPath], with: .fade)
+        }
+    }
 }
 
 extension ComposeViewController {
@@ -630,3 +660,5 @@ extension ComposeViewController {
         node.reloadSections(IndexSet(integer: 1), with: .fade)
     }
 }
+
+

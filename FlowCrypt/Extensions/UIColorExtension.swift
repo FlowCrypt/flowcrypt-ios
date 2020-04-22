@@ -8,6 +8,7 @@
 
 import UIKit
 
+// Uncomment for FlowCrypt application
 extension UIColor {
     static var main: UIColor {
         UIColor(named: "mainGreenColor")!
@@ -41,3 +42,39 @@ extension UIColor {
         UIColor(red: 0, green: 120/255, blue: 1, alpha: 1)
     }
 }
+
+
+// Uncomment for FlowCryptUIApplication
+//extension UIColor {
+//    static var main: UIColor {
+//        .green
+//    }
+//
+//    static var textColor: UIColor {
+//        .darkGray
+//    }
+//
+//    static var mainTextColor: UIColor {
+//        .black
+//    }
+//
+//    static var backgroundColor: UIColor {
+//        .white
+//    }
+//
+//    static var dividerColor: UIColor {
+//        .black
+//    }
+//
+//    static var mainTextUnreadColor: UIColor {
+//        .black
+//    }
+//
+//    static var activityIndicatorColor: UIColor {
+//        .black
+//    }
+//
+//    static var blueColor: UIColor {
+//        .blue
+//    }
+//}
