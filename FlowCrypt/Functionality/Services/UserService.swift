@@ -27,7 +27,7 @@ final class UserService: NSObject  {
 
     private let googleManager: GIDSignIn
     private var dataService: DataServiceType
-
+    
     private init(
         googleManager: GIDSignIn = GIDSignIn.sharedInstance(),
         dataService: DataServiceType = DataService.shared
@@ -44,7 +44,6 @@ final class UserService: NSObject  {
         }
         switch authType {
         case .oAuth:
-//            onNewSession?(token)
             if dataService.isLoggedIn {
                 onLogin?()
             }
@@ -104,6 +103,7 @@ extension UserService: GIDSignInDelegate {
         }
 
         dataService.startFor(user: .google(user.profile.email, name: user.profile.name, token: token))
+        onNewSession?()
         onLogin?()
     }
 

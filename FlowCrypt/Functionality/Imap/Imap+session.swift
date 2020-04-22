@@ -47,11 +47,17 @@ extension Imap {
     /// renew user session on error
     @discardableResult
     func renewSession() -> Promise<Void> {
-        userService
-            .renewSession()
-            .then { [weak self] _ in
-                self?.setupSession()
-            }
+        guard let currentAuthType = dataService.currentAuthType else { return Promise(()) }
+
+        switch currentAuthType {
+        case .oAuth:
+            return userService.renewSession()
+                .then { [weak self] _ in
+                    self?.setupSession()
+                }
+        case .password:
+            return Promise(self.setupSession())
+        }
     }
 
     func connectSession() -> Promise<Void> {
