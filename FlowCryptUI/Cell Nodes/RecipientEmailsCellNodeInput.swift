@@ -11,44 +11,55 @@ import UIKit
 // MARK: Input
 extension RecipientEmailsCellNode {
     public struct Input {
+        public struct StateContext {
+            let backgroundColor, borderColor, textColor: UIColor
+            let image: UIImage?
+
+            public init(
+                backgroundColor: UIColor,
+                borderColor: UIColor,
+                textColor: UIColor,
+                image: UIImage?
+            ) {
+                self.backgroundColor = backgroundColor
+                self.borderColor = borderColor
+                self.textColor = textColor
+                self.image = image
+            }
+        }
+
         public enum State {
-            case idle(_ backgroundColor: UIColor, _ borderColor: UIColor, _ textColor: UIColor)
-            case selected(_ backgroundColor: UIColor, _ borderColor: UIColor, _ textColor: UIColor)
-            case keyFound(_ backgroundColor: UIColor, _ borderColor: UIColor, _ textColor: UIColor)
-            case keyNotFound(_ backgroundColor: UIColor, _ borderColor: UIColor, _ textColor: UIColor)
-            case error(_ backgroundColor: UIColor, _ borderColor: UIColor, _ textColor: UIColor)
+            case idle(StateContext)
+            case selected(StateContext)
+            case keyFound(StateContext)
+            case keyNotFound(StateContext)
+            case error(StateContext)
+
+            private var stateContext: StateContext {
+                switch self {
+                case .idle(let context),
+                     .selected(let context),
+                     .keyFound(let context),
+                     .keyNotFound(let context),
+                     .error(let context):
+                    return context
+                }
+            }
 
             public var backgroundColor: UIColor {
-                switch self {
-                case .idle(let color, _, _),
-                     .selected(let color, _, _),
-                     .keyFound(let color, _, _),
-                     .keyNotFound(let color, _, _),
-                     .error(let color, _, _):
-                    return color
-                }
+                stateContext.backgroundColor
             }
 
             public var borderColor: UIColor {
-                switch self {
-                case .idle(_, let color, _),
-                     .selected(_, let color, _),
-                     .keyFound(_, let color, _),
-                     .keyNotFound(_, let color, _),
-                     .error(_, let color, _):
-                    return color
-                }
+                stateContext.borderColor
             }
             
             public var textColor: UIColor {
-                switch self {
-                case .idle(_, _, let color),
-                     .selected(_, _, let color),
-                     .keyFound(_, _, let color),
-                     .keyNotFound(_, _, let color),
-                     .error(_, _, let color):
-                    return color
-                }
+                stateContext.textColor
+            }
+
+            public var stateImage: UIImage? {
+                stateContext.image
             }
 
             public var isSelected: Bool {

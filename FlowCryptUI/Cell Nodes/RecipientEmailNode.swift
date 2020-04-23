@@ -19,6 +19,7 @@ final class RecipientEmailNode: CellNode {
     let titleNode = ASTextNode()
     let input: Input
     let displayNode = ASDisplayNode()
+    let imageNode = ASImageNode()
 
     init(input: Input) {
         self.input = input
@@ -32,6 +33,41 @@ final class RecipientEmailNode: CellNode {
         titleNode.borderColor = input.recipient.state.borderColor.cgColor
 
         displayNode.backgroundColor = .clear
+        imageNode.image = input.recipient.state.stateImage
+        imageNode.alpha = 0
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            switch input.recipient.state {
+            case .idle: self.animateImageRotation()
+            case .error: self.animateImageScaling()
+            case .keyFound, .keyNotFound, .selected: break
+            }
+        }
+    }
+
+    private func animateImageRotation() {
+        guard input.recipient.state.stateImage != nil else { return }
+        imageNode.alpha = 1
+        let animation = CABasicAnimation(keyPath: "transform.rotation")
+        animation.fromValue = 0
+        animation.toValue =  Double.pi * 2.0
+        animation.duration = 2
+        animation.repeatCount = .infinity
+        animation.isRemovedOnCompletion = false
+        animation.fillMode = .forwards
+        imageNode.layer.add(animation, forKey: "spin")
+    }
+
+    private func animateImageScaling() {
+        guard imageNode.image != nil else { return }
+        imageNode.alpha = 1
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        animation.fromValue = 0.5
+        animation.toValue =  1.0
+        animation.duration = 0.5
+        animation.repeatCount = 1
+        animation.isRemovedOnCompletion = false
+        animation.fillMode = .forwards
+        imageNode.layer.add(animation, forKey: "scale")
     }
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
@@ -41,9 +77,21 @@ final class RecipientEmailNode: CellNode {
         spec.children = [displayNode, titleNode]
         spec.direction = .vertical
         spec.alignItems = .baselineFirst
+
+
+        let elements: [ASLayoutElement] = imageNode.image == nil
+            ? [spec]
+            : [imageNode, spec]
+
         return ASInsetLayoutSpec(
             insets: .zero,
-            child: spec
+            child: ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 8,
+                justifyContent: .start,
+                alignItems: .center,
+                children: elements
+            )
         )
     }
 }

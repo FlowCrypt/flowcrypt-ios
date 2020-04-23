@@ -25,11 +25,11 @@ protocol ComposeViewDecoratorType {
 
 // MARK: - ComposeViewDecorator
 struct ComposeViewDecorator: ComposeViewDecoratorType {
-    let recipientIdleState: RecipientEmailsCellNode.Input.State = .idle(.titleNodeBackgroundColor, .borderColor, .mainTextColor)
-    let recipientSelectedState: RecipientEmailsCellNode.Input.State = .selected(.titleNodeBackgroundColorSelected, .borderColorSelected, .white)
-    let recipientKeyFoundState: RecipientEmailsCellNode.Input.State = .keyFound(.main, .borderColor, .white)
-    let recipientKeyNotFoundState: RecipientEmailsCellNode.Input.State = .keyNotFound(.red, .borderColor, .white)
-    let recipientErrorState: RecipientEmailsCellNode.Input.State = .error(.red, .borderColor, .white)
+    let recipientIdleState: RecipientEmailsCellNode.Input.State = .idle(idleStateContext)
+    let recipientSelectedState: RecipientEmailsCellNode.Input.State = .selected(selectedStateContext)
+    let recipientKeyFoundState: RecipientEmailsCellNode.Input.State = .keyFound(keyFoundStateContext)
+    let recipientKeyNotFoundState: RecipientEmailsCellNode.Input.State = .keyNotFound(keyNotFoundStateContext)
+    let recipientErrorState: RecipientEmailsCellNode.Input.State = .error(errorStateContext)
 
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
@@ -101,7 +101,7 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
 }
 
 // MARK: - Color
-private extension UIColor {
+extension UIColor {
     static var titleNodeBackgroundColorSelected: UIColor {
         UIColor.colorFor(
             darkStyle: UIColor.lightGray,
@@ -127,6 +127,54 @@ private extension UIColor {
         UIColor.colorFor(
             darkStyle: UIColor.white.withAlphaComponent(0.5),
             lightStyle: UIColor.black.withAlphaComponent(0.3)
+        )
+    }
+}
+
+// MARK: - RecipientEmailsCellNode.Input.State
+extension ComposeViewDecorator {
+    private static var idleStateContext: RecipientEmailsCellNode.Input.StateContext {
+        RecipientEmailsCellNode.Input.StateContext(
+            backgroundColor: .titleNodeBackgroundColorSelected,
+            borderColor: .borderColor,
+            textColor: .mainTextColor,
+            image: #imageLiteral(resourceName: "retry")
+        )
+    }
+
+    private static var selectedStateContext: RecipientEmailsCellNode.Input.StateContext {
+        RecipientEmailsCellNode.Input.StateContext(
+            backgroundColor: .titleNodeBackgroundColorSelected,
+            borderColor: .borderColorSelected,
+            textColor: .white,
+            image: nil
+        )
+    }
+
+    private static var keyFoundStateContext: RecipientEmailsCellNode.Input.StateContext {
+        RecipientEmailsCellNode.Input.StateContext(
+            backgroundColor: .main,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil
+        )
+    }
+
+    private static var keyNotFoundStateContext: RecipientEmailsCellNode.Input.StateContext {
+        RecipientEmailsCellNode.Input.StateContext(
+            backgroundColor: .red,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil
+        )
+    }
+
+    private static var errorStateContext: RecipientEmailsCellNode.Input.StateContext {
+        RecipientEmailsCellNode.Input.StateContext(
+            backgroundColor: .red,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: #imageLiteral(resourceName: "cancel")
         )
     }
 }
