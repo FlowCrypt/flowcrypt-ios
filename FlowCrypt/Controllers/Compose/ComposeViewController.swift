@@ -663,7 +663,6 @@ extension ComposeViewController {
 
         guard let recipientIndex = index else { return }
         contextToSend.recipients[recipientIndex].state = state
-        print(contextToSend.recipients.map { $0.state })
         node.reloadRows(at: [recipientsIndexPath], with: .fade)
     }
 
