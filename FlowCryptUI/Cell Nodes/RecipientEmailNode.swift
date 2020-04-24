@@ -11,6 +11,10 @@ import AsyncDisplayKit
 import FlowCryptCommon
 
 final class RecipientEmailNode: CellNode {
+    enum Tap {
+        case image, text
+    }
+
     struct Input {
         let recipient: RecipientEmailsCellNode.Input
         let width: CGFloat
@@ -20,6 +24,8 @@ final class RecipientEmailNode: CellNode {
     let input: Input
     let displayNode = ASDisplayNode()
     let imageNode = ASImageNode()
+
+    private var onTap: ((Tap) -> Void)?
 
     init(input: Input) {
         self.input = input
@@ -42,6 +48,21 @@ final class RecipientEmailNode: CellNode {
             case .keyFound, .keyNotFound, .selected: break
             }
         }
+        imageNode.addTarget(self, action: #selector(handleTap(_:)), forControlEvents: .touchUpInside)
+        titleNode.addTarget(self, action: #selector(handleTap(_:)), forControlEvents: .touchUpInside)
+    }
+
+    @objc private func handleTap(_ sender: ASDisplayNode) {
+        switch sender {
+        case imageNode: onTap?(Tap.image)
+        case titleNode: onTap?(Tap.text)
+        default: break
+        }
+    }
+
+    func onTapAction(_ block: ((Tap) -> Void)?) -> Self {
+        self.onTap = block
+        return self
     }
 
     private func animateImageRotation() {
@@ -72,22 +93,25 @@ final class RecipientEmailNode: CellNode {
 
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         displayNode.style.preferredSize.width = input.width
-        displayNode.style.preferredSize.height = 1 
+        displayNode.style.preferredSize.height = 1
         let spec = ASStackLayoutSpec()
         spec.children = [displayNode, titleNode]
         spec.direction = .vertical
         spec.alignItems = .baselineFirst
+        let elements: [ASLayoutElement]
 
-
-        let elements: [ASLayoutElement] = imageNode.image == nil
-            ? [spec]
-            : [imageNode, spec]
+        if imageNode.image == nil {
+            elements = [spec]
+        } else {
+            elements = [imageNode, spec]
+            imageNode.hitTestSlop = UIEdgeInsets(top: -8, left: -8, bottom: -8, right: -20)
+        }
 
         return ASInsetLayoutSpec(
-            insets: .zero,
+            insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
             child: ASStackLayoutSpec(
                 direction: .horizontal,
-                spacing: 8,
+                spacing: 20,
                 justifyContent: .start,
                 alignItems: .center,
                 children: elements

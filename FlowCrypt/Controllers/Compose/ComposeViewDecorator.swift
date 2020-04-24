@@ -10,11 +10,11 @@ import UIKit
 import FlowCryptUI
 
 protocol ComposeViewDecoratorType {
-    var recipientIdleState: RecipientEmailsCellNode.Input.State { get }
-    var recipientSelectedState: RecipientEmailsCellNode.Input.State { get }
-    var recipientKeyFoundState: RecipientEmailsCellNode.Input.State { get }
-    var recipientKeyNotFoundState: RecipientEmailsCellNode.Input.State { get }
-    var recipientErrorState: RecipientEmailsCellNode.Input.State { get }
+    var recipientIdleState: RecipientState { get }
+    var recipientSelectedState: RecipientState { get }
+    var recipientKeyFoundState: RecipientState { get }
+    var recipientKeyNotFoundState: RecipientState { get }
+    var recipientErrorState: RecipientState { get }
     
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
     func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
@@ -25,11 +25,11 @@ protocol ComposeViewDecoratorType {
 
 // MARK: - ComposeViewDecorator
 struct ComposeViewDecorator: ComposeViewDecoratorType {
-    let recipientIdleState: RecipientEmailsCellNode.Input.State = .idle(idleStateContext)
-    let recipientSelectedState: RecipientEmailsCellNode.Input.State = .selected(selectedStateContext)
-    let recipientKeyFoundState: RecipientEmailsCellNode.Input.State = .keyFound(keyFoundStateContext)
-    let recipientKeyNotFoundState: RecipientEmailsCellNode.Input.State = .keyNotFound(keyNotFoundStateContext)
-    let recipientErrorState: RecipientEmailsCellNode.Input.State = .error(errorStateContext)
+    let recipientIdleState: RecipientState = .idle(idleStateContext)
+    let recipientSelectedState: RecipientState = .selected(selectedStateContext)
+    let recipientKeyFoundState: RecipientState = .keyFound(keyFoundStateContext)
+    let recipientKeyNotFoundState: RecipientState = .keyNotFound(keyNotFoundStateContext)
+    let recipientErrorState: RecipientState = .error(errorStateContext)
 
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
@@ -131,10 +131,10 @@ extension UIColor {
     }
 }
 
-// MARK: - RecipientEmailsCellNode.Input.State
+// MARK: - RecipientState
 extension ComposeViewDecorator {
-    private static var idleStateContext: RecipientEmailsCellNode.Input.StateContext {
-        RecipientEmailsCellNode.Input.StateContext(
+    private static var idleStateContext: RecipientStateContext {
+        RecipientStateContext(
             backgroundColor: .titleNodeBackgroundColorSelected,
             borderColor: .borderColor,
             textColor: .mainTextColor,
@@ -142,8 +142,8 @@ extension ComposeViewDecorator {
         )
     }
 
-    private static var selectedStateContext: RecipientEmailsCellNode.Input.StateContext {
-        RecipientEmailsCellNode.Input.StateContext(
+    private static var selectedStateContext: RecipientStateContext {
+        RecipientStateContext(
             backgroundColor: .titleNodeBackgroundColorSelected,
             borderColor: .borderColorSelected,
             textColor: .white,
@@ -151,8 +151,8 @@ extension ComposeViewDecorator {
         )
     }
 
-    private static var keyFoundStateContext: RecipientEmailsCellNode.Input.StateContext {
-        RecipientEmailsCellNode.Input.StateContext(
+    private static var keyFoundStateContext: RecipientStateContext {
+        RecipientStateContext(
             backgroundColor: .main,
             borderColor: .borderColor,
             textColor: .white,
@@ -160,8 +160,8 @@ extension ComposeViewDecorator {
         )
     }
 
-    private static var keyNotFoundStateContext: RecipientEmailsCellNode.Input.StateContext {
-        RecipientEmailsCellNode.Input.StateContext(
+    private static var keyNotFoundStateContext: RecipientStateContext {
+        RecipientStateContext(
             backgroundColor: .red,
             borderColor: .borderColor,
             textColor: .white,
@@ -169,8 +169,8 @@ extension ComposeViewDecorator {
         )
     }
 
-    private static var errorStateContext: RecipientEmailsCellNode.Input.StateContext {
-        RecipientEmailsCellNode.Input.StateContext(
+    private static var errorStateContext: RecipientStateContext {
+        RecipientStateContext(
             backgroundColor: .red,
             borderColor: .borderColor,
             textColor: .white,

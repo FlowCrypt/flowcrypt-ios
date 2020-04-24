@@ -10,12 +10,19 @@ import AsyncDisplayKit
 import FlowCryptCommon
 
 final public class RecipientEmailsCellNode: CellNode {
+    public typealias RecipientTap = (RecipientEmailTapAction) -> Void
+
+    public enum RecipientEmailTapAction {
+        case select(IndexPath)
+        case imageTap(RecipientState)
+    }
+
     private enum Constants {
         static let sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)
         static let minimumLineSpacing: CGFloat = 4
     }
 
-    private var onSelect: ((IndexPath) -> Void)?
+    private var onAction: RecipientTap?
 
     public lazy var collectionNode: ASCollectionNode = {
         let layout = UICollectionViewFlowLayout()
@@ -38,6 +45,7 @@ final public class RecipientEmailsCellNode: CellNode {
         automaticallyManagesSubnodes = true
     }
 
+    // TODO: ANTON - Calculate height
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         guard recipients.isNotEmpty else {
             return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
@@ -59,8 +67,8 @@ final public class RecipientEmailsCellNode: CellNode {
 }
 
 extension RecipientEmailsCellNode {
-    public func onItemSelect(_ action: ((IndexPath) -> Void)?) -> Self {
-        self.onSelect = action
+    public func onItemSelect(_ action: RecipientTap?) -> Self {
+        self.onAction = action
         return self
     }
 }
@@ -75,10 +83,12 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
         return { [weak self] in
             guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
             return RecipientEmailNode(input: RecipientEmailNode.Input(recipient: recipient, width: width))
+                .onTapAction { [weak self] action in
+                    switch action {
+                    case .image: self?.onAction?(.imageTap(recipient.state))
+                    case .text: self?.onAction?(.select(indexPath))
+                    }
+                }
         }
-    }
-
-    public func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
-        onSelect?(indexPath)
     }
 }

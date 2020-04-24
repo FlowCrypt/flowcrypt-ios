@@ -11,11 +11,11 @@ final class ComposeViewController: ASViewController<TableNode> {
 
     struct Recipient {
         let email: String
-        var state: RecipientEmailsCellNode.Input.State
+        var state: RecipientState
 
         init(
             email: String,
-            state: RecipientEmailsCellNode.Input.State
+            state: RecipientState
         ) {
             self.email = email
             self.state = state
@@ -457,15 +457,13 @@ extension ComposeViewController {
         }
     }
 
+    // TODO: ANTON -
     private func recipientsNode() -> RecipientEmailsCellNode {
         RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
-//            .then { node in
-//                DispatchQueue.main.async {
-//                    node.collectionNode.reloadData()
-//                }
-//            }
-            .onItemSelect { [weak self] indexPath in
-                self?.handleRecipientSelection(with: indexPath)
+            .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
+                print("^^ \(action)")
+                // TODO: ANTON -
+//                self?.handleRecipientSelection(with: indexPath)
             }
     }
 
@@ -644,13 +642,14 @@ extension ComposeViewController {
             }
     }
 
+    // TODO: ANTON -
     private func evaluate(recipient: Recipient) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            var evaluated = recipient
-            evaluated.state = self.decorator.recipientErrorState
-            self.contextToSend.recipients = [evaluated]
-            self.node.reloadRows(at: [self.recipientsIndexPath], with: .fade)
-        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//            var evaluated = recipient
+//            evaluated.state = self.decorator.recipientErrorState
+//            self.contextToSend.recipients = [evaluated]
+//            self.node.reloadRows(at: [self.recipientsIndexPath], with: .fade)
+//        }
     }
 }
 
