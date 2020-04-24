@@ -457,13 +457,13 @@ extension ComposeViewController {
         }
     }
 
-    // TODO: ANTON -
     private func recipientsNode() -> RecipientEmailsCellNode {
         RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
             .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
-                print("^^ \(action)")
-                // TODO: ANTON -
-//                self?.handleRecipientSelection(with: indexPath)
+                switch action {
+                case let .imageTap(indexPath): self?.handleRecipientAction(with: indexPath)
+                case let .select(indexPath): self?.handleRecipientSelection(with: indexPath)
+                }
             }
     }
 
@@ -597,23 +597,6 @@ extension ComposeViewController {
         }
     }
 
-    private func handleRecipientSelection(with indexPath: IndexPath) {
-        var recipient = contextToSend.recipients[indexPath.row]
-
-        if recipient.state.isSelected {
-            recipient.state = decorator.recipientIdleState // TODO: ANTON -
-            contextToSend.recipients[indexPath.row].state = decorator.recipientIdleState
-        } else {
-            contextToSend.recipients[indexPath.row].state = decorator.recipientSelectedState
-        }
-        
-        node.reloadRows(at: [recipientsIndexPath], with: .fade)
-        if !(textField?.isFirstResponder() ?? true) {
-            textField?.becomeFirstResponder()
-        }
-        textField?.reset()
-    }
-
     private func handleEditingChanged(with text: String?) {
 //        temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
 //        guard let text = text, text.isNotEmpty else {
@@ -631,6 +614,7 @@ extension ComposeViewController {
     }
 }
 
+// MARK: - Action Handling
 extension ComposeViewController {
     private func searchEmail(with query: String) {
         googleService.searchContacts(query: query)
@@ -644,15 +628,47 @@ extension ComposeViewController {
 
     // TODO: ANTON -
     private func evaluate(recipient: Recipient) {
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//            var evaluated = recipient
-//            evaluated.state = self.decorator.recipientErrorState
-//            self.contextToSend.recipients = [evaluated]
-//            self.node.reloadRows(at: [self.recipientsIndexPath], with: .fade)
-//        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            var evaluated = recipient
+            evaluated.state = self.decorator.recipientErrorState
+            self.contextToSend.recipients = [evaluated]
+            self.node.reloadRows(at: [self.recipientsIndexPath], with: .fade)
+        }
+    }
+
+    private func handleRecipientSelection(with indexPath: IndexPath) {
+        var recipient = contextToSend.recipients[indexPath.row]
+
+        if recipient.state.isSelected {
+            recipient.state = decorator.recipientIdleState // TODO: ANTON -
+            contextToSend.recipients[indexPath.row].state = decorator.recipientIdleState
+        } else {
+            contextToSend.recipients[indexPath.row].state = decorator.recipientSelectedState
+        }
+
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        if !(textField?.isFirstResponder() ?? true) {
+            textField?.becomeFirstResponder()
+        }
+        textField?.reset()
+    }
+
+    private func handleRecipientAction(with indexPath: IndexPath) {
+        let recipient = contextToSend.recipients[indexPath.row]
+        switch recipient.state {
+        case .idle:
+            handleRecipientSelection(with: indexPath)
+        case .keyFound, .keyNotFound, .selected:
+            break
+        case .error:
+            contextToSend.recipients[indexPath.row].state = decorator.recipientIdleState
+            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+            evaluate(recipient: recipient)
+        }
     }
 }
 
+// MARK: - State Handling
 extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState

@@ -135,7 +135,7 @@ extension UIColor {
 extension ComposeViewDecorator {
     private static var idleStateContext: RecipientStateContext {
         RecipientStateContext(
-            backgroundColor: .titleNodeBackgroundColorSelected,
+            backgroundColor: .titleNodeBackgroundColor,
             borderColor: .borderColor,
             textColor: .mainTextColor,
             image: #imageLiteral(resourceName: "retry")

@@ -13,7 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ aplication: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         disableHardwareKeyboardOnSimulator()
-        ASControlNode.enableHitTestDebug = true
+//        ASControlNode.enableHitTestDebug = true
         AppStartup().initializeApp(window: window)
         return true
     }

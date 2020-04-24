@@ -14,7 +14,7 @@ final public class RecipientEmailsCellNode: CellNode {
 
     public enum RecipientEmailTapAction {
         case select(IndexPath)
-        case imageTap(RecipientState)
+        case imageTap(IndexPath)
     }
 
     private enum Constants {
@@ -45,16 +45,15 @@ final public class RecipientEmailsCellNode: CellNode {
         automaticallyManagesSubnodes = true
     }
 
-    // TODO: ANTON - Calculate height
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         guard recipients.isNotEmpty else {
             return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
         }
-        let recipientNodeInset: CGFloat = 1
+        let recipientNodeInset: CGFloat = 12
         let textSize: CGSize = recipients.first?.email.size() ?? .zero
         let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
         let insets = Constants.minimumLineSpacing * CGFloat(recipients.count - 1)
-        let height = recipientsHeight + insets + Constants.sectionInset.width
+        let height = recipientsHeight + insets + Constants.sectionInset.height
 
         collectionNode.style.preferredSize.height = height
         collectionNode.style.preferredSize.width = constrainedSize.max.width
@@ -85,7 +84,7 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
             return RecipientEmailNode(input: RecipientEmailNode.Input(recipient: recipient, width: width))
                 .onTapAction { [weak self] action in
                     switch action {
-                    case .image: self?.onAction?(.imageTap(recipient.state))
+                    case .image: self?.onAction?(.imageTap(indexPath))
                     case .text: self?.onAction?(.select(indexPath))
                     }
                 }
