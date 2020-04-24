@@ -15,6 +15,7 @@ protocol ComposeViewDecoratorType {
     var recipientKeyFoundState: RecipientState { get }
     var recipientKeyNotFoundState: RecipientState { get }
     var recipientErrorState: RecipientState { get }
+    var recipientErrorStateRetry: RecipientState { get }
     
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
     func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
@@ -29,7 +30,8 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
     let recipientSelectedState: RecipientState = .selected(selectedStateContext)
     let recipientKeyFoundState: RecipientState = .keyFound(keyFoundStateContext)
     let recipientKeyNotFoundState: RecipientState = .keyNotFound(keyNotFoundStateContext)
-    let recipientErrorState: RecipientState = .error(errorStateContext)
+    let recipientErrorState: RecipientState = .error(errorStateContext, false)
+    var recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
 
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
@@ -144,8 +146,8 @@ extension ComposeViewDecorator {
 
     private static var selectedStateContext: RecipientStateContext {
         RecipientStateContext(
-            backgroundColor: .titleNodeBackgroundColorSelected,
-            borderColor: .borderColorSelected,
+            backgroundColor: .gray,
+            borderColor: .borderColor,
             textColor: .white,
             image: nil
         )
@@ -162,8 +164,8 @@ extension ComposeViewDecorator {
 
     private static var keyNotFoundStateContext: RecipientStateContext {
         RecipientStateContext(
-            backgroundColor: .red,
-            borderColor: .borderColor,
+            backgroundColor: .titleNodeBackgroundColorSelected,
+            borderColor: .borderColorSelected,
             textColor: .white,
             image: nil
         )
@@ -175,6 +177,15 @@ extension ComposeViewDecorator {
             borderColor: .borderColor,
             textColor: .white,
             image: #imageLiteral(resourceName: "cancel")
+        )
+    }
+
+    private static var errorStateContextWithRetry: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .red,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: #imageLiteral(resourceName: "retry")
         )
     }
 }

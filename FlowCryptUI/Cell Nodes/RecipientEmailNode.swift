@@ -11,6 +11,11 @@ import AsyncDisplayKit
 import FlowCryptCommon
 
 final class RecipientEmailNode: CellNode {
+    enum Constants {
+        static let titleInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+        static let layoutInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+    }
+    
     enum Tap {
         case image, text
     }
@@ -37,6 +42,7 @@ final class RecipientEmailNode: CellNode {
         titleNode.clipsToBounds = true
         titleNode.borderWidth = 1
         titleNode.borderColor = input.recipient.state.borderColor.cgColor
+        titleNode.textContainerInset = RecipientEmailNode.Constants.titleInsets
 
         displayNode.backgroundColor = .clear
         imageNode.image = input.recipient.state.stateImage
@@ -82,7 +88,7 @@ final class RecipientEmailNode: CellNode {
         guard imageNode.image != nil else { return }
         imageNode.alpha = 1
         let animation = CABasicAnimation(keyPath: "transform.scale")
-        animation.fromValue = 0.5
+        animation.fromValue = 0.9
         animation.toValue =  1.0
         animation.duration = 0.5
         animation.repeatCount = 1
@@ -108,7 +114,7 @@ final class RecipientEmailNode: CellNode {
         }
 
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8),
+            insets: Constants.layoutInsets,
             child: ASStackLayoutSpec(
                 direction: .horizontal,
                 spacing: 20,

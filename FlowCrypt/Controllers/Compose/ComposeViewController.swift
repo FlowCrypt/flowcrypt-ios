@@ -8,7 +8,6 @@ import FlowCryptUI
 import FlowCryptCommon
 
 final class ComposeViewController: ASViewController<TableNode> {
-
     struct Recipient {
         let email: String
         var state: RecipientState
@@ -548,7 +547,9 @@ extension ComposeViewController {
         // Set all recipients to idle state
         contextToSend.recipients = recipients.map { recipient in
             var recipient = recipient
-            recipient.state = self.decorator.recipientIdleState
+            if recipient.state.isSelected {
+                recipient.state = self.decorator.recipientIdleState
+            }
             return recipient
         }
 
@@ -626,22 +627,53 @@ extension ComposeViewController {
             }
     }
 
-    // TODO: ANTON -
     private func evaluate(recipient: Recipient) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            var evaluated = recipient
-            evaluated.state = self.decorator.recipientErrorState
-            self.contextToSend.recipients = [evaluated]
-            self.node.reloadRows(at: [self.recipientsIndexPath], with: .fade)
+        guard isValid(email: recipient.email) else {
+            updateRecipientWithNew(state: self.decorator.recipientErrorState, for: .left(recipient))
+            return
         }
+
+        attesterApi.lookupEmail(email: recipient.email)
+            .then(on: .main) { [weak self] result in
+                guard let self = self else { return }
+                let newState: RecipientState = result.armored != nil
+                    ? self.decorator.recipientKeyFoundState
+                    : self.decorator.recipientKeyNotFoundState
+                self.updateRecipientWithNew(state: newState, for: .left(recipient))
+            }
+            .catch(on: .main) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateRecipientWithNew(state: self.decorator.recipientErrorStateRetry, for: .left(recipient))
+            }
+    }
+
+    private func updateRecipientWithNew(state: RecipientState, for context: Either<Recipient, IndexPath>) {
+        let index: Int? = {
+            switch context {
+            case let .left(recipient):
+                guard let index = recipients.firstIndex(where: { $0.email == recipient.email }) else {
+                    assertionFailure()
+                    return nil
+                }
+                return index
+            case let .right(index):
+                return index.row
+            }
+        }()
+
+        guard let recipientIndex = index else { return }
+        contextToSend.recipients[recipientIndex].state = state
+        print(contextToSend.recipients.map { $0.state })
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
     }
 
     private func handleRecipientSelection(with indexPath: IndexPath) {
         var recipient = contextToSend.recipients[indexPath.row]
 
         if recipient.state.isSelected {
-            recipient.state = decorator.recipientIdleState // TODO: ANTON -
+            recipient.state = decorator.recipientIdleState
             contextToSend.recipients[indexPath.row].state = decorator.recipientIdleState
+            evaluate(recipient: recipient)
         } else {
             contextToSend.recipients[indexPath.row].state = decorator.recipientSelectedState
         }
@@ -660,11 +692,21 @@ extension ComposeViewController {
             handleRecipientSelection(with: indexPath)
         case .keyFound, .keyNotFound, .selected:
             break
-        case .error:
-            contextToSend.recipients[indexPath.row].state = decorator.recipientIdleState
-            node.reloadRows(at: [recipientsIndexPath], with: .fade)
-            evaluate(recipient: recipient)
+        case let .error(_, isRetryError):
+            if isRetryError {
+                updateRecipientWithNew(state: decorator.recipientIdleState, for: .right(indexPath))
+                evaluate(recipient: recipient)
+            } else {
+                contextToSend.recipients.remove(at: indexPath.row)
+                node.reloadRows(at: [recipientsIndexPath], with: .fade)
+            }
         }
+    }
+
+    private func isValid(email: String) -> Bool {
+        let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailFormat)
+        return emailPredicate.evaluate(with: email)
     }
 }
 
@@ -675,5 +717,3 @@ extension ComposeViewController {
         node.reloadSections(IndexSet(integer: 1), with: .fade)
     }
 }
-
-

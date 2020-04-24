@@ -10,6 +10,7 @@ import UIKit
 
 public typealias RecipientState = RecipientEmailsCellNode.Input.State
 public typealias RecipientStateContext = RecipientEmailsCellNode.Input.StateContext
+
 // MARK: Input
 extension RecipientEmailsCellNode {
     public struct Input {
@@ -30,12 +31,12 @@ extension RecipientEmailsCellNode {
             }
         }
 
-        public enum State {
+        public enum State: CustomStringConvertible {
             case idle(StateContext)
             case selected(StateContext)
             case keyFound(StateContext)
             case keyNotFound(StateContext)
-            case error(StateContext)
+            case error(StateContext, Bool)
 
             private var stateContext: StateContext {
                 switch self {
@@ -43,7 +44,7 @@ extension RecipientEmailsCellNode {
                      .selected(let context),
                      .keyFound(let context),
                      .keyNotFound(let context),
-                     .error(let context):
+                     .error(let context, _):
                     return context
                 }
             }
@@ -68,6 +69,16 @@ extension RecipientEmailsCellNode {
                 switch self {
                 case .selected: return true
                 default: return false
+                }
+            }
+
+            public var description: String {
+                switch self {
+                case .idle: return "idle"
+                case .selected: return "selected"
+                case .keyFound: return "keyFound"
+                case .keyNotFound: return "keyNotFound"
+                case .error: return "error"
                 }
             }
         }
