@@ -12,7 +12,7 @@ import FlowCryptCommon
 public final class MessageSenderNode: CellNode {
     public typealias ButtonAction = () -> Void
 
-    private let textNode = ASTextNode()
+    private let textNode = ASTextNode2()
     private let buttonNode = ASButtonNode()
     private let onTap: ButtonAction?
 

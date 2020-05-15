@@ -23,9 +23,9 @@ public final class KeySettingCellNode: CellNode {
         }
     }
     
-    private let titleNode = ASTextNode()
-    private let dateNode = ASTextNode()
-    private let subTitleNode = ASTextNode()
+    private let titleNode = ASTextNode2()
+    private let dateNode = ASTextNode2()
+    private let subTitleNode = ASTextNode2()
     private let separatorNode = ASDisplayNode()
 
     public init(with input: KeySettingCellNode.Input) {
