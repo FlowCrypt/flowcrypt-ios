@@ -32,5 +32,6 @@ blocks:
       jobs:
         - name: FlowCryptTests
           commands:
+            - bundle exec xcversion select 11.3.1
             - bundle exec fastlane do_everything
 
