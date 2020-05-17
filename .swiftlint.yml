@@ -1,0 +1,30 @@
+# disabled_rules:
+#   - todo
+#   - identifier_name
+#   - legacy_hashing
+#   - line_length
+#   - identifier_name 
+#   - force_cast
+#   - weak_delegate
+#   - force_try
+#   - function_parameter_count
+#   - file_length
+#   - function_body_length
+#   - class_delegate_protocol #disabled this rule since it cannot track inheritance of protocol if protocols declared in different files
+#   - operator_whitespace 
+
+included:
+  - FlowCrypt
+excluded: 
+  - FlowCrypt/Core
+
+line_length: 140
+
+# type_body_length:
+#   - 400 # Warning
+#   - 550 # Error
+
+# warning_threshold: 1
+
+reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit, html, emoji)
+
