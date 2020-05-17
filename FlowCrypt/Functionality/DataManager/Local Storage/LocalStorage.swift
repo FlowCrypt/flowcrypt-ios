@@ -15,7 +15,6 @@ protocol LocalStorageType {
 }
 
 struct LocalStorage: LocalStorageType {
-
     private enum Constants: String, CaseIterable {
         case indexCurrentUser = "keyCurrentUser"
     }
@@ -36,7 +35,7 @@ extension LocalStorage {
         do {
             let encodedData = try PropertyListEncoder().encode(user)
             storage.set(encodedData, forKey: Constants.indexCurrentUser.rawValue)
-        } catch let error {
+        } catch {
             fatalError("Could not save user: \(error)")
         }
     }

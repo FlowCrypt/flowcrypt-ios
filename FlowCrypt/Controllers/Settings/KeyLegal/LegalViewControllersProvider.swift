@@ -6,12 +6,12 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import SafariServices
+import UIKit
 
 private enum Items: Int, CaseIterable {
     case privacy, terms, license, sources
-    
+
     var title: String {
         switch self {
         case .privacy: return "settings_legal_privacy".localized
@@ -20,7 +20,7 @@ private enum Items: Int, CaseIterable {
         case .sources: return "settings_legal_sources".localized
         }
     }
-    
+
     var url: URL? {
         switch self {
         case .privacy: return URL(string: "https://flowcrypt.com/privacy")
@@ -29,7 +29,7 @@ private enum Items: Int, CaseIterable {
         case .sources: return URL(string: "https://github.com/FlowCrypt/flowcrypt-ios")
         }
     }
-    
+
     var viewController: UIViewController {
         guard let link = self.url else {
             assertionFailure()

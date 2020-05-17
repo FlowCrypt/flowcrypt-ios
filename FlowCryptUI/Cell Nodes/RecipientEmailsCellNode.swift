@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 
-final public class RecipientEmailsCellNode: CellNode {
+public final class RecipientEmailsCellNode: CellNode {
     private enum Constants {
         static let sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)
         static let minimumLineSpacing: CGFloat = 4
@@ -51,7 +51,7 @@ final public class RecipientEmailsCellNode: CellNode {
         automaticallyManagesSubnodes = true
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         guard recipients.isNotEmpty else {
             return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
         }
@@ -73,13 +73,13 @@ final public class RecipientEmailsCellNode: CellNode {
 
 extension RecipientEmailsCellNode {
     public func onItemSelect(_ action: ((IndexPath) -> Void)?) -> Self {
-        self.onSelect = action
+        onSelect = action
         return self
     }
 }
 
 extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource {
-    public func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
+    public func collectionNode(_: ASCollectionNode, numberOfItemsInSection _: Int) -> Int {
         recipients.count
     }
 
@@ -91,10 +91,7 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
         }
     }
 
-    public func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
+    public func collectionNode(_: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
         onSelect?(indexPath)
     }
 }
-
-
-

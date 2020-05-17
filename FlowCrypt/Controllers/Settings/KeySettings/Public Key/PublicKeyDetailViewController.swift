@@ -17,7 +17,7 @@ final class PublicKeyDetailViewController: ASViewController<TableNode> {
         super.init(node: TableNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -37,11 +37,11 @@ final class PublicKeyDetailViewController: ASViewController<TableNode> {
 }
 
 extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         1
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+    func tableNode(_: ASTableNode, nodeBlockForRowAt _: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             SetupTitleNode(
                 title: (self?.text ?? "").attributed(.regular(16)),

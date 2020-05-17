@@ -7,8 +7,8 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
 
 final class ViewController: ASViewController<TableNode> {
     enum Elements: Int, CaseIterable {
@@ -27,15 +27,15 @@ final class ViewController: ASViewController<TableNode> {
         super.init(node: TableNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.node.delegate = self
-        self.node.dataSource = self
-        self.node.reloadData()
+        node.delegate = self
+        node.dataSource = self
+        node.reloadData()
     }
 
     override func viewDidLayoutSubviews() {
@@ -58,17 +58,18 @@ final class ViewController: ASViewController<TableNode> {
     }
 
     // MARK: - Recipient Text Field
+
     enum Constants {
         static let endTypingCharacters = [",", " "]
     }
 
-    var recipients: [RecipientEmailsCellNode.Input] = (1...10).map { _ in
+    var recipients: [RecipientEmailsCellNode.Input] = (1 ... 10).map { _ in
         RecipientEmailsCellNode.Input(email: testAttributedText(), isSelected: false)
     }
 }
 
 extension ViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Elements.allCases.count
     }
 
@@ -82,7 +83,7 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
             case .divider:
                 return DividerCellNode(color: .black, height: 10)
             case .menu:
-                let title = NSAttributedString(string: "Example of recipients text field", attributes: [NSAttributedString.Key.foregroundColor : UIColor.red])
+                let title = NSAttributedString(string: "Example of recipients text field", attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
 
                 let input = InfoCellNode.Input(
                     attributedText: title,
@@ -126,6 +127,7 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
 }
 
 // MARK: - Recipient Text Field
+
 extension ViewController {
     private var textField: TextFieldNode? {
         (node.nodeForRow(at: IndexPath(row: Elements.emailTextField.rawValue, section: 0)) as? TextFieldCellNode)?.textField
@@ -139,8 +141,8 @@ extension ViewController {
         NSAttributedString(
             string: string,
             attributes: [
-                NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 14),
-                NSAttributedString.Key.foregroundColor : UIColor.black
+                NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14),
+                NSAttributedString.Key.foregroundColor: UIColor.black,
             ]
         )
     }
@@ -172,7 +174,6 @@ extension ViewController {
         } else {
             return true
         }
-
     }
 
     private func handleTextFieldAction(with action: TextFieldActionType) {

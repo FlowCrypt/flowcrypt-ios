@@ -22,7 +22,7 @@ public final class KeySettingCellNode: CellNode {
             self.date = date
         }
     }
-    
+
     private let titleNode = ASTextNode()
     private let dateNode = ASTextNode()
     private let subTitleNode = ASTextNode()
@@ -43,7 +43,7 @@ public final class KeySettingCellNode: CellNode {
         separatorNode.backgroundColor = .lightGray
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let nameLocationStack = ASStackLayoutSpec.vertical()
         nameLocationStack.spacing = 6
         nameLocationStack.style.flexShrink = 1.0

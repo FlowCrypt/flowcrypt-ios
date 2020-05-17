@@ -6,9 +6,10 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
+// swiftlint:disable force_try
 import Foundation
-import RealmSwift
 import Promises
+import RealmSwift
 
 protocol DBMigration {
     func performMigrationIfNeeded() -> Promise<Void>
@@ -33,10 +34,10 @@ final class EncryptedStorage: EncryptedStorageType {
 
     init(
         fileManager: FileManager = .default,
-        keychainHelper: KeyChainServiceType = KeyChainService()
+        keychainHelper _: KeyChainServiceType = KeyChainService()
     ) {
         self.fileManager = fileManager
-        self.keychainService = KeyChainService()
+        keychainService = KeyChainService()
     }
 
     private var realmKey: Data {
@@ -54,8 +55,8 @@ final class EncryptedStorage: EncryptedStorageType {
 
     private var storage: Realm {
         do {
-            return try Realm(configuration: self.encryptedConfiguration)
-        } catch let error {
+            return try Realm(configuration: encryptedConfiguration)
+        } catch {
 //             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
 //             return nil
             fatalError("failed to initiate realm: \(error)")
@@ -63,17 +64,21 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        try! storage.write {
-            for k in keyDetails {
-                storage.add(try! KeyInfo(k, passphrase: passPhrase, source: source))
+        do {
+            try storage.write {
+                for k in keyDetails {
+                    storage.add(try KeyInfo(k, passphrase: passPhrase, source: source))
+                }
             }
+        } catch {
+            fatalError()
         }
     }
 
     func publicKey() -> String? {
         return storage.objects(KeyInfo.self)
             .map { $0.public }
-            .first 
+            .first
     }
 
     func keys() -> Results<KeyInfo>? {
@@ -102,7 +107,7 @@ extension EncryptedStorage: LogOutHandler {
 
     private func destroyEncryptedStorage() {
         destroyStorage(at: Realm.Configuration.defaultConfiguration.fileURL!) // todo - remove this line in version 0.1.8
-        destroyStorage(at: self.encryptedConfiguration.fileURL!)
+        destroyStorage(at: encryptedConfiguration.fileURL!)
     }
 
     private func destroyStorage(at url: URL) {
@@ -110,7 +115,7 @@ extension EncryptedStorage: LogOutHandler {
             try fileManager.removeItem(at: url)
         } catch CocoaError.fileNoSuchFile {
 //            debugPrint("Realm at url \(url) did not exist")
-        } catch let error {
+        } catch {
             fatalError("Could not delete configuration for \(url) with error: \(error)")
         }
     }
@@ -120,25 +125,25 @@ extension EncryptedStorage {
     func performMigrationIfNeeded() -> Promise<Void> {
         // current migration only does plain realm -> encrypted realm migration, with no database schema change
         // during next future migration, we can delete this and only focus on database schema migration
-        let documentDirectory = self.getDocumentDirectory()
+        let documentDirectory = getDocumentDirectory()
         let plainRealmPath = documentDirectory + "/default.realm"
         let encryptedRealmPath = documentDirectory + "/" + Constants.encryptedDbFilename
-        guard self.fileManager.fileExists(atPath: plainRealmPath) else {
+        guard fileManager.fileExists(atPath: plainRealmPath) else {
             debugPrint("Migration not needed: plain realm not used")
             return Promise(())
         }
-        guard !self.fileManager.fileExists(atPath: encryptedRealmPath) else {
+        guard !fileManager.fileExists(atPath: encryptedRealmPath) else {
             debugPrint("Migration not needed: encrypted realm already set up")
             return Promise(())
         }
         debugPrint("Performing migration from plain to encrypted Realm")
-        guard let plainRealm = try? Realm.init(configuration: Realm.Configuration.defaultConfiguration) else {
+        guard let plainRealm = try? Realm(configuration: Realm.Configuration.defaultConfiguration) else {
             debugPrint("Failed to load plain realm, although the db file was present: destroying")
-            self.destroyEncryptedStorage() // destroys plain as well as encrypted realm (if one existed)
+            destroyEncryptedStorage() // destroys plain as well as encrypted realm (if one existed)
             return Promise(())
         }
         // write encrypted copy of plain realm db
-        try! plainRealm.writeCopy(toFile: URL(fileURLWithPath: encryptedRealmPath), encryptionKey: self.realmKey) // encryptionKey is for the NEW copy
+        try! plainRealm.writeCopy(toFile: URL(fileURLWithPath: encryptedRealmPath), encryptionKey: realmKey) // encryptionKey is for the NEW copy
         // launch configuration and perform schema migration if needed
         return Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
@@ -169,5 +174,4 @@ extension EncryptedStorage {
         }
         return documentDirectory
     }
-
 }

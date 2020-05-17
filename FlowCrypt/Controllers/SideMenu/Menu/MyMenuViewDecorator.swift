@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 protocol MyMenuViewDecoratorType {
     var dividerColor: UIColor { get }
@@ -51,7 +51,7 @@ extension FolderViewModel {
                 path: "",
                 image: UIImage(named: "exit")?.tinted(.mainTextColor),
                 itemType: .logOut
-            )
+            ),
         ]
     }
 }
@@ -67,4 +67,3 @@ extension InfoCellNode.Input {
         )
     }
 }
-

@@ -26,7 +26,7 @@ final class AttesterApi: AttesterApiType {
     func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
         Promise { () -> PubkeySearchResult in
             let res = try await(URLSession.shared.call(AttesterApi.urlPub(emailOrLongid: email), tolerateStatus: [404]))
-            
+
             if res.status >= 200, res.status <= 299 {
                 return PubkeySearchResult(email: email, armored: res.data.toStr())
             }

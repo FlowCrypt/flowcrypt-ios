@@ -14,7 +14,7 @@ class SignInTest: XCTestCase {
 
     override func setUp() {
         continueAfterFailure = false
-        
+
         app = XCUIApplicationBuilder()
             .setupRegion()
             .build()
@@ -38,7 +38,9 @@ class SignInTest: XCTestCase {
         let user = UserCredentials.main
 
         // tap on gmail button
+
         // MARK: - Google Login
+
         app.tables.buttons["gmail"].tap()
         let signInAlert = gmailAlert
 
@@ -57,7 +59,6 @@ class SignInTest: XCTestCase {
         wait(1)
 
         textField.tap()
-
 
         textField.typeText(user.email)
         let returnButton = goKeyboardButton
@@ -78,8 +79,8 @@ class SignInTest: XCTestCase {
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
 
-
         // MARK: - Wrong pass phrase
+
         // enter wrong pass phrase and tap enter
         let button = goKeyboardButton
 
@@ -93,8 +94,8 @@ class SignInTest: XCTestCase {
         wait(0.2)
         app.tables.secureTextFields.firstMatch.tap()
 
-
         // MARK: - Correct pass phrase
+
         // enter correct pass phrase and tap enter
         if button.exists {
             app.typeText(user.pass)
@@ -107,10 +108,12 @@ class SignInTest: XCTestCase {
         XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
 
         // MARK: - Send message
+
         sendMessage(to: user.email)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
 
         // MARK: - Check in sent mail box
+
         menuButton.tap()
         tapOnMenu(folder: "Sent Mail")
         wait(3)
@@ -209,11 +212,10 @@ extension SignInTest {
     private var menuButton: XCUIElement {
         app.navigationBars.buttons["menu icn"]
     }
-
 }
 
 extension SignInTest {
-    private func sendMessage(to recipient: String ) {
+    private func sendMessage(to recipient: String) {
         tapOnCompose()
         app.typeText(recipient)
         app.tables.textFields["Subject"].tap()

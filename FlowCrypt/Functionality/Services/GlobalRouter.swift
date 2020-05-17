@@ -18,8 +18,8 @@ struct GlobalRouter: GlobalRouterType {
     func reset() {
         let application = UIApplication.shared
         guard let delegate = (application.delegate as? AppDelegate) else {
-            assertionFailure("missing AppDelegate in GlobalRouter.reset()");
-            return;
+            assertionFailure("missing AppDelegate in GlobalRouter.reset()")
+            return
         }
         AppStartup().initializeApp(window: delegate.window)
     }

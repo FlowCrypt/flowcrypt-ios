@@ -8,9 +8,9 @@
 
 import AsyncDisplayKit
 
-final public class TextFieldCellNode: CellNode {
+public final class TextFieldCellNode: CellNode {
     public struct Input {
-        public var placeholder: NSAttributedString? = nil
+        public var placeholder: NSAttributedString?
         public var isSecureTextEntry = false
         public var textInsets: CGFloat = -7
         public var textAlignment: NSTextAlignment = .left
@@ -54,7 +54,7 @@ final public class TextFieldCellNode: CellNode {
 
     public var isLowercased = false {
         didSet {
-            self.textField.isLowercased = isLowercased
+            textField.isLowercased = isLowercased
         }
     }
 

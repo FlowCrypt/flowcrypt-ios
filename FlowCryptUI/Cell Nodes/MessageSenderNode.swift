@@ -17,7 +17,7 @@ public final class MessageSenderNode: CellNode {
     private let onTap: ButtonAction?
 
     public init(_ text: NSAttributedString? = nil, action: ButtonAction? = nil) {
-        self.onTap = action
+        onTap = action
         super.init()
         textNode.attributedText = text
         buttonNode.setImage(UIImage(named: "reply-all")?.tinted(.main), for: .normal)
@@ -28,7 +28,7 @@ public final class MessageSenderNode: CellNode {
         onTap?()
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
         buttonNode.style.preferredSize = CGSize(width: 50, height: 50)
         return ASInsetLayoutSpec(

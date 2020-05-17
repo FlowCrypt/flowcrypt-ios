@@ -18,4 +18,4 @@ public extension DateFormatter {
         }
         return dateFormater.string(from: date)
     }
-} 
+}

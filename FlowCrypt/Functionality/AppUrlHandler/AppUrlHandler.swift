@@ -16,7 +16,7 @@ struct AppUrlHandler {
         self.googleApi = googleApi
     }
 
-    func handle(_: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    func handle(_: UIApplication, open url: URL, options _: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         googleApi.handle(url)
     }
 }

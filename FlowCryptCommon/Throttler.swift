@@ -16,11 +16,10 @@ public final class Throttler {
     private var maxInterval: Int
 
     public init(seconds: Int) {
-        self.maxInterval = seconds
+        maxInterval = seconds
     }
 
-
-    public func throttle(_ block: @escaping () -> ()) {
+    public func throttle(_ block: @escaping () -> Void) {
         job.cancel()
         job = DispatchWorkItem { [weak self] in
             self?.previousRun = Date()
@@ -29,7 +28,7 @@ public final class Throttler {
         let delay = Date.second(from: previousRun) > maxInterval
             ? 0
             : maxInterval
-        
+
         queue.asyncAfter(deadline: .now() + Double(delay), execute: job)
     }
 }

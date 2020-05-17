@@ -2,8 +2,8 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import JavaScriptCore
 import FlowCryptCommon
+import JavaScriptCore
 
 enum CoreError: Error {
     case exception(String)
@@ -21,7 +21,7 @@ final class Core {
     private dynamic var started = false
     private dynamic var ready = false
 
-    private init() { }
+    private init() {}
 
     public func version() throws -> CoreRes.Version {
         let r = try call("version", jsonDict: nil, data: nil)

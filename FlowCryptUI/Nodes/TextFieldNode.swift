@@ -26,7 +26,7 @@ final class TextField: UITextField {
     }
 }
 
-final public class TextFieldNode: ASDisplayNode {
+public final class TextFieldNode: ASDisplayNode {
     public typealias ShouldChangeAction = ((UITextField, String) -> (Bool))
     public typealias ShouldReturnAction = (UITextField) -> (Bool)
 
@@ -102,7 +102,7 @@ final public class TextFieldNode: ASDisplayNode {
                 }
             }
         }
-    }  
+    }
 
     var shouldReturn: ShouldReturnAction?
 
@@ -112,7 +112,7 @@ final public class TextFieldNode: ASDisplayNode {
 
     private var textFiledAction: TextFieldAction?
 
-    public init(preferredHeight: CGFloat?, action: TextFieldAction? = nil) {
+    public init(preferredHeight _: CGFloat?, action: TextFieldAction? = nil) {
         super.init()
         addSubnode(node)
         textFiledAction = action
@@ -134,7 +134,7 @@ final public class TextFieldNode: ASDisplayNode {
         }
     }
 
-    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(insets: .zero, child: node)
     }
 
@@ -164,7 +164,7 @@ extension TextFieldNode {
     @objc private func onEditingChanged() {
         textFiledAction?(.editingChanged(textField.attributedText?.string ?? textField.text))
 
-        if self.isLowercased {
+        if isLowercased {
             guard let attributedText = textField.attributedText, attributedText.string.isNotEmpty else { return }
             textField.attributedText = NSAttributedString(
                 string: attributedText.string.lowercased(),
@@ -191,7 +191,7 @@ extension TextFieldNode: UITextFieldDelegate {
         shouldReturn?(textField) ?? true
     }
 
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn _: NSRange, replacementString string: String) -> Bool {
         shouldChangeCharacters?(textField, string) ?? true
     }
 }

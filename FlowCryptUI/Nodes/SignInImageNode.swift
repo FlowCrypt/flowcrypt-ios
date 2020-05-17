@@ -22,7 +22,7 @@ public final class SignInImageNode: ASCellNode {
         selectionStyle = .none
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize.height = imageHeight
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20),

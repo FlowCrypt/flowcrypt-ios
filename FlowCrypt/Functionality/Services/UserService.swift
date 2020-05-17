@@ -17,7 +17,7 @@ protocol UserServiceType {
     func renewAccessToken() -> Promise<String>
 }
 
-final class UserService: NSObject  {
+final class UserService: NSObject {
     static let shared = UserService()
 
     private var onLogin: ((User) -> Void)?
@@ -48,7 +48,6 @@ final class UserService: NSObject  {
 }
 
 extension UserService: UserServiceType {
-
     func renewAccessToken() -> Promise<String> {
         return Promise<String> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }

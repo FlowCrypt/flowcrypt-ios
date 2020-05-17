@@ -38,6 +38,6 @@ extension UIColor {
     }
 
     static var blueColor: UIColor {
-        UIColor(red: 0, green: 120/255, blue: 1, alpha: 1)
+        UIColor(red: 0, green: 120 / 255, blue: 1, alpha: 1)
     }
 }

@@ -61,7 +61,8 @@ extension Imap: BackupProvider {
                 try await(self.fetchMsgAttribute(
                     in: attContext.path,
                     msgUid: attContext.msg.uid,
-                    part: attContext.part)
+                    part: attContext.part
+                )
                 ) + [10] // newline
             }
 
@@ -103,7 +104,6 @@ extension Imap: BackupProvider {
         return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: subjectsExpr())
     }
 }
-
 
 private struct UidsContext {
     let path: String

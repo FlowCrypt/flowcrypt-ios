@@ -10,7 +10,6 @@ import Foundation
 import XCTest
 
 final class Springboard {
-
     static let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
 
     class func resetSettings() {

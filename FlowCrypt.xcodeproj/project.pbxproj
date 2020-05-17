@@ -1254,6 +1254,8 @@
 			buildConfigurationList = C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */;
 			buildPhases = (
 				5430C58483A407F52FD23C1B /* [CP] Check Pods Manifest.lock */,
+				D2324CAA2471D47B00FD1C6F /* ShellScript */,
+				D2324CA92471CED200FD1C6F /* ShellScript */,
 				C132B9AC1EC2DBD800763715 /* Sources */,
 				C132B9AD1EC2DBD800763715 /* Frameworks */,
 				C132B9AE1EC2DBD800763715 /* Resources */,
@@ -1638,6 +1640,40 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		D2324CA92471CED200FD1C6F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
+		};
+		D2324CAA2471D47B00FD1C6F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make format\n";
 		};
 		F5FDFD02C616C6B2DEBEEFCA /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

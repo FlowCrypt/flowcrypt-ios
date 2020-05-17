@@ -6,8 +6,8 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 protocol ComposeViewDecoratorType {
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
@@ -45,7 +45,7 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
         )
     }
 
-    func styledTitle(with text:String?) -> NSAttributedString? {
+    func styledTitle(with text: String?) -> NSAttributedString? {
         guard let text = text else { return nil }
         return text.attributed(.regular(17))
     }

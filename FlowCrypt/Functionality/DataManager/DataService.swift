@@ -11,7 +11,7 @@ import Promises
 
 protocol DataServiceType {
     func startFor(user: User, with token: String?)
-    
+
     var email: String? { get }
     var currentUser: User? { get }
     var currentToken: String? { get }
@@ -30,7 +30,7 @@ final class DataService: DataServiceType {
     static let shared = DataService()
 
     var isSetupFinished: Bool {
-        return isLoggedIn && (self.encryptedStorage.keys()?.count ?? 0) > 0
+        return isLoggedIn && (encryptedStorage.keys()?.count ?? 0) > 0
     }
 
     var isLoggedIn: Bool {
@@ -81,7 +81,7 @@ final class DataService: DataServiceType {
         localStorage.saveCurrentUser(user: user)
         encryptedStorage.saveToken(with: token)
     }
-} 
+}
 
 extension DataService {
     func logOutAndDestroyStorage() {

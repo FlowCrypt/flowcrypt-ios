@@ -18,7 +18,7 @@ public final class SettingsCellNode: CellNode {
         textNode.attributedText = title
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
             child: textNode

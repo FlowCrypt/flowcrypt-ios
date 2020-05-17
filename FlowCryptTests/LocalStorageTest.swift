@@ -23,7 +23,7 @@ class LocalStorageTest: XCTestCase {
         XCTAssertNotNil(fetchedUser != nil)
         let expectationName = fetchedUser?.name == "ElonMask"
         XCTAssertTrue(expectationName)
-         let expectationEmail = fetchedUser?.email == "elonTesla@gmail.com"
+        let expectationEmail = fetchedUser?.email == "elonTesla@gmail.com"
         XCTAssertTrue(expectationEmail)
     }
 
@@ -33,4 +33,3 @@ class LocalStorageTest: XCTestCase {
         XCTAssertNil(fetchedUser)
     }
 }
-

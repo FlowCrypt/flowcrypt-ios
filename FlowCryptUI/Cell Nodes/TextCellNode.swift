@@ -35,8 +35,8 @@ public final class TextCellNode: CellNode {
     private let withSpinner: Bool
 
     public init(input: Input) {
-        self.withSpinner = input.withSpinner
-        self.size = input.size
+        withSpinner = input.withSpinner
+        size = input.size
         super.init()
         addSubnode(text)
         text.attributedText = NSAttributedString.text(from: input.title, style: .medium(16), color: .lightGray)
@@ -46,7 +46,7 @@ public final class TextCellNode: CellNode {
         backgroundColor = input.backgroundColor
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let spec = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 16,
@@ -60,7 +60,6 @@ public final class TextCellNode: CellNode {
 }
 
 final class SpinnerNode: ASDisplayNode {
-
     var activityIndicatorView: UIActivityIndicatorView {
         return view as! UIActivityIndicatorView
     }

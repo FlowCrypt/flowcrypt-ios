@@ -91,6 +91,7 @@ public extension UIView {
 }
 
 // MARK: - UITextField
+
 public extension UITextField {
     func setTextInset(_ left: CGFloat = 7) {
         leftView = UIView(frame: CGRect(x: 0, y: 0, width: left, height: frame.size.height))

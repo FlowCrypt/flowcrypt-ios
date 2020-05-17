@@ -14,7 +14,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         case title, description, passPhrase, divider, enterPhrase, chooseAnother
 
         var indexPath: IndexPath {
-            IndexPath(row: self.rawValue, section: 0)
+            IndexPath(row: rawValue, section: 0)
         }
     }
 
@@ -44,7 +44,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         super.init(node: TableNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -89,17 +89,19 @@ extension EnterPassPhraseViewController {
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
-                guard let self = self else { return }
-                self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
-            }
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self else { return }
+            self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
+        }
 
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
-                self?.adjustForKeyboard(height: 0)
-            }
+            queue: .main
+        ) { [weak self] _ in
+            self?.adjustForKeyboard(height: 0)
+        }
     }
 
     private func adjustForKeyboard(height: CGFloat) {
@@ -111,11 +113,11 @@ extension EnterPassPhraseViewController {
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         return Parts.allCases.count
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
@@ -137,14 +139,14 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
                     return true
-                } 
+                }
             case .enterPhrase:
-                 return ButtonCellNode(
+                return ButtonCellNode(
                     title: self.decorator.passPhraseContine,
                     insets: self.decorator.passPhraseInsets
-                 ) { [weak self] in
+                ) { [weak self] in
                     self?.handleContinueAction()
-                 }
+                }
             case .chooseAnother:
                 return ButtonCellNode(
                     title: self.decorator.passPhraseChooseAnother,
@@ -162,7 +164,7 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
 
 // MARK: - Actions
 
-extension EnterPassPhraseViewController { 
+extension EnterPassPhraseViewController {
     private func handleContinueAction() {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }

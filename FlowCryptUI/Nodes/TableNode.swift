@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-final public class TableNode: ASTableNode {
+public final class TableNode: ASTableNode {
     override public init(style: UITableView.Style) {
         super.init(style: style)
         view.showsVerticalScrollIndicator = false
@@ -16,7 +16,7 @@ final public class TableNode: ASTableNode {
         view.keyboardDismissMode = .onDrag
         backgroundColor = .backgroundColor
     }
-    
+
     public var bounces: Bool = true {
         didSet {
             DispatchQueue.main.async {

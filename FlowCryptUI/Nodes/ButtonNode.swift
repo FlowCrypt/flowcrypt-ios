@@ -8,11 +8,11 @@
 
 import AsyncDisplayKit
 
-final public class ButtonNode: ASButtonNode {
+public final class ButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
 
     public init(_ action: (() -> Void)?) {
-        self.onTap = action
+        onTap = action
         super.init()
         addTarget(self, action: #selector(handleTap), forControlEvents: .touchUpInside)
     }

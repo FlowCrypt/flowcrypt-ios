@@ -17,10 +17,9 @@ protocol KeyChainServiceType {
 }
 
 struct KeyChainService: KeyChainServiceType {
-
     // the prefix ensures that we use a different keychain index after deleting the app
     // because keychain entries survive app uninstall
-    static private var keychainIndex: String = {
+    private static var keychainIndex: String = {
         // todo - verify if this is indeed atomic (because static) or if there can be a race condition
         let prefixStorageIndex = "indexSecureKeychainPrefix"
         let storageEncryptionKeyIndexSuffix = "-indexStorageEncryptionKey"
@@ -46,10 +45,10 @@ struct KeyChainService: KeyChainServiceType {
             fatalError("KeyChainServiceType generateAndSaveStorageEncryptionKey getSecureRandomByteNumberArray bytes are nil")
         }
         let key = Data(randomBytes)
-        let query: [CFString : Any] = [
+        let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: KeyChainService.keychainIndex,
-            kSecValueData: key
+            kSecValueData: key,
         ]
         let addOsStatus = SecItemAdd(query as CFDictionary, nil)
         guard addOsStatus == noErr else {
@@ -58,13 +57,13 @@ struct KeyChainService: KeyChainServiceType {
     }
 
     func getStorageEncryptionKey() -> Data {
-        let query: [CFString : Any] = [
+        let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: KeyChainService.keychainIndex,
             kSecReturnData: kCFBooleanTrue!,
-            kSecMatchLimit: kSecMatchLimitOne
+            kSecMatchLimit: kSecMatchLimitOne,
         ]
-        var keyFromKeychain: AnyObject? = nil
+        var keyFromKeychain: AnyObject?
         let findOsStatus = SecItemCopyMatching(query as CFDictionary, &keyFromKeychain)
         guard findOsStatus != errSecItemNotFound else {
             generateAndSaveStorageEncryptionKey() // saves new key to storage
@@ -82,4 +81,3 @@ struct KeyChainService: KeyChainServiceType {
         return validKey
     }
 }
-

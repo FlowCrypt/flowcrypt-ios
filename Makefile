@@ -7,3 +7,6 @@ dependencies:
 
 ui_tests: dependencies
 	bundle exec fastlane test_ui --verbose
+
+format:
+	Scripts/format.sh

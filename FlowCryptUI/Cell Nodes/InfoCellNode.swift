@@ -33,20 +33,20 @@ public final class InfoCellNode: ASCellNode {
     public init(input: Input?) {
         self.input = input
         super.init()
-        self.textNode.attributedText = input?.attributedText
-        self.imageNode.image = input?.image
-        self.automaticallyManagesSubnodes = true
+        textNode.attributedText = input?.attributedText
+        imageNode.image = input?.image
+        automaticallyManagesSubnodes = true
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize = imageNode.image != nil
             ? CGSize(width: 24, height: 24)
             : .zero
 
         let stack = ASStackLayoutSpec.horizontal()
         stack.spacing = imageNode.image != nil
-                ? 6.0
-                : 0.0
+            ? 6.0
+            : 0.0
         stack.children = [imageNode, textNode]
 
         return ASInsetLayoutSpec(

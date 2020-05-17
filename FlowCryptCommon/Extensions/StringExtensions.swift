@@ -10,7 +10,7 @@ public extension String {
     }
 
     var trimLeadingSlash: String {
-        if count > 0, self[self.startIndex] == "/" {
+        if count > 0, self[startIndex] == "/" {
             return String(dropFirst())
         }
         return self
@@ -22,7 +22,7 @@ public extension String {
 }
 
 public extension NSAttributedString {
-    static func +(_ lhs: NSAttributedString, _ rhs: NSAttributedString) -> NSAttributedString {
+    static func + (_ lhs: NSAttributedString, _ rhs: NSAttributedString) -> NSAttributedString {
         let mutable = NSMutableAttributedString(attributedString: lhs)
         mutable.append(rhs)
         return mutable

@@ -51,7 +51,7 @@ struct AppStartup {
     }
 
     private func setupSession() throws {
-        try await(self.renewSessionIfValid())
+        try await(renewSessionIfValid())
     }
 
     private func renewSessionIfValid() -> Promise<Void> {

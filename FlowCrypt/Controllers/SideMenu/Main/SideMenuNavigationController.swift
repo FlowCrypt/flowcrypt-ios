@@ -3,8 +3,8 @@
 //
 
 import ENSwiftSideMenu
-import UIKit
 import FlowCryptUI
+import UIKit
 
 protocol NavigationChildController {
     func handleBackButtonTap()
@@ -78,7 +78,7 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     private func updateSideMenuSize() {
         sideMenu?.menuWidth =
             min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-            - Constants.menuOffset
+                - Constants.menuOffset
         fixSideMenuSize()
 
         if gestureView.superview != nil {
@@ -118,7 +118,7 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
     func sideMenuDidOpen() {
         isStatusBarHidden = true
         setNeedsStatusBarAppearanceUpdate()
-        gestureView.frame = view.frame 
+        gestureView.frame = view.frame
         menuViewContoller?.didOpen()
     }
 }

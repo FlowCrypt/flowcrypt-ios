@@ -33,11 +33,10 @@ extension MsgListViewConroller where Self: UIViewController {
     }
 
     private func msgListHandleOperation(message: MCOIMAPMessage, operation: MessageViewController.MessageAction) {
-        guard let index = self.msgListGetIndex(message: message) else { return }
+        guard let index = msgListGetIndex(message: message) else { return }
         switch operation {
-        case .markAsRead: self.msgListRenderAsRead(message: message, at: index)
-        case .moveToTrash, .archive, .permanentlyDelete: self.msgListRenderAsRemoved(message: message, at: index)
+        case .markAsRead: msgListRenderAsRead(message: message, at: index)
+        case .moveToTrash, .archive, .permanentlyDelete: msgListRenderAsRemoved(message: message, at: index)
         }
     }
-
 }

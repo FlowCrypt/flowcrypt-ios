@@ -61,7 +61,7 @@ extension UIViewController {
             CSToastManager.setTapToDismissEnabled(true)
         }
     }
-} 
+}
 
 extension UIViewController {
     var safeAreaWindowInsets: UIEdgeInsets {
@@ -86,7 +86,7 @@ extension UIViewController {
     }
 
     func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
-        guard let formatted = self.errorToUserFriendlyString(error: error, title: message) else {
+        guard let formatted = errorToUserFriendlyString(error: error, title: message) else {
             hideSpinner()
             onOk?()
             return // silent abort
@@ -167,7 +167,7 @@ extension UIViewController {
 }
 
 extension UINavigationController {
-    func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> ()) {
+    func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
         pushViewController(viewController, animated: animated)
 
         if let coordinator = transitionCoordinator, animated {
@@ -179,7 +179,7 @@ extension UINavigationController {
         }
     }
 
-    func popViewController(animated: Bool, completion: @escaping () -> ()) {
+    func popViewController(animated: Bool, completion: @escaping () -> Void) {
         popViewController(animated: animated)
 
         if let coordinator = transitionCoordinator, animated {

@@ -6,9 +6,9 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import AsyncDisplayKit
 import FlowCryptCommon
+import UIKit
 
 final class RecipientEmailNode: CellNode {
     struct Input {
@@ -38,9 +38,9 @@ final class RecipientEmailNode: CellNode {
         displayNode.backgroundColor = .clear
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         displayNode.style.preferredSize.width = input.width
-        displayNode.style.preferredSize.height = 1 
+        displayNode.style.preferredSize.height = 1
         let spec = ASStackLayoutSpec()
         spec.children = [displayNode, titleNode]
         spec.direction = .vertical
@@ -52,7 +52,7 @@ final class RecipientEmailNode: CellNode {
     }
 }
 
-fileprivate extension UIColor {
+private extension UIColor {
     static var titleNodeBackgroundColorSelected: UIColor {
         UIColor.colorFor(
             darkStyle: UIColor.darkGray.withAlphaComponent(0.5),

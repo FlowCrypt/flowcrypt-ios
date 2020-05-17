@@ -27,7 +27,7 @@ extension InboxCellNode.Input {
         let textColor: UIColor = isMessageRead
             ? .lightGray
             : .mainTextUnreadColor
-        
+
         self.init(
             emailText: NSAttributedString.text(from: email, style: style, color: textColor),
             dateText: NSAttributedString.text(from: date, style: style, color: dateColor),

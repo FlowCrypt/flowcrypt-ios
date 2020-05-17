@@ -13,7 +13,7 @@ public final class SetupTitleNode: CellNode {
     private let insets: UIEdgeInsets
     private let selectedNode = ASDisplayNode()
     private var selectedLineColor: UIColor?
-    
+
     public init(
         title: NSAttributedString,
         insets: UIEdgeInsets,
@@ -25,7 +25,7 @@ public final class SetupTitleNode: CellNode {
         textNode.attributedText = title
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let layout = ASInsetLayoutSpec(
             insets: insets,
             child: ASCenterLayoutSpec(
@@ -41,15 +41,15 @@ public final class SetupTitleNode: CellNode {
                 $0.spacing = 4
                 $0.children = [
                     ASInsetLayoutSpec(insets: insets, child: textNode),
-                    selectedNode
+                    selectedNode,
                 ]
             }
         } else {
             return layout
         }
     }
-    
-    public override var isSelected: Bool {
+
+    override public var isSelected: Bool {
         didSet {
             selectedNode.backgroundColor = isSelected ? selectedLineColor : .clear
         }

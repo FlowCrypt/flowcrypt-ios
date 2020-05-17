@@ -14,7 +14,7 @@ protocol ImapHelperType {
         total: Int,
         from: Int
     ) -> MCOIndexSet
-    
+
     func createSearchExpressions(
         from possibleExpressions: [MCOIMAPSearchExpression]
     ) -> MCOIMAPSearchExpression?
@@ -42,11 +42,11 @@ struct ImapHelper: ImapHelperType {
         if possibleExpressions.isEmpty {
             return nil
         }
-        
+
         if possibleExpressions.count == 1 {
             return possibleExpressions[0]
         }
-        
+
         let possibleResult: [MCOIMAPSearchExpression] = possibleExpressions
             .chunked(2)
             .compactMap { chunk -> MCOIMAPSearchExpression? in
@@ -56,8 +56,7 @@ struct ImapHelper: ImapHelperType {
                     firstSearchExp,
                     other: secondSearchExp
                 )
-        }
+            }
         return createSearchExpressions(from: possibleResult)
     }
 }
-

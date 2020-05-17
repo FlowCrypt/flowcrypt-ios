@@ -31,7 +31,7 @@ public final class HeaderNode: CellNode {
         backgroundColor = .main
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16),
             child: ASStackLayoutSpec.vertical().then {

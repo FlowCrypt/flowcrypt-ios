@@ -22,4 +22,3 @@ _ = autoreleasepool {
         NSStringFromClass(AppDelegate.self)
     )
 }
-

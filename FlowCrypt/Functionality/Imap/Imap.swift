@@ -7,12 +7,12 @@ import UIKit
 
 final class Imap {
     static let shared: Imap = Imap()
-    
+
     let helper: ImapHelperType
     let messageKindProvider: MessageKindProviderType
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
-    
+
     typealias ImapIndexSet = MCOIndexSet
     typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode

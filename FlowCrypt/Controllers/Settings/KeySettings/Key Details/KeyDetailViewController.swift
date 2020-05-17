@@ -29,7 +29,7 @@ final class KeyDetailViewController: ASViewController<TableNode> {
         super.init(node: TableNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -49,11 +49,11 @@ final class KeyDetailViewController: ASViewController<TableNode> {
 }
 
 extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else {
                 return ASCellNode()

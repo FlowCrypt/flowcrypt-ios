@@ -3,9 +3,9 @@
 //
 
 import AsyncDisplayKit
-import Promises
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
+import Promises
 
 final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
@@ -53,7 +53,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
-        self.tableNode = TableNode()
+        tableNode = TableNode()
 
         super.init(node: ASDisplayNode())
 
@@ -189,8 +189,8 @@ extension InboxViewController {
             .map { (index, _) -> Int in
                 let indexInTableView = index + count
                 return indexInTableView
-        }
-        .map { IndexPath(row: $0, section: 0) }
+            }
+            .map { IndexPath(row: $0, section: 0) }
 
         messages.append(contentsOf: messageContext.messages)
         state = .fetched(messageContext.totalMessages)
@@ -239,7 +239,6 @@ extension InboxViewController {
 }
 
 extension InboxViewController: MsgListViewConroller {
-
     func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
         return messages.firstIndex(of: message)
     }
@@ -251,7 +250,7 @@ extension InboxViewController: MsgListViewConroller {
             state = .empty
             tableNode.reloadData()
         } else {
-            let total = self.state.total ?? 0
+            let total = state.total ?? 0
             let newTotalCount = total - 1
             state = .fetched(newTotalCount)
             tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
@@ -331,7 +330,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                         withSpinner: false,
                         size: size
                     )
-                ) 
+                )
             }
         }
     }
@@ -361,7 +360,7 @@ extension InboxViewController {
     private func handleBeginFetching(_ context: ASBatchContext?) {
         switch state {
         case .idle:
-            break 
+            break
         case let .fetched(total):
             if messages.count != total {
                 loadMore(context)

@@ -12,7 +12,7 @@ import FlowCryptUI
 final class SettingsViewController: ASViewController<TableNode> {
     private enum Settings: Int, CaseIterable {
         case backups, privacy, contacts, keys, atteseter, notifications, legal, experimental
-        
+
         var title: String {
             switch self {
             case .backups: return "settings_screen_backup".localized
@@ -26,25 +26,25 @@ final class SettingsViewController: ASViewController<TableNode> {
             }
         }
     }
-    
+
     private let decorator: SettingsViewDecoratorType
-    
+
     init(
         decorator: SettingsViewDecoratorType = SettingsViewDecorator()
     ) {
         self.decorator = decorator
         super.init(node: TableNode())
     }
-    
-    required init?(coder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
@@ -54,7 +54,7 @@ final class SettingsViewController: ASViewController<TableNode> {
         super.traitCollectionDidChange(previousTraitCollection)
         node.reloadData()
     }
-    
+
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -65,22 +65,22 @@ final class SettingsViewController: ASViewController<TableNode> {
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension SettingsViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Settings.allCases.count
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let setting = Settings(rawValue: indexPath.row) else { return ASCellNode() }
-        
+
             return SettingsCellNode(
                 title: self.decorator.attributedSetting(setting.title),
                 insets: self.decorator.insets
-           )
+            )
         }
     }
-    
-    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+
+    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard let setting = Settings(rawValue: indexPath.row) else { return assertionFailure() }
         proceed(to: setting)
     }
@@ -91,7 +91,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
 extension SettingsViewController {
     private func proceed(to setting: Settings) {
         let viewController: UIViewController?
-        
+
         switch setting {
         case .keys:
             viewController = KeySettingsViewController()
@@ -100,12 +100,12 @@ extension SettingsViewController {
         default:
             viewController = nil
         }
-        
+
         guard let vc = viewController else {
             showToast("\(setting.title) not yet implemented")
             return
         }
-        
+
         navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -6,9 +6,9 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
+import UIKit
 
 protocol SignInViewDecoratorType {
     var description: NSAttributedString { get }
@@ -23,9 +23,9 @@ struct SignInViewDecorator: SignInViewDecoratorType {
                 .medium(13),
                 color: UIColor.colorFor(darkStyle: .mainTextColor, lightStyle: .textColor),
                 alignment: .center
-        )
+            )
     }
-    
+
     var logo: UIImage? {
         UIImage(named: "full-logo")
     }
@@ -34,7 +34,7 @@ struct SignInViewDecorator: SignInViewDecoratorType {
 extension SigninButtonNode {
     convenience init(_ buttonType: SignInType, onTap: (() -> Void)?) {
         self.init(
-            input: SigninButtonNode.Input.init(buttonType),
+            input: SigninButtonNode.Input(buttonType),
             onTap: onTap
         )
         button.accessibilityLabel = buttonType.rawValue
@@ -55,11 +55,11 @@ extension AppLinks: Link {
         case .security: return "sign_in_security".localized
         }
     }
-    
+
     var attributedTitle: NSAttributedString {
         NSAttributedString.text(from: title, style: .medium(17), color: .mainTextColor)
     }
-    
+
     var url: URL? {
         switch self {
         case .privacy: return URL(string: "https://flowcrypt.com/privacy")
