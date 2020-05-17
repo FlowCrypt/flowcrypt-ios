@@ -25,9 +25,9 @@ public final class InboxCellNode: CellNode {
         }
     }
 
-    private let emailNode = ASTextNode()
-    private let dateNode = ASTextNode()
-    private let messageNode = ASTextNode()
+    private let emailNode = ASTextNode2()
+    private let dateNode = ASTextNode2()
+    private let messageNode = ASTextNode2()
     private let separatorNode = ASDisplayNode()
 
     public init(message: Input) {

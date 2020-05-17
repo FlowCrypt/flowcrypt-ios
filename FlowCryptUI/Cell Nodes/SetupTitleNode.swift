@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 
 public final class SetupTitleNode: CellNode {
-    private let textNode = ASTextNode()
+    private let textNode = ASTextNode2()
     private let insets: UIEdgeInsets
     private let selectedNode = ASDisplayNode()
     private var selectedLineColor: UIColor?
