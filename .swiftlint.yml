@@ -1,3 +1,5 @@
+################### RULES https://realm.github.io/SwiftLint/
+
 # disabled_rules:
 #   - todo
 #   - identifier_name

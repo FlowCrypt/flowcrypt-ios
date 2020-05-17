@@ -17,3 +17,5 @@ else
   brew install swiftformat
   exit 0
 fi
+
+################### RULES https://github.com/nicklockwood/SwiftFormat/blob/master/Rules.md
