@@ -26,5 +26,5 @@ line_length: 140
 
 # warning_threshold: 1
 
-reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit, html, emoji)
+reporter: "xcode"
 

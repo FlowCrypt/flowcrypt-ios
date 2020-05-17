@@ -14,4 +14,6 @@ if which swiftformat >/dev/null; then
      --swiftversion 5
 else
   echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"
+  brew install swiftformat
+  exit 0
 fi
