@@ -204,7 +204,7 @@ extension SetupViewController {
     private func reloadNodes() {
         let indexes = [
             IndexPath(row: Parts.action.rawValue, section: 0),
-            IndexPath(row: Parts.description.rawValue, section: 0),
+            IndexPath(row: Parts.description.rawValue, section: 0)
         ]
         node.reloadRows(at: indexes, with: .fade)
     }
@@ -299,7 +299,12 @@ extension SetupViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        try! storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .generated)
+
+        do {
+            try storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .generated)
+        } catch {
+            fatalError()
+        }
         moveToMainFlow()
     }
 

@@ -51,7 +51,7 @@ public final class RecipientEmailsCellNode: CellNode {
         automaticallyManagesSubnodes = true
     }
 
-    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         guard recipients.isNotEmpty else {
             return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
         }

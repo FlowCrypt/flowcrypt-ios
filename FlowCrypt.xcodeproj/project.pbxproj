@@ -61,7 +61,6 @@
 		9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA523C673AD005D2CB6 /* Springboard.swift */; };
 		9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA823C67587005D2CB6 /* UserCredentials.swift */; };
 		9F228BAA23C67729005D2CB6 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
-		9F228BAC23C7198F005D2CB6 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 9F228BAB23C7198F005D2CB6 /* test-ci-secrets.json */; };
 		9F23EA50237217140017DFED /* ComposeViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */; };
 		9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268890237DC55600428A94 /* ImportKeyViewController.swift */; };
 		9F268894237DD98900428A94 /* EnterPassPhraseViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268893237DD98900428A94 /* EnterPassPhraseViewDecorator.swift */; };
@@ -136,6 +135,8 @@
 		D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* InfoCellNode.swift */; };
 		D216D05E242D32EA0083EDD6 /* TestCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D216D05D242D32EA0083EDD6 /* TestCredentials.swift */; };
+		D2324CAD2471DCF800FD1C6F /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = D2324CAC2471DCF800FD1C6F /* format.sh */; };
+		D2324CAF2471E35F00FD1C6F /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D2324CAE2471E35F00FD1C6F /* test-ci-secrets.json */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
@@ -420,6 +421,8 @@
 		D204DBA123FB35700083B9D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D204DBA723FB35930083B9D6 /* RecipientsTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientsTextField.swift; sourceTree = "<group>"; };
 		D216D05D242D32EA0083EDD6 /* TestCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCredentials.swift; sourceTree = "<group>"; };
+		D2324CAC2471DCF800FD1C6F /* format.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = format.sh; sourceTree = "<group>"; };
+		D2324CAE2471E35F00FD1C6F /* test-ci-secrets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNode.swift; sourceTree = "<group>"; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
@@ -809,6 +812,7 @@
 				D216D05D242D32EA0083EDD6 /* TestCredentials.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
 				9F228BA723C673C2005D2CB6 /* Resources */,
+				D2324CAE2471E35F00FD1C6F /* test-ci-secrets.json */,
 			);
 			path = FlowCryptUITests;
 			sourceTree = "<group>";
@@ -853,6 +857,7 @@
 			children = (
 				C132B9B21EC2DBD800763715 /* FlowCrypt */,
 				A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */,
+				D2324CAB2471DCF800FD1C6F /* Scripts */,
 				2DC3601602226D74335E18F4 /* Pods */,
 				9FDF3642235A1B0100614596 /* FlowCryptUITests */,
 				D204DB9F23FB35700083B9D6 /* FlowCryptUI */,
@@ -963,6 +968,14 @@
 				D28655972424D0BC0066F52E /* Views */,
 			);
 			path = FlowCryptUI;
+			sourceTree = "<group>";
+		};
+		D2324CAB2471DCF800FD1C6F /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				D2324CAC2471DCF800FD1C6F /* format.sh */,
+			);
+			path = Scripts;
 			sourceTree = "<group>";
 		};
 		D24ABA6123FDB275002EE9DD /* Resources */ = {
@@ -1395,7 +1408,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F228BAC23C7198F005D2CB6 /* test-ci-secrets.json in Resources */,
+				D2324CAF2471E35F00FD1C6F /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1411,6 +1424,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2324CAD2471DCF800FD1C6F /* format.sh in Resources */,
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,

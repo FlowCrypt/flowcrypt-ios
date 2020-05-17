@@ -46,7 +46,7 @@ public final class TextCellNode: CellNode {
         backgroundColor = input.backgroundColor
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let spec = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 16,

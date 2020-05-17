@@ -91,10 +91,10 @@ final class SegmentedViewController: ASViewController<ASDisplayNode> {
             .reduce(0, +)
         let collectionWidth = calculatedWidth
             + CGFloat(dataSource.count + 1) * style.insets.width
-        let x = (view.frame.size.width - collectionWidth) / 2
+        let originX = (view.frame.size.width - collectionWidth) / 2
 
         collectionNode.frame = CGRect(
-            x: x,
+            x: originX,
             y: 0,
             width: node.view.frame.width,
             height: style.height

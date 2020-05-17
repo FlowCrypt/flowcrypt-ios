@@ -28,7 +28,7 @@ public final class MessageSenderNode: CellNode {
         onTap?()
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
         buttonNode.style.preferredSize = CGSize(width: 50, height: 50)
         return ASInsetLayoutSpec(

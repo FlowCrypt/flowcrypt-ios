@@ -133,7 +133,7 @@ extension ImportKeyViewController {
             String(kUTTypeUTF16ExternalPlainText),
             String(kUTTypeUTF16PlainText),
             String(kUTTypeItem),
-            String(kUTTypeData),
+            String(kUTTypeData)
         ]
         let documentInteractionController = UIDocumentPickerViewController(
             documentTypes: acceptableDocumentTypes,

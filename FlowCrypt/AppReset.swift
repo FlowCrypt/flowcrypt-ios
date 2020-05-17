@@ -17,7 +17,7 @@ enum AppReset: String {
             kSecClassInternetPassword as String,
             kSecClassCertificate as String,
             kSecClassKey as String,
-            kSecClassIdentity as String,
+            kSecClassIdentity as String
         ]
         for secClass in secClasses {
             let query = [kSecClass as String: secClass]

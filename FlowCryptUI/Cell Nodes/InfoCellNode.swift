@@ -38,7 +38,7 @@ public final class InfoCellNode: ASCellNode {
         automaticallyManagesSubnodes = true
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize = imageNode.image != nil
             ? CGSize(width: 24, height: 24)
             : .zero

@@ -18,7 +18,7 @@ public final class MessageSubjectNode: CellNode {
         timeNode.attributedText = time
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8),

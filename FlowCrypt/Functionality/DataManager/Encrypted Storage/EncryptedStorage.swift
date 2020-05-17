@@ -66,8 +66,8 @@ final class EncryptedStorage: EncryptedStorageType {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
         do {
             try storage.write {
-                for k in keyDetails {
-                    storage.add(try KeyInfo(k, passphrase: passPhrase, source: source))
+                for key in keyDetails {
+                    storage.add(try KeyInfo(key, passphrase: passPhrase, source: source))
                 }
             }
         } catch {

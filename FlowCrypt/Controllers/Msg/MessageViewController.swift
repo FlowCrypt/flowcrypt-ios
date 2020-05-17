@@ -174,7 +174,7 @@ extension MessageViewController {
     }
 
     private func handleError(_ error: Error, path: String) {
-        if let e = error as NSError?, e.code == Imap.Err.fetch.rawValue {
+        if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
             // todo - the missing msg should be removed from the list in inbox view
             // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
             showToast("Message not found in folder: \(path)")

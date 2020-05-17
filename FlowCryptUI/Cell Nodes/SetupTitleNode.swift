@@ -25,7 +25,7 @@ public final class SetupTitleNode: CellNode {
         textNode.attributedText = title
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let layout = ASInsetLayoutSpec(
             insets: insets,
             child: ASCenterLayoutSpec(
@@ -49,7 +49,7 @@ public final class SetupTitleNode: CellNode {
         }
     }
 
-    override public var isSelected: Bool {
+    public override var isSelected: Bool {
         didSet {
             selectedNode.backgroundColor = isSelected ? selectedLineColor : .clear
         }

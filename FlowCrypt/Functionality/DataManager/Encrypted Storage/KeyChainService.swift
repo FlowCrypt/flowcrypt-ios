@@ -48,7 +48,7 @@ struct KeyChainService: KeyChainServiceType {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: KeyChainService.keychainIndex,
-            kSecValueData: key,
+            kSecValueData: key
         ]
         let addOsStatus = SecItemAdd(query as CFDictionary, nil)
         guard addOsStatus == noErr else {
@@ -61,7 +61,7 @@ struct KeyChainService: KeyChainServiceType {
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: KeyChainService.keychainIndex,
             kSecReturnData: kCFBooleanTrue!,
-            kSecMatchLimit: kSecMatchLimitOne,
+            kSecMatchLimit: kSecMatchLimitOne
         ]
         var keyFromKeychain: AnyObject?
         let findOsStatus = SecItemCopyMatching(query as CFDictionary, &keyFromKeychain)

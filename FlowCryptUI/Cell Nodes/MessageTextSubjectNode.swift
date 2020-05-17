@@ -20,7 +20,7 @@ public final class MessageTextSubjectNode: CellNode {
         }
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),

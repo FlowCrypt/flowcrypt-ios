@@ -78,7 +78,7 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     private func updateSideMenuSize() {
         sideMenu?.menuWidth =
             min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-                - Constants.menuOffset
+            - Constants.menuOffset
         fixSideMenuSize()
 
         if gestureView.superview != nil {

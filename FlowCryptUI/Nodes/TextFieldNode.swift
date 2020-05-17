@@ -134,12 +134,12 @@ public final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(insets: .zero, child: node)
     }
 
     @discardableResult
-    override public func becomeFirstResponder() -> Bool {
+    public override func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
             super.becomeFirstResponder()
             _ = self.textField.becomeFirstResponder()

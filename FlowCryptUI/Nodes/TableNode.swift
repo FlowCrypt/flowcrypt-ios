@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 
 public final class TableNode: ASTableNode {
-    override public init(style: UITableView.Style) {
+    public override init(style: UITableView.Style) {
         super.init(style: style)
         view.showsVerticalScrollIndicator = false
         view.separatorStyle = .none

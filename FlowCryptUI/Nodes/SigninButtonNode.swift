@@ -44,7 +44,7 @@ public final class SigninButtonNode: ASCellNode {
         onTap?()
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16),
             child: button

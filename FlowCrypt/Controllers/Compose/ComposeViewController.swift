@@ -136,7 +136,7 @@ extension ComposeViewController {
             with: [
                 NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
                 NavigationBarItemsView.Input(image: UIImage(named: "paperclip"), action: (self, #selector(handleAttachTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "android-send"), action: (self, #selector(handleSendTap)), accessibilityLabel: "send"),
+                NavigationBarItemsView.Input(image: UIImage(named: "android-send"), action: (self, #selector(handleSendTap)), accessibilityLabel: "send")
             ]
         )
     }
@@ -328,7 +328,12 @@ extension ComposeViewController {
             replyToMimeMsg: replyToMimeMsg,
             atts: atts
         )
-        return try! core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
+
+        do {
+            return try core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
+        } catch {
+            fatalError()
+        }
     }
 
     private func isInputValid() -> Bool {

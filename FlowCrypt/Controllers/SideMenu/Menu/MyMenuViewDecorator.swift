@@ -51,7 +51,7 @@ extension FolderViewModel {
                 path: "",
                 image: UIImage(named: "exit")?.tinted(.mainTextColor),
                 itemType: .logOut
-            ),
+            )
         ]
     }
 }

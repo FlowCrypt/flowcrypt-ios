@@ -49,13 +49,13 @@ public final class TextViewCellNode: CellNode {
         ]
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textView.style.preferredSize.height = height
         return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8), child: textView)
     }
 
     @discardableResult
-    override public func becomeFirstResponder() -> Bool {
+    public override func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
             _ = self.textView.textView.becomeFirstResponder()
         }

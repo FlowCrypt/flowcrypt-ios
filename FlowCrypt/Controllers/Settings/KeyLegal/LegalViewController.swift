@@ -41,13 +41,13 @@ final class LegalViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let y = safeAreaWindowInsets.top
+        let originY = safeAreaWindowInsets.top
             + (navigationController?.navigationBar.frame.height ?? 0)
         segment.node.view.frame = CGRect(
             x: 0,
-            y: y,
+            y: originY,
             width: view.frame.width,
-            height: view.frame.height - y
+            height: view.frame.height - originY
         )
     }
 }

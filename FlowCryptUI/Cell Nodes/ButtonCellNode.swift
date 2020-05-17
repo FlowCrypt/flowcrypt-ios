@@ -37,7 +37,7 @@ public final class ButtonCellNode: CellNode {
         button.setAttributedTitle(title, for: .normal)
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
             child: button

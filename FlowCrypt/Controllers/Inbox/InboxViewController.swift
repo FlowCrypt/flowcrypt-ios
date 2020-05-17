@@ -117,7 +117,7 @@ extension InboxViewController {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap))),
+                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
             ]
         )
     }

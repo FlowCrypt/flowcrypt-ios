@@ -57,8 +57,7 @@ struct EnterPassPhraseViewDecorator: EnterPassPhraseViewDecoratorType {
     let passPhraseInsets = UIEdgeInsets(top: 32, left: 16, bottom: 0, right: 16)
     let titleInsets = UIEdgeInsets(top: 100, left: 16, bottom: 30, right: 16)
     let subTitleInset = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
-    var subtitleStyle: (String) -> NSAttributedString {
-        { $0.attributed(.regular(17), alignment: .center) }
+    var subtitleStyle: (String) -> NSAttributedString { { $0.attributed(.regular(17), alignment: .center) }
     }
 
     private func attributed(title: String) -> NSAttributedString {

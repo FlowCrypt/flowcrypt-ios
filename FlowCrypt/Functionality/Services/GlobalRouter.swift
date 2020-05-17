@@ -1,4 +1,3 @@
-
 //
 //  GlobalRouter.swift
 //  FlowCrypt

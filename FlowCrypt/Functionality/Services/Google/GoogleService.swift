@@ -81,7 +81,7 @@ extension GoogleService: GoogleServiceType {
             URLQueryItem(name: "v", value: "3.0"),
             URLQueryItem(name: "alt", value: "json"),
             URLQueryItem(name: "access_token", value: token),
-            URLQueryItem(name: "start-index", value: "0"),
+            URLQueryItem(name: "start-index", value: "0")
         ]
 
         guard let url = searchComponents.url else {

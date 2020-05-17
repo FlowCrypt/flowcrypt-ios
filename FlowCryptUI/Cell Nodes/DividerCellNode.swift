@@ -24,7 +24,7 @@ public final class DividerCellNode: CellNode {
         backgroundColor = color
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(insets: inset, child: line)
     }
 }
