@@ -16,7 +16,7 @@ final class RecipientEmailNode: CellNode {
         let width: CGFloat
     }
 
-    let titleNode = ASTextNode()
+    let titleNode = ASTextNode2()
     let input: Input
     let displayNode = ASDisplayNode()
 

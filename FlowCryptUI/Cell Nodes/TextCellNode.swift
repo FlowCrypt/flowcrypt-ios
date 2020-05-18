@@ -30,7 +30,7 @@ public final class TextCellNode: CellNode {
     }
 
     private let spinner = SpinnerNode()
-    private let text = ASTextNode()
+    private let text = ASTextNode2()
     private let size: CGSize
     private let withSpinner: Bool
 

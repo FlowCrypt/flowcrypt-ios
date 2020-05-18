@@ -29,7 +29,7 @@ public final class InfoCellNode: ASCellNode {
         }
     }
 
-    private let textNode = ASTextNode()
+    private let textNode = ASTextNode2()
     private let imageNode = ASImageNode()
     private let input: Input?
 
