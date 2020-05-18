@@ -9,8 +9,8 @@
 import AsyncDisplayKit
 
 public final class MessageSubjectNode: CellNode {
-    private let textNode = ASTextNode()
-    private let timeNode = ASTextNode()
+    private let textNode = ASTextNode2()
+    private let timeNode = ASTextNode2()
 
     public init(_ text: NSAttributedString?, time: NSAttributedString?) {
         super.init()

@@ -19,8 +19,8 @@ public final class HeaderNode: CellNode {
         }
     }
 
-    private let titleNode = ASTextNode()
-    private let subTitleNode = ASTextNode()
+    private let titleNode = ASTextNode2()
+    private let subTitleNode = ASTextNode2()
 
     public init(input: HeaderNode.Input?) {
         super.init()

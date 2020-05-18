@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 
 public final class SettingsCellNode: CellNode {
-    private let textNode = ASTextNode()
+    private let textNode = ASTextNode2()
     private let insets: UIEdgeInsets
 
     public init(title: NSAttributedString, insets: UIEdgeInsets) {
