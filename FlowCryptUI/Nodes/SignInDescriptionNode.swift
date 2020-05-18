@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 
 public final class SignInDescriptionNode: ASCellNode {
-    private let textNode = ASTextNode()
+    private let textNode = ASTextNode2()
 
     public init(_ title: NSAttributedString?) {
         super.init()
