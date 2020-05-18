@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -188,7 +188,7 @@
 		D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
 		D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */; };
 		D2A9CA472426244600E1D898 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
-		D2ADCB272472CC0E00B5C0B4 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D2ADCB252472B22800B5C0B4 /* test-ci-secrets.json */; platformFilter = ios; };
+		D2BEB5922472F1C5009E7E2F /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D2BEB5912472F1C5009E7E2F /* test-ci-secrets.json */; };
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
 		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		D2CDC3CF2402D4AD002B045F /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */; };
@@ -463,7 +463,7 @@
 		D2A9CA3E24261A4600E1D898 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
 		D2A9CA4124261DBC00E1D898 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralConstantsTest.swift; sourceTree = "<group>"; };
-		D2ADCB252472B22800B5C0B4 /* test-ci-secrets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = "<group>"; };
+		D2BEB5912472F1C5009E7E2F /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
 		D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInGoogleTest.swift; sourceTree = "<group>"; };
 		D2F18467244B0F35000CC5D1 /* AppTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTestHelper.swift; sourceTree = "<group>"; };
 		D2F18469244DB8F6000CC5D1 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = fastlane/SnapshotHelper.swift; sourceTree = SOURCE_ROOT; };
@@ -838,12 +838,12 @@
 		9FDF3642235A1B0100614596 /* FlowCryptUITests */ = {
 			isa = PBXGroup;
 			children = (
+				D2BEB5912472F1C5009E7E2F /* test-ci-secrets.json */,
 				9FDF364C235A1CCD00614596 /* SignInTest.swift */,
 				D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */,
 				D216D05D242D32EA0083EDD6 /* TestCredentials.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
 				9F228BA723C673C2005D2CB6 /* Resources */,
-				D2ADCB252472B22800B5C0B4 /* test-ci-secrets.json */,
 			);
 			path = FlowCryptUITests;
 			sourceTree = "<group>";
@@ -1453,7 +1453,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2ADCB272472CC0E00B5C0B4 /* test-ci-secrets.json in Resources */,
+				D2BEB5922472F1C5009E7E2F /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
