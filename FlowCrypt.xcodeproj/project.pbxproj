@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -188,7 +188,7 @@
 		D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
 		D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */; };
 		D2A9CA472426244600E1D898 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
-		D2ADCB262472B22800B5C0B4 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D2ADCB252472B22800B5C0B4 /* test-ci-secrets.json */; };
+		D2ADCB272472CC0E00B5C0B4 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D2ADCB252472B22800B5C0B4 /* test-ci-secrets.json */; platformFilter = ios; };
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
 		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		D2CDC3CF2402D4AD002B045F /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */; };
@@ -1453,7 +1453,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2ADCB262472B22800B5C0B4 /* test-ci-secrets.json in Resources */,
+				D2ADCB272472CC0E00B5C0B4 /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
