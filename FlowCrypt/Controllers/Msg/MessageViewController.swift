@@ -95,31 +95,34 @@ final class MessageViewController: ASViewController<TableNode> {
     }
 
     private func setupNavigationBar() {
-        let infoInput = NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap)))
-        let archiveInput = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
-        let trashInput = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
-        let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
-
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: [infoInput])
-
         imap.trashFolderPath()
             .then(on: .main) { [weak self] path in
-                guard let self = self else { return }
-                switch self.input?.path.lowercased() {
-                case path?.lowercased():
-                    self.navigationItem.rightBarButtonItem = NavigationBarItemsView(
-                        with: [infoInput, trashInput]
-                    )
-                case MailDestination.Gmail.inbox.path.lowercased():
-                    self.navigationItem.rightBarButtonItem = NavigationBarItemsView(
-                        with: [infoInput, archiveInput, trashInput, mailInput]
-                    )
-                default:
-                    self.navigationItem.rightBarButtonItem = NavigationBarItemsView(
-                        with: [infoInput, trashInput, mailInput]
-                    )
-                }
+                self?.setupNavigationBarItems(with: path)
             }
+    }
+
+    private func setupNavigationBarItems(with trashFolderPath: String?) {
+        let helpButton = NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap)))
+        let archiveButton = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
+        let trashButton = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
+        let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
+
+
+        let items: [NavigationBarItemsView.Input]
+        switch input?.path.lowercased() {
+        case trashFolderPath?.lowercased():
+            // in case we are in trash folder ([Gmail]/Trash or Deleted for Outlook, etc)
+            // we need to have only help and trash buttons
+            items = [helpButton, trashButton]
+        case MailDestination.Gmail.inbox.path.lowercased():
+            // for Gmail inbox we also need to have archive and unread buttons
+            items = [helpButton, archiveButton, trashButton, unreadButton]
+        default:
+            // in any other folders
+            items = [helpButton, trashButton, unreadButton]
+        }
+
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

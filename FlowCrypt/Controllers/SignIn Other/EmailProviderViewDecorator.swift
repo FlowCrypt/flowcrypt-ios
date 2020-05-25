@@ -10,6 +10,8 @@ import UIKit
 import FlowCryptUI
 
 protocol EmailProviderViewDecoratorType {
+    var connectButtonTitle: NSAttributedString { get }
+    var connectButtonInsets: UIEdgeInsets { get }
     func title(for section: EmailProviderViewController.Section) -> InfoCellNode.Input
     func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input?
     func stringFor(user: UserObject, for section: EmailProviderViewController.Section) -> NSAttributedString?
@@ -19,6 +21,14 @@ protocol EmailProviderViewDecoratorType {
 }
 
 struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
+    var connectButtonTitle: NSAttributedString {
+        "other_provider_connect"
+            .localized
+            .attributed(.bold(20), color: .white, alignment: .center)
+    }
+
+    let connectButtonInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 10)
+
     private var titleColor: UIColor {
         .colorFor(
             darkStyle: .white,

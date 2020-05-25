@@ -262,10 +262,8 @@ extension EmailProviderViewController {
 
     private func buttonNode() -> ButtonCellNode {
         ButtonCellNode(
-            title: "other_provider_connect"
-                .localized
-                .attributed(.bold(20), color: .white, alignment: .center),
-            insets: UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 10)
+            title: decorator.connectButtonTitle,
+            insets: decorator.connectButtonInsets
         ) { [weak self] in
             self?.connect()
         }
