@@ -129,7 +129,6 @@
 		D211CE7223FC35AC00D1CE38 /* TextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C1236B9273005D7D05 /* TextFieldNode.swift */; };
 		D211CE7323FC35AC00D1CE38 /* TextViewCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */; };
 		D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* ButtonCellNode.swift */; };
-		D211CE7523FC369D00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* InfoCellNode.swift */; };
 		D21574B724376852006B094F /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21574B624376852006B094F /* ConnectionType.swift */; };
@@ -189,6 +188,8 @@
 		D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */; };
 		D2A9CA472426244600E1D898 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
 		D2BEB5922472F1C5009E7E2F /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D2BEB5912472F1C5009E7E2F /* test-ci-secrets.json */; };
+		D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
+		D2CCD1FA247C50DA00D21F9C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
 		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		D2CDC3CF2402D4AD002B045F /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */; };
@@ -1483,6 +1484,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1887,6 +1889,7 @@
 				D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */,
 				D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
+				D2CCD1FA247C50DA00D21F9C /* UIColorExtension.swift in Sources */,
 				D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */,
 				D2F6D12F24324ACC00DB4065 /* SwitchCellNode.swift in Sources */,
 				D2A9CA38242618DF00E1D898 /* LinkButtonNode.swift in Sources */,
@@ -1908,7 +1911,6 @@
 				D27177472424D59800BDA9A9 /* TextCellNode.swift in Sources */,
 				D211CE6E23FC354200D1CE38 /* CellNode.swift in Sources */,
 				D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */,
-				D211CE7523FC369D00D1CE38 /* UIColorExtension.swift in Sources */,
 				D211CE7323FC35AC00D1CE38 /* TextViewCellNode.swift in Sources */,
 				D2A9CA392426197400E1D898 /* SigninButtonNode.swift in Sources */,
 				D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */,

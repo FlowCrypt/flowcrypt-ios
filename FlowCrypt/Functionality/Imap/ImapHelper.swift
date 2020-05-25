@@ -43,7 +43,6 @@ struct ImapHelper: ImapHelperType {
         }
 
         let range = MCORange(location: UInt64(diff), length: UInt64(location))
-        print("^^ diff \(diff) location \(location)")
         return MCOIndexSet(range: range)
     }
 

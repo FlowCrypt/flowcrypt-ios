@@ -30,7 +30,7 @@ extension UIColor {
     }
 
     static var mainTextUnreadColor: UIColor {
-        UIColor(named: "mainTextUnreadColor")!
+        .white
     }
 
     static var activityIndicatorColor: UIColor {
