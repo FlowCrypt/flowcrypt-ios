@@ -130,7 +130,6 @@ GEM
       xcodeproj (>= 1.13.0, < 2.0.0)
       xcpretty (~> 0.3.0)
       xcpretty-travis-formatter (>= 0.0.3)
-    fastlane-plugin-semaphore (0.2.0)
     ffi (1.12.2)
     fourflusher (2.3.1)
     fuzzy_match (2.0.4)
@@ -250,11 +249,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  cocoapods
+  cocoapods (>= 1.9.1)
   fastlane (>= 2.134.0)
-  fastlane-plugin-semaphore
   rest-client
   xcode-install (>= 2.6.1)
 
 BUNDLED WITH
-   2.1.4
+   1.17.3
