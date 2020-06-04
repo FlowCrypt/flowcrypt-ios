@@ -8,6 +8,7 @@ import IDZSwiftCommonCrypto // for aes
 import JavaScriptCore // for export to js
 import Security // for rng
 import SwiftyRSA // for rsa
+import BigInt
 
 @objc protocol CoreHostExports: JSExport {
     // crypto
@@ -54,14 +55,15 @@ final class CoreHost: NSObject, CoreHostExports {
         return Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
     }
 
-    // rsa verify is used by OpenPGP.js during decryption as well to figure out our own key preferences
-    // this slows down decryption the first time a private key is used in a session because bn.js is slow
-    // Using GMP C library modular exponentiation reduces rsa4096 verify time from 800ms to 40ms
     func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
-        // only supported on arm64 because was not able to build it for other platforms yet
-        // in fact, I'm no longer able to build any working library other than the one I've built before
-        // when not supported, the function returns empty string, and JS falls back on bn.js
-        return String(cString: c_gmp_mod_pow(base, exponent, modulo))
+        guard let n = BigUInt(base),
+            let e = BigUInt(exponent),
+            let m = BigUInt(modulo)
+        else {
+            return ""
+        }
+        let result = modPow(n: n, e: e, m: m)
+        return String(result, radix: 10)
     }
 
     func hashDigest(name: String, data: Data) throws -> [UInt8] {
@@ -146,4 +148,30 @@ final class CoreHost: NSObject, CoreHostExports {
 extension SecPadding {
     // https://developer.apple.com/documentation/security/secpadding/ksecpaddingnone
     public static let NONE = SecPadding(rawValue: 0)
+}
+
+
+private func modPow<T: BinaryInteger>(n: T, e: T, m: T) -> T {
+    guard e != 0 else {
+        return 1
+    }
+
+    var res = T(1)
+    var base = n % m
+    var exp = e
+
+    while true {
+        if exp & 1 == 1 {
+            res *= base
+            res %= m
+        }
+
+        if exp == 1 {
+            return res
+        }
+
+        exp /= 2
+        base *= base
+        base %= m
+    }
 }
