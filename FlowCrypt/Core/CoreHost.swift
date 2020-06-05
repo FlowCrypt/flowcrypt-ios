@@ -55,11 +55,11 @@ final class CoreHost: NSObject, CoreHostExports {
         return Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
     }
 
+    // rsa verify is used by OpenPGP.js during decryption as well to figure out our own key preferences
+    // this slows down decryption the first time a private key is used in a session because bn.js is slow
     func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
-        guard let n = BigUInt(base),
-            let e = BigUInt(exponent),
-            let m = BigUInt(modulo)
-        else {
+        // If there is an error parsing provided numbers, the function returns empty string, and JS falls back on bn.js
+        guard let n = BigUInt(base), let e = BigUInt(exponent), let m = BigUInt(modulo) else {
             return ""
         }
         let result = modPow(n: n, e: e, m: m)
@@ -148,30 +148,4 @@ final class CoreHost: NSObject, CoreHostExports {
 extension SecPadding {
     // https://developer.apple.com/documentation/security/secpadding/ksecpaddingnone
     public static let NONE = SecPadding(rawValue: 0)
-}
-
-
-private func modPow<T: BinaryInteger>(n: T, e: T, m: T) -> T {
-    guard e != 0 else {
-        return 1
-    }
-
-    var res = T(1)
-    var base = n % m
-    var exp = e
-
-    while true {
-        if exp & 1 == 1 {
-            res *= base
-            res %= m
-        }
-
-        if exp == 1 {
-            return res
-        }
-
-        exp /= 2
-        base *= base
-        base %= m
-    }
 }
