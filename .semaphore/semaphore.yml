@@ -26,7 +26,7 @@ blocks:
           - checkout
           - cd ~/git/flowcrypt-ios/
           - cache restore
-          - bundle install --path vendor/bundle
+          - bundle install #--path vendor/bundle
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
       jobs:
