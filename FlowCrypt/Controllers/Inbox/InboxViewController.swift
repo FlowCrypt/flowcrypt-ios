@@ -96,6 +96,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         tableNode.reloadData()
     }
 }
@@ -283,7 +284,10 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             - safeAreaWindowInsets.top
             - safeAreaWindowInsets.bottom
 
-        let size = CGSize(width: tableNode.frame.size.width, height: height)
+        let size = CGSize(
+            width: tableNode.frame.size.width,
+            height: max(height, 0)
+        )
         let text = title ?? ""
 
         return { [weak self] in
