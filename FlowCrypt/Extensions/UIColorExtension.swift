@@ -10,34 +10,60 @@ import UIKit
 
 extension UIColor {
     static var main: UIColor {
-        UIColor(named: "mainGreenColor")!
+        UIColor(r: 36, g: 156, b: 6, alpha: 1)
     }
 
     static var textColor: UIColor {
-        UIColor(named: "additionalInfoLabelColor")!
+        UIColor(r: 57, g: 57, b: 57, alpha: 1)
     }
 
     static var mainTextColor: UIColor {
-        UIColor(named: "mainTextColor")!
+        UIColor.colorFor(
+            darkStyle: .white,
+            lightStyle: .black
+        )
     }
 
     static var backgroundColor: UIColor {
-        UIColor(named: "backgroundColor")!
+        UIColor.colorFor(
+            darkStyle: UIColor(r: 45, g: 44, b: 46, alpha: 1),
+            lightStyle: .white
+        )
     }
 
     static var dividerColor: UIColor {
-        UIColor(named: "dividerColor")!
+        UIColor.colorFor(
+            darkStyle: UIColor(r: 102, g: 102, b: 102, alpha: 1),
+            lightStyle: UIColor(r: 255, g: 255, b: 255, alpha: 0.1)
+        )
     }
 
     static var mainTextUnreadColor: UIColor {
-        UIColor(named: "mainTextUnreadColor")!
+        UIColor.colorFor(
+            darkStyle: .white,
+            lightStyle: .black
+        )
     }
 
     static var activityIndicatorColor: UIColor {
-        UIColor(named: "activityIndicatorColor")!
+        UIColor.colorFor(
+            darkStyle: .white,
+            lightStyle: UIColor(r: 143, g: 142, b: 147, alpha: 1)
+        )
     }
 
     static var blueColor: UIColor {
-        UIColor(red: 0, green: 120/255, blue: 1, alpha: 1)
+        UIColor(r: 0, g: 120, b: 255, alpha: 1)
+    }
+}
+
+extension UIColor {
+    convenience init(r: Int, g: Int, b: Int, alpha: CGFloat) {
+        self.init(
+            red: CGFloat(r)/CGFloat(255.0),
+            green: CGFloat(g)/CGFloat(255.0),
+            blue: CGFloat(b)/CGFloat(255.0),
+            alpha: alpha
+        )
     }
 }
