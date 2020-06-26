@@ -3,31 +3,40 @@ platform :ios, '12.2'
 
 use_frameworks!
 
-target 'FlowCrypt' do
+############################ Pods ############################
+
+def app_pods
   pod 'GoogleSignIn'
   pod 'mailcore2-ios'
   pod 'MBProgressHUD'
-  pod 'RealmSwift'
   pod 'SwiftLint' # todo - add linting rules
-  pod 'PromisesSwift'
-  pod 'SwiftyRSA'
-  pod 'IDZSwiftCommonCrypto'
   pod 'Toast', '~> 4.0.0'
   pod 'ENSwiftSideMenu', '~> 0.1.4'
   pod 'Texture'
 end
 
-target 'FlowCryptTests' do
+def shared_pods
+  pod 'RealmSwift'
   pod 'PromisesSwift'
   pod 'SwiftyRSA'
-  pod 'RealmSwift'
   pod 'IDZSwiftCommonCrypto'
   pod 'mailcore2-ios'
-  inherit! :search_paths
+  pod 'BigInt', '~> 5.0'
 end
 
-def ui_pods 
+def ui_pods
   pod 'Texture'
+end
+
+############################ Targets ############################
+target 'FlowCrypt' do
+  shared_pods
+  app_pods
+end
+
+target 'FlowCryptTests' do
+  shared_pods
+  inherit! :search_paths
 end
 
 target 'FlowCryptUI' do

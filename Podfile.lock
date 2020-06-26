@@ -4,6 +4,7 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.2.0)
   - AppAuth/Core (1.2.0)
   - AppAuth/ExternalUserAgent (1.2.0)
+  - BigInt (5.0.0)
   - ENSwiftSideMenu (0.1.4)
   - GoogleSignIn (5.0.1):
     - AppAuth (~> 1.2)
@@ -70,6 +71,7 @@ PODS:
   - Toast (4.0.0)
 
 DEPENDENCIES:
+  - BigInt (~> 5.0)
   - ENSwiftSideMenu (~> 0.1.4)
   - GoogleSignIn
   - IDZSwiftCommonCrypto
@@ -85,6 +87,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AppAuth
+    - BigInt
     - ENSwiftSideMenu
     - GoogleSignIn
     - GTMAppAuth
@@ -106,6 +109,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
+  BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
   ENSwiftSideMenu: 21e755dae28f09bbf453aa83b3d05f2e5f92ca39
   GoogleSignIn: 3a51b9bb8e48b635fd7f4272cee06ca260345b86
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
@@ -125,6 +129,6 @@ SPEC CHECKSUMS:
   Texture: 8ecf6984065a1e54f06bf97b349ecca28582acd7
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: e3da1781f2aa14f05930954107a80ad17c468bfd
+PODFILE CHECKSUM: 36d237a0de3d18e24313ca84b375363d721fa28d
 
 COCOAPODS: 1.8.4
