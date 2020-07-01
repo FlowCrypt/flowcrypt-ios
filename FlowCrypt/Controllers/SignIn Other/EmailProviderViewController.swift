@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
+import Promises
 
 final class EmailProviderViewController: ASViewController<TableNode> {
     private enum UserError: Error {
@@ -460,7 +461,7 @@ extension EmailProviderViewController {
         let result = checkCurrentUser()
         switch result {
         case .failure(.empty):
-            break
+            showToast("other_provider_error_other".localized)
         case .failure(.password):
             showToast("other_provider_error_password".localized)
         case .failure(.email):
@@ -474,21 +475,44 @@ extension EmailProviderViewController {
     private func checkImapSession() {
         showSpinner()
         imap.setupSession()
-        imap.connectSession()
-            .then(on: .main) { [weak self] in
-                self?.hideSpinner()
-                GlobalRouter().proceed()
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.hideSpinner()
-                self?.showToast("\(error)")
-            }
+        
+        Promise<Void> {
+            try await(self.imap.connectImapSession())
+            try await(self.imap.connectSmtpSession())
+        }
+        .then(on: .main) { [weak self] in
+            self?.handleSuccessfulConnection()
+        }
+        .catch(on: .main) { [weak self] error in
+            self?.handleConnection(error: error)
+        }
+    }
+    
+    private func handleConnection(error: Error) {
+        imap.disconnect()
+        dataService.logOutAndDestroyStorage()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            let message = (error as? AppErr)?.userMessage ?? error.localizedDescription
+            self.hideSpinner()
+            self.showToast(message)
+        }
+    }
+    
+    private func handleSuccessfulConnection() {
+        hideSpinner()
+        GlobalRouter().proceed()
     }
 
     private func checkCurrentUser() -> Result<UserObject, UserError> {
-        guard user != UserObject.empty else { return .failure(.empty) }
-        guard user.email != UserObject.empty.email else { return .failure(.email) }
-        guard let password = user.password, password.isNotEmpty else { return .failure(.password) }
+        guard user != UserObject.empty,
+            user.email != UserObject.empty.email
+        else {
+            return .failure(.empty)
+        }
+        
+        guard let password = user.password, password.isNotEmpty else {
+            return .failure(.password)
+        }
 
         return .success(user)
     }

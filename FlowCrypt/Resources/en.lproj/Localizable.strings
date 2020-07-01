@@ -135,3 +135,4 @@
 "other_provider_connect" = "Connect";
 "other_provider_error_password" = "Password must not be empty";
 "other_provider_error_email" = "Email must not be empty";
+"other_provider_error_other" = "Check credentials";

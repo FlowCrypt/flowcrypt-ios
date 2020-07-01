@@ -59,14 +59,25 @@ extension Imap {
             return Promise(self.setupSession())
         }
     }
+    
+    func connectSmtpSession() -> Promise<Void> {
+        Promise { [weak self] resolve, reject in
+            self?.smtpSess?
+                .loginOperation()?
+                .start { error in
+                    guard let error = error else { resolve(()); return }
+                    reject(AppErr.value("Can't establish SMTP Connection.\n\(error.localizedDescription)"))
+                }
+        }
+    }
 
-    func connectSession() -> Promise<Void> {
-         Promise { [weak self] resolve, reject in
+    func connectImapSession() -> Promise<Void> {
+         Promise<Void> { [weak self] resolve, reject in
             self?.imapSess?
                 .connectOperation()?
                 .start { error in
                     guard let error = error else { resolve(()); return }
-                    reject(AppErr(error))
+                    reject(AppErr.value("Can't establish IMAP Connection.\n\(error.localizedDescription)"))
                 }
         }
     }
