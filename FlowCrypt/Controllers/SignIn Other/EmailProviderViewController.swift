@@ -466,19 +466,24 @@ extension EmailProviderViewController {
             showToast("other_provider_error_password".localized)
         case .failure(.email):
             showToast("other_provider_error_email".localized)
-        case let .success(user):
-            dataService.startFor(user: .session(user))
+        case .success:
             checkImapSession()
         }
     }
 
     private func checkImapSession() {
         showSpinner()
-        imap.setupSession()
+        
+        guard let imapSessionToCheck = IMAPSession(userObject: user),
+            let smtpSession = SMTPSession(userObject: user)
+        else {
+            assertionFailure("Should be able to create session at this momment")
+            return
+        }
         
         Promise<Void> {
-            try await(self.imap.connectImapSession())
-            try await(self.imap.connectSmtpSession())
+            try await(self.imap.connectImap(session:imapSessionToCheck))
+            try await(self.imap.connectSmtp(session:smtpSession))
         }
         .then(on: .main) { [weak self] in
             self?.handleSuccessfulConnection()
@@ -499,14 +504,17 @@ extension EmailProviderViewController {
     }
     
     private func handleSuccessfulConnection() {
+        // save user only when it's possible to connect
+        dataService.startFor(user: .session(user))
+        // start session for saved user
+        imap.setupSession()
+        // hide spinner and show next screen
         hideSpinner()
         GlobalRouter().proceed()
     }
 
     private func checkCurrentUser() -> Result<UserObject, UserError> {
-        guard user != UserObject.empty,
-            user.email != UserObject.empty.email
-        else {
+        guard user != UserObject.empty, user.email != UserObject.empty.email else {
             return .failure(.empty)
         }
         

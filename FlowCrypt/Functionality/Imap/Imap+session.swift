@@ -60,9 +60,9 @@ extension Imap {
         }
     }
     
-    func connectSmtpSession() -> Promise<Void> {
-        Promise { [weak self] resolve, reject in
-            self?.smtpSess?
+    func connectSmtp(session: SMTPSession) -> Promise<Void> {
+        Promise { resolve, reject in
+            MCOSMTPSession(session: session)
                 .loginOperation()?
                 .start { error in
                     guard let error = error else { resolve(()); return }
@@ -71,9 +71,9 @@ extension Imap {
         }
     }
 
-    func connectImapSession() -> Promise<Void> {
-         Promise<Void> { [weak self] resolve, reject in
-            self?.imapSess?
+    func connectImap(session: IMAPSession) -> Promise<Void> {
+         Promise { resolve, reject in
+            MCOIMAPSession(session: session)
                 .connectOperation()?
                 .start { error in
                     guard let error = error else { resolve(()); return }

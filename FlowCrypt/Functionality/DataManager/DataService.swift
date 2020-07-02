@@ -166,23 +166,12 @@ extension DataService: ImapSessionProvider {
             return nil
         }
 
-        guard let imap = user.imap else {
-            assertionFailure("Can't get IMAP Session without user data")
+        guard let imapSession = IMAPSession(userObject: user) else {
+            assertionFailure("couldn't create IMAP Session with this parameters")
             return nil
         }
-
-        guard let auth = user.authType, let connection = ConnectionType(rawValue: imap.connectionType) else {
-            assertionFailure("Authentication type should be defined on this step")
-            return nil
-        }
-
-        return IMAPSession(
-            hostname: imap.hostname,
-            port: imap.port,
-            email: user.email,
-            authType: auth,
-            connectionType: connection
-        )
+        
+        return imapSession
     }
 
     func smtpSession() -> SMTPSession? {
@@ -191,23 +180,12 @@ extension DataService: ImapSessionProvider {
             return nil
         }
 
-        guard let smtp = user.smtp else {
-            assertionFailure("Can't get SMTP Session without user data")
+        guard let smtpSession = SMTPSession(userObject: user) else {
+            assertionFailure("couldn't create SMTP Session with this parameters")
             return nil
         }
-
-        guard let auth = user.authType, let connection = ConnectionType(rawValue: smtp.connectionType) else {
-            assertionFailure("Authentication type should be defined on this step")
-            return nil
-        }
-
-        return SMTPSession(
-            hostname: smtp.hostname,
-            port: smtp.port,
-            email: user.email,
-            authType: auth,
-            connectionType: connection
-        )
+        
+        return smtpSession
     }
 }
 
