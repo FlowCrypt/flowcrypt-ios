@@ -27,20 +27,28 @@ extension Imap {
             debugPrint("IMAP: creating a new session")
             let newImapSession = MCOIMAPSession(session: imap)
             imapSess = newImapSession
-//            logConnection(for: imapSess!)
+            //logIMAPConnection(for: imapSess!)
         }
 
         if let smtp = smtpSession {
             debugPrint("SMTP: creating a new session")
             let newSmtpSession = MCOSMTPSession(session: smtp)
             smtpSess = newSmtpSession
+            //logSMTPConnection(for: smtpSess!)
         }
     }
 
-    private func logConnection(for session: MCOIMAPSession) {
+    private func logIMAPConnection(for session: MCOIMAPSession) {
         session.connectionLogger = { (connectionID, type, data) in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
-            debugPrint("IMAP:\(type):\(string)")
+            debugPrint("### IMAP:\(type):\(string)")
+        }
+    }
+    
+    private func logSMTPConnection(for smtpSession: MCOSMTPSession) {
+        smtpSession.connectionLogger = { (connectionID, type, data) in
+            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
+            debugPrint("### SMTP:\(type):\(string)")
         }
     }
 

@@ -34,7 +34,7 @@ struct UserCredentials: Codable, Equatable {
     static var compatibility: UserCredentials = {
         Credentials.default
             .users
-            .first(where: { $0.email == "flowcrypt.compatibility.ios@outlook.com" })!
+            .first(where: { $0.email == "flowcrypt_compatibility_ios@outlook.com" })!
     }()
 }
 
