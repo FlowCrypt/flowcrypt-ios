@@ -9,6 +9,7 @@
 import Foundation
 import RealmSwift
 
+@available(*, deprecated, message: "Use UserObject instead")
 final class EmailAccessToken: Object {
     @objc dynamic var value: String = ""
 

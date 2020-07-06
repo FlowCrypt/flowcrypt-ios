@@ -13,6 +13,8 @@ class TestCredentials: XCTestCase {
     func test_user_credentials() {
         XCTAssert(UserCredentials.main != UserCredentials.empty)
         XCTAssert(UserCredentials.noKeyBackUp != UserCredentials.empty)
+        XCTAssert(UserCredentials.compatibility != UserCredentials.empty)
+        
         XCTAssert(!UserCredentials.noKeyBackUp.privateKey.isEmpty)
     }
 }

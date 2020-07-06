@@ -10,15 +10,17 @@ import Foundation
 import Promises
 
 struct AppStartup {
-    let googleService: GoogleServiceType
+    static var shared: AppStartup = AppStartup()
 
-    init(
+    let googleService: GoogleServiceType
+    
+    private init(
         googleService: GoogleServiceType = GoogleService()
     ) {
         self.googleService = googleService
     }
 
-    public func initializeApp(window: UIWindow) {
+    public func initializeApp(window: UIWindow) { 
         let start = DispatchTime.now()
         DispatchQueue.promises = .global()
         window.rootViewController = BootstrapViewController()
@@ -55,9 +57,7 @@ struct AppStartup {
     }
 
     private func renewSessionIfValid() -> Promise<Void> {
-        guard DataService.shared.isLoggedIn else { return Promise(()) }
-        Imap.shared.setup()
-        return Imap.shared.renewSession()
+        Imap.shared.renewSession()
     }
 
     private func chooseView(window: UIWindow) {

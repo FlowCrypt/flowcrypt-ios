@@ -101,9 +101,6 @@ final class ComposeViewController: ASViewController<TableNode> {
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
-
-        // establish session before user taps send, so that sending msg is faster once the user does tap it
-        imap.getSmtpSess()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -120,6 +117,7 @@ final class ComposeViewController: ASViewController<TableNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 
@@ -282,7 +280,7 @@ extension ComposeViewController {
                 return false
             }
 
-            guard let myPubKey = self.dataService.publicKey() else {
+            guard let myPubKey = self.dataService.publicKey else {
                 self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }

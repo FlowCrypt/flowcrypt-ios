@@ -10,7 +10,7 @@ import FlowCryptCommon
 
 final class SignInViewController: ASViewController<ASTableNode> {
     enum Parts: Int, CaseIterable {
-        case links, logo, description, gmail, outlook
+        case links, logo, description, gmail, outlook, other
     }
 
     private let userService: UserServiceType
@@ -59,6 +59,7 @@ final class SignInViewController: ASViewController<ASTableNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 }
@@ -93,6 +94,10 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
                 return SigninButtonNode(.outlook) { [weak self] in
                     self?.signInWithOutlook()
                 }
+            case .other:
+                return SigninButtonNode(.other) { [weak self] in
+                    self?.proceedToOtherProvider()
+                }
             }
         }
     }
@@ -110,11 +115,6 @@ extension SignInViewController {
             .catch(on: .main) { [weak self] error in
                 self?.showAlert(error: error, message: "Failed to sign in")
             }
-    }
-
-    private func proceedToRecover() {
-        let setupViewController = SetupViewController()
-        navigationController?.pushViewController(setupViewController, animated: true)
     }
 
     private func signInWithOutlook() {
@@ -145,6 +145,16 @@ extension SignInViewController {
             debugPrint("catch generic")
             debugPrint(error)
         }
+
+    }
+
+    private func proceedToRecover() {
+        GlobalRouter().proceed() 
+    }
+
+    private func proceedToOtherProvider() {
+        let setupViewController = EmailProviderViewController()
+        navigationController?.pushViewController(setupViewController, animated: true)
     }
 
     private func handle(option: AppLinks) {

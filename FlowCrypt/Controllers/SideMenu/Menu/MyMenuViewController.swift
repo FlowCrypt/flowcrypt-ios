@@ -132,13 +132,14 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         tableNode.reloadData()
     }
 }
 
 extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
-        return Sections.allCases.count
+        Sections.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
@@ -213,12 +214,7 @@ extension MyMenuViewController {
         case .settings:
             sideMenuController()?.setContentViewController(SettingsViewController())
         case .logOut:
-            userService.signOut()
-                .then(on: .main) { [weak self] _ in
-                    self?.router.reset()
-                }.catch(on: .main) { [weak self] error in
-                    self?.showAlert(error: error, message: "Could not log out")
-                }
+            self.router.wipeOutAndReset()
         }
     }
 }

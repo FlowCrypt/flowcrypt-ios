@@ -37,13 +37,14 @@ final class KeySettingsViewController: ASViewController<TableNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 }
 
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() {
-        guard let keys = DataService.shared.keys() else {
+        guard let keys = DataService.shared.keys else {
             return showAlert(message: "Could not retrieve keys from DataService. Please restart the app and try again.")
         }
         let keyDetailsArr = keys.compactMap { (privateKeys: PrvKeyInfo) -> [KeyDetails]? in

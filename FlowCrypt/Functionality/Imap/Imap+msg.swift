@@ -10,7 +10,7 @@ extension Imap {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
             
-            self.getImapSess()
+            self.imapSess?
                 .fetchMessageOperation(withFolder: folder, uid: message.uid)
                 .start(self.finalize("fetchMsg", resolve, reject, retry: { self.fetchMsg(message: message, folder: folder) }))
         }
@@ -20,7 +20,7 @@ extension Imap {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
            
-            self.getImapSess()
+            self.imapSess?
                 .storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: message.flags)
                 .start(self.finalizeVoid("markAsRead", resolve, reject, retry: { self.markAsRead(message: message, folder: folder) }))
         }
@@ -30,7 +30,7 @@ extension Imap {
         Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
             
-            self.getImapSess()
+            self.imapSess?
                 .copyMessagesOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(msg.uid)), destFolder: destFolder)
                 .start(self.finalizeAsVoid("moveMsg", resolve, reject, retry: { self.moveMsg(msg: msg, folder: folder, destFolder: destFolder) }))
         }
@@ -40,7 +40,7 @@ extension Imap {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
            
-            self.getImapSess()
+            self.imapSess?
                 .storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(msg.uid)), kind: MCOIMAPStoreFlagsRequestKind.set, flags: msg.flags)
                 .start(self.finalizeVoid("updateMsgFlags", resolve, reject, retry: { self.pushUpdatedMsgFlags(msg: msg, folder: folder) }))
         }

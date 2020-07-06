@@ -8,6 +8,7 @@ import IDZSwiftCommonCrypto // for aes
 import JavaScriptCore // for export to js
 import Security // for rng
 import SwiftyRSA // for rsa
+import BigInt
 
 @objc protocol CoreHostExports: JSExport {
     // crypto
@@ -56,12 +57,13 @@ final class CoreHost: NSObject, CoreHostExports {
 
     // rsa verify is used by OpenPGP.js during decryption as well to figure out our own key preferences
     // this slows down decryption the first time a private key is used in a session because bn.js is slow
-    // Using GMP C library modular exponentiation reduces rsa4096 verify time from 800ms to 40ms
     func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
-        // only supported on arm64 because was not able to build it for other platforms yet
-        // in fact, I'm no longer able to build any working library other than the one I've built before
-        // when not supported, the function returns empty string, and JS falls back on bn.js
-        return String(cString: c_gmp_mod_pow(base, exponent, modulo))
+        // If there is an error parsing provided numbers, the function returns empty string, and JS falls back on bn.js
+        guard let n = BigUInt(base), let e = BigUInt(exponent), let m = BigUInt(modulo) else {
+            return ""
+        }
+        let result = modPow(n: n, e: e, m: m)
+        return String(result, radix: 10)
     }
 
     func hashDigest(name: String, data: Data) throws -> [UInt8] {

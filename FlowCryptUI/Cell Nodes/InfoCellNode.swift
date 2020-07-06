@@ -14,15 +14,18 @@ public final class InfoCellNode: ASCellNode {
         let attributedText: NSAttributedString
         let image: UIImage?
         let insets: UIEdgeInsets
+        let backgroundColor: UIColor?
 
         public init(
             attributedText: NSAttributedString,
             image: UIImage?,
-            insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+            insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            backgroundColor: UIColor? = nil
         ) {
             self.attributedText = attributedText
             self.image = image
             self.insets = insets
+            self.backgroundColor = backgroundColor
         }
     }
 
@@ -36,6 +39,10 @@ public final class InfoCellNode: ASCellNode {
         self.textNode.attributedText = input?.attributedText
         self.imageNode.image = input?.image
         self.automaticallyManagesSubnodes = true
+
+        if let backgroundColor = input?.backgroundColor{
+            self.backgroundColor = backgroundColor
+        }
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

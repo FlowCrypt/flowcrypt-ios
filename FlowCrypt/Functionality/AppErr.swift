@@ -23,6 +23,7 @@ enum AppErr: Error {
         switch self {
         case .connection: return "error_app_connection".localized
         case let .operation(error): return error.localizedDescription
+        case let .value(message): return message
         default: return "" // TODO: - provide description for error if needed
         }
     }

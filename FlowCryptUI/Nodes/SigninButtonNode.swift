@@ -37,6 +37,7 @@ public final class SigninButtonNode: ASCellNode {
         button.cornerRadius = 5
         button.borderColor = UIColor.lightGray.cgColor
         button.borderWidth = 1.0
+        button.accessibilityIdentifier = input.title.string
         selectionStyle = .none
     }
 

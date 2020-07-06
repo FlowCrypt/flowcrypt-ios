@@ -6,8 +6,9 @@ import Promises
 import UIKit
 
 final class Imap {
+    typealias Injection = ImapSessionProvider & DataServiceType
     static let shared: Imap = Imap()
-    
+
     let helper: ImapHelperType
     let messageKindProvider: MessageKindProviderType
     var imapSess: MCOIMAPSession?
@@ -20,33 +21,11 @@ final class Imap {
     var lastErr: [String: AppErr] = [:]
 
     let userService: UserServiceType
-    let dataService: DataServiceType
-
-    // TODO: Anton - show login flow instead of fatal error
-    var email: String {
-        guard let email = dataService.currentUser?.email else {
-            fatalError("Can't use Imap without user data")
-        }
-        return email
-    }
-
-    var name: String {
-        guard let name = dataService.currentUser?.name else {
-            fatalError("Can't use Imap without user data")
-        }
-        return name
-    }
-
-    var accessToken: String? {
-        guard let token = dataService.currentToken else {
-            fatalError("Can't use Imap without user data")
-        }
-        return token
-    }
+    let dataService: Injection
 
     private init(
         userService: UserService = .shared,
-        dataService: DataServiceType = DataService.shared,
+        dataService: Injection = DataService.shared,
         helper: ImapHelperType = ImapHelper(),
         messageKindProvider: MessageKindProviderType = MessageKindProvider()
     ) {
@@ -54,11 +33,5 @@ final class Imap {
         self.dataService = dataService
         self.helper = helper
         self.messageKindProvider = messageKindProvider
-    }
-
-    func setup() {
-        guard let token = accessToken else { return }
-        getImapSess(newAccessToken: token)
-        getSmtpSess(newAccessToken: token)
     }
 }

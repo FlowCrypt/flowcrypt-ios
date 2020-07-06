@@ -10,11 +10,11 @@ import Foundation
 import Promises
 
 protocol BackupProvider {
-    func searchBackups() -> Promise<Data>
+    func searchBackups(for email: String) -> Promise<Data>
 }
 
 extension Imap: BackupProvider {
-    func searchBackups() -> Promise<Data> {
+    func searchBackups(for email: String) -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
             var folderPaths = try await(self.fetchFolders())
@@ -26,13 +26,17 @@ extension Imap: BackupProvider {
             }
 
             if folderPaths.contains(GeneralConstants.Global.gmailAllMailPath) {
-                folderPaths = [GeneralConstants.Global.gmailAllMailPath] // On Gmail, no need to cycle through each folder
+                folderPaths = [GeneralConstants.Global.gmailAllMailPath]
+            } else if let inbox = folderPaths.firstCaseInsensitive("inbox") {
+                folderPaths = [inbox]
             }
 
-            let searchExpr = self.createSearchBackupExpression()
 
-            let uidsForFolders = try folderPaths.compactMap { folder in
-                UidsContext(path: folder, uids: try await(self.fetchUids(folder: folder, expr: searchExpr)))
+            let searchExpr = self.createSearchBackupExpression(for: email)
+
+            let uidsForFolders = try folderPaths.compactMap { folder -> UidsContext in
+                let uids = try await(self.fetchUids(folder: folder, expr: searchExpr))
+                return UidsContext(path: folder, uids: uids)
             }
 
             if uidsForFolders.isEmpty {
@@ -72,7 +76,7 @@ extension Imap: BackupProvider {
     private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
         Promise<Data> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            self.getImapSess()
+            self.imapSess?
                 .fetchMessageAttachmentOperation(
                     withFolder: folder,
                     uid: msgUid,
@@ -95,7 +99,7 @@ extension Imap: BackupProvider {
         return expression
     }
 
-    private func createSearchBackupExpression() -> MCOIMAPSearchExpression {
+    private func createSearchBackupExpression(for email: String) -> MCOIMAPSearchExpression {
         let fromToExpr = MCOIMAPSearchExpression.searchAnd(
             MCOIMAPSearchExpression.search(from: email),
             other: MCOIMAPSearchExpression.search(to: email)

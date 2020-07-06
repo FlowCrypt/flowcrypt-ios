@@ -10,24 +10,57 @@
 import UIKit
 
 protocol GlobalRouterType {
-    func reset()
+    func proceed()
     func wipeOutAndReset()
 }
 
+// TODO: -
 struct GlobalRouter: GlobalRouterType {
-    func reset() {
+    private let dataService: DataServiceType = DataService.shared
+
+    private var keyWindow: UIWindow {
         let application = UIApplication.shared
         guard let delegate = (application.delegate as? AppDelegate) else {
-            assertionFailure("missing AppDelegate in GlobalRouter.reset()");
-            return;
+            fatalError("missing AppDelegate in GlobalRouter.reset()");
         }
-        AppStartup().initializeApp(window: delegate.window)
+        return delegate.window
+    }
+
+    /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
+    func proceed() {
+        AppStartup.shared.initializeApp(window: keyWindow)
     }
 
     func wipeOutAndReset() {
-        UserService.shared.signOut()
+        switch dataService.currentAuthType {
+        case .oAuth:
+            logOutGmailSession()
+        case .password:
+            logOutUserSession()
+        default:
+            assertionFailure("User is not logged in")
+            break
+        }
+    }
+
+    private func logOutGmailSession() {
+        UserService.shared
+            .signOut()
             .then(on: .main) {
-                self.reset()
+                self.proceed()
             }
+            .catch(on: .main) { error in
+                self.keyWindow
+                .rootViewController?
+                .showAlert(error: error, message: "Could not log out")
+            }
+    }
+
+    private func logOutUserSession() {
+        Imap.shared.disconnect()
+        dataService.logOutAndDestroyStorage()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.proceed()
+        }
     }
 }

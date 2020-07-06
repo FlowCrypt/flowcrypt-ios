@@ -9,19 +9,21 @@
 import UIKit
 
 enum SignInType: String {
-    case gmail, outlook
+    case gmail, outlook, other
 
     var title: String {
         switch self {
         case .gmail: return "sign_in_gmail".localized
         case .outlook: return "sign_in_outlook".localized
+        case .other: return "sign_in_other".localized
         }
     }
 
     var image: UIImage? {
         switch self {
         case .gmail: return UIImage(named: "gmail_icn")
-        case .outlook: return UIImage(named: "outlook_icn")
+        case .outlook: return UIImage(named: "microsoft-outlook")
+        case .other: return UIImage(named: "email_icn")?.tinted(.mainTextColor)
         }
     }
 
