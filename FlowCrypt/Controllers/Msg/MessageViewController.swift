@@ -48,7 +48,7 @@ final class MessageViewController: ASViewController<TableNode> {
     private var input: MessageViewController.Input?
     private let imap: Imap
     private let decorator: MessageViewDecoratorType
-    private let dataService: DataServiceType
+    private var dataService: DataServiceType
     private let core: Core
 
     private var message: NSAttributedString
@@ -95,21 +95,34 @@ final class MessageViewController: ASViewController<TableNode> {
     }
 
     private func setupNavigationBar() {
-        let infoInput = NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap)))
-        let archiveInput = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
-        let trashInput = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
-        let mailInput = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
-        let buttons: [NavigationBarItemsView.Input] = {
-            switch input?.path.lowercased() {
-            case MailDestination.Gmail.trash.path.lowercased():
-                return [infoInput, trashInput]
-            case MailDestination.Gmail.inbox.path.lowercased():
-                return [infoInput, archiveInput, trashInput, mailInput]
-            default:
-                return [infoInput, trashInput, mailInput]
+        imap.trashFolderPath()
+            .then(on: .main) { [weak self] path in
+                self?.setupNavigationBarItems(with: path)
             }
-        }()
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: buttons)
+    }
+
+    private func setupNavigationBarItems(with trashFolderPath: String?) {
+        let helpButton = NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap)))
+        let archiveButton = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
+        let trashButton = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
+        let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
+
+
+        let items: [NavigationBarItemsView.Input]
+        switch input?.path.lowercased() {
+        case trashFolderPath?.lowercased():
+            // in case we are in trash folder ([Gmail]/Trash or Deleted for Outlook, etc)
+            // we need to have only help and trash buttons
+            items = [helpButton, trashButton]
+        case MailDestination.Gmail.inbox.path.lowercased():
+            // for Gmail inbox we also need to have archive and unread buttons
+            items = [helpButton, archiveButton, trashButton, unreadButton]
+        default:
+            // in any other folders
+            items = [helpButton, trashButton, unreadButton]
+        }
+
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -143,7 +156,7 @@ extension MessageViewController {
             let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
             self.input?.bodyMessage = rawMimeData
 
-            guard let keys = self.dataService.keys() else {
+            guard let keys = self.dataService.keys else {
                 reject(CoreError.notReady("Could not fetch keys"))
                 return
             }
@@ -224,31 +237,55 @@ extension MessageViewController {
     }
 
     @objc private func handleTrashTap() {
-        guard let input = input else { return }
         showSpinner()
-        let op = input.path == MailDestination.Gmail.trash.path
-            ? MessageAction.permanentlyDelete
-            : MessageAction.moveToTrash
+
+        imap.trashFolderPath()
+            .then { [weak self] trashPath in
+                guard let strongSelf = self, let input = strongSelf.input, let path = trashPath else {
+                    self?.permanentlyDelete()
+                    return
+                }
+
+                input.path == trashPath
+                    ? strongSelf.permanentlyDelete()
+                    : strongSelf.moveToTrash(with: path)
+            }
+            .catch(on: .main) { error in
+                self.showToast(error.localizedDescription)
+            }
+    }
+
+    private func permanentlyDelete() {
+        guard let input = input else { return hideSpinner() }
+        input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
+
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
-            if op == MessageAction.permanentlyDelete {
-                input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
-                guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-                try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
-                try await(self.imap.expungeMsgs(folder: input.path))
-            } else {
-                try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: MailDestination.Gmail.trash.path))
-            }
+            guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
+
+            input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
+            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
+            try await(self.imap.expungeMsgs(folder: input.path))
             return true
-        }.then(on: .main) { [weak self] didPerformOp in
-            if didPerformOp {
-                self?.handleOpSuccess(operation: op)
-            } else {
-                self?.hideSpinner()
-            }
-        }.catch(on: .main) { [weak self] _ in
-            self?.handleOpErr(operation: op)
         }
+        .then(on: .main) { [weak self] didPerformOp in
+            guard didPerformOp else { self?.hideSpinner(); return  }
+            self?.handleOpSuccess(operation: .permanentlyDelete)
+        }.catch(on: .main) { [weak self] _ in
+            self?.handleOpErr(operation: .permanentlyDelete)
+        }
+    }
+
+    private func moveToTrash(with trashPath: String) {
+        guard let input = input else { return hideSpinner() }
+
+        imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath)
+            .then(on: .main) { [weak self] in
+                self?.handleOpSuccess(operation: .moveToTrash)
+            }
+            .catch(on: .main) { [weak self] _ in
+                self?.handleOpErr(operation: .moveToTrash)
+            }
     }
 
     @objc private func handleArchiveTap() {
@@ -303,8 +340,11 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        // TODO: ANTON - input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
+        // crash because sender is nil
+
         let senderTitle = decorator.attributed(
-            title: input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
+            title: input?.objMessage.header.from.mailbox ?? "(unknown sender)"
         )
         let subject = decorator.attributed(
             subject: input?.objMessage.header.subject ?? "(no subject)"

@@ -26,7 +26,8 @@ platform :ios do
       skip_build: true,    
       disable_slide_to_type: true,  
       force_quit_simulator: true,
-      reset_simulator: true
+      reset_simulator: true,
+      devices: ["iPhone 11"]
   )
   end
 

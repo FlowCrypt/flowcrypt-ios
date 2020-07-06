@@ -16,6 +16,8 @@ struct UserCredentials: Codable, Equatable {
     let privateKey: String
      
     static var empty = UserCredentials(email: "", password: "", pass: "", recovery: "", privateKey: "")
+
+    // TODO: ANTON - flowcrypt.compatibility@mail.com
     
     static var main: UserCredentials = {
         Credentials.default
@@ -26,7 +28,13 @@ struct UserCredentials: Codable, Equatable {
     static var noKeyBackUp: UserCredentials = {
         Credentials.default
             .users
-            .first(where: { $0.email == "flowcrypt.test.anton@gmail.com" })!
+            .first(where: { $0.email == "flowcrypt.compatibility.ios.nokey@outlook.com" })!
+    }()
+
+    static var compatibility: UserCredentials = {
+        Credentials.default
+            .users
+            .first(where: { $0.email == "flowcrypt_compatibility_ios@outlook.com" })!
     }()
 }
 

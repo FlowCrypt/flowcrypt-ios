@@ -102,7 +102,15 @@ final public class TextFieldNode: ASDisplayNode {
                 }
             }
         }
-    }  
+    }
+
+    public var keyboardType: UIKeyboardType = .default {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.keyboardType = self.keyboardType
+            }
+        }
+    }
 
     var shouldReturn: ShouldReturnAction?
 
@@ -111,6 +119,8 @@ final public class TextFieldNode: ASDisplayNode {
     private lazy var node = ASDisplayNode { TextField() }
 
     private var textFiledAction: TextFieldAction?
+
+    private var onToolbarDoneAction: (() -> Void)?
 
     public init(preferredHeight: CGFloat?, action: TextFieldAction? = nil) {
         super.init()
@@ -195,3 +205,40 @@ extension TextFieldNode: UITextFieldDelegate {
         shouldChangeCharacters?(textField, string) ?? true
     }
 }
+
+extension TextFieldNode {
+    public func setPicker(view: UIPickerView?, withToolbar: Bool = true, onDone: (() -> Void)?) {
+        DispatchQueue.main.async {
+            guard let view = view else {
+                self.textField.inputView = nil
+                self.textField.inputAccessoryView = nil
+                return
+            }
+            self.textField.inputView = view
+
+            if withToolbar {
+                self.setToolbar(onDone)
+            }
+        }
+    }
+ 
+    public func setToolbar(_ onDone: (() -> Void)?) {
+        onToolbarDoneAction = onDone
+        let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 40))
+        self.textField.sizeToFit()
+        let doneButton = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(self.dismiss)
+        )
+        toolBar.setItems([doneButton], animated: false)
+        toolBar.isUserInteractionEnabled = true
+        self.textField.inputAccessoryView = toolBar
+    }
+
+    @objc private func dismiss() {
+        onToolbarDoneAction?()
+    }
+}
+
+

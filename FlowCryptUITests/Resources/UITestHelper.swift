@@ -11,7 +11,7 @@ import XCTest
 
 let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
 
-extension XCTest {
+extension AppTest {
     func wait(_ time: TimeInterval) {
         _ = XCTWaiter().wait(for: [XCTestExpectation(description: "dummy-expectation")], timeout: time)
     }

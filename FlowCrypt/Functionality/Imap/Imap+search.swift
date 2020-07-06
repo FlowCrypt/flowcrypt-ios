@@ -72,7 +72,7 @@ extension Imap: SearchResultsProvider {
         Promise<MCOIndexSet> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
             
-            self.getImapSess()
+            self.imapSess?
                 .searchExpressionOperation(withFolder: folder, expression: expr)
                 .start(self.finalize(
                     "searchExpression", resolve, reject,

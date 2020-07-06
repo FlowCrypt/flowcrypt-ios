@@ -134,23 +134,6 @@ extension UIViewController {
         }
     }
 
-    func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
-        return Promise<String?>(on: .main) { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let alert = UIAlertController(title: "Pass Phrase", message: title, preferredStyle: .alert)
-            alert.addTextField { textField in
-                textField.isSecureTextEntry = true
-            }
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in
-                resolve(nil)
-            }))
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] _ in
-                resolve(alert?.textFields?[0].text)
-            }))
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-
     func awaitUserConfirmation(title: String) -> Promise<Bool> {
         return Promise<Bool>(on: .main) { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
@@ -161,8 +144,28 @@ extension UIViewController {
         }
     }
 
+    func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
+        Promise<String?>(on: .main) { [weak self] resolve, _ in
+            guard let self = self else { throw AppErr.nilSelf }
+            let alert = UIAlertController(title: "Pass Phrase", message: title, preferredStyle: .alert)
+            alert.addTextField { textField in
+                textField.isSecureTextEntry = true
+                textField.accessibilityLabel = "textField"
+            }
+
+            alert.addAction(UIAlertAction(title: "Cancel", style: .default) { _ in
+                resolve(nil)
+            })
+
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak alert] _ in
+                resolve(alert?.textFields?[0].text)
+            })
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
     func keyboardHeight(from notification: Notification) -> CGFloat {
-        (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
+        (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
     }
 }
 
