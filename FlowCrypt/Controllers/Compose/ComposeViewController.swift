@@ -666,7 +666,6 @@ extension ComposeViewController {
         attesterApi.lookupEmail(email: recipient.email)
             .then(on: .main) { [weak self] result in
                 guard let self = self else { return }
-                print("\(result.armored == nil)")
                 let newState: RecipientState = result.armored != nil
                     ? self.decorator.recipientKeyFoundState
                     : self.decorator.recipientKeyNotFoundState
