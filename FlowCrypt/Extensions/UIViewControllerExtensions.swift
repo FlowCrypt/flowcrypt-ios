@@ -76,7 +76,8 @@ extension UIViewController {
         // todo - more intelligent handling of HttpErr
         do {
             throw error
-        } catch let AppErr.user(userErr) { // if this is AppErr.user, show only the content of the message to the user, not info about the exception
+        } catch let AppErr.user(userErr) {
+            // if this is AppErr.user, show only the content of the message to the user, not info about the exception
             return "\(title)\n\n\(userErr)"
         } catch AppErr.silentAbort { // don't show any alert
             return nil
@@ -134,23 +135,6 @@ extension UIViewController {
         }
     }
 
-    func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
-        return Promise<String?>(on: .main) { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let alert = UIAlertController(title: "Pass Phrase", message: title, preferredStyle: .alert)
-            alert.addTextField { textField in
-                textField.isSecureTextEntry = true
-            }
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in
-                resolve(nil)
-            }))
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] _ in
-                resolve(alert?.textFields?[0].text)
-            }))
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-
     func awaitUserConfirmation(title: String) -> Promise<Bool> {
         return Promise<Bool>(on: .main) { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
@@ -161,8 +145,28 @@ extension UIViewController {
         }
     }
 
+    func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
+        Promise<String?>(on: .main) { [weak self] resolve, _ in
+            guard let self = self else { throw AppErr.nilSelf }
+            let alert = UIAlertController(title: "Pass Phrase", message: title, preferredStyle: .alert)
+            alert.addTextField { textField in
+                textField.isSecureTextEntry = true
+                textField.accessibilityLabel = "textField"
+            }
+
+            alert.addAction(UIAlertAction(title: "Cancel", style: .default) { _ in
+                resolve(nil)
+            })
+
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak alert] _ in
+                resolve(alert?.textFields?[0].text)
+            })
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
     func keyboardHeight(from notification: Notification) -> CGFloat {
-        (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
+        (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
     }
 }
 

@@ -9,7 +9,7 @@ extension Imap {
     func sendMail(mime: Data) -> Promise<Void> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            self.getSmtpSess()
+            self.smtpSess?
                 .sendOperation(with: mime)
                 .start(self.finalizeVoid("send", resolve, reject, retry: { self.sendMail(mime: mime) }))
         }

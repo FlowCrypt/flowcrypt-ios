@@ -62,6 +62,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 
@@ -85,6 +86,8 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
 // MARK: - Keyboard
 
 extension EnterPassPhraseViewController {
+    // swiftlint:disable discarded_notification_center_observer
+    /// Observation should be removed in a place where subscription is
     private func observeKeyboardNotifications() {
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
@@ -192,6 +195,6 @@ extension EnterPassPhraseViewController {
     }
 
     private func moveToMainFlow() {
-        router.reset()
+        router.proceed()
     }
 }

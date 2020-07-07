@@ -40,3 +40,9 @@ public extension Array {
         }
     }
 }
+
+public extension Array where Element == String {
+    func firstCaseInsensitive(_ stringToCompare: String) -> Element? {
+        first(where: { $0.caseInsensitiveCompare(stringToCompare) == .orderedSame })
+    }
+}

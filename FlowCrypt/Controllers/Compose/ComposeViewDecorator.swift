@@ -10,6 +10,13 @@ import FlowCryptUI
 import UIKit
 
 protocol ComposeViewDecoratorType {
+    var recipientIdleState: RecipientState { get }
+    var recipientSelectedState: RecipientState { get }
+    var recipientKeyFoundState: RecipientState { get }
+    var recipientKeyNotFoundState: RecipientState { get }
+    var recipientErrorState: RecipientState { get }
+    var recipientErrorStateRetry: RecipientState { get }
+
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
     func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
     func styledRecipientInfo(with email: String) -> InfoCellNode.Input
@@ -17,7 +24,15 @@ protocol ComposeViewDecoratorType {
     func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString
 }
 
+// MARK: - ComposeViewDecorator
 struct ComposeViewDecorator: ComposeViewDecoratorType {
+    let recipientIdleState: RecipientState = .idle(idleStateContext)
+    let recipientSelectedState: RecipientState = .selected(selectedStateContext)
+    let recipientKeyFoundState: RecipientState = .keyFound(keyFoundStateContext)
+    let recipientKeyNotFoundState: RecipientState = .keyNotFound(keyNotFoundStateContext)
+    let recipientErrorState: RecipientState = .error(errorStateContext, false)
+    var recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
+
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
             placeholder: "message_compose_secure".localized.attributed(
@@ -87,15 +102,104 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
     }
 }
 
+// MARK: - Color
+extension UIColor {
+    static var titleNodeBackgroundColorSelected: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.lightGray,
+            lightStyle: UIColor.black.withAlphaComponent(0.1)
+        )
+    }
+
+    static var titleNodeBackgroundColor: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.darkGray.withAlphaComponent(0.5),
+            lightStyle: UIColor.white.withAlphaComponent(0.9)
+        )
+    }
+
+    static var borderColorSelected: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.white.withAlphaComponent(0.5),
+            lightStyle: black.withAlphaComponent(0.4)
+        )
+    }
+
+    static var borderColor: UIColor {
+        UIColor.colorFor(
+            darkStyle: UIColor.white.withAlphaComponent(0.5),
+            lightStyle: UIColor.black.withAlphaComponent(0.3)
+        )
+    }
+}
+
+// MARK: - RecipientState
+extension ComposeViewDecorator {
+    private static var idleStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .titleNodeBackgroundColor,
+            borderColor: .borderColor,
+            textColor: .mainTextColor,
+            image: #imageLiteral(resourceName: "retry")
+        )
+    }
+
+    private static var selectedStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .gray,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil
+        )
+    }
+
+    private static var keyFoundStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .main,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil
+        )
+    }
+
+    private static var keyNotFoundStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .titleNodeBackgroundColorSelected,
+            borderColor: .borderColorSelected,
+            textColor: .white,
+            image: nil
+        )
+    }
+
+    private static var errorStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .red,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: #imageLiteral(resourceName: "cancel")
+        )
+    }
+
+    private static var errorStateContextWithRetry: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .red,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: #imageLiteral(resourceName: "retry")
+        )
+    }
+}
+
+// MARK: - RecipientEmailsCellNode.Input
 extension RecipientEmailsCellNode.Input {
     init(_ recipient: ComposeViewController.Recipient) {
         self.init(
             email: recipient.email.lowercased().attributed(
                 .regular(17),
-                color: .mainTextColor,
+                color: recipient.state.textColor,
                 alignment: .left
             ),
-            isSelected: recipient.isSelected
+            state: recipient.state
         )
     }
 }

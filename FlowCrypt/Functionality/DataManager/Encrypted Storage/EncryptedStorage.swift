@@ -17,28 +17,25 @@ protocol DBMigration {
 
 protocol EncryptedStorageType: DBMigration {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-    func saveToken(with string: String?)
     func currentToken() -> String?
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>?
+
+    func getUser() -> UserObject?
+    func saveUser(with user: UserObject)
 }
 
 final class EncryptedStorage: EncryptedStorageType {
     enum Constants {
+        // Encrypted schema version
         static let schemaVersion: UInt64 = 1
+        // User object added to schema
+        static let schemaVersionUser: UInt64 = 2
         static let encryptedDbFilename = "encrypted.realm"
     }
 
-    let keychainService: KeyChainServiceType
+    private let keychainService: KeyChainServiceType
     private let fileManager: FileManager
-
-    init(
-        fileManager: FileManager = .default,
-        keychainHelper _: KeyChainServiceType = KeyChainService()
-    ) {
-        self.fileManager = fileManager
-        keychainService = KeyChainService()
-    }
 
     private var realmKey: Data {
         keychainService.getStorageEncryptionKey()
@@ -49,7 +46,7 @@ final class EncryptedStorage: EncryptedStorageType {
         return Realm.Configuration(
             fileURL: URL(fileURLWithPath: path),
             encryptionKey: realmKey,
-            schemaVersion: Constants.schemaVersion
+            schemaVersion: Constants.schemaVersionUser
         )
     }
 
@@ -63,51 +60,35 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        do {
-            try storage.write {
-                for key in keyDetails {
-                    storage.add(try KeyInfo(key, passphrase: passPhrase, source: source))
-                }
-            }
-        } catch {
-            fatalError()
-        }
-    }
-
-    func publicKey() -> String? {
-        return storage.objects(KeyInfo.self)
-            .map { $0.public }
-            .first
-    }
-
-    func keys() -> Results<KeyInfo>? {
-        return storage.objects(KeyInfo.self)
-    }
-
-    func saveToken(with string: String?) {
-        guard let token = string else {
-            logOut()
-            return
-        }
-        try! storage.write {
-            self.storage.add(EmailAccessToken(value: token))
-        }
-    }
-
-    func currentToken() -> String? {
-        storage.objects(EmailAccessToken.self).first?.value
+    init(
+        fileManager: FileManager = .default,
+        keychainHelper: KeyChainServiceType = KeyChainService()
+    ) {
+        self.fileManager = fileManager
+        self.keychainService = KeyChainService()
     }
 }
 
+// MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
     func logOut() { // todo - logOut is not clear - should be called onLogOut to make it clear it's responding to an event
         destroyEncryptedStorage()
     }
 
     private func destroyEncryptedStorage() {
-        destroyStorage(at: Realm.Configuration.defaultConfiguration.fileURL!) // todo - remove this line in version 0.1.8
-        destroyStorage(at: encryptedConfiguration.fileURL!)
+        do {
+            try storage.write {
+                storage.deleteAll()
+            }
+        } catch let error {
+            assertionFailure("Error while deleting the objects from the storage \(error)")
+        }
+
+        // Remove configuration if user still on plain realm
+        if let defaultPath = Realm.Configuration.defaultConfiguration.fileURL,
+            defaultPath != self.encryptedConfiguration.fileURL {
+            destroyStorage(at: defaultPath)
+        }
     }
 
     private func destroyStorage(at url: URL) {
@@ -121,6 +102,7 @@ extension EncryptedStorage: LogOutHandler {
     }
 }
 
+// MARK: - Migration
 extension EncryptedStorage {
     func performMigrationIfNeeded() -> Promise<Void> {
         // current migration only does plain realm -> encrypted realm migration, with no database schema change
@@ -143,7 +125,8 @@ extension EncryptedStorage {
             return Promise(())
         }
         // write encrypted copy of plain realm db
-        try! plainRealm.writeCopy(toFile: URL(fileURLWithPath: encryptedRealmPath), encryptionKey: realmKey) // encryptionKey is for the NEW copy
+        // encryptionKey is for the NEW copy
+        try! plainRealm.writeCopy(toFile: URL(fileURLWithPath: encryptedRealmPath), encryptionKey: realmKey)
         // launch configuration and perform schema migration if needed
         return Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
@@ -173,5 +156,48 @@ extension EncryptedStorage {
             fatalError("No path direction for .documentDirectory")
         }
         return documentDirectory
+    }
+}
+
+// MARK: - Keys
+extension EncryptedStorage {
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        try! storage.write {
+            for key in keyDetails {
+                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source))
+            }
+        }
+    }
+
+    func keys() -> Results<KeyInfo>? {
+        storage.objects(KeyInfo.self)
+    }
+
+    func publicKey() -> String? {
+        storage.objects(KeyInfo.self)
+            .map { $0.public }
+            .first
+    }
+}
+
+// MARK: - Token
+extension EncryptedStorage {
+    @available(*, deprecated, message: "Use information from UserObject")
+    func currentToken() -> String? {
+        storage.objects(EmailAccessToken.self).first?.value
+    }
+}
+
+// MARK: - User
+
+extension EncryptedStorage {
+    func getUser() -> UserObject? {
+        storage.objects(UserObject.self).first
+    }
+
+    func saveUser(with user: UserObject) {
+        try! storage.write {
+            self.storage.add(user, update: .all)
+        }
     }
 }

@@ -23,12 +23,14 @@ enum AppErr: Error {
         switch self {
         case .connection: return "error_app_connection".localized
         case let .operation(error): return error.localizedDescription
+        case let .value(message): return message
         default: return "" // TODO: - provide description for error if needed
         }
     }
 }
 
 extension AppErr: Equatable {
+    // swiftlint:disable cyclomatic_complexity
     static func == (lhs: AppErr, rhs: AppErr) -> Bool {
         switch (lhs, rhs) {
         case (.authentication, .authentication): return true

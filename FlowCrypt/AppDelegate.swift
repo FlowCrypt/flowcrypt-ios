@@ -4,6 +4,7 @@
 //
 
 import UIKit
+import AsyncDisplayKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     private lazy var appUrlHandler = AppUrlHandler()
@@ -12,7 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         disableHardwareKeyboardOnSimulator()
-        AppStartup().initializeApp(window: window)
+        GlobalRouter().proceed()
         return true
     }
 

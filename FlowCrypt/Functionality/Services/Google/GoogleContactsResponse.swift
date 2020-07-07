@@ -8,6 +8,7 @@
 
 import Foundation
 
+// swiftlint:disable nesting
 struct GoogleContactsResponse: Decodable {
     let emails: [String]
 

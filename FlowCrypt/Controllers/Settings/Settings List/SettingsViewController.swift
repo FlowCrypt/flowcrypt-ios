@@ -52,6 +52,7 @@ final class SettingsViewController: ASViewController<TableNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 

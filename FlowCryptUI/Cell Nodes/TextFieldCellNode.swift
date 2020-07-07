@@ -18,6 +18,8 @@ public final class TextFieldCellNode: CellNode {
         public var insets: UIEdgeInsets = .zero
         public var height: CGFloat = 40
         public var width: CGFloat?
+        public var backgroundColor: UIColor?
+        public var keyboardType: UIKeyboardType
 
         public init(
             placeholder: NSAttributedString = NSAttributedString(string: "PLACEHOLDER"),
@@ -27,7 +29,9 @@ public final class TextFieldCellNode: CellNode {
             isLowercased: Bool = false,
             insets: UIEdgeInsets = .zero,
             height: CGFloat = 40,
-            width: CGFloat? = nil
+            width: CGFloat? = nil,
+            backgroundColor: UIColor? = nil,
+            keyboardType: UIKeyboardType = .default
         ) {
             self.placeholder = placeholder
             self.isSecureTextEntry = isSecureTextEntry
@@ -37,6 +41,8 @@ public final class TextFieldCellNode: CellNode {
             self.insets = insets
             self.height = height
             self.width = width
+            self.backgroundColor = backgroundColor
+            self.keyboardType = keyboardType
         }
     }
 
@@ -68,6 +74,10 @@ public final class TextFieldCellNode: CellNode {
         textField.isSecureTextEntry = input.isSecureTextEntry
         textField.textAlignment = input.textAlignment
         textField.textInsets = input.textInsets
+        textField.keyboardType = input.keyboardType
+        if let color = input.backgroundColor {
+            backgroundColor = color
+        }
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

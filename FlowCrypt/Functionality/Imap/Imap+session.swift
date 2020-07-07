@@ -10,59 +10,84 @@ import Foundation
 import Promises
 
 extension Imap {
-    @discardableResult
-    func getImapSess(newAccessToken: String? = nil) -> MCOIMAPSession {
-        guard let existingImapSess = imapSess, newAccessToken == nil else {
+    func setupSession() {
+        guard
+            let imapSession = dataService.imapSession(),
+            let smtpSession = dataService.smtpSession()
+        else { return }
+
+        createNewConnection(
+            imapSession: imapSession,
+            smtpSession: smtpSession
+        )
+    }
+
+    private func createNewConnection(imapSession: IMAPSession?, smtpSession: SMTPSession?) {
+        if let imap = imapSession {
             debugPrint("IMAP: creating a new session")
-            let newImapSess = MCOIMAPSession()
-            newImapSess.hostname = "imap.gmail.com"
-            newImapSess.port = 993
-            newImapSess.connectionType = MCOConnectionType.TLS
-            newImapSess.authType = MCOAuthType.xoAuth2
-            newImapSess.username = email
-            newImapSess.password = nil
-            newImapSess.oAuth2Token = newAccessToken ?? accessToken ?? "(no access token)"
-            newImapSess.authType = MCOAuthType.xoAuth2
-            newImapSess.connectionType = MCOConnectionType.TLS
-//            newImapSess.connectionLogger = {(connectionID, type, data) in
-//                if data != nil {
-//                    if let string = String(data: data!, encoding: String.Encoding.utf8) {
-//                        debugPrint("IMAP:\(type):\(string)")
-//                    }
-//                }
-//            }
-            imapSess = newImapSess
-            return newImapSess
+            let newImapSession = MCOIMAPSession(session: imap)
+            imapSess = newImapSession
+            //logIMAPConnection(for: imapSess!)
         }
-        return existingImapSess
-    }
 
-    @discardableResult
-    func getSmtpSess(newAccessToken: String? = nil) -> MCOSMTPSession {
-        guard let existingSess = smtpSess, newAccessToken == nil else {
+        if let smtp = smtpSession {
             debugPrint("SMTP: creating a new session")
-            let newSmtpSess = MCOSMTPSession()
-            newSmtpSess.hostname = "smtp.gmail.com"
-            newSmtpSess.port = 465
-            newSmtpSess.connectionType = MCOConnectionType.TLS
-            newSmtpSess.authType = MCOAuthType.xoAuth2
-            newSmtpSess.username = email
-            newSmtpSess.password = nil
-            newSmtpSess.oAuth2Token = newAccessToken ?? accessToken ?? "(no access token)"
-            smtpSess = newSmtpSess
-            return newSmtpSess
+            let newSmtpSession = MCOSMTPSession(session: smtp)
+            smtpSess = newSmtpSession
+            //logSMTPConnection(for: smtpSess!)
         }
-        return existingSess
     }
 
+    private func logIMAPConnection(for session: MCOIMAPSession) {
+        session.connectionLogger = { (connectionID, type, data) in
+            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
+            debugPrint("### IMAP:\(type):\(string)")
+        }
+    }
+
+    private func logSMTPConnection(for smtpSession: MCOSMTPSession) {
+        smtpSession.connectionLogger = { (connectionID, type, data) in
+            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
+            debugPrint("### SMTP:\(type):\(string)")
+        }
+    }
+
+    /// renew user session on error
     @discardableResult
     func renewSession() -> Promise<Void> {
-        return userService
-            .renewAccessToken()
-            .then { [weak self] token -> Void in
-                self?.getImapSess(newAccessToken: token)
-                self?.getSmtpSess(newAccessToken: token)
-            }
+        guard let currentAuthType = dataService.currentAuthType else { return Promise(()) }
+
+        switch currentAuthType {
+        case .oAuth:
+            return userService.renewSession()
+                .then { [weak self] _ in
+                    self?.setupSession()
+                }
+        case .password:
+            return Promise(self.setupSession())
+        }
+    }
+
+    func connectSmtp(session: SMTPSession) -> Promise<Void> {
+        Promise { resolve, reject in
+            MCOSMTPSession(session: session)
+                .loginOperation()?
+                .start { error in
+                    guard let error = error else { resolve(()); return }
+                    reject(AppErr.value("Can't establish SMTP Connection.\n\(error.localizedDescription)"))
+                }
+        }
+    }
+
+    func connectImap(session: IMAPSession) -> Promise<Void> {
+         Promise { resolve, reject in
+            MCOIMAPSession(session: session)
+                .connectOperation()?
+                .start { error in
+                    guard let error = error else { resolve(()); return }
+                    reject(AppErr.value("Can't establish IMAP Connection.\n\(error.localizedDescription)"))
+                }
+        }
     }
 
     func disconnect() {

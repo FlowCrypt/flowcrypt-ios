@@ -1,8 +1,9 @@
 ################### RULES https://realm.github.io/SwiftLint/
 
-# disabled_rules:
-#   - todo
-#   - identifier_name
+disabled_rules:
+    - todo
+    - identifier_name
+    - nesting
 #   - legacy_hashing
 #   - line_length
 #   - identifier_name 
@@ -30,3 +31,5 @@ line_length: 140
 
 reporter: "xcode"
 
+### to disable rule
+### // swiftlint:disable <rule>

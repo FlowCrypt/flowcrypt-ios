@@ -48,4 +48,9 @@ extension XCUIApplication {
         launch()
         return self
     }
+
+    func addSnapshot() -> XCUIApplication {
+        setupSnapshot(self)
+        return self
+    }
 }

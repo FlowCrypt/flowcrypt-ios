@@ -26,12 +26,14 @@ protocol FoldersProvider {
         kind: MCOIMAPMessagesRequestKind,
         uids: MCOIndexSet
     ) -> Promise<[MCOIMAPMessage]>
+
+    func trashFolderPath() -> Promise<String?>
 }
 
 extension Imap: FoldersProvider {
     func fetchFolders() -> Promise<FoldersContext> {
-        return Promise { [weak self] resolve, reject in
-            self?.getImapSess()
+        Promise { [weak self] resolve, reject in
+            self?.imapSess?
                 .fetchAllFoldersOperation()
                 .start { [weak self] error, value in
                     guard let self = self else { return reject(AppErr.nilSelf) }
@@ -41,11 +43,39 @@ extension Imap: FoldersProvider {
                     if let error = error {
                         reject(AppErr(error))
                     } else if let folders = value as? [MCOIMAPFolder] {
+                        self.saveTrashFolderPath(with: folders)
                         resolve(FoldersContext(folders: folders))
                     } else {
                         reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
                     }
-                }
+            }
+        }
+    }
+
+    private func saveTrashFolderPath(with folders: [MCOIMAPFolder]) {
+        if dataService.email?.contains("gmail") ?? false {
+            dataService.saveTrashFolder(path: MailDestination.Gmail.trash.path)
+        } else {
+            let paths = folders.compactMap { $0.path }
+            guard let path = paths.firstCaseInsensitive("trash") ?? paths.firstCaseInsensitive("deleted") else {
+                assertionFailure("Trash folder not found")
+                return
+            }
+            dataService.saveTrashFolder(path: path)
+        }
+    }
+
+    /// get trash folder path either form local storage in case it was already saved or tries to fetch all folders info and save it
+    func trashFolderPath() -> Promise<String?> {
+        Promise { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf )}
+
+            if let path = self.dataService.trashFolderPath {
+                resolve(path)
+            } else {
+                _ = try await(self.fetchFolders())
+                resolve(self.dataService.trashFolderPath)
+            }
         }
     }
 
@@ -53,7 +83,7 @@ extension Imap: FoldersProvider {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
 
-            self.getImapSess()
+            self.imapSess?
                 .expungeOperation(folder)
                 .start(self.finalizeVoid("expungeMsgs", resolve, reject, retry: { self.expungeMsgs(folder: folder) }))
         }
@@ -88,7 +118,7 @@ extension Imap: FoldersProvider {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            self.getImapSess()
+            self.imapSess?
                 .fetchMessagesOperation(withFolder: folder, requestKind: kind, uids: uids)?
                 .start { error, msgs, _ in
                     guard self.notRetrying("fetchMsgs", error, resolve, reject, retry: {

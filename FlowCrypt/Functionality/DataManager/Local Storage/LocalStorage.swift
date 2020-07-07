@@ -10,13 +10,13 @@ import Foundation
 
 protocol LocalStorageType {
     var storage: UserDefaults { get }
-    func saveCurrentUser(user: User?)
-    func currentUser() -> User?
+
+    var trashFolderPath: String? { get set }
 }
 
 struct LocalStorage: LocalStorageType {
     private enum Constants: String, CaseIterable {
-        case indexCurrentUser = "keyCurrentUser"
+        case indexTrashFolder
     }
 
     let storage: UserDefaults
@@ -27,22 +27,10 @@ struct LocalStorage: LocalStorageType {
 }
 
 extension LocalStorage {
-    func saveCurrentUser(user: User?) {
-        guard let user = user else {
-            logOut()
-            return
-        }
-        do {
-            let encodedData = try PropertyListEncoder().encode(user)
-            storage.set(encodedData, forKey: Constants.indexCurrentUser.rawValue)
-        } catch {
-            fatalError("Could not save user: \(error)")
-        }
-    }
-
-    func currentUser() -> User? {
-        guard let data = storage.object(forKey: Constants.indexCurrentUser.rawValue) as? Data else { return nil }
-        return try? PropertyListDecoder().decode(User.self, from: data)
+    var trashFolderPath: String? {
+        set { storage.set(newValue, forKey: Constants.indexTrashFolder.rawValue) }
+        // swiftlint:disable implicit_getter
+        get { storage.string(forKey: Constants.indexTrashFolder.rawValue) }
     }
 }
 

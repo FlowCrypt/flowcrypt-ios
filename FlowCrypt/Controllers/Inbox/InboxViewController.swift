@@ -96,6 +96,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         tableNode.reloadData()
     }
 }
@@ -282,10 +283,24 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             - safeAreaWindowInsets.top
             - safeAreaWindowInsets.bottom
 
-        let size = CGSize(width: tableNode.frame.size.width, height: height)
-        let text = title ?? ""
+        let size = CGSize(
+            width: tableNode.frame.size.width,
+            height: max(height, 0)
+        )
 
-        return { [weak self] in
+        return cellNode(for: indexPath, and: size)
+    }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        tableNode.deselectRow(at: indexPath, animated: true)
+        guard let message = messages[safe: indexPath.row] else { return }
+
+        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
+    }
+}
+
+extension InboxViewController {
+    private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock { { [weak self] in
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
@@ -293,7 +308,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 return TextCellNode(
                     input: TextCellNode.Input(
                         backgroundColor: .backgroundColor,
-                        title: "\(text) is empty",
+                        title: "\(self.title ?? "") is empty",
                         withSpinner: false,
                         size: size
                     )
@@ -334,14 +349,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             }
         }
     }
-
-    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        tableNode.deselectRow(at: indexPath, animated: true)
-        guard let message = messages[safe: indexPath.row] else { return }
-
-        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
-    }
-}
+ }
 
 extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {

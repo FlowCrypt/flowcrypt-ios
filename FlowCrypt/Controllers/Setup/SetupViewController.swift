@@ -6,6 +6,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
+// swiftlint:disable line_length
 final class SetupViewController: ASViewController<ASTableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction
@@ -92,6 +93,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 
@@ -111,6 +113,7 @@ extension SetupViewController {
         state = .idle
     }
 
+    // swiftlint:disable discarded_notification_center_observer
     private func observeKeyboardNotifications() {
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
@@ -160,9 +163,13 @@ extension SetupViewController {
     }
 
     private func searchBackups() {
+        guard let email = storage.email else {
+            assertionFailure(); return
+        }
+
         showSpinner()
 
-        imap.searchBackups()
+        self.imap.searchBackups(for: email)
             .then(on: .main) { [weak self] data in
                 self?.state = .backups(data)
             }
@@ -392,14 +399,14 @@ extension SetupViewController {
     private func handleOtherAccount() {
         userService.signOut()
             .then(on: .main) { [weak self] _ in
-                self?.router.reset()
+                self?.router.proceed()
             }.catch(on: .main) { [weak self] error in
                 self?.showAlert(error: error, message: "Could not switch accounts")
             }
     }
 
     private func moveToMainFlow() {
-        GlobalRouter().reset()
+        GlobalRouter().proceed()
     }
 }
 

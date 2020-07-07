@@ -10,3 +10,10 @@ ui_tests: dependencies
 
 format:
 	Scripts/format.sh
+
+snapshots: dependencies
+	brew update && brew install imagemagick
+	bundle exec fastlane snapshot
+	cd fastlane/screenshots
+	fastlane frameit
+

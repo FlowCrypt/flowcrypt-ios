@@ -54,6 +54,7 @@
 "sign_in_description" = "Connect your email account\nto send encrypted messages";
 "sign_in_gmail" = "Continue with Gmail";
 "sign_in_outlook" = "Continue with Outlook";
+"sign_in_other" = "Other email provider";
 
 // Setup
 "setup_title" = "Set up FlowCrypt";
@@ -124,3 +125,14 @@
 "key_settings_detail_copy" = "Copy to clipboard";
 "key_settings_detail_show_private" = "Not implemented yet";
 "key_settings_detail_public" = "Public key";
+
+
+// Other Provider
+"other_provider_account_title" = "Account info";
+"other_provider_imap_title" = "Incoming mail settings";
+"other_provider_smtp_title" = "Outgoing mail settings";
+"other_provider_other_smtp_title" = "Set different credentials for SMTP";
+"other_provider_connect" = "Connect";
+"other_provider_error_password" = "Password must not be empty";
+"other_provider_error_email" = "Email must not be empty";
+"other_provider_error_other" = "Check credentials";

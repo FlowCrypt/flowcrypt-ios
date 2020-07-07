@@ -54,6 +54,7 @@ final class ViewController: ASViewController<TableNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 
@@ -63,8 +64,8 @@ final class ViewController: ASViewController<TableNode> {
         static let endTypingCharacters = [",", " "]
     }
 
-    var recipients: [RecipientEmailsCellNode.Input] = (1 ... 10).map { _ in
-        RecipientEmailsCellNode.Input(email: testAttributedText(), isSelected: false)
+    var recipients: [RecipientEmailsCellNode.Input] = (1...10).map { _ in
+        RecipientEmailsCellNode.Input(email: testAttributedText())
     }
 }
 
@@ -191,10 +192,10 @@ extension ViewController {
         guard let text = text, !text.isEmpty else { return }
         recipients = recipients.map { recipient in
             var recipient = recipient
-            recipient.isSelected = false
+            recipient.state = .selectedState
             return recipient
         }
-        recipients.append(RecipientEmailsCellNode.Input(email: attributedEmail(with: text), isSelected: false))
+        recipients.append(RecipientEmailsCellNode.Input(email: attributedEmail(with: text)))
         node.reloadRows(at: [recipientsIndexPath], with: .fade)
 
         let endIndex = recipients.endIndex - 1
@@ -209,11 +210,11 @@ extension ViewController {
         guard textField.text == "" else { return }
 
         let selectedRecipients = recipients
-            .filter { $0.isSelected }
+            .filter { $0.state.isSelected }
 
         guard selectedRecipients.isEmpty else {
             // remove selected recipients
-            recipients = recipients.filter { !$0.isSelected }
+            recipients = recipients.filter { !$0.state.isSelected }
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
             return
         }
@@ -221,7 +222,7 @@ extension ViewController {
         if let lastRecipient = recipients.popLast() {
             // select last recipient in a list
             var last = lastRecipient
-            last.isSelected = true
+            last.state = .selectedState
             recipients.append(last)
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
         } else {
@@ -231,7 +232,15 @@ extension ViewController {
     }
 
     private func handleRecipientSelection(with indexPath: IndexPath) {
-        recipients[indexPath.row].isSelected.toggle()
+        var recipient = recipients[indexPath.row]
+
+        if recipient.state.isSelected {
+            recipient.state = .idleState
+        } else {
+            // TODO: ANTON -
+            recipient.state = .errorState
+        }
+
         node.reloadRows(at: [recipientsIndexPath], with: .fade)
         if !(textField?.isFirstResponder() ?? true) {
             textField?.becomeFirstResponder()
@@ -239,3 +248,4 @@ extension ViewController {
         textField?.reset()
     }
 }
+

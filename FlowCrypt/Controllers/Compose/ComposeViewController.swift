@@ -10,14 +10,14 @@ import Promises
 final class ComposeViewController: ASViewController<TableNode> {
     struct Recipient {
         let email: String
-        var isSelected: Bool
+        var state: RecipientState
 
         init(
             email: String,
-            isSelected: Bool = false
+            state: RecipientState
         ) {
             self.email = email
-            self.isSelected = isSelected
+            self.state = state
         }
     }
 
@@ -85,7 +85,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         contextToSend.subject = input.subject
         if input.isReply {
             if let email = input.recipientReplyTitle {
-                contextToSend.recipients.append(Recipient(email: email))
+                contextToSend.recipients.append(Recipient(email: email, state: decorator.recipientIdleState))
             }
         }
         super.init(node: TableNode())
@@ -101,9 +101,6 @@ final class ComposeViewController: ASViewController<TableNode> {
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
-
-        // establish session before user taps send, so that sending msg is faster once the user does tap it
-        imap.getSmtpSess()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -120,6 +117,7 @@ final class ComposeViewController: ASViewController<TableNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 
@@ -134,9 +132,19 @@ extension ComposeViewController {
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "paperclip"), action: (self, #selector(handleAttachTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "android-send"), action: (self, #selector(handleSendTap)), accessibilityLabel: "send")
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "help_icn"),
+                    action: (self, #selector(handleInfoTap))
+                ),
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "paperclip"),
+                    action: (self, #selector(handleAttachTap))
+                ),
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "android-send"),
+                    action: (self, #selector(handleSendTap)),
+                    accessibilityLabel: "send"
+                )
             ]
         )
     }
@@ -181,6 +189,7 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func observeKeyboardNotifications() {
+        // swiftlint:disable discarded_notification_center_observer
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
             object: nil,
@@ -283,7 +292,7 @@ extension ComposeViewController {
                 return false
             }
 
-            guard let myPubKey = self.dataService.publicKey() else {
+            guard let myPubKey = self.dataService.publicKey else {
                 self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }
@@ -379,6 +388,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         let nodeHeight = tableNode.frame.size.height
             - (navigationController?.navigationBar.frame.size.height ?? 0.0)
@@ -464,8 +474,11 @@ extension ComposeViewController {
 
     private func recipientsNode() -> RecipientEmailsCellNode {
         RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
-            .onItemSelect { [weak self] indexPath in
-                self?.handleRecipientSelection(with: indexPath)
+            .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
+                switch action {
+                case let .imageTap(indexPath): self?.handleRecipientAction(with: indexPath)
+                case let .select(indexPath): self?.handleRecipientSelection(with: indexPath)
+                }
             }
     }
 
@@ -548,19 +561,29 @@ extension ComposeViewController {
     private func handleEndEditingAction(with text: String?) {
         guard let text = text, text.isNotEmpty else { return }
 
+        // Set all recipients to idle state
         contextToSend.recipients = recipients.map { recipient in
             var recipient = recipient
-            recipient.isSelected = false
+            if recipient.state.isSelected {
+                recipient.state = self.decorator.recipientIdleState
+            }
             return recipient
         }
-        contextToSend.recipients.append(Recipient(email: text))
-        node.reloadRows(at: [recipientsIndexPath], with: .fade)
 
+        // add new recipient
+        let newRecipient = Recipient(email: text, state: decorator.recipientIdleState)
+        contextToSend.recipients.append(newRecipient)
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        evaluate(recipient: newRecipient)
+
+        // scroll to the latest recipient
         let endIndex = recipients.endIndex - 1
         let collectionNode = (node.nodeForRow(at: recipientsIndexPath) as? RecipientEmailsCellNode)?.collectionNode
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             collectionNode?.scrollToItem(at: IndexPath(row: endIndex, section: 0), at: .bottom, animated: true)
         }
+
+        // reset textfield
         textField?.reset()
         node.view.keyboardDismissMode = .interactive
 
@@ -571,11 +594,11 @@ extension ComposeViewController {
         guard textField.text == "" else { return }
 
         let selectedRecipients = recipients
-            .filter { $0.isSelected }
+            .filter { $0.state.isSelected }
 
         guard selectedRecipients.isEmpty else {
             // remove selected recipients
-            contextToSend.recipients = recipients.filter { !$0.isSelected }
+            contextToSend.recipients = recipients.filter { !$0.state.isSelected }
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
             return
         }
@@ -583,7 +606,7 @@ extension ComposeViewController {
         if let lastRecipient = contextToSend.recipients.popLast() {
             // select last recipient in a list
             var last = lastRecipient
-            last.isSelected = true
+            last.state = self.decorator.recipientSelectedState
             contextToSend.recipients.append(last)
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
         } else {
@@ -592,16 +615,7 @@ extension ComposeViewController {
         }
     }
 
-    private func handleRecipientSelection(with indexPath: IndexPath) {
-        contextToSend.recipients[indexPath.row].isSelected.toggle()
-        node.reloadRows(at: [recipientsIndexPath], with: .fade)
-        if !(textField?.isFirstResponder() ?? true) {
-            textField?.becomeFirstResponder()
-        }
-        textField?.reset()
-    }
-
-    private func handleEditingChanged(with _: String?) {
+    private func handleEditingChanged(with text: String?) {
 //        temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
 //        guard let text = text, text.isNotEmpty else {
 //            updateState(with: .main)
@@ -618,6 +632,7 @@ extension ComposeViewController {
     }
 }
 
+// MARK: - Action Handling
 extension ComposeViewController {
     private func searchEmail(with query: String) {
         googleService.searchContacts(query: query)
@@ -628,8 +643,90 @@ extension ComposeViewController {
                 self?.updateState(with: state)
             }
     }
+
+    private func evaluate(recipient: Recipient) {
+        guard isValid(email: recipient.email) else {
+            updateRecipientWithNew(state: self.decorator.recipientErrorState, for: .left(recipient))
+            return
+        }
+
+        attesterApi.lookupEmail(email: recipient.email)
+            .then(on: .main) { [weak self] result in
+                guard let self = self else { return }
+                let newState: RecipientState = result.armored != nil
+                    ? self.decorator.recipientKeyFoundState
+                    : self.decorator.recipientKeyNotFoundState
+                self.updateRecipientWithNew(state: newState, for: .left(recipient))
+            }
+            .catch(on: .main) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateRecipientWithNew(state: self.decorator.recipientErrorStateRetry, for: .left(recipient))
+            }
+    }
+
+    private func updateRecipientWithNew(state: RecipientState, for context: Either<Recipient, IndexPath>) {
+        let index: Int? = {
+            switch context {
+            case let .left(recipient):
+                guard let index = recipients.firstIndex(where: { $0.email == recipient.email }) else {
+                    assertionFailure()
+                    return nil
+                }
+                return index
+            case let .right(index):
+                return index.row
+            }
+        }()
+
+        guard let recipientIndex = index else { return }
+        contextToSend.recipients[recipientIndex].state = state
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+    }
+
+    private func handleRecipientSelection(with indexPath: IndexPath) {
+        var recipient = contextToSend.recipients[indexPath.row]
+
+        if recipient.state.isSelected {
+            recipient.state = decorator.recipientIdleState
+            contextToSend.recipients[indexPath.row].state = decorator.recipientIdleState
+            evaluate(recipient: recipient)
+        } else {
+            contextToSend.recipients[indexPath.row].state = decorator.recipientSelectedState
+        }
+
+        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        if !(textField?.isFirstResponder() ?? true) {
+            textField?.becomeFirstResponder()
+        }
+        textField?.reset()
+    }
+
+    private func handleRecipientAction(with indexPath: IndexPath) {
+        let recipient = contextToSend.recipients[indexPath.row]
+        switch recipient.state {
+        case .idle:
+            handleRecipientSelection(with: indexPath)
+        case .keyFound, .keyNotFound, .selected:
+            break
+        case let .error(_, isRetryError):
+            if isRetryError {
+                updateRecipientWithNew(state: decorator.recipientIdleState, for: .right(indexPath))
+                evaluate(recipient: recipient)
+            } else {
+                contextToSend.recipients.remove(at: indexPath.row)
+                node.reloadRows(at: [recipientsIndexPath], with: .fade)
+            }
+        }
+    }
+
+    private func isValid(email: String) -> Bool {
+        let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
+        return emailPredicate.evaluate(with: email)
+    }
 }
 
+// MARK: - State Handling
 extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
