@@ -11,7 +11,7 @@ import Promises
 
 enum SearchDestinations: CaseIterable {
     case subject, from, to, recipient, content, body
-    
+
     var searchExpresion: (String) -> (MCOIMAPSearchExpression) {
         { expression in
             switch self {
@@ -41,37 +41,37 @@ extension Imap: SearchResultsProvider {
         expression: String,
         in folder: String,
         destinaions: [SearchDestinations] = SearchDestinations.allCases,
-        count: Int,
-        from: Int?
+        count _: Int,
+        from _: Int?
     ) -> Promise<[MCOIMAPMessage]> {
-        Promise { [weak self] (resolve, reject) in
+        Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-           
+
             let searchExpressions = self.helper.createSearchExpressions(
                 from: destinaions.map { $0.searchExpresion(expression) }
             )
-            
+
             guard let expression = searchExpressions else {
                 return resolve([])
             }
-            
+
             let kind = self.messageKindProvider.imapMessagesRequestKind
             let indexes = try await(self.fetchUids(folder: folder, expr: expression))
-  
+
             let messages = try await(self.fetchMessagesByUIDOperation(
                 for: folder,
                 kind: kind,
                 set: indexes
-                )
+            )
             )
             return resolve(messages)
         }
     }
-    
+
     func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
         Promise<MCOIndexSet> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            
+
             self.imapSess?
                 .searchExpressionOperation(withFolder: folder, expression: expr)
                 .start(self.finalize(
@@ -80,7 +80,7 @@ extension Imap: SearchResultsProvider {
                         self.fetchUids(folder: folder, expr: expr)
                     }
                 )
-            )
+                )
         }
     }
 }

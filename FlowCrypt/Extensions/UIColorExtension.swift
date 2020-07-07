@@ -69,7 +69,6 @@ extension UIColor {
     }
 }
 
-
 // Uncomment for FlowCryptUIApplication
 //extension UIColor {
 //    static var main: UIColor {

@@ -30,6 +30,7 @@ enum AppErr: Error {
 }
 
 extension AppErr: Equatable {
+    // swiftlint:disable cyclomatic_complexity
     static func == (lhs: AppErr, rhs: AppErr) -> Bool {
         switch (lhs, rhs) {
         case (.authentication, .authentication): return true

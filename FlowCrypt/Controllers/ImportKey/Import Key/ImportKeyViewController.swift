@@ -7,15 +7,15 @@
 //
 
 import AsyncDisplayKit
-import MobileCoreServices
 import FlowCryptUI
+import MobileCoreServices
 
 final class ImportKeyViewController: ASViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, fileImport, pasteBoardImport
 
         var indexPath: IndexPath {
-            IndexPath(row: self.rawValue, section: 0)
+            IndexPath(row: rawValue, section: 0)
         }
     }
 
@@ -40,8 +40,8 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         self.core = core
         super.init(node: TableNode())
     }
-    
-    required init?(coder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -77,17 +77,17 @@ final class ImportKeyViewController: ASViewController<TableNode> {
         DispatchQueue.main.async {
             self.node.reloadRows(at: [Parts.description.indexPath], with: .fade)
         }
-    } 
+    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         return Parts.allCases.count
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
@@ -164,7 +164,7 @@ extension ImportKeyViewController {
                 userInfoMessage = "Found \(privateKey.count) key\(privateKey.count > 1 ? "s" : "")"
                 proceedToPassPhrase(with: user, keys: privateKey)
             }
-        } catch let error {
+        } catch {
             userInfoMessage = error.localizedDescription
         }
     }
@@ -186,7 +186,7 @@ extension ImportKeyViewController {
 // MARK: - UIDocumentPickerDelegate
 
 extension ImportKeyViewController: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let pickedURL = urls.first else { return }
         hanldePicked(document: pickedURL)
     }
@@ -194,15 +194,15 @@ extension ImportKeyViewController: UIDocumentPickerDelegate {
     private func hanldePicked(document url: URL) {
         let shouldStopAccessing = url.startAccessingSecurityScopedResource()
         defer {
-           if shouldStopAccessing {
-               url.stopAccessingSecurityScopedResource()
+            if shouldStopAccessing {
+                url.stopAccessingSecurityScopedResource()
             }
         }
 
         let document = Document(fileURL: url)
         document.open { [weak self] success in
             guard success else { assertionFailure("Failed to open doc"); return }
-            guard let metadata = document.data else { assertionFailure("Failed to fetch data"); return  }
+            guard let metadata = document.data else { assertionFailure("Failed to fetch data"); return }
             self?.parseFetched(data: metadata)
         }
     }

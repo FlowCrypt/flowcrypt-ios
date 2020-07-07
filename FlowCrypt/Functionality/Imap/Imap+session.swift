@@ -44,7 +44,7 @@ extension Imap {
             debugPrint("### IMAP:\(type):\(string)")
         }
     }
-    
+
     private func logSMTPConnection(for smtpSession: MCOSMTPSession) {
         smtpSession.connectionLogger = { (connectionID, type, data) in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
@@ -67,7 +67,7 @@ extension Imap {
             return Promise(self.setupSession())
         }
     }
-    
+
     func connectSmtp(session: SMTPSession) -> Promise<Void> {
         Promise { resolve, reject in
             MCOSMTPSession(session: session)

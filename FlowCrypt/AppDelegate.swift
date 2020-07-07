@@ -11,7 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
 
-    func application(_ aplication: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         disableHardwareKeyboardOnSimulator()
         GlobalRouter().proceed()
         return true
@@ -24,9 +24,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 private func disableHardwareKeyboardOnSimulator() {
     #if targetEnvironment(simulator)
-    let setHardwareLayout = NSSelectorFromString("setHardwareLayout:")
-    UITextInputMode.activeInputModes
-        .filter({ $0.responds(to: setHardwareLayout) })
-        .forEach { $0.perform(setHardwareLayout, with: nil) }
+        let setHardwareLayout = NSSelectorFromString("setHardwareLayout:")
+        UITextInputMode.activeInputModes
+            .filter { $0.responds(to: setHardwareLayout) }
+            .forEach { $0.perform(setHardwareLayout, with: nil) }
     #endif
 }

@@ -18,7 +18,7 @@ enum GeneralConstants {
             "Your CryptUp Backup",
             "Your CryptUP Backup",
             "CryptUP Account Backup",
-            "All you need to know about CryptUP (contains a backup)",
+            "All you need to know about CryptUP (contains a backup)"
         ]
     }
 }

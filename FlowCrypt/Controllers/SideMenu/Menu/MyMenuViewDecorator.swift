@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 protocol MyMenuViewDecoratorType {
     var dividerColor: UIColor { get }
@@ -67,4 +67,3 @@ extension InfoCellNode.Input {
         )
     }
 }
-

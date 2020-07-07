@@ -30,7 +30,7 @@ struct KeySettingsViewDecorator: KeySettingsViewDecoratorType {
     func attributedKeyWords(key: KeyDetails) -> NSAttributedString {
         key.ids
             .compactMap { $0.keywords }
-            .joined(separator:"\n")
+            .joined(separator: "\n")
             .attributed(.regular(14), color: .main)
     }
 

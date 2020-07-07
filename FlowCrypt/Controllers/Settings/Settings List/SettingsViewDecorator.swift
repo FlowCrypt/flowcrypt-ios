@@ -17,7 +17,7 @@ protocol SettingsViewDecoratorType {
 struct SettingsViewDecorator: SettingsViewDecoratorType {
     let sceneTitle = "settings_screen_title".localized
     let insets = UIEdgeInsets.side(16)
-    
+
     func attributedSetting(_ title: String) -> NSAttributedString {
         title.attributed(.regular(16), color: .mainTextColor)
     }

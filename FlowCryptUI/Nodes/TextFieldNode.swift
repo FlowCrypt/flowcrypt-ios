@@ -26,7 +26,7 @@ final class TextField: UITextField {
     }
 }
 
-final public class TextFieldNode: ASDisplayNode {
+public final class TextFieldNode: ASDisplayNode {
     public typealias ShouldChangeAction = ((UITextField, String) -> (Bool))
     public typealias ShouldReturnAction = (UITextField) -> (Bool)
 
@@ -144,12 +144,12 @@ final public class TextFieldNode: ASDisplayNode {
         }
     }
 
-    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(insets: .zero, child: node)
     }
 
     @discardableResult
-    override public func becomeFirstResponder() -> Bool {
+    public override func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
             super.becomeFirstResponder()
             _ = self.textField.becomeFirstResponder()
@@ -174,7 +174,7 @@ extension TextFieldNode {
     @objc private func onEditingChanged() {
         textFiledAction?(.editingChanged(textField.attributedText?.string ?? textField.text))
 
-        if self.isLowercased {
+        if isLowercased {
             guard let attributedText = textField.attributedText, attributedText.string.isNotEmpty else { return }
             textField.attributedText = NSAttributedString(
                 string: attributedText.string.lowercased(),
@@ -201,7 +201,7 @@ extension TextFieldNode: UITextFieldDelegate {
         shouldReturn?(textField) ?? true
     }
 
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn _: NSRange, replacementString string: String) -> Bool {
         shouldChangeCharacters?(textField, string) ?? true
     }
 }
@@ -221,7 +221,7 @@ extension TextFieldNode {
             }
         }
     }
- 
+
     public func setToolbar(_ onDone: (() -> Void)?) {
         onToolbarDoneAction = onDone
         let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 40))

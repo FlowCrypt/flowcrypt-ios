@@ -8,9 +8,9 @@
 
 import AsyncDisplayKit
 
-final public class TextFieldCellNode: CellNode {
+public final class TextFieldCellNode: CellNode {
     public struct Input {
-        public var placeholder: NSAttributedString? = nil
+        public var placeholder: NSAttributedString?
         public var isSecureTextEntry = false
         public var textInsets: CGFloat = -7
         public var textAlignment: NSTextAlignment = .left
@@ -60,7 +60,7 @@ final public class TextFieldCellNode: CellNode {
 
     public var isLowercased = false {
         didSet {
-            self.textField.isLowercased = isLowercased
+            textField.isLowercased = isLowercased
         }
     }
 
@@ -80,7 +80,7 @@ final public class TextFieldCellNode: CellNode {
         }
     }
 
-    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         textField.style.preferredSize = CGSize(
             width: input.width ?? constrainedSize.max.width,
             height: input.height
@@ -89,7 +89,7 @@ final public class TextFieldCellNode: CellNode {
     }
 
     @discardableResult
-    override public func becomeFirstResponder() -> Bool {
+    public override func becomeFirstResponder() -> Bool {
         textField.becomeFirstResponder()
         return true
     }

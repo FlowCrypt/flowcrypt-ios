@@ -2,10 +2,10 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
-import Promises
 import AsyncDisplayKit
 import FlowCryptUI
+import Promises
+import UIKit
 
 final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
@@ -27,6 +27,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems
     }
+
     private let tableNode: ASTableNode
 
     init(
@@ -40,13 +41,13 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         self.foldersProvider = foldersProvider
         self.dataService = dataService
         self.userService = userService
-        self.router = globalRouter
+        router = globalRouter
         self.decorator = decorator
         self.tableNode = tableNode
         super.init(node: ASDisplayNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -120,14 +121,13 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         tableNode.reloadData()
     }
 
-    private func handleError(with error: Error) { 
+    private func handleError(with error: Error) {
         switch AppErr(error) {
         case .connection:
             hideSpinner()
         default:
             showAlert(error: error, message: "error_fetch_folders".localized)
         }
-
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -142,7 +142,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
         Sections.allCases.count
     }
 
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case Sections.header.rawValue: return 1
         case Sections.folders.rawValue: return folders.count
@@ -151,7 +151,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
         }
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
             switch indexPath.section {
@@ -159,26 +159,26 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
                 return HeaderNode(
                     input: self.decorator.header(
                         for: self.dataService.currentUser?.name,
-                        email: self.dataService.email)
+                        email: self.dataService.email
                     )
+                )
             case Sections.folders.rawValue:
                 return InfoCellNode(
                     input: self.folders[safe: indexPath.row]
                         .map(InfoCellNode.Input.init)
-                    )
+                )
             case Sections.service.rawValue:
                 return InfoCellNode(
                     input: self.serviceItems[safe: indexPath.row]
                         .map(InfoCellNode.Input.init)
-                    )
+                )
             default:
                 return ASCellNode()
-            } 
+            }
         }
-
     }
 
-    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case Sections.folders.rawValue:
             guard let item = folders[safe: indexPath.row] else { return }

@@ -15,9 +15,13 @@ protocol EmailProviderViewDecoratorType {
     func title(for section: EmailProviderViewController.Section) -> InfoCellNode.Input
     func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input?
     func stringFor(user: UserObject, for section: EmailProviderViewController.Section) -> NSAttributedString?
-    func pickerView(for section: EmailProviderViewController.Section, delegate: UIPickerViewDelegate, dataSource: UIPickerViewDataSource) -> UIPickerView?
     func switchInput(isOn: Bool) -> SwitchCellNode.Input
     func shouldAddToolBar(for section: EmailProviderViewController.Section) -> Bool
+    func pickerView(
+        for: EmailProviderViewController.Section,
+        delegate: UIPickerViewDelegate,
+        dataSource: UIPickerViewDataSource
+    ) -> UIPickerView?
 }
 
 struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
@@ -74,6 +78,7 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
         )
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input? {
         let placeholder: String?
         var isSecure = false

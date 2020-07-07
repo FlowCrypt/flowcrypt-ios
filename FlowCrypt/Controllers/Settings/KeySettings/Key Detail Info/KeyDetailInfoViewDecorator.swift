@@ -6,8 +6,8 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import FlowCryptCommon
+import UIKit
 
 protocol KeyDetailInfoViewDecoratorType {
     var insets: UIEdgeInsets { get }
@@ -30,7 +30,7 @@ struct KeyDetailInfoViewDecorator: KeyDetailInfoViewDecoratorType {
         keyId: KeyId,
         date: Date,
         user: String
-    ) -> NSAttributedString{
+    ) -> NSAttributedString {
         let title: String
         switch part {
         case .keyWord:

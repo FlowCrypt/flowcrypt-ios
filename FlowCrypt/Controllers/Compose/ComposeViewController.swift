@@ -2,10 +2,10 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
 import AsyncDisplayKit
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
+import Promises
 
 final class ComposeViewController: ASViewController<TableNode> {
     struct Recipient {
@@ -26,7 +26,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         var recipients: [Recipient] = []
         var subject: String?
     }
-    
+
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
         static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
@@ -82,7 +82,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.googleService = googleService
         self.userDefaults = userDefaults
         self.globalRouter = globalRouter
-        self.contextToSend.subject = input.subject
+        contextToSend.subject = input.subject
         if input.isReply {
             if let email = input.recipientReplyTitle {
                 contextToSend.recipients.append(Recipient(email: email, state: decorator.recipientIdleState))
@@ -91,7 +91,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         super.init(node: TableNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -132,9 +132,19 @@ extension ComposeViewController {
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "paperclip"), action: (self, #selector(handleAttachTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "android-send"), action: (self, #selector(handleSendTap)), accessibilityLabel: "send"),
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "help_icn"),
+                    action: (self, #selector(handleInfoTap))
+                ),
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "paperclip"),
+                    action: (self, #selector(handleAttachTap))
+                ),
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "android-send"),
+                    action: (self, #selector(handleSendTap)),
+                    accessibilityLabel: "send"
+                )
             ]
         )
     }
@@ -148,9 +158,8 @@ extension ComposeViewController {
     }
 
     private func showScopeAlertIfNeeded() {
-        if googleService.shouldRenewToken(for: [.mail]) &&
-            !userDefaults.bool(forKey: Constants.shouldShowScopeAlertIndex)
-        {
+        if googleService.shouldRenewToken(for: [.mail]),
+            !userDefaults.bool(forKey: Constants.shouldShowScopeAlertIndex) {
             userDefaults.set(true, forKey: Constants.shouldShowScopeAlertIndex)
             let alert = UIAlertController(
                 title: "",
@@ -159,14 +168,15 @@ extension ComposeViewController {
             )
             let okAction = UIAlertAction(
                 title: "Log out",
-                style: .default) { _ in
-                    self.globalRouter.wipeOutAndReset()
-                }
+                style: .default
+            ) { _ in
+                self.globalRouter.wipeOutAndReset()
+            }
             let cancelAction = UIAlertAction(
                 title: "Cancel",
-                style: .destructive) { _ in
-
-                }
+                style: .destructive
+            ) { _ in
+            }
             alert.addAction(okAction)
             alert.addAction(cancelAction)
 
@@ -179,27 +189,30 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func observeKeyboardNotifications() {
+        // swiftlint:disable discarded_notification_center_observer
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
-                guard let self = self else { return }
-                self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
-            }
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self else { return }
+            self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
+        }
 
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
-                self?.adjustForKeyboard(height: 0)
-            }
+            queue: .main
+        ) { [weak self] _ in
+            self?.adjustForKeyboard(height: 0)
+        }
     }
 
     private func adjustForKeyboard(height: CGFloat) {
         let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 8, right: 0)
         node.contentInset = insets
 
-        guard let textView = node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first?.textView.textView else { return }
+        guard let textView = node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first?.textView.textView else { return }
         guard let selectedRange = textView.selectedTextRange else { return }
         let rect = textView.caretRect(for: selectedRange.start)
         node.view.scrollRectToVisible(rect, animated: true)
@@ -234,7 +247,7 @@ extension ComposeViewController {
         showSpinner("sending_title".localized)
 
         Promise<Bool> { [weak self] in
-            return try await(self!.encryptAndSendMessage())
+            try await(self!.encryptAndSendMessage())
         }.then(on: .main) { [weak self] sent in
             if sent { // else it must have shown error to user
                 self?.handleSuccessfullySentMessage()
@@ -251,19 +264,18 @@ extension ComposeViewController {
             let recipients = self.contextToSend.recipients
 
             guard recipients.isNotEmpty else {
-                assertionFailure("Recipients should not be empty. Fail in checking");
+                assertionFailure("Recipients should not be empty. Fail in checking")
                 return false
             }
 
             guard let text = self.contextToSend.message else {
-                assertionFailure("Text and Email should not be nil at this point. Fail in checking");
+                assertionFailure("Text and Email should not be nil at this point. Fail in checking")
                 return false
             }
 
             let subject = self.input.subjectReplyTitle
                 ?? self.contextToSend.subject
                 ?? "(no subject)"
-
 
             let lookup = recipients.map {
                 self.attesterApi.lookupEmail(email: $0.email)
@@ -325,7 +337,12 @@ extension ComposeViewController {
             replyToMimeMsg: replyToMimeMsg,
             atts: atts
         )
-        return try! core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
+
+        do {
+            return try core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
+        } catch {
+            fatalError()
+        }
     }
 
     private func isInputValid() -> Bool {
@@ -349,15 +366,14 @@ extension ComposeViewController {
     }
 }
 
-
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
-    func numberOfSections(in tableNode: ASTableNode) -> Int {
+    func numberOfSections(in _: ASTableNode) -> Int {
         2
     }
 
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         switch (state, section) {
         case (.main, 0):
             return RecipientParts.allCases.count
@@ -365,13 +381,14 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             return ComposeParts.allCases.count
         case (.searchEmails, 0):
             return RecipientParts.allCases.count
-        case (.searchEmails(let emails), 1):
+        case let (.searchEmails(emails), 1):
             return emails.count
         default:
             return 0
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         let nodeHeight = tableNode.frame.size.height
             - (navigationController?.navigationBar.frame.size.height ?? 0.0)
@@ -395,7 +412,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 case .text: return self.textNode(with: nodeHeight)
                 case .subjectDivider: return DividerCellNode()
                 }
-            case (.searchEmails(let emails), 1):
+            case let (.searchEmails(emails), 1):
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
                 return ASCellNode()
@@ -403,7 +420,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard case let .searchEmails(emails) = state,
             indexPath.section == 1,
             let selectedEmail = emails[safe: indexPath.row]
@@ -414,6 +431,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 }
 
 // MARK: - Nodes
+
 extension ComposeViewController {
     private func subjectNode() -> ASCellNode {
         TextFieldCellNode(
@@ -424,7 +442,7 @@ extension ComposeViewController {
         }
         .onShouldReturn { [weak self] _ in
             guard let self = self else { return true }
-            if !self.input.isReply, let node = self.node.visibleNodes.compactMap ({ $0 as? TextViewCellNode }).first {
+            if !self.input.isReply, let node = self.node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first {
                 node.becomeFirstResponder()
             } else {
                 self.node.view.endEditing(true)
@@ -486,6 +504,7 @@ extension ComposeViewController {
 }
 
 // MARK: - Recipients Input
+
 extension ComposeViewController {
     private var textField: TextFieldNode? {
         (node.nodeForRow(at: IndexPath(row: RecipientParts.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
@@ -702,7 +721,7 @@ extension ComposeViewController {
 
     private func isValid(email: String) -> Bool {
         let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailFormat)
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
         return emailPredicate.evaluate(with: email)
     }
 }

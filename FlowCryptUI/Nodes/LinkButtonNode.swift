@@ -16,7 +16,7 @@ public protocol Link {
 }
 
 public final class LinkButtonNode: ASCellNode {
-    public typealias Action = (String) -> ()
+    public typealias Action = (String) -> Void
 
     private let buttons: [ASButtonNode]
     private var tapAction: Action?
@@ -40,7 +40,7 @@ public final class LinkButtonNode: ASCellNode {
         tapAction?(identifier)
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 30, left: 16, bottom: 8, right: 18),
             child: ASCenterLayoutSpec(

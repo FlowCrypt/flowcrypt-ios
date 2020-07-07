@@ -19,7 +19,7 @@ public final class SignInDescriptionNode: ASCellNode {
         selectionStyle = .none
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 30, left: 16, bottom: 55, right: 16),
             child: ASCenterLayoutSpec(

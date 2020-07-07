@@ -61,7 +61,7 @@ extension UIViewController {
             CSToastManager.setTapToDismissEnabled(true)
         }
     }
-} 
+}
 
 extension UIViewController {
     var safeAreaWindowInsets: UIEdgeInsets {
@@ -76,7 +76,8 @@ extension UIViewController {
         // todo - more intelligent handling of HttpErr
         do {
             throw error
-        } catch let AppErr.user(userErr) { // if this is AppErr.user, show only the content of the message to the user, not info about the exception
+        } catch let AppErr.user(userErr) {
+            // if this is AppErr.user, show only the content of the message to the user, not info about the exception
             return "\(title)\n\n\(userErr)"
         } catch AppErr.silentAbort { // don't show any alert
             return nil
@@ -86,7 +87,7 @@ extension UIViewController {
     }
 
     func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
-        guard let formatted = self.errorToUserFriendlyString(error: error, title: message) else {
+        guard let formatted = errorToUserFriendlyString(error: error, title: message) else {
             hideSpinner()
             onOk?()
             return // silent abort
@@ -170,7 +171,7 @@ extension UIViewController {
 }
 
 extension UINavigationController {
-    func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> ()) {
+    func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
         pushViewController(viewController, animated: animated)
 
         if let coordinator = transitionCoordinator, animated {
@@ -182,7 +183,7 @@ extension UINavigationController {
         }
     }
 
-    func popViewController(animated: Bool, completion: @escaping () -> ()) {
+    func popViewController(animated: Bool, completion: @escaping () -> Void) {
         popViewController(animated: animated)
 
         if let coordinator = transitionCoordinator, animated {

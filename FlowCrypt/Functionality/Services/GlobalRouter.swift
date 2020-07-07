@@ -1,4 +1,3 @@
-
 //
 //  GlobalRouter.swift
 //  FlowCrypt
@@ -14,14 +13,13 @@ protocol GlobalRouterType {
     func wipeOutAndReset()
 }
 
-// TODO: -
 struct GlobalRouter: GlobalRouterType {
     private let dataService: DataServiceType = DataService.shared
 
     private var keyWindow: UIWindow {
         let application = UIApplication.shared
         guard let delegate = (application.delegate as? AppDelegate) else {
-            fatalError("missing AppDelegate in GlobalRouter.reset()");
+            fatalError("missing AppDelegate in GlobalRouter.reset()")
         }
         return delegate.window
     }
@@ -39,7 +37,6 @@ struct GlobalRouter: GlobalRouterType {
             logOutUserSession()
         default:
             assertionFailure("User is not logged in")
-            break
         }
     }
 

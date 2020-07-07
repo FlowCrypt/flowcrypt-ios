@@ -23,7 +23,7 @@ struct MessageViewDecorator: MessageViewDecoratorType {
     }
 
     func attributed(subject: String) -> NSAttributedString {
-       subject.attributed(.thin(15), color: .mainTextColor)
+        subject.attributed(.thin(15), color: .mainTextColor)
     }
 
     func attributed(date: Date?) -> NSAttributedString {

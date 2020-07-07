@@ -33,7 +33,6 @@ struct KeyDetailViewDecorator: KeyDetailViewDecoratorType {
     let buttonInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
 
     func attributedTitle(for keyDetailPart: KeyDetailViewController.Parts) -> NSAttributedString {
-
         let title: String
         switch keyDetailPart {
         case .description: title = "key_settings_subtitle".localized
@@ -55,6 +54,3 @@ struct KeyDetailViewDecorator: KeyDetailViewDecoratorType {
         keyDetailPart.isPrivateKey ? .red : .main
     }
 }
-
-
-

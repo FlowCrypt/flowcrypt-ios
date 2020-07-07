@@ -20,7 +20,7 @@ final class KeySettingsViewController: ASViewController<TableNode> {
         super.init(node: TableNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -60,12 +60,11 @@ extension KeySettingsViewController {
 }
 
 extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         keys.count
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let key = self.keys[safe: indexPath.row] else {
                 return ASCellNode()
@@ -80,7 +79,7 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard let key = keys[safe: indexPath.row] else { return }
         let viewController = KeyDetailViewController(key: key)
         navigationController?.pushViewController(viewController, animated: true)

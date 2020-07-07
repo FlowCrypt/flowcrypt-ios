@@ -2,9 +2,9 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
 import AsyncDisplayKit
 import FlowCryptUI
+import Promises
 
 final class MessageViewController: ASViewController<TableNode> {
     struct Input {
@@ -64,10 +64,10 @@ final class MessageViewController: ASViewController<TableNode> {
         self.imap = imap
         self.input = input
         self.decorator = decorator
-        self.dataService = storage
+        dataService = storage
         self.core = core
-        self.onCompletion = completion
-        self.message = decorator.attributed(
+        onCompletion = completion
+        message = decorator.attributed(
             text: "loading_title".localized + "...",
             color: .lightGray
         )
@@ -75,7 +75,7 @@ final class MessageViewController: ASViewController<TableNode> {
         super.init(node: TableNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -106,7 +106,6 @@ final class MessageViewController: ASViewController<TableNode> {
         let archiveButton = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
         let trashButton = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
         let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
-
 
         let items: [NavigationBarItemsView.Input]
         switch input?.path.lowercased() {
@@ -140,7 +139,7 @@ extension MessageViewController {
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
         Promise { [weak self] in
             self?.message = try await(self!.fetchMessage())
-        }.then(on: .main) { [weak self]  in
+        }.then(on: .main) { [weak self] in
             self?.hideSpinner()
             self?.node.reloadRows(at: [Parts.text.indexPath], with: .fade)
             self?.asyncMarkAsReadIfNotAlreadyMarked()
@@ -188,7 +187,7 @@ extension MessageViewController {
     }
 
     private func handleError(_ error: Error, path: String) {
-        if let e = error as NSError?, e.code == Imap.Err.fetch.rawValue {
+        if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
             // todo - the missing msg should be removed from the list in inbox view
             // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
             showToast("Message not found in folder: \(path)")
@@ -308,9 +307,9 @@ extension MessageViewController {
             subject: input.objMessage.header.subject,
             mime: input.bodyMessage,
             sentDate: input.objMessage.header.date,
-            message: self.message.string
+            message: message.string
         )
-        
+
         navigationController?.pushViewController(
             ComposeViewController(
                 input: ComposeViewController.Input(
@@ -335,7 +334,7 @@ extension MessageViewController: NavigationChildController {
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension MessageViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         return Parts.allCases.count
     }
 
@@ -366,5 +365,5 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
                 return MessageTextSubjectNode(self.message)
             }
         }
-    } 
+    }
 }

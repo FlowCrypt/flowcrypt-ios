@@ -10,9 +10,9 @@ import UIKit
 
 public extension UIEdgeInsets {
     static var side: (CGFloat) -> UIEdgeInsets {
-        { side in UIEdgeInsets(top: side, left: side, bottom: side, right: side)}
+        { side in UIEdgeInsets(top: side, left: side, bottom: side, right: side) }
     }
-    
+
     var width: CGFloat {
         left + right
     }

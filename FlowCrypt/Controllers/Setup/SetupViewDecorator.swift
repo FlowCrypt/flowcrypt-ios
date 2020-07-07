@@ -6,9 +6,9 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
+import UIKit
 
 protocol SetupViewDecoratorType {
     var title: NSAttributedString { get }
@@ -29,6 +29,7 @@ struct SetupViewDecorator: SetupViewDecoratorType {
     var title: NSAttributedString {
         "setup_title".localized.attributed(.bold(35), color: .mainTextColor, alignment: .center)
     }
+
     var useAnotherAccountTitle: NSAttributedString {
         "setup_use_another".localized.attributed(
             .regular(15),
@@ -51,6 +52,7 @@ struct SetupViewDecorator: SetupViewDecoratorType {
 
         return title.localized.attributed(.regular(17), color: .white, alignment: .center)
     }
+
     func subtitle(for state: SetupViewController.State) -> NSAttributedString {
         let subtitle: String = {
             switch state {

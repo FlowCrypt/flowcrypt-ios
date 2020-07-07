@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 
-final public class TextViewCellNode: CellNode {
+public final class TextViewCellNode: CellNode {
     public struct Input {
         var placeholder: NSAttributedString
         var preferredHeight: CGFloat
@@ -39,23 +39,23 @@ final public class TextViewCellNode: CellNode {
 
     public init(_ input: Input, action: TextViewAction? = nil) {
         self.action = action
-        self.height = input.preferredHeight
+        height = input.preferredHeight
         super.init()
         textView.delegate = self
         textView.attributedPlaceholderText = input.placeholder
         textView.typingAttributes = [
             NSAttributedString.Key.font.rawValue: NSAttributedString.Style.regular(17).font,
-            NSAttributedString.Key.foregroundColor.rawValue: input.textColor
+            NSAttributedString.Key.foregroundColor.rawValue: input.textColor,
         ]
     }
 
-    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        textView.style.preferredSize.height = self.height
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+        textView.style.preferredSize.height = height
         return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8), child: textView)
     }
 
     @discardableResult
-    override public func becomeFirstResponder() -> Bool {
+    public override func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
             _ = self.textView.textView.becomeFirstResponder()
         }

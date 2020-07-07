@@ -13,14 +13,14 @@ struct AppStartup {
     static var shared: AppStartup = AppStartup()
 
     let googleService: GoogleServiceType
-    
+
     private init(
         googleService: GoogleServiceType = GoogleService()
     ) {
         self.googleService = googleService
     }
 
-    public func initializeApp(window: UIWindow) { 
+    public func initializeApp(window: UIWindow) {
         let start = DispatchTime.now()
         DispatchQueue.promises = .global()
         window.rootViewController = BootstrapViewController()
@@ -53,7 +53,7 @@ struct AppStartup {
     }
 
     private func setupSession() throws {
-        try await(self.renewSessionIfValid())
+        try await(renewSessionIfValid())
     }
 
     private func renewSessionIfValid() -> Promise<Void> {

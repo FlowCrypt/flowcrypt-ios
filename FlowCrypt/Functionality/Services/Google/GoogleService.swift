@@ -52,7 +52,7 @@ final class GoogleService {
 
 extension GoogleService: GoogleServiceType {
     func shouldRenewToken(for scopes: [Scope]) -> Bool {
-        Set(scopes.map {$0.value}).isSubset(
+        Set(scopes.map { $0.value }).isSubset(
             of: Set(instance?.scopes.compactMap { $0 as? String } ?? [])
         )
     }
@@ -96,8 +96,3 @@ extension GoogleService: GoogleServiceType {
         }
     }
 }
-
-
-
-
-

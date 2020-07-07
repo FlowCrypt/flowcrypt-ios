@@ -19,7 +19,6 @@ protocol DataServiceType {
     var keys: [PrvKeyInfo]? { get }
     var publicKey: String? { get }
 
-
     // Local data
     var trashFolderPath: String? { get }
     func saveTrashFolder(path: String?)
@@ -31,12 +30,10 @@ protocol DataServiceType {
     func logOutAndDestroyStorage()
 }
 
-
 protocol ImapSessionProvider {
     func imapSession() -> IMAPSession?
     func smtpSession() -> SMTPSession?
 }
-
 
 enum SessionType {
     case google(_ email: String, name: String, token: String)
@@ -130,7 +127,7 @@ extension DataService: DBMigration {
     }
 
     /// Perform migration from google signing to generic session
-    private func performUserSessionMigration() { 
+    private func performUserSessionMigration() {
         guard let token = encryptedStorage.currentToken() else {
             debugPrint("User migration not needed. Token was not stored or migration already finished")
             return
@@ -170,7 +167,7 @@ extension DataService: ImapSessionProvider {
             assertionFailure("couldn't create IMAP Session with this parameters")
             return nil
         }
-        
+
         return imapSession
     }
 
@@ -184,7 +181,7 @@ extension DataService: ImapSessionProvider {
             assertionFailure("couldn't create SMTP Session with this parameters")
             return nil
         }
-        
+
         return smtpSession
     }
 }

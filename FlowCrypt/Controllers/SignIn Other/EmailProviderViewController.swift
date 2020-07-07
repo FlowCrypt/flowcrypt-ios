@@ -21,7 +21,7 @@ final class EmailProviderViewController: ASViewController<TableNode> {
     private var selectedSection: Section?
 
     private let dataService: DataServiceType
-    
+
     private let decorator: EmailProviderViewDecoratorType
     private let sessionCredentials: SessionCredentialsProvider
     private let imap: Imap
@@ -153,6 +153,7 @@ extension EmailProviderViewController {
         observeKeyboardNotifications()
     }
 
+    // swiftlint:disable discarded_notification_center_observer
     private func observeKeyboardNotifications() {
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
@@ -165,7 +166,7 @@ extension EmailProviderViewController {
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
+            queue: .main) { [weak self] _ in
                 self?.adjustForKeyboard(height: 0)
             }
     }
@@ -206,8 +207,7 @@ extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
         Section.numberOfItems(for: section, state: state)
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock { { [weak self] in
             guard let self = self, let section = Section(indexPath: indexPath) else { return ASCellNode() }
 
             switch section {
@@ -231,7 +231,7 @@ extension EmailProviderViewController {
         }
 
         let input = decorator.title(for: section)
-        
+
         return InfoCellNode(input: input)
     }
 
@@ -473,17 +473,17 @@ extension EmailProviderViewController {
 
     private func checkImapSession() {
         showSpinner()
-        
+
         guard let imapSessionToCheck = IMAPSession(userObject: user),
             let smtpSession = SMTPSession(userObject: user)
         else {
             assertionFailure("Should be able to create session at this momment")
             return
         }
-        
+
         Promise<Void> {
-            try await(self.imap.connectImap(session:imapSessionToCheck))
-            try await(self.imap.connectSmtp(session:smtpSession))
+            try await(self.imap.connectImap(session: imapSessionToCheck))
+            try await(self.imap.connectSmtp(session: smtpSession))
         }
         .then(on: .main) { [weak self] in
             self?.handleSuccessfulConnection()
@@ -492,7 +492,7 @@ extension EmailProviderViewController {
             self?.handleConnection(error: error)
         }
     }
-    
+
     private func handleConnection(error: Error) {
         imap.disconnect()
         dataService.logOutAndDestroyStorage()
@@ -502,7 +502,7 @@ extension EmailProviderViewController {
             self.showToast(message)
         }
     }
-    
+
     private func handleSuccessfulConnection() {
         // save user only when it's possible to connect
         dataService.startFor(user: .session(user))
@@ -517,7 +517,7 @@ extension EmailProviderViewController {
         guard user != UserObject.empty, user.email != UserObject.empty.email else {
             return .failure(.empty)
         }
-        
+
         guard let password = user.password, password.isNotEmpty else {
             return .failure(.password)
         }

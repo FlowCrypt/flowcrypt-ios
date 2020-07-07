@@ -15,12 +15,12 @@ struct FoldersContext {
 
 protocol FoldersProvider {
     func fetchFolders() -> Promise<FoldersContext>
-    
+
     func fetchMessagesIn(
         folder: String,
         uids: MCOIndexSet
     ) -> Promise<[MCOIMAPMessage]>
-    
+
     func fetchMessage(
         in folder: String,
         kind: MCOIMAPMessagesRequestKind,
@@ -39,7 +39,7 @@ extension Imap: FoldersProvider {
                     guard let self = self else { return reject(AppErr.nilSelf) }
                     guard self.notRetrying("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
                         return
-                    } 
+                    }
                     if let error = error {
                         reject(AppErr(error))
                     } else if let folders = value as? [MCOIMAPFolder] {
@@ -82,13 +82,13 @@ extension Imap: FoldersProvider {
     func expungeMsgs(folder: String) -> Promise<Void> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
-           
+
             self.imapSess?
                 .expungeOperation(folder)
                 .start(self.finalizeVoid("expungeMsgs", resolve, reject, retry: { self.expungeMsgs(folder: folder) }))
         }
     }
-    
+
     func fetchMessagesIn(
         folder: String,
         uids: MCOIndexSet

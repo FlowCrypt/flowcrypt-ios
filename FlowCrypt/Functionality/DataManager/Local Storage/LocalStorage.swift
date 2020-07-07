@@ -15,7 +15,6 @@ protocol LocalStorageType {
 }
 
 struct LocalStorage: LocalStorageType {
-
     private enum Constants: String, CaseIterable {
         case indexTrashFolder
     }
@@ -29,8 +28,9 @@ struct LocalStorage: LocalStorageType {
 
 extension LocalStorage {
     var trashFolderPath: String? {
+        set { storage.set(newValue, forKey: Constants.indexTrashFolder.rawValue) }
+        // swiftlint:disable implicit_getter
         get { storage.string(forKey: Constants.indexTrashFolder.rawValue) }
-        set { storage.set(newValue, forKey: Constants.indexTrashFolder.rawValue)}
     }
 }
 

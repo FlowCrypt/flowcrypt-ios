@@ -11,15 +11,15 @@ import UIKit
 final class Document: UIDocument {
     var data: Data?
 
-    override func contents(forType typeName: String) throws -> Any {
+    override func contents(forType _: String) throws -> Any {
         guard let data = data else { return Data() }
         return try NSKeyedArchiver.archivedData(
-            withRootObject:data,
+            withRootObject: data,
             requiringSecureCoding: true
         )
     }
 
-    override func load(fromContents contents: Any, ofType typeName: String?) throws {
+    override func load(fromContents contents: Any, ofType _: String?) throws {
         guard let data = contents as? Data else { return }
         self.data = data
     }

@@ -2,9 +2,9 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import Foundation
 import Promises
-import FlowCryptCommon
 
 struct HttpRes {
     let status: Int
@@ -24,7 +24,10 @@ extension URLSession {
             self.dataTask(with: urlRequest) { data, response, error in
                 let res = response as? HTTPURLResponse
                 let status = res?.statusCode ?? GeneralConstants.Global.generalError
-                debugPrint("URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlRequest.httpMethod ?? "GET") \(urlRequest.url?.absoluteString ?? "??")")
+                let urlMethod = urlRequest.httpMethod ?? "GET"
+                let urlString = urlRequest.url?.absoluteString ?? "??"
+                let message = "URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlMethod) \(urlString)"
+                debugPrint(message)
                 let validStatusCode = 200 ... 299
                 let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
                 let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes

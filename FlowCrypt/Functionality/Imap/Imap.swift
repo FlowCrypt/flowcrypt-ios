@@ -13,7 +13,7 @@ final class Imap {
     let messageKindProvider: MessageKindProviderType
     var imapSess: MCOIMAPSession?
     var smtpSess: MCOSMTPSession?
-    
+
     typealias ImapIndexSet = MCOIndexSet
     typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode

@@ -37,7 +37,7 @@ final class SegmentedViewController: ASViewController<ASDisplayNode> {
     private var style: SegmentStyle = .default
     private var segmentView = ASDisplayNode()
     private let backgroundBar = ASDisplayNode()
-     
+
     init(
         dataSource: [Segment],
         style: SegmentStyle = .default
@@ -46,16 +46,16 @@ final class SegmentedViewController: ASViewController<ASDisplayNode> {
         self.style = style
         super.init(node: ASDisplayNode())
     }
-    
-    required init?(coder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         collectionNode.selectItem(
@@ -65,12 +65,12 @@ final class SegmentedViewController: ASViewController<ASDisplayNode> {
         )
         selectViewController(with: 0)
     }
-    
+
     private func setup() {
         node.addSubnode(backgroundBar)
         node.addSubnode(collectionNode)
         node.addSubnode(segmentView)
-        
+
         collectionNode.do {
             $0.backgroundColor = style.tabTintColor
             $0.view.contentInsetAdjustmentBehavior = .never
@@ -81,20 +81,20 @@ final class SegmentedViewController: ASViewController<ASDisplayNode> {
         segmentView.backgroundColor = .backgroundColor
         node.backgroundColor = .backgroundColor
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         let calculatedWidth = dataSource
             .map { $0.title }
             .map { $0.size().width }
             .reduce(0, +)
         let collectionWidth = calculatedWidth
             + CGFloat(dataSource.count + 1) * style.insets.width
-        let x = (view.frame.size.width - collectionWidth) / 2
-        
+        let originX = (view.frame.size.width - collectionWidth) / 2
+
         collectionNode.frame = CGRect(
-            x: x,
+            x: originX,
             y: 0,
             width: node.view.frame.width,
             height: style.height
@@ -118,12 +118,13 @@ final class SegmentedViewController: ASViewController<ASDisplayNode> {
 }
 
 // MARK: - ASCollectionDataSource
+
 extension SegmentedViewController: ASCollectionDataSource, ASCollectionDelegate {
-    func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
+    func collectionNode(_: ASCollectionNode, numberOfItemsInSection _: Int) -> Int {
         dataSource.count
     }
-    
-    func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
+
+    func collectionNode(_: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let item = self.dataSource[safe: indexPath.row] else { return ASCellNode() }
             return SetupTitleNode(
@@ -133,19 +134,20 @@ extension SegmentedViewController: ASCollectionDataSource, ASCollectionDelegate 
             )
         }
     }
-    
-    func collectionNode(_ collectionNode: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
+
+    func collectionNode(_: ASCollectionNode, didSelectItemAt indexPath: IndexPath) {
         selectViewController(with: indexPath.row)
     }
 }
 
 // MARK: - Actions
+
 extension SegmentedViewController {
     private func selectViewController(with index: Int) {
         guard let viewController = dataSource[safe: index]?.viewController else {
             return assertionFailure()
         }
-        
+
         UIView.animate(
             withDuration: 0.2,
             animations: {
@@ -153,12 +155,12 @@ extension SegmentedViewController {
             },
             completion: { _ in
                 self.segmentView.view.subviews.forEach { $0.removeFromSuperview() }
-                
+
                 self.children.forEach {
                     $0.removeFromParent()
                     $0.didMove(toParent: nil)
                 }
-                
+
                 self.addChild(viewController)
                 self.segmentView.view.addSubview(viewController.view)
                 self.node.view.setNeedsLayout()

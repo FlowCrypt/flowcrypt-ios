@@ -8,11 +8,12 @@
 
 import Foundation
 
-struct GoogleContactsResponse : Decodable {
+// swiftlint:disable nesting
+struct GoogleContactsResponse: Decodable {
     let emails: [String]
 
-    private enum CodingKeys : String, CodingKey {
-        case feed = "feed"
+    private enum CodingKeys: String, CodingKey {
+        case feed
 
         enum Entry: String, CodingKey {
             case entry
@@ -43,9 +44,9 @@ struct GoogleContactsResponse : Decodable {
                 let resultContainer = try emailContainer.nestedContainer(keyedBy: CodingKeys.Entry.AdressKeys.EmailKeys.self)
                 names.append(try resultContainer.decode(String.self, forKey: .address))
             }
-            self.emails = names
+            emails = names
         } catch {
-            self.emails = []
+            emails = []
         }
     }
 }

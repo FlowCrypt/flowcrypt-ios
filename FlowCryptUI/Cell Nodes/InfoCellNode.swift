@@ -45,15 +45,15 @@ public final class InfoCellNode: ASCellNode {
         }
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize = imageNode.image != nil
             ? CGSize(width: 24, height: 24)
             : .zero
 
         let stack = ASStackLayoutSpec.horizontal()
         stack.spacing = imageNode.image != nil
-                ? 6.0
-                : 0.0
+            ? 6.0
+            : 0.0
         stack.children = [imageNode, textNode]
 
         return ASInsetLayoutSpec(

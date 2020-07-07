@@ -35,7 +35,6 @@ final class SessionObject: Object {
     }
 }
 
-
 extension SessionObject {
     static func googleIMAP(with token: String, username: String) -> SessionObject {
         SessionObject(

@@ -2,10 +2,11 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
 import AsyncDisplayKit
 import FlowCryptUI
+import Promises
 
+// swiftlint:disable line_length
 final class SetupViewController: ASViewController<ASTableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction
@@ -70,7 +71,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         super.init(node: TableNode())
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -112,21 +113,24 @@ extension SetupViewController {
         state = .idle
     }
 
+    // swiftlint:disable discarded_notification_center_observer
     private func observeKeyboardNotifications() {
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
-                guard let self = self else { return }
-                self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
-            }
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self else { return }
+            self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
+        }
 
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
-                self?.adjustForKeyboard(height: 0)
-            }
+            queue: .main
+        ) { [weak self] _ in
+            self?.adjustForKeyboard(height: 0)
+        }
     }
 
     private func adjustForKeyboard(height: CGFloat) {
@@ -137,6 +141,7 @@ extension SetupViewController {
 }
 
 // MARK: - State Handling
+
 extension SetupViewController {
     private func handle(newState: State) {
         hideSpinner()
@@ -150,7 +155,7 @@ extension SetupViewController {
             fetchEnctyptedKeys(with: data)
         case let .fetchedEncrypted(details):
             handleBackupsFetchResult(with: details)
-        case .error(let error):
+        case let .error(error):
             handleError(with: error)
         case .createKey:
             handleCreateKey()
@@ -161,9 +166,8 @@ extension SetupViewController {
         guard let email = storage.email else {
             assertionFailure(); return
         }
-        
-        showSpinner()
 
+        showSpinner()
 
         self.imap.searchBackups(for: email)
             .then(on: .main) { [weak self] data in
@@ -178,10 +182,10 @@ extension SetupViewController {
         showSpinner()
 
         do {
-            let parsed = try self.core.parseKeys(armoredOrBinary: backupData)
+            let parsed = try core.parseKeys(armoredOrBinary: backupData)
             let keys = parsed.keyDetails.filter { $0.private != nil }
             state = .fetchedEncrypted(keys)
-        } catch let error {
+        } catch {
             state = .error(.parseKey(error))
         }
     }
@@ -205,7 +209,7 @@ extension SetupViewController {
     }
 
     private func reloadNodes() {
-        let indexes =  [
+        let indexes = [
             IndexPath(row: Parts.action.rawValue, section: 0),
             IndexPath(row: Parts.description.rawValue, section: 0)
         ]
@@ -224,7 +228,7 @@ extension SetupViewController {
             showSearchBackupError(with: msg)
         case .noBackups:
             showSearchBackupError(with: "setup_action_failed".localized)
-        case .parseKey(let error):
+        case let .parseKey(error):
             showErrorAlert(with: "setup_action_failed".localized, error: error)
         }
     }
@@ -234,16 +238,18 @@ extension SetupViewController {
 
         let useOtherAccountAction = UIAlertAction(
             title: "setup_use_otherAccount".localized,
-            style: .default) { [weak self] _ in
-                self?.handleOtherAccount()
-            }
+            style: .default
+        ) { [weak self] _ in
+            self?.handleOtherAccount()
+        }
 
         let retryAction = UIAlertAction(
             title: "Retry",
-            style: .default) { [weak self] _ in
-                self?.state = .idle
-                self?.state = .searchingBackups
-            }
+            style: .default
+        ) { [weak self] _ in
+            self?.state = .idle
+            self?.state = .searchingBackups
+        }
 
         alert.addAction(useOtherAccountAction)
         alert.addAction(retryAction)
@@ -269,15 +275,17 @@ extension SetupViewController {
 
         let importAction = UIAlertAction(
             title: "setup_action_import".localized,
-            style: .default) { [weak self] _ in
-                self?.handleImportKey()
-            }
+            style: .default
+        ) { [weak self] _ in
+            self?.handleImportKey()
+        }
 
         let createNewPrivateKeyAction = UIAlertAction(
             title: "setup_action_create_new".localized,
-            style: .default) { [weak self] _ in
-                self?.state = .createKey
-            }
+            style: .default
+        ) { [weak self] _ in
+            self?.state = .createKey
+        }
 
         alert.addAction(importAction)
         alert.addAction(createNewPrivateKeyAction)
@@ -285,7 +293,6 @@ extension SetupViewController {
         present(alert, animated: true, completion: nil)
     }
 }
-
 
 // MARK: - Recover account
 
@@ -299,7 +306,12 @@ extension SetupViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        try! storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .generated)
+
+        do {
+            try storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .generated)
+        } catch {
+            fatalError()
+        }
         moveToMainFlow()
     }
 
@@ -401,11 +413,11 @@ extension SetupViewController {
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension SetupViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
 
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {

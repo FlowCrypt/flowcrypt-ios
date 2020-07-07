@@ -6,8 +6,8 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 protocol EnterPassPhraseViewDecoratorType {
     var sceneTitle: String { get }
@@ -32,18 +32,23 @@ struct EnterPassPhraseViewDecorator: EnterPassPhraseViewDecoratorType {
     var title: NSAttributedString {
         attributed(title: "import_key_description")
     }
+
     var passPhraseTitle: NSAttributedString {
         attributed(title: "import_key_description")
     }
+
     var fileImportTitle: NSAttributedString {
         attributed(subTitle: "import_key_file")
     }
+
     var pasteBoardTitle: NSAttributedString {
         attributed(subTitle: "import_key_paste")
     }
+
     var passPhraseContine: NSAttributedString {
         attributed(subTitle: "import_key_continue")
     }
+
     var passPhraseChooseAnother: NSAttributedString {
         attributed(subTitle: "import_key_choose", color: UIColor.white.withAlphaComponent(0.9))
     }
@@ -52,8 +57,7 @@ struct EnterPassPhraseViewDecorator: EnterPassPhraseViewDecoratorType {
     let passPhraseInsets = UIEdgeInsets(top: 32, left: 16, bottom: 0, right: 16)
     let titleInsets = UIEdgeInsets(top: 100, left: 16, bottom: 30, right: 16)
     let subTitleInset = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
-    var subtitleStyle: (String) -> NSAttributedString {
-        { $0.attributed(.regular(17), alignment: .center) }
+    var subtitleStyle: (String) -> NSAttributedString { { $0.attributed(.regular(17), alignment: .center) }
     }
 
     private func attributed(title: String) -> NSAttributedString {

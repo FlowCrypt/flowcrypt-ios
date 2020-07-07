@@ -9,7 +9,6 @@
 import XCTest
 
 class FlowCryptCoreTests: XCTestCase {
-
     var core: Core!
 
     override func setUp() {

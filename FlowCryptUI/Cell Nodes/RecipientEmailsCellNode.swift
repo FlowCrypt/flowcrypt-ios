@@ -51,7 +51,7 @@ final public class RecipientEmailsCellNode: CellNode {
         }
         let recipientNodeInset = RecipientEmailNode.Constants.layoutInsets.height
             + RecipientEmailNode.Constants.titleInsets.height
-        
+
         let textSize: CGSize = recipients.first?.email.size() ?? .zero
         let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
         let insets = Constants.minimumLineSpacing * CGFloat(recipients.count - 1)
@@ -75,7 +75,7 @@ extension RecipientEmailsCellNode {
 }
 
 extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource {
-    public func collectionNode(_ collectionNode: ASCollectionNode, numberOfItemsInSection section: Int) -> Int {
+    public func collectionNode(_: ASCollectionNode, numberOfItemsInSection _: Int) -> Int {
         recipients.count
     }
 

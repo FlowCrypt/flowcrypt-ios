@@ -6,16 +6,16 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import AsyncDisplayKit
 import FlowCryptCommon
+import UIKit
 
 final class RecipientEmailNode: CellNode {
     enum Constants {
         static let titleInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
         static let layoutInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
     }
-    
+
     enum Tap {
         case image, text
     }
@@ -97,7 +97,7 @@ final class RecipientEmailNode: CellNode {
         imageNode.layer.add(animation, forKey: "scale")
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         displayNode.style.preferredSize.width = input.width
         displayNode.style.preferredSize.height = 1
         let spec = ASStackLayoutSpec()

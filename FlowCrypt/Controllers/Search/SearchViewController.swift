@@ -7,33 +7,34 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
 
 final class SearchViewController: ASViewController<TableNode> {
     enum State {
         enum FetchedUpdates {
             case added(Int), removed(Int)
         }
+
         case idle, startFetching, empty, fetched([MCOIMAPMessage], FetchedUpdates?), error(String)
-        
+
         var messages: [MCOIMAPMessage] {
             guard case let .fetched(messages, _) = self else { return [] }
             return messages
         }
     }
-    
+
     private var state: State = .idle {
         didSet { updateState() }
     }
-    
+
     private let messageProvider: SearchResultsProvider
     private var searchTask: DispatchWorkItem?
-    
+
     private let searchController = UISearchController(searchResultsController: nil)
     private let folderPath: String
     private var searchedExpression: String = ""
-    
+
     init(
         messageProvider: SearchResultsProvider = Imap.shared,
         folderPath: String
@@ -42,17 +43,17 @@ final class SearchViewController: ASViewController<TableNode> {
         self.folderPath = folderPath
         super.init(node: TableNode())
     }
-    
-    required init?(coder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupSearch()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if case .idle = state {
@@ -83,8 +84,8 @@ extension SearchViewController {
             $0.searchResultsUpdater = self
             $0.hidesNavigationBarDuringPresentation = false
             $0.searchBar.tintColor = .white
-            $0.searchBar.setImage( #imageLiteral(resourceName: "search_icn").tinted(.white), for: .search, state: .normal)
-            $0.searchBar.setImage( #imageLiteral(resourceName: "cancel.png").tinted(.white), for: .clear, state: .normal)
+            $0.searchBar.setImage(#imageLiteral(resourceName: "search_icn").tinted(.white), for: .search, state: .normal)
+            $0.searchBar.setImage(#imageLiteral(resourceName: "cancel.png").tinted(.white), for: .clear, state: .normal)
             $0.searchBar.delegate = self
             $0.searchBar.textField?.textColor = .white
             if #available(iOS 12, *) {
@@ -95,7 +96,7 @@ extension SearchViewController {
         definesPresentationContext = true
         navigationItem.titleView = searchController.searchBar
     }
- 
+
     @objc private func handleInfoTap() {
         #warning("ToDo")
         showToast("Email us at human@flowcrypt.com")
@@ -105,7 +106,6 @@ extension SearchViewController {
 // MARK: - MessageHandlerViewConroller
 
 extension SearchViewController: MsgListViewConroller {
-
     func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
         return state.messages.firstIndex(of: message)
     }
@@ -126,7 +126,7 @@ extension SearchViewController: MsgListViewConroller {
 
 // MARK: - ASTableDataSource, ASTableDelegate
 
-extension SearchViewController : ASTableDataSource, ASTableDelegate {
+extension SearchViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
         case .fetched:
@@ -145,7 +145,7 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
         let size = CGSize(width: tableNode.frame.size.width, height: height)
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
-            
+
             switch self.state {
             case .empty:
                 return TextCellNode(
@@ -185,7 +185,7 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
                         withSpinner: false,
                         size: size
                     )
-                ) 
+                )
             }
         }
     }
@@ -198,28 +198,27 @@ extension SearchViewController : ASTableDataSource, ASTableDelegate {
     }
 }
 
-
 // MARK: - UISearchControllerDelegate
 
 extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_: UISearchBar) {
         guard let searchText = searchText(for: searchController.searchBar) else { return }
         searchTask?.cancel()
         search(for: searchText)
     }
-    
+
     func didPresentSearchController(_ searchController: UISearchController) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             self?.searchController.searchBar.becomeFirstResponder()
         }
-        
+
         update(searchController: searchController)
     }
- 
+
     func didDismissSearchController(_ searchController: UISearchController) {
         searchController.searchBar.text = searchedExpression
     }
-    
+
     private func update(searchController: UISearchController) {
         searchController.searchBar.textField?
             .attributedPlaceholder = "search_placeholder"
@@ -249,25 +248,25 @@ extension SearchViewController: UISearchResultsUpdating {
         guard searchedExpression != searchText else {
             return
         }
-        
+
         searchTask?.cancel()
         let task = DispatchWorkItem { [weak self] in
             self?.search(for: searchText)
         }
         searchTask = task
-        
+
         let throttleTime = 1.0
         DispatchQueue.main.asyncAfter(
             deadline: .now() + throttleTime,
             execute: task
         )
     }
-    
+
     private func searchText(for searchBar: UISearchBar) -> String? {
         guard let text = searchBar.text, text.isNotEmpty else { return nil }
         return text
     }
-    
+
     private func search(for searchText: String) {
         state = .startFetching
         searchedExpression = searchText
@@ -277,15 +276,15 @@ extension SearchViewController: UISearchResultsUpdating {
             destinaions: SearchDestinations.allCases,
             count: 10,
             from: 0
-            )
-            .catch(on: .main) { [weak self] error in
-                self?.handleError(with: error)
-            }
-            .then(on: .main) { [weak self] messages in
-                self?.handleFetchedMessages(with: messages)
-            }
+        )
+        .catch(on: .main) { [weak self] error in
+            self?.handleError(with: error)
+        }
+        .then(on: .main) { [weak self] messages in
+            self?.handleFetchedMessages(with: messages)
+        }
     }
-    
+
     private func handleFetchedMessages(with messages: [MCOIMAPMessage]) {
         if messages.isEmpty {
             state = .empty
@@ -294,10 +293,10 @@ extension SearchViewController: UISearchResultsUpdating {
         }
     }
 
-    private func handleError(with error: Error) {
+    private func handleError(with _: Error) {
         state = .error("search_empty".localized)
     }
-    
+
     private func updateState() {
         switch state {
         case .empty, .error:
@@ -325,7 +324,7 @@ extension SearchViewController: UISearchResultsUpdating {
 
 // Support for iOS 12 and iOS 13 UISearchBar textField
 private extension UISearchBar {
-    var textField : UITextField? {
+    var textField: UITextField? {
         if #available(iOS 13.0, *) {
             return searchTextField
         } else {

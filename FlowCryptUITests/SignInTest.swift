@@ -16,13 +16,13 @@ class SignInTest: XCTestCase, AppTest {
 
     override func setUp() {
         continueAfterFailure = false
-        
+
         app = XCUIApplicationBuilder()
             .setupRegion()
             .build()
             .addSnapshot()
             .launched()
-    } 
+    }
 }
 
 extension SignInTest {
@@ -282,7 +282,7 @@ extension SignInTest {
     }
 }
 
- 
+
 
 /*
  log in -> approve -> no backups -> generate pubkey -> switch accounts

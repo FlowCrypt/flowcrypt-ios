@@ -17,7 +17,7 @@ protocol UserServiceType {
     func renewSession() -> Promise<Void>
 }
 
-final class UserService: NSObject  {
+final class UserService: NSObject {
     static let shared = UserService()
 
     private var onLogin: (() -> Void)?
@@ -27,7 +27,7 @@ final class UserService: NSObject  {
 
     private let googleManager: GIDSignIn
     private var dataService: DataServiceType
-    
+
     private init(
         googleManager: GIDSignIn = GIDSignIn.sharedInstance(),
         dataService: DataServiceType = DataService.shared
@@ -47,7 +47,7 @@ final class UserService: NSObject  {
             if dataService.isLoggedIn {
                 onLogin?()
             }
-        case let .password(password):
+        case .password:
             assertionFailure("Implement this one")
         }
     }

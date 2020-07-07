@@ -3,9 +3,9 @@
 //
 
 import AsyncDisplayKit
-import Promises
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
+import Promises
 
 final class InboxViewController: ASViewController<ASDisplayNode> {
     private enum Constants {
@@ -53,7 +53,7 @@ final class InboxViewController: ASViewController<ASDisplayNode> {
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
-        self.tableNode = TableNode()
+        tableNode = TableNode()
 
         super.init(node: ASDisplayNode())
 
@@ -118,7 +118,7 @@ extension InboxViewController {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap))),
+                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
             ]
         )
     }
@@ -190,8 +190,8 @@ extension InboxViewController {
             .map { (index, _) -> Int in
                 let indexInTableView = index + count
                 return indexInTableView
-        }
-        .map { IndexPath(row: $0, section: 0) }
+            }
+            .map { IndexPath(row: $0, section: 0) }
 
         messages.append(contentsOf: messageContext.messages)
         state = .fetched(messageContext.totalMessages)
@@ -240,7 +240,6 @@ extension InboxViewController {
 }
 
 extension InboxViewController: MsgListViewConroller {
-
     func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
         return messages.firstIndex(of: message)
     }
@@ -252,7 +251,7 @@ extension InboxViewController: MsgListViewConroller {
             state = .empty
             tableNode.reloadData()
         } else {
-            let total = self.state.total ?? 0
+            let total = state.total ?? 0
             let newTotalCount = total - 1
             state = .fetched(newTotalCount)
             tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
@@ -288,9 +287,20 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             width: tableNode.frame.size.width,
             height: max(height, 0)
         )
-        let text = title ?? ""
 
-        return { [weak self] in
+        return cellNode(for: indexPath, and: size)
+    }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        tableNode.deselectRow(at: indexPath, animated: true)
+        guard let message = messages[safe: indexPath.row] else { return }
+
+        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
+    }
+}
+
+extension InboxViewController {
+    private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock { { [weak self] in
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
@@ -298,7 +308,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 return TextCellNode(
                     input: TextCellNode.Input(
                         backgroundColor: .backgroundColor,
-                        title: "\(text) is empty",
+                        title: "\(self.title ?? "") is empty",
                         withSpinner: false,
                         size: size
                     )
@@ -335,18 +345,11 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                         withSpinner: false,
                         size: size
                     )
-                ) 
+                )
             }
         }
     }
-
-    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        tableNode.deselectRow(at: indexPath, animated: true)
-        guard let message = messages[safe: indexPath.row] else { return }
-
-        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
-    }
-}
+ }
 
 extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {
@@ -365,7 +368,7 @@ extension InboxViewController {
     private func handleBeginFetching(_ context: ASBatchContext?) {
         switch state {
         case .idle:
-            break 
+            break
         case let .fetched(total):
             if messages.count != total {
                 loadMore(context)

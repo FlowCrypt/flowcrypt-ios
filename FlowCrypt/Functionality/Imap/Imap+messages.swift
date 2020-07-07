@@ -17,7 +17,7 @@ extension Imap: MessageProvider {
     func fetchMessages(for folder: String, count: Int, from: Int?) -> Promise<MessageContext> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            
+
             let folderInfo = try await(self.folderInfo(for: folder))
             let totalCount = Int(folderInfo.messageCount)
             if totalCount == 0  {
@@ -37,7 +37,7 @@ extension Imap: MessageProvider {
     private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            
+
             self.imapSess?
                 .folderInfoOperation(path)
                 .start(self.finalize("folderInfo", resolve, reject, retry: {
@@ -53,7 +53,7 @@ extension Imap: MessageProvider {
     ) -> Promise<[MCOIMAPMessage]> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            
+
             self.imapSess?
                 .fetchMessagesByNumberOperation(
                     withFolder: folder,
@@ -67,7 +67,7 @@ extension Imap: MessageProvider {
                 }
         }
     }
-    
+
     func fetchMessagesByUIDOperation(
         for folder: String,
         kind: MCOIMAPMessagesRequestKind,
@@ -75,7 +75,7 @@ extension Imap: MessageProvider {
     ) -> Promise<[MCOIMAPMessage]> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
-            
+
             self.imapSess?
                 .fetchMessagesByUIDOperation(
                     withFolder: folder,

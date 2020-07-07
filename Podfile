@@ -13,6 +13,8 @@ def app_pods
   pod 'Toast', '~> 4.0.0'
   pod 'ENSwiftSideMenu', '~> 0.1.4'
   pod 'Texture'
+  pod 'SwiftLint'
+  pod 'SwiftFormat/CLI'
 end
 
 def shared_pods

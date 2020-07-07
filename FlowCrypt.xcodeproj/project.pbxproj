@@ -128,6 +128,8 @@
 		D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* InfoCellNode.swift */; };
 		D21574B724376852006B094F /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21574B624376852006B094F /* ConnectionType.swift */; };
 		D216D05E242D32EA0083EDD6 /* TestCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D216D05D242D32EA0083EDD6 /* TestCredentials.swift */; };
+		D2324CAD2471DCF800FD1C6F /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = D2324CAC2471DCF800FD1C6F /* format.sh */; };
+		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
@@ -185,7 +187,6 @@
 		D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
 		D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */; };
 		D2A9CA472426244600E1D898 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
-		D2BEB5922472F1C5009E7E2F /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D2BEB5912472F1C5009E7E2F /* test-ci-secrets.json */; };
 		D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		D2CCD1FA247C50DA00D21F9C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
@@ -200,7 +201,8 @@
 		D2CDC3DE24052D50002B045F /* FlowCryptUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D2CDC3E324052D54002B045F /* FlowCryptCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
+		D2D27B79248A8694007346FA /* BigIntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtension.swift */; };
+		D2D27B7A248A874C007346FA /* BigIntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtension.swift */; };
 		D2F18464244B0C63000CC5D1 /* SignInGoogleTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */; };
 		D2F18468244B0F35000CC5D1 /* AppTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F18467244B0F35000CC5D1 /* AppTestHelper.swift */; };
 		D2F1846A244DB8F7000CC5D1 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F18469244DB8F6000CC5D1 /* SnapshotHelper.swift */; };
@@ -213,10 +215,9 @@
 		D2F6D13E2434FF1400DB4065 /* providers.json in Resources */ = {isa = PBXBuildFile; fileRef = D2F6D13D2434FF1400DB4065 /* providers.json */; };
 		D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */; };
 		D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D146243506DA00DB4065 /* MailSettingsCredentials.swift */; };
+		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* EmailProviderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */; };
 		D2FF6968243115F9007182F0 /* EmailProviderViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */; };
-		D2D27B79248A8694007346FA /* BigIntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtension.swift */; };
-		D2D27B7A248A874C007346FA /* BigIntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtension.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */; };
 		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
 /* End PBXBuildFile section */
@@ -428,9 +429,10 @@
 		D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlowCryptUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D204DBA023FB35700083B9D6 /* FlowCryptUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlowCryptUI.h; sourceTree = "<group>"; };
 		D204DBA123FB35700083B9D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D204DBA723FB35930083B9D6 /* RecipientsTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientsTextField.swift; sourceTree = "<group>"; };
 		D21574B624376852006B094F /* ConnectionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
 		D216D05D242D32EA0083EDD6 /* TestCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCredentials.swift; sourceTree = "<group>"; };
+		D2324CAC2471DCF800FD1C6F /* format.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = format.sh; sourceTree = "<group>"; };
+		D2324CB22471E60300FD1C6F /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNode.swift; sourceTree = "<group>"; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
@@ -462,8 +464,7 @@
 		D2A9CA3E24261A4600E1D898 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
 		D2A9CA4124261DBC00E1D898 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralConstantsTest.swift; sourceTree = "<group>"; };
-		D2FD0F682453245E00259FF0 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
-		D2BEB5912472F1C5009E7E2F /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
+		D2D27B78248A8694007346FA /* BigIntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigIntExtension.swift; sourceTree = "<group>"; };
 		D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInGoogleTest.swift; sourceTree = "<group>"; };
 		D2F18467244B0F35000CC5D1 /* AppTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTestHelper.swift; sourceTree = "<group>"; };
 		D2F18469244DB8F6000CC5D1 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = fastlane/SnapshotHelper.swift; sourceTree = SOURCE_ROOT; };
@@ -476,9 +477,9 @@
 		D2F6D13D2434FF1400DB4065 /* providers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = providers.json; sourceTree = "<group>"; };
 		D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCredentialsProvider.swift; sourceTree = "<group>"; };
 		D2F6D146243506DA00DB4065 /* MailSettingsCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailSettingsCredentials.swift; sourceTree = "<group>"; };
+		D2FD0F682453245E00259FF0 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderViewDecorator.swift; sourceTree = "<group>"; };
-		D2D27B78248A8694007346FA /* BigIntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigIntExtension.swift; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -819,7 +820,6 @@
 		9FDF3642235A1B0100614596 /* FlowCryptUITests */ = {
 			isa = PBXGroup;
 			children = (
-				D2BEB5912472F1C5009E7E2F /* test-ci-secrets.json */,
 				9FDF364C235A1CCD00614596 /* SignInTest.swift */,
 				D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */,
 				D216D05D242D32EA0083EDD6 /* TestCredentials.swift */,
@@ -866,8 +866,10 @@
 		C132B9A71EC2DBD800763715 = {
 			isa = PBXGroup;
 			children = (
+				D2324CB22471E60300FD1C6F /* .swiftlint.yml */,
 				C132B9B21EC2DBD800763715 /* FlowCrypt */,
 				A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */,
+				D2324CAB2471DCF800FD1C6F /* Scripts */,
 				2DC3601602226D74335E18F4 /* Pods */,
 				9FDF3642235A1B0100614596 /* FlowCryptUITests */,
 				D204DB9F23FB35700083B9D6 /* FlowCryptUI */,
@@ -977,6 +979,14 @@
 				D28655972424D0BC0066F52E /* Views */,
 			);
 			path = FlowCryptUI;
+			sourceTree = "<group>";
+		};
+		D2324CAB2471DCF800FD1C6F /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				D2324CAC2471DCF800FD1C6F /* format.sh */,
+			);
+			path = Scripts;
 			sourceTree = "<group>";
 		};
 		D24ABA6123FDB275002EE9DD /* Resources */ = {
@@ -1295,6 +1305,8 @@
 			buildConfigurationList = C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */;
 			buildPhases = (
 				5430C58483A407F52FD23C1B /* [CP] Check Pods Manifest.lock */,
+				D2324CAA2471D47B00FD1C6F /* Format code */,
+				D2324CA92471CED200FD1C6F /* SwiftLint */,
 				C132B9AC1EC2DBD800763715 /* Sources */,
 				C132B9AD1EC2DBD800763715 /* Frameworks */,
 				C132B9AE1EC2DBD800763715 /* Resources */,
@@ -1434,7 +1446,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2BEB5922472F1C5009E7E2F /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1450,6 +1461,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */,
+				D2324CAD2471DCF800FD1C6F /* format.sh in Resources */,
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
@@ -1684,6 +1697,42 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		D2324CA92471CED200FD1C6F /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
+		};
+		D2324CAA2471D47B00FD1C6F /* Format code */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Format code";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make format\n";
 		};
 		F5FDFD02C616C6B2DEBEEFCA /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

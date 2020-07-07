@@ -31,7 +31,7 @@ public final class InboxCellNode: CellNode {
     private let separatorNode = ASDisplayNode()
 
     public init(message: Input) {
-        super.init()  
+        super.init()
         emailNode.attributedText = message.emailText
         dateNode.attributedText = message.dateText
         messageNode.attributedText = message.messageText
@@ -73,4 +73,3 @@ public final class InboxCellNode: CellNode {
         )
     }
 }
-

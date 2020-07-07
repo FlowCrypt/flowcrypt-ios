@@ -56,7 +56,7 @@ extension RecipientEmailsCellNode {
             public var borderColor: UIColor {
                 stateContext.borderColor
             }
-            
+
             public var textColor: UIColor {
                 stateContext.textColor
             }
