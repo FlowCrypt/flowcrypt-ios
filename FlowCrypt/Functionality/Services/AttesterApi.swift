@@ -12,20 +12,29 @@ struct PubkeySearchResult {
 
 protocol AttesterApiType {
     func lookupEmail(email: String) -> Promise<PubkeySearchResult>
-    func updateKey(email: String, pubkey: String) -> Promise<String>
+    func updateKey(email: String, pubkey: String, token: String?) -> Promise<String>
     func replaceKey(email: String, pubkey: String) -> Promise<String>
     func testWelcome(email: String, pubkey: String) -> Promise<Void>
 }
 
 final class AttesterApi: AttesterApiType {
-    static let shared: AttesterApi = AttesterApi()
-    private static var url = "https://flowcrypt.com/attester/"
+    private enum Endpoint {
+        static let baseURL = "https://flowcrypt.com/attester/"
+    }
 
-    private init() {}
+    private func urlPub(emailOrLongid: String) -> String {
+        let normalizedEmail = emailOrLongid
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return "\(Endpoint.baseURL)pub/\(normalizedEmail)"
+    }
+}
 
+extension AttesterApi {
     func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
-        Promise { () -> PubkeySearchResult in
-            let res = try await(URLSession.shared.call(AttesterApi.urlPub(emailOrLongid: email), tolerateStatus: [404]))
+        Promise { [weak self] () -> PubkeySearchResult in
+            guard let url = self?.urlPub(emailOrLongid: email) else { throw AppErr.nilSelf }
+            let res = try await(URLSession.shared.call(url, tolerateStatus: [404]))
 
             if res.status >= 200, res.status <= 299 {
                 return PubkeySearchResult(email: email, armored: res.data.toStr())
@@ -39,43 +48,53 @@ final class AttesterApi: AttesterApiType {
     }
 
     @discardableResult
-    func updateKey(email: String, pubkey: String) -> Promise<String> {
-        Promise { () -> String in
-            var req = URLRequest(url: URL(string: AttesterApi.urlPub(emailOrLongid: email))!)
-            req.httpMethod = "PUT"
-            req.httpBody = pubkey.data()
-            let res = try await(URLSession.shared.call(req)) // will throw on non-200
+    func updateKey(email: String, pubkey: String, token: String?) -> Promise<String> {
+        let httpMethod: HTTPMetod
+        let headers: [URLHeader]
+
+        if let value = token {
+            httpMethod = .post
+            headers = [URLHeader(value: "Authorization", httpHeaderField: "Bearer \(value)")]
+        } else {
+            httpMethod = .put
+            headers = []
+        }
+
+        let request = URLRequest.urlRequest(
+            with: urlPub(emailOrLongid: email),
+            method: httpMethod,
+            body: pubkey.data(),
+            headers: headers
+        )
+        return Promise { () -> String in
+            let res = try await(URLSession.shared.call(request))
             return res.data.toStr()
         }
     }
 
     @discardableResult
     func replaceKey(email: String, pubkey: String) -> Promise<String> {
-        Promise { () -> String in
-            var req = URLRequest(url: URL(string: AttesterApi.urlPub(emailOrLongid: email))!)
-            req.httpMethod = "POST"
-            req.httpBody = pubkey.data()
-            let res = try await(URLSession.shared.call(req)) // will throw on non-200
+        let request = URLRequest.urlRequest(
+            with: urlPub(emailOrLongid: email),
+            method: .post,
+            body: pubkey.data()
+        )
+        return Promise { () -> String in
+            let res = try await(URLSession.shared.call(request))
             return res.data.toStr()
         }
     }
 
     @discardableResult
     func testWelcome(email: String, pubkey: String) -> Promise<Void> {
+        let request = URLRequest.urlRequest(
+            with: Endpoint.baseURL + "test/welcome",
+            method: .post,
+            body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
+            headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
+        )
         return Promise { () -> Void in
-            var req = URLRequest(url: URL(string: AttesterApi.url + "test/welcome")!)
-            req.httpMethod = "POST"
-            req.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            req.httpBody = try JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey])
-            _ = try await(URLSession.shared.call(req)) // will throw on non-200
+            _ = try await(URLSession.shared.call(request)) // will throw on non-200
         }
-    }
-
-    private static func urlPub(emailOrLongid: String) -> String {
-        "\(AttesterApi.url)pub/\(AttesterApi.normalize(emailOrLongid))"
-    }
-
-    private static func normalize(_ email: String) -> String {
-        email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }

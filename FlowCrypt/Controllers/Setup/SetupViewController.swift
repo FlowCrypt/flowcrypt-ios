@@ -19,6 +19,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
     private let decorator: SetupViewDecoratorType
     private let core: Core
     private let keyMethods: KeyMethodsType
+    private let attester: AttesterApiType
 
     private var passPhrase: String?
 
@@ -59,7 +60,8 @@ final class SetupViewController: ASViewController<ASTableNode> {
         storage: DataServiceType = DataService.shared,
         decorator: SetupViewDecoratorType = SetupViewDecorator(),
         core: Core = Core.shared,
-        keyMethods: KeyMethodsType = KeyMethods(core: .shared)
+        keyMethods: KeyMethodsType = KeyMethods(core: .shared),
+        attester: AttesterApiType = AttesterApi()
     ) {
         self.imap = imap
         self.userService = userService
@@ -68,6 +70,7 @@ final class SetupViewController: ASViewController<ASTableNode> {
         self.decorator = decorator
         self.core = core
         self.keyMethods = keyMethods
+        self.attester = attester
         super.init(node: TableNode())
     }
 
@@ -323,8 +326,21 @@ extension SetupViewController {
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
             try await(self.backupPrvToInbox(prv: encryptedPrv.key, userId: userId))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
-            try await(self.alertAndSkipOnRejection(AttesterApi.shared.updateKey(email: userId.email, pubkey: encryptedPrv.key.public), fail: "Failed to submit Public Key"))
-            try await(self.alertAndSkipOnRejection(AttesterApi.shared.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public), fail: "Failed to send you welcome email"))
+
+            let updateKey = self.attester.updateKey(
+                email: userId.email,
+                pubkey: encryptedPrv.key.public,
+                token: self.storage.token
+            )
+            try await(self.alertAndSkipOnRejection(
+                updateKey,
+                fail: "Failed to submit Public Key")
+            )
+            let testWelcome = self.attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
+            try await(self.alertAndSkipOnRejection(
+                testWelcome,
+                fail: "Failed to send you welcome email")
+            )
         }.then(on: .main) { [weak self] in
             self?.moveToMainFlow()
         }.catch(on: .main) { [weak self] error in

@@ -64,7 +64,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         imap: Imap = Imap.shared,
         notificationCenter: NotificationCenter = .default,
         dataService: DataServiceType = DataService.shared,
-        attesterApi: AttesterApiType = AttesterApi.shared,
+        attesterApi: AttesterApiType = AttesterApi(),
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,

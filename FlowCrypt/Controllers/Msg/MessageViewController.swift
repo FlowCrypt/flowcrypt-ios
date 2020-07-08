@@ -276,6 +276,7 @@ extension MessageViewController {
     }
 
     private func moveToTrash(with trashPath: String) {
+<<<<<<< Updated upstream
         guard let input = input else { return hideSpinner() }
 
         imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath)
@@ -285,6 +286,27 @@ extension MessageViewController {
             .catch(on: .main) { [weak self] _ in
                 self?.handleOpErr(operation: .moveToTrash)
             }
+=======
+        Promise<Void> { [weak self] in
+            guard let self = self else { return }
+            guard let input = self.input else { return }
+            //Move message to trash
+            try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath))
+
+            //Mark as deleted in the origin folder
+            input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
+            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
+
+            //Expunge origin folder
+            try await(self.imap.expungeMsgs(folder: input.path))
+        }
+        .then(on: .main) { [weak self] in
+            self?.handleOpSuccess(operation: .moveToTrash)
+        }
+        .catch(on: .main) { [weak self] _ in
+            self?.handleOpErr(operation: .moveToTrash)
+        }
+>>>>>>> Stashed changes
     }
 
     @objc private func handleArchiveTap() {

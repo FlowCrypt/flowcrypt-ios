@@ -51,3 +51,34 @@ extension URLSession {
         }
     }
 }
+
+enum HTTPMetod: String {
+    case put = "PUT"
+    case get = "GET"
+    case post = "POST"
+}
+
+struct URLHeader {
+    let value: String
+    let httpHeaderField: String
+}
+
+extension URLRequest {
+    static func urlRequest(
+        with urlString: String,
+        method: HTTPMetod,
+        body: Data?,
+        headers: [URLHeader] = []
+    ) -> URLRequest {
+        guard let url = URL(string: urlString) else {
+            fatalError("can't create URL")
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        request.httpBody = body
+        headers.forEach {
+            request.addValue($0.value, forHTTPHeaderField: $0.httpHeaderField)
+        }
+        return request
+    }
+}
