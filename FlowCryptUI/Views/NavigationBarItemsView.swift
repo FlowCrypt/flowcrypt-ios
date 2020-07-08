@@ -14,9 +14,11 @@ public final class NavigationBarItemsView: UIBarButtonItem {
         static let interItemSpacing: CGFloat = 16
     }
 
+    public typealias TargetAction = (target: Any?, selector: Selector)
+
     public struct Input {
         let image: UIImage?
-        let action: (target: Any?, selector: Selector)?
+        let action: TargetAction?
         let accessibilityLabel: String?
 
         public init(image: UIImage?, action: (target: Any?, selector: Selector)?, accessibilityLabel: String? = nil) {

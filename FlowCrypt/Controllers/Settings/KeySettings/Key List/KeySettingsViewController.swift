@@ -33,6 +33,15 @@ final class KeySettingsViewController: ASViewController<TableNode> {
         node.reloadData()
 
         loadKeysFromStorageAndRender()
+        setupNavigationBar()
+    }
+
+    private func setupNavigationBar() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .add,
+            target: self,
+            action: #selector(handleAddButtonTap)
+        )
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -59,6 +68,11 @@ extension KeySettingsViewController {
     }
 }
 
+extension KeySettingsViewController {
+    @objc private func handleAddButtonTap() {
+        navigationController?.pushViewController(ImportKeyViewController(), animated: true)
+    }
+}
 extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         keys.count
