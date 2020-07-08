@@ -570,17 +570,30 @@ extension ComposeViewController {
             return recipient
         }
 
-        // add new recipient
         let newRecipient = Recipient(email: text, state: decorator.recipientIdleState)
-        contextToSend.recipients.append(newRecipient)
-        node.reloadRows(at: [recipientsIndexPath], with: .fade)
-        evaluate(recipient: newRecipient)
+        let indexOfRecipient: Int
 
-        // scroll to the latest recipient
-        let endIndex = recipients.endIndex - 1
+        if let index = contextToSend.recipients.firstIndex(where: { $0.email == newRecipient.email }) {
+            // recipient already in list
+            evaluate(recipient: newRecipient)
+            indexOfRecipient = index
+        } else {
+            // add new recipient
+            contextToSend.recipients.append(newRecipient)
+            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+            evaluate(recipient: newRecipient)
+
+            // scroll to the latest recipient
+            indexOfRecipient = recipients.endIndex - 1
+        }
+
         let collectionNode = (node.nodeForRow(at: recipientsIndexPath) as? RecipientEmailsCellNode)?.collectionNode
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            collectionNode?.scrollToItem(at: IndexPath(row: endIndex, section: 0), at: .bottom, animated: true)
+            collectionNode?.scrollToItem(
+                at: IndexPath(row: indexOfRecipient, section: 0),
+                at: .bottom,
+                animated: true
+            )
         }
 
         // reset textfield
