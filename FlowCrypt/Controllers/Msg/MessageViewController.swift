@@ -256,8 +256,6 @@ extension MessageViewController {
 
     private func permanentlyDelete() {
         guard let input = input else { return hideSpinner() }
-        input.objMessage.flags = MCOMessageFlag(rawValue: MCOMessageFlag.deleted.rawValue)
-
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
             guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
@@ -280,7 +278,6 @@ extension MessageViewController {
 
         Promise<Void> { [weak self] in
             guard let self = self else { return }
-            guard let input = self.input else { return }
             //Move message to trash
             try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath))
 
