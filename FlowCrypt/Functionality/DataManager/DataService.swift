@@ -18,6 +18,7 @@ protocol DataServiceType {
     var currentAuthType: AuthType? { get }
     var keys: [PrvKeyInfo]? { get }
     var publicKey: String? { get }
+    var token: String? { get }
 
     // Local data
     var trashFolderPath: String? { get }
@@ -76,6 +77,13 @@ final class DataService: DataServiceType {
 
     var publicKey: String? {
         encryptedStorage.publicKey()
+    }
+
+    var token: String? {
+        switch currentAuthType {
+        case let .oAuth(value): return value
+        default: return nil
+        }
     }
 
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
