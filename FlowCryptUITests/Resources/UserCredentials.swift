@@ -17,8 +17,6 @@ struct UserCredentials: Codable, Equatable {
 
     static var empty = UserCredentials(email: "", password: "", pass: "", recovery: "", privateKey: "")
 
-    // TODO: ANTON - flowcrypt.compatibility@mail.com
-
     static var main: UserCredentials = {
         Credentials.default
             .users
