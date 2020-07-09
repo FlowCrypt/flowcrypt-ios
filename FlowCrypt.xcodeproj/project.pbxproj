@@ -131,6 +131,7 @@
 		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
+		D24B8FEB24B7837F00521D74 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D24B8FEA24B7837E00521D74 /* test-ci-secrets.json */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
 		D2531F2F23FEEF52007E5198 /* FlowCryptCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D2531F3423FEEF5F007E5198 /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3923438D3700A7371A /* StyleExtension.swift */; };
@@ -164,7 +165,6 @@
 		D28655982424D1BD0066F52E /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D28655992424D1EB0066F52E /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D286559A2424D1EB0066F52E /* FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; };
-		D28E274C24B50C85004862D5 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D28E274B24B50C85004862D5 /* test-ci-secrets.json */; };
 		D297990D2444A76D004A3E31 /* UserObject+Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D297990C2444A76D004A3E31 /* UserObject+Empty.swift */; };
 		D29AFFED24092D7900C1387D /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFEC24092D7900C1387D /* GoogleService.swift */; };
 		D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
@@ -434,6 +434,7 @@
 		D2324CB22471E60300FD1C6F /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNode.swift; sourceTree = "<group>"; };
+		D24B8FEA24B7837E00521D74 /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
 		D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlowCryptCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlowCryptCommon.h; sourceTree = "<group>"; };
@@ -447,7 +448,6 @@
 		D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
 		D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMenuViewDecorator.swift; sourceTree = "<group>"; };
 		D28655942423BFF60066F52E /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
-		D28E274B24B50C85004862D5 /* test-ci-secrets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = "<group>"; };
 		D297990C2444A76D004A3E31 /* UserObject+Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserObject+Empty.swift"; sourceTree = "<group>"; };
 		D29AFFEC24092D7900C1387D /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		D29AFFF22409370300C1387D /* LogOutHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutHandler.swift; sourceTree = "<group>"; };
@@ -819,11 +819,11 @@
 		9FDF3642235A1B0100614596 /* FlowCryptUITests */ = {
 			isa = PBXGroup;
 			children = (
+				D24B8FEA24B7837E00521D74 /* test-ci-secrets.json */,
 				9FDF364C235A1CCD00614596 /* SignInTest.swift */,
 				D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */,
 				D216D05D242D32EA0083EDD6 /* TestCredentials.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
-				D28E274B24B50C85004862D5 /* test-ci-secrets.json */,
 				9F228BA723C673C2005D2CB6 /* Resources */,
 			);
 			path = FlowCryptUITests;
@@ -1446,7 +1446,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D28E274C24B50C85004862D5 /* test-ci-secrets.json in Resources */,
+				D24B8FEB24B7837F00521D74 /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
