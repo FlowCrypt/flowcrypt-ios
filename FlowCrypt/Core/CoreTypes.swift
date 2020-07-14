@@ -143,6 +143,10 @@ struct SendableMsg {
 }
 
 struct MsgBlock: Decodable {
+    static func blockParseErr(with content: String) -> MsgBlock {
+        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil)
+    }
+
     let type: BlockType
     let content: String
     let decryptErr: DecryptErr? // always present in decryptErr BlockType
