@@ -52,17 +52,15 @@ final class Core {
         let meta = try parsed.json
             .decodeJson(as: CoreRes.ParseDecryptMsgWithoutBlocks.self)
 
-        // newline separated block jsons, one json per line
-        let blockLines = parsed.data
-            .split(separator: 10)
-
-        let blocks = blockLines.map { data -> MsgBlock in
-            guard let block = try? data.decodeJson(as: MsgBlock.self) else {
-                let content = String(data: data, encoding: .utf8) ?? "(utf err)"
-                return MsgBlock.blockParseErr(with: content)
+        let blocks = parsed.data
+            .split(separator: 10) // newline separated block jsons, one json per line
+            .map { data -> MsgBlock in
+                guard let block = try? data.decodeJson(as: MsgBlock.self) else {
+                    let content = String(data: data, encoding: .utf8) ?? "(utf err)"
+                    return MsgBlock.blockParseErr(with: content)
+                }
+                return block
             }
-            return block
-        }
 
         return CoreRes.ParseDecryptMsg(
             replyType: meta.replyType,
