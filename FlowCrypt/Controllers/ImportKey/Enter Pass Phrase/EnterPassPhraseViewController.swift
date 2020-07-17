@@ -185,7 +185,9 @@ extension EnterPassPhraseViewController {
             return
         }
 
-        let isKeyAlreadyAdded = Set(matchingKeys).isSubset(of: Set(fetchedKeys))
+        let existedKeys = keysService.keys?.compactMap { $0.private } ?? []
+        let newKeys = fetchedKeys.map { $0.private }
+        let isKeyAlreadyAdded = Set(newKeys).isSubset(of: Set(existedKeys))
 
         guard !isKeyAlreadyAdded else {
             showAlert(message: "import_key_error_added".localized)
