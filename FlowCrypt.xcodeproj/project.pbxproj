@@ -126,6 +126,12 @@
 		D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797692368EE90002BF770 /* ButtonCellNode.swift */; };
 		D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* InfoCellNode.swift */; };
+		D212D35D24C1AACF00035991 /* PrvKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */; };
+		D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */; };
+		D212D36024C1AC0D00035991 /* KeyDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D35F24C1AC0D00035991 /* KeyDetails.swift */; };
+		D212D36124C1AC0D00035991 /* KeyDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D35F24C1AC0D00035991 /* KeyDetails.swift */; };
+		D212D36424C1AC4800035991 /* KeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D36324C1AC4800035991 /* KeyId.swift */; };
+		D212D36524C1AC4800035991 /* KeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D36324C1AC4800035991 /* KeyId.swift */; };
 		D21574B724376852006B094F /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21574B624376852006B094F /* ConnectionType.swift */; };
 		D216D05E242D32EA0083EDD6 /* TestCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D216D05D242D32EA0083EDD6 /* TestCredentials.swift */; };
 		D2324CAD2471DCF800FD1C6F /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = D2324CAC2471DCF800FD1C6F /* format.sh */; };
@@ -429,6 +435,9 @@
 		D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlowCryptUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D204DBA023FB35700083B9D6 /* FlowCryptUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlowCryptUI.h; sourceTree = "<group>"; };
 		D204DBA123FB35700083B9D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfo.swift; sourceTree = "<group>"; };
+		D212D35F24C1AC0D00035991 /* KeyDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetails.swift; sourceTree = "<group>"; };
+		D212D36324C1AC4800035991 /* KeyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyId.swift; sourceTree = "<group>"; };
 		D21574B624376852006B094F /* ConnectionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
 		D216D05D242D32EA0083EDD6 /* TestCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCredentials.swift; sourceTree = "<group>"; };
 		D2324CAC2471DCF800FD1C6F /* format.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = format.sh; sourceTree = "<group>"; };
@@ -602,6 +611,7 @@
 			isa = PBXGroup;
 			children = (
 				32DCAC732B988D9704658812 /* CoreTypes.swift */,
+				D212D36224C1AC1900035991 /* Models */,
 				32DCA0C3D34A69851A238E87 /* Core.swift */,
 				32DCACB22E895C2500A99350 /* CoreHost.swift */,
 			);
@@ -979,6 +989,16 @@
 				D28655972424D0BC0066F52E /* Views */,
 			);
 			path = FlowCryptUI;
+			sourceTree = "<group>";
+		};
+		D212D36224C1AC1900035991 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D212D35F24C1AC0D00035991 /* KeyDetails.swift */,
+				D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */,
+				D212D36324C1AC4800035991 /* KeyId.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		D2324CAB2471DCF800FD1C6F /* Scripts */ = {
@@ -1779,16 +1799,19 @@
 				D2D27B7A248A874C007346FA /* BigIntExtension.swift in Sources */,
 				9F3EF32B23B16ADE00FA0CEF /* CommonExtensions.swift in Sources */,
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
+				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
 				9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
 				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
 				D29AFFF42409370300C1387D /* LogOutHandler.swift in Sources */,
 				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
+				D212D36124C1AC0D00035991 /* KeyDetails.swift in Sources */,
 				A3DAD60A22E458C100F2C4CD /* CodableExntensions.swift in Sources */,
 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
 				9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */,
 				5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */,
+				D212D36524C1AC4800035991 /* KeyId.swift in Sources */,
 				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
@@ -1840,6 +1863,7 @@
 				D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
+				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
 				9F589F1F238C8A90007FD759 /* Token.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
@@ -1851,6 +1875,7 @@
 				9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */,
 				9F9ABC8523AC1E5700D560E3 /* Imap+search.swift in Sources */,
 				9FD364862381EFCB00657302 /* EnterPassPhraseViewController.swift in Sources */,
+				D212D35D24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
 				9F23EA50237217140017DFED /* ComposeViewDecorator.swift in Sources */,
 				D21574B724376852006B094F /* ConnectionType.swift in Sources */,
 				5ADEDCAF23A3EA9E00EC495E /* KeySettingsViewDecorator.swift in Sources */,
@@ -1868,6 +1893,7 @@
 				D269E02724103A20000495C3 /* ComposeViewControllerInput.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
 				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
+				D212D36024C1AC0D00035991 /* KeyDetails.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
 				D2F41371243CC76F0066AFB5 /* SessionObject.swift in Sources */,

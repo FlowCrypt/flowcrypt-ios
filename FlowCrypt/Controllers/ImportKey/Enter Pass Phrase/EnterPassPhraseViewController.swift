@@ -22,7 +22,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let storage: DataServiceType
+    private let keysService: KeyDataServiceType
     private let router: GlobalRouterType
 
     private var passPhrase: String?
@@ -30,7 +30,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     init(
         decorator: EnterPassPhraseViewDecoratorType = EnterPassPhraseViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(core: .shared),
-        storage: DataServiceType = DataService.shared,
+        keysService: KeyDataServiceType = DataService.shared,
         router: GlobalRouterType = GlobalRouter(),
         email: String,
         fetchedKeys: [KeyDetails]
@@ -39,7 +39,7 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.storage = storage
+        self.keysService = keysService
         self.router = router
         super.init(node: TableNode())
     }
@@ -185,8 +185,14 @@ extension EnterPassPhraseViewController {
             return
         }
 
-        storage.addKeys(keyDetails: fetchedKeys, passPhrase: passPhrase, source: .generated)
+        let isKeyAlreadyAdded = Set(matchingKeys).isSubset(of: Set(fetchedKeys))
 
+        guard !isKeyAlreadyAdded else {
+            showAlert(message: "import_key_error_added".localized)
+            return
+        }
+
+        keysService.addKeys(keyDetails: fetchedKeys, passPhrase: passPhrase, source: .generated)
         moveToMainFlow()
     }
 

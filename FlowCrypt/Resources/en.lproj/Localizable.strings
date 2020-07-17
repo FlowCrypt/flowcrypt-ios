@@ -82,6 +82,7 @@
 "import_no_backups_clipboard" = "No backups found for account: \n";
 "import_key_choose" = "Choose Another Key";
 "import_key_continue" = "Continue";
+"import_key_error_added" = "This key was already imported";
 
 // Search
 "search_title" = "Search";
