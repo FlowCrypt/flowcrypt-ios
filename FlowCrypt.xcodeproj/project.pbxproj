@@ -173,6 +173,7 @@
 		D28655992424D1EB0066F52E /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D286559A2424D1EB0066F52E /* FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; };
 		D2891AC224C59EFA008918E3 /* KeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2891AC124C59EFA008918E3 /* KeyService.swift */; };
+		D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2891AC324C62446008918E3 /* ErrorHandler.swift */; };
 		D297990D2444A76D004A3E31 /* UserObject+Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D297990C2444A76D004A3E31 /* UserObject+Empty.swift */; };
 		D29AFFED24092D7900C1387D /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFEC24092D7900C1387D /* GoogleService.swift */; };
 		D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
@@ -461,6 +462,7 @@
 		D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMenuViewDecorator.swift; sourceTree = "<group>"; };
 		D28655942423BFF60066F52E /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
 		D2891AC124C59EFA008918E3 /* KeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyService.swift; sourceTree = "<group>"; };
+		D2891AC324C62446008918E3 /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		D297990C2444A76D004A3E31 /* UserObject+Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserObject+Empty.swift"; sourceTree = "<group>"; };
 		D29AFFEC24092D7900C1387D /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		D29AFFF22409370300C1387D /* LogOutHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutHandler.swift; sourceTree = "<group>"; };
@@ -727,6 +729,7 @@
 				32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */,
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				D2891AC124C59EFA008918E3 /* KeyService.swift */,
+				D2891AC324C62446008918E3 /* ErrorHandler.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1856,6 +1859,7 @@
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				D2A9CA4224261DBC00E1D898 /* AppLinks.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
+				D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */,

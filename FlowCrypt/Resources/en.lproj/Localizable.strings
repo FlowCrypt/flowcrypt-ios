@@ -83,6 +83,7 @@
 "import_key_choose" = "Choose Another Key";
 "import_key_continue" = "Continue";
 "import_key_error_added" = "This key was already imported";
+"import_key_error_added_all" = "All keys are already imported";
 
 // Search
 "search_title" = "Search";

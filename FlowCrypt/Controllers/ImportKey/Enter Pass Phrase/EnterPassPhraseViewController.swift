@@ -22,7 +22,8 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let keysService: KeyDataServiceType
+    private let keysDataService: KeyDataServiceType
+    private let keyService: KeyServiceType
     private let router: GlobalRouterType
 
     private var passPhrase: String?
@@ -32,15 +33,17 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         keyMethods: KeyMethodsType = KeyMethods(core: .shared),
         keysService: KeyDataServiceType = DataService.shared,
         router: GlobalRouterType = GlobalRouter(),
+        keyService: KeyServiceType = KeyService(),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
-        self.fetchedKeys = fetchedKeys
+        self.fetchedKeys = fetchedKeys.unique()
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.keysService = keysService
+        self.keysDataService = keysService
         self.router = router
+        self.keyService = keyService
         super.init(node: TableNode())
     }
 
@@ -178,24 +181,43 @@ extension EnterPassPhraseViewController {
         }
         showSpinner()
 
-        let matchingKeys = keyMethods.filterByPassPhraseMatch(keys: fetchedKeys, passPhrase: passPhrase)
+        let matchingKeys = keyMethods.filterByPassPhraseMatch(
+            keys: fetchedKeys,
+            passPhrase: passPhrase
+        )
 
         guard matchingKeys.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
 
-        let existedKeys = keysService.keys?.compactMap { $0.private } ?? []
-        // compare keys by fingerprints
-        let newKeys = fetchedKeys.flatMap { $0.ids.map { $0.fingerprint } }
-        let isKeyAlreadyAdded = Set(newKeys).isSubset(of: Set(existedKeys))
+        switch keyService.retrieveKeyDetails() {
+        case let .failure(error):
+            handleCommon(error: error)
+        case let .success(existedKeys):
+            checkIfKeyPossibleToAdd(with: existedKeys, and: passPhrase)
+        }
+    }
+
+    private func checkIfKeyPossibleToAdd(with existedKeys: [KeyDetails], and passPhrase: String) {
+        let isKeyAlreadyAdded = Set(fetchedKeys).isSubset(of: existedKeys)
+
+        guard Set(fetchedKeys) != Set(existedKeys) else {
+            showAlert(message: "import_key_error_added_all".localized)
+            return
+        }
 
         guard !isKeyAlreadyAdded else {
             showAlert(message: "import_key_error_added".localized)
             return
         }
 
-        keysService.addKeys(keyDetails: fetchedKeys, passPhrase: passPhrase, source: .generated)
+        keysDataService.addKeys(
+            keyDetails: fetchedKeys,
+            passPhrase: passPhrase,
+            source: .generated
+        )
+
         moveToMainFlow()
     }
 
@@ -207,17 +229,3 @@ extension EnterPassPhraseViewController {
         router.proceed()
     }
 }
-
-/**
- Also if the  [KeyDetails] contains two keys with the same fingerprint, you only add the first one that matches the pass phrase.
- The second one you'd silently skip, if you have already just imported another key with the same fingerprint that did match
-
- For example, the array may contain two keys with the same fingerprint but different pass phrase
- In which case you only import one of them and skip the other
-
-
-
- If I'm importing some keys and all of them are already present in the database,
- than they are all duplicate and the user should know (some alert would show).
- If at least one of them is a new key by fingerprint, then it can let the user go through successfully
- */

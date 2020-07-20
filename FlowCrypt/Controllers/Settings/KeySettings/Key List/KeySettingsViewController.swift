@@ -57,11 +57,9 @@ final class KeySettingsViewController: ASViewController<TableNode> {
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() {
         switch keyService.retrieveKeyDetails() {
-        case .failure(.retrieve):
-            showAlert(message: "Could not retrieve keys from DataService. Please restart the app and try again.")
-        case .failure(.parse):
-            showAlert(message: "Could not parse keys from storage. Please reinstall the app.")
-        case .success(let keys):
+        case let .failure(error):
+            handleCommon(error: error)
+        case let .success(keys):
             self.keys = keys
             node.reloadData()
         }
