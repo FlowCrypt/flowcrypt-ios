@@ -180,13 +180,14 @@ extension EnterPassPhraseViewController {
 
         let matchingKeys = keyMethods.filterByPassPhraseMatch(keys: fetchedKeys, passPhrase: passPhrase)
 
-        guard matchingKeys.count > 0 else {
+        guard matchingKeys.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
 
         let existedKeys = keysService.keys?.compactMap { $0.private } ?? []
-        let newKeys = fetchedKeys.map { $0.private }
+        // compare keys by fingerprints
+        let newKeys = fetchedKeys.flatMap { $0.ids.map { $0.fingerprint } }
         let isKeyAlreadyAdded = Set(newKeys).isSubset(of: Set(existedKeys))
 
         guard !isKeyAlreadyAdded else {
@@ -206,3 +207,17 @@ extension EnterPassPhraseViewController {
         router.proceed()
     }
 }
+
+/**
+ Also if the  [KeyDetails] contains two keys with the same fingerprint, you only add the first one that matches the pass phrase.
+ The second one you'd silently skip, if you have already just imported another key with the same fingerprint that did match
+
+ For example, the array may contain two keys with the same fingerprint but different pass phrase
+ In which case you only import one of them and skip the other
+
+
+
+ If I'm importing some keys and all of them are already present in the database,
+ than they are all duplicate and the user should know (some alert would show).
+ If at least one of them is a new key by fingerprint, then it can let the user go through successfully
+ */

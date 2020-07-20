@@ -17,7 +17,7 @@ struct PrvKeyInfo: Encodable {
 extension PrvKeyInfo {
     init(from keyInfo: KeyInfo) {
         self.private = keyInfo.private
-        longid = keyInfo.longid
-        passphrase = keyInfo.passphrase
+        self.longid = keyInfo.longid
+        self.passphrase = keyInfo.passphrase
     }
 }

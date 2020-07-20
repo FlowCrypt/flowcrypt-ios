@@ -26,12 +26,6 @@ protocol DataServiceType {
     func logOutAndDestroyStorage()
 }
 
-protocol KeyDataServiceType {
-    var keys: [PrvKeyInfo]? { get }
-    var publicKey: String? { get }
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-}
-
 protocol ImapSessionProvider {
     func imapSession() -> IMAPSession?
     func smtpSession() -> SMTPSession?
@@ -86,8 +80,7 @@ final class DataService: DataServiceType {
 extension DataService: KeyDataServiceType {
     var keys: [PrvKeyInfo]? {
         guard let keys = encryptedStorage.keys() else { return nil }
-        return Array(keys)
-            .map(PrvKeyInfo.init)
+        return Array(keys).map(PrvKeyInfo.init)
     }
 
     var publicKey: String? {

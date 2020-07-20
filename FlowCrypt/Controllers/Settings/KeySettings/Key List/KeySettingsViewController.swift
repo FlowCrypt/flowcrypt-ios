@@ -12,11 +12,14 @@ import FlowCryptUI
 final class KeySettingsViewController: ASViewController<TableNode> {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecoratorType
+    private let keyService: KeyServiceType
 
     init(
-        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
+        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator(),
+        keyService: KeyServiceType = KeyService()
     ) {
         self.decorator = decorator
+        self.keyService = keyService
         super.init(node: TableNode())
     }
 
@@ -53,18 +56,15 @@ final class KeySettingsViewController: ASViewController<TableNode> {
 
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() {
-        guard let keys = DataService.shared.keys else {
-            return showAlert(message: "Could not retrieve keys from DataService. Please restart the app and try again.")
+        switch keyService.retrieveKeyDetails() {
+        case .failure(.retrieve):
+            showAlert(message: "Could not retrieve keys from DataService. Please restart the app and try again.")
+        case .failure(.parse):
+            showAlert(message: "Could not parse keys from storage. Please reinstall the app.")
+        case .success(let keys):
+            self.keys = keys
+            node.reloadData()
         }
-        let keyDetailsArr = keys.compactMap { (privateKeys: PrvKeyInfo) -> [KeyDetails]? in
-            let parsedKey = try? Core.shared.parseKeys(armoredOrBinary: privateKeys.private.data())
-            return parsedKey?.keyDetails
-        }.flatMap { $0 }
-        guard keyDetailsArr.count == keys.count else {
-            return showAlert(message: "Could not parse keys from storage. Please reinstall the app.")
-        }
-        self.keys = keyDetailsArr
-        node.reloadData()
     }
 }
 

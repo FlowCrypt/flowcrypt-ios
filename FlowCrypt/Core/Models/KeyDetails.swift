@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import FlowCryptCommon
 
-struct KeyDetails: Decodable, Hashable {
+struct KeyDetails: Decodable {
     let `public`: String
     let `private`: String? // ony if this is prv
     let isFullyDecrypted: Bool? // only if this is prv
@@ -24,4 +25,16 @@ struct KeyDetails: Decodable, Hashable {
     //        bits?: number;
     //        curve?: string;
     //    };
+}
+
+extension KeyDetails: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.ids.first)
+    }
+}
+
+extension KeyDetails: Equatable {
+    static func == (lhs: KeyDetails, rhs: KeyDetails) -> Bool {
+        lhs.ids == rhs.ids
+    }
 }
