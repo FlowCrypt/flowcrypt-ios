@@ -173,29 +173,18 @@ extension EncryptedStorage {
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
         // KeyInfo doesn't have primaty key, to avoid migration we need to delete keys and then save them
 
-        // find all keys
-        let allKeys = storage.objects(KeyInfo.self)
-
-        // find keys that should be deleted
-        var keysToDelete: [KeyInfo] = []
-        keyDetails.forEach {
-            let key = try! KeyInfo($0, passphrase: passPhrase, source: source)
-            if allKeys.contains(key) {
-                keysToDelete.append(key)
-            }
-        }
-
         // delete keys
-        keysToDelete.forEach { key in
-            try! storage.write {
-                storage.delete(key)
+        keyDetails.forEach { keyDetail in
+            try? storage.write {
+                storage.delete(storage.objects(KeyInfo.self)
+                    .filter("longid=%@", keyDetail.ids[0].longid))
             }
         }
 
         // add new keys
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source), update: .modified)
+                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source))
             }
         }
     }

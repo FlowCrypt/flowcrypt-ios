@@ -23,6 +23,7 @@ protocol KeyServiceType {
 enum KeyServiceError: Error {
     case retrieve
     case parse
+    case unexpected
 }
 
 struct KeyService: KeyServiceType {

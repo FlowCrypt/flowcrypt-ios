@@ -142,6 +142,9 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                     guard case let .didEndEditing(text) = action else { return }
                     self?.passPhrase = text
                 }
+                .then {
+                    $0.becomeFirstResponder()
+                }
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
                     return true
@@ -203,9 +206,6 @@ extension EnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        print("^^keysToUpdate \(keysToUpdate.count)")
-        print("^^newKeysToAdd \(newKeysToAdd.count)")
-
         keysDataService.addKeys(
             keyDetails: newKeysToAdd,
             passPhrase: passPhrase,
@@ -218,21 +218,32 @@ extension EnterPassPhraseViewController {
             source: .generated
         )
 
-//
-//        guard Set(fetchedKeys) != Set(existedKeys) else {
-//            showAlert(message: "import_key_error_added_all".localized)
-//            return
-//        }
-//
-//        guard !isKeyAlreadyAdded else {
-//            showAlert(message: "import_key_error_added".localized)
-//            return
-//        }
-//
-
-        //
         hideSpinner()
-        moveToMainFlow()
+
+        let updated = keysToUpdate.count
+        let imported = newKeysToAdd.count
+
+        let message: String? = {
+            if updated > 0, imported > 0 {
+                return "import_key_add_both".localizeWithArguments(String(imported), String(updated))
+            } else if updated > 0 {
+                return "import_key_add_update".localizeWithArguments(String(updated))
+            } else if imported > 0 {
+                return "import_key_add_new".localizeWithArguments(String(imported))
+            } else {
+                return nil
+            }
+        }()
+
+        guard let msg = message else {
+            assertionFailure()
+            handleCommon(error: KeyServiceError.unexpected)
+            return
+        }
+
+        showAlert(title: nil, message: msg) { [weak self] in
+            self?.moveToMainFlow()
+        }
     }
 
     private func handleAnotherKeySelection() {
@@ -243,22 +254,3 @@ extension EnterPassPhraseViewController {
         router.proceed()
     }
 }
-
-/*
- Instead of showing errors, when you encounter a private key with the same fingerprint, we would replace the stored key object instead of skipping it.
- So we would be doing an upsert, effectively.
-
- So if the user imported 5 keys that were all the same, that would be fine -
- we'd process one by one and then finally the last one would end up stored in the database in the end.
-
- Finally, we would show an alert.
-
- if there were only new keys, no replacement: Keys imported: <N>
- if there were only updates: Keys imported: 0\nKeys updated: <Y>
- if there was a mix of new keys and updates: Keys imported: <N>\nKeys updated: <Y>
- We could show such alert regardless if this is first time setup or if adding keys from settings, either way it's good to know.
-
- All of this will be achieved by comparing first fingerprint in each key, as you did here.
-
- Thanks!
- */

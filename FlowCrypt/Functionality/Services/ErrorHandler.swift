@@ -15,6 +15,8 @@ extension UIViewController {
             showAlert(message: "Could not retrieve keys from DataService. Please restart the app and try again.")
         case KeyServiceError.parse:
             showAlert(message: "Could not parse keys from storage. Please reinstall the app.")
+        case KeyServiceError.unexpected:
+            showAlert(message: "Could not import key. Please try to relogin.")
         default:
             assertionFailure("Error \(error) is not handled yet")
         }
