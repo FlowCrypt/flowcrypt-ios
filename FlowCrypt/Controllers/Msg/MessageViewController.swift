@@ -256,13 +256,11 @@ extension MessageViewController {
 
     private func permanentlyDelete() {
         guard let input = input else { return hideSpinner() }
-        input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
-
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
             guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
 
-            input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
+            input.objMessage.flags = MCOMessageFlag(rawValue: MCOMessageFlag.deleted.rawValue)
             try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
             try await(self.imap.expungeMsgs(folder: input.path))
             return true
@@ -278,13 +276,24 @@ extension MessageViewController {
     private func moveToTrash(with trashPath: String) {
         guard let input = input else { return hideSpinner() }
 
-        imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath)
-            .then(on: .main) { [weak self] in
-                self?.handleOpSuccess(operation: .moveToTrash)
-            }
-            .catch(on: .main) { [weak self] _ in
-                self?.handleOpErr(operation: .moveToTrash)
-            }
+        Promise<Void> { [weak self] in
+            guard let self = self else { return }
+            //Move message to trash
+            try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath))
+
+            //Mark as deleted in the origin folder
+            input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
+            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
+
+            //Expunge origin folder
+            try await(self.imap.expungeMsgs(folder: input.path))
+        }
+        .then(on: .main) { [weak self] in
+            self?.handleOpSuccess(operation: .moveToTrash)
+        }
+        .catch(on: .main) { [weak self] _ in
+            self?.handleOpErr(operation: .moveToTrash)
+        }
     }
 
     @objc private func handleArchiveTap() {
