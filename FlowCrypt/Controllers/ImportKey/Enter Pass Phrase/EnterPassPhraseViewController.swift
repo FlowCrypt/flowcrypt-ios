@@ -200,24 +200,38 @@ extension EnterPassPhraseViewController {
     }
 
     private func checkIfKeyPossibleToAdd(with existedKeys: [KeyDetails], and passPhrase: String) {
-        let isKeyAlreadyAdded = Set(fetchedKeys).isSubset(of: existedKeys)
+        let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
+        let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        guard Set(fetchedKeys) != Set(existedKeys) else {
-            showAlert(message: "import_key_error_added_all".localized)
-            return
-        }
-
-        guard !isKeyAlreadyAdded else {
-            showAlert(message: "import_key_error_added".localized)
-            return
-        }
+        print("^^keysToUpdate \(keysToUpdate.count)")
+        print("^^newKeysToAdd \(newKeysToAdd.count)")
 
         keysDataService.addKeys(
-            keyDetails: fetchedKeys,
+            keyDetails: newKeysToAdd,
             passPhrase: passPhrase,
             source: .generated
         )
 
+        keysDataService.updateKeys(
+            keyDetails: keysToUpdate,
+            passPhrase: passPhrase,
+            source: .generated
+        )
+
+//
+//        guard Set(fetchedKeys) != Set(existedKeys) else {
+//            showAlert(message: "import_key_error_added_all".localized)
+//            return
+//        }
+//
+//        guard !isKeyAlreadyAdded else {
+//            showAlert(message: "import_key_error_added".localized)
+//            return
+//        }
+//
+
+        //
+        hideSpinner()
         moveToMainFlow()
     }
 
@@ -229,3 +243,22 @@ extension EnterPassPhraseViewController {
         router.proceed()
     }
 }
+
+/*
+ Instead of showing errors, when you encounter a private key with the same fingerprint, we would replace the stored key object instead of skipping it.
+ So we would be doing an upsert, effectively.
+
+ So if the user imported 5 keys that were all the same, that would be fine -
+ we'd process one by one and then finally the last one would end up stored in the database in the end.
+
+ Finally, we would show an alert.
+
+ if there were only new keys, no replacement: Keys imported: <N>
+ if there were only updates: Keys imported: 0\nKeys updated: <Y>
+ if there was a mix of new keys and updates: Keys imported: <N>\nKeys updated: <Y>
+ We could show such alert regardless if this is first time setup or if adding keys from settings, either way it's good to know.
+
+ All of this will be achieved by comparing first fingerprint in each key, as you did here.
+
+ Thanks!
+ */

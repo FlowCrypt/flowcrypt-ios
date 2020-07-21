@@ -90,6 +90,10 @@ extension DataService: KeyDataServiceType {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
         encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
     }
+
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        encryptedStorage.updateKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
+    }
 }
 
 // MARK: - LogOut

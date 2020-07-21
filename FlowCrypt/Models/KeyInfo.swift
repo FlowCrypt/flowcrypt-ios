@@ -39,4 +39,8 @@ final class KeyInfo: Object {
         self.passphrase = passphrase
         self.source = source.path
     }
+
+    override class func primaryKey() -> String? {
+        "longid"
+    }
 }

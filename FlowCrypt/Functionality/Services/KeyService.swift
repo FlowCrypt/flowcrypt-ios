@@ -13,6 +13,7 @@ protocol KeyDataServiceType {
     var keys: [PrvKeyInfo]? { get }
     var publicKey: String? { get }
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
 }
 
 protocol KeyServiceType {
