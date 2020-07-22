@@ -308,7 +308,7 @@ extension SetupViewController {
         }
 
         do {
-            try storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .generated)
+            try storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .backup)
         } catch {
             fatalError()
         }

@@ -198,24 +198,24 @@ extension EnterPassPhraseViewController {
         case let .failure(error):
             handleCommon(error: error)
         case let .success(existedKeys):
-            checkIfKeyPossibleToAdd(with: existedKeys, and: passPhrase)
+            importKeys(with: existedKeys, and: passPhrase)
         }
     }
 
-    private func checkIfKeyPossibleToAdd(with existedKeys: [KeyDetails], and passPhrase: String) {
+    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
         keysDataService.addKeys(
             keyDetails: newKeysToAdd,
             passPhrase: passPhrase,
-            source: .generated
+            source: .imported
         )
 
         keysDataService.updateKeys(
             keyDetails: keysToUpdate,
             passPhrase: passPhrase,
-            source: .generated
+            source: .imported
         )
 
         hideSpinner()
