@@ -46,3 +46,9 @@ public extension Array where Element == String {
         first(where: { $0.caseInsensitiveCompare(stringToCompare) == .orderedSame })
     }
 }
+
+public extension Collection where Element: Hashable {
+    func unique() -> [Element] {
+        return Array(Set(self))
+    }
+}

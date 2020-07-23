@@ -22,7 +22,8 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let storage: DataServiceType
+    private let keysDataService: KeyDataServiceType
+    private let keyService: KeyServiceType
     private let router: GlobalRouterType
 
     private var passPhrase: String?
@@ -30,17 +31,19 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
     init(
         decorator: EnterPassPhraseViewDecoratorType = EnterPassPhraseViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(core: .shared),
-        storage: DataServiceType = DataService.shared,
+        keysService: KeyDataServiceType = DataService.shared,
         router: GlobalRouterType = GlobalRouter(),
+        keyService: KeyServiceType = KeyService(),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
-        self.fetchedKeys = fetchedKeys
+        self.fetchedKeys = fetchedKeys.unique()
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.storage = storage
+        self.keysDataService = keysService
         self.router = router
+        self.keyService = keyService
         super.init(node: TableNode())
     }
 
@@ -139,6 +142,9 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                     guard case let .didEndEditing(text) = action else { return }
                     self?.passPhrase = text
                 }
+                .then {
+                    $0.becomeFirstResponder()
+                }
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
                     return true
@@ -178,16 +184,66 @@ extension EnterPassPhraseViewController {
         }
         showSpinner()
 
-        let matchingKeys = keyMethods.filterByPassPhraseMatch(keys: fetchedKeys, passPhrase: passPhrase)
+        let matchingKeys = keyMethods.filterByPassPhraseMatch(
+            keys: fetchedKeys,
+            passPhrase: passPhrase
+        )
 
-        guard matchingKeys.count > 0 else {
+        guard matchingKeys.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
 
-        storage.addKeys(keyDetails: fetchedKeys, passPhrase: passPhrase, source: .generated)
+        switch keyService.retrieveKeyDetails() {
+        case let .failure(error):
+            handleCommon(error: error)
+        case let .success(existedKeys):
+            importKeys(with: existedKeys, and: passPhrase)
+        }
+    }
 
-        moveToMainFlow()
+    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) {
+        let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
+        let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
+
+        keysDataService.addKeys(
+            keyDetails: newKeysToAdd,
+            passPhrase: passPhrase,
+            source: .imported
+        )
+
+        keysDataService.updateKeys(
+            keyDetails: keysToUpdate,
+            passPhrase: passPhrase,
+            source: .imported
+        )
+
+        hideSpinner()
+
+        let updated = keysToUpdate.count
+        let imported = newKeysToAdd.count
+
+        let message: String? = {
+            if updated > 0, imported > 0 {
+                return "import_key_add_both".localizeWithArguments(String(imported), String(updated))
+            } else if updated > 0 {
+                return "import_key_add_update".localizeWithArguments(String(updated))
+            } else if imported > 0 {
+                return "import_key_add_new".localizeWithArguments(String(imported))
+            } else {
+                return nil
+            }
+        }()
+
+        guard let msg = message else {
+            assertionFailure()
+            handleCommon(error: KeyServiceError.unexpected)
+            return
+        }
+
+        showAlert(title: nil, message: msg) { [weak self] in
+            self?.moveToMainFlow()
+        }
     }
 
     private func handleAnotherKeySelection() {

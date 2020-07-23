@@ -58,7 +58,7 @@ extension Imap: FoldersProvider {
         } else {
             let paths = folders.compactMap { $0.path }
             guard let path = paths.firstCaseInsensitive("trash") ?? paths.firstCaseInsensitive("deleted") else {
-                assertionFailure("Trash folder not found")
+                debugPrint("###Warning### Trash folder not found")
                 return
             }
             dataService.saveTrashFolder(path: path)

@@ -48,7 +48,7 @@ final class MessageViewController: ASViewController<TableNode> {
     private var input: MessageViewController.Input?
     private let imap: Imap
     private let decorator: MessageViewDecoratorType
-    private var dataService: DataServiceType
+    private var dataService: DataServiceType & KeyDataServiceType
     private let core: Core
 
     private var message: NSAttributedString
@@ -56,7 +56,7 @@ final class MessageViewController: ASViewController<TableNode> {
     init(
         imap: Imap = Imap.shared,
         decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
-        storage: DataServiceType = DataService.shared,
+        storage: DataServiceType & KeyDataServiceType = DataService.shared,
         core: Core = Core.shared,
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
@@ -64,7 +64,7 @@ final class MessageViewController: ASViewController<TableNode> {
         self.imap = imap
         self.input = input
         self.decorator = decorator
-        dataService = storage
+        self.dataService = storage
         self.core = core
         onCompletion = completion
         message = decorator.attributed(

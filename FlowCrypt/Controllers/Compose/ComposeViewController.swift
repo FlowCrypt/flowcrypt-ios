@@ -46,7 +46,7 @@ final class ComposeViewController: ASViewController<TableNode> {
 
     private let imap: Imap
     private let notificationCenter: NotificationCenter
-    private let dataService: DataServiceType
+    private let dataService: DataServiceType & KeyDataServiceType
     private let attesterApi: AttesterApiType
     private let decorator: ComposeViewDecoratorType
     private let core: Core
@@ -63,7 +63,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     init(
         imap: Imap = Imap.shared,
         notificationCenter: NotificationCenter = .default,
-        dataService: DataServiceType = DataService.shared,
+        dataService: DataServiceType & KeyDataServiceType = DataService.shared,
         attesterApi: AttesterApiType = AttesterApi(),
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,

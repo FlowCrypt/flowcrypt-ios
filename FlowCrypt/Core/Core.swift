@@ -39,19 +39,34 @@ final class Core {
     }
 
     public func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) throws -> CoreRes.ParseDecryptMsg {
-        let parsed = try call("parseDecryptMsg", jsonDict: ["keys": try keys.map { try $0.toDict() }, "isEmail": isEmail, "msgPwd": msgPwd], data: encrypted)
-        let meta = try parsed.json.decodeJson(as: CoreRes.ParseDecryptMsgWithoutBlocks.self)
-        let blockLines = parsed.data.split(separator: 10) // newline separated block jsons, one json per line
-        var blocks: [MsgBlock] = []
-        for blockLine in blockLines {
-            var block = try? blockLine.decodeJson(as: MsgBlock.self)
-            if block == nil {
-                let parseErr = "Err parsing block:\n\n\(String(data: blockLine, encoding: .utf8) ?? "(utf err)")"
-                block = MsgBlock(type: MsgBlock.BlockType.blockParseErr, content: parseErr, decryptErr: nil, keyDetails: nil)
+        let json: [String : Any?]? = [
+            "keys": try keys.map { try $0.toDict() },
+            "isEmail": isEmail,
+            "msgPwd": msgPwd
+        ]
+        let parsed = try call(
+            "parseDecryptMsg",
+            jsonDict: json,
+            data: encrypted
+        )
+        let meta = try parsed.json
+            .decodeJson(as: CoreRes.ParseDecryptMsgWithoutBlocks.self)
+
+        let blocks = parsed.data
+            .split(separator: 10) // newline separated block jsons, one json per line
+            .map { data -> MsgBlock in
+                guard let block = try? data.decodeJson(as: MsgBlock.self) else {
+                    let content = String(data: data, encoding: .utf8) ?? "(utf err)"
+                    return MsgBlock.blockParseErr(with: content)
+                }
+                return block
             }
-            blocks.append(block!)
-        }
-        return CoreRes.ParseDecryptMsg(replyType: meta.replyType, text: meta.text, blocks: blocks)
+
+        return CoreRes.ParseDecryptMsg(
+            replyType: meta.replyType,
+            text: meta.text,
+            blocks: blocks
+        )
     }
 
     public func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) throws -> CoreRes.ComposeEmail {

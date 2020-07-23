@@ -17,6 +17,7 @@ protocol DBMigration {
 
 protocol EncryptedStorageType: DBMigration {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func currentToken() -> String?
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>?
@@ -162,6 +163,25 @@ extension EncryptedStorage {
 // MARK: - Keys
 extension EncryptedStorage {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        try! storage.write {
+            for key in keyDetails {
+                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source))
+            }
+        }
+    }
+
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        // KeyInfo doesn't have primaty key, to avoid migration we need to delete keys and then save them
+
+        // delete keys
+        keyDetails.forEach { keyDetail in
+            try? storage.write {
+                storage.delete(storage.objects(KeyInfo.self)
+                    .filter("longid=%@", keyDetail.ids[0].longid))
+            }
+        }
+
+        // add new keys
         try! storage.write {
             for key in keyDetails {
                 storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source))

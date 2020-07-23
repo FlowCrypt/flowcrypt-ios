@@ -4,16 +4,10 @@
 
 import RealmSwift
 
-enum KeySource {
+enum KeySource: String {
     case backup
     case generated
-
-    var path: String {
-        switch self {
-        case .backup: return "backup"
-        case .generated: return "generated"
-        }
-    }
+    case imported
 }
 
 final class KeyInfo: Object {
@@ -37,6 +31,6 @@ final class KeyInfo: Object {
         `public` = keyDetails.public
         longid = keyDetails.ids[0].longid
         self.passphrase = passphrase
-        self.source = source.path
+        self.source = source.rawValue
     }
 }

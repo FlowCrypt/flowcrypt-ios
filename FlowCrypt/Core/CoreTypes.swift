@@ -107,21 +107,7 @@ struct UserId: Encodable {
 
 extension UserId {
     func toMime() -> String {
-        return "\(name) <\(email)>"
-    }
-}
-
-struct PrvKeyInfo: Encodable {
-    let `private`: String
-    let longid: String
-    let passphrase: String?
-}
-
-extension PrvKeyInfo {
-    init(from keyInfo: KeyInfo) {
-        self.private = keyInfo.private
-        longid = keyInfo.longid
-        passphrase = keyInfo.passphrase
+        "\(name) <\(email)>"
     }
 }
 
@@ -143,6 +129,10 @@ struct SendableMsg {
 }
 
 struct MsgBlock: Decodable {
+    static func blockParseErr(with content: String) -> MsgBlock {
+        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil)
+    }
+
     let type: BlockType
     let content: String
     let decryptErr: DecryptErr? // always present in decryptErr BlockType
@@ -195,29 +185,4 @@ struct MsgBlock: Decodable {
         case blockParseErr // block type for situations where block json could not be parsed out
         // case cryptupVerification; // not sure if Swift code will ever encounter this
     }
-}
-
-struct KeyId: Decodable, Equatable {
-    let shortid: String
-    let longid: String
-    let fingerprint: String
-    let keywords: String
-}
-
-struct KeyDetails: Decodable {
-    let `public`: String
-    let `private`: String? // ony if this is prv
-    let isFullyDecrypted: Bool? // only if this is prv
-    let isFullyEncrypted: Bool? // only if this is prv
-    let ids: [KeyId]
-    let created: Int
-    let users: [String]
-
-    // TODO: -
-    //    let algo: { // same as OpenPGP.key.AlgorithmInfo
-    //        algorithm: string;
-    //        algorithmId: number;
-    //        bits?: number;
-    //        curve?: string;
-    //    };
 }

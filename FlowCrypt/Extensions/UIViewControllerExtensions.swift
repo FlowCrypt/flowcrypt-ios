@@ -95,11 +95,11 @@ extension UIViewController {
         showAlert(message: formatted, onOk: onOk)
     }
 
-    func showAlert(message: String, onOk: (() -> Void)? = nil) {
+    func showAlert(title: String? = "Error", message: String, onOk: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             self.view.hideAllToasts()
             self.hideSpinner()
-            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in onOk?() })
             self.present(alert, animated: true, completion: nil)
         }

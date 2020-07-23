@@ -16,15 +16,11 @@ protocol DataServiceType {
     var isLoggedIn: Bool { get }
     var isSetupFinished: Bool { get }
     var currentAuthType: AuthType? { get }
-    var keys: [PrvKeyInfo]? { get }
-    var publicKey: String? { get }
     var token: String? { get }
 
     // Local data
     var trashFolderPath: String? { get }
     func saveTrashFolder(path: String?)
-
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
 
     // login / logout
     func startFor(user type: SessionType)
@@ -69,16 +65,6 @@ final class DataService: DataServiceType {
         encryptedStorage.getUser()?.authType
     }
 
-    var keys: [PrvKeyInfo]? {
-        guard let keys = encryptedStorage.keys() else { return nil }
-        return Array(keys)
-            .map(PrvKeyInfo.init)
-    }
-
-    var publicKey: String? {
-        encryptedStorage.publicKey()
-    }
-
     var token: String? {
         switch currentAuthType {
         case let .oAuth(value): return value
@@ -95,6 +81,26 @@ final class DataService: DataServiceType {
     ) {
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
+    }
+}
+
+// MARK: - DataKeyServiceType
+extension DataService: KeyDataServiceType {
+    var keys: [PrvKeyInfo]? {
+        guard let keys = encryptedStorage.keys() else { return nil }
+        return Array(keys).map(PrvKeyInfo.init)
+    }
+
+    var publicKey: String? {
+        encryptedStorage.publicKey()
+    }
+
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
+    }
+
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+        encryptedStorage.updateKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
     }
 }
 
@@ -215,10 +221,6 @@ extension DataService {
             logOutAndDestroyStorage()
             encryptedStorage.saveUser(with: user)
         }
-    }
-
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
     }
 }
 

@@ -26,7 +26,11 @@ struct GlobalRouter: GlobalRouterType {
 
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        AppStartup.shared.initializeApp(window: keyWindow)
+        // make sure it runs on main thread
+        let window = keyWindow
+        DispatchQueue.main.async {
+            AppStartup.shared.initializeApp(window: window)
+        }
     }
 
     func wipeOutAndReset() {
