@@ -10,10 +10,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private lazy var appUrlHandler = AppUrlHandler()
 
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
+    let t = ContactsProvider()
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         disableHardwareKeyboardOnSimulator()
         GlobalRouter().proceed()
+
+        t.searchContact(with: "")
         return true
     }
 

@@ -31,6 +31,21 @@ final class AttesterApi: AttesterApiType {
 }
 
 extension AttesterApi {
+    func lookupEmailTest(email: String) -> Promise<Data?> {
+        Promise { [weak self] () -> Data? in
+            guard let url = self?.urlPub(emailOrLongid: email) else { throw AppErr.nilSelf }
+            let res = try await(URLSession.shared.call(url, tolerateStatus: [404]))
+
+            if res.status >= 200, res.status <= 299 {
+                return res.data
+            }
+            if res.status == 404 {
+                throw AppErr.unexpected("^^ 404")
+            }
+            throw AppErr.unexpected("^^ programming")
+        }
+    }
+
     func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
         Promise { [weak self] () -> PubkeySearchResult in
             guard let url = self?.urlPub(emailOrLongid: email) else { throw AppErr.nilSelf }

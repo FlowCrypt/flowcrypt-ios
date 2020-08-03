@@ -225,6 +225,7 @@
 		D2F6D13E2434FF1400DB4065 /* providers.json in Resources */ = {isa = PBXBuildFile; fileRef = D2F6D13D2434FF1400DB4065 /* providers.json */; };
 		D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */; };
 		D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D146243506DA00DB4065 /* MailSettingsCredentials.swift */; };
+		D2FC1C0624D82C9F003B949D /* RecipientsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FC1C0524D82C9F003B949D /* RecipientsProvider.swift */; };
 		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* EmailProviderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */; };
 		D2FF6968243115F9007182F0 /* EmailProviderViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */; };
@@ -493,6 +494,7 @@
 		D2F6D13D2434FF1400DB4065 /* providers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = providers.json; sourceTree = "<group>"; };
 		D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCredentialsProvider.swift; sourceTree = "<group>"; };
 		D2F6D146243506DA00DB4065 /* MailSettingsCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailSettingsCredentials.swift; sourceTree = "<group>"; };
+		D2FC1C0524D82C9F003B949D /* RecipientsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientsProvider.swift; sourceTree = "<group>"; };
 		D2FD0F682453245E00259FF0 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderViewDecorator.swift; sourceTree = "<group>"; };
@@ -578,6 +580,7 @@
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
 				D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */,
 				9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */,
+				D2FC1C0524D82C9F003B949D /* RecipientsProvider.swift */,
 			);
 			path = Compose;
 			sourceTree = "<group>";
@@ -1886,6 +1889,7 @@
 				9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */,
 				D2FF6968243115F9007182F0 /* EmailProviderViewDecorator.swift in Sources */,
 				9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */,
+				D2FC1C0624D82C9F003B949D /* RecipientsProvider.swift in Sources */,
 				9F9ABC8523AC1E5700D560E3 /* Imap+search.swift in Sources */,
 				9FD364862381EFCB00657302 /* EnterPassPhraseViewController.swift in Sources */,
 				D212D35D24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
