@@ -15,19 +15,28 @@ protocol ContactsProviderType {
 
 // MARK: - LOCAL
 protocol LocalContactsProviderType: ContactsProviderType {
-
+    func save(contact: Contact)
+    func retrievePubKey(for contact: Contact)
 }
 
 struct LocalContactsProvider: LocalContactsProviderType {
     func searchContact(with email: String) {
+        print("^^ \(self) \(#function)")
+    }
 
+    func save(contact: Contact) {
+        print("^^ \(self) \(#function)")
+    }
+
+    func retrievePubKey(for contact: Contact) {
+        print("^^ \(self) \(#function)")
     }
 }
 
 // MARK: - REMOTE
 extension AttesterApi: ContactsProviderType {
     func searchContact(with email: String) {
-
+        print("^^ \(self) \(#function)")
     }
 }
 
@@ -36,49 +45,92 @@ struct ContactsProvider: ContactsProviderType {
     let attesterApi = AttesterApi()
     let core = Core.shared
 
+    let localContactsProvider: LocalContactsProviderType
+    let remoteContactsProvider: ContactsProviderType
+
+    init(
+        localContactsProvider: LocalContactsProviderType = LocalContactsProvider(),
+        remoteContactsProvider: ContactsProviderType = AttesterApi()
+    ) {
+        self.localContactsProvider = localContactsProvider
+        self.remoteContactsProvider = remoteContactsProvider
+    }
+
     func searchContact(with email: String) {
-        attesterApi
-            .lookupEmailTest(email: "cryptup.tester@gmail.com")
-            .then { result in
-                print("^^ \(result!.toStr())")
+        print("^^ \(self) \(#function)")
 
-                do {
-                    let parsed = try self.core.parseKeys(armoredOrBinary: result!)
-                    print("^^ \(parsed)")
+        let foundLocal = false
+        localContactsProvider.searchContact(with: email)
+        if foundLocal {
+            print("^^ return contact")
+        } else {
+            let foundRemote = true
+            remoteContactsProvider.searchContact(with: email)
 
-                } catch let e {
-                    print("^^ \(e)")
-                }
-        }.catch { e in
-            print("^^ \(e)")
+            if foundRemote {
+                print("^^ return contact")
+                // localContactsProvider.save(contact: )
+            } else {
+                print("^^ return error")
+            }
         }
+
+//        attesterApi
+//            .lookupEmailTest(email: "cryptup.tester@gmail.com")
+//            .then { result in
+//                print("^^ \(result!.toStr())")
+//
+//                do {
+//                    let parsed = try self.core.parseKeys(armoredOrBinary: result!)
+//                    print("^^ \(parsed)")
+//
+//                } catch let e {
+//                    print("^^ \(e)")
+//                }
+//        }.catch { e in
+//            print("^^ \(e)")
+//        }
     }
 }
 
-struct Recipient {
-    let email: String
-    let name: String
+/*
+ [CoreRes.ParseKeys]
+        let keyDetails: [KeyDetails]
+            struct KeyDetails: Decodable {
+                let `public`: String
+                let `private`: String? // ony if this is prv
+                let isFullyDecrypted: Bool? // only if this is prv
+                let isFullyEncrypted: Bool? // only if this is prv
+                let ids: [KeyId]
+                let created: Int
+                let users: [String]
+            }
+ */
 
+struct Contact {
+    let email: String
+    let name: String?
     let pubKey: String
+    /// will be provided later
     let pubKeyLastSig: Date?
+    /// the date when pubkey was retrieved from Attester, or null if none
     let pubkeyLastChecked: Date?
     let pubkeyExpiresOn: Date
     let longids: [String]
+    /// last time an email was sent to this contact, update when email is sent
     let lastUsed: Date?
 }
 
 /*
  When a recipient is evaluated (see issue #201 )
 
- 1) first search local contacts for public key
-        if found, use the local contact
-        if not found, search on attester
+ first search local contacts for public key
+    if found, use the local contact
+    if not found, search on attester
+        if pubkey found on attester, save the public key in local contacts (TOFU - Trust on First Use)
 
-
- if pubkey found on attester, save the public key in local contacts (TOFU - Trust on First Use) Either way,
  later when I hit the send button, the public key will be fetched locally from Contacts.
  If there are none, it will show alert that recipient doesn't use pgp.
-
 
 
 
