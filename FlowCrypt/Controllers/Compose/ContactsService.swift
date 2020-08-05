@@ -62,17 +62,18 @@ struct ContactsService: ContactsServiceType {
         print("^^ ContactsProvider \(#function)")
 
         try? ds.storage.write {
-            ds.storage.add(ContactObjectTest7(
+            ds.storage.add(ContactObjectTest8(
                 email: "email",
                 name: nil,
                 pubKey: "pubKey1_new",
                 pubKeyLastSig: nil,
                 pubkeyLastChecked: nil,
                 pubkeyExpiresOn: Date(),
-                lastUsed: nil
+                lastUsed: nil,
+                longids: ["longid 1", "longid 2"]
                 ), update: .modified
             )
-            print(Array(ds.storage.objects(ContactObjectTest7.self)))
+            print(Array(ds.storage.objects(ContactObjectTest8.self)))
         }
 
         let foundLocal = false
@@ -125,22 +126,27 @@ struct ContactsService: ContactsServiceType {
 
 import RealmSwift
 
-//final class LongId: Object {
-//    @objc dynamic var value: String
-//}
+final class LongId: Object {
+    @objc dynamic var value: String = ""
 
-final class ContactObjectTest7: Object {
+    convenience init(value: String) {
+        self.init()
+        self.value = value
+    }
+}
+
+final class ContactObjectTest8: Object {
     @objc dynamic var email: String = ""
     @objc dynamic var pubKey: String = ""
 
     @objc dynamic var name: String?
-//    @objc dynamic var longids: String = ""
+
     @objc dynamic var pubkeyExpiresOn: Date!
     @objc dynamic var pubKeyLastSig: Date?
     @objc dynamic var pubkeyLastChecked: Date?
     @objc dynamic var lastUsed: Date?
 
-//    var longid: String? { longids.first }
+    let longids = List<LongId>()
 
     override class func primaryKey() -> String? { "email" }
 
@@ -151,8 +157,8 @@ final class ContactObjectTest7: Object {
         pubKeyLastSig: Date?,
         pubkeyLastChecked: Date?,
         pubkeyExpiresOn: Date,
-        longids: [String] = [],
-        lastUsed: Date?
+        lastUsed: Date?,
+        longids: [String]
     ) {
         self.init()
         self.email = email
@@ -162,7 +168,12 @@ final class ContactObjectTest7: Object {
         self.pubKeyLastSig = pubKeyLastSig
         self.pubkeyLastChecked = pubkeyLastChecked
         self.lastUsed = lastUsed
-//        self.longids = longids
+
+        longids
+            .map(LongId.init)
+            .forEach {
+                self.longids.append($0)
+            }
     }
 
 }
@@ -183,6 +194,30 @@ struct Contact {
     let longids: [String]
     /// last time an email was sent to this contact, update when email is sent
     let lastUsed: Date?
+    
+    var longid: String { longids.first }
+}
+
+extension Contact {
+    init(_ contactObject: ContactObjectTest8) {
+        self.email = contactObject.email
+        self.name = contactObject.name.nilIfEmpty
+        self.pubKey = contactObject.pubKey
+        self.pubKeyLastSig = contactObject.pubKeyLastSig
+        self.pubkeyLastChecked = contactObject.pubkeyLastChecked
+        self.pubkeyExpiresOn = contactObject.pubkeyExpiresOn
+        self.lastUsed = contactObject.lastUsed
+        self.longids = contactObject.longids.map { $0.value }
+    }
+}
+
+extension Optional where Wrapped == String {
+    var nilIfEmpty: String? {
+        guard let strongSelf = self else {
+            return nil
+        }
+        return strongSelf.isEmpty ? nil : strongSelf
+    }
 }
 
 /*
