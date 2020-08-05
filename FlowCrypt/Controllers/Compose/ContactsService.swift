@@ -9,55 +9,71 @@
 import Foundation
 import Promises
 
-protocol ContactsProviderType {
+protocol ContactsServiceType {
     func searchContact(with email: String)
 }
 
 // MARK: - LOCAL
-protocol LocalContactsProviderType: ContactsProviderType {
+protocol LocalContactsProviderType: ContactsServiceType {
     func save(contact: Contact)
     func retrievePubKey(for contact: Contact)
 }
 
 struct LocalContactsProvider: LocalContactsProviderType {
     func searchContact(with email: String) {
-        print("^^ \(self) \(#function)")
+        print("^^LocalContactsProvider \(#function)")
     }
 
     func save(contact: Contact) {
-        print("^^ \(self) \(#function)")
+        print("^^LocalContactsProvider \(#function)")
     }
 
     func retrievePubKey(for contact: Contact) {
-        print("^^ \(self) \(#function)")
+        print("^^LocalContactsProvider \(#function)")
     }
 }
 
 // MARK: - REMOTE
-extension AttesterApi: ContactsProviderType {
+extension AttesterApi: ContactsServiceType {
     func searchContact(with email: String) {
-        print("^^ \(self) \(#function)")
+        print("^^AttesterApi \(#function)")
     }
 }
 
 // MARK: - PROVIDER
-struct ContactsProvider: ContactsProviderType {
+struct ContactsService: ContactsServiceType {
     let attesterApi = AttesterApi()
     let core = Core.shared
+    #warning("Remove")
+    let ds = DataService.shared
 
     let localContactsProvider: LocalContactsProviderType
-    let remoteContactsProvider: ContactsProviderType
+    let remoteContactsProvider: ContactsServiceType
 
     init(
         localContactsProvider: LocalContactsProviderType = LocalContactsProvider(),
-        remoteContactsProvider: ContactsProviderType = AttesterApi()
+        remoteContactsProvider: ContactsServiceType = AttesterApi()
     ) {
         self.localContactsProvider = localContactsProvider
         self.remoteContactsProvider = remoteContactsProvider
     }
 
     func searchContact(with email: String) {
-        print("^^ \(self) \(#function)")
+        print("^^ ContactsProvider \(#function)")
+
+        try? ds.storage.write {
+            ds.storage.add(ContactObjectTest7(
+                email: "email",
+                name: nil,
+                pubKey: "pubKey1_new",
+                pubKeyLastSig: nil,
+                pubkeyLastChecked: nil,
+                pubkeyExpiresOn: Date(),
+                lastUsed: nil
+                ), update: .modified
+            )
+            print(Array(ds.storage.objects(ContactObjectTest7.self)))
+        }
 
         let foundLocal = false
         localContactsProvider.searchContact(with: email)
@@ -107,15 +123,63 @@ struct ContactsProvider: ContactsProviderType {
             }
  */
 
+import RealmSwift
+
+//final class LongId: Object {
+//    @objc dynamic var value: String
+//}
+
+final class ContactObjectTest7: Object {
+    @objc dynamic var email: String = ""
+    @objc dynamic var pubKey: String = ""
+
+    @objc dynamic var name: String?
+//    @objc dynamic var longids: String = ""
+    @objc dynamic var pubkeyExpiresOn: Date!
+    @objc dynamic var pubKeyLastSig: Date?
+    @objc dynamic var pubkeyLastChecked: Date?
+    @objc dynamic var lastUsed: Date?
+
+//    var longid: String? { longids.first }
+
+    override class func primaryKey() -> String? { "email" }
+
+    convenience init(
+        email: String,
+        name: String?,
+        pubKey: String,
+        pubKeyLastSig: Date?,
+        pubkeyLastChecked: Date?,
+        pubkeyExpiresOn: Date,
+        longids: [String] = [],
+        lastUsed: Date?
+    ) {
+        self.init()
+        self.email = email
+        self.name = name ?? ""
+        self.pubKey = pubKey
+        self.pubkeyExpiresOn = pubkeyExpiresOn
+        self.pubKeyLastSig = pubKeyLastSig
+        self.pubkeyLastChecked = pubkeyLastChecked
+        self.lastUsed = lastUsed
+//        self.longids = longids
+    }
+
+}
+
 struct Contact {
     let email: String
+    /// name if known
     let name: String?
+    /// public key
     let pubKey: String
     /// will be provided later
     let pubKeyLastSig: Date?
-    /// the date when pubkey was retrieved from Attester, or null if none
+    /// the date when pubkey was retrieved from Attester, or nil
     let pubkeyLastChecked: Date?
+    /// pubkey expiration date
     let pubkeyExpiresOn: Date
+    /// all pubkey longids, comma-separated
     let longids: [String]
     /// last time an email was sent to this contact, update when email is sent
     let lastUsed: Date?

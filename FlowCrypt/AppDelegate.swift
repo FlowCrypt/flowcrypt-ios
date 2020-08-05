@@ -10,7 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private lazy var appUrlHandler = AppUrlHandler()
 
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
-    let t = ContactsProvider()
+    let t = ContactsService()
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         disableHardwareKeyboardOnSimulator()

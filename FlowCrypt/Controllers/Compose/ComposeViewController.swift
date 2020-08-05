@@ -282,7 +282,9 @@ extension ComposeViewController {
             }
 
             let lookupRes = try await(all(lookup))
-            let allRecipientPubs = lookupRes.compactMap { $0.armored }
+            let allRecipientPubs = lookupRes
+                .compactMap { $0.armored }
+                .map(String.init)
 
             guard allRecipientPubs.count == recipients.count else {
                 let message = recipients.count == 1
