@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         disableHardwareKeyboardOnSimulator()
         GlobalRouter().proceed()
 
-        t.searchContact(with: "")
+        t.searchContact(with: "cryptup.tester@gmail.com")
         return true
     }
 

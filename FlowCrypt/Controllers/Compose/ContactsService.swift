@@ -10,7 +10,7 @@ import Foundation
 import Promises
 
 protocol ContactsServiceType {
-    func searchContact(with email: String)
+    func searchContact(with email: String) -> Promise<Contact>
 }
 
 // MARK: - LOCAL
@@ -20,10 +20,6 @@ protocol LocalContactsProviderType: ContactsServiceType {
 }
 
 struct LocalContactsProvider: LocalContactsProviderType {
-    func searchContact(with email: String) {
-        print("^^LocalContactsProvider \(#function)")
-    }
-
     func save(contact: Contact) {
         print("^^LocalContactsProvider \(#function)")
     }
@@ -33,17 +29,75 @@ struct LocalContactsProvider: LocalContactsProviderType {
     }
 }
 
-// MARK: - REMOTE
-extension AttesterApi: ContactsServiceType {
-    func searchContact(with email: String) {
-        print("^^AttesterApi \(#function)")
+extension LocalContactsProvider {
+    func searchContact(with email: String) -> Promise<Contact> {
+        Promise(ContactsError.keyMissing)
     }
+}
+
+// MARK: - REMOTE
+struct RemoteContactsProvider {
+    let api: AttesterApiType
+    let core: Core
+
+    init(
+        api: AttesterApiType = AttesterApi(),
+        core: Core = .shared
+    ) {
+        self.api = api
+        self.core = core
+    }
+}
+
+extension RemoteContactsProvider: ContactsServiceType {
+    func searchContact(with email: String) -> Promise<Contact> {
+        Promise<Contact> { resolve, _ in
+            let armoredData = try await(self.api.lookupEmail(email: email)).armored
+            let contact = try await(self.parseKey(data: armoredData, for: email))
+            resolve(contact)
+        }
+    }
+
+    private func parseKey(data armoredData: Data?, for email: String) -> Promise<Contact> {
+        guard let data = armoredData else {
+            return Promise(ContactsError.keyMissing)
+        }
+
+        do {
+            let parsedKey = try core.parseKeys(armoredOrBinary: data)
+
+            guard let keyDetail = parsedKey.keyDetails.first else {
+                return Promise(ContactsError.unexpected("Key details are not parsed"))
+            }
+
+            let longids = parsedKey.keyDetails.flatMap { $0.ids }.map { $0.longid }
+
+            let contact = Contact(
+                email: email,
+                name: keyDetail.users.first ?? email,
+                pubKey: keyDetail.public,
+                pubKeyLastSig: nil, // TODO: - will be provided later
+                pubkeyLastChecked: Date(),
+                pubkeyExpiresOn: nil, // TODO: - will be provided later
+                longids: longids,
+                lastUsed: nil
+            )
+            return Promise(contact)
+        } catch let error {
+            let message = "Armored or binary are not parsed.\n\(error.localizedDescription)"
+            return Promise(ContactsError.unexpected(message))
+        }
+    }
+}
+
+// MARK: - Error
+enum ContactsError: Error {
+    case keyMissing
+    case unexpected(String)
 }
 
 // MARK: - PROVIDER
 struct ContactsService: ContactsServiceType {
-    let attesterApi = AttesterApi()
-    let core = Core.shared
     #warning("Remove")
     let ds = DataService.shared
 
@@ -52,36 +106,36 @@ struct ContactsService: ContactsServiceType {
 
     init(
         localContactsProvider: LocalContactsProviderType = LocalContactsProvider(),
-        remoteContactsProvider: ContactsServiceType = AttesterApi()
+        remoteContactsProvider: ContactsServiceType = RemoteContactsProvider()
     ) {
         self.localContactsProvider = localContactsProvider
         self.remoteContactsProvider = remoteContactsProvider
     }
 
-    func searchContact(with email: String) {
+    func searchContact(with email: String) -> Promise<Contact> {
         print("^^ ContactsProvider \(#function)")
 
-        try? ds.storage.write {
-            ds.storage.add(ContactObjectTest8(
-                email: "email",
-                name: nil,
-                pubKey: "pubKey1_new",
-                pubKeyLastSig: nil,
-                pubkeyLastChecked: nil,
-                pubkeyExpiresOn: Date(),
-                lastUsed: nil,
-                longids: ["longid 1", "longid 2"]
-                ), update: .modified
-            )
-            print(Array(ds.storage.objects(ContactObjectTest8.self)))
-        }
+//        try? ds.storage.write {
+//            ds.storage.add(ContactObjectTest8(
+//                email: "email",
+//                name: nil,
+//                pubKey: "pubKey1_new",
+//                pubKeyLastSig: nil,
+//                pubkeyLastChecked: nil,
+//                pubkeyExpiresOn: Date(),
+//                lastUsed: nil,
+//                longids: ["longid 1", "longid 2"]
+//                ), update: .modified
+//            )
+//            print(Array(ds.storage.objects(ContactObjectTest8.self)))
+//        }
 
         let foundLocal = false
         localContactsProvider.searchContact(with: email)
         if foundLocal {
             print("^^ return contact")
         } else {
-            let foundRemote = true
+            let foundRemote = false
             remoteContactsProvider.searchContact(with: email)
 
             if foundRemote {
@@ -91,38 +145,9 @@ struct ContactsService: ContactsServiceType {
                 print("^^ return error")
             }
         }
-
-//        attesterApi
-//            .lookupEmailTest(email: "cryptup.tester@gmail.com")
-//            .then { result in
-//                print("^^ \(result!.toStr())")
-//
-//                do {
-//                    let parsed = try self.core.parseKeys(armoredOrBinary: result!)
-//                    print("^^ \(parsed)")
-//
-//                } catch let e {
-//                    print("^^ \(e)")
-//                }
-//        }.catch { e in
-//            print("^^ \(e)")
-//        }
+        return Promise(ContactsError.keyMissing)
     }
 }
-
-/*
- [CoreRes.ParseKeys]
-        let keyDetails: [KeyDetails]
-            struct KeyDetails: Decodable {
-                let `public`: String
-                let `private`: String? // ony if this is prv
-                let isFullyDecrypted: Bool? // only if this is prv
-                let isFullyEncrypted: Bool? // only if this is prv
-                let ids: [KeyId]
-                let created: Int
-                let users: [String]
-            }
- */
 
 import RealmSwift
 
@@ -135,7 +160,7 @@ final class LongId: Object {
     }
 }
 
-final class ContactObjectTest8: Object {
+final class ContactObject: Object {
     @objc dynamic var email: String = ""
     @objc dynamic var pubKey: String = ""
 
@@ -189,17 +214,17 @@ struct Contact {
     /// the date when pubkey was retrieved from Attester, or nil
     let pubkeyLastChecked: Date?
     /// pubkey expiration date
-    let pubkeyExpiresOn: Date
+    let pubkeyExpiresOn: Date?
     /// all pubkey longids, comma-separated
     let longids: [String]
     /// last time an email was sent to this contact, update when email is sent
     let lastUsed: Date?
-    
-    var longid: String { longids.first }
+
+    var longid: String? { longids.first }
 }
 
 extension Contact {
-    init(_ contactObject: ContactObjectTest8) {
+    init(_ contactObject: ContactObject) {
         self.email = contactObject.email
         self.name = contactObject.name.nilIfEmpty
         self.pubKey = contactObject.pubKey
@@ -211,22 +236,15 @@ extension Contact {
     }
 }
 
-extension Optional where Wrapped == String {
-    var nilIfEmpty: String? {
-        guard let strongSelf = self else {
-            return nil
-        }
-        return strongSelf.isEmpty ? nil : strongSelf
-    }
-}
-
 /*
  When a recipient is evaluated (see issue #201 )
 
  first search local contacts for public key
     if found, use the local contact
-    if not found, search on attester
-        if pubkey found on attester, save the public key in local contacts (TOFU - Trust on First Use)
+
+ if not found, search on attester
+    if pubkey found on attester,
+    save the public key in local contacts (TOFU - Trust on First Use)
 
  later when I hit the send button, the public key will be fetched locally from Contacts.
  If there are none, it will show alert that recipient doesn't use pgp.
@@ -234,8 +252,6 @@ extension Optional where Wrapped == String {
 
 
  When saving contacts, the following info needs to be saved, as a Realm object:
-
-
 
  type Contact = {
    email: string; // lowercased, trimmed email address
