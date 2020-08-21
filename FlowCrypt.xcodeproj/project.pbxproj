@@ -165,6 +165,10 @@
 		D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */; };
 		D2717753242568A600BDA9A9 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
 		D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */; };
+		D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */; };
+		D27B911B24EFE7BE002DF0A1 /* RemoteContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911A24EFE7BE002DF0A1 /* RemoteContactsProvider.swift */; };
+		D27B911D24EFE806002DF0A1 /* ContactObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911C24EFE806002DF0A1 /* ContactObject.swift */; };
+		D27B911F24EFE828002DF0A1 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911E24EFE828002DF0A1 /* Contact.swift */; };
 		D28325DC24895F5400D311BD /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		D28325DD24895F5700D311BD /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		D28655912423B4580066F52E /* HeaderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3639235A0B3B00614596 /* HeaderNode.swift */; };
@@ -461,6 +465,10 @@
 		D26F132624509EB6009175BA /* RecipientEmailsCellNodeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNodeInput.swift; sourceTree = "<group>"; };
 		D27177482424D73000BDA9A9 /* InboxViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewDecorator.swift; sourceTree = "<group>"; };
 		D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
+		D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProvider.swift; sourceTree = "<group>"; };
+		D27B911A24EFE7BE002DF0A1 /* RemoteContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteContactsProvider.swift; sourceTree = "<group>"; };
+		D27B911C24EFE806002DF0A1 /* ContactObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactObject.swift; sourceTree = "<group>"; };
+		D27B911E24EFE828002DF0A1 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMenuViewDecorator.swift; sourceTree = "<group>"; };
 		D28655942423BFF60066F52E /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
 		D2891AC124C59EFA008918E3 /* KeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyService.swift; sourceTree = "<group>"; };
@@ -580,7 +588,6 @@
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
 				D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */,
 				9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */,
-				D2FC1C0524D82C9F003B949D /* ContactsService.swift */,
 			);
 			path = Compose;
 			sourceTree = "<group>";
@@ -734,6 +741,7 @@
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				D2891AC124C59EFA008918E3 /* KeyService.swift */,
 				D2891AC324C62446008918E3 /* ErrorHandler.swift */,
+				D27B911724EFE787002DF0A1 /* ContactsService */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1063,6 +1071,26 @@
 				D2FD0F682453245E00259FF0 /* Either.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		D27B911724EFE787002DF0A1 /* ContactsService */ = {
+			isa = PBXGroup;
+			children = (
+				D2FC1C0524D82C9F003B949D /* ContactsService.swift */,
+				D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */,
+				D27B911A24EFE7BE002DF0A1 /* RemoteContactsProvider.swift */,
+				D27B912024EFE842002DF0A1 /* Models */,
+			);
+			path = ContactsService;
+			sourceTree = "<group>";
+		};
+		D27B912024EFE842002DF0A1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D27B911C24EFE806002DF0A1 /* ContactObject.swift */,
+				D27B911E24EFE828002DF0A1 /* Contact.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		D28655972424D0BC0066F52E /* Views */ = {
@@ -1863,6 +1891,7 @@
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				D2A9CA4224261DBC00E1D898 /* AppLinks.swift in Sources */,
+				D27B911D24EFE806002DF0A1 /* ContactObject.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
@@ -1880,6 +1909,7 @@
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
 				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
+				D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */,
 				9F589F1F238C8A90007FD759 /* Token.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
@@ -1899,6 +1929,8 @@
 				D29AFFED24092D7900C1387D /* GoogleService.swift in Sources */,
 				9F3EF33123B1785600FA0CEF /* MsgListViewConroller.swift in Sources */,
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
+				D27B911F24EFE828002DF0A1 /* Contact.swift in Sources */,
+				D27B911B24EFE7BE002DF0A1 /* RemoteContactsProvider.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
 				32DCA557DA4EF81A74CEF951 /* TestData.swift in Sources */,
 				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
