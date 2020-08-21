@@ -11,6 +11,7 @@ import Promises
 import RealmSwift
 
 protocol LocalContactsProviderType: ContactsServiceType {
+    func updateLastUsedDate(for email: String)
     func searchContact(with email: String) -> Contact?
     func save(contact: Contact)
 }
@@ -24,12 +25,28 @@ struct LocalContactsProvider {
 }
 
 extension LocalContactsProvider: LocalContactsProviderType {
+    func updateLastUsedDate(for email: String) {
+        let contact = storage.objects(ContactObject.self)
+            .first(where: { $0.email == email })
+
+        try? storage.write {
+            contact?.lastUsed = Date()
+        }
+    }
+
     func retrievePubKey(for email: String) -> String? {
-        nil
+        storage.objects(ContactObject.self)
+            .first(where: { $0.email == email })?
+            .pubKey
     }
 
     func save(contact: Contact) {
-        print("^^LocalContactsProvider \(#function)")
+        try? storage.write {
+            storage.add(
+                ContactObject(contact: contact),
+                update: .modified
+            )
+        }
     }
 
     func searchContact(with email: String) -> Contact? {
@@ -38,18 +55,3 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .map(Contact.init)
     }
 }
-
-//        try? ds.storage.write {
-//            ds.storage.add(ContactObjectTest8(
-//                email: "email",
-//                name: nil,
-//                pubKey: "pubKey1_new",
-//                pubKeyLastSig: nil,
-//                pubkeyLastChecked: nil,
-//                pubkeyExpiresOn: Date(),
-//                lastUsed: nil,
-//                longids: ["longid 1", "longid 2"]
-//                ), update: .modified
-//            )
-//            print(Array(ds.storage.objects(ContactObjectTest8.self)))
-//        }

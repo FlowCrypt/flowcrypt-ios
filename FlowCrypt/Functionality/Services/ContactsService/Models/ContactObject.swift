@@ -24,7 +24,7 @@ final class ContactObject: Object {
 
     @objc dynamic var name: String?
 
-    @objc dynamic var pubkeyExpiresOn: Date!
+    @objc dynamic var pubkeyExpiresOn: Date?
     @objc dynamic var pubKeyLastSig: Date?
     @objc dynamic var pubkeyLastChecked: Date?
     @objc dynamic var lastUsed: Date?
@@ -39,7 +39,7 @@ final class ContactObject: Object {
         pubKey: String,
         pubKeyLastSig: Date?,
         pubkeyLastChecked: Date?,
-        pubkeyExpiresOn: Date,
+        pubkeyExpiresOn: Date?,
         lastUsed: Date?,
         longids: [String]
     ) {
@@ -58,5 +58,19 @@ final class ContactObject: Object {
                 self.longids.append($0)
             }
     }
+}
 
+extension ContactObject {
+    convenience init(contact: Contact) {
+        self.init(
+            email: contact.email,
+            name: contact.name,
+            pubKey: contact.pubKey,
+            pubKeyLastSig: contact.pubKeyLastSig,
+            pubkeyLastChecked: contact.pubkeyLastChecked,
+            pubkeyExpiresOn: contact.pubkeyExpiresOn,
+            lastUsed: contact.lastUsed,
+            longids: contact.longids
+        )
+    }
 }

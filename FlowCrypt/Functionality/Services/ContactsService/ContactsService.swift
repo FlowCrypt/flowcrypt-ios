@@ -52,7 +52,9 @@ extension ContactsService: ContactsProviderType {
 
 extension ContactsService: ContactsServiceType {
     func retrievePubKey(for email: String) -> String? {
-        nil
+        let publickKey = localContactsProvider.retrievePubKey(for: email)
+        localContactsProvider.updateLastUsedDate(for: email)
+        return publickKey
     }
 }
 
@@ -68,7 +70,6 @@ extension ContactsService: ContactsServiceType {
 
  later when I hit the send button, the public key will be fetched locally from Contacts.
  If there are none, it will show alert that recipient doesn't use pgp.
-
 
 
  When saving contacts, the following info needs to be saved, as a Realm object:
