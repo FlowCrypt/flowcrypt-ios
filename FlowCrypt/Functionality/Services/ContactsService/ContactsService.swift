@@ -8,69 +8,53 @@
 
 import Foundation
 import Promises
- 
+
 enum ContactsError: Error {
     case keyMissing
     case unexpected(String)
 }
 
-// MARK: - PROVIDER
 protocol ContactsServiceType {
-    func searchContact(with email: String) -> Promise<Contact>
+    func retrievePubKey(for email: String) -> String?
 }
 
-struct ContactsService: ContactsServiceType {
-    #warning("Remove")
-    let ds = DataService.shared
+// MARK: - PROVIDER
 
+struct ContactsService {
     let localContactsProvider: LocalContactsProviderType
-    let remoteContactsProvider: ContactsServiceType
+    let remoteContactsProvider: ContactsProviderType
 
     init(
         localContactsProvider: LocalContactsProviderType = LocalContactsProvider(),
-        remoteContactsProvider: ContactsServiceType = RemoteContactsProvider()
+        remoteContactsProvider: ContactsProviderType = RemoteContactsProvider()
     ) {
         self.localContactsProvider = localContactsProvider
         self.remoteContactsProvider = remoteContactsProvider
     }
+}
 
+extension ContactsService: ContactsProviderType {
     func searchContact(with email: String) -> Promise<Contact> {
-        print("^^ ContactsProvider \(#function)")
-
-//        try? ds.storage.write {
-//            ds.storage.add(ContactObjectTest8(
-//                email: "email",
-//                name: nil,
-//                pubKey: "pubKey1_new",
-//                pubKeyLastSig: nil,
-//                pubkeyLastChecked: nil,
-//                pubkeyExpiresOn: Date(),
-//                lastUsed: nil,
-//                longids: ["longid 1", "longid 2"]
-//                ), update: .modified
-//            )
-//            print(Array(ds.storage.objects(ContactObjectTest8.self)))
-//        }
-
-        let foundLocal = false
-        localContactsProvider.searchContact(with: email)
-        if foundLocal {
-            print("^^ return contact")
-        } else {
-            let foundRemote = false
-            remoteContactsProvider.searchContact(with: email)
-
-            if foundRemote {
-                print("^^ return contact")
-                // localContactsProvider.save(contact: )
-            } else {
-                print("^^ return error")
-            }
+        guard let contact = localContactsProvider.searchContact(with: email) else {
+            return searchRemote(for: email)
         }
-        return Promise(ContactsError.keyMissing)
+        return Promise(contact)
+    }
+
+    private func searchRemote(for email: String) -> Promise<Contact> {
+        remoteContactsProvider
+            .searchContact(with: email)
+            .then { contact in
+                self.localContactsProvider.save(contact: contact)
+            }
     }
 }
 
+extension ContactsService: ContactsServiceType {
+    func retrievePubKey(for email: String) -> String? {
+        nil
+    }
+}
 
 /*
  When a recipient is evaluated (see issue #201 )

@@ -9,6 +9,10 @@
 import Foundation
 import Promises
 
+protocol ContactsProviderType {
+    func searchContact(with email: String) -> Promise<Contact>
+}
+
 struct RemoteContactsProvider {
     let api: AttesterApiType
     let core: Core
@@ -22,7 +26,7 @@ struct RemoteContactsProvider {
     }
 }
 
-extension RemoteContactsProvider: ContactsServiceType {
+extension RemoteContactsProvider: ContactsProviderType {
     func searchContact(with email: String) -> Promise<Contact> {
         Promise<Contact> { resolve, _ in
             let armoredData = try await(self.api.lookupEmail(email: email)).armored
