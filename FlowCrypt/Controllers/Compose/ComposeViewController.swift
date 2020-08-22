@@ -47,7 +47,6 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let imap: Imap
     private let notificationCenter: NotificationCenter
     private let dataService: DataServiceType & KeyDataServiceType
-    private let attesterApi: AttesterApiType
     private let decorator: ComposeViewDecoratorType
     private let core: Core
     private let googleService: GoogleServiceType
@@ -65,7 +64,6 @@ final class ComposeViewController: ASViewController<TableNode> {
         imap: Imap = Imap.shared,
         notificationCenter: NotificationCenter = .default,
         dataService: DataServiceType & KeyDataServiceType = DataService.shared,
-        attesterApi: AttesterApiType = AttesterApi(),
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
@@ -77,7 +75,6 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.imap = imap
         self.notificationCenter = notificationCenter
         self.dataService = dataService
-        self.attesterApi = attesterApi
         self.input = input
         self.decorator = decorator
         self.core = core
@@ -315,24 +312,6 @@ extension ComposeViewController {
         }
 
         return pubKeys.compactMap { $0.1 }
-//        let lookup = recipients.map {
-//            self.attesterApi.lookupEmail(email: $0.email)
-//        }
-//
-//        let lookupRes = try await(all(lookup))
-//        let allRecipientPubs = lookupRes
-//            .compactMap { $0.armored }
-//            .map(String.init)
-//
-//        guard allRecipientPubs.count == recipients.count else {
-//            let message = recipients.count == 1
-//                ? "compose_no_pub_recipient".localized
-//                : "compose_no_pub_multiple".localized
-//            self.showAlert(message: message)
-//            return nil
-//        }
-//
-//        return []
     }
 
     private func showNoPubKeyAlert(for emails: [String]) {
@@ -695,18 +674,36 @@ extension ComposeViewController {
             return
         }
 
-        attesterApi.lookupEmail(email: recipient.email)
-            .then(on: .main) { [weak self] result in
-                guard let self = self else { return }
-                let newState: RecipientState = result.armored != nil
-                    ? self.decorator.recipientKeyFoundState
-                    : self.decorator.recipientKeyNotFoundState
-                self.updateRecipientWithNew(state: newState, for: .left(recipient))
+        contactsService.searchContact(with: recipient.email)
+            .then(on: .main) { [weak self] _ in
+                self?.handleEvaluation(for: recipient)
             }
-            .catch(on: .main) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateRecipientWithNew(state: self.decorator.recipientErrorStateRetry, for: .left(recipient))
+            .catch(on: .main) { [weak self] error in
+                self?.handleEvaluation(error: error, with: recipient)
             }
+    }
+
+    private func handleEvaluation(for recipient: Recipient) {
+        updateRecipientWithNew(
+            state: decorator.recipientKeyFoundState,
+            for: .left(recipient)
+        )
+    }
+
+    private func handleEvaluation(error: Error, with recipient: Recipient) {
+        let recipientState: RecipientState = {
+            switch error {
+            case ContactsError.keyMissing:
+                return self.decorator.recipientKeyNotFoundState
+            default:
+                return self.decorator.recipientErrorStateRetry
+            }
+        }()
+
+        updateRecipientWithNew(
+            state: recipientState,
+            for: .left(recipient)
+        )
     }
 
     private func updateRecipientWithNew(state: RecipientState, for context: Either<Recipient, IndexPath>) {

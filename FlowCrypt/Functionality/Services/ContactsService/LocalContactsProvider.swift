@@ -10,7 +10,7 @@ import Foundation
 import Promises
 import RealmSwift
 
-protocol LocalContactsProviderType: ContactsServiceType {
+protocol LocalContactsProviderType: PublicKeyProvider {
     func updateLastUsedDate(for email: String)
     func searchContact(with email: String) -> Contact?
     func save(contact: Contact)

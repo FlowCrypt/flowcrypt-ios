@@ -14,13 +14,17 @@ enum ContactsError: Error {
     case unexpected(String)
 }
 
-protocol ContactsServiceType {
+protocol ContactsServiceType: PublicKeyProvider, ContactsProviderType {
+
+}
+
+protocol PublicKeyProvider {
     func retrievePubKey(for email: String) -> String?
 }
 
 // MARK: - PROVIDER
 
-struct ContactsService {
+struct ContactsService: ContactsServiceType {
     let localContactsProvider: LocalContactsProviderType
     let remoteContactsProvider: ContactsProviderType
 
@@ -50,7 +54,7 @@ extension ContactsService: ContactsProviderType {
     }
 }
 
-extension ContactsService: ContactsServiceType {
+extension ContactsService: PublicKeyProvider {
     func retrievePubKey(for email: String) -> String? {
         let publickKey = localContactsProvider.retrievePubKey(for: email)
         localContactsProvider.updateLastUsedDate(for: email)

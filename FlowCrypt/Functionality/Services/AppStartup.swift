@@ -68,7 +68,7 @@ struct AppStartup {
             window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
         }
     }
-    
+
     private func showErrorAlert(with error: Error, on window: UIWindow) {
         let alert = UIAlertController(title: "Startup Error", message: "\(error)", preferredStyle: .alert)
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in
