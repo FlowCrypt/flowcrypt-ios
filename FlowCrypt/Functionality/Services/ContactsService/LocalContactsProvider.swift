@@ -17,32 +17,36 @@ protocol LocalContactsProviderType: ContactsServiceType {
 }
 
 struct LocalContactsProvider {
-    let storage: Realm
+    let storage: () -> Realm
 
-    init(storage: Realm = DataService.shared.storage) {
+    init(storage: @escaping @autoclosure () -> Realm) {
         self.storage = storage
     }
 }
 
 extension LocalContactsProvider: LocalContactsProviderType {
     func updateLastUsedDate(for email: String) {
-        let contact = storage.objects(ContactObject.self)
+        let realm = storage()
+        let contact = realm
+            .objects(ContactObject.self)
             .first(where: { $0.email == email })
 
-        try? storage.write {
+        try? realm.write {
             contact?.lastUsed = Date()
         }
     }
 
     func retrievePubKey(for email: String) -> String? {
-        storage.objects(ContactObject.self)
+        storage()
+            .objects(ContactObject.self)
             .first(where: { $0.email == email })?
             .pubKey
     }
 
     func save(contact: Contact) {
-        try? storage.write {
-            storage.add(
+        let realm = storage()
+        try? realm.write {
+            realm.add(
                 ContactObject(contact: contact),
                 update: .modified
             )
@@ -50,7 +54,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func searchContact(with email: String) -> Contact? {
-        storage.objects(ContactObject.self)
+        storage()
+            .objects(ContactObject.self)
             .first(where: { $0.email == email })
             .map(Contact.init)
     }

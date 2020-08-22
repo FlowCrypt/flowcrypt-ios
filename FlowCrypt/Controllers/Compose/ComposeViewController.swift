@@ -54,6 +54,7 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let searchThrottler = Throttler(seconds: 1)
     private let userDefaults: UserDefaults
     private let globalRouter: GlobalRouterType
+    private let contactsService: ContactsServiceType
 
     private var input: Input
     private var contextToSend = Context()
@@ -70,7 +71,8 @@ final class ComposeViewController: ASViewController<TableNode> {
         core: Core = Core.shared,
         googleService: GoogleServiceType = GoogleService(),
         userDefaults: UserDefaults = .standard,
-        globalRouter: GlobalRouterType = GlobalRouter()
+        globalRouter: GlobalRouterType = GlobalRouter(),
+        contactsService: ContactsServiceType = ContactsService()
     ) {
         self.imap = imap
         self.notificationCenter = notificationCenter
@@ -82,6 +84,7 @@ final class ComposeViewController: ASViewController<TableNode> {
         self.googleService = googleService
         self.userDefaults = userDefaults
         self.globalRouter = globalRouter
+        self.contactsService = contactsService
         contextToSend.subject = input.subject
         if input.isReply {
             if let email = input.recipientReplyTitle {
@@ -233,14 +236,14 @@ extension ComposeViewController {
     }
 
     @objc private func handleSendTap() {
-        sendMsgTapHandler()
+        sendMessage()
     }
 }
 
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    private func sendMsgTapHandler() {
+    private func sendMessage() {
         view.endEditing(true)
         guard isInputValid() else { return }
 
@@ -277,25 +280,12 @@ extension ComposeViewController {
                 ?? self.contextToSend.subject
                 ?? "(no subject)"
 
-            let lookup = recipients.map {
-                self.attesterApi.lookupEmail(email: $0.email)
-            }
-
-            let lookupRes = try await(all(lookup))
-            let allRecipientPubs = lookupRes
-                .compactMap { $0.armored }
-                .map(String.init)
-
-            guard allRecipientPubs.count == recipients.count else {
-                let message = recipients.count == 1
-                    ? "compose_no_pub_recipient".localized
-                    : "compose_no_pub_multiple".localized
-                self.showAlert(message: message)
+            guard let myPubKey = self.dataService.publicKey else {
+                self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }
 
-            guard let myPubKey = self.dataService.publicKey else {
-                self.showAlert(message: "compose_no_pub_sender".localized)
+            guard let allRecipientPubs = self.getPubKeys(for: recipients) else {
                 return false
             }
 
@@ -310,6 +300,46 @@ extension ComposeViewController {
 
             return true
         }
+    }
+
+    private func getPubKeys(for recepients: [Recipient]) -> [String]? {
+        let pubKeys = recipients.map {
+            ($0.email, contactsService.retrievePubKey(for: $0.email))
+        }
+
+        let emailsWithoutPubKeys = pubKeys.filter { $0.1 == nil }.map { $0.0 }
+
+        guard emailsWithoutPubKeys.isEmpty else {
+            showNoPubKeyAlert(for: emailsWithoutPubKeys)
+            return nil
+        }
+
+        return pubKeys.compactMap { $0.1 }
+//        let lookup = recipients.map {
+//            self.attesterApi.lookupEmail(email: $0.email)
+//        }
+//
+//        let lookupRes = try await(all(lookup))
+//        let allRecipientPubs = lookupRes
+//            .compactMap { $0.armored }
+//            .map(String.init)
+//
+//        guard allRecipientPubs.count == recipients.count else {
+//            let message = recipients.count == 1
+//                ? "compose_no_pub_recipient".localized
+//                : "compose_no_pub_multiple".localized
+//            self.showAlert(message: message)
+//            return nil
+//        }
+//
+//        return []
+    }
+
+    private func showNoPubKeyAlert(for emails: [String]) {
+        let message = emails.count == 1
+            ? "compose_no_pub_recipient".localized
+            : "compose_no_pub_multiple".localized + "\n" + emails.joined(separator: ",")
+        showAlert(message: message)
     }
 
     private func handleSuccessfullySentMessage() {

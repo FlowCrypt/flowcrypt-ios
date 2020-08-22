@@ -25,7 +25,7 @@ struct ContactsService {
     let remoteContactsProvider: ContactsProviderType
 
     init(
-        localContactsProvider: LocalContactsProviderType = LocalContactsProvider(),
+        localContactsProvider: LocalContactsProviderType = LocalContactsProvider(storage: DataService.shared.storage),
         remoteContactsProvider: ContactsProviderType = RemoteContactsProvider()
     ) {
         self.localContactsProvider = localContactsProvider

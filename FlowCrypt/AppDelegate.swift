@@ -16,10 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         disableHardwareKeyboardOnSimulator()
         GlobalRouter().proceed()
 
-        t.searchContact(with: "cryptup.tester@gmail.com").then { c in
-            print(c.lastUsed)
+        t.searchContact(with: "cryptup1.tester@gmail.com")
+            .then { _ in
+                print("^^ found")
+            }
+        .catch { error in
+            print("^^ error \(error)")
         }
-        print(t.retrievePubKey(for: "cryptup.tester@gmail.com"))
+
+//        print(t.retrievePubKey(for: "cryptup.tester@gmail.com"))
         return true
     }
 
