@@ -49,6 +49,7 @@ extension ContactsListViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
+        title = decorator.title
     }
 
     private func fetchContacts() {
@@ -65,8 +66,7 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
             return ContactCellNode(
-                title: NSAttributedString(string: self.contacts[indexPath.row].email),
-                insets: .zero
+                input: self.decorator.contactNodeInput(with: self.contacts[indexPath.row])
             )
         }
     }

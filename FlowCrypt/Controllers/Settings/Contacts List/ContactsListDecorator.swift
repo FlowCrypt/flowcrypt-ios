@@ -6,12 +6,44 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import FlowCryptUI
 
 protocol ContactsListDecoratorType {
-
+    var title: String { get }
+    func contactNodeInput(with contact: Contact) -> ContactCellNode.Input
 }
 
 struct ContactsListDecorator: ContactsListDecoratorType {
+    let title = "contacts_screen_title".localized
 
+    func contactNodeInput(with contact: Contact) -> ContactCellNode.Input {
+        let name: String
+
+        if let contactName = contact.name, contactName.isNotEmpty {
+            let components = contactName
+                .split(separator: " ")
+                .filter { !$0.contains("@") }
+
+            if components.isEmpty {
+                name = nameFrom(email: contact.email)
+            } else {
+                name = components.joined(separator: " ")
+            }
+        } else {
+            name = nameFrom(email: contact.email)
+        }
+
+        return ContactCellNode.Input(
+            name: name.attributed(.medium(16)),
+            email: contact.email.attributed(.medium(14)),
+            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        )
+    }
+
+    private func nameFrom(email: String) -> String {
+        email.split(separator: "@")
+            .dropLast()
+            .joined()
+    }
 }
