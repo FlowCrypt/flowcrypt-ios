@@ -14,6 +14,7 @@ protocol LocalContactsProviderType: PublicKeyProvider {
     func updateLastUsedDate(for email: String)
     func searchContact(with email: String) -> Contact?
     func save(contact: Contact)
+    func remove(contact: Contact)
     func getAllContacts() -> [Contact]
 }
 
@@ -51,6 +52,18 @@ extension LocalContactsProvider: LocalContactsProviderType {
                 ContactObject(contact: contact),
                 update: .modified
             )
+        }
+    }
+
+    func remove(contact: Contact) {
+        let realm = storage()
+        let contactToDelete = realm.objects(ContactObject.self)
+            .first(where: { $0.email == contact.email })
+
+        guard let contact = contactToDelete else { return }
+        
+        try? realm.write {
+           realm.delete(contact)
         }
     }
 

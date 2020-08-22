@@ -66,10 +66,19 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
             return ContactCellNode(
-                input: self.decorator.contactNodeInput(with: self.contacts[indexPath.row])
-            ) {
-                print("^^ tap")
-            }
+                input: self.decorator.contactNodeInput(with: self.contacts[indexPath.row]),
+                action: { [weak self] in
+                    self?.handleDeleteButtonTap(with: indexPath)
+                }
+            )
         }
+    }
+}
+
+extension ContactsListViewController {
+    private func handleDeleteButtonTap(with indexPath: IndexPath) {
+        contactsProvider.remove(contact: contacts[indexPath.row])
+        contacts.remove(at: indexPath.row)
+        node.deleteRows(at: [indexPath], with: .left)
     }
 }
