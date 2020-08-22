@@ -29,6 +29,9 @@ final class ContactObject: Object {
     @objc dynamic var pubkeyLastChecked: Date?
     @objc dynamic var lastUsed: Date?
 
+    /// all pubkey fingerprints, comma-separated
+    @objc dynamic var fingerprints: String = ""
+
     let longids = List<LongId>()
 
     override class func primaryKey() -> String? { "email" }
@@ -41,7 +44,8 @@ final class ContactObject: Object {
         pubkeyLastChecked: Date?,
         pubkeyExpiresOn: Date?,
         lastUsed: Date?,
-        longids: [String]
+        longids: [String],
+        fingerprints: [String]
     ) {
         self.init()
         self.email = email
@@ -51,6 +55,7 @@ final class ContactObject: Object {
         self.pubKeyLastSig = pubKeyLastSig
         self.pubkeyLastChecked = pubkeyLastChecked
         self.lastUsed = lastUsed
+        self.fingerprints = fingerprints.joined(separator: ",")
 
         longids
             .map(LongId.init)
@@ -70,7 +75,8 @@ extension ContactObject {
             pubkeyLastChecked: contact.pubkeyLastChecked,
             pubkeyExpiresOn: contact.pubkeyExpiresOn,
             lastUsed: contact.lastUsed,
-            longids: contact.longids
+            longids: contact.longids,
+            fingerprints: contact.fingerprints
         )
     }
 }

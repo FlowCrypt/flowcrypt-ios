@@ -22,10 +22,15 @@ struct Contact {
     let pubkeyExpiresOn: Date?
     /// all pubkey longids, comma-separated
     let longids: [String]
+    var longid: String? { longids.first }
+
     /// last time an email was sent to this contact, update when email is sent
     let lastUsed: Date?
 
-    var longid: String? { longids.first }
+    /// all pubkey fingerprints, comma-separated
+    let fingerprints: [String]
+    /// first pubkey fingerprint
+    var fingerprint: String? { fingerprints.first }
 }
 
 extension Contact {
@@ -38,5 +43,6 @@ extension Contact {
         self.pubkeyExpiresOn = contactObject.pubkeyExpiresOn
         self.lastUsed = contactObject.lastUsed
         self.longids = contactObject.longids.map { $0.value }
+        self.fingerprints = contactObject.fingerprints.split(separator: ",").map(String.init)
     }
 }

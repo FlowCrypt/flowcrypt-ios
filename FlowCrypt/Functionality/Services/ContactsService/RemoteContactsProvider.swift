@@ -47,7 +47,9 @@ extension RemoteContactsProvider: ContactsProviderType {
                 return Promise(ContactsError.unexpected("Key details are not parsed"))
             }
 
-            let longids = parsedKey.keyDetails.flatMap { $0.ids }.map { $0.longid }
+            let keyIds = parsedKey.keyDetails.flatMap { $0.ids }
+            let longids = keyIds.map { $0.longid }
+            let fingerprints = keyIds.map { $0.fingerprint }
 
             let contact = Contact(
                 email: email,
@@ -57,7 +59,8 @@ extension RemoteContactsProvider: ContactsProviderType {
                 pubkeyLastChecked: Date(),
                 pubkeyExpiresOn: nil, // TODO: - will be provided later
                 longids: longids,
-                lastUsed: nil
+                lastUsed: nil,
+                fingerprints: fingerprints
             )
             return Promise(contact)
         } catch let error {
