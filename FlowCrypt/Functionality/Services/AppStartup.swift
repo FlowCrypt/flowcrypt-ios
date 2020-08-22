@@ -33,10 +33,9 @@ struct AppStartup {
         }.then(on: .main) {
             self.chooseView(window: window)
             log("AppStartup", error: nil, res: nil, start: start)
-        }.catch(on: .main) { err in
-            let alert = UIAlertController(title: "Startup Error", message: "\(err)", preferredStyle: .alert)
-            window.rootViewController?.present(alert, animated: true, completion: nil)
-            log("AppStartup", error: err, res: nil, start: start)
+        }.catch(on: .main) { error in
+            self.showErrorAlert(with: error, on: window)
+            log("AppStartup", error: error, res: nil, start: start)
         }
     }
 
@@ -68,5 +67,14 @@ struct AppStartup {
         } else {
             window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
         }
+    }
+    
+    private func showErrorAlert(with error: Error, on window: UIWindow) {
+        let alert = UIAlertController(title: "Startup Error", message: "\(error)", preferredStyle: .alert)
+        let retry = UIAlertAction(title: "Retry", style: .default) { _ in
+            self.initializeApp(window: window)
+        }
+        alert.addAction(retry)
+        window.rootViewController?.present(alert, animated: true, completion: nil)
     }
 }
