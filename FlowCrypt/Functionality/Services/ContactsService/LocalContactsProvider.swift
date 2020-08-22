@@ -14,6 +14,7 @@ protocol LocalContactsProviderType: PublicKeyProvider {
     func updateLastUsedDate(for email: String)
     func searchContact(with email: String) -> Contact?
     func save(contact: Contact)
+    func getAllContacts() -> [Contact]
 }
 
 struct LocalContactsProvider {
@@ -58,5 +59,12 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .objects(ContactObject.self)
             .first(where: { $0.email == email })
             .map(Contact.init)
+    }
+
+    func getAllContacts() -> [Contact] {
+        Array(storage()
+            .objects(ContactObject.self)
+            .map(Contact.init)
+        )
     }
 }

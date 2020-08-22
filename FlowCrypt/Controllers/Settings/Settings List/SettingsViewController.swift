@@ -98,6 +98,8 @@ extension SettingsViewController {
             viewController = KeySettingsViewController()
         case .legal:
             viewController = LegalViewController()
+        case .contacts:
+            viewController = ContactsListViewController()
         default:
             viewController = nil
         }
