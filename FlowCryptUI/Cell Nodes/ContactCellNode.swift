@@ -13,46 +13,68 @@ public final class ContactCellNode: CellNode {
         let name: NSAttributedString?
         let email: NSAttributedString
         let insets: UIEdgeInsets
+        let buttonImage: UIImage?
 
         public init(
             name: NSAttributedString?,
             email: NSAttributedString,
-            insets: UIEdgeInsets
+            insets: UIEdgeInsets,
+            buttonImage: UIImage?
         ) {
             self.name = name
             self.email = email
             self.insets = insets
+            self.buttonImage = buttonImage
         }
     }
 
     private let nameNode = ASTextNode2()
     private let emailNode = ASTextNode2()
-    private let input: Input
+    private let buttonNode = ASButtonNode()
 
-    public init(input: Input) {
+    private let input: Input
+    private let action: (() -> Void)?
+
+    public init(input: Input, action: (() -> Void)?) {
         self.input = input
+        self.action = action
         super.init()
+
         nameNode.attributedText = input.name
         emailNode.attributedText = input.email
+        buttonNode.setImage(input.buttonImage, for: .normal)
+        buttonNode.addTarget(self, action: #selector(handleButtonTap), forControlEvents: .touchUpInside)
+    }
+
+    @objc private func handleButtonTap() {
+        action?()
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+        let children: [ASLayoutElement]
         if input.name == nil {
-            return ASInsetLayoutSpec(
-                insets: input.insets,
-                child: emailNode
-            )
+            emailNode.style.flexGrow = 1
+            children = [emailNode, buttonNode]
         } else {
-            return ASInsetLayoutSpec(
-                insets: input.insets,
-                child: ASStackLayoutSpec(
-                    direction: .vertical,
-                    spacing: 8,
-                    justifyContent: .start,
-                    alignItems: .baselineFirst,
-                    children: [nameNode, emailNode]
-                )
+            let nameStack = ASStackLayoutSpec(
+                direction: .vertical,
+                spacing: 8,
+                justifyContent: .start,
+                alignItems: .start,
+                children: [nameNode, emailNode]
             )
+            nameStack.style.flexGrow = 1
+            children = [nameStack, buttonNode]
         }
+        return ASInsetLayoutSpec(
+            insets: input.insets,
+            child: ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 8,
+                justifyContent: .start,
+                alignItems: .stretch,
+                children: children
+            )
+        )
     }
 }

@@ -67,7 +67,9 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self else { return ASCellNode() }
             return ContactCellNode(
                 input: self.decorator.contactNodeInput(with: self.contacts[indexPath.row])
-            )
+            ) {
+                print("^^ tap")
+            }
         }
     }
 }

@@ -24,5 +24,11 @@ public final class TableNode: ASTableNode {
             }
         }
     }
+
+    public override func asyncTraitCollectionDidChange() {
+        super.asyncTraitCollectionDidChange()
+        guard #available(iOS 13.0, *) else { return }
+        backgroundColor = .backgroundColor
+    }
 }
 

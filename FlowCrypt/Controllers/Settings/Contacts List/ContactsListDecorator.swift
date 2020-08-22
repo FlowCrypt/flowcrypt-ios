@@ -34,10 +34,16 @@ struct ContactsListDecorator: ContactsListDecoratorType {
             name = nameFrom(email: contact.email)
         }
 
+        let buttonColor = UIColor.colorFor(
+            darkStyle: .lightGray,
+            lightStyle: .darkGray
+        )
+
         return ContactCellNode.Input(
             name: name.attributed(.medium(16)),
             email: contact.email.attributed(.medium(14)),
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+            insets: UIEdgeInsets(top: 16, left: 16, bottom: 8, right: 16),
+            buttonImage: #imageLiteral(resourceName: "trash").tinted(buttonColor)
         )
     }
 
