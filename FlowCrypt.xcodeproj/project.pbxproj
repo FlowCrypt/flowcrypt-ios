@@ -222,6 +222,10 @@
 		D2E26F6824F169E300612AF1 /* ContactCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6724F169E300612AF1 /* ContactCellNode.swift */; };
 		D2E26F6A24F25AB800612AF1 /* KeyAlgoObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6924F25AB800612AF1 /* KeyAlgoObject.swift */; };
 		D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */; };
+		D2E26F6D24F263B600612AF1 /* KeyAlgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */; };
+		D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6F24F266F300612AF1 /* ContactDetailViewController.swift */; };
+		D2E26F7224F26FFF00612AF1 /* ContactDetailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F7124F26FFF00612AF1 /* ContactDetailNode.swift */; };
+		D2E26F7424F2705B00612AF1 /* ContactDetailDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F7324F2705B00612AF1 /* ContactDetailDecorator.swift */; };
 		D2F18464244B0C63000CC5D1 /* SignInGoogleTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */; };
 		D2F18468244B0F35000CC5D1 /* AppTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F18467244B0F35000CC5D1 /* AppTestHelper.swift */; };
 		D2F1846A244DB8F7000CC5D1 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F18469244DB8F6000CC5D1 /* SnapshotHelper.swift */; };
@@ -500,6 +504,9 @@
 		D2E26F6724F169E300612AF1 /* ContactCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCellNode.swift; sourceTree = "<group>"; };
 		D2E26F6924F25AB800612AF1 /* KeyAlgoObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAlgoObject.swift; sourceTree = "<group>"; };
 		D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAlgo.swift; sourceTree = "<group>"; };
+		D2E26F6F24F266F300612AF1 /* ContactDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailViewController.swift; sourceTree = "<group>"; };
+		D2E26F7124F26FFF00612AF1 /* ContactDetailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailNode.swift; sourceTree = "<group>"; };
+		D2E26F7324F2705B00612AF1 /* ContactDetailDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailDecorator.swift; sourceTree = "<group>"; };
 		D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInGoogleTest.swift; sourceTree = "<group>"; };
 		D2F18467244B0F35000CC5D1 /* AppTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTestHelper.swift; sourceTree = "<group>"; };
 		D2F18469244DB8F6000CC5D1 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SnapshotHelper.swift; path = fastlane/SnapshotHelper.swift; sourceTree = SOURCE_ROOT; };
@@ -669,7 +676,7 @@
 			isa = PBXGroup;
 			children = (
 				5A39F435239ECADA001F4607 /* Settings List */,
-				D2E26F6424F1698F00612AF1 /* Contacts List */,
+				D2E26F6424F1698F00612AF1 /* Contacts */,
 				5A39F43B239ECFA0001F4607 /* KeySettings */,
 				5A5C234723A042070015E705 /* KeyLegal */,
 			);
@@ -1237,6 +1244,7 @@
 				9FDF3637235A0B3100614596 /* InfoCellNode.swift */,
 				D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */,
 				D2E26F6724F169E300612AF1 /* ContactCellNode.swift */,
+				D2E26F7124F26FFF00612AF1 /* ContactDetailNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -1268,11 +1276,21 @@
 			path = "SignIn Models";
 			sourceTree = "<group>";
 		};
-		D2E26F6424F1698F00612AF1 /* Contacts List */ = {
+		D2E26F6424F1698F00612AF1 /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				D2E26F6E24F266E100612AF1 /* Contacts List */,
+			);
+			path = Contacts;
+			sourceTree = "<group>";
+		};
+		D2E26F6E24F266E100612AF1 /* Contacts List */ = {
 			isa = PBXGroup;
 			children = (
 				D2E26F6224F1698100612AF1 /* ContactsListViewController.swift */,
 				D2E26F6524F169B400612AF1 /* ContactsListDecorator.swift */,
+				D2E26F6F24F266F300612AF1 /* ContactDetailViewController.swift */,
+				D2E26F7324F2705B00612AF1 /* ContactDetailDecorator.swift */,
 			);
 			path = "Contacts List";
 			sourceTree = "<group>";
@@ -1892,6 +1910,7 @@
 				32DCAF683D87EA6221F71335 /* SequenceExtensions.swift in Sources */,
 				32DCA24159622E7442FF9459 /* AppErr.swift in Sources */,
 				9F589F11238C7DDC007FD759 /* User.swift in Sources */,
+				D2E26F6D24F263B600612AF1 /* KeyAlgo.swift in Sources */,
 				D2A9CA472426244600E1D898 /* GeneralConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1933,6 +1952,7 @@
 				D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
+				D2E26F7424F2705B00612AF1 /* ContactDetailDecorator.swift in Sources */,
 				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
 				D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */,
 				9F589F1F238C8A90007FD759 /* Token.swift in Sources */,
@@ -1994,6 +2014,7 @@
 				D2F6D1332433753100DB4065 /* IMAPSession.swift in Sources */,
 				9F0C3C122316DDA500299985 /* DataService.swift in Sources */,
 				9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */,
+				D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
 				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,
@@ -2030,6 +2051,7 @@
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
 				D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */,
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
+				D2E26F7224F26FFF00612AF1 /* ContactDetailNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
 				D2A9CA3B242619A400E1D898 /* SignInImageNode.swift in Sources */,
 				D211CE7223FC35AC00D1CE38 /* TextFieldNode.swift in Sources */,

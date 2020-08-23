@@ -27,6 +27,7 @@ final class ContactObject: Object {
     @objc dynamic var pubkeyExpiresOn: Date?
     @objc dynamic var pubKeyLastSig: Date?
     @objc dynamic var pubkeyLastChecked: Date?
+    @objc dynamic var pubkeyCreated: Date?
     @objc dynamic var lastUsed: Date?
 
     /// all pubkey fingerprints, comma-separated
@@ -43,6 +44,7 @@ final class ContactObject: Object {
         pubkeyLastChecked: Date?,
         pubkeyExpiresOn: Date?,
         lastUsed: Date?,
+        pubkeyCreated: Date?,
         longids: [String],
         fingerprints: [String],
         algo: KeyAlgo?
@@ -54,6 +56,7 @@ final class ContactObject: Object {
         self.pubkeyExpiresOn = pubkeyExpiresOn
         self.pubKeyLastSig = pubKeyLastSig
         self.pubkeyLastChecked = pubkeyLastChecked
+        self.pubkeyCreated = pubkeyCreated
         self.lastUsed = lastUsed
         self.fingerprints = fingerprints.joined(separator: ",")
 
@@ -83,6 +86,7 @@ extension ContactObject {
             pubkeyLastChecked: contact.pubkeyLastChecked,
             pubkeyExpiresOn: contact.pubkeyExpiresOn,
             lastUsed: contact.lastUsed,
+            pubkeyCreated: contact.pubkeyCreated,
             longids: contact.longids,
             fingerprints: contact.fingerprints,
             algo: contact.algo

@@ -109,6 +109,7 @@
 
 // Contacts
 "contacts_screen_title" = "Contacts";
+"contact_detail_screen_title" = "Public Key";
 
 // Key Settings
 "key_settings_title" = "Keys";

@@ -33,11 +33,6 @@ final class ContactsListViewController: ASViewController<TableNode> {
         fetchContacts()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         guard #available(iOS 13.0, *) else { return }
@@ -73,6 +68,10 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
             )
         }
     }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        proceedToKeyDetail(with: indexPath)
+    }
 }
 
 extension ContactsListViewController {
@@ -80,5 +79,12 @@ extension ContactsListViewController {
         contactsProvider.remove(contact: contacts[indexPath.row])
         contacts.remove(at: indexPath.row)
         node.deleteRows(at: [indexPath], with: .left)
+    }
+
+    private func proceedToKeyDetail(with indexPath: IndexPath) {
+        navigationController?.pushViewController(
+            ContactDetailViewController(contact: contacts[indexPath.row]),
+            animated: true
+        )
     }
 }

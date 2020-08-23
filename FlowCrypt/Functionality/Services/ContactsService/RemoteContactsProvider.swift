@@ -61,6 +61,7 @@ extension RemoteContactsProvider: ContactsProviderType {
                 longids: longids,
                 lastUsed: nil,
                 fingerprints: fingerprints,
+                pubkeyCreated: Date(timeIntervalSince1970: Double(keyDetail.created)),
                 algo: keyDetail.algo
             )
             return Promise(contact)
