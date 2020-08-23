@@ -61,7 +61,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .first(where: { $0.email == contact.email })
 
         guard let contact = contactToDelete else { return }
-        
+
         try? realm.write {
            realm.delete(contact)
         }

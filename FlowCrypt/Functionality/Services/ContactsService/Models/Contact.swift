@@ -31,6 +31,8 @@ struct Contact {
     let fingerprints: [String]
     /// first pubkey fingerprint
     var fingerprint: String? { fingerprints.first }
+
+    let algo: KeyAlgo?
 }
 
 extension Contact {
@@ -44,5 +46,6 @@ extension Contact {
         self.lastUsed = contactObject.lastUsed
         self.longids = contactObject.longids.map { $0.value }
         self.fingerprints = contactObject.fingerprints.split(separator: ",").map(String.init)
+        self.algo = contactObject.keyAlgo.flatMap(KeyAlgo.init)
     }
 }

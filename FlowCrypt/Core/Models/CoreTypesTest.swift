@@ -26,7 +26,8 @@ class CoreTypesTest: XCTestCase {
                 )
             ],
             created: 0,
-            users: []
+            users: [],
+            algo: nil
         )
         let secondKeyDetail = KeyDetails(
             public: "public2",
@@ -42,7 +43,8 @@ class CoreTypesTest: XCTestCase {
                 )
             ],
             created: 0,
-            users: []
+            users: [],
+            algo: nil
         )
 
         let given: [KeyDetails] = [

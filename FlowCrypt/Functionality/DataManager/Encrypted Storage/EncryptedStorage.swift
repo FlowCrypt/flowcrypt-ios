@@ -53,7 +53,6 @@ final class EncryptedStorage: EncryptedStorageType {
         )
     }
 
-    #warning("Remove")
     var storage: Realm {
         do {
             return try Realm(configuration: encryptedConfiguration)

@@ -60,7 +60,8 @@ extension RemoteContactsProvider: ContactsProviderType {
                 pubkeyExpiresOn: nil, // TODO: - will be provided later
                 longids: longids,
                 lastUsed: nil,
-                fingerprints: fingerprints
+                fingerprints: fingerprints,
+                algo: keyDetail.algo
             )
             return Promise(contact)
         } catch let error {
