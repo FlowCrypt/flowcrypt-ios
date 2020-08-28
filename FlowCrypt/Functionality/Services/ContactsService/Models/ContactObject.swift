@@ -93,3 +93,7 @@ extension ContactObject {
         )
     }
 }
+
+extension ContactObject: CachedObject {
+    var identifier: String { email }
+}
