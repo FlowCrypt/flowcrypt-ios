@@ -48,26 +48,14 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func save(contact: Contact) {
-        localCache.save(ContactObject(contact: contact))
-//        let realm = storage()
-//        try? realm.write {
-//            realm.add(
-//                ContactObject(contact: contact),
-//                update: .modified
-//            )
-//        }
+        localCache.save(ContactObject(contact))
     }
 
     func remove(contact: Contact) {
-        let realm = storage()
-        let contactToDelete = realm.objects(ContactObject.self)
-            .first(where: { $0.email == contact.email })
-
-        guard let contact = contactToDelete else { return }
-
-        try? realm.write {
-           realm.delete(contact)
-        }
+        localCache.remove(
+            object: ContactObject(contact),
+            with: contact.email
+        )
     }
 
     func searchContact(with email: String) -> Contact? {

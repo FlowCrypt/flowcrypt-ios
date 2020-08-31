@@ -40,6 +40,18 @@ struct CacheService<T: CachedObject>: CacheServiceType {
         getAll()?.first(where: { $0.identifier == identifier })
     }
 
+    func remove(object: T, with identifier: T.Identifier) {
+        let realm = storage()
+        guard let objectToDelete = realm
+            .objects(T.self)
+            .first(where: { $0.identifier == identifier })
+        else { return }
+
+        try? realm.write {
+           realm.delete(objectToDelete)
+        }
+    }
+
     func getAll() -> [T]? {
         Array(storage().objects(T.self))
     }

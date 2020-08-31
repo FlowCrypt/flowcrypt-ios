@@ -9,29 +9,12 @@
 import Foundation
 import Promises
 
-struct FoldersContext {
-    let folders: [MCOIMAPFolder]
+protocol RemoteFoldersProviderType {
+    func fetchFolders() -> Promise<[MCOIMAPFolder]>
 }
 
-protocol FoldersProvider {
-    func fetchFolders() -> Promise<FoldersContext>
-
-    func fetchMessagesIn(
-        folder: String,
-        uids: MCOIndexSet
-    ) -> Promise<[MCOIMAPMessage]>
-
-    func fetchMessage(
-        in folder: String,
-        kind: MCOIMAPMessagesRequestKind,
-        uids: MCOIndexSet
-    ) -> Promise<[MCOIMAPMessage]>
-
-    func trashFolderPath() -> Promise<String?>
-}
-
-extension Imap: FoldersProvider {
-    func fetchFolders() -> Promise<FoldersContext> {
+extension Imap: RemoteFoldersProviderType {
+    func fetchFolders() -> Promise<[MCOIMAPFolder]> {
         Promise { [weak self] resolve, reject in
             self?.imapSess?
                 .fetchAllFoldersOperation()
@@ -44,7 +27,7 @@ extension Imap: FoldersProvider {
                         reject(AppErr(error))
                     } else if let folders = value as? [MCOIMAPFolder] {
                         self.saveTrashFolderPath(with: folders)
-                        resolve(FoldersContext(folders: folders))
+                        resolve(folders)
                     } else {
                         reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
                     }
@@ -131,6 +114,59 @@ extension Imap: FoldersProvider {
                         reject(AppErr.cast("msgs as? [MCOIMAPMessage]"))
                     }
                 }
+        }
+    }
+}
+
+
+// MARK: -
+protocol FoldersProviderType {
+    func fetchFolders() -> Promise<[FolderViewModel]>
+}
+
+protocol LocalFoldersProviderType {
+    func fetchFolders() -> [FolderViewModel]
+}
+
+struct FolderProvider: FoldersProviderType {
+    let localFoldersProvider: LocalFoldersProviderType!
+    let remoteFoldersProvider: RemoteFoldersProviderType!
+
+//    init(
+//        localFoldersProvider: LocalFoldersProviderType,
+//        remoteFoldersProvider: RemoteFoldersProviderType
+//    ) {
+//        self.localFoldersProvider = localFoldersProvider
+//        self.remoteFoldersProvider = remoteFoldersProvider
+//    }
+
+    func fetchFolders() -> Promise<[FolderViewModel]> {
+        Promise<[FolderViewModel]> { resolve, reject in
+            let localFolders = self.localFoldersProvider.fetchFolders()
+            
+            if localFolders.isEmpty {
+                let folders = try await(self.getAndSaveFolders())
+                resolve(folders)
+            } else {
+                // TODO: - Anton 2) return existed
+                // TODO: - Anton 2) getAndSaveFolders
+                // TODO: - Anton 2) update controller if needed
+                resolve(localFolders)
+            }
+        }
+    }
+    
+    private func getAndSaveFolders() -> Promise<[FolderViewModel]> {
+        Promise<[FolderViewModel]> { resolve, reject in
+            let remoteFolders = try await(self.remoteFoldersProvider.fetchFolders())
+            
+            // TODO: - Anton 1) Save to local data base
+            // TODO: - Anton 1.1) map to FolderObject (realm)
+            // TODO: - Anton 1.2) save to local
+            // TODO: - Anton 1.3) map to FolderViewModel
+            // TODO: - Anton 1.4) return to controller
+            
+            resolve([])
         }
     }
 }
