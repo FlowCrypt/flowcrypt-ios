@@ -31,7 +31,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let tableNode: ASTableNode
 
     init(
-        foldersProvider: FoldersProviderType = FolderProvider(),
+        foldersProvider: FoldersProviderType = FolderProvider(storage: DataService.shared.storage),
         dataService: DataServiceType = DataService.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),

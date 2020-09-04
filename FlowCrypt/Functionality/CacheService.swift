@@ -57,29 +57,6 @@ struct CacheService<T: CachedObject>: CacheServiceType {
     }
 }
 
-// MARK: - Object
-
-final class FolderObject: Object {
-
-}
-
-extension FolderObject: CachedObject {
-    var identifier: String { "Identifier" }
-}
-
-// MARK: - Struct
-//struct Folder {
-//
-//}
-//
-//extension Folder: CachedObject {
-//    func mapToObject() -> FolderObject {
-//        FolderObject()
-//    }
-//
-//    var identifier: String { "Identifier" }
-//}
-
 // MARK: - Test
 final class ATestClass {
     let cache = CacheService<FolderObject>(storage: DataService.shared.storage)
