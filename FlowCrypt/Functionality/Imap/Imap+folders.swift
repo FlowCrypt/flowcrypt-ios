@@ -9,10 +9,6 @@
 import Foundation
 import Promises
 
-protocol RemoteFoldersProviderType {
-    func fetchFolders() -> Promise<[MCOIMAPFolder]>
-}
-
 extension Imap: RemoteFoldersProviderType {
     func fetchFolders() -> Promise<[MCOIMAPFolder]> {
         Promise { [weak self] resolve, reject in
@@ -114,76 +110,6 @@ extension Imap: RemoteFoldersProviderType {
                         reject(AppErr.cast("msgs as? [MCOIMAPMessage]"))
                     }
                 }
-        }
-    }
-}
-
-
-// MARK: -
-protocol FoldersProviderType {
-    func fetchFolders() -> Promise<[FolderViewModel]>
-}
-
-// MARK: -
-import RealmSwift
-
-protocol LocalFoldersProviderType {
-    func fetchFolders() -> [FolderViewModel]
-    func save(folders: [FolderObject])
-}
-
-struct LocalFoldersProvider: LocalFoldersProviderType {
-    let folderCache: CacheService<FolderObject>
-
-    init(storage: @escaping @autoclosure () -> Realm) {
-        self.folderCache = CacheService(storage: storage())
-    }
-
-    func fetchFolders() -> [FolderViewModel] {
-        folderCache.getAll()?.compactMap(FolderViewModel.init) ?? []
-    }
-
-    func save(folders: [FolderObject]) {
-        folders.forEach(folderCache.save)
-    }
-}
-
-
-struct FolderProvider: FoldersProviderType {
-    let localFoldersProvider: LocalFoldersProviderType
-    let remoteFoldersProvider: RemoteFoldersProviderType
-
-    init(
-        storage: @escaping @autoclosure () -> Realm,
-        remoteFoldersProvider: RemoteFoldersProviderType = Imap.shared
-    ) {
-        self.localFoldersProvider = LocalFoldersProvider(storage: storage())
-        self.remoteFoldersProvider = remoteFoldersProvider
-    }
-
-    func fetchFolders() -> Promise<[FolderViewModel]> {
-        let localFolders = self.localFoldersProvider.fetchFolders()
-
-        if localFolders.isEmpty {
-            return getAndSaveFolders()
-        } else {
-            getAndSaveFolders()
-            return Promise(localFolders)
-        }
-    }
-
-    @discardableResult
-    private func getAndSaveFolders() -> Promise<[FolderViewModel]> {
-        Promise<[FolderViewModel]> { resolve, reject in
-            // fetch all folders
-            let remoteFolders = try await(self.remoteFoldersProvider.fetchFolders())
-
-            // save to Realm
-            let folders = remoteFolders.compactMap(FolderObject.init)
-            self.localFoldersProvider.save(folders: folders)
-
-            // return folders
-            resolve(folders.map(FolderViewModel.init))
         }
     }
 }

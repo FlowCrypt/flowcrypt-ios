@@ -10,6 +10,7 @@ import Foundation
 import RealmSwift
 
 typealias CacheStorage = () -> Realm
+
 protocol CacheServiceType {
     var storage: CacheStorage { get }
 }
@@ -22,9 +23,9 @@ protocol CachedObject: Object {
 
 // MARK: - Cache
 struct CacheService<T: CachedObject>: CacheServiceType {
-    let storage: () -> Realm
+    let storage: CacheStorage
 
-    init(storage: @escaping @autoclosure () -> Realm) {
+    init(storage: @escaping @autoclosure CacheStorage) {
         self.storage = storage
     }
 
@@ -54,15 +55,5 @@ struct CacheService<T: CachedObject>: CacheServiceType {
 
     func getAll() -> [T]? {
         Array(storage().objects(T.self))
-    }
-}
-
-// MARK: - Test
-final class ATestClass {
-    let cache = CacheService<FolderObject>(storage: DataService.shared.storage)
-
-    func doSmth() {
-        let folder = cache.retreive(for: "INBOX")
-        let all = cache.getAll()
     }
 }

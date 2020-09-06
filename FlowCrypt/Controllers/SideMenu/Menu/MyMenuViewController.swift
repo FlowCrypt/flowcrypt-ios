@@ -18,7 +18,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         case header = 0, folders, service
     }
 
-    private let foldersProvider: FoldersProviderType
+    private let foldersProvider: FoldersServiceType
     private let dataService: DataServiceType
     private let userService: UserServiceType
     private let router: GlobalRouterType
@@ -31,7 +31,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let tableNode: ASTableNode
 
     init(
-        foldersProvider: FoldersProviderType = FolderProvider(storage: DataService.shared.storage),
+        foldersProvider: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
         dataService: DataServiceType = DataService.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),

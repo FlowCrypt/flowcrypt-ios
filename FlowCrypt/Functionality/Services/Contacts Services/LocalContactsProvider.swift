@@ -22,7 +22,7 @@ struct LocalContactsProvider: CacheServiceType {
     let storage: CacheStorage
     let localCache: CacheService<ContactObject>
 
-    init(storage: @escaping @autoclosure () -> Realm) {
+    init(storage: @escaping @autoclosure CacheStorage) {
         self.storage = storage
         self.localCache = CacheService(storage: storage())
     }

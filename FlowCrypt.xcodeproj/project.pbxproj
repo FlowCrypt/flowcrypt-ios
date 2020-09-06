@@ -133,6 +133,9 @@
 		D212D36524C1AC4800035991 /* KeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D36324C1AC4800035991 /* KeyId.swift */; };
 		D21574B724376852006B094F /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21574B624376852006B094F /* ConnectionType.swift */; };
 		D216D05E242D32EA0083EDD6 /* TestCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D216D05D242D32EA0083EDD6 /* TestCredentials.swift */; };
+		D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E2250538100070F805 /* LocalFoldersProvider.swift */; };
+		D227C0E6250538780070F805 /* RemoteFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */; };
+		D227C0E8250538A90070F805 /* FoldersService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E7250538A90070F805 /* FoldersService.swift */; };
 		D2324CAD2471DCF800FD1C6F /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = D2324CAC2471DCF800FD1C6F /* format.sh */; };
 		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
@@ -459,6 +462,9 @@
 		D212D36324C1AC4800035991 /* KeyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyId.swift; sourceTree = "<group>"; };
 		D21574B624376852006B094F /* ConnectionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
 		D216D05D242D32EA0083EDD6 /* TestCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCredentials.swift; sourceTree = "<group>"; };
+		D227C0E2250538100070F805 /* LocalFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFoldersProvider.swift; sourceTree = "<group>"; };
+		D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFoldersProvider.swift; sourceTree = "<group>"; };
+		D227C0E7250538A90070F805 /* FoldersService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersService.swift; sourceTree = "<group>"; };
 		D2324CAC2471DCF800FD1C6F /* format.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = format.sh; sourceTree = "<group>"; };
 		D2324CB22471E60300FD1C6F /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -591,7 +597,6 @@
 			isa = PBXGroup;
 			children = (
 				D2A9CA4024261A4D00E1D898 /* SignIn Models */,
-				D29A0005240C14EB00C1387D /* Folder Models */,
 				9FD22A20230FF9BC005067A6 /* Inbox Models */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				9F0C3C132316E69300299985 /* User.swift */,
@@ -763,7 +768,8 @@
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				D2891AC124C59EFA008918E3 /* KeyService.swift */,
 				D2891AC324C62446008918E3 /* ErrorHandler.swift */,
-				D27B911724EFE787002DF0A1 /* ContactsService */,
+				D227C0E4250538190070F805 /* Folders Services */,
+				D27B911724EFE787002DF0A1 /* Contacts Services */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1046,6 +1052,17 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		D227C0E4250538190070F805 /* Folders Services */ = {
+			isa = PBXGroup;
+			children = (
+				D227C0E7250538A90070F805 /* FoldersService.swift */,
+				D227C0E2250538100070F805 /* LocalFoldersProvider.swift */,
+				D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */,
+				D29A0005240C14EB00C1387D /* Models */,
+			);
+			path = "Folders Services";
+			sourceTree = "<group>";
+		};
 		D2324CAB2471DCF800FD1C6F /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1097,7 +1114,7 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		D27B911724EFE787002DF0A1 /* ContactsService */ = {
+		D27B911724EFE787002DF0A1 /* Contacts Services */ = {
 			isa = PBXGroup;
 			children = (
 				D2FC1C0524D82C9F003B949D /* ContactsService.swift */,
@@ -1105,7 +1122,7 @@
 				D27B911A24EFE7BE002DF0A1 /* RemoteContactsProvider.swift */,
 				D27B912024EFE842002DF0A1 /* Models */,
 			);
-			path = ContactsService;
+			path = "Contacts Services";
 			sourceTree = "<group>";
 		};
 		D27B912024EFE842002DF0A1 /* Models */ = {
@@ -1162,13 +1179,13 @@
 			path = "Public Key";
 			sourceTree = "<group>";
 		};
-		D29A0005240C14EB00C1387D /* Folder Models */ = {
+		D29A0005240C14EB00C1387D /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				9F0C3C2523194E0A00299985 /* FolderViewModel.swift */,
 				D274724324FD1932006BA6EF /* FolderObject.swift */,
 			);
-			path = "Folder Models";
+			path = Models;
 			sourceTree = "<group>";
 		};
 		D29AFFEE24092F4900C1387D /* DataManager */ = {
@@ -1943,6 +1960,7 @@
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */,
 				D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */,
+				D227C0E8250538A90070F805 /* FoldersService.swift in Sources */,
 				D2E26F6A24F25AB800612AF1 /* KeyAlgoObject.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
@@ -2015,6 +2033,7 @@
 				D2D27B79248A8694007346FA /* BigIntExtension.swift in Sources */,
 				D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */,
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
+				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
 				9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */,
@@ -2034,6 +2053,7 @@
 				D2F6D1352433753B00DB4065 /* SMTPSession.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */,
 				5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */,
+				D227C0E6250538780070F805 /* RemoteFoldersProvider.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
