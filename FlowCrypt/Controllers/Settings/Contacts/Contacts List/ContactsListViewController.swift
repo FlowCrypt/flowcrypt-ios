@@ -8,6 +8,7 @@
 
 import FlowCryptUI
 import AsyncDisplayKit
+import FlowCryptCommon
 
 final class ContactsListViewController: ASViewController<TableNode> {
     private let decorator: ContactsListDecoratorType
@@ -70,15 +71,41 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
 
 extension ContactsListViewController {
     private func handleDeleteButtonTap(with indexPath: IndexPath) {
-        contactsProvider.remove(contact: contacts[indexPath.row])
-        contacts.remove(at: indexPath.row)
-        node.deleteRows(at: [indexPath], with: .left)
+        delete(with: .right(indexPath))
     }
 
     private func proceedToKeyDetail(with indexPath: IndexPath) {
-        navigationController?.pushViewController(
-            ContactDetailViewController(contact: contacts[indexPath.row]),
-            animated: true
-        )
+        let contactDetailViewController = ContactDetailViewController(
+            contact: contacts[indexPath.row]
+        ) { [weak self] action in
+            guard case let .delete(contact) = action else {
+                assertionFailure("Action is not implemented")
+                return
+            }
+            self?.delete(with: .left(contact))
+        }
+
+        navigationController?.pushViewController(contactDetailViewController, animated: true)
+    }
+
+    private func delete(with context: Either<Contact, IndexPath>) {
+        let contactToRemove: Contact
+        let indexPathToRemove: IndexPath
+        switch context {
+        case .left(let contact):
+            contactToRemove = contact
+            guard let index = contacts.firstIndex(where: { $0 == contact }) else {
+                assertionFailure("Can't find index of the contact")
+                return
+            }
+            indexPathToRemove = IndexPath(row: index, section: 0)
+        case .right(let indexPath):
+            indexPathToRemove = indexPath
+            contactToRemove = contacts[indexPath.row]
+        }
+
+        contactsProvider.remove(contact: contactToRemove)
+        contacts.remove(at: indexPathToRemove.row)
+        node.deleteRows(at: [indexPathToRemove], with: .left)
     }
 }
