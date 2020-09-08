@@ -32,12 +32,6 @@ final class ContactsListViewController: ASViewController<TableNode> {
         setupUI()
         fetchContacts()
     }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
-    }
 }
 
 extension ContactsListViewController {
