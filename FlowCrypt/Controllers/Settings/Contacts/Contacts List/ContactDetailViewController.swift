@@ -46,8 +46,8 @@ final class ContactDetailViewController: ASViewController<TableNode> {
     private func setupNavigationBarItems() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                .init(image: UIImage(named: "trash"), action: (self, #selector(handleSaveAction))),
-                .init(image: UIImage(named: "trash"), action: (self, #selector(handleCopyAction))),
+                .init(image: UIImage(named: "share"), action: (self, #selector(handleSaveAction))),
+                .init(image: UIImage(named: "copy"), action: (self, #selector(handleCopyAction))),
                 .init(image: UIImage(named: "trash"), action: (self, #selector(handleRemoveAction)))
             ]
         )
@@ -56,11 +56,16 @@ final class ContactDetailViewController: ASViewController<TableNode> {
 
 extension ContactDetailViewController {
     @objc private final func handleSaveAction() {
-
+        let vc = UIActivityViewController(
+            activityItems: [contact.pubKey],
+            applicationActivities: nil
+        )
+        present(vc, animated: true, completion: nil)
     }
 
     @objc private final func handleCopyAction() {
-
+        UIPasteboard.general.string = contact.pubKey
+        showToast("contact_detail_copy".localized)
     }
 
     @objc private final func handleRemoveAction() {
