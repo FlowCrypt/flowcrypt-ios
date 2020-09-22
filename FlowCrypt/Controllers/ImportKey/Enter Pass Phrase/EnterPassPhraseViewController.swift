@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class EnterPassPhraseViewController: ASViewController<TableNode> {
+final class EnterPassPhraseViewController: ASDKViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, enterPhrase, chooseAnother
 

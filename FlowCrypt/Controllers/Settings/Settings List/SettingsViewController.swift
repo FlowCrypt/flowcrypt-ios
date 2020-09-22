@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class SettingsViewController: ASViewController<TableNode> {
+final class SettingsViewController: ASDKViewController<TableNode> {
     private enum Settings: Int, CaseIterable {
         case backups, privacy, contacts, keys, atteseter, notifications, legal, experimental
 

@@ -7,7 +7,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
-final class ComposeViewController: ASViewController<TableNode> {
+final class ComposeViewController: ASDKViewController<TableNode> {
     struct Recipient {
         let email: String
         var state: RecipientState

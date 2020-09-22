@@ -8,7 +8,7 @@ import FlowCryptUI
 import GoogleSignIn
 import UIKit
 
-final class SignInViewController: ASViewController<ASTableNode> {
+final class SignInViewController: ASDKViewController<ASTableNode> {
     enum Parts: Int, CaseIterable {
         case links, logo, description, gmail, outlook, other
     }

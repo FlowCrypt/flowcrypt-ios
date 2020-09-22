@@ -7,7 +7,7 @@ import FlowCryptUI
 import Promises
 import UIKit
 
-final class MyMenuViewController: ASViewController<ASDisplayNode> {
+final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
         static let allMail = "folder_all_mail".localized
         static let inbox = "folder_all_inbox".localized

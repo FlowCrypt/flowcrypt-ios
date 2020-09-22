@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
-final class EmailProviderViewController: ASViewController<TableNode> {
+final class EmailProviderViewController: ASDKViewController<TableNode> {
     private enum UserError: Error {
         case password
         case empty
