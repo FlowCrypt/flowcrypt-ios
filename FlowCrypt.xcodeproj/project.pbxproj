@@ -152,6 +152,8 @@
 		D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F716304234FC7200031645E /* LocalizationExtensions.swift */; };
 		D269E02724103A20000495C3 /* ComposeViewControllerInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */; };
 		D26F132724509EB6009175BA /* RecipientEmailsCellNodeInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26F132624509EB6009175BA /* RecipientEmailsCellNodeInput.swift */; };
+		D270EF8B2519F868001E2619 /* BackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D270EF8A2519F868001E2619 /* BackupViewController.swift */; };
+		D270EF922519F8AC001E2619 /* BackupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D270EF912519F8AC001E2619 /* BackupViewDecorator.swift */; };
 		D27177452424D44200BDA9A9 /* ComposeButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2F23438B4400A7371A /* ComposeButtonNode.swift */; };
 		D27177462424D59800BDA9A9 /* InboxCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3123438B5B00A7371A /* InboxCellNode.swift */; };
 		D27177472424D59800BDA9A9 /* TextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3523438B9D00A7371A /* TextCellNode.swift */; };
@@ -458,6 +460,8 @@
 		D269E025240EAD9A000495C3 /* Naming Convention.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Naming Convention.md"; sourceTree = "<group>"; };
 		D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewControllerInput.swift; sourceTree = "<group>"; };
 		D26F132624509EB6009175BA /* RecipientEmailsCellNodeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNodeInput.swift; sourceTree = "<group>"; };
+		D270EF8A2519F868001E2619 /* BackupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupViewController.swift; sourceTree = "<group>"; };
+		D270EF912519F8AC001E2619 /* BackupViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupViewDecorator.swift; sourceTree = "<group>"; };
 		D27177482424D73000BDA9A9 /* InboxViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewDecorator.swift; sourceTree = "<group>"; };
 		D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
 		D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMenuViewDecorator.swift; sourceTree = "<group>"; };
@@ -651,6 +655,7 @@
 				5A39F435239ECADA001F4607 /* Settings List */,
 				5A39F43B239ECFA0001F4607 /* KeySettings */,
 				5A5C234723A042070015E705 /* KeyLegal */,
+				D270EF982519F8C1001E2619 /* BackupSettings */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1060,6 +1065,15 @@
 				D2FD0F682453245E00259FF0 /* Either.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		D270EF982519F8C1001E2619 /* BackupSettings */ = {
+			isa = PBXGroup;
+			children = (
+				D270EF8A2519F868001E2619 /* BackupViewController.swift */,
+				D270EF912519F8AC001E2619 /* BackupViewDecorator.swift */,
+			);
+			path = BackupSettings;
 			sourceTree = "<group>";
 		};
 		D28655972424D0BC0066F52E /* Views */ = {
@@ -1852,6 +1866,7 @@
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */,
+				D270EF8B2519F868001E2619 /* BackupViewController.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */,
@@ -1934,6 +1949,7 @@
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
 				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,
+				D270EF922519F8AC001E2619 /* BackupViewDecorator.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
 				32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */,
 				32DCAD9F3A6B6101B78F0918 /* AttesterApi.swift in Sources */,
