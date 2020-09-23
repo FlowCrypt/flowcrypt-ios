@@ -7,6 +7,7 @@ import FlowCryptUI
 import Promises
 
 // swiftlint:disable line_length
+// TODO: - Anton refactor with BackupServiceType
 final class SetupViewController: ASViewController<ASTableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction

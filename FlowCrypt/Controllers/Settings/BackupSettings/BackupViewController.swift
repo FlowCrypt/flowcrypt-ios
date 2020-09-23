@@ -15,11 +15,14 @@ final class BackupViewController: ASViewController<TableNode> {
     }
 
     private let decorator: BackupViewDecoratorType
+    private let backupProvider: BackupServiceType
 
     init(
-        decorator: BackupViewDecoratorType = BackupViewDecorator()
+        decorator: BackupViewDecoratorType = BackupViewDecorator(),
+        backupProvider: BackupServiceType = BackupService.shared
     ) {
         self.decorator = decorator
+        self.backupProvider = backupProvider
         super.init(node: TableNode())
     }
 
@@ -31,6 +34,11 @@ final class BackupViewController: ASViewController<TableNode> {
         super.viewDidLoad()
         setupUI()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchBackups()
+    }
 }
 
 extension BackupViewController {
@@ -39,18 +47,33 @@ extension BackupViewController {
         node.dataSource = self
         title = decorator.sceneTitle
     }
+
+    private func fetchBackups() {
+        backupProvider.fetchBackups()
+            .then { keys in
+                print("^^ \(keys.count)")
+            }
+            .catch { error in
+                print("^^ error \(error)")
+            }
+    }
 }
 
 extension BackupViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        0
+        Parts.allCases.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-//            guard let self = self, let setting = Settings(rawValue: indexPath.row) else { return ASCellNode() }
+            guard let self = self else { return ASCellNode() }
 
-            return ASCellNode()
+            return ButtonCellNode(
+                title: self.decorator.buttonTitle(isAnyBackups: true),
+                insets: self.decorator.buttonInsets
+            ) {
+
+            }
         }
     }
 }

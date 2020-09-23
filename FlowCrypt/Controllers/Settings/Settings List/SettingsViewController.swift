@@ -98,6 +98,8 @@ extension SettingsViewController {
             viewController = KeySettingsViewController()
         case .legal:
             viewController = LegalViewController()
+        case .backups:
+            viewController = BackupViewController()
         default:
             viewController = nil
         }
