@@ -21,3 +21,9 @@ public extension Data {
         String(decoding: self, as: UTF8.self)
     }
 }
+
+extension String {
+    init(data: Data) {
+        self = String(decoding: data, as: UTF8.self)
+    }
+}

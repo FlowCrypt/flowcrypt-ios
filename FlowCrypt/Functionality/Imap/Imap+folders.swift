@@ -9,29 +9,8 @@
 import Foundation
 import Promises
 
-struct FoldersContext {
-    let folders: [MCOIMAPFolder]
-}
-
-protocol FoldersProvider {
-    func fetchFolders() -> Promise<FoldersContext>
-
-    func fetchMessagesIn(
-        folder: String,
-        uids: MCOIndexSet
-    ) -> Promise<[MCOIMAPMessage]>
-
-    func fetchMessage(
-        in folder: String,
-        kind: MCOIMAPMessagesRequestKind,
-        uids: MCOIndexSet
-    ) -> Promise<[MCOIMAPMessage]>
-
-    func trashFolderPath() -> Promise<String?>
-}
-
-extension Imap: FoldersProvider {
-    func fetchFolders() -> Promise<FoldersContext> {
+extension Imap: RemoteFoldersProviderType {
+    func fetchFolders() -> Promise<[MCOIMAPFolder]> {
         Promise { [weak self] resolve, reject in
             self?.imapSess?
                 .fetchAllFoldersOperation()
@@ -44,7 +23,7 @@ extension Imap: FoldersProvider {
                         reject(AppErr(error))
                     } else if let folders = value as? [MCOIMAPFolder] {
                         self.saveTrashFolderPath(with: folders)
-                        resolve(FoldersContext(folders: folders))
+                        resolve(folders)
                     } else {
                         reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
                     }

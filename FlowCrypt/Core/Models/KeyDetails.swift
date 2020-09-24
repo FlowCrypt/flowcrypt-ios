@@ -17,14 +17,7 @@ struct KeyDetails: Decodable {
     let ids: [KeyId]
     let created: Int
     let users: [String]
-
-    // TODO: -
-    //    let algo: { // same as OpenPGP.key.AlgorithmInfo
-    //        algorithm: string;
-    //        algorithmId: number;
-    //        bits?: number;
-    //        curve?: string;
-    //    };
+    let algo: KeyAlgo?
 }
 
 extension KeyDetails: Hashable {

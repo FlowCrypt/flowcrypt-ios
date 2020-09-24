@@ -18,7 +18,6 @@ extension Imap: BackupProvider {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
             var folderPaths = try await(self.fetchFolders())
-                .folders
                 .compactMap { $0.path }
 
             if folderPaths.isEmpty {
