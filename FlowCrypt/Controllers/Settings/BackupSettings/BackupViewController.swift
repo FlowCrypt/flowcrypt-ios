@@ -14,8 +14,22 @@ final class BackupViewController: ASViewController<TableNode> {
         case info, action
     }
 
+    enum State {
+        case idle
+        case backups([KeyDetails])
+        case noBackups
+
+        var isAnyBackups: Bool {
+            switch self {
+            case .backups: return true
+            case .idle, .noBackups: return false
+            }
+        }
+    }
+
     private let decorator: BackupViewDecoratorType
     private let backupProvider: BackupServiceType
+    private var state: State = .idle { didSet { updateState() } }
 
     init(
         decorator: BackupViewDecoratorType = BackupViewDecorator(),
@@ -37,6 +51,7 @@ final class BackupViewController: ASViewController<TableNode> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        state = .idle
         fetchBackups()
     }
 }
@@ -50,29 +65,49 @@ extension BackupViewController {
 
     private func fetchBackups() {
         backupProvider.fetchBackups()
-            .then { keys in
-                print("^^ \(keys.count)")
+            .then { [weak self] keys in
+                self?.state = .backups(keys)
             }
             .catch { error in
+                // TODO: - Anton handle error
                 print("^^ error \(error)")
             }
+    }
+
+    private func updateState() {
+        DispatchQueue.main.async {
+            self.node.reloadData()
+        }
     }
 }
 
 extension BackupViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        Parts.allCases.count
+        switch state {
+        case .backups, .noBackups:
+            return Parts.allCases.count
+        case .idle:
+            return [Parts.info].count
+        }
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
 
-            return ButtonCellNode(
-                title: self.decorator.buttonTitle(isAnyBackups: true),
-                insets: self.decorator.buttonInsets
-            ) {
+            switch part {
+            case .info:
+                return BackupCellNode(
+                    title: self.decorator.description(for: self.state),
+                    insets: UIEdgeInsets.zero
+                )
+            case .action:
+                return ButtonCellNode(
+                    title: self.decorator.buttonTitle(for: self.state),
+                    insets: self.decorator.buttonInsets
+                ) {
 
+                }
             }
         }
     }
