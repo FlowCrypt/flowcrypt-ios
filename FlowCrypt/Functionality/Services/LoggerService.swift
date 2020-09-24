@@ -39,8 +39,6 @@ private struct Logger {
             resStr = "Data[\(res != nil ? (data.count < 1204 ? "\(data.count)" : "\(data.count / 1024)k") : "-")]"
         } else if let res = res as? NSArray {
             resStr = "Array[\(res.count)]"
-        } else if let res = res as? FoldersContext {
-            resStr = "FetchFoldersRes[\(res.folders.count)]"
         } else if let res = res as? MCOIndexSet {
             resStr = "IndexSet[\(res.count())]"
         }

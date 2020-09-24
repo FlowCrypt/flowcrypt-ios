@@ -133,6 +133,9 @@
 		D212D36524C1AC4800035991 /* KeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D36324C1AC4800035991 /* KeyId.swift */; };
 		D21574B724376852006B094F /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21574B624376852006B094F /* ConnectionType.swift */; };
 		D216D05E242D32EA0083EDD6 /* TestCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D216D05D242D32EA0083EDD6 /* TestCredentials.swift */; };
+		D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E2250538100070F805 /* LocalFoldersProvider.swift */; };
+		D227C0E6250538780070F805 /* RemoteFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */; };
+		D227C0E8250538A90070F805 /* FoldersService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E7250538A90070F805 /* FoldersService.swift */; };
 		D2324CAD2471DCF800FD1C6F /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = D2324CAC2471DCF800FD1C6F /* format.sh */; };
 		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
@@ -165,6 +168,8 @@
 		D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */; };
 		D2717753242568A600BDA9A9 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
 		D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */; };
+		D274724124F97C5C006BA6EF /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724024F97C5C006BA6EF /* CacheService.swift */; };
+		D274724424FD1932006BA6EF /* FolderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724324FD1932006BA6EF /* FolderObject.swift */; };
 		D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */; };
 		D27B911B24EFE7BE002DF0A1 /* RemoteContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911A24EFE7BE002DF0A1 /* RemoteContactsProvider.swift */; };
 		D27B911D24EFE806002DF0A1 /* ContactObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911C24EFE806002DF0A1 /* ContactObject.swift */; };
@@ -457,6 +462,9 @@
 		D212D36324C1AC4800035991 /* KeyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyId.swift; sourceTree = "<group>"; };
 		D21574B624376852006B094F /* ConnectionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
 		D216D05D242D32EA0083EDD6 /* TestCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCredentials.swift; sourceTree = "<group>"; };
+		D227C0E2250538100070F805 /* LocalFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFoldersProvider.swift; sourceTree = "<group>"; };
+		D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFoldersProvider.swift; sourceTree = "<group>"; };
+		D227C0E7250538A90070F805 /* FoldersService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersService.swift; sourceTree = "<group>"; };
 		D2324CAC2471DCF800FD1C6F /* format.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = format.sh; sourceTree = "<group>"; };
 		D2324CB22471E60300FD1C6F /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -474,6 +482,8 @@
 		D26F132624509EB6009175BA /* RecipientEmailsCellNodeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNodeInput.swift; sourceTree = "<group>"; };
 		D27177482424D73000BDA9A9 /* InboxViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewDecorator.swift; sourceTree = "<group>"; };
 		D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
+		D274724024F97C5C006BA6EF /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
+		D274724324FD1932006BA6EF /* FolderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderObject.swift; sourceTree = "<group>"; };
 		D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProvider.swift; sourceTree = "<group>"; };
 		D27B911A24EFE7BE002DF0A1 /* RemoteContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteContactsProvider.swift; sourceTree = "<group>"; };
 		D27B911C24EFE806002DF0A1 /* ContactObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactObject.swift; sourceTree = "<group>"; };
@@ -587,7 +597,6 @@
 			isa = PBXGroup;
 			children = (
 				D2A9CA4024261A4D00E1D898 /* SignIn Models */,
-				D29A0005240C14EB00C1387D /* Folder Models */,
 				9FD22A20230FF9BC005067A6 /* Inbox Models */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				9F0C3C132316E69300299985 /* User.swift */,
@@ -759,7 +768,8 @@
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				D2891AC124C59EFA008918E3 /* KeyService.swift */,
 				D2891AC324C62446008918E3 /* ErrorHandler.swift */,
-				D27B911724EFE787002DF0A1 /* ContactsService */,
+				D227C0E4250538190070F805 /* Folders Services */,
+				D27B911724EFE787002DF0A1 /* Contacts Services */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -994,6 +1004,7 @@
 				9F31AB8F232993AC00CF87EA /* Imap */,
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				32DCA4B11D4531B3B04D01D1 /* AppErr.swift */,
+				D274724024F97C5C006BA6EF /* CacheService.swift */,
 			);
 			path = Functionality;
 			sourceTree = "<group>";
@@ -1039,6 +1050,17 @@
 				D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		D227C0E4250538190070F805 /* Folders Services */ = {
+			isa = PBXGroup;
+			children = (
+				D227C0E7250538A90070F805 /* FoldersService.swift */,
+				D227C0E2250538100070F805 /* LocalFoldersProvider.swift */,
+				D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */,
+				D29A0005240C14EB00C1387D /* Models */,
+			);
+			path = "Folders Services";
 			sourceTree = "<group>";
 		};
 		D2324CAB2471DCF800FD1C6F /* Scripts */ = {
@@ -1092,7 +1114,7 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		D27B911724EFE787002DF0A1 /* ContactsService */ = {
+		D27B911724EFE787002DF0A1 /* Contacts Services */ = {
 			isa = PBXGroup;
 			children = (
 				D2FC1C0524D82C9F003B949D /* ContactsService.swift */,
@@ -1100,7 +1122,7 @@
 				D27B911A24EFE7BE002DF0A1 /* RemoteContactsProvider.swift */,
 				D27B912024EFE842002DF0A1 /* Models */,
 			);
-			path = ContactsService;
+			path = "Contacts Services";
 			sourceTree = "<group>";
 		};
 		D27B912024EFE842002DF0A1 /* Models */ = {
@@ -1157,12 +1179,13 @@
 			path = "Public Key";
 			sourceTree = "<group>";
 		};
-		D29A0005240C14EB00C1387D /* Folder Models */ = {
+		D29A0005240C14EB00C1387D /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				9F0C3C2523194E0A00299985 /* FolderViewModel.swift */,
+				D274724324FD1932006BA6EF /* FolderObject.swift */,
 			);
-			path = "Folder Models";
+			path = Models;
 			sourceTree = "<group>";
 		};
 		D29AFFEE24092F4900C1387D /* DataManager */ = {
@@ -1937,6 +1960,7 @@
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */,
 				D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */,
+				D227C0E8250538A90070F805 /* FoldersService.swift in Sources */,
 				D2E26F6A24F25AB800612AF1 /* KeyAlgoObject.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
@@ -1951,6 +1975,7 @@
 				9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */,
 				D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
+				D274724424FD1932006BA6EF /* FolderObject.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
 				D2E26F7424F2705B00612AF1 /* ContactDetailDecorator.swift in Sources */,
 				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
@@ -1983,6 +2008,7 @@
 				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
 				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
+				D274724124F97C5C006BA6EF /* CacheService.swift in Sources */,
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				D2891AC224C59EFA008918E3 /* KeyService.swift in Sources */,
@@ -2007,6 +2033,7 @@
 				D2D27B79248A8694007346FA /* BigIntExtension.swift in Sources */,
 				D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */,
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
+				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
 				9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */,
@@ -2026,6 +2053,7 @@
 				D2F6D1352433753B00DB4065 /* SMTPSession.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */,
 				5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */,
+				D227C0E6250538780070F805 /* RemoteFoldersProvider.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,

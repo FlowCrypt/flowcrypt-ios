@@ -18,11 +18,13 @@ protocol LocalContactsProviderType: PublicKeyProvider {
     func getAllContacts() -> [Contact]
 }
 
-struct LocalContactsProvider {
-    let storage: () -> Realm
+struct LocalContactsProvider: CacheServiceType {
+    let storage: CacheStorage
+    let localCache: CacheService<ContactObject>
 
-    init(storage: @escaping @autoclosure () -> Realm) {
+    init(storage: @escaping @autoclosure CacheStorage) {
         self.storage = storage
+        self.localCache = CacheService(storage: storage())
     }
 }
 
@@ -46,25 +48,14 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func save(contact: Contact) {
-        let realm = storage()
-        try? realm.write {
-            realm.add(
-                ContactObject(contact: contact),
-                update: .modified
-            )
-        }
+        localCache.save(ContactObject(contact))
     }
 
     func remove(contact: Contact) {
-        let realm = storage()
-        let contactToDelete = realm.objects(ContactObject.self)
-            .first(where: { $0.email == contact.email })
-
-        guard let contact = contactToDelete else { return }
-
-        try? realm.write {
-           realm.delete(contact)
-        }
+        localCache.remove(
+            object: ContactObject(contact),
+            with: contact.email
+        )
     }
 
     func searchContact(with email: String) -> Contact? {

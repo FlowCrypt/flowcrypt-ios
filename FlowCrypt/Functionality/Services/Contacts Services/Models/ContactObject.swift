@@ -77,7 +77,7 @@ final class ContactObject: Object {
 }
 
 extension ContactObject {
-    convenience init(contact: Contact) {
+    convenience init(_ contact: Contact) {
         self.init(
             email: contact.email,
             name: contact.name,
@@ -92,4 +92,8 @@ extension ContactObject {
             algo: contact.algo
         )
     }
+}
+
+extension ContactObject: CachedObject {
+    var identifier: String { email }
 }
