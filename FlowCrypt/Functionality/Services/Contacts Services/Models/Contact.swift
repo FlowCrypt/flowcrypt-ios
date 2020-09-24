@@ -53,3 +53,9 @@ extension Contact {
         self.pubkeyCreated = contactObject.pubkeyCreated
     }
 }
+
+extension Contact: Equatable {
+    static func == (lhs: Contact, rhs: Contact) -> Bool {
+        lhs.email == rhs.email
+    }
+}
