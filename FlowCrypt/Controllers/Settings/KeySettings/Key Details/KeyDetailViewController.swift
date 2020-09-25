@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class KeyDetailViewController: ASViewController<TableNode> {
+final class KeyDetailViewController: ASDKViewController<TableNode> {
     enum Parts: Int, CaseIterable {
         case description, publicInfo, keyDetails, copy, save, privateInfo
     }
@@ -39,12 +39,6 @@ final class KeyDetailViewController: ASViewController<TableNode> {
 
         node.delegate = self
         node.dataSource = self
-        node.reloadData()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
         node.reloadData()
     }
 }

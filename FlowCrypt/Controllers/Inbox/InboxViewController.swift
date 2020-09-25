@@ -7,7 +7,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
-final class InboxViewController: ASViewController<ASDisplayNode> {
+final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
         static let numberOfMessagesToLoad = 20
     }

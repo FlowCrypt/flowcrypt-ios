@@ -7,7 +7,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
-final class ComposeViewController: ASViewController<TableNode> {
+final class ComposeViewController: ASDKViewController<TableNode> {
     struct Recipient {
         let email: String
         var state: RecipientState
@@ -47,13 +47,13 @@ final class ComposeViewController: ASViewController<TableNode> {
     private let imap: Imap
     private let notificationCenter: NotificationCenter
     private let dataService: DataServiceType & KeyDataServiceType
-    private let attesterApi: AttesterApiType
     private let decorator: ComposeViewDecoratorType
     private let core: Core
     private let googleService: GoogleServiceType
     private let searchThrottler = Throttler(seconds: 1)
     private let userDefaults: UserDefaults
     private let globalRouter: GlobalRouterType
+    private let contactsService: ContactsServiceType
 
     private var input: Input
     private var contextToSend = Context()
@@ -64,24 +64,24 @@ final class ComposeViewController: ASViewController<TableNode> {
         imap: Imap = Imap.shared,
         notificationCenter: NotificationCenter = .default,
         dataService: DataServiceType & KeyDataServiceType = DataService.shared,
-        attesterApi: AttesterApiType = AttesterApi(),
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
         googleService: GoogleServiceType = GoogleService(),
         userDefaults: UserDefaults = .standard,
-        globalRouter: GlobalRouterType = GlobalRouter()
+        globalRouter: GlobalRouterType = GlobalRouter(),
+        contactsService: ContactsServiceType = ContactsService()
     ) {
         self.imap = imap
         self.notificationCenter = notificationCenter
         self.dataService = dataService
-        self.attesterApi = attesterApi
         self.input = input
         self.decorator = decorator
         self.core = core
         self.googleService = googleService
         self.userDefaults = userDefaults
         self.globalRouter = globalRouter
+        self.contactsService = contactsService
         contextToSend.subject = input.subject
         if input.isReply {
             if let email = input.recipientReplyTitle {
@@ -113,12 +113,6 @@ final class ComposeViewController: ASViewController<TableNode> {
 
         // temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
         // showScopeAlertIfNeeded()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
     }
 
     deinit {
@@ -233,14 +227,14 @@ extension ComposeViewController {
     }
 
     @objc private func handleSendTap() {
-        sendMsgTapHandler()
+        sendMessage()
     }
 }
 
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    private func sendMsgTapHandler() {
+    private func sendMessage() {
         view.endEditing(true)
         guard isInputValid() else { return }
 
@@ -277,23 +271,12 @@ extension ComposeViewController {
                 ?? self.contextToSend.subject
                 ?? "(no subject)"
 
-            let lookup = recipients.map {
-                self.attesterApi.lookupEmail(email: $0.email)
-            }
-
-            let lookupRes = try await(all(lookup))
-            let allRecipientPubs = lookupRes.compactMap { $0.armored }
-
-            guard allRecipientPubs.count == recipients.count else {
-                let message = recipients.count == 1
-                    ? "compose_no_pub_recipient".localized
-                    : "compose_no_pub_multiple".localized
-                self.showAlert(message: message)
+            guard let myPubKey = self.dataService.publicKey else {
+                self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }
 
-            guard let myPubKey = self.dataService.publicKey else {
-                self.showAlert(message: "compose_no_pub_sender".localized)
+            guard let allRecipientPubs = self.getPubKeys(for: recipients) else {
                 return false
             }
 
@@ -308,6 +291,28 @@ extension ComposeViewController {
 
             return true
         }
+    }
+
+    private func getPubKeys(for recepients: [Recipient]) -> [String]? {
+        let pubKeys = recipients.map {
+            ($0.email, contactsService.retrievePubKey(for: $0.email))
+        }
+
+        let emailsWithoutPubKeys = pubKeys.filter { $0.1 == nil }.map { $0.0 }
+
+        guard emailsWithoutPubKeys.isEmpty else {
+            showNoPubKeyAlert(for: emailsWithoutPubKeys)
+            return nil
+        }
+
+        return pubKeys.compactMap { $0.1 }
+    }
+
+    private func showNoPubKeyAlert(for emails: [String]) {
+        let message = emails.count == 1
+            ? "compose_no_pub_recipient".localized
+            : "compose_no_pub_multiple".localized + "\n" + emails.joined(separator: ",")
+        showAlert(message: message)
     }
 
     private func handleSuccessfullySentMessage() {
@@ -663,18 +668,36 @@ extension ComposeViewController {
             return
         }
 
-        attesterApi.lookupEmail(email: recipient.email)
-            .then(on: .main) { [weak self] result in
-                guard let self = self else { return }
-                let newState: RecipientState = result.armored != nil
-                    ? self.decorator.recipientKeyFoundState
-                    : self.decorator.recipientKeyNotFoundState
-                self.updateRecipientWithNew(state: newState, for: .left(recipient))
+        contactsService.searchContact(with: recipient.email)
+            .then(on: .main) { [weak self] _ in
+                self?.handleEvaluation(for: recipient)
             }
-            .catch(on: .main) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateRecipientWithNew(state: self.decorator.recipientErrorStateRetry, for: .left(recipient))
+            .catch(on: .main) { [weak self] error in
+                self?.handleEvaluation(error: error, with: recipient)
             }
+    }
+
+    private func handleEvaluation(for recipient: Recipient) {
+        updateRecipientWithNew(
+            state: decorator.recipientKeyFoundState,
+            for: .left(recipient)
+        )
+    }
+
+    private func handleEvaluation(error: Error, with recipient: Recipient) {
+        let recipientState: RecipientState = {
+            switch error {
+            case ContactsError.keyMissing:
+                return self.decorator.recipientKeyNotFoundState
+            default:
+                return self.decorator.recipientErrorStateRetry
+            }
+        }()
+
+        updateRecipientWithNew(
+            state: recipientState,
+            for: .left(recipient)
+        )
     }
 
     private func updateRecipientWithNew(state: RecipientState, for context: Either<Recipient, IndexPath>) {

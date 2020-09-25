@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class KeySettingsViewController: ASViewController<TableNode> {
+final class KeySettingsViewController: ASDKViewController<TableNode> {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecoratorType
     private let keyService: KeyServiceType
@@ -45,12 +45,6 @@ final class KeySettingsViewController: ASViewController<TableNode> {
             target: self,
             action: #selector(handleAddButtonTap)
         )
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
     }
 }
 

@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import MobileCoreServices
 
-final class ImportKeyViewController: ASViewController<TableNode> {
+final class ImportKeyViewController: ASDKViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, fileImport, pasteBoardImport
 
@@ -59,12 +59,6 @@ final class ImportKeyViewController: ASViewController<TableNode> {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         userInfoMessage = ""
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
     }
 
     private func setupUI() {

@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class SettingsViewController: ASViewController<TableNode> {
+final class SettingsViewController: ASDKViewController<TableNode> {
     private enum Settings: Int, CaseIterable {
         case backups, privacy, contacts, keys, atteseter, notifications, legal, experimental
 
@@ -48,12 +48,6 @@ final class SettingsViewController: ASViewController<TableNode> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
     }
 
     private func setupUI() {
@@ -100,6 +94,8 @@ extension SettingsViewController {
             viewController = LegalViewController()
         case .backups:
             viewController = BackupViewController()
+        case .contacts:
+            viewController = ContactsListViewController()
         default:
             viewController = nil
         }

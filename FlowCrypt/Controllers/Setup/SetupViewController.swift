@@ -8,7 +8,7 @@ import Promises
 
 // swiftlint:disable line_length
 // TODO: - Anton refactor with BackupServiceType
-final class SetupViewController: ASViewController<ASTableNode> {
+final class SetupViewController: ASDKViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction
     }
@@ -93,12 +93,6 @@ final class SetupViewController: ASViewController<ASTableNode> {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         state = .searchingBackups
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
     }
 
     deinit {

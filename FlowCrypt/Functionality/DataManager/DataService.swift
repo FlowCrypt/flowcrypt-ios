@@ -8,8 +8,11 @@
 
 import Foundation
 import Promises
+import RealmSwift
 
 protocol DataServiceType {
+    var storage: Realm { get }
+
     // data
     var email: String? { get }
     var currentUser: User? { get }
@@ -39,8 +42,11 @@ enum SessionType {
 
 // MARK: - DataService
 final class DataService: DataServiceType {
-
     static let shared = DataService()
+
+    var storage: Realm {
+        encryptedStorage.storage
+    }
 
     var isSetupFinished: Bool {
         isLoggedIn && (self.encryptedStorage.keys()?.count ?? 0) > 0

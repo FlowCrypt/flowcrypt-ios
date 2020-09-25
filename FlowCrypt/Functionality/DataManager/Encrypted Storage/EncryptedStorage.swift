@@ -16,6 +16,8 @@ protocol DBMigration {
 }
 
 protocol EncryptedStorageType: DBMigration {
+    var storage: Realm { get }
+
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func currentToken() -> String?
@@ -51,7 +53,7 @@ final class EncryptedStorage: EncryptedStorageType {
         )
     }
 
-    private var storage: Realm {
+    var storage: Realm {
         do {
             return try Realm(configuration: encryptedConfiguration)
         } catch {

@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-final class ViewController: ASViewController<TableNode> {
+final class ViewController: ASDKViewController<TableNode> {
     enum Elements: Int, CaseIterable {
         case header
         case divider
@@ -51,13 +51,6 @@ final class ViewController: ASViewController<TableNode> {
         )
         composeButton.cornerRadius = size.width / 2
     }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
-    }
-
     // MARK: - Recipient Text Field
 
     enum Constants {

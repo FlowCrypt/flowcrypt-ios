@@ -7,7 +7,7 @@ import FlowCryptUI
 import Promises
 import UIKit
 
-final class MyMenuViewController: ASViewController<ASDisplayNode> {
+final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
         static let allMail = "folder_all_mail".localized
         static let inbox = "folder_all_inbox".localized
@@ -18,7 +18,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
         case header = 0, folders, service
     }
 
-    private let foldersProvider: FoldersProvider
+    private let foldersProvider: FoldersServiceType
     private let dataService: DataServiceType
     private let userService: UserServiceType
     private let router: GlobalRouterType
@@ -31,7 +31,7 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
     private let tableNode: ASTableNode
 
     init(
-        foldersProvider: FoldersProvider = Imap.shared,
+        foldersProvider: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
         dataService: DataServiceType = DataService.shared,
         userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
@@ -104,20 +104,18 @@ final class MyMenuViewController: ASViewController<ASDisplayNode> {
             }
     }
 
-    private func handleNewFolders(with result: FoldersContext) {
+    private func handleNewFolders(with folders: [FolderViewModel]) {
         hideSpinner()
-        folders = result.folders
-            .compactMap {
-                FolderViewModel($0)
-            }
-            .sorted(by: { left, _ in
+        self.folders = folders.sorted(
+            by: { left, _ in
                 if left.path.caseInsensitiveCompare(Constants.inbox) == .orderedSame {
                     return true
                 } else if left.path.caseInsensitiveCompare(Constants.allMail) == .orderedSame {
                     return true
                 }
                 return false
-            })
+            }
+        )
         tableNode.reloadData()
     }
 

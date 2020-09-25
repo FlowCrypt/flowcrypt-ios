@@ -7,7 +7,7 @@ import Promises
 
 struct PubkeySearchResult {
     let email: String
-    let armored: String?
+    let armored: Data?
 }
 
 protocol AttesterApiType {
@@ -37,7 +37,7 @@ extension AttesterApi {
             let res = try await(URLSession.shared.call(url, tolerateStatus: [404]))
 
             if res.status >= 200, res.status <= 299 {
-                return PubkeySearchResult(email: email, armored: res.data.toStr())
+                return PubkeySearchResult(email: email, armored: res.data)
             }
             if res.status == 404 {
                 return PubkeySearchResult(email: email, armored: nil)

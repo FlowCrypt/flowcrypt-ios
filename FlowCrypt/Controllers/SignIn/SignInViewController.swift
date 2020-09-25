@@ -8,7 +8,7 @@ import FlowCryptUI
 import GoogleSignIn
 import UIKit
 
-final class SignInViewController: ASViewController<ASTableNode> {
+final class SignInViewController: ASDKViewController<TableNode> {
     enum Parts: Int, CaseIterable {
         case links, logo, description, gmail, outlook, other
     }
@@ -55,12 +55,6 @@ final class SignInViewController: ASViewController<ASTableNode> {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
     }
 }
 

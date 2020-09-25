@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-final class SearchViewController: ASViewController<TableNode> {
+final class SearchViewController: ASDKViewController<TableNode> {
     enum State {
         enum FetchedUpdates {
             case added(Int), removed(Int)
@@ -59,12 +59,6 @@ final class SearchViewController: ASViewController<TableNode> {
         if case .idle = state {
             searchController.isActive = true
         }
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
     }
 }
 

@@ -29,7 +29,7 @@ struct SegmentStyle {
 }
 
 // TODO: - Move to page tab based layout
-final class SegmentedViewController: ASViewController<ASDisplayNode> {
+final class SegmentedViewController: ASDKViewController<ASDisplayNode> {
     private var dataSource: [Segment] = []
     private var collectionNode = ASCollectionNode(
         collectionViewLayout: UICollectionViewFlowLayout()

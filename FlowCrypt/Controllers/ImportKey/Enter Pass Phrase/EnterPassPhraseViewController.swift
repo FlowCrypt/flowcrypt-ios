@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class EnterPassPhraseViewController: ASViewController<TableNode> {
+final class EnterPassPhraseViewController: ASDKViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, enterPhrase, chooseAnother
 
@@ -61,12 +61,6 @@ final class EnterPassPhraseViewController: ASViewController<TableNode> {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
         navigationController?.navigationBar.barStyle = .black
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
     }
 
     private func setupUI() {
