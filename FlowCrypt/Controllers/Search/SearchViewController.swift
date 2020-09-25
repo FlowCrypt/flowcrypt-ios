@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-final class SearchViewController: ASViewController<TableNode> {
+final class SearchViewController: ASDKViewController<TableNode> {
     enum State {
         enum FetchedUpdates {
             case added(Int), removed(Int)

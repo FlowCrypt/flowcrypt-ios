@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class KeySettingsViewController: ASViewController<TableNode> {
+final class KeySettingsViewController: ASDKViewController<TableNode> {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecoratorType
     private let keyService: KeyServiceType

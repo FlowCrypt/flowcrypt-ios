@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class KeyDetailViewController: ASViewController<TableNode> {
+final class KeyDetailViewController: ASDKViewController<TableNode> {
     enum Parts: Int, CaseIterable {
         case description, publicInfo, keyDetails, copy, save, privateInfo
     }

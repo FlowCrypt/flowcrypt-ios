@@ -21,20 +21,20 @@ PODS:
   - IDZSwiftCommonCrypto (0.13.0)
   - mailcore2-ios (0.6.4)
   - MBProgressHUD (1.1.0)
-  - PINCache (3.0.1-beta.6):
-    - PINCache/Arc-exception-safe (= 3.0.1-beta.6)
-    - PINCache/Core (= 3.0.1-beta.6)
-  - PINCache/Arc-exception-safe (3.0.1-beta.6):
+  - PINCache (3.0.1):
+    - PINCache/Arc-exception-safe (= 3.0.1)
+    - PINCache/Core (= 3.0.1)
+  - PINCache/Arc-exception-safe (3.0.1):
     - PINCache/Core
-  - PINCache/Core (3.0.1-beta.6):
-    - PINOperation (~> 1.1.0)
-  - PINOperation (1.1.2)
-  - PINRemoteImage/Core (3.0.0-beta.13):
+  - PINCache/Core (3.0.1):
+    - PINOperation (~> 1.2.0)
+  - PINOperation (1.2)
+  - PINRemoteImage/Core (3.0.1):
     - PINOperation
-  - PINRemoteImage/iOS (3.0.0-beta.13):
+  - PINRemoteImage/iOS (3.0.1):
     - PINRemoteImage/Core
-  - PINRemoteImage/PINCache (3.0.0-beta.13):
-    - PINCache (= 3.0.1-beta.6)
+  - PINRemoteImage/PINCache (3.0.1):
+    - PINCache (~> 3.0.1)
     - PINRemoteImage/Core
   - PromisesObjC (1.2.8)
   - PromisesSwift (1.2.8):
@@ -49,25 +49,25 @@ PODS:
   - SwiftyRSA (1.5.0):
     - SwiftyRSA/ObjC (= 1.5.0)
   - SwiftyRSA/ObjC (1.5.0)
-  - Texture (2.8.1):
-    - Texture/AssetsLibrary (= 2.8.1)
-    - Texture/Core (= 2.8.1)
-    - Texture/MapKit (= 2.8.1)
-    - Texture/Photos (= 2.8.1)
-    - Texture/PINRemoteImage (= 2.8.1)
-    - Texture/Video (= 2.8.1)
-  - Texture/AssetsLibrary (2.8.1):
+  - Texture (3.0.0):
+    - Texture/AssetsLibrary (= 3.0.0)
+    - Texture/Core (= 3.0.0)
+    - Texture/MapKit (= 3.0.0)
+    - Texture/Photos (= 3.0.0)
+    - Texture/PINRemoteImage (= 3.0.0)
+    - Texture/Video (= 3.0.0)
+  - Texture/AssetsLibrary (3.0.0):
     - Texture/Core
-  - Texture/Core (2.8.1)
-  - Texture/MapKit (2.8.1):
+  - Texture/Core (3.0.0)
+  - Texture/MapKit (3.0.0):
     - Texture/Core
-  - Texture/Photos (2.8.1):
+  - Texture/Photos (3.0.0):
     - Texture/Core
-  - Texture/PINRemoteImage (2.8.1):
-    - PINRemoteImage/iOS (= 3.0.0-beta.13)
+  - Texture/PINRemoteImage (3.0.0):
+    - PINRemoteImage/iOS (~> 3.0.0)
     - PINRemoteImage/PINCache
     - Texture/Core
-  - Texture/Video (2.8.1):
+  - Texture/Video (3.0.0):
     - Texture/Core
   - Toast (4.0.0)
 
@@ -120,9 +120,9 @@ SPEC CHECKSUMS:
   IDZSwiftCommonCrypto: 00dd37cdfbd149312a7e5a582cf9909f8b129f44
   mailcore2-ios: 3ff0be2fa553d4da9c11d39c11d51863c768f24f
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
-  PINCache: d195fdba255283f7e9900a55e3cced377f431f9b
-  PINOperation: 24b774353ca248fcf87d67b2d61eef42087c125a
-  PINRemoteImage: d6d51c5d2adda55f1ce30c96e850b6c4ebd2856a
+  PINCache: ee3c4abadd09970a61cdda0cfc345e69a3d75b26
+  PINOperation: 3a967a927e7867e61976c6cc23e5770416449fbc
+  PINRemoteImage: 3b7cedb118c2d357f87e9eabc7c81ba0202cb236
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   PromisesSwift: 37bad6f4daddb02f7c9c531efe91e8b21c13ee2f
   Realm: 8b2ca5bc6479a91f379b6b42b5922e396cd5ba5a
@@ -130,9 +130,9 @@ SPEC CHECKSUMS:
   SwiftFormat: b72e592ea0979aeee53f6052abff291181364933
   SwiftLint: fc9859e4e1752340664851f667bb1898b9c90114
   SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
-  Texture: 8ecf6984065a1e54f06bf97b349ecca28582acd7
+  Texture: 2f109e937850d94d1d07232041c9c7313ccddb81
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
 PODFILE CHECKSUM: 52783076c36d91f48fff6d055e61ee99d35333b0
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3
