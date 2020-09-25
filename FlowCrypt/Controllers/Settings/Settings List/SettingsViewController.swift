@@ -50,12 +50,6 @@ final class SettingsViewController: ASDKViewController<TableNode> {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
-    }
-
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -98,6 +92,8 @@ extension SettingsViewController {
             viewController = KeySettingsViewController()
         case .legal:
             viewController = LegalViewController()
+        case .contacts:
+            viewController = ContactsListViewController()
         default:
             viewController = nil
         }

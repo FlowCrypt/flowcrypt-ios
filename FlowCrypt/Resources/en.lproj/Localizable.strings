@@ -107,6 +107,11 @@
 "settings_legal_license" = "License";
 "settings_legal_sources" = "Sources";
 
+// Contacts
+"contacts_screen_title" = "Contacts";
+"contact_detail_screen_title" = "Public Key";
+"contact_detail_copy" = "Public Key copied to clipboard";
+
 // Key Settings
 "key_settings_title" = "Keys";
 "key_settings_subtitle" = "Public Keys are safe to share";

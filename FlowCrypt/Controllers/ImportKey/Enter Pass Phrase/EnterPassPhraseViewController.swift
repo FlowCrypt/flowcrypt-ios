@@ -63,12 +63,6 @@ final class EnterPassPhraseViewController: ASDKViewController<TableNode> {
         navigationController?.navigationBar.barStyle = .black
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
-    }
-
     private func setupUI() {
         node.delegate = self
         node.dataSource = self

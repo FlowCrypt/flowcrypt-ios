@@ -43,12 +43,6 @@ final class KeyDetailInfoViewController: ASDKViewController<TableNode> {
         node.dataSource = self
         node.reloadData()
     }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        node.reloadData()
-    }
 }
 
 extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
