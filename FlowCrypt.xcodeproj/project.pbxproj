@@ -696,8 +696,7 @@
 				D2E26F6424F1698F00612AF1 /* Contacts */,
 				5A39F43B239ECFA0001F4607 /* KeySettings */,
 				5A5C234723A042070015E705 /* KeyLegal */,
-				D20D3C662520AB1000D4AA9A /* BackupViewController.swift */,
-				D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */,
+				D20D3C822520AD0400D4AA9A /* Backup */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1049,6 +1048,15 @@
 				D28655972424D0BC0066F52E /* Views */,
 			);
 			path = FlowCryptUI;
+			sourceTree = "<group>";
+		};
+		D20D3C822520AD0400D4AA9A /* Backup */ = {
+			isa = PBXGroup;
+			children = (
+				D20D3C662520AB1000D4AA9A /* BackupViewController.swift */,
+				D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */,
+			);
+			path = Backup;
 			sourceTree = "<group>";
 		};
 		D212D36224C1AC1900035991 /* Models */ = {

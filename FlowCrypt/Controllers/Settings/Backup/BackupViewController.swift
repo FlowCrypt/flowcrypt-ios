@@ -65,7 +65,7 @@ extension BackupViewController {
 
     private func fetchBackups() {
         backupProvider.fetchBackups()
-            .then { [weak self] keys in
+            .then { [weak self] _ in
                 self?.state = .backups(keys)
             }
             .catch { error in
@@ -91,7 +91,13 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        let nodeHeight = tableNode.frame.size.height
+            - (navigationController?.navigationBar.frame.size.height ?? 0.0)
+            - safeAreaWindowInsets.top
+            - safeAreaWindowInsets.bottom
+        let height = nodeHeight / 2 - 200
+
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
 
@@ -99,7 +105,7 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
             case .info:
                 return BackupCellNode(
                     title: self.decorator.description(for: self.state),
-                    insets: UIEdgeInsets.zero
+                    insets: UIEdgeInsets(top: height, left: 8, bottom: 16, right: 8)
                 )
             case .action:
                 return ButtonCellNode(

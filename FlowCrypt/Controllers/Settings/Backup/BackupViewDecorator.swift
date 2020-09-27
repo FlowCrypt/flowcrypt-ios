@@ -31,22 +31,26 @@ struct BackupViewDecorator: BackupViewDecoratorType {
 
     func description(for state: BackupViewController.State) -> NSAttributedString {
         let title: String
+        let subtitle: String
+
         switch state {
         case .idle:
             title = "Fetching backups..."
+            subtitle = ""
         case let .backups(keys):
             title = "backup_screen_found".localized
                 + " \(keys.count)"
-                + "\n\n"
-                + "backup_screen_found_description".localized
+            subtitle = "\n\n" + "backup_screen_found_description".localized
         case .noBackups:
             title = "backup_screen_not_found".localized
-                + "\n\n"
-                + "backup_screen_not_found_description".localized
+            subtitle = "\n\n" + "backup_screen_not_found_description".localized
         }
 
-        return title
-            .localized
-            .attributed(.medium(14), color: .textColor, alignment: .center)
+        let titleAttributedString = title.attributed(.bold(20), color: .textColor, alignment: .center)
+        let subtitleAttrinutedString = subtitle.attributed(.medium(14), color: .textColor, alignment: .center)
+        let result = NSMutableAttributedString(attributedString: titleAttributedString)
+        result.append(subtitleAttrinutedString)
+
+        return result
     }
 }

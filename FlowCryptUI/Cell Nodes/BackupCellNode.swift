@@ -18,7 +18,7 @@ public final class BackupCellNode: CellNode {
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        ASCenterLayoutSpec(
+        return ASCenterLayoutSpec(
             centeringOptions: .XY,
             sizingOptions: .minimumXY,
             child: ASInsetLayoutSpec(
