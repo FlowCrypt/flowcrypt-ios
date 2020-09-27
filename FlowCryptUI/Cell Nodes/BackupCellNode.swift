@@ -18,12 +18,15 @@ public final class BackupCellNode: CellNode {
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        let circle = CheckBoxNode(CheckBoxNode.Input(color: .red, disabledColor: .blue, strokeWidth: 2))
+        circle.style.preferredSize.height = 40
+        circle.style.preferredSize.width = 40
         return ASCenterLayoutSpec(
             centeringOptions: .XY,
             sizingOptions: .minimumXY,
             child: ASInsetLayoutSpec(
                 insets: insets,
-                child: textNode
+                child: circle
             )
         )
     }

@@ -149,6 +149,8 @@
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
 		D24B8FEC24B79BF600521D74 /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
+		D24FAFA42520BF9100BF46C5 /* CheckBoxCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24FAFA32520BF9100BF46C5 /* CheckBoxCircleView.swift */; };
+		D24FAFAB2520BFAE00BF46C5 /* CheckBoxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24FAFAA2520BFAE00BF46C5 /* CheckBoxNode.swift */; };
 		D2531F2F23FEEF52007E5198 /* FlowCryptCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D2531F3423FEEF5F007E5198 /* StyleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3923438D3700A7371A /* StyleExtension.swift */; };
 		D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* CommonExtensions.swift */; };
@@ -483,6 +485,8 @@
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNode.swift; sourceTree = "<group>"; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
+		D24FAFA32520BF9100BF46C5 /* CheckBoxCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxCircleView.swift; sourceTree = "<group>"; };
+		D24FAFAA2520BFAE00BF46C5 /* CheckBoxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxNode.swift; sourceTree = "<group>"; };
 		D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlowCryptCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlowCryptCommon.h; sourceTree = "<group>"; };
 		D2531F2E23FEEF52007E5198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1166,6 +1170,7 @@
 				9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */,
 				9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */,
 				D28655942423BFF60066F52E /* SideMenuOptionalView.swift */,
+				D24FAFA32520BF9100BF46C5 /* CheckBoxCircleView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1312,6 +1317,7 @@
 				9F1797702368EEE8002BF770 /* ButtonNode.swift */,
 				9F4453BF236B894D005D7D05 /* TableNode.swift */,
 				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
+				D24FAFAA2520BFAE00BF46C5 /* CheckBoxNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -2097,6 +2103,7 @@
 			files = (
 				D27177452424D44200BDA9A9 /* ComposeButtonNode.swift in Sources */,
 				D271774B242558DA00BDA9A9 /* MessageSubjectNode.swift in Sources */,
+				D24FAFAB2520BFAE00BF46C5 /* CheckBoxNode.swift in Sources */,
 				D28655952423BFF60066F52E /* SideMenuOptionalView.swift in Sources */,
 				D271774A242558DA00BDA9A9 /* MessageSenderNode.swift in Sources */,
 				D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */,
@@ -2107,6 +2114,7 @@
 				D2F6D12F24324ACC00DB4065 /* SwitchCellNode.swift in Sources */,
 				D2E26F6824F169E300612AF1 /* ContactCellNode.swift in Sources */,
 				D2A9CA38242618DF00E1D898 /* LinkButtonNode.swift in Sources */,
+				D24FAFA42520BF9100BF46C5 /* CheckBoxCircleView.swift in Sources */,
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
 				D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */,
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
