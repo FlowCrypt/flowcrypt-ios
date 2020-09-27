@@ -94,6 +94,8 @@ extension SettingsViewController {
             viewController = LegalViewController()
         case .contacts:
             viewController = ContactsListViewController()
+        case .backups:
+            viewController = BackupViewController()
         default:
             viewController = nil
         }
