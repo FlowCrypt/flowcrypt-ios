@@ -25,6 +25,13 @@ final class BackupViewController: ASDKViewController<TableNode> {
             case .idle, .noBackups: return false
             }
         }
+
+        var backups: [KeyDetails] {
+            switch self {
+            case .backups(let value): return value
+            default: return []
+            }
+        }
     }
 
     private let decorator: BackupViewDecoratorType
@@ -66,7 +73,7 @@ extension BackupViewController {
     private func fetchBackups() {
         backupProvider.fetchBackups()
             .then { [weak self] _ in
-                self?.state = .backups(keys)
+                self?.state = .noBackups//.backups(keys)
             }
             .catch { error in
                 // TODO: - Anton handle error
@@ -111,10 +118,15 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
                 return ButtonCellNode(
                     title: self.decorator.buttonTitle(for: self.state),
                     insets: self.decorator.buttonInsets
-                ) {
-
+                ) { [weak self] in
+                    self?.proceedToBackupOptionsScreen()
                 }
             }
         }
+    }
+
+    private func proceedToBackupOptionsScreen() {
+        let optionsScreene = BackupOptionsViewController(backups: state.backups)
+        navigationController?.pushViewController(optionsScreene, animated: true)
     }
 }

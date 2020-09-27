@@ -61,7 +61,7 @@ struct AppStartup {
 
     private func chooseView(window: UIWindow) {
         // TODO: - Anton
-        window.rootViewController = BackupViewController()
+        window.rootViewController = MainNavigationController(rootViewController: BackupViewController())
 //        if !DataService.shared.isLoggedIn {
 //            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
 //        } else if DataService.shared.isSetupFinished {

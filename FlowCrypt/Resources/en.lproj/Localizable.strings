@@ -151,6 +151,7 @@
 "backup_screen_found" = "Backups found:";
 "backup_screen_found_description" = "Your account is backed up correctly in your Email inbox";
 "backup_screen_found_action" = "See more backup options";
+"backup_screen_not_found_action" = "Back up my key";
 
 "backup_screen_not_found" = "There are no bcakups on this account";
 "backup_screen_not_found_description" = "If you lose your device, or it stops working, your encrypted email will be unreadable.";

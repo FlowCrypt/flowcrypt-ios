@@ -121,6 +121,8 @@
 		D20D3C6E2520AB3900D4AA9A /* BackupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */; };
 		D20D3C752520AB9A00D4AA9A /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C742520AB9A00D4AA9A /* BackupService.swift */; };
 		D20D3C7C2520ABC600D4AA9A /* BackupCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C7B2520ABC600D4AA9A /* BackupCellNode.swift */; };
+		D20D3C892520B67C00D4AA9A /* BackupOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C882520B67C00D4AA9A /* BackupOptionsViewController.swift */; };
+		D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C8F2520B68A00D4AA9A /* BackupOptionsViewDecorator.swift */; };
 		D211CE6E23FC354200D1CE38 /* CellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8D5E61236B04E300186E43 /* CellNode.swift */; };
 		D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797702368EEE8002BF770 /* ButtonNode.swift */; };
 		D211CE7023FC35AC00D1CE38 /* TableNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453BF236B894D005D7D05 /* TableNode.swift */; };
@@ -466,6 +468,8 @@
 		D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupViewDecorator.swift; sourceTree = "<group>"; };
 		D20D3C742520AB9A00D4AA9A /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
 		D20D3C7B2520ABC600D4AA9A /* BackupCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupCellNode.swift; sourceTree = "<group>"; };
+		D20D3C882520B67C00D4AA9A /* BackupOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOptionsViewController.swift; sourceTree = "<group>"; };
+		D20D3C8F2520B68A00D4AA9A /* BackupOptionsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOptionsViewDecorator.swift; sourceTree = "<group>"; };
 		D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfo.swift; sourceTree = "<group>"; };
 		D212D35F24C1AC0D00035991 /* KeyDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetails.swift; sourceTree = "<group>"; };
 		D212D36324C1AC4800035991 /* KeyId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyId.swift; sourceTree = "<group>"; };
@@ -1055,6 +1059,8 @@
 			children = (
 				D20D3C662520AB1000D4AA9A /* BackupViewController.swift */,
 				D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */,
+				D20D3C882520B67C00D4AA9A /* BackupOptionsViewController.swift */,
+				D20D3C8F2520B68A00D4AA9A /* BackupOptionsViewDecorator.swift */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -1984,6 +1990,7 @@
 				D227C0E8250538A90070F805 /* FoldersService.swift in Sources */,
 				D2E26F6A24F25AB800612AF1 /* KeyAlgoObject.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
+				D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
 				D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
@@ -2005,6 +2012,7 @@
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
+				D20D3C892520B67C00D4AA9A /* BackupOptionsViewController.swift in Sources */,
 				D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */,
 				D2A9CA3F24261A4600E1D898 /* SignInType.swift in Sources */,
 				9F0C3C18231819B200299985 /* LoggerService.swift in Sources */,
