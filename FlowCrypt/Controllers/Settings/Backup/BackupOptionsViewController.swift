@@ -10,21 +10,23 @@ import FlowCryptUI
 import AsyncDisplayKit
 
 final class BackupOptionsViewController: ASDKViewController<TableNode> {
+    enum BackupOption: Int, CaseIterable {
+        case email, download
+    }
+    
     private enum Parts: Int, CaseIterable {
         case email, download, action, info
     }
 
     private let decorator: BackupOptionsViewDecoratorType
-    private let backupProvider: BackupServiceType
     private var backups: [KeyDetails] = []
+    private var slectedOption: BackupOption = .email { didSet { handleOptionChange() } }
 
     init(
         decorator: BackupOptionsViewDecoratorType = BackupOptionsViewDecorator(),
-        backupProvider: BackupServiceType = BackupService.shared,
         backups: [KeyDetails]
     ) {
         self.decorator = decorator
-        self.backupProvider = backupProvider
         self.backups = backups
 
         super.init(node: TableNode())
@@ -45,6 +47,16 @@ extension BackupOptionsViewController {
         node.delegate = self
         node.dataSource = self
         title = decorator.sceneTitle
+    }
+}
+
+extension BackupOptionsViewController {
+    private func handleButtonTap() {
+        print("^^ Tap")
+    }
+    
+    private func handleOptionChange() {
+        node.reloadData()
     }
 }
 
@@ -81,11 +93,35 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
                     )
                 )
             )
-            case .info: return ASCellNode()
-            case .action: return ASCellNode()
+            case .action: return ButtonCellNode(
+                title: NSAttributedString(string: "Button"),
+                insets: .side(16)
+            ) { [weak self] in
+                self?.handleButtonTap()
             }
+            case .info:
+                return BackupCellNode(
+                    title: NSAttributedString(string: "alksfhlah fsalkfhal f afskh "),
+                    insets: UIEdgeInsets(top: 8, left: 8, bottom: 16, right: 8)
+                )
+            }
+        }
+    }
+    
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        tableNode.deselectRow(at: indexPath, animated: false)
+        guard let part = Parts(rawValue: indexPath.row) else { return }
+        
+        switch part {
+        case .email: slectedOption = .email
+        case .download: slectedOption = .download
+        case .action: handleButtonTap()
+        case .info: break
         }
     }
 }
 
+// TODO: - Anton
 // CheckBoxTextNode.Input for download/email is selected
+// Button title for selected type
+// info for selected type

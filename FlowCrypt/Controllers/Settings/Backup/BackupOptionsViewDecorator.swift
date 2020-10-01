@@ -13,6 +13,7 @@ protocol BackupOptionsViewDecoratorType {
 }
 
 struct BackupOptionsViewDecorator: BackupOptionsViewDecoratorType {
-    let sceneTitle: String = "backup_option_screen_title"
-        .localized
+    let sceneTitle = "backup_option_screen_title".localized
+    
+    
 }
