@@ -10,11 +10,18 @@ import FlowCryptUI
 import AsyncDisplayKit
 
 final class BackupOptionsViewController: ASDKViewController<TableNode> {
-    enum BackupOption: Int, CaseIterable {
+    enum BackupOption: Int, CaseIterable, Equatable {
         case email, download
+
+        var isEmail: Bool {
+            switch self {
+            case .download: return false
+            case .email: return true
+            }
+        }
     }
-    
-    private enum Parts: Int, CaseIterable {
+
+    enum Parts: Int, CaseIterable {
         case email, download, action, info
     }
 
@@ -54,7 +61,7 @@ extension BackupOptionsViewController {
     private func handleButtonTap() {
         print("^^ Tap")
     }
-    
+
     private func handleOptionChange() {
         node.reloadData()
     }
@@ -72,46 +79,38 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
             switch part {
             case .download:
                 return CheckBoxTextNode(
-                    input: CheckBoxTextNode.Input.init(
-                        title: NSAttributedString(string: "download"),
-                        insets: .side(16),
-                        preferredSize: CGSize(width: 30, height: 30),
-                        checkBoxInput: CheckBoxNode.Input(
-                            color: .main,
-                            strokeWidth: 2
-                        )
+                    input: self.decorator.checkboxContext(
+                        for: .download,
+                        isSelected: self.slectedOption == .download
                     )
                 )
-            case .email: return CheckBoxTextNode(
-                input: CheckBoxTextNode.Input.init(
-                    title: NSAttributedString(string: "email"),
-                    insets: .side(16),
-                    preferredSize: CGSize(width: 30, height: 30),
-                    checkBoxInput: CheckBoxNode.Input(
-                        color: .main,
-                        strokeWidth: 2
+            case .email:
+                return CheckBoxTextNode(
+                    input: self.decorator.checkboxContext(
+                        for: .email,
+                        isSelected: self.slectedOption == .email
                     )
                 )
-            )
-            case .action: return ButtonCellNode(
-                title: NSAttributedString(string: "Button"),
-                insets: .side(16)
-            ) { [weak self] in
-                self?.handleButtonTap()
-            }
+            case .action:
+                return ButtonCellNode(
+                    title: self.decorator.buttonText(for: self.slectedOption),
+                    insets: self.decorator.insets
+                ) { [weak self] in
+                    self?.handleButtonTap()
+                }
             case .info:
                 return BackupCellNode(
-                    title: NSAttributedString(string: "alksfhlah fsalkfhal f afskh "),
-                    insets: UIEdgeInsets(top: 8, left: 8, bottom: 16, right: 8)
+                    title: self.decorator.description(for: self.slectedOption),
+                    insets: self.decorator.insets
                 )
             }
         }
     }
-    
+
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: false)
         guard let part = Parts(rawValue: indexPath.row) else { return }
-        
+
         switch part {
         case .email: slectedOption = .email
         case .download: slectedOption = .download
@@ -123,5 +122,3 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
 
 // TODO: - Anton
 // CheckBoxTextNode.Input for download/email is selected
-// Button title for selected type
-// info for selected type
