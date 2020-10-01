@@ -11,16 +11,13 @@ import AsyncDisplayKit
 final public class CheckBoxNode: ASDisplayNode {
     public struct Input {
         let color: UIColor
-        let disabledColor: UIColor
         let strokeWidth: CGFloat
 
         public init(
             color: UIColor,
-            disabledColor: UIColor,
             strokeWidth: CGFloat
         ) {
             self.color = color
-            self.disabledColor = disabledColor
             self.strokeWidth = strokeWidth
         }
     }
@@ -29,6 +26,8 @@ final public class CheckBoxNode: ASDisplayNode {
         self.init { () -> UIView in
             let view = CheckBoxCircleView()
             view.innerColor = input.color
+            view.outerColor = input.color
+            view.innerInset = 4
             view.strokeWidth = input.strokeWidth
             return view
         }

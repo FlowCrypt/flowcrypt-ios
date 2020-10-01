@@ -192,6 +192,7 @@
 		D286559A2424D1EB0066F52E /* FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; };
 		D2891AC224C59EFA008918E3 /* KeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2891AC124C59EFA008918E3 /* KeyService.swift */; };
 		D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2891AC324C62446008918E3 /* ErrorHandler.swift */; };
+		D28A1CBD2525C141003B760B /* CheckBoxTextNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */; };
 		D297990D2444A76D004A3E31 /* UserObject+Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D297990C2444A76D004A3E31 /* UserObject+Empty.swift */; };
 		D29AFFED24092D7900C1387D /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFEC24092D7900C1387D /* GoogleService.swift */; };
 		D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
@@ -508,6 +509,7 @@
 		D28655942423BFF60066F52E /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
 		D2891AC124C59EFA008918E3 /* KeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyService.swift; sourceTree = "<group>"; };
 		D2891AC324C62446008918E3 /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
+		D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxTextNode.swift; sourceTree = "<group>"; };
 		D297990C2444A76D004A3E31 /* UserObject+Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserObject+Empty.swift"; sourceTree = "<group>"; };
 		D29AFFEC24092D7900C1387D /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
 		D29AFFF22409370300C1387D /* LogOutHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutHandler.swift; sourceTree = "<group>"; };
@@ -1299,6 +1301,7 @@
 				D2E26F6724F169E300612AF1 /* ContactCellNode.swift */,
 				D2E26F7124F26FFF00612AF1 /* ContactDetailNode.swift */,
 				D20D3C7B2520ABC600D4AA9A /* BackupCellNode.swift */,
+				D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -2120,6 +2123,7 @@
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
 				D2E26F7224F26FFF00612AF1 /* ContactDetailNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
+				D28A1CBD2525C141003B760B /* CheckBoxTextNode.swift in Sources */,
 				D2A9CA3B242619A400E1D898 /* SignInImageNode.swift in Sources */,
 				D211CE7223FC35AC00D1CE38 /* TextFieldNode.swift in Sources */,
 				D20D3C7C2520ABC600D4AA9A /* BackupCellNode.swift in Sources */,

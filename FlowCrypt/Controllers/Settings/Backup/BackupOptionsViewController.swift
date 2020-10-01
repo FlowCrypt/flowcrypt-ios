@@ -54,25 +54,38 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { ASCellNode() }
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+
+            switch part {
+            case .download:
+                return CheckBoxTextNode(
+                    input: CheckBoxTextNode.Input.init(
+                        title: NSAttributedString(string: "download"),
+                        insets: .side(16),
+                        preferredSize: CGSize(width: 30, height: 30),
+                        checkBoxInput: CheckBoxNode.Input(
+                            color: .main,
+                            strokeWidth: 2
+                        )
+                    )
+                )
+            case .email: return CheckBoxTextNode(
+                input: CheckBoxTextNode.Input.init(
+                    title: NSAttributedString(string: "email"),
+                    insets: .side(16),
+                    preferredSize: CGSize(width: 30, height: 30),
+                    checkBoxInput: CheckBoxNode.Input(
+                        color: .main,
+                        strokeWidth: 2
+                    )
+                )
+            )
+            case .info: return ASCellNode()
+            case .action: return ASCellNode()
+            }
+        }
     }
-//        return { [weak self] in
-//            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
-//
-//            switch part {
-//            case .info:
-//                return BackupCellNode(
-//                    title: self.decorator.description(for: self.state),
-//                    insets: UIEdgeInsets(top: 8, left: 8, bottom: 16, right: 8)
-//                )
-//            case .action:
-//                return ButtonCellNode(
-//                    title: self.decorator.buttonTitle(for: self.state),
-//                    insets: self.decorator.buttonInsets
-//                ) {
-//
-//                }
-//            }
-//        }
-//    }
 }
+
+// CheckBoxTextNode.Input for download/email is selected
