@@ -105,14 +105,8 @@ struct UserId: Encodable {
     let name: String
 }
 
-extension UserId {
-    func toMime() -> String {
-        "\(name) <\(email)>"
-    }
-}
-
 struct SendableMsg {
-    struct Att {
+    struct Attribute {
         let name: String
         let type: String
         let base64: String
@@ -125,7 +119,7 @@ struct SendableMsg {
     let from: String
     let subject: String
     let replyToMimeMsg: String?
-    let atts: [Att]
+    let atts: [Attribute]
 }
 
 struct MsgBlock: Decodable {

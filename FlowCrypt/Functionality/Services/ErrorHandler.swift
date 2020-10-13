@@ -10,15 +10,33 @@ import UIKit
 
 extension UIViewController {
     func handleCommon(error: Error) {
-        switch error {
-        case KeyServiceError.retrieve:
-            showAlert(message: "Could not retrieve keys from DataService. Please restart the app and try again.")
-        case KeyServiceError.parse:
-            showAlert(message: "Could not parse keys from storage. Please reinstall the app.")
-        case KeyServiceError.unexpected:
-            showAlert(message: "Could not import key. Please try to relogin.")
-        default:
+        let composedHandler = ComposedErrorHandler.shared
+        let isErrorHandled = composedHandler.handle(error: error, for: self)
+
+        if !isErrorHandled {
             assertionFailure("Error \(error) is not handled yet")
         }
+    }
+}
+
+protocol ErrorHandler {
+    func handle(error: Error, for viewController: UIViewController) -> Bool
+}
+
+/// This Handler contains array of all possible handlers
+private struct ComposedErrorHandler: ErrorHandler {
+    static let shared: ComposedErrorHandler = ComposedErrorHandler(
+        handlers: [
+            KeyServiceErrorHandler()
+        ]
+    )
+    
+    let handlers: [ErrorHandler]
+
+    func handle(error: Error, for viewController: UIViewController) -> Bool {
+        let isErrorHandled = handlers.map { $0.handle(error: error, for: viewController) }
+
+        // Error is handled by one of the handlers
+        return isErrorHandled.contains(true)
     }
 }

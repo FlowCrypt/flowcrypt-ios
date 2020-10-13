@@ -13,7 +13,6 @@ final class SetupViewController: ASDKViewController<TableNode> {
         case title, description, passPhrase, divider, action, optionalAction
     }
 
-    private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType
     private let storage: DataServiceType & KeyDataServiceType
@@ -21,7 +20,6 @@ final class SetupViewController: ASDKViewController<TableNode> {
     private let core: Core
     private let keyMethods: KeyMethodsType
     private let attester: AttesterApiType
-
     private let backupService: BackupServiceType
 
     private var passPhrase: String?
@@ -31,7 +29,7 @@ final class SetupViewController: ASDKViewController<TableNode> {
         case emptyFetchedKeys
         /// error while key parsing (associated error for verbose message)
         case parseKey(Error)
-        /// no backups found while searching in imap
+        /// no backups found while searching
         case noBackups
     }
 
@@ -55,7 +53,6 @@ final class SetupViewController: ASDKViewController<TableNode> {
     }
 
     init(
-        imap: Imap = Imap.shared,
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
@@ -65,7 +62,6 @@ final class SetupViewController: ASDKViewController<TableNode> {
         attester: AttesterApiType = AttesterApi(),
         backupService: BackupServiceType = BackupService.shared
     ) {
-        self.imap = imap
         self.userService = userService
         self.router = router
         self.storage = storage
@@ -317,7 +313,7 @@ extension SetupViewController {
             let userId = try self.getUserId()
             try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try await(self.backupPrvToInbox(prv: encryptedPrv.key, userId: userId))
+            try await(self.backupService.backupToInbox(key: encryptedPrv.key, userId: userId))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
 
             let updateKey = self.attester.updateKey(
@@ -357,25 +353,6 @@ extension SetupViewController {
         guard let email = DataService.shared.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
         guard let name = DataService.shared.email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
         return UserId(email: email, name: name)
-    }
-
-    // TODO: - ANTON - Move to Backup Service
-    private func backupPrvToInbox(prv: KeyDetails, userId: UserId) -> Promise<Void> {
-        return Promise { () -> Void in
-            guard prv.isFullyEncrypted ?? false else { throw AppErr.unexpected("Private Key must be fully enrypted before backing up") }
-            let filename = "flowcrypt-backup-\(userId.email.replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression)).key"
-            let backupEmail = try self.core.composeEmail(msg: SendableMsg(
-                text: "setup_backup_email".localized,
-                to: [userId.toMime()],
-                cc: [],
-                bcc: [],
-                from: userId.toMime(),
-                subject: "Your FlowCrypt Backup",
-                replyToMimeMsg: nil,
-                atts: [SendableMsg.Att(name: filename, type: "text/plain", base64: prv.private!.data().base64EncodedString())] // !crash ok
-            ), fmt: .plain, pubKeys: nil)
-            try await(Imap.shared.sendMail(mime: backupEmail.mimeEncoded))
-        }
     }
 
     private func storePrvs(prvs: [KeyDetails], passPhrase: String, source: KeySource) throws {

@@ -28,6 +28,11 @@
 "error_permanently_delete" = "Unable to delete message";
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
 
+// KeyServiceError
+"keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
+"keyServiceError_retrieve_parse" = "Could not parse keys from storage. Please reinstall the app.";
+"keyServiceError_retrieve_unexpected" = "Could not import key. Please try to relogin.";
+
 // Compose
 "compose_enter_recipient" = "Enter recipient";
 "compose_no_pub_recipient" = "Recipient doesn't seem to have encryption set up";
