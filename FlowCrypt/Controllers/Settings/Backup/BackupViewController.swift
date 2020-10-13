@@ -72,8 +72,8 @@ extension BackupViewController {
 
     private func fetchBackups() {
         backupProvider.fetchBackups()
-            .then { [weak self] _ in
-                self?.state = .noBackups//.backups(keys)
+            .then { [weak self] keys in
+                self?.state = .backups(keys)
             }
             .catch { error in
                 // TODO: - Anton handle error
@@ -82,9 +82,7 @@ extension BackupViewController {
     }
 
     private func updateState() {
-        DispatchQueue.main.async {
-            self.node.reloadData()
-        }
+        node.reloadData()
     }
 }
 
@@ -126,7 +124,7 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func proceedToBackupOptionsScreen() {
-        let optionsScreene = BackupOptionsViewController(backups: state.backups)
-        navigationController?.pushViewController(optionsScreene, animated: true)
+        let optionsScreen = BackupOptionsViewController(backups: state.backups)
+        navigationController?.pushViewController(optionsScreen, animated: true)
     }
 }

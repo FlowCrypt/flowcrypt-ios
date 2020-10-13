@@ -23,6 +23,7 @@ struct BackupService: BackupServiceType {
     enum BackupError: Error {
         case parse, emailNotFound
     }
+
     let backupProvider: BackupProvider
     let core: Core
     let dataService: DataService

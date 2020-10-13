@@ -32,4 +32,10 @@ public final class TableNode: ASTableNode {
         guard #available(iOS 13.0, *) else { return }
         backgroundColor = .backgroundColor
     }
+
+    public override func reloadData() {
+        DispatchQueue.main.async {
+            super.reloadData()
+        }
+    }
 }

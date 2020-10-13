@@ -27,7 +27,10 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
 
     private let decorator: BackupOptionsViewDecoratorType
     private var backups: [KeyDetails] = []
-    private var slectedOption: BackupOption = .email { didSet { handleOptionChange() } }
+    private var slectedOption: BackupOption = .email {
+        didSet { handleOptionChange() }
+    }
+    private let attester = AttesterApi()
 
     init(
         decorator: BackupOptionsViewDecoratorType = BackupOptionsViewDecorator(),
@@ -60,6 +63,8 @@ extension BackupOptionsViewController {
 extension BackupOptionsViewController {
     private func handleButtonTap() {
         print("^^ Tap")
+        let key = backups[0].private
+        attester.testWelcome(email: "cryptup.tester@gmail.com", pubkey: key!)
     }
 
     private func handleOptionChange() {
