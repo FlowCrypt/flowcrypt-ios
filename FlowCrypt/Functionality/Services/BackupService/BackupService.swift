@@ -11,7 +11,7 @@ import Promises
 
 protocol BackupServiceType {
     func fetchBackups() -> Promise<[KeyDetails]>
-    func backupToInbox(key: KeyDetails, userId: UserId) -> Promise<Void>
+    func backupToInbox(key: KeyDetails) -> Promise<Void>
 }
 
 // MARK: - BackupService
@@ -23,19 +23,19 @@ struct BackupService {
         imap: Imap.shared
     )
 
-    enum BackupError: Error {
-        case parse
-        case emailNotFound
-
-        // "Private Key must be fully enrypted before backing up"
-        // TODO: - ANTON - Error message
-        case keyIsNotFullyEncrypted
-    }
-
     let backupProvider: BackupProvider
     let core: Core
     let dataService: DataService
     let imap: Imap
+
+    private var userID: UserId? {
+        guard let email = dataService.email, email.isNotEmpty,
+              let name = dataService.email, name.isNotEmpty
+        else {
+            return nil
+        }
+        return UserId(email: email, name: name)
+    }
 }
 
 // MARK: - BackupServiceType
@@ -43,7 +43,7 @@ extension BackupService: BackupServiceType {
     func fetchBackups() -> Promise<[KeyDetails]> {
         Promise<[KeyDetails]> { resolve, reject in
             guard let email = self.dataService.email else {
-                reject(BackupError.emailNotFound)
+                reject(BackupServiceError.emailNotFound)
                 return
             }
 
@@ -54,14 +54,20 @@ extension BackupService: BackupServiceType {
                 let keys = parsed.keyDetails.filter { $0.private != nil }
                 resolve(keys)
             } catch {
-                reject(BackupError.parse)
+                reject(BackupServiceError.parse)
             }
         }
     }
 
-    func backupToInbox(key: KeyDetails, userId: UserId) -> Promise<Void> {
+    func backupToInbox(key: KeyDetails) -> Promise<Void> {
         Promise { () -> Void in
-            guard key.isFullyEncrypted ?? false else { throw BackupError.keyIsNotFullyEncrypted }
+            guard let userId = self.userID else {
+                throw BackupServiceError.emailNotFound
+            }
+
+            guard key.isFullyEncrypted ?? false else {
+                throw BackupServiceError.keyIsNotFullyEncrypted
+            }
 
             guard let privateKeyData = key.private?.data().base64EncodedString() else {
                 fatalError() // !crash ok

@@ -313,7 +313,7 @@ extension SetupViewController {
             let userId = try self.getUserId()
             try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try await(self.backupService.backupToInbox(key: encryptedPrv.key, userId: userId))
+            try await(self.backupService.backupToInbox(key: encryptedPrv.key))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
 
             let updateKey = self.attester.updateKey(

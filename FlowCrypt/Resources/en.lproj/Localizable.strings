@@ -33,6 +33,10 @@
 "keyServiceError_retrieve_parse" = "Could not parse keys from storage. Please reinstall the app.";
 "keyServiceError_retrieve_unexpected" = "Could not import key. Please try to relogin.";
 
+"backupServiceError_parse" = "Key can't be parsed";
+"backupServiceError_email" = "Missing user email";
+"backupServiceError_notEncrypted" = "Private Key must be fully encrypted before backing up";
+
 // Compose
 "compose_enter_recipient" = "Enter recipient";
 "compose_no_pub_recipient" = "Recipient doesn't seem to have encryption set up";

@@ -19,6 +19,7 @@ extension UIViewController {
     }
 }
 
+// MARK: - ErrorHandler
 protocol ErrorHandler {
     func handle(error: Error, for viewController: UIViewController) -> Bool
 }
@@ -30,7 +31,7 @@ private struct ComposedErrorHandler: ErrorHandler {
             KeyServiceErrorHandler()
         ]
     )
-    
+
     let handlers: [ErrorHandler]
 
     func handle(error: Error, for viewController: UIViewController) -> Bool {
@@ -40,3 +41,19 @@ private struct ComposedErrorHandler: ErrorHandler {
         return isErrorHandled.contains(true)
     }
 }
+
+// TODO: - ERROR HANDLING
+// https://github.com/FlowCrypt/flowcrypt-ios/issues/140
+
+// In case Error Handling for all existed errors will be the same
+// replace ErrorHandler protocol with AppError
+// Extended existed error to AppError (localised description will be the same as in ErrorHandler for each error)
+
+//protocol AppError {
+//    var localizedDescription: String { get }
+//}
+
+// In case Errors should be handled differently for some cases
+// func handle(error: Error, for viewController: UIViewController) -> Bool
+// should be improved to use Presenter instead of UIViewController
+// and Promise<Bool> as return type instead of Bool in case of callback or async hadling
