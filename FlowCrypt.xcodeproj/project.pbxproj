@@ -868,8 +868,8 @@
 		9F41FA1C25372C2D003B970D /* BackupService */ = {
 			isa = PBXGroup;
 			children = (
-				9F41F9E62537265C003B970D /* BackupServiceError.swift */,
 				D20D3C742520AB9A00D4AA9A /* BackupService.swift */,
+				9F41F9E62537265C003B970D /* BackupServiceError.swift */,
 			);
 			path = BackupService;
 			sourceTree = "<group>";

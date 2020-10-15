@@ -10,8 +10,11 @@ import UIKit
 import Promises
 
 protocol BackupServiceType {
+    /// get all existed backups
     func fetchBackups() -> Promise<[KeyDetails]>
-    func backupToInbox(key: KeyDetails) -> Promise<Void>
+    /// backup keys to user inbox
+    func backupToInbox(keys: [KeyDetails]) -> Promise<Void>
+
 }
 
 // MARK: - BackupService
@@ -59,19 +62,24 @@ extension BackupService: BackupServiceType {
         }
     }
 
-    func backupToInbox(key: KeyDetails) -> Promise<Void> {
+    func backupToInbox(keys: [KeyDetails]) -> Promise<Void> {
         Promise { () -> Void in
             guard let userId = self.userID else {
                 throw BackupServiceError.emailNotFound
             }
 
-            guard key.isFullyEncrypted ?? false else {
+            let isFullyEncryptedKeys = keys.map { $0.isFullyDecrypted }.contains(false)
+
+            guard isFullyEncryptedKeys else {
                 throw BackupServiceError.keyIsNotFullyEncrypted
             }
 
-            guard let privateKeyData = key.private?.data().base64EncodedString() else {
-                fatalError() // !crash ok
-            }
+            // concatenate private keys, joined with a newline
+            let privateKeyContext = keys
+                .compactMap { $0.private }
+                .joined(separator: "\n")
+
+            let privateKeyData = privateKeyContext.data().base64EncodedString()
 
             let filename = "flowcrypt-backup-\(userId.email.userReadableEmail).key"
             let messageAttributes = [SendableMsg.Attribute(name: filename, type: "text/plain", base64: privateKeyData)]
@@ -107,3 +115,22 @@ fileprivate extension UserId {
         "\(name) <\(email)>"
     }
 }
+
+// TODO: - ANTON
+/**
+ Firstly you let the user choose with a list of checkboxes which keys to include in the backup. You can check all by default and let them uncheck the ones they want to skip.
+
+ Then you concatenate all private keys (armored) into one file. Join them with a newline.
+ 12:16
+ The app should also be able to process such file when importing. I think it does.
+ 12:16
+ If it's just one key, you can skip the checkbox list
+ 12:17
+ so you'll have
+ -----BEGIN PGP PRIVATE KEY BLOCK-----
+ ...
+ -----END PGP PRIVATE KEY BLOCK-----
+ -----BEGIN PGP PRIVATE KEY BLOCK-----
+ ...
+ -----END PGP PRIVATE KEY BLOCK-----
+ */

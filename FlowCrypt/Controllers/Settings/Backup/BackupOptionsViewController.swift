@@ -27,17 +27,20 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
 
     private let decorator: BackupOptionsViewDecoratorType
     private var backups: [KeyDetails] = []
-    private var slectedOption: BackupOption = .email {
+    private var selectedOption: BackupOption = .email {
         didSet { handleOptionChange() }
     }
     private let attester = AttesterApi()
+    private let backupService: BackupServiceType
 
     init(
         decorator: BackupOptionsViewDecoratorType = BackupOptionsViewDecorator(),
+        backupService: BackupServiceType = BackupService.shared,
         backups: [KeyDetails]
     ) {
         self.decorator = decorator
         self.backups = backups
+        self.backupService = backupService
 
         super.init(node: TableNode())
     }
@@ -61,19 +64,40 @@ extension BackupOptionsViewController {
 }
 
 extension BackupOptionsViewController {
-    private func handleButtonTap() {
-        print("^^ Tap")
-        let key = backups[0].private
-        attester.testWelcome(email: "cryptup.tester@gmail.com", pubkey: key!)
-    }
-
     private func handleOptionChange() {
         node.reloadData()
+    }
+
+    private func handleButtonTap() {
+//        if backups.count > 1 {
+//            proceedToSelectBackupsScreen()
+//        } else {
+            makeBackup()
+//        }
+    }
+
+    private func proceedToSelectBackupsScreen() {
+
+    }
+
+    private func makeBackup() {
+        switch selectedOption {
+        case .download:
+            break
+        case .email:
+            backupService.backupToInbox(keys: backups)
+                .then(on: .main) {
+                    print("😀")
+                }
+                .catch(on: .main) { error in
+                    print("\(error)")
+                }
+        }
     }
 }
 
 extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
+    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
 
@@ -86,26 +110,26 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
                 return CheckBoxTextNode(
                     input: self.decorator.checkboxContext(
                         for: .download,
-                        isSelected: self.slectedOption == .download
+                        isSelected: self.selectedOption == .download
                     )
                 )
             case .email:
                 return CheckBoxTextNode(
                     input: self.decorator.checkboxContext(
                         for: .email,
-                        isSelected: self.slectedOption == .email
+                        isSelected: self.selectedOption == .email
                     )
                 )
             case .action:
                 return ButtonCellNode(
-                    title: self.decorator.buttonText(for: self.slectedOption),
+                    title: self.decorator.buttonText(for: self.selectedOption),
                     insets: self.decorator.insets
                 ) { [weak self] in
                     self?.handleButtonTap()
                 }
             case .info:
                 return BackupCellNode(
-                    title: self.decorator.description(for: self.slectedOption),
+                    title: self.decorator.description(for: self.selectedOption),
                     insets: self.decorator.insets
                 )
             }
@@ -117,13 +141,10 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
         guard let part = Parts(rawValue: indexPath.row) else { return }
 
         switch part {
-        case .email: slectedOption = .email
-        case .download: slectedOption = .download
+        case .email: selectedOption = .email
+        case .download: selectedOption = .download
         case .action: handleButtonTap()
         case .info: break
         }
     }
 }
-
-// TODO: - Anton
-// CheckBoxTextNode.Input for download/email is selected
