@@ -14,7 +14,8 @@ protocol BackupServiceType {
     func fetchBackups() -> Promise<[KeyDetails]>
     /// backup keys to user inbox
     func backupToInbox(keys: [KeyDetails]) -> Promise<Void>
-
+    /// show activity sheet to save keys as file
+    func backupAsFile(keys: [KeyDetails], for viewController: UIViewController)
 }
 
 // MARK: - BackupService
@@ -74,10 +75,9 @@ extension BackupService: BackupServiceType {
                 throw BackupServiceError.keyIsNotFullyEncrypted
             }
 
-            // concatenate private keys, joined with a newline
             let privateKeyContext = keys
-                .compactMap { $0.private }
-                .joined(separator: "\n")
+                .compactMap { $0 }
+                .joinedPrivateKey
 
             let privateKeyData = privateKeyContext.data().base64EncodedString()
 
@@ -96,6 +96,15 @@ extension BackupService: BackupServiceType {
             let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: nil)
             try await(imap.sendMail(mime: backupEmail.mimeEncoded))
         }
+    }
+
+    func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {
+        let file = keys.joinedPrivateKey
+        let viewController = UIActivityViewController(
+            activityItems: [file],
+            applicationActivities: nil
+        )
+        viewController.present(viewController, animated: true)
     }
 }
 

@@ -182,10 +182,10 @@ extension ImportKeyViewController {
 extension ImportKeyViewController: UIDocumentPickerDelegate {
     func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let pickedURL = urls.first else { return }
-        hanldePicked(document: pickedURL)
+        handlePicked(document: pickedURL)
     }
 
-    private func hanldePicked(document url: URL) {
+    private func handlePicked(document url: URL) {
         let shouldStopAccessing = url.startAccessingSecurityScopedResource()
         defer {
             if shouldStopAccessing {

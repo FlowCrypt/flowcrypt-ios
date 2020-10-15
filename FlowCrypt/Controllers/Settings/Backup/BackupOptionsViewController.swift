@@ -55,6 +55,7 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     }
 }
 
+// MARK: - Setup
 extension BackupOptionsViewController {
     private func setupUI() {
         node.delegate = self
@@ -63,17 +64,18 @@ extension BackupOptionsViewController {
     }
 }
 
+// MARK: - Actions
 extension BackupOptionsViewController {
     private func handleOptionChange() {
         node.reloadData()
     }
 
     private func handleButtonTap() {
-//        if backups.count > 1 {
-//            proceedToSelectBackupsScreen()
-//        } else {
+        if backups.count > 1 {
+            proceedToSelectBackupsScreen()
+        } else {
             makeBackup()
-//        }
+        }
     }
 
     private func proceedToSelectBackupsScreen() {
@@ -83,19 +85,30 @@ extension BackupOptionsViewController {
     private func makeBackup() {
         switch selectedOption {
         case .download:
-            break
+            backupAsFile()
         case .email:
-            backupService.backupToInbox(keys: backups)
-                .then(on: .main) {
-                    print("😀")
-                }
-                .catch(on: .main) { error in
-                    print("\(error)")
-                }
+            backupToInbox()
         }
+    }
+
+    private func backupToInbox() {
+        showSpinner()
+        backupService.backupToInbox(keys: backups)
+            .then(on: .main) { [weak self] in
+                self?.hideSpinner()
+                self?.navigationController?.popToRootViewController(animated: true)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.handleCommon(error: error)
+            }
+    }
+
+    private func backupAsFile() {
+        backupService.backupAsFile(keys: backups, for: self)
     }
 }
 
+// MARK: - ASTableDelegate, ASTableDataSource
 extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count

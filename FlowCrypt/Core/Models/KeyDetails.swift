@@ -31,3 +31,10 @@ extension KeyDetails: Equatable {
         lhs.ids == rhs.ids
     }
 }
+
+extension Array where Element == KeyDetails {
+    // concatenated private keys, joined with a newline
+    var joinedPrivateKey: String {
+        compactMap { $0.private }.joined(separator: "\n")
+    }
+}
