@@ -9,13 +9,16 @@
 import UIKit
 
 extension UIViewController {
-    func handleCommon(error: Error) {
+    @discardableResult
+    func handleCommon(error: Error) -> Bool {
         let composedHandler = ComposedErrorHandler.shared
         let isErrorHandled = composedHandler.handle(error: error, for: self)
 
         if !isErrorHandled {
-            assertionFailure("Error \(error) is not handled yet")
+            debugPrint("[ERROR HANDLING] - \(error) is not handled yet.\nErrorHandler should be used for this error")
         }
+
+        return isErrorHandled
     }
 }
 
@@ -28,7 +31,8 @@ protocol ErrorHandler {
 private struct ComposedErrorHandler: ErrorHandler {
     static let shared: ComposedErrorHandler = ComposedErrorHandler(
         handlers: [
-            KeyServiceErrorHandler()
+            KeyServiceErrorHandler(),
+            BackupServiceErrorHandler()
         ]
     )
 

@@ -73,11 +73,12 @@ extension BackupViewController {
     private func fetchBackups() {
         backupProvider.fetchBackups()
             .then { [weak self] keys in
-                self?.state = .backups(keys)
+                self?.state = keys.isEmpty
+                    ? .noBackups
+                    : .backups(keys)
             }
             .catch { error in
-                // TODO: - Anton handle error
-                print("^^ error \(error)")
+                self.handleCommon(error: error)
             }
     }
 

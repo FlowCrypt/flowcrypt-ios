@@ -8,8 +8,6 @@
 
 import UIKit
 
-// TODO: - ANTON HANDLE ERROR
-// Call viewController.handleCommon(error: ) 
 enum BackupServiceError: Error {
     case parse
     case emailNotFound

@@ -7,7 +7,6 @@ import FlowCryptUI
 import Promises
 
 // swiftlint:disable line_length
-// TODO: - Anton refactor with BackupServiceType
 final class SetupViewController: ASDKViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction
@@ -156,16 +155,18 @@ extension SetupViewController {
         }
     }
 
-    // TODO: - ANTON
     private func searchBackups() {
         showSpinner()
         backupService.fetchBackups()
             .then(on: .main) { [weak self] keys in
+                guard keys.isNotEmpty else {
+                    self?.state = .error(.noBackups)
+                    return
+                }
                 self?.state = .fetchedEncrypted(keys)
             }
-            .catch(on: .main) { [weak self] _ in
-                // TODO: - ANTON - Verbose error
-                self?.state = .error(.noBackups)
+            .catch(on: .main) { [weak self] error in
+                self?.handleCommon(error: error)
             }
     }
 
@@ -335,7 +336,12 @@ extension SetupViewController {
             self?.moveToMainFlow()
         }
         .catch(on: .main) { [weak self] error in
-            self?.showAlert(error: error, message: "Could not finish setup, please try again")
+            guard let self = self else { return }
+            let isErrorHandled = self.handleCommon(error: error)
+
+            if !isErrorHandled {
+                self.showAlert(error: error, message: "Could not finish setup, please try again")
+            }
         }
     }
 
