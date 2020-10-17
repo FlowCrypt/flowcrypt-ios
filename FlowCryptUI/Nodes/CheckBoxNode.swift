@@ -29,6 +29,7 @@ final public class CheckBoxNode: ASDisplayNode {
             view.outerColor = input.color
             view.innerInset = 4
             view.strokeWidth = input.strokeWidth
+            view.backgroundColor = .clear
             return view
         }
     }

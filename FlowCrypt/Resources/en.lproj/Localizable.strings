@@ -173,3 +173,7 @@
 "backup_option_screen_file_action" = "Backup as file";
 "backup_option_screen_email_description" = "This will back up private key(s) in your Inbox. The security depends on the strength of your pass phrase, which should be very long and hard to guess. Best option for most users.";
 "backup_option_screen_download_description" = "This will download your key(s) as a file. Very secure option if your device is encrypted, or if you can keep a file stored securely. If you lose both your phone and the file, your encrypted email will be unreadable, so you need to keep this file in a safe place";
+
+// Backup select keys screen
+"backup_select_key_screen_title" = "Select keys";
+"backup_select_key_screen_no_selection" = "Please select keys to backup";

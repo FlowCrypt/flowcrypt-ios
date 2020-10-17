@@ -100,11 +100,11 @@ extension BackupService: BackupServiceType {
 
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {
         let file = keys.joinedPrivateKey
-        let viewController = UIActivityViewController(
+        let activityViewController = UIActivityViewController(
             activityItems: [file],
             applicationActivities: nil
         )
-        viewController.present(viewController, animated: true)
+        viewController.present(activityViewController, animated: true)
     }
 }
 
@@ -124,22 +124,3 @@ fileprivate extension UserId {
         "\(name) <\(email)>"
     }
 }
-
-// TODO: - ANTON
-/**
- Firstly you let the user choose with a list of checkboxes which keys to include in the backup. You can check all by default and let them uncheck the ones they want to skip.
-
- Then you concatenate all private keys (armored) into one file. Join them with a newline.
- 12:16
- The app should also be able to process such file when importing. I think it does.
- 12:16
- If it's just one key, you can skip the checkbox list
- 12:17
- so you'll have
- -----BEGIN PGP PRIVATE KEY BLOCK-----
- ...
- -----END PGP PRIVATE KEY BLOCK-----
- -----BEGIN PGP PRIVATE KEY BLOCK-----
- ...
- -----END PGP PRIVATE KEY BLOCK-----
- */

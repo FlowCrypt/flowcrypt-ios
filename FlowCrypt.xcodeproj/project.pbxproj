@@ -74,6 +74,8 @@
 		9F3EF33123B1785600FA0CEF /* MsgListViewConroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */; };
 		9F41F9E0253649F2003B970D /* KeyServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41F9DF253649F2003B970D /* KeyServiceError.swift */; };
 		9F41F9E72537265C003B970D /* BackupServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41F9E62537265C003B970D /* BackupServiceError.swift */; };
+		9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA27253B75F4003B970D /* BackupSelectKeyViewController.swift */; };
+		9F41FA2F253B7624003B970D /* BackupSelectKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */; };
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
 		9F56BD3823438C7000A7371A /* DateFormattingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */; };
 		9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
@@ -393,6 +395,8 @@
 		9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MsgListViewConroller.swift; sourceTree = "<group>"; };
 		9F41F9DF253649F2003B970D /* KeyServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceError.swift; sourceTree = "<group>"; };
 		9F41F9E62537265C003B970D /* BackupServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceError.swift; sourceTree = "<group>"; };
+		9F41FA27253B75F4003B970D /* BackupSelectKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSelectKeyViewController.swift; sourceTree = "<group>"; };
+		9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSelectKeyDecorator.swift; sourceTree = "<group>"; };
 		9F4453BF236B894D005D7D05 /* TableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNode.swift; sourceTree = "<group>"; };
 		9F4453C1236B9273005D7D05 /* TextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNode.swift; sourceTree = "<group>"; };
 		9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerCellNode.swift; sourceTree = "<group>"; };
@@ -874,6 +878,33 @@
 			path = BackupService;
 			sourceTree = "<group>";
 		};
+		9F41FA35253B762A003B970D /* Backups Scene */ = {
+			isa = PBXGroup;
+			children = (
+				D20D3C662520AB1000D4AA9A /* BackupViewController.swift */,
+				D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */,
+			);
+			path = "Backups Scene";
+			sourceTree = "<group>";
+		};
+		9F41FA40253B763E003B970D /* Backups Option Scene */ = {
+			isa = PBXGroup;
+			children = (
+				D20D3C882520B67C00D4AA9A /* BackupOptionsViewController.swift */,
+				D20D3C8F2520B68A00D4AA9A /* BackupOptionsViewDecorator.swift */,
+			);
+			path = "Backups Option Scene";
+			sourceTree = "<group>";
+		};
+		9F41FA46253B764C003B970D /* Backups Seleckt Key Scene */ = {
+			isa = PBXGroup;
+			children = (
+				9F41FA27253B75F4003B970D /* BackupSelectKeyViewController.swift */,
+				9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */,
+			);
+			path = "Backups Seleckt Key Scene";
+			sourceTree = "<group>";
+		};
 		9F589F19238C82A1007FD759 /* Local Storage */ = {
 			isa = PBXGroup;
 			children = (
@@ -1076,10 +1107,9 @@
 		D20D3C822520AD0400D4AA9A /* Backup */ = {
 			isa = PBXGroup;
 			children = (
-				D20D3C662520AB1000D4AA9A /* BackupViewController.swift */,
-				D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */,
-				D20D3C882520B67C00D4AA9A /* BackupOptionsViewController.swift */,
-				D20D3C8F2520B68A00D4AA9A /* BackupOptionsViewDecorator.swift */,
+				9F41FA35253B762A003B970D /* Backups Scene */,
+				9F41FA40253B763E003B970D /* Backups Option Scene */,
+				9F41FA46253B764C003B970D /* Backups Seleckt Key Scene */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -2008,6 +2038,7 @@
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */,
 				D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */,
+				9F41FA2F253B7624003B970D /* BackupSelectKeyDecorator.swift in Sources */,
 				D227C0E8250538A90070F805 /* FoldersService.swift in Sources */,
 				D2E26F6A24F25AB800612AF1 /* KeyAlgoObject.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
@@ -2075,6 +2106,7 @@
 				D2F41371243CC76F0066AFB5 /* SessionObject.swift in Sources */,
 				9F268894237DD98900428A94 /* EnterPassPhraseViewDecorator.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
+				9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */,
 				D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */,
 				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* UserService.swift in Sources */,

@@ -9,18 +9,18 @@
 import FlowCryptUI
 import AsyncDisplayKit
 
-final class BackupOptionsViewController: ASDKViewController<TableNode> {
-    enum BackupOption: Int, CaseIterable, Equatable {
-        case email, download
+enum BackupOption: Int, CaseIterable, Equatable {
+    case email, download
 
-        var isEmail: Bool {
-            switch self {
-            case .download: return false
-            case .email: return true
-            }
+    var isEmail: Bool {
+        switch self {
+        case .download: return false
+        case .email: return true
         }
     }
+}
 
+final class BackupOptionsViewController: ASDKViewController<TableNode> {
     enum Parts: Int, CaseIterable {
         case email, download, action, info
     }
@@ -79,7 +79,13 @@ extension BackupOptionsViewController {
     }
 
     private func proceedToSelectBackupsScreen() {
-
+        navigationController?.pushViewController(
+            BackupSelectKeyViewController(
+                selectedOption: selectedOption,
+                backups: backups
+            ),
+            animated: true
+        )
     }
 
     private func makeBackup() {

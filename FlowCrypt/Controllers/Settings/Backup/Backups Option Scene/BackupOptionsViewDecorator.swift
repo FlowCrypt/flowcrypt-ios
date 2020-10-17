@@ -13,8 +13,8 @@ protocol BackupOptionsViewDecoratorType {
     var sceneTitle: String { get }
     var insets: UIEdgeInsets { get }
 
-    func buttonText(for backupOption: BackupOptionsViewController.BackupOption) -> NSAttributedString
-    func description(for backupOption: BackupOptionsViewController.BackupOption) -> NSAttributedString
+    func buttonText(for backupOption: BackupOption) -> NSAttributedString
+    func description(for backupOption: BackupOption) -> NSAttributedString
     func checkboxContext(for part: BackupOptionsViewController.Parts, isSelected: Bool) -> CheckBoxTextNode.Input
 }
 
@@ -22,7 +22,7 @@ struct BackupOptionsViewDecorator: BackupOptionsViewDecoratorType {
     let sceneTitle = "backup_option_screen_title".localized
     let insets: UIEdgeInsets = .side(16)
 
-    func buttonText(for backupOption: BackupOptionsViewController.BackupOption) -> NSAttributedString {
+    func buttonText(for backupOption: BackupOption) -> NSAttributedString {
         (backupOption.isEmail
             ? "backup_option_screen_email_action"
             : "backup_option_screen_file_action"
@@ -32,7 +32,7 @@ struct BackupOptionsViewDecorator: BackupOptionsViewDecoratorType {
             .attributed(.bold(14), color: .white, alignment: .center)
     }
 
-    func description(for backupOption: BackupOptionsViewController.BackupOption) -> NSAttributedString {
+    func description(for backupOption: BackupOption) -> NSAttributedString {
         (backupOption.isEmail
             ? "backup_option_screen_email_description"
             : "backup_option_screen_download_description"
