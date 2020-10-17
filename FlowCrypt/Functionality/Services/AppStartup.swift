@@ -60,15 +60,13 @@ struct AppStartup {
     }
 
     private func chooseView(window: UIWindow) {
-        // TODO: - Anton
-        window.rootViewController = MainNavigationController(rootViewController: BackupViewController())
-//        if !DataService.shared.isLoggedIn {
-//            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
-//        } else if DataService.shared.isSetupFinished {
-//            window.rootViewController = SideMenuNavigationController()
-//        } else {
-//            window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
-//        }
+        if !DataService.shared.isLoggedIn {
+            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
+        } else if DataService.shared.isSetupFinished {
+            window.rootViewController = SideMenuNavigationController()
+        } else {
+            window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
+        }
     }
 
     private func showErrorAlert(with error: Error, on window: UIWindow) {
