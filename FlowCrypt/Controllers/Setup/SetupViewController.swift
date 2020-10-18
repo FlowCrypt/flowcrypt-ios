@@ -7,7 +7,7 @@ import FlowCryptUI
 import Promises
 
 // swiftlint:disable line_length
-final class SetupViewController: ASDKViewController<TableNode> {
+final class SetupViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction
     }

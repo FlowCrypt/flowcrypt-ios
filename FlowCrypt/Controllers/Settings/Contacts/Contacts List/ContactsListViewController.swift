@@ -10,7 +10,7 @@ import FlowCryptUI
 import AsyncDisplayKit
 import FlowCryptCommon
 
-final class ContactsListViewController: ASDKViewController<TableNode> {
+final class ContactsListViewController: TableNodeViewController {
     private let decorator: ContactsListDecoratorType
     private let contactsProvider: LocalContactsProviderType
     private var contacts: [Contact] = []

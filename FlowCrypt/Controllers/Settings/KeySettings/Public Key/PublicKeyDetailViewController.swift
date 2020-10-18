@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class PublicKeyDetailViewController: ASDKViewController<TableNode> {
+final class PublicKeyDetailViewController: TableNodeViewController {
     private let text: String
 
     init(text: String) {

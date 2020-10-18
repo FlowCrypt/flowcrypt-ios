@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import MobileCoreServices
 
-final class ImportKeyViewController: ASDKViewController<TableNode> {
+final class ImportKeyViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, fileImport, pasteBoardImport
 
