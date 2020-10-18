@@ -87,13 +87,19 @@ extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
             switch part {
             case .title:
                 return SetupTitleNode(
-                    title: self.decorator.title,
-                    insets: self.decorator.titleInsets
+                    SetupTitleNode.Input(
+                        title: self.decorator.title,
+                        insets: self.decorator.titleInsets,
+                        backgroundColor: .backgroundColor
+                    )
                 )
             case .description:
                 return SetupTitleNode(
-                    title: self.decorator.subtitleStyle(self.userInfoMessage),
-                    insets: self.decorator.subTitleInset
+                    SetupTitleNode.Input(
+                        title: self.decorator.subtitleStyle(self.userInfoMessage),
+                        insets: self.decorator.subTitleInset,
+                        backgroundColor: .backgroundColor
+                    )
                 )
             case .fileImport:
                 return ButtonCellNode(

@@ -56,8 +56,11 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
 
             if part.isDescription {
                 return SetupTitleNode(
-                    title: self.decorator.attributedTitle(for: part),
-                    insets: self.decorator.titleInsets
+                    SetupTitleNode.Input(
+                        title: self.decorator.attributedTitle(for: part),
+                        insets: self.decorator.titleInsets,
+                        backgroundColor: .backgroundColor
+                    )
                 )
             } else {
                 return ButtonCellNode(
