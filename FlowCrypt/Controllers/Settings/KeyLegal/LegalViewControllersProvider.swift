@@ -35,8 +35,7 @@ private enum Items: Int, CaseIterable {
             assertionFailure()
             return UIViewController()
         }
-        let vc = WebViewController(url: link)
-        return vc
+        return WebViewController(url: link)
     }
 }
 

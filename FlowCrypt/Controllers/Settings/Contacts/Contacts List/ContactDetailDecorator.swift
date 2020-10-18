@@ -20,10 +20,10 @@ struct ContactDetailDecorator: ContactDetailDecoratorType {
     func nodeInput(with contact: Contact) -> ContactDetailNode.Input {
         let createdString: String = {
             if let created = contact.pubkeyCreated {
-                let df = DateFormatter()
-                df.dateStyle = .medium
-                df.timeStyle = .medium
-                return df.string(from: created)
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateStyle = .medium
+                dateFormatter.timeStyle = .medium
+                return dateFormatter.string(from: created)
             } else {
                 return "-"
             }

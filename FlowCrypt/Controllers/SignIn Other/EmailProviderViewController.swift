@@ -10,6 +10,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
+// swiftlint:disable file_length
 final class EmailProviderViewController: ASDKViewController<TableNode> {
     private enum UserError: Error {
         case password

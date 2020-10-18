@@ -14,7 +14,7 @@ func log(_ message: String, error: Error?, res: Any?, start: DispatchTime) {
 }
 
 func logDebug(
-    _ id: Int? = nil,
+    _ identifier: Int? = nil,
     _ msg: String? = nil,
     value: Any? = nil,
     fileName: String = #file,
@@ -22,8 +22,8 @@ func logDebug(
     lineNumber: Int = #line,
     columnNumber: Int = #column
 ) {
-    if let message = msg, let id = id {
-        Logger().debug(id, message, value: value)
+    if let message = msg, let identifier = identifier {
+        Logger().debug(identifier, message, value: value)
     } else {
         debugPrint("•••• \(fileName) - \(functionName) at line \(lineNumber)[\(columnNumber)]")
     }
@@ -45,7 +45,7 @@ private struct Logger {
         debugPrint("IMAP \(message) -> \(errStr) \(resStr) \(start.millisecondsSince)ms")
     }
 
-    func debug(_ id: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
-        debugPrint("[Imap debug \(id) - \(msg)] \(String(describing: value))")
+    func debug(_ identifier: Int, _ msg: String, value: Any? = nil) { // temporary function while we debug token refreshing
+        debugPrint("[Imap debug \(identifier) - \(msg)] \(String(describing: value))")
     }
 }

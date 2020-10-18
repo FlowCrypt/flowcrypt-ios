@@ -11,11 +11,11 @@ import FlowCryptCommon
 import FlowCryptUI
 
 final class SearchViewController: ASDKViewController<TableNode> {
-    enum State {
-        enum FetchedUpdates {
-            case added(Int), removed(Int)
-        }
+    enum FetchedUpdates {
+        case added(Int), removed(Int)
+    }
 
+    enum State {
         case idle, startFetching, empty, fetched([MCOIMAPMessage], FetchedUpdates?), error(String)
 
         var messages: [MCOIMAPMessage] {

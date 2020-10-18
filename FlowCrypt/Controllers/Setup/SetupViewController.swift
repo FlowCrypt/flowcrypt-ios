@@ -6,7 +6,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
-// swiftlint:disable line_length
+// swiftlint:disable file_length
 final class SetupViewController: ASDKViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction
@@ -345,7 +345,10 @@ extension SetupViewController {
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
         return Promise {
             let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
-            guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
+            let errorMessage = "Pass phrase strength: \(strength.word.word)"
+                + "\ncrack time: \(strength.time)"
+                + "\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase."
+            guard strength.word.pass else { throw AppErr.user(errorMessage) }
             let confirmPassPhrase = try await(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
             guard confirmPassPhrase != nil else { throw AppErr.silentAbort }
             guard confirmPassPhrase == passPhrase else { throw AppErr.user("Pass phrases don't match") }
@@ -361,7 +364,12 @@ extension SetupViewController {
     private func backupPrvToInbox(prv: KeyDetails, userId: UserId) -> Promise<Void> {
         return Promise { () -> Void in
             guard prv.isFullyEncrypted ?? false else { throw AppErr.unexpected("Private Key must be fully enrypted before backing up") }
-            let filename = "flowcrypt-backup-\(userId.email.replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression)).key"
+            let userEmail = userId.email.replacingOccurrences(
+                of: "[^a-z0-9]",
+                with: "",
+                options: .regularExpression
+            )
+            let filename = "flowcrypt-backup-\(userEmail).key"
             let backupEmail = try self.core.composeEmail(msg: SendableMsg(
                 text: "setup_backup_email".localized,
                 to: [userId.toMime()],

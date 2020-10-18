@@ -7,6 +7,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
+// swiftlint:disable file_length
 final class ComposeViewController: ASDKViewController<TableNode> {
     struct Recipient {
         let email: String
@@ -321,6 +322,7 @@ extension ComposeViewController {
         navigationController?.popViewController(animated: true)
     }
 
+    // swiftlint:disable identifier_name
     private func encryptMsg(
         pubkeys: [String],
         subject: String,

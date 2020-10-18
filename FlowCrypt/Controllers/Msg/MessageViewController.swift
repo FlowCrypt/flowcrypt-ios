@@ -305,7 +305,7 @@ extension MessageViewController {
 
     private func handleReplyTap() {
         guard let input = input else { return }
-        let replyInfo = ComposeViewController.Input.ReplyInfo(
+        let replyInfo = ComposeViewController.ReplyInfo(
             recipient: input.objMessage.header.from,
             subject: input.objMessage.header.subject,
             mime: input.bodyMessage,

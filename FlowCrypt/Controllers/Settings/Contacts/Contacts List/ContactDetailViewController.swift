@@ -56,11 +56,11 @@ final class ContactDetailViewController: ASDKViewController<TableNode> {
 
 extension ContactDetailViewController {
     @objc private final func handleSaveAction() {
-        let vc = UIActivityViewController(
+        let activityViewController = UIActivityViewController(
             activityItems: [contact.pubKey],
             applicationActivities: nil
         )
-        present(vc, animated: true, completion: nil)
+        present(activityViewController, animated: true, completion: nil)
     }
 
     @objc private final func handleCopyAction() {

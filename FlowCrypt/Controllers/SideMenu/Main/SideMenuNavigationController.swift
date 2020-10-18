@@ -64,8 +64,8 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         delegate = self
         interactivePopGestureRecognizer?.delegate = self
 
-        if let vc = viewControllers.first {
-            navigationController(self, didShow: vc, animated: false)
+        if let firstVC = viewControllers.first {
+            navigationController(self, didShow: firstVC, animated: false)
         }
     }
 

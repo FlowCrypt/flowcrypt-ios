@@ -9,21 +9,21 @@
 import Foundation
 
 extension ComposeViewController {
+    struct ReplyInfo: Equatable {
+        let recipient: MCOAddress?
+        let subject: String?
+        let mime: Data?
+        let sentDate: Date
+        let message: String
+    }
+
+    enum InputType: Equatable {
+        case idle
+        case reply(ReplyInfo)
+    }
+
     struct Input {
         static let empty = Input(type: .idle)
-
-        struct ReplyInfo: Equatable {
-            let recipient: MCOAddress?
-            let subject: String?
-            let mime: Data?
-            let sentDate: Date
-            let message: String
-        }
-
-        enum InputType: Equatable {
-            case idle
-            case reply(ReplyInfo)
-        }
 
         let type: InputType
 

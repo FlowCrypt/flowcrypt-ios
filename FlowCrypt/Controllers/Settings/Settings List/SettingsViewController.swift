@@ -98,11 +98,11 @@ extension SettingsViewController {
             viewController = nil
         }
 
-        guard let vc = viewController else {
+        guard let controller = viewController else {
             showToast("\(setting.title) not yet implemented")
             return
         }
 
-        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(controller, animated: true)
     }
 }
