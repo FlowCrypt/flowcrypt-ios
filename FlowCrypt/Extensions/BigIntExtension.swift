@@ -10,7 +10,7 @@ import Foundation
 
 #warning("Should be checked with cryptographer before production")
 // https://github.com/FlowCrypt/flowcrypt-ios/issues/238
-
+// swiftlint:disable identifier_name
 func modPow<T: BinaryInteger>(n: T, e: T, m: T) -> T {
     guard e != 0 else {
         return 1

@@ -59,6 +59,7 @@ extension UIColor {
 }
 
 extension UIColor {
+    // swiftlint:disable identifier_name
     convenience init(r: Int, g: Int, b: Int, alpha: CGFloat) {
         self.init(
             red: CGFloat(r)/CGFloat(255.0),

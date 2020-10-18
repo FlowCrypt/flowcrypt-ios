@@ -2,7 +2,7 @@
 
 disabled_rules:
     - todo
-    - identifier_name
+#    - identifier_name
     - nesting
 #   - legacy_hashing
 #   - line_length
