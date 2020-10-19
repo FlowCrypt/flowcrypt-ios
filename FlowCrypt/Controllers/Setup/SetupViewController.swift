@@ -74,6 +74,7 @@ final class SetupViewController: ASDKViewController<TableNode> {
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -299,7 +300,7 @@ extension SetupViewController {
 
         let matchingKeyBackups = keyMethods.filterByPassPhraseMatch(keys: details, passPhrase: passPhrase)
 
-        guard matchingKeyBackups.count > 0 else {
+        guard !matchingKeyBackups.isEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }

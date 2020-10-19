@@ -16,7 +16,17 @@ if which swiftformat >/dev/null; then
             blankLinesAtEndOfScope, \
             blankLinesAtStartOfScope, \
             consecutiveBlankLines, \
-            consecutiveSpaces
+            consecutiveSpaces, \
+            duplicateImports, \
+            initCoderUnavailable, \
+            isEmpty, \
+            linebreakAtEndOfFile, \
+            redundantBreak, \
+            redundantFileprivate, \
+            redundantInit, \
+            redundantLet, \
+            redundantPattern, \
+            sortedImports
      --swiftversion 5 \
 else
   echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"

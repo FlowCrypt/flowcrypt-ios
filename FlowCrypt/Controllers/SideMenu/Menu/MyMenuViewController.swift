@@ -47,6 +47,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         super.init(node: ASDisplayNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

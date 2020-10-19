@@ -31,6 +31,7 @@ final class ContactDetailViewController: ASDKViewController<TableNode> {
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
