@@ -260,7 +260,7 @@ extension MessageViewController {
             return true
         }
         .then(on: .main) { [weak self] didPerformOp in
-            guard didPerformOp else { self?.hideSpinner(); return  }
+            guard didPerformOp else { self?.hideSpinner(); return }
             self?.handleOpSuccess(operation: .permanentlyDelete)
         }.catch(on: .main) { [weak self] _ in
             self?.handleOpErr(operation: .permanentlyDelete)

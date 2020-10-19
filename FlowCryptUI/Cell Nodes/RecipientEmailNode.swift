@@ -76,7 +76,7 @@ final class RecipientEmailNode: CellNode {
         imageNode.alpha = 1
         let animation = CABasicAnimation(keyPath: "transform.rotation")
         animation.fromValue = 0
-        animation.toValue =  Double.pi * 2.0
+        animation.toValue = Double.pi * 2.0
         animation.duration = 2
         animation.repeatCount = .infinity
         animation.isRemovedOnCompletion = false
@@ -89,7 +89,7 @@ final class RecipientEmailNode: CellNode {
         imageNode.alpha = 1
         let animation = CABasicAnimation(keyPath: "transform.scale")
         animation.fromValue = 0.9
-        animation.toValue =  1.0
+        animation.toValue = 1.0
         animation.duration = 0.5
         animation.repeatCount = 1
         animation.isRemovedOnCompletion = false

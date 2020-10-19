@@ -15,7 +15,8 @@ if which swiftformat >/dev/null; then
             blankLinesAroundMark, \
             blankLinesAtEndOfScope, \
             blankLinesAtStartOfScope, \
-            consecutiveBlankLines
+            consecutiveBlankLines, \
+            consecutiveSpaces
      --swiftversion 5 \
 else
   echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"

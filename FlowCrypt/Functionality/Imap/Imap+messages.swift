@@ -20,7 +20,7 @@ extension Imap: MessageProvider {
 
             let folderInfo = try await(self.folderInfo(for: folder))
             let totalCount = Int(folderInfo.messageCount)
-            if totalCount == 0  {
+            if totalCount == 0 {
                 resolve(MessageContext(messages: [], totalMessages: totalCount))
             }
             let set = self.helper.createSet(
