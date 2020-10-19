@@ -30,7 +30,6 @@ extension Imap: BackupProvider {
                 folderPaths = [inbox]
             }
 
-
             let searchExpr = self.createSearchBackupExpression(for: email)
 
             let uidsForFolders = try folderPaths.compactMap { folder -> UidsContext in

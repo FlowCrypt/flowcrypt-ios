@@ -16,7 +16,6 @@ public final class ContactDetailNode: CellNode {
         let algoInfo: NSAttributedString?
         let created: NSAttributedString?
 
-
         public init(
             user: NSAttributedString,
             ids: NSAttributedString,

@@ -80,7 +80,6 @@ class SignInGoogleTest: XCTestCase, AppTest {
 
         textField.tap()
 
-
         textField.typeText(user.email)
         let returnButton = goKeyboardButton
         XCTAssert(returnButton.exists, "User keyboard button")
@@ -100,7 +99,6 @@ class SignInGoogleTest: XCTestCase, AppTest {
 
         XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
 
-
         // MARK: - Wrong pass phrase
 
         // enter wrong pass phrase and tap enter
@@ -115,7 +113,6 @@ class SignInGoogleTest: XCTestCase, AppTest {
         errorAlert.scrollViews.otherElements.buttons["OK"].tap()
         wait(0.2)
         app.tables.secureTextFields.firstMatch.tap()
-
 
         // MARK: - Correct pass phrase
 

@@ -282,8 +282,6 @@ extension SignInTest {
     }
 }
 
-
-
 /*
  log in -> approve -> no backups -> generate pubkey -> switch accounts
  */

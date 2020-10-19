@@ -242,4 +242,3 @@ extension ViewController {
         textField?.reset()
     }
 }
-
