@@ -2,7 +2,10 @@
 
 disabled_rules:
     - todo
-#   - nesting
+    
+    # https://docs.swift.org/swift-book/LanguageGuide/NestedTypes.html#//apple_ref/doc/uid/TP40014097-CH23-ID242
+    - nesting
+    
 #   - identifier_name
 #   - legacy_hashing
 #   - line_length

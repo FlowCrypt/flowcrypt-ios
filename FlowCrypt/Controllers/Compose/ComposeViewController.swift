@@ -395,7 +395,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         let nodeHeight = tableNode.frame.size.height
             - (navigationController?.navigationBar.frame.size.height ?? 0.0)
@@ -407,18 +406,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             switch (self.state, indexPath.section) {
             case (_, 0):
                 guard let part = RecipientParts(rawValue: indexPath.row) else { return ASCellNode() }
-                switch part {
-                case .recipientDivider: return DividerCellNode()
-                case .recipientsInput: return self.recipientInput()
-                case .recipient: return self.recipientsNode()
-                }
+                return nodeForRecipient(part: part)
             case (.main, 1):
                 guard let composePart = ComposeParts(rawValue: indexPath.row) else { return ASCellNode() }
-                switch composePart {
-                case .subject: return self.subjectNode()
-                case .text: return self.textNode(with: nodeHeight)
-                case .subjectDivider: return DividerCellNode()
-                }
+                return cellForCompose(part: part)
             case let (.searchEmails(emails), 1):
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
@@ -440,6 +431,22 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 // MARK: - Nodes
 
 extension ComposeViewController {
+    private func nodeForRecipient(part: ComposeViewController.RecipientParts) -> CellNode {
+        switch part {
+        case .recipientDivider: return DividerCellNode()
+        case .recipientsInput: return self.recipientInput()
+        case .recipient: return self.recipientsNode()
+        }
+    }
+    
+    private func nodeForCompose(part: ComposeViewController.ComposeParts) -> CellNode {
+        switch part {
+        case .subject: return self.subjectNode()
+        case .text: return self.textNode(with: nodeHeight)
+        case .subjectDivider: return DividerCellNode()
+        }
+    }
+    
     private func subjectNode() -> ASCellNode {
         TextFieldCellNode(
             input: decorator.styledTextFieldInput(with: "compose_subject".localized)
