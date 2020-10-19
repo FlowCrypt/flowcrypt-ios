@@ -54,7 +54,6 @@ public final class SwitchCellNode: ASCellNode {
         if let backgroundColor = input?.backgroundColor{
             self.backgroundColor = backgroundColor
         }
-
     }
 
     @objc private func handleAction(_ sender: UISwitch) {

@@ -16,12 +16,14 @@ protocol CacheServiceType {
 }
 
 // MARK: - CachedObject
+
 protocol CachedObject: Object {
     associatedtype Identifier: Equatable
     var identifier: Identifier { get }
 }
 
 // MARK: - Cache
+
 struct CacheService<T: CachedObject>: CacheServiceType {
     let storage: CacheStorage
 

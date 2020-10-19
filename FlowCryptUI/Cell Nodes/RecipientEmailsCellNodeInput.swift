@@ -12,6 +12,7 @@ public typealias RecipientState = RecipientEmailsCellNode.Input.State
 public typealias RecipientStateContext = RecipientEmailsCellNode.Input.StateContext
 
 // MARK: Input
+
 extension RecipientEmailsCellNode {
     public struct Input {
         public struct StateContext {

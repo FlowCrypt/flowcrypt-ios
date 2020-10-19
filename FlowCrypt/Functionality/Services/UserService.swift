@@ -51,11 +51,9 @@ final class UserService: NSObject {
             assertionFailure("Implement this one")
         }
     }
-
 }
 
 extension UserService: UserServiceType {
-
     func renewSession() -> Promise<Void> {
         Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }

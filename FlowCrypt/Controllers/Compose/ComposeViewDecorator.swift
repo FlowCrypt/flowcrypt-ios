@@ -25,6 +25,7 @@ protocol ComposeViewDecoratorType {
 }
 
 // MARK: - ComposeViewDecorator
+
 struct ComposeViewDecorator: ComposeViewDecoratorType {
     let recipientIdleState: RecipientState = .idle(idleStateContext)
     let recipientSelectedState: RecipientState = .selected(selectedStateContext)
@@ -103,6 +104,7 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
 }
 
 // MARK: - Color
+
 extension UIColor {
     static var titleNodeBackgroundColorSelected: UIColor {
         UIColor.colorFor(
@@ -134,6 +136,7 @@ extension UIColor {
 }
 
 // MARK: - RecipientState
+
 extension ComposeViewDecorator {
     private static var idleStateContext: RecipientStateContext {
         RecipientStateContext(
@@ -191,6 +194,7 @@ extension ComposeViewDecorator {
 }
 
 // MARK: - RecipientEmailsCellNode.Input
+
 extension RecipientEmailsCellNode.Input {
     init(_ recipient: ComposeViewController.Recipient) {
         self.init(

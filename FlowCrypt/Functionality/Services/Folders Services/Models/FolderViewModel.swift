@@ -23,6 +23,7 @@ struct FolderViewModel {
 }
 
 // MARK: - Map from server(imap) model
+
 extension FolderViewModel {
     init?(_ folder: MCOIMAPFolder, image: UIImage? = nil, itemType: ItemType = .folder) {
         guard let name = folder.name else { return nil }
@@ -34,6 +35,7 @@ extension FolderViewModel {
 }
 
 // MARK: - Map from realm model
+
 extension FolderViewModel {
     init(_ object: FolderObject) {
         self.init(
@@ -46,6 +48,7 @@ extension FolderViewModel {
 }
 
 // MARK: - Common extension for MCOIMAPFolder
+
 extension MCOIMAPFolder {
     var name: String? {
         let gmailRootPath = GeneralConstants.Global.gmailRootPath

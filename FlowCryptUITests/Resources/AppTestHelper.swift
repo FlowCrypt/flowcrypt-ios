@@ -13,6 +13,7 @@ protocol AppTest {
 }
 
 // MARK: - Helpers
+
 extension AppTest {
     var cells: [XCUIElement] {
         app.tables
@@ -50,6 +51,7 @@ extension AppTest {
 }
 
 // MARK: - Actions
+
 extension AppTest {
     func sendMessage(to recipient: String ) {
         tapOnCompose()

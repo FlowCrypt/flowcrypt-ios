@@ -150,6 +150,7 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
 }
 
 // MARK: - TextFieldContext for parts
+
 extension EmailProviderViewDecorator {
     typealias TextFieldContext = (placeholder: String?, isSecure: Bool, keyboardType: UIKeyboardType)
 
@@ -231,6 +232,7 @@ extension EmailProviderViewDecorator {
 }
 
 // MARK: - String for parts
+
 extension EmailProviderViewDecorator {
     private func accountStringFor(user: UserObject, part: EmailProviderViewController.AccountPart) -> NSAttributedString? {
         switch part {

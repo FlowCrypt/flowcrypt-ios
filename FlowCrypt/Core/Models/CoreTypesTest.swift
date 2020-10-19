@@ -10,7 +10,6 @@ import XCTest
 import FlowCryptCommon
 
 class CoreTypesTest: XCTestCase {
-
     func test_key_details_with_same_fingerprints() {
         let firstKeyDetail = KeyDetails(
             public: "public1",
@@ -59,7 +58,6 @@ class CoreTypesTest: XCTestCase {
             1,
             "If the [KeyDetails] contains two keys with the same fingerprint, only one should be added"
         )
-
     }
 
     func test_key_ids_with_same_fingerprint() {

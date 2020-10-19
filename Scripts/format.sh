@@ -10,8 +10,12 @@ if which swiftformat >/dev/null; then
   echo "Start formating"
   swiftlint autocorrect --path .
   swiftformat . \
-     --rules trailingSpace \
-     --swiftversion 5
+     --rules trailingSpace, \
+            andOperator, \
+            blankLinesAroundMark, \
+            blankLinesAtEndOfScope, \
+            blankLinesAtStartOfScope \
+     --swiftversion 5 \
 else
   echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"
   brew install swiftformat

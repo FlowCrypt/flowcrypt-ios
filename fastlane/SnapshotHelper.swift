@@ -70,7 +70,6 @@ open class Snapshot: NSObject {
     }
 
     open class func setupSnapshot(_ app: XCUIApplication, waitForAnimations: Bool = true) {
-
         Snapshot.app = app
         Snapshot.waitForAnimations = waitForAnimations
 
@@ -117,7 +116,7 @@ open class Snapshot: NSObject {
             NSLog("Couldn't detect/set locale...")
         }
 
-        if locale.isEmpty && !deviceLanguage.isEmpty {
+        if locale.isEmpty, !deviceLanguage.isEmpty {
             locale = Locale(identifier: deviceLanguage).identifier
         }
 

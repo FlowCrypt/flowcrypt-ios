@@ -41,6 +41,7 @@ enum SessionType {
 }
 
 // MARK: - DataService
+
 final class DataService: DataServiceType {
     static let shared = DataService()
 
@@ -91,6 +92,7 @@ final class DataService: DataServiceType {
 }
 
 // MARK: - DataKeyServiceType
+
 extension DataService: KeyDataServiceType {
     var keys: [PrvKeyInfo]? {
         guard let keys = encryptedStorage.keys() else { return nil }
@@ -111,6 +113,7 @@ extension DataService: KeyDataServiceType {
 }
 
 // MARK: - LogOut
+
 extension DataService {
     func logOutAndDestroyStorage() {
         localStorage.logOut()
@@ -119,6 +122,7 @@ extension DataService {
 }
 
 // MARK: - Migration
+
 extension DataService: DBMigration {
     /// Perform all kind of migrations
     func performMigrationIfNeeded() -> Promise<Void> {
@@ -176,6 +180,7 @@ extension DataService: DBMigration {
 }
 
 // MARK: - SessionProvider
+
 extension DataService: ImapSessionProvider {
     func imapSession() -> IMAPSession? {
         guard let user = encryptedStorage.getUser() else {
@@ -207,6 +212,7 @@ extension DataService: ImapSessionProvider {
 }
 
 // MARK: -
+
 extension DataService {
     func startFor(user type: SessionType) {
         switch type {

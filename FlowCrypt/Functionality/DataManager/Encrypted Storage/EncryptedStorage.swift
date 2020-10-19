@@ -73,6 +73,7 @@ final class EncryptedStorage: EncryptedStorageType {
 }
 
 // MARK: - LogOut
+
 extension EncryptedStorage: LogOutHandler {
     func logOut() { // todo - logOut is not clear - should be called onLogOut to make it clear it's responding to an event
         destroyEncryptedStorage()
@@ -106,6 +107,7 @@ extension EncryptedStorage: LogOutHandler {
 }
 
 // MARK: - Migration
+
 extension EncryptedStorage {
     func performMigrationIfNeeded() -> Promise<Void> {
         // current migration only does plain realm -> encrypted realm migration, with no database schema change
@@ -163,6 +165,7 @@ extension EncryptedStorage {
 }
 
 // MARK: - Keys
+
 extension EncryptedStorage {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
         try! storage.write {
@@ -203,6 +206,7 @@ extension EncryptedStorage {
 }
 
 // MARK: - Token
+
 extension EncryptedStorage {
     @available(*, deprecated, message: "Use information from UserObject")
     func currentToken() -> String? {

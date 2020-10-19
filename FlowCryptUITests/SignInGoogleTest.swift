@@ -58,7 +58,9 @@ class SignInGoogleTest: XCTestCase, AppTest {
         let user = UserCredentials.main
 
         // tap on gmail button
+
         // MARK: - Google Login
+
         app.tables.buttons["gmail"].tap()
         let signInAlert = gmailAlert
 
@@ -100,6 +102,7 @@ class SignInGoogleTest: XCTestCase, AppTest {
 
 
         // MARK: - Wrong pass phrase
+
         // enter wrong pass phrase and tap enter
         let button = goKeyboardButton
 
@@ -115,6 +118,7 @@ class SignInGoogleTest: XCTestCase, AppTest {
 
 
         // MARK: - Correct pass phrase
+
         // enter correct pass phrase and tap enter
         if button.exists {
             app.typeText(user.pass)
@@ -127,10 +131,12 @@ class SignInGoogleTest: XCTestCase, AppTest {
         XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
 
         // MARK: - Send message
+
         sendMessage(to: user.email)
         XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
 
         // MARK: - Check in sent mail box
+
         menuButton.tap()
         tapOnMenu(folder: "Sent Mail")
         wait(3)

@@ -59,6 +59,7 @@ final class EmailProviderViewController: ASDKViewController<TableNode> {
 }
 
 // MARK: - Parts
+
 extension EmailProviderViewController {
     enum Section {
         case account(AccountPart)
@@ -148,6 +149,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Setup
+
 extension EmailProviderViewController {
     private func setupUI() {
         title = "Email Provider"
@@ -199,6 +201,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
+
 extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
         Section.numberOfSections
@@ -224,6 +227,7 @@ extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
 }
 
 // MARK: - Nodes
+
 extension EmailProviderViewController {
     private func titleNode(for indexPath: IndexPath) -> ASCellNode {
         guard let section = Section(indexPath: indexPath) else {
@@ -273,6 +277,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Helpers
+
 extension EmailProviderViewController {
     private var connections: [ConnectionType] {
         ConnectionType.allCases
@@ -306,6 +311,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Actions
+
 extension EmailProviderViewController {
     private func handleTextField(_ action: TextFieldActionType, for indexPath: IndexPath) {
         guard let section = Section(indexPath: indexPath) else { return }
@@ -457,6 +463,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Connect
+
 extension EmailProviderViewController {
     private func connect() {
         let result = checkCurrentUser()
@@ -525,10 +532,10 @@ extension EmailProviderViewController {
 
         return .success(user)
     }
-
 }
 
 // MARK: - Picker
+
 extension EmailProviderViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         1

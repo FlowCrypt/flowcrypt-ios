@@ -406,10 +406,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             switch (self.state, indexPath.section) {
             case (_, 0):
                 guard let part = RecipientParts(rawValue: indexPath.row) else { return ASCellNode() }
-                return nodeForRecipient(part: part)
+                return self.nodeForRecipient(part: part)
             case (.main, 1):
                 guard let composePart = ComposeParts(rawValue: indexPath.row) else { return ASCellNode() }
-                return cellForCompose(part: part)
+                return self.nodeForCompose(part: composePart, height: nodeHeight)
             case let (.searchEmails(emails), 1):
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
@@ -438,16 +438,16 @@ extension ComposeViewController {
         case .recipient: return self.recipientsNode()
         }
     }
-    
-    private func nodeForCompose(part: ComposeViewController.ComposeParts) -> CellNode {
+
+    private func nodeForCompose(part: ComposeViewController.ComposeParts, height: CGFloat) -> CellNode {
         switch part {
         case .subject: return self.subjectNode()
-        case .text: return self.textNode(with: nodeHeight)
+        case .text: return self.textNode(with: height)
         case .subjectDivider: return DividerCellNode()
         }
     }
-    
-    private func subjectNode() -> ASCellNode {
+
+    private func subjectNode() -> CellNode {
         TextFieldCellNode(
             input: decorator.styledTextFieldInput(with: "compose_subject".localized)
         ) { [weak self] event in
@@ -468,7 +468,7 @@ extension ComposeViewController {
         }
     }
 
-    private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
+    private func textNode(with nodeHeight: CGFloat) -> CellNode {
         let textFieldHeight = decorator.styledTextFieldInput(with: "").height
         let dividerHeight: CGFloat = 1
         let preferredHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
@@ -660,6 +660,7 @@ extension ComposeViewController {
 }
 
 // MARK: - Action Handling
+
 extension ComposeViewController {
     private func searchEmail(with query: String) {
         googleService.searchContacts(query: query)
@@ -772,6 +773,7 @@ extension ComposeViewController {
 }
 
 // MARK: - State Handling
+
 extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState

@@ -51,6 +51,7 @@ final class ViewController: ASDKViewController<TableNode> {
         )
         composeButton.cornerRadius = size.width / 2
     }
+
     // MARK: - Recipient Text Field
 
     enum Constants {

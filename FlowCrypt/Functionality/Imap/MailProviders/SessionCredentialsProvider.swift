@@ -19,7 +19,6 @@ enum SessionCredentialsError: Error {
     case notFound(Int)
 }
 struct SessionCredentialsService: SessionCredentialsProvider {
-
     let manager = MCOMailProvidersManager.shared()
 
     func getImapCredentials(for email: String) -> MailSettingsCredentials? {

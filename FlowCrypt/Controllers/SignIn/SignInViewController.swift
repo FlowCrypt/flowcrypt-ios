@@ -145,7 +145,6 @@ extension SignInViewController {
             debugPrint("catch generic")
             debugPrint(error)
         }
-
     }
 
     private func proceedToRecover() {
