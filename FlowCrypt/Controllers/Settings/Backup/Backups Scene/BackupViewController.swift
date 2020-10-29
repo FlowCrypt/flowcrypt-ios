@@ -19,7 +19,7 @@ final class BackupViewController: ASDKViewController<TableNode> {
         case backups([KeyDetails])
         case noBackups
 
-        var isAnyBackups: Bool {
+        var hasAnyBackups: Bool {
             switch self {
             case .backups: return true
             case .idle, .noBackups: return false

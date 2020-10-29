@@ -23,7 +23,7 @@ struct BackupViewDecorator: BackupViewDecoratorType {
     let buttonInsets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
 
     func buttonTitle(for state: BackupViewController.State) -> NSAttributedString {
-        (state.isAnyBackups ? "backup_screen_found_action" : "backup_screen_not_found_action")
+        (state.hasAnyBackups ? "backup_screen_found_action" : "backup_screen_not_found_action")
             .localized
             .uppercased()
             .attributed(.bold(14), color: .white, alignment: .center)

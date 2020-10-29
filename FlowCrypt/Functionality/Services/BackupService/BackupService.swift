@@ -82,7 +82,7 @@ extension BackupService: BackupServiceType {
             let privateKeyData = privateKeyContext.data().base64EncodedString()
 
             let filename = "flowcrypt-backup-\(userId.email.userReadableEmail).key"
-            let messageAttributes = [SendableMsg.Attribute(name: filename, type: "text/plain", base64: privateKeyData)]
+            let attachments = [SendableMsg.Attachment(name: filename, type: "text/plain", base64: privateKeyData)]
             let message = SendableMsg(
                 text: "setup_backup_email".localized,
                 to: [userId.toMime],
@@ -91,7 +91,7 @@ extension BackupService: BackupServiceType {
                 from: userId.toMime,
                 subject: "Your FlowCrypt Backup",
                 replyToMimeMsg: nil,
-                atts: messageAttributes
+                atts: attachments
             )
             let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: nil)
             try await(imap.sendMail(mime: backupEmail.mimeEncoded))
