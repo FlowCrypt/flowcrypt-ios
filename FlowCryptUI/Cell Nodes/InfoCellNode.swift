@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 
 /// Node for representing text and optional image
-public final class InfoCellNode: ASCellNode {
+public final class InfoCellNode: CellNode {
     public struct Input {
         let attributedText: NSAttributedString
         let image: UIImage?

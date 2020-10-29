@@ -8,7 +8,8 @@ import FlowCryptUI
 import Promises
 
 // swiftlint:disable file_length
-final class ComposeViewController: ASDKViewController<TableNode> {
+final class ComposeViewController: TableNodeViewController {
+
     struct Recipient {
         let email: String
         var state: RecipientState

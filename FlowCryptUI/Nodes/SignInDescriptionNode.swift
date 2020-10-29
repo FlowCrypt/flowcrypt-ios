@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-public final class SignInDescriptionNode: ASCellNode {
+public final class SignInDescriptionNode: CellNode {
     private let textNode = ASTextNode2()
 
     public init(_ title: NSAttributedString?) {

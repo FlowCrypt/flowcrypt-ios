@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class EnterPassPhraseViewController: ASDKViewController<TableNode> {
+final class EnterPassPhraseViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, enterPhrase, chooseAnother
 
@@ -124,13 +124,19 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
             switch part {
             case .title:
                 return SetupTitleNode(
-                    title: self.decorator.passPhraseTitle,
-                    insets: self.decorator.titleInsets
+                    SetupTitleNode.Input(
+                        title: self.decorator.passPhraseTitle,
+                        insets: self.decorator.titleInsets,
+                        backgroundColor: .backgroundColor
+                    )
                 )
             case .description:
                 return SetupTitleNode(
-                    title: self.decorator.subtitleStyle(self.email),
-                    insets: self.decorator.subTitleInset
+                    SetupTitleNode.Input(
+                        title: self.decorator.subtitleStyle(self.email),
+                        insets: self.decorator.subTitleInset,
+                        backgroundColor: .backgroundColor
+                    )
                 )
             case .passPhrase:
                 return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { [weak self] action in

@@ -6,7 +6,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
-final class MessageViewController: ASDKViewController<TableNode> {
+final class MessageViewController: TableNodeViewController {
     struct Input {
         var objMessage = MCOIMAPMessage()
         var bodyMessage: Data?

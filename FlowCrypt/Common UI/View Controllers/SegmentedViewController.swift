@@ -128,10 +128,14 @@ extension SegmentedViewController: ASCollectionDataSource, ASCollectionDelegate 
     func collectionNode(_: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self, let item = self.dataSource[safe: indexPath.row] else { return ASCellNode() }
+
             return SetupTitleNode(
-                title: item.title,
-                insets: UIEdgeInsets(top: 16, left: 8, bottom: 8, right: 8),
-                selectedLineColor: self.style.lineColor
+                SetupTitleNode.Input(
+                    title: item.title,
+                    insets: UIEdgeInsets(top: 16, left: 8, bottom: 8, right: 8),
+                    selectedLineColor: self.style.lineColor,
+                    backgroundColor: .main
+                )
             )
         }
     }
