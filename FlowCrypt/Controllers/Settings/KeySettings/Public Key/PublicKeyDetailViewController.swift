@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class PublicKeyDetailViewController: ASDKViewController<TableNode> {
+final class PublicKeyDetailViewController: TableNodeViewController {
     private let text: String
 
     init(text: String) {
@@ -38,9 +38,12 @@ extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt _: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            SetupTitleNode(
-                title: (self?.text ?? "").attributed(.regular(16)),
-                insets: UIEdgeInsets.side(16)
+            return SetupTitleNode(
+                SetupTitleNode.Input(
+                    title: (self?.text ?? "").attributed(.regular(16)),
+                    insets: .side(16),
+                    backgroundColor: .backgroundColor
+                )
             )
         }
     }

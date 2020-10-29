@@ -13,5 +13,6 @@ open class CellNode: ASCellNode {
         super.init()
         automaticallyManagesSubnodes = true
         selectionStyle = .none
+        backgroundColor = .backgroundColor
     }
 }

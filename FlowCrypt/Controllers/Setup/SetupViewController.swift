@@ -7,7 +7,7 @@ import FlowCryptUI
 import Promises
 
 // swiftlint:disable line_length
-final class SetupViewController: ASDKViewController<TableNode> {
+final class SetupViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction
     }
@@ -433,13 +433,19 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             switch part {
             case .title:
                 return SetupTitleNode(
-                    title: self.decorator.title,
-                    insets: self.decorator.titleInset
+                    SetupTitleNode.Input(
+                        title: self.decorator.title,
+                        insets: self.decorator.titleInset,
+                        backgroundColor: .backgroundColor
+                    )
                 )
             case .description:
                 return SetupTitleNode(
-                    title: self.decorator.subtitle(for: self.state),
-                    insets: self.decorator.subTitleInset
+                    SetupTitleNode.Input(
+                        title: self.decorator.subtitle(for: self.state),
+                        insets: self.decorator.subTitleInset,
+                        backgroundColor: .backgroundColor
+                    )
                 )
             case .passPhrase:
                 return TextFieldCellNode(input: self.decorator.textFieldStyle) { [weak self] action in

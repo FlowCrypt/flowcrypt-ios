@@ -21,12 +21,12 @@ PODS:
   - IDZSwiftCommonCrypto (0.13.0)
   - mailcore2-ios (0.6.4)
   - MBProgressHUD (1.1.0)
-  - PINCache (3.0.1):
-    - PINCache/Arc-exception-safe (= 3.0.1)
-    - PINCache/Core (= 3.0.1)
-  - PINCache/Arc-exception-safe (3.0.1):
+  - PINCache (3.0.2):
+    - PINCache/Arc-exception-safe (= 3.0.2)
+    - PINCache/Core (= 3.0.2)
+  - PINCache/Arc-exception-safe (3.0.2):
     - PINCache/Core
-  - PINCache/Core (3.0.1):
+  - PINCache/Core (3.0.2):
     - PINOperation (~> 1.2.0)
   - PINOperation (1.2)
   - PINRemoteImage/Core (3.0.1):
@@ -120,7 +120,7 @@ SPEC CHECKSUMS:
   IDZSwiftCommonCrypto: 00dd37cdfbd149312a7e5a582cf9909f8b129f44
   mailcore2-ios: 3ff0be2fa553d4da9c11d39c11d51863c768f24f
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
-  PINCache: ee3c4abadd09970a61cdda0cfc345e69a3d75b26
+  PINCache: bea7c404c360f6fe0f6ee783c5cd14e778fa2aab
   PINOperation: 3a967a927e7867e61976c6cc23e5770416449fbc
   PINRemoteImage: 3b7cedb118c2d357f87e9eabc7c81ba0202cb236
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
@@ -135,4 +135,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 52783076c36d91f48fff6d055e61ee99d35333b0
 
-COCOAPODS: 1.10.0.rc.1
+COCOAPODS: 1.9.3

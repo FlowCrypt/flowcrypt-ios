@@ -9,38 +9,51 @@
 import AsyncDisplayKit
 
 public final class SetupTitleNode: CellNode {
-    private let textNode = ASTextNode2()
-    private let insets: UIEdgeInsets
-    private let selectedNode = ASDisplayNode()
-    private var selectedLineColor: UIColor?
+    public struct Input {
+        let title: NSAttributedString
+        let insets: UIEdgeInsets
+        let selectedLineColor: UIColor?
+        let backgroundColor: UIColor
 
-    public init(
-        title: NSAttributedString,
-        insets: UIEdgeInsets,
-        selectedLineColor: UIColor? = nil
-    ) {
-        self.insets = insets
-        self.selectedLineColor = selectedLineColor
+        public init(
+            title: NSAttributedString,
+            insets: UIEdgeInsets,
+            selectedLineColor: UIColor? = nil,
+            backgroundColor: UIColor
+        ) {
+            self.title = title
+            self.insets = insets
+            self.selectedLineColor = selectedLineColor
+            self.backgroundColor = backgroundColor
+        }
+    }
+    private let input: Input
+    private let textNode = ASTextNode2()
+    private let selectedNode = ASDisplayNode()
+
+    public init(_ input: Input) {
+        self.input = input
         super.init()
-        textNode.attributedText = title
+        textNode.attributedText = input.title
+        backgroundColor = input.backgroundColor
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let layout = ASInsetLayoutSpec(
-            insets: insets,
+            insets: input.insets,
             child: ASCenterLayoutSpec(
                 centeringOptions: .XY,
                 sizingOptions: .minimumXY,
                 child: textNode
             )
         )
-        if selectedLineColor != nil {
+        if input.selectedLineColor != nil {
             selectedNode.style.flexGrow = 1.0
             selectedNode.style.preferredSize.height = 2
             return ASStackLayoutSpec.vertical().then {
                 $0.spacing = 4
                 $0.children = [
-                    ASInsetLayoutSpec(insets: insets, child: textNode),
+                    ASInsetLayoutSpec(insets: input.insets, child: textNode),
                     selectedNode,
                 ]
             }
@@ -51,7 +64,9 @@ public final class SetupTitleNode: CellNode {
 
     public override var isSelected: Bool {
         didSet {
-            selectedNode.backgroundColor = isSelected ? selectedLineColor : .clear
+            selectedNode.backgroundColor = isSelected
+                ? input.selectedLineColor :
+                .clear
         }
     }
 }
