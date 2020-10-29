@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 
 /// Node for representing text and switch toggle
-public final class SwitchCellNode: ASCellNode {
+public final class SwitchCellNode: CellNode {
     public struct Input {
         let attributedText: NSAttributedString
         let insets: UIEdgeInsets

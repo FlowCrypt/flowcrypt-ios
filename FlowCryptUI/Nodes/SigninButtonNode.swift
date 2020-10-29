@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-public final class SigninButtonNode: ASCellNode {
+public final class SigninButtonNode: CellNode {
     public struct Input {
         let title: NSAttributedString
         let image: UIImage?

@@ -15,7 +15,7 @@ public protocol Link {
     var rawValue: String { get }
 }
 
-public final class LinkButtonNode: ASCellNode {
+public final class LinkButtonNode: CellNode {
     public typealias Action = (String) -> Void
 
     private let buttons: [ASButtonNode]

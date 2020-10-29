@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
-final class EmailProviderViewController: ASDKViewController<TableNode> {
+final class EmailProviderViewController: TableNodeViewController {
     private enum UserError: Error {
         case password
         case empty
@@ -174,11 +174,6 @@ extension EmailProviderViewController {
     private func adjustForKeyboard(height: CGFloat) {
         let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
         node.contentInset = insets
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        node.reloadData()
     }
 
     private func update(for newState: State) {

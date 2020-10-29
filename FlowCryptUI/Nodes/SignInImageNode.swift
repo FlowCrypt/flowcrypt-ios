@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-public final class SignInImageNode: ASCellNode {
+public final class SignInImageNode: CellNode {
     private let imageNode = ASImageNode()
     private var imageHeight: CGFloat = .zero
 

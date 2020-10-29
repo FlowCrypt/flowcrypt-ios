@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class KeyDetailViewController: ASDKViewController<TableNode> {
+final class KeyDetailViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
         case description, publicInfo, keyDetails, copy, save, privateInfo
     }
@@ -56,8 +56,11 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
 
             if part.isDescription {
                 return SetupTitleNode(
-                    title: self.decorator.attributedTitle(for: part),
-                    insets: self.decorator.titleInsets
+                    SetupTitleNode.Input(
+                        title: self.decorator.attributedTitle(for: part),
+                        insets: self.decorator.titleInsets,
+                        backgroundColor: .backgroundColor
+                    )
                 )
             } else {
                 return ButtonCellNode(
