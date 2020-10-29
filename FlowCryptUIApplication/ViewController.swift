@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-final class ViewController: ASDKViewController<TableNode> {
+final class ViewController: TableNodeViewController {
     enum Elements: Int, CaseIterable {
         case header
         case divider

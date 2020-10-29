@@ -24,18 +24,4 @@ public final class TableNode: ASTableNode {
             }
         }
     }
-
-    public override func asyncTraitCollectionDidChange(
-        withPreviousTraitCollection previousTraitCollection: ASPrimitiveTraitCollection
-    ) {
-        super.asyncTraitCollectionDidChange(withPreviousTraitCollection: previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        backgroundColor = .backgroundColor
-    }
-
-    public override func reloadData() {
-        DispatchQueue.main.async {
-            super.reloadData()
-        }
-    }
 }

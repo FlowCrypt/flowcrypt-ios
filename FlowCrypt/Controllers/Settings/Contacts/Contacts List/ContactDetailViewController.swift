@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class ContactDetailViewController: ASDKViewController<TableNode> {
+final class ContactDetailViewController: TableNodeViewController {
     typealias ContactDetailAction = (Action) -> Void
 
     enum Action {
