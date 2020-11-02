@@ -179,7 +179,7 @@ extension ComposeViewController {
     }
 }
 
-// MARK: - Keyboard 
+// MARK: - Keyboard
 
 extension ComposeViewController {
     private func observeKeyboardNotifications() {
