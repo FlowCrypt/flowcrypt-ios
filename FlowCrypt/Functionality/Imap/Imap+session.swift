@@ -58,7 +58,7 @@ extension Imap {
         guard let currentAuthType = dataService.currentAuthType else { return Promise(()) }
 
         switch currentAuthType {
-        case .oAuth:
+        case .gmail:
             return userService.renewSession()
                 .then { [weak self] _ in
                     self?.setupSession()

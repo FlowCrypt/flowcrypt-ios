@@ -9,7 +9,10 @@
 import Foundation
 
 enum AuthType {
-    case oAuth(String), password(String)
+    /// gmail authentication with token
+    case gmail(String)
+    /// other email provider with password
+    case password(String)
 }
 
 enum ConnectionType: String, CaseIterable {

@@ -30,10 +30,15 @@ def ui_pods
   pod 'Texture'
 end
 
+def google_pods
+  pod 'GoogleAPIClientForREST/Gmail'
+end
+
 ############################ Targets ############################
 target 'FlowCrypt' do
   shared_pods
   app_pods
+  google_pods
 end
 
 target 'FlowCryptTests' do
