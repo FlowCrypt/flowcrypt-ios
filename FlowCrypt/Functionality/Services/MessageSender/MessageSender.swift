@@ -11,7 +11,7 @@ import Promises
 
 // TODO: - ANTON - Handle errors
 enum MessageSenderError: Error {
-    case failedToSendMessage(Error)
+    case providerError(Error)
     case encode
 }
 

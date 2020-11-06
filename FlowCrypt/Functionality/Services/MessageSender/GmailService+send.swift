@@ -12,7 +12,7 @@ import GoogleAPIClientForREST
 import GTMSessionFetcher
 
 extension GmailService: MessageSender {
-    func sendMail(mime: Data) -> Promise<Void>  {
+    func sendMail(mime: Data) -> Promise<Void> {
         Promise { (resolve, reject) in
             guard let raw = GTLREncodeBase64(mime) else {
                 return reject(MessageSenderError.encode)
@@ -29,7 +29,7 @@ extension GmailService: MessageSender {
 
             self.gmailService.executeQuery(querySend) { (ticket, any, error) in
                 if let error = error {
-                    reject(MessageSenderError.failedToSendMessage(error))
+                    reject(MessageSenderError.providerError(error))
                 }
                 resolve(())
             }

@@ -13,7 +13,9 @@ enum AppErr: Error {
     case nilSelf // guard let self = self else { throw AppErr.nilSelf }
     case value(String) // wrong value passed into a function
     case unexpected(String) // we did not expect to ever see this error in practice
-    case cast(String) // something as? Something is unexpectedly nil
+
+    // TODO: - ANTON Handle cast Error
+    case cast(Any) // something as? Something is unexpectedly nil
     // all others
     case user(String) // user error, useful to throw from Promises
     case silentAbort // useful in Promises when you want to cancel execution without showing any error (eg after user clicks cancel button)

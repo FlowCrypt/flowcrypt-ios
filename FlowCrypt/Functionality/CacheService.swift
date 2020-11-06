@@ -53,6 +53,14 @@ struct CacheService<T: CachedObject>: CacheServiceType {
         }
     }
 
+    func remove(objects: [T]) {
+        let realm = storage()
+
+        try? realm.write {
+            realm.delete(objects)
+        }
+    }
+
     func getAll() -> [T]? {
         Array(storage().objects(T.self))
     }

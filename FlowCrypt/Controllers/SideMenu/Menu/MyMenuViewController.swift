@@ -58,7 +58,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
         if isFirstLaunch {
             setupUI()
-            fetchFolders()
         }
         isFirstLaunch = false
     }
@@ -216,8 +215,6 @@ extension MyMenuViewController {
 
 extension MyMenuViewController: SideMenuViewController {
     func didOpen() {
-        if folders.isEmpty {
-            fetchFolders()
-        }
+        fetchFolders()
     }
 }

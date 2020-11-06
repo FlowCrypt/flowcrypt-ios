@@ -34,14 +34,3 @@ final class FolderObject: Object {
 extension FolderObject: CachedObject {
     var identifier: String { name }
 }
-
-extension FolderObject {
-    convenience init?(with folder: MCOIMAPFolder) {
-        guard let name = folder.name else { return nil }
-        self.init(
-            name: name,
-            path: folder.path,
-            image: nil
-        )
-    }
-}

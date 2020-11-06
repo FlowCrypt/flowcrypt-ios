@@ -127,6 +127,7 @@ extension DataService: DBMigration {
             try await(self.encryptedStorage.performMigrationIfNeeded())
             self.performTokenEncryptedMigration()
             self.performUserSessionMigration()
+            self.performGmailApiMigration()
         }
     }
 
@@ -172,6 +173,25 @@ extension DataService: DBMigration {
     private func previouslyStoredUser() -> User? {
         guard let data = UserDefaults.standard.object(forKey: legacyCurrentUserIndex) as? Data else { return nil }
         return try? PropertyListDecoder().decode(User.self, from: data)
+    }
+
+    /// Perform migration when Gmail Api implemented
+    private func performGmailApiMigration() {
+        let key = "KeyGmailApiMigration"
+        let isMigrated = UserDefaults.standard.bool(forKey: key)
+        guard !isMigrated else {
+            return
+        }
+        UserDefaults.standard.set(true, forKey: key)
+        let folders = storage.objects(FolderObject.self)
+
+        do {
+            try storage.write {
+                storage.delete(folders)
+            }
+        } catch let error {
+            assertionFailure("Can't perform Gmail Api migration \(error)")
+        }
     }
 }
 

@@ -30,7 +30,8 @@ class GlobalServices {
         self.currentAuthType = currentAuthType
     }
 
-    private var gmailService: GmailService {
+    // TODO: - ANTON should be private
+    var gmailService: GmailService {
         GmailService(
             signInService: GIDSignIn.sharedInstance(),
             gmailService: GTLRGmailService()
@@ -42,6 +43,13 @@ class GlobalServices {
     }
 
     var messageSender: MessageSender {
+        switch authType {
+        case .gmail: return gmailService
+        case .password: return imap
+        }
+    }
+
+    var remoteFoldersProvider: RemoteFoldersProviderType {
         switch authType {
         case .gmail: return gmailService
         case .password: return imap

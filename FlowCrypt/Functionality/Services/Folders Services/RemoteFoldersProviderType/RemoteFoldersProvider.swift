@@ -9,6 +9,11 @@
 import Foundation
 import Promises
 
+// TODO: - ANTON - Handle errors
+enum FoldersProviderError: Error {
+    case providerError(Error)
+}
+
 protocol RemoteFoldersProviderType {
-    func fetchFolders() -> Promise<[MCOIMAPFolder]>
+    func fetchFolders() -> Promise<[FolderObject]>
 }

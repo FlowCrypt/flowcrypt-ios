@@ -1,49 +1,16 @@
 //
-//  Imap+folders.swift
+//  Imap+Other.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 9/11/19.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Created by Anton Kharchevskyi on 06.11.2020.
+//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
 import Foundation
 import Promises
 
-extension Imap: RemoteFoldersProviderType {
-    func fetchFolders() -> Promise<[MCOIMAPFolder]> {
-        Promise { [weak self] resolve, reject in
-            self?.imapSess?
-                .fetchAllFoldersOperation()
-                .start { [weak self] error, value in
-                    guard let self = self else { return reject(AppErr.nilSelf) }
-                    guard self.notRetrying("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
-                        return
-                    }
-                    if let error = error {
-                        reject(AppErr(error))
-                    } else if let folders = value as? [MCOIMAPFolder] {
-                        self.saveTrashFolderPath(with: folders)
-                        resolve(folders)
-                    } else {
-                        reject(AppErr.cast("value as? [MCOIMAPFolder] failed"))
-                    }
-            }
-        }
-    }
-
-    private func saveTrashFolderPath(with folders: [MCOIMAPFolder]) {
-        if dataService.email?.contains("gmail") ?? false {
-            dataService.saveTrashFolder(path: MailDestination.Gmail.trash.path)
-        } else {
-            let paths = folders.compactMap { $0.path }
-            guard let path = paths.firstCaseInsensitive("trash") ?? paths.firstCaseInsensitive("deleted") else {
-                debugPrint("###Warning### Trash folder not found")
-                return
-            }
-            dataService.saveTrashFolder(path: path)
-        }
-    }
-
+extension Imap {
+    // TODO: - ANTON
     /// get trash folder path either form local storage in case it was already saved or tries to fetch all folders info and save it
     func trashFolderPath() -> Promise<String?> {
         Promise { [weak self] resolve, reject in
@@ -104,11 +71,10 @@ extension Imap: RemoteFoldersProviderType {
                         self.fetchMessage(in: folder, kind: kind, uids: uids)
                     }) else { return }
 
-                    if let messages = msgs as? [MCOIMAPMessage] {
-                        return resolve(messages)
-                    } else {
-                        reject(AppErr.cast("msgs as? [MCOIMAPMessage]"))
+                    guard let messages = msgs as? [MCOIMAPMessage] else {
+                        return reject(AppErr.cast("[MCOIMAPMessage]"))
                     }
+                    return resolve(messages)
                 }
         }
     }
