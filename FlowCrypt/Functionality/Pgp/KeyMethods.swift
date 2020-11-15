@@ -16,13 +16,12 @@ struct KeyMethods: KeyMethodsType {
     let core: Core
 
     func filterByPassPhraseMatch(keys: [KeyDetails], passPhrase: String) -> [KeyDetails] {
-        return keys
-            .compactMap { key -> KeyDetails? in
-                guard let privateKey = key.private,
-                    let decrypted = try? self.core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
-                    decrypted.decryptedKey != nil
-                else { return nil }
-                return key
-            }
+        keys.compactMap { key -> KeyDetails? in
+            guard let privateKey = key.private,
+                  let decrypted = try? self.core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
+                  decrypted.decryptedKey != nil
+            else { return nil }
+            return key
+        }
     }
 }

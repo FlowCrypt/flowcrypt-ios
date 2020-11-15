@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FlowCryptCommon
 
 protocol KeySettingsViewDecoratorType {
     func attributedUsers(key: KeyDetails) -> NSAttributedString
@@ -46,18 +47,5 @@ struct KeySettingsViewDecorator: KeySettingsViewDecoratorType {
     func attributedDateCreated(key: KeyDetails) -> NSAttributedString {
         dateFormatter.string(from: key.created.toDate())
             .attributed(.medium(12))
-    }
-}
-
-private extension String {
-    func separate(
-        every stride: Int = 4,
-        with separator: Character = " "
-    ) -> String {
-        String(
-            self.enumerated()
-            .map { $0 > 0 && $0 % stride == 0 ? [separator, $1] : [$1]}
-            .joined()
-        )
     }
 }

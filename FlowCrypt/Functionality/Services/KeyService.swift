@@ -20,12 +20,6 @@ protocol KeyServiceType {
     func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError>
 }
 
-enum KeyServiceError: Error {
-    case retrieve
-    case parse
-    case unexpected
-}
-
 struct KeyService: KeyServiceType {
     let coreService: Core = .shared
     let dataService: KeyDataServiceType = DataService.shared

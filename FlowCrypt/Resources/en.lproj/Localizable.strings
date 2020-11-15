@@ -28,6 +28,15 @@
 "error_permanently_delete" = "Unable to delete message";
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
 
+// KeyServiceError
+"keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
+"keyServiceError_retrieve_parse" = "Could not parse keys from storage. Please reinstall the app.";
+"keyServiceError_retrieve_unexpected" = "Could not import key. Please try to relogin.";
+
+"backupServiceError_parse" = "Key can't be parsed";
+"backupServiceError_email" = "Missing user email";
+"backupServiceError_notEncrypted" = "Private Key must be fully encrypted before backing up";
+
 // Compose
 "compose_enter_recipient" = "Enter recipient";
 "compose_no_pub_recipient" = "Recipient doesn't seem to have encryption set up";
@@ -144,3 +153,27 @@
 "other_provider_error_password" = "Password must not be empty";
 "other_provider_error_email" = "Email must not be empty";
 "other_provider_error_other" = "Check credentials";
+
+// Backup screen
+"backup_screen_title" = "Backups";
+
+"backup_screen_found" = "Backups found:";
+"backup_screen_found_description" = "Your account is backed up correctly in your Email inbox";
+"backup_screen_found_action" = "See more backup options";
+"backup_screen_not_found_action" = "Back up my key";
+
+"backup_screen_not_found" = "There are no bcakups on this account";
+"backup_screen_not_found_description" = "If you lose your device, or it stops working, your encrypted email will be unreadable.";
+
+// Backup option screen
+"backup_option_screen_title" = "Backup options";
+"backup_option_screen_download" = "Download";
+"backup_option_screen_email" = "Email";
+"backup_option_screen_email_action" = "Backup as email";
+"backup_option_screen_file_action" = "Backup as file";
+"backup_option_screen_email_description" = "This will back up private key(s) in your Inbox. The security depends on the strength of your pass phrase, which should be very long and hard to guess. Best option for most users.";
+"backup_option_screen_download_description" = "This will download your key(s) as a file. Very secure option if your device is encrypted, or if you can keep a file stored securely. If you lose both your phone and the file, your encrypted email will be unreadable, so you need to keep this file in a safe place";
+
+// Backup select keys screen
+"backup_select_key_screen_title" = "Select keys";
+"backup_select_key_screen_no_selection" = "Please select keys to backup";
