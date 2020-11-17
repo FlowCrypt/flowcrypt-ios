@@ -15,7 +15,7 @@ class GlobalServices {
     static var shared: GlobalServices = GlobalServices(currentAuthType: DataService.shared.currentAuthType)
 
     private var currentAuthType: () -> (AuthType?)
-    private var authType: AuthType {
+    var authType: AuthType {
         switch currentAuthType() {
         case let .gmail(token):
             return .gmail(token)
@@ -50,6 +50,13 @@ class GlobalServices {
     }
 
     var remoteFoldersProvider: RemoteFoldersProviderType {
+        switch authType {
+        case .gmail: return gmailService
+        case .password: return imap
+        }
+    }
+
+    var messageProvider: MessagesListProvider {
         switch authType {
         case .gmail: return gmailService
         case .password: return imap

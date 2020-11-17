@@ -36,7 +36,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     private var state: State = .idle
 
-    private let messageProvider: MessageProvider
+    private let messageProvider: MessagesListProvider
     private let viewModel: InboxViewModel
     private var messages: [MCOIMAPMessage] = []
     private let tableNode: ASTableNode
@@ -49,7 +49,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel = .empty,
-        messageProvider: MessageProvider = Imap.shared
+        messageProvider: MessagesListProvider = GlobalServices.shared.messageProvider
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
@@ -103,9 +103,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
 extension InboxViewController {
     private func setupUI() {
-        title = viewModel.folderName.isEmpty
-            ? "Inbox"
-            : viewModel.folderName
+        title = inboxTitle
 
         node.addSubnode(tableNode)
         node.addSubnode(composeButton)
@@ -122,6 +120,21 @@ extension InboxViewController {
             ]
         )
     }
+
+    private var inboxTitle: String {
+        viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
+    }
+}
+
+extension InboxViewController {
+    // TODO: - ANTON - MessagesListPagination
+    private func currentMessagesListPagination(from number: Int? = nil, token: String? = nil) -> MessagesListPagination {
+        return MessagesListPagination.byNumber(from: number ?? 0)
+        switch GlobalServices.shared.authType {
+        case .password: return MessagesListPagination.byNumber(from: number ?? 0)
+        case .gmail: return .byNextPage(token: token)
+        }
+    }
 }
 
 extension InboxViewController {
@@ -130,7 +143,7 @@ extension InboxViewController {
             .fetchMessages(
                 for: viewModel.path,
                 count: Constants.numberOfMessagesToLoad,
-                from: 0
+                using: currentMessagesListPagination()
             )
             .then { [weak self] context in
                 self?.handleEndFetching(with: context, context: batchContext)
@@ -147,7 +160,11 @@ extension InboxViewController {
         let from = messages.count
         let diff = min(Constants.numberOfMessagesToLoad, totalNumberOfMessages - from)
         messageProvider
-            .fetchMessages(for: viewModel.path, count: diff, from: from)
+            .fetchMessages(
+                for: viewModel.path,
+                count: diff,
+                using: currentMessagesListPagination(from: from)
+            )
             .then { [weak self] context in
                 self?.state = .fetched(context.totalMessages)
                 self?.handleEndFetching(with: context, context: batchContext)
@@ -301,53 +318,53 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
 extension InboxViewController {
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock { { [weak self] in
-            guard let self = self else { return ASCellNode() }
+        guard let self = self else { return ASCellNode() }
 
-            switch self.state {
-            case .empty:
-                return TextCellNode(
-                    input: TextCellNode.Input(
-                        backgroundColor: .backgroundColor,
-                        title: "\(self.title ?? "") is empty",
-                        withSpinner: false,
-                        size: size
-                    )
+        switch self.state {
+        case .empty:
+            return TextCellNode(
+                input: TextCellNode.Input(
+                    backgroundColor: .backgroundColor,
+                    title: "\(self.inboxTitle) is empty",
+                    withSpinner: false,
+                    size: size
                 )
-            case .idle:
+            )
+        case .idle:
+            return TextCellNode(
+                input: TextCellNode.Input(
+                    backgroundColor: .backgroundColor,
+                    title: "",
+                    withSpinner: true,
+                    size: size
+                )
+            )
+        case .fetched, .refresh:
+            return InboxCellNode(message: InboxCellNode.Input(self.messages[indexPath.row]))
+                .then { $0.backgroundColor = .backgroundColor }
+        case .fetching:
+            guard let message = self.messages[safe: indexPath.row] else {
                 return TextCellNode(
                     input: TextCellNode.Input(
                         backgroundColor: .backgroundColor,
-                        title: "",
+                        title: "Loading ...",
                         withSpinner: true,
-                        size: size
-                    )
-                )
-            case .fetched, .refresh:
-                return InboxCellNode(message: InboxCellNode.Input(self.messages[indexPath.row]))
-                    .then { $0.backgroundColor = .backgroundColor }
-            case .fetching:
-                guard let message = self.messages[safe: indexPath.row] else {
-                    return TextCellNode(
-                        input: TextCellNode.Input(
-                            backgroundColor: .backgroundColor,
-                            title: "Loading ...",
-                            withSpinner: true,
-                            size: CGSize(width: 44, height: 44)
-                        )
-                    )
-                }
-                return InboxCellNode(message: InboxCellNode.Input(message))
-            case let .error(message):
-                return TextCellNode(
-                    input: TextCellNode.Input(
-                        backgroundColor: .backgroundColor,
-                        title: message,
-                        withSpinner: false,
-                        size: size
+                        size: CGSize(width: 44, height: 44)
                     )
                 )
             }
+            return InboxCellNode(message: InboxCellNode.Input(message))
+        case let .error(message):
+            return TextCellNode(
+                input: TextCellNode.Input(
+                    backgroundColor: .backgroundColor,
+                    title: message,
+                    withSpinner: false,
+                    size: size
+                )
+            )
         }
+    }
     }
  }
 
