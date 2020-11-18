@@ -10,5 +10,5 @@ import Foundation
 
 struct MessageContext {
     let messages: [MCOIMAPMessage]
-    let totalMessages: Int
+    let pagination: MessagesListPagination
 }

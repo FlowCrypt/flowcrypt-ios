@@ -10,7 +10,7 @@ import Foundation
 import Promises
 
 enum MessagesListPagination {
-    case byNumber(from: Int?)
+    case byNumber(total: Int?)
     case byNextPage(token: String?)
 }
 

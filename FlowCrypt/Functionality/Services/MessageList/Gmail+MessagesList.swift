@@ -15,13 +15,14 @@ extension GmailService: MessagesListProvider {
         guard case let .byNextPage(token) = pagination else {
             fatalError("Pagination \(pagination) is not supported for this provider")
         }
-        return Promise { (resolve, reject) in
-            let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
-            query.includeSpamTrash = false
+
+        let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
+        query.includeSpamTrash = false
+//        query.
 //            query.labelIds = [""]
-            query.maxResults = UInt(count)
+        query.maxResults = UInt(count)
 
-
+        return Promise { (resolve, reject) in
 
 
             self.gmailService.executeQuery(query) { (_, data, error) in
@@ -36,9 +37,12 @@ extension GmailService: MessagesListProvider {
                 let messages: [GTLRGmail_Message] = messageList.messages ?? []
                 let nextPageToken: String? = messageList.nextPageToken
 
+                let context = MessageContext(
+                    messages: [],
+                    pagination: MessagesListPagination.byNextPage(token: nextPageToken)
+                )
 
-
-                resolve(MessageContext(messages: [], totalMessages: 0))
+                resolve(context)
             }
         }
     }
