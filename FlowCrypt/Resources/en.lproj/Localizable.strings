@@ -3,7 +3,6 @@
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
 
-
 // EMAIL
 "email_removed" = "Email moved to Trash";
 "email_deleted" = "Email deleted";
@@ -14,6 +13,8 @@
 "message_failed_load" = "Failed to load messages";
 "message_your" = "Your message";
 "message_compose_secure" = "Compose Secure Message";
+"message_unknown_sender" = "(unknown sender)";
+"message_missed_subject" = "No subject";
 
 // REPLY
 "reply_title" = "Your reply"; // not used

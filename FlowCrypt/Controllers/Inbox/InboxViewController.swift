@@ -41,22 +41,24 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private var state: State = .idle
 
     private let messageProvider: MessagesListProvider
-    private let viewModel: InboxViewModel
-    private var messages: [MCOIMAPMessage] = []
+    private let decorator: InboxViewDecoratorType
+    private let refreshControl = UIRefreshControl()
     private let tableNode: ASTableNode
-
     private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
 
-    private let refreshControl = UIRefreshControl()
+    private let viewModel: InboxViewModel
+    private var messages: [Message] = []
 
     init(
         _ viewModel: InboxViewModel = .empty,
-        messageProvider: MessagesListProvider = GlobalServices.shared.messageProvider
+        messageProvider: MessagesListProvider = GlobalServices.shared.messageProvider,
+        decorator: InboxViewDecoratorType = InboxViewDecorator()
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
+        self.decorator = decorator
         tableNode = TableNode()
 
         super.init(node: ASDisplayNode())
@@ -206,7 +208,7 @@ extension InboxViewController {
             state = .empty
         } else {
             messages = messageContext.messages
-                .sorted(by: { $0.header.date > $1.header.date })
+                .sorted(by: { $0.date > $1.date })
             state = .fetched(messageContext.pagination)
         }
         DispatchQueue.main.async {
@@ -274,11 +276,11 @@ extension InboxViewController {
 }
 
 extension InboxViewController: MsgListViewConroller {
-    func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
+    func msgListGetIndex(message: Message) -> Int? {
         return messages.firstIndex(of: message)
     }
 
-    func msgListRenderAsRemoved(message _: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRemoved(message _: Message, at index: Int) {
         guard messages[safe: index] != nil else { return }
         messages.remove(at: index)
 
@@ -302,7 +304,7 @@ extension InboxViewController: MsgListViewConroller {
         }
     }
 
-    func msgListRenderAsRead(message: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRead(message: Message, at index: Int) {
         messages[index] = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
@@ -344,56 +346,43 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 }
 
 extension InboxViewController {
-    private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock { { [weak self] in
-        guard let self = self else { return ASCellNode() }
+    private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self else { return ASCellNode() }
 
-        switch self.state {
-        case .empty:
-            return TextCellNode(
-                input: TextCellNode.Input(
-                    backgroundColor: .backgroundColor,
-                    title: "\(self.inboxTitle) is empty",
-                    withSpinner: false,
-                    size: size
-                )
-            )
-        case .idle:
-            return TextCellNode(
-                input: TextCellNode.Input(
-                    backgroundColor: .backgroundColor,
-                    title: "",
-                    withSpinner: true,
-                    size: size
-                )
-            )
-        case .fetched, .refresh:
-            return InboxCellNode(message: InboxCellNode.Input(self.messages[indexPath.row]))
-                .then { $0.backgroundColor = .backgroundColor }
-        case .fetching:
-            guard let message = self.messages[safe: indexPath.row] else {
+            switch self.state {
+            case .empty:
+                return TextCellNode(input: self.decorator.emptyStateNodeInput(for: size, title: self.inboxTitle))
+            case .idle:
+                return TextCellNode(input: self.decorator.initialNodeInput(for: size))
+            case .fetched, .refresh:
+                return InboxCellNode(message: InboxCellNode.Input(self.messages[indexPath.row]))
+                    .then { $0.backgroundColor = .backgroundColor }
+            case .fetching:
+                guard let message = self.messages[safe: indexPath.row] else {
+                    return TextCellNode(
+                        input: TextCellNode.Input(
+                            backgroundColor: .backgroundColor,
+                            title: "Loading ...",
+                            withSpinner: true,
+                            size: CGSize(width: 44, height: 44)
+                        )
+                    )
+                }
+                return InboxCellNode(message: InboxCellNode.Input(message))
+            case let .error(message):
                 return TextCellNode(
                     input: TextCellNode.Input(
                         backgroundColor: .backgroundColor,
-                        title: "Loading ...",
-                        withSpinner: true,
-                        size: CGSize(width: 44, height: 44)
+                        title: message,
+                        withSpinner: false,
+                        size: size
                     )
                 )
             }
-            return InboxCellNode(message: InboxCellNode.Input(message))
-        case let .error(message):
-            return TextCellNode(
-                input: TextCellNode.Input(
-                    backgroundColor: .backgroundColor,
-                    title: message,
-                    withSpinner: false,
-                    size: size
-                )
-            )
         }
     }
-    }
- }
+}
 
 extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {

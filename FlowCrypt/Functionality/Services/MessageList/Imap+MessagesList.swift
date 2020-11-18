@@ -19,7 +19,7 @@ extension Imap: MessagesListProvider {
 
             let folderInfo = try await(self.folderInfo(for: folder))
             let totalCount = Int(folderInfo.messageCount)
-            if totalCount == 0  {
+            if totalCount == 0 {
                 resolve(MessageContext(messages: [], pagination: .byNumber(total: totalCount)))
             }
             let set = self.helper.createSet(
@@ -29,6 +29,8 @@ extension Imap: MessagesListProvider {
             )
             let kind = self.messageKindProvider.imapMessagesRequestKind
             let messages = try await(self.fetchMsgsByNumber(for: folder, kind: kind, set: set))
+                .map(Message.init)
+
             resolve(MessageContext(messages: messages, pagination: .byNumber(total: totalCount)))
         }
     }

@@ -6,9 +6,10 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
+// TODO: - ANTON - SINGLE MESSAGE Functionality
 final class MessageViewController: TableNodeViewController {
     struct Input {
-        var objMessage = MCOIMAPMessage()
+        var objMessage: Message?
         var bodyMessage: Data?
         var path = ""
     }
@@ -143,41 +144,43 @@ extension MessageViewController {
         }
     }
 
+    // TODO: - ANTON - SINGLE MESSAGE
     private func fetchMessage() -> Promise<NSAttributedString> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self, let input = self.input else { return }
-            let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
-            self.input?.bodyMessage = rawMimeData
-
-            guard let keys = self.dataService.keys else {
-                reject(CoreError.notReady("Could not fetch keys"))
-                return
-            }
-
-            let decrypted = try self.core.parseDecryptMsg(
-                encrypted: rawMimeData,
-                keys: keys,
-                msgPwd: nil,
-                isEmail: true
-            )
-            let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
-
-            let message: NSAttributedString
-            if let decryptErrBlock = decryptErrBlocks.first {
-                let rawMsg = decryptErrBlock.content
-                let err = decryptErrBlock.decryptErr?.error
-                message = self.decorator.attributed(
-                    text: "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)",
-                    color: .red
-                )
-            } else {
-                message = self.decorator.attributed(
-                    text: decrypted.text,
-                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.mainTextColor
-                )
-            }
-            resolve(message)
-        }
+        Promise(NSAttributedString())
+//        Promise { [weak self] resolve, reject in
+//            guard let self = self, let input = self.input else { return }
+//            let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
+//            self.input?.bodyMessage = rawMimeData
+//
+//            guard let keys = self.dataService.keys else {
+//                reject(CoreError.notReady("Could not fetch keys"))
+//                return
+//            }
+//
+//            let decrypted = try self.core.parseDecryptMsg(
+//                encrypted: rawMimeData,
+//                keys: keys,
+//                msgPwd: nil,
+//                isEmail: true
+//            )
+//            let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
+//
+//            let message: NSAttributedString
+//            if let decryptErrBlock = decryptErrBlocks.first {
+//                let rawMsg = decryptErrBlock.content
+//                let err = decryptErrBlock.decryptErr?.error
+//                message = self.decorator.attributed(
+//                    text: "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)",
+//                    color: .red
+//                )
+//            } else {
+//                message = self.decorator.attributed(
+//                    text: decrypted.text,
+//                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.mainTextColor
+//                )
+//            }
+//            resolve(message)
+//        }
     }
 
     private func handleError(_ error: Error, path: String) {
@@ -192,24 +195,26 @@ extension MessageViewController {
         navigationController?.popViewController(animated: true)
     }
 
+    // TODO: - ANTON - SINGLE MESSAGE
     private func asyncMarkAsReadIfNotAlreadyMarked() {
-        guard let input = input else { return }
-        guard !input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return } // only proceed if not already marked as read
-        input.objMessage.flags.formUnion(MCOMessageFlag.seen)
-        imap.markAsRead(message: input.objMessage, folder: input.path)
-            .catch(on: .main) { [weak self] error in
-                self?.showToast("Could not mark message as read: \(error)")
-            }
+//        guard let input = input else { return }
+//        guard !input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return } // only proceed if not already marked as read
+//        input.objMessage.flags.formUnion(MCOMessageFlag.seen)
+//        imap.markAsRead(message: input.objMessage, folder: input.path)
+//            .catch(on: .main) { [weak self] error in
+//                self?.showToast("Could not mark message as read: \(error)")
+//            }
     }
 
+    // TODO: - ANTON - SINGLE MESSAGE
     private func handleOpSuccess(operation: MessageAction) {
-        guard let input = input else { return }
-        hideSpinner()
-        operation.text.flatMap { showToast($0) }
-
-        navigationController?.popViewController(animated: true) { [weak self] in
-            self?.onCompletion?(operation, input.objMessage)
-        }
+//        guard let input = input else { return }
+//        hideSpinner()
+//        operation.text.flatMap { showToast($0) }
+//
+//        navigationController?.popViewController(animated: true) { [weak self] in
+//            self?.onCompletion?(operation, input.objMessage)
+//        }
     }
 
     private func handleOpErr(operation: MessageAction) {
@@ -248,89 +253,94 @@ extension MessageViewController {
             }
     }
 
+    // TODO: - ANTON - SINGLE MESSAGE
     private func permanentlyDelete() {
         guard let input = input else { return hideSpinner() }
-        Promise<Bool> { [weak self] () -> Bool in
-            guard let self = self else { throw AppErr.nilSelf }
-            guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-
-            input.objMessage.flags = MCOMessageFlag(rawValue: MCOMessageFlag.deleted.rawValue)
-            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
-            try await(self.imap.expungeMsgs(folder: input.path))
-            return true
-        }
-        .then(on: .main) { [weak self] didPerformOp in
-            guard didPerformOp else { self?.hideSpinner(); return  }
-            self?.handleOpSuccess(operation: .permanentlyDelete)
-        }.catch(on: .main) { [weak self] _ in
-            self?.handleOpErr(operation: .permanentlyDelete)
-        }
+//        Promise<Bool> { [weak self] () -> Bool in
+//            guard let self = self else { throw AppErr.nilSelf }
+//            guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
+//
+//            input.objMessage.flags = MCOMessageFlag(rawValue: MCOMessageFlag.deleted.rawValue)
+//            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
+//            try await(self.imap.expungeMsgs(folder: input.path))
+//            return true
+//        }
+//        .then(on: .main) { [weak self] didPerformOp in
+//            guard didPerformOp else { self?.hideSpinner(); return  }
+//            self?.handleOpSuccess(operation: .permanentlyDelete)
+//        }.catch(on: .main) { [weak self] _ in
+//            self?.handleOpErr(operation: .permanentlyDelete)
+//        }
     }
 
+    // TODO: - ANTON - SINGLE MESSAGE
     private func moveToTrash(with trashPath: String) {
-        guard let input = input else { return hideSpinner() }
-
-        Promise<Void> { [weak self] in
-            guard let self = self else { return }
-            //Move message to trash
-            try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath))
-
-            //Mark as deleted in the origin folder
-            input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
-            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
-
-            //Expunge origin folder
-            try await(self.imap.expungeMsgs(folder: input.path))
-        }
-        .then(on: .main) { [weak self] in
-            self?.handleOpSuccess(operation: .moveToTrash)
-        }
-        .catch(on: .main) { [weak self] _ in
-            self?.handleOpErr(operation: .moveToTrash)
-        }
+//        guard let input = input else { return hideSpinner() }
+//
+//        Promise<Void> { [weak self] in
+//            guard let self = self else { return }
+//            //Move message to trash
+//            try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath))
+//
+//            //Mark as deleted in the origin folder
+//            input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
+//            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
+//
+//            //Expunge origin folder
+//            try await(self.imap.expungeMsgs(folder: input.path))
+//        }
+//        .then(on: .main) { [weak self] in
+//            self?.handleOpSuccess(operation: .moveToTrash)
+//        }
+//        .catch(on: .main) { [weak self] _ in
+//            self?.handleOpErr(operation: .moveToTrash)
+//        }
     }
 
+    // TODO: - ANTON - SINGLE MESSAGE
     @objc private func handleArchiveTap() {
         guard let input = input else { return }
-        showSpinner()
-        input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
-        imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
-            .then(on: .main) { [weak self] _ in
-                self?.handleOpSuccess(operation: .archive)
-            }
-            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
-                self?.handleOpErr(operation: .archive)
-            }
+//        showSpinner()
+//        input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
+//        imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
+//            .then(on: .main) { [weak self] _ in
+//                self?.handleOpSuccess(operation: .archive)
+//            }
+//            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
+//                self?.handleOpErr(operation: .archive)
+//            }
     }
 
+    // TODO: - ANTON - SINGLE MESSAGE
     private func handleReplyTap() {
-        guard let input = input else { return }
-        let replyInfo = ComposeViewController.Input.ReplyInfo(
-            recipient: input.objMessage.header.from,
-            subject: input.objMessage.header.subject,
-            mime: input.bodyMessage,
-            sentDate: input.objMessage.header.date,
-            message: message.string
-        )
-
-        navigationController?.pushViewController(
-            ComposeViewController(
-                input: ComposeViewController.Input(
-                    type: .reply(replyInfo)
-                )
-            ),
-            animated: true
-        )
+//        guard let input = input else { return }
+//        let replyInfo = ComposeViewController.Input.ReplyInfo(
+//            recipient: input.objMessage.header.from,
+//            subject: input.objMessage.header.subject,
+//            mime: input.bodyMessage,
+//            sentDate: input.objMessage.header.date,
+//            message: message.string
+//        )
+//
+//        navigationController?.pushViewController(
+//            ComposeViewController(
+//                input: ComposeViewController.Input(
+//                    type: .reply(replyInfo)
+//                )
+//            ),
+//            animated: true
+//        )
     }
 }
 
 // MARK: - NavigationChildController
 
 extension MessageViewController: NavigationChildController {
+    // TODO: - ANTON - SINGLE MESSAGE
     func handleBackButtonTap() {
-        guard let message = input?.objMessage else { return }
-        onCompletion?(MessageAction.markAsRead, message)
-        navigationController?.popViewController(animated: true)
+//        guard let message = input?.objMessage else { return }
+//        onCompletion?(MessageAction.markAsRead, message)
+//        navigationController?.popViewController(animated: true)
     }
 }
 
@@ -341,32 +351,34 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         return Parts.allCases.count
     }
 
+    // TODO: - ANTON - SINGLE MESSAGE
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        // TODO: ANTON - input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
-        // crash because sender is nil
-
-        let senderTitle = decorator.attributed(
-            title: input?.objMessage.header.from.mailbox ?? "(unknown sender)"
-        )
-        let subject = decorator.attributed(
-            subject: input?.objMessage.header.subject ?? "(no subject)"
-        )
-        let time = decorator.attributed(
-            date: input?.objMessage.header.date
-        )
-
-        return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
-            switch part {
-            case .sender:
-                return MessageSenderNode(senderTitle) { [weak self] in
-                    self?.handleReplyTap()
-                }
-            case .subject:
-                return MessageSubjectNode(subject, time: time)
-            case .text:
-                return MessageTextSubjectNode(self.message)
-            }
-        }
+        return { ASCellNode() }
+//        // TODO: ANTON - input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
+//        // crash because sender is nil
+//
+//        let senderTitle = decorator.attributed(
+//            title: input?.objMessage.header.from.mailbox ?? "(unknown sender)"
+//        )
+//        let subject = decorator.attributed(
+//            subject: input?.objMessage.header.subject ?? "(no subject)"
+//        )
+//        let time = decorator.attributed(
+//            date: input?.objMessage.header.date
+//        )
+//
+//        return { [weak self] in
+//            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+//            switch part {
+//            case .sender:
+//                return MessageSenderNode(senderTitle) { [weak self] in
+//                    self?.handleReplyTap()
+//                }
+//            case .subject:
+//                return MessageSubjectNode(subject, time: time)
+//            case .text:
+//                return MessageTextSubjectNode(self.message)
+//            }
+//        }
     }
 }

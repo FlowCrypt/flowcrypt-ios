@@ -9,6 +9,6 @@
 import Foundation
 
 struct MessageContext {
-    let messages: [MCOIMAPMessage]
+    let messages: [Message]
     let pagination: MessagesListPagination
 }

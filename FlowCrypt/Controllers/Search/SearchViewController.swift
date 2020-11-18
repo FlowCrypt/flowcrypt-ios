@@ -98,23 +98,24 @@ extension SearchViewController {
 }
 
 // MARK: - MessageHandlerViewConroller
-
+// TODO: - ANTON - Search MESSAGE
 extension SearchViewController: MsgListViewConroller {
-    func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
-        return state.messages.firstIndex(of: message)
+    func msgListGetIndex(message: Message) -> Int? {
+        0
+//        return state.messages.firstIndex(of: message)
     }
 
-    func msgListRenderAsRemoved(message _: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRemoved(message _: Message, at index: Int) {
         var updatedMessages = state.messages
         guard updatedMessages[safe: index] != nil else { return }
         updatedMessages.remove(at: index)
         state = updatedMessages.isEmpty ? .empty : .fetched(updatedMessages, .removed(index))
     }
 
-    func msgListRenderAsRead(message: MCOIMAPMessage, at index: Int) {
-        var updatedMessages = state.messages
-        updatedMessages[safe: index] = message
-        state = .fetched(updatedMessages, .added(index))
+    func msgListRenderAsRead(message: Message, at index: Int) {
+//        var updatedMessages = state.messages
+//        updatedMessages[safe: index] = message
+//        state = .fetched(updatedMessages, .added(index))
     }
 }
 
@@ -169,8 +170,10 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
                     )
                 )
             case .fetched:
-                return InboxCellNode(message: InboxCellNode.Input(self.state.messages[indexPath.row]))
-                    .then { $0.backgroundColor = .backgroundColor }
+                // TODO: - ANTON - Search MESSAGE
+                return ASCellNode()
+//                return InboxCellNode(message: InboxCellNode.Input(self.state.messages[indexPath.row]))
+//                    .then { $0.backgroundColor = .backgroundColor }
             case let .error(message):
                 return TextCellNode(
                     input: TextCellNode.Input(
@@ -184,11 +187,12 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         }
     }
 
+    // TODO: - ANTON - Search MESSAGE
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        tableNode.deselectRow(at: indexPath, animated: false)
-        guard let message = state.messages[safe: indexPath.row] else { return }
-
-        msgListOpenMsgElseShowToast(with: message, path: folderPath)
+//        tableNode.deselectRow(at: indexPath, animated: false)
+//        guard let message = state.messages[safe: indexPath.row] else { return }
+//
+//        msgListOpenMsgElseShowToast(with: message, path: folderPath)
     }
 }
 
