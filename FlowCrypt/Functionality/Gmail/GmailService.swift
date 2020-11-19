@@ -13,6 +13,8 @@ import GoogleAPIClientForREST
 // TODO: - ANTON Handle common error
 enum GmailServiceError: Error {
     case failedToParseData(Any?)
+    case missedMessagePayload
+    case missedMessageHeader
 }
 
 struct GmailService {

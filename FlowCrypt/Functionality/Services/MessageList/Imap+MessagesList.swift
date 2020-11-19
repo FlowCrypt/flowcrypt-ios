@@ -47,3 +47,16 @@ extension Imap: MessagesListProvider {
         }
     }
 }
+
+// MARK: - Message
+private extension Message {
+    init(imapMessage: MCOIMAPMessage) {
+        self.init(
+            date: imapMessage.header.date,
+            sender: imapMessage.header.from.mailbox ?? imapMessage.header.sender.mailbox,
+            subject: imapMessage.header.subject,
+            isMessageRead: imapMessage.flags.rawValue != 0,
+            size: Int(imapMessage.size)
+        )
+    }
+}

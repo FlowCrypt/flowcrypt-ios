@@ -14,6 +14,10 @@ enum MessagesListPagination {
     case byNextPage(token: String?)
 }
 
+enum MessagesListProviderError {
+    case provider
+}
+
 protocol MessagesListProvider {
-    func fetchMessages(for folder: String, count: Int, using pagination: MessagesListPagination) -> Promise<MessageContext>
+    func fetchMessages(for folderPath: String, count: Int, using pagination: MessagesListPagination) -> Promise<MessageContext>
 }

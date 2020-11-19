@@ -21,6 +21,10 @@ enum AppErr: Error {
     case silentAbort // useful in Promises when you want to cancel execution without showing any error (eg after user clicks cancel button)
     case general(String)
 
+    // TODO: - ANTON Handle cast Error
+    /// email provider unexpected error
+    case providerError(Error)
+
     var userMessage: String {
         switch self {
         case .connection: return "error_app_connection".localized

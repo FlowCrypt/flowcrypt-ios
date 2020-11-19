@@ -11,9 +11,9 @@ import UIKit
 
 extension InboxCellNode.Input {
     init(_ message: Message) {
-        let email = message.sender
+        let email = message.sender ?? "message_unknown_sender".localized
         let date = DateFormatter().formatDate(message.date)
-        let msg = message.subject
+        let msg = message.subject ?? "message_missed_subject".localized
         let isMessageRead = message.isMessageRead
 
         let style: NSAttributedString.Style = isMessageRead

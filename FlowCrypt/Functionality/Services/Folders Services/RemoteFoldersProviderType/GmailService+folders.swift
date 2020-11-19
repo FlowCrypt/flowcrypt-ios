@@ -18,7 +18,7 @@ extension GmailService: RemoteFoldersProviderType {
 
             self.gmailService.executeQuery(query) { (_, data, error) in
                 if let error = error {
-                    reject(FoldersProviderError.providerError(error))
+                    reject(AppErr .providerError(error))
                 }
 
                 guard let listLabels = data as? GTLRGmail_ListLabelsResponse else {
@@ -56,9 +56,13 @@ extension GmailService: RemoteFoldersProviderType {
 private extension FolderObject {
     convenience init?(with folder: GTLRGmail_Label) {
         guard let name = folder.name else { return nil }
+        guard let identifier = folder.identifier else {
+            assertionFailure("Gmail folder \(folder) doesn't have identifier")
+            return nil
+        }
         self.init(
             name: name,
-            path: name,
+            path: identifier,
             image: nil
         )
     }
