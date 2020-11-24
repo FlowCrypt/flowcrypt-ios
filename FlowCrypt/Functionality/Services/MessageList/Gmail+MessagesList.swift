@@ -17,7 +17,12 @@ extension GmailService: MessagesListProvider {
             let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchMessage(with:)) ?? []
             all(messageRequests)
                 .then { messages in
-                    resolve(MessageContext(messages: messages, pagination: .byNextPage(token: "")))
+                    resolve(
+                        MessageContext(
+                            messages: messages,
+                            pagination: .byNextPage(token: list.nextPageToken)
+                        )
+                    )
                 }
                 .catch { error in
                     reject(error)
@@ -44,6 +49,7 @@ extension GmailService: MessagesListProvider {
                 guard let messageList = data as? GTLRGmail_ListMessagesResponse else {
                     return reject(AppErr.cast("GTLRGmail_ListMessagesResponse"))
                 }
+
                 resolve(messageList)
             }
         }

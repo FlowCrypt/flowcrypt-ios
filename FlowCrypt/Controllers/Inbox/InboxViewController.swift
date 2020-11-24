@@ -9,7 +9,7 @@ import Promises
 
 final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
-        static let numberOfMessagesToLoad = 20
+        static let numberOfMessagesToLoad = 50
     }
 
     enum State {
@@ -52,7 +52,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private var messages: [Message] = []
 
     init(
-        _ viewModel: InboxViewModel = .empty,
+        _ viewModel: InboxViewModel,
         messageProvider: MessagesListProvider = GlobalServices.shared.messageProvider,
         decorator: InboxViewDecoratorType = InboxViewDecorator()
     ) {
@@ -384,6 +384,7 @@ extension InboxViewController {
     }
 }
 
+// MARK: - Batch fetching
 extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {
         switch state {
@@ -412,7 +413,8 @@ extension InboxViewController {
                 loadMore(context)
             }
         case let .fetched(.byNextPage(token)):
-            break
+            guard token != nil else { return }
+            loadMore(context)
         case .empty:
             fetchAndRenderEmails(context)
             state = .idle
