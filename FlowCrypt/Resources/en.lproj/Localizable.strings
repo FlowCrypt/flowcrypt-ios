@@ -2,6 +2,7 @@
 "loading_title" = "Loading";
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
+"retry_title" = "retry";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -28,6 +29,8 @@
 "error_archive" = "Unable to archive message";
 "error_permanently_delete" = "Unable to delete message";
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
+"error_general_text" = "Something went wrong.";
+"error_no_folders" = "There are no folders on your account";
 
 // Compose
 "compose_enter_recipient" = "Enter recipient";
@@ -145,3 +148,5 @@
 "other_provider_error_password" = "Password must not be empty";
 "other_provider_error_email" = "Email must not be empty";
 "other_provider_error_other" = "Check credentials";
+
+// Loading
