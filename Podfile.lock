@@ -4,7 +4,7 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.2.0)
   - AppAuth/Core (1.2.0)
   - AppAuth/ExternalUserAgent (1.2.0)
-  - BigInt (5.0.0)
+  - BigInt (5.2.0)
   - ENSwiftSideMenu (0.1.4)
   - GoogleAPIClientForREST/Core (1.5.1):
     - GTMSessionFetcher (>= 1.1.7)
@@ -119,7 +119,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
-  BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
+  BigInt: f668a80089607f521586bbe29513d708491ef2f7
   ENSwiftSideMenu: 21e755dae28f09bbf453aa83b3d05f2e5f92ca39
   GoogleAPIClientForREST: 4bb409633efcc2e1b3f945afe7e35039b5a61db2
   GoogleSignIn: 3a51b9bb8e48b635fd7f4272cee06ca260345b86
@@ -141,6 +141,6 @@ SPEC CHECKSUMS:
   Texture: 2f109e937850d94d1d07232041c9c7313ccddb81
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: 959de2527c8c45403d0e2c8558977402119269a2
+PODFILE CHECKSUM: f53500a42b10d22ba52a6a0958db92fc10291d2c
 
 COCOAPODS: 1.9.3

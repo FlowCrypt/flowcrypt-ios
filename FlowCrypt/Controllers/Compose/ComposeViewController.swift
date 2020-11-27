@@ -329,7 +329,7 @@ extension ComposeViewController {
         to: [String],
         cc: [String] = [],
         bcc: [String] = [],
-        atts: [SendableMsg.Att] = []
+        atts: [SendableMsg.Attachment] = []
     ) -> CoreRes.ComposeEmail {
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }

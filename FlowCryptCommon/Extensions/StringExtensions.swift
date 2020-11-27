@@ -19,6 +19,17 @@ public extension String {
     func data() -> Data {
         data(using: .utf8)!
     }
+
+    func separate(
+        every stride: Int = 4,
+        with separator: Character = " "
+    ) -> String {
+        String(
+            self.enumerated()
+                .map { $0 > 0 && $0 % stride == 0 ? [separator, $1] : [$1]}
+                .joined()
+        )
+    }
 }
 
 public extension NSAttributedString {

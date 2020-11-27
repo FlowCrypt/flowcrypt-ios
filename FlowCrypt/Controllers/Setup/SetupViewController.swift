@@ -12,7 +12,6 @@ final class SetupViewController: TableNodeViewController {
         case title, description, passPhrase, divider, action, optionalAction
     }
 
-    private let imap: Imap
     private let userService: UserServiceType
     private let router: GlobalRouterType
     private let storage: DataServiceType & KeyDataServiceType
@@ -20,6 +19,7 @@ final class SetupViewController: TableNodeViewController {
     private let core: Core
     private let keyMethods: KeyMethodsType
     private let attester: AttesterApiType
+    private let backupService: BackupServiceType
 
     private var passPhrase: String?
 
@@ -28,7 +28,7 @@ final class SetupViewController: TableNodeViewController {
         case emptyFetchedKeys
         /// error while key parsing (associated error for verbose message)
         case parseKey(Error)
-        /// no backups found while searching in imap
+        /// no backups found while searching
         case noBackups
     }
 
@@ -37,8 +37,6 @@ final class SetupViewController: TableNodeViewController {
         case idle
         /// start searching backups
         case searchingBackups
-        /// found backup data
-        case backups(Data)
         /// encrypted keys found
         case fetchedEncrypted([KeyDetails])
         /// creating new key
@@ -54,16 +52,15 @@ final class SetupViewController: TableNodeViewController {
     }
 
     init(
-        imap: Imap = Imap.shared,
         userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: SetupViewDecoratorType = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(core: .shared),
-        attester: AttesterApiType = AttesterApi()
+        attester: AttesterApiType = AttesterApi(),
+        backupService: BackupServiceType = BackupService.shared
     ) {
-        self.imap = imap
         self.userService = userService
         self.router = router
         self.storage = storage
@@ -71,6 +68,8 @@ final class SetupViewController: TableNodeViewController {
         self.core = core
         self.keyMethods = keyMethods
         self.attester = attester
+        self.backupService = backupService
+
         super.init(node: TableNode())
     }
 
@@ -147,9 +146,6 @@ extension SetupViewController {
             node.reloadData()
         case .searchingBackups:
             searchBackups()
-        case let .backups(data):
-            reloadNodes()
-            fetchEnctyptedKeys(with: data)
         case let .fetchedEncrypted(details):
             handleBackupsFetchResult(with: details)
         case let .error(error):
@@ -160,18 +156,17 @@ extension SetupViewController {
     }
 
     private func searchBackups() {
-        guard let email = storage.email else {
-            assertionFailure(); return
-        }
-
         showSpinner()
-
-        self.imap.searchBackups(for: email)
-            .then(on: .main) { [weak self] data in
-                self?.state = .backups(data)
+        backupService.fetchBackups()
+            .then(on: .main) { [weak self] keys in
+                guard keys.isNotEmpty else {
+                    self?.state = .error(.noBackups)
+                    return
+                }
+                self?.state = .fetchedEncrypted(keys)
             }
-            .catch(on: .main) { [weak self] _ in
-                self?.state = .error(.noBackups)
+            .catch(on: .main) { [weak self] error in
+                self?.handleCommon(error: error)
             }
     }
 
@@ -188,6 +183,8 @@ extension SetupViewController {
     }
 
     private func handleBackupsFetchResult(with keys: [KeyDetails]) {
+        hideSpinner()
+
         guard keys.isNotEmpty else {
             state = .error(.emptyFetchedKeys)
             return
@@ -294,12 +291,11 @@ extension SetupViewController {
 // MARK: - Recover account
 
 extension SetupViewController {
-    private func recoverAccountWithBackups(with passPhrase: String) {
-        guard case let .fetchedEncrypted(details) = state else { assertionFailure(); return }
+    private func recoverAccount(with backups: [KeyDetails], and passPhrase: String) {
 
-        let matchingKeyBackups = keyMethods.filterByPassPhraseMatch(keys: details, passPhrase: passPhrase)
+        let matchingKeyBackups = keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase)
 
-        guard matchingKeyBackups.count > 0 else {
+        guard matchingKeyBackups.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
@@ -318,7 +314,7 @@ extension SetupViewController {
             let userId = try self.getUserId()
             try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try await(self.backupPrvToInbox(prv: encryptedPrv.key, userId: userId))
+            try await(self.backupService.backupToInbox(keys: [encryptedPrv.key]))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
 
             let updateKey = self.attester.updateKey(
@@ -335,10 +331,17 @@ extension SetupViewController {
                 testWelcome,
                 fail: "Failed to send you welcome email")
             )
-        }.then(on: .main) { [weak self] in
+        }
+        .then(on: .main) { [weak self] in
             self?.moveToMainFlow()
-        }.catch(on: .main) { [weak self] error in
-            self?.showAlert(error: error, message: "Could not finish setup, please try again")
+        }
+        .catch(on: .main) { [weak self] error in
+            guard let self = self else { return }
+            let isErrorHandled = self.handleCommon(error: error)
+
+            if !isErrorHandled {
+                self.showAlert(error: error, message: "Could not finish setup, please try again")
+            }
         }
     }
 
@@ -356,24 +359,6 @@ extension SetupViewController {
         guard let email = DataService.shared.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
         guard let name = DataService.shared.email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
         return UserId(email: email, name: name)
-    }
-
-    private func backupPrvToInbox(prv: KeyDetails, userId: UserId) -> Promise<Void> {
-        return Promise { () -> Void in
-            guard prv.isFullyEncrypted ?? false else { throw AppErr.unexpected("Private Key must be fully enrypted before backing up") }
-            let filename = "flowcrypt-backup-\(userId.email.replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression)).key"
-            let backupEmail = try self.core.composeEmail(msg: SendableMsg(
-                text: "setup_backup_email".localized,
-                to: [userId.toMime()],
-                cc: [],
-                bcc: [],
-                from: userId.toMime(),
-                subject: "Your FlowCrypt Backup",
-                replyToMimeMsg: nil,
-                atts: [SendableMsg.Att(name: filename, type: "text/plain", base64: prv.private!.data().base64EncodedString())] // !crash ok
-            ), fmt: .plain, pubKeys: nil)
-            try await(Imap.shared.sendMail(mime: backupEmail.mimeEncoded))
-        }
     }
 
     private func storePrvs(prvs: [KeyDetails], passPhrase: String, source: KeySource) throws {
@@ -401,8 +386,12 @@ extension SetupViewController {
         showSpinner()
 
         switch state {
-        case .createKey: setupAccountWithGeneratedKey(with: passPhrase)
-        default: recoverAccountWithBackups(with: passPhrase)
+        case .createKey:
+            setupAccountWithGeneratedKey(with: passPhrase)
+        case let .fetchedEncrypted(backups):
+            recoverAccount(with: backups, and: passPhrase)
+        default:
+            assertionFailure("Not proper state for the screen")
         }
     }
 
@@ -410,7 +399,8 @@ extension SetupViewController {
         userService.signOut()
             .then(on: .main) { [weak self] _ in
                 self?.router.proceed()
-            }.catch(on: .main) { [weak self] error in
+            }
+            .catch(on: .main) { [weak self] error in
                 self?.showAlert(error: error, message: "Could not switch accounts")
             }
     }
