@@ -11,18 +11,18 @@ import GTMSessionFetcher
 import GoogleAPIClientForREST
 
 extension GmailService: MessagesListProvider {
-    func fetchMessages(for folderPath: String, count: Int, using pagination: MessagesListPagination) -> Promise<MessageContext> {
+    func fetchMessages(
+        for folderPath: String,
+        count: Int,
+        using pagination: MessagesListPagination
+    ) -> Promise<MessageContext> {
         Promise { (resolve, reject) in
             let list = try await(fetchMessagesList(for: folderPath, count: count, using: pagination))
             let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchMessage(with:)) ?? []
             all(messageRequests)
                 .then { messages in
-                    resolve(
-                        MessageContext(
-                            messages: messages,
-                            pagination: .byNextPage(token: list.nextPageToken)
-                        )
-                    )
+                    let context = MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
+                    resolve(context)
                 }
                 .catch { error in
                     reject(error)
@@ -30,11 +30,14 @@ extension GmailService: MessagesListProvider {
         }
     }
 
-    private func fetchMessagesList(for folderPath: String, count: Int, using pagination: MessagesListPagination) -> Promise<GTLRGmail_ListMessagesResponse> {
+    private func fetchMessagesList(
+        for folderPath: String,
+        count: Int,
+        using pagination: MessagesListPagination
+    ) -> Promise<GTLRGmail_ListMessagesResponse> {
         guard case let .byNextPage(token) = pagination else {
             fatalError("Pagination \(pagination) is not supported for this provider")
         }
-
         let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
         query.labelIds = [folderPath]
         query.maxResults = UInt(count)
@@ -78,7 +81,7 @@ extension GmailService: MessagesListProvider {
     }
 }
 
-
+// MARK: -
 private extension String {
     static let from = "from"
     static let subject = "subject"
@@ -115,10 +118,9 @@ private extension Message {
         }
 
         if let date = dateString {
-            print("^^ date \(date)")
+            print("date \(date)")
             let df = DateFormatter()
             let date = df.date(from: date)
-            print(date)
         }
 
         self.init(

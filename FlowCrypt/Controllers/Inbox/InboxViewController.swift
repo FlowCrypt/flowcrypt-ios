@@ -36,6 +36,15 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
                 return false
             }
         }
+
+        var token: String? {
+            switch self {
+            case let .fetched(.byNextPage(token)):
+                return token
+            default:
+                return nil
+            }
+        }
     }
 
     private var state: State = .idle
@@ -107,6 +116,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     }
 }
 
+// MARK: - UI
 extension InboxViewController {
     private func setupUI() {
         title = inboxTitle
@@ -132,31 +142,7 @@ extension InboxViewController {
     }
 }
 
-extension InboxViewController {
-    // TODO: - ANTON - MessagesListPagination
-    private func currentMessagesListPagination(from number: Int? = nil, token: String? = nil) -> MessagesListPagination {
-        switch GlobalServices.shared.authType {
-        case .password: return MessagesListPagination.byNumber(total: number ?? 0)
-        case .gmail: return .byNextPage(token: token)
-        }
-    }
-
-    private func messagesToLoad() -> Int {
-        switch state {
-        case .fetched(.byNextPage):
-            return Constants.numberOfMessagesToLoad
-        case .fetched(.byNumber(let totalNumberOfMessages)):
-            guard let total = totalNumberOfMessages else {
-                return Constants.numberOfMessagesToLoad
-            }
-            let from = messages.count
-            return min(Constants.numberOfMessagesToLoad, total - from)
-        default:
-            return Constants.numberOfMessagesToLoad
-        }
-    }
-}
-
+// MARK: - Functionality
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
         messageProvider
@@ -176,13 +162,14 @@ extension InboxViewController {
     private func loadMore(_ batchContext: ASBatchContext?) {
         guard state.canLoadMore else { return }
 
+        let pagination = currentMessagesListPagination(from: messages.count)
         state = .fetching
-
+        
         messageProvider
             .fetchMessages(
                 for: viewModel.path,
                 count: messagesToLoad(),
-                using: currentMessagesListPagination(from: messages.count)
+                using: pagination
             )
             .then { [weak self] context in
                 self?.state = .fetched(context.pagination)
@@ -197,8 +184,10 @@ extension InboxViewController {
         context?.completeBatchFetching(true)
 
         switch state {
-        case .idle, .refresh: handleNew(messageContext)
-        case .fetched: handleFetched(messageContext)
+        case .idle, .refresh:
+            handleNew(messageContext)
+        case .fetched:
+            handleFetched(messageContext)
         default: break
         }
     }
@@ -252,6 +241,7 @@ extension InboxViewController {
     }
 }
 
+// MARK: - Action handlers
 extension InboxViewController {
     @objc private func handleInfoTap() {
         #warning("ToDo")
@@ -275,6 +265,7 @@ extension InboxViewController {
     }
 }
 
+// MARK: - MsgListViewConroller
 extension InboxViewController: MsgListViewConroller {
     func msgListGetIndex(message: Message) -> Int? {
         return messages.firstIndex(of: message)
@@ -313,6 +304,7 @@ extension InboxViewController: MsgListViewConroller {
     }
 }
 
+// MARK: - ASTableDataSource, ASTableDelegate
 extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
@@ -345,6 +337,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 }
 
+// MARK: - Cell Nodes
 extension InboxViewController {
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
         return { [weak self] in
@@ -384,7 +377,7 @@ extension InboxViewController {
     }
 }
 
-// MARK: - Batch fetching
+// MARK: - Pagination
 extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {
         switch state {
@@ -431,6 +424,33 @@ extension InboxViewController {
             fetchAndRenderEmails(context)
         case .error:
             break
+        }
+    }
+}
+
+// MARK: - Pagination helpers
+extension InboxViewController {
+    private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
+        switch GlobalServices.shared.authType {
+        case .password:
+            return MessagesListPagination.byNumber(total: number ?? 0)
+        case .gmail:
+            return .byNextPage(token: state.token)
+        }
+    }
+
+    private func messagesToLoad() -> Int {
+        switch state {
+        case .fetched(.byNextPage):
+            return Constants.numberOfMessagesToLoad
+        case .fetched(.byNumber(let totalNumberOfMessages)):
+            guard let total = totalNumberOfMessages else {
+                return Constants.numberOfMessagesToLoad
+            }
+            let from = messages.count
+            return min(Constants.numberOfMessagesToLoad, total - from)
+        default:
+            return Constants.numberOfMessagesToLoad
         }
     }
 }

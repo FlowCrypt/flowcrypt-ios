@@ -58,6 +58,8 @@ target 'FlowCryptUITests' do
   pod 'GoogleSignIn'
 end
 
+
+## Set IPHONEOS_DEPLOYMENT_TARGET for all pods
 post_install do |pi|
     pi.pods_project.targets.each do |t|
       t.build_configurations.each do |config|
