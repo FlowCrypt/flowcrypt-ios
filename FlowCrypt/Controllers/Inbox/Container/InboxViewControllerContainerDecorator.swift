@@ -6,7 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import FlowCryptUI
 
 struct InboxViewControllerContainerDecorator {
     func emptyFoldersInput(with size: CGSize) -> TextCellNode.Input {

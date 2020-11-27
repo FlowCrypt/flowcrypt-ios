@@ -107,6 +107,7 @@
 		9FE1B38D2563F96400D6D086 /* Gmail+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B38C2563F96400D6D086 /* Gmail+MessagesList.swift */; };
 		9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */; };
 		9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B39F2565B0CD00D6D086 /* Message.swift */; };
+		9FE233D825712E51003D7C7E /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 9FE233D725712E51003D7C7E /* test-ci-secrets.json */; };
 		9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE743062347AA54005E2DBB /* MainNavigationController.swift */; };
 		9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */; };
 		9FF0670825520CF800FCC9E6 /* GmailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF0670725520CF800FCC9E6 /* GmailService.swift */; };
@@ -153,7 +154,6 @@
 		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
-		D24B8FEB24B7837F00521D74 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = D24B8FEA24B7837E00521D74 /* test-ci-secrets.json */; };
 		D24B8FEC24B79BF600521D74 /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
 		D2531F2F23FEEF52007E5198 /* FlowCryptCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -449,6 +449,7 @@
 		9FE1B38C2563F96400D6D086 /* Gmail+MessagesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+MessagesList.swift"; sourceTree = "<group>"; };
 		9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+MessagesList.swift"; sourceTree = "<group>"; };
 		9FE1B39F2565B0CD00D6D086 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		9FE233D725712E51003D7C7E /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
 		9FE743062347AA54005E2DBB /* MainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationController.swift; sourceTree = "<group>"; };
 		9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewModel.swift; sourceTree = "<group>"; };
@@ -495,7 +496,6 @@
 		D2324CB22471E60300FD1C6F /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNode.swift; sourceTree = "<group>"; };
-		D24B8FEA24B7837E00521D74 /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
 		D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapViewController.swift; sourceTree = "<group>"; };
 		D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlowCryptCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlowCryptCommon.h; sourceTree = "<group>"; };
@@ -923,11 +923,11 @@
 		9FDF3642235A1B0100614596 /* FlowCryptUITests */ = {
 			isa = PBXGroup;
 			children = (
-				D24B8FEA24B7837E00521D74 /* test-ci-secrets.json */,
 				9FDF364C235A1CCD00614596 /* SignInTest.swift */,
 				D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */,
 				D216D05D242D32EA0083EDD6 /* TestCredentials.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
+				9FE233D725712E51003D7C7E /* test-ci-secrets.json */,
 				9F228BA723C673C2005D2CB6 /* Resources */,
 			);
 			path = FlowCryptUITests;
@@ -1658,7 +1658,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D24B8FEB24B7837F00521D74 /* test-ci-secrets.json in Resources */,
+				9FE233D825712E51003D7C7E /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
