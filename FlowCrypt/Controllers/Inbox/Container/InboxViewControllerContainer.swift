@@ -10,29 +10,17 @@ import AsyncDisplayKit
 import FlowCryptUI
 import FlowCryptCommon
 
-import Promises
-struct EmptyMock {
-    func fetchFolders() -> Promise<[FolderViewModel]> {
-        return Promise([])
-    }
-}
-
-struct ErrorMock {
-    enum A: Error {
-        case some
-    }
-    
-    func fetchFolders() -> Promise<[FolderViewModel]> {
-        return Promise(A.some)
-    }
-}
-
+// MARK: - InboxViewControllerContainer
+// Used to fetch folders and get correct path for "inbox" folder
 final class InboxViewControllerContainer: TableNodeViewController {
+    private let inbox = "inbox"
+
     private enum InboxViewControllerContainerError: Error {
         case noInbox
+        case internalError
     }
 
-    enum State {
+    private enum State {
         case loading
         case error(Error)
         case empty
@@ -41,11 +29,9 @@ final class InboxViewControllerContainer: TableNodeViewController {
 
     let folderService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
-    
+
     private var state: State = .loading {
-        didSet {
-            handleNewState()
-        }
+        didSet { handleNewState() }
     }
 
     init(
@@ -77,7 +63,7 @@ final class InboxViewControllerContainer: TableNodeViewController {
                 self?.state = .error(error)
             }
     }
-    
+
     private func handleFetched(folders: [FolderViewModel]) {
         guard folders.isNotEmpty else {
             state = .empty
@@ -86,8 +72,8 @@ final class InboxViewControllerContainer: TableNodeViewController {
 
         let containsInbox = folders
             .map(\.path)
-            .containsCaseInsensitive("inbox")
-        
+            .containsCaseInsensitive(inbox)
+
         state = containsInbox
             ? .loadedFolders(folders)
             : .error(InboxViewControllerContainerError.noInbox)
@@ -97,12 +83,17 @@ final class InboxViewControllerContainer: TableNodeViewController {
         switch state {
         case .loading, .error, .empty:
             node.reloadData()
-        case .error:
-            node.reloadData()
         case .loadedFolders(let folders):
-            print("^^ find inbox and load inbox view controller")
-//            let vc = InboxViewController(viewModel: nil)
-//            sideMenuController()?.setContentViewController(InboxViewController(input))
+            let folder = folders
+                .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
+
+            guard let inbox = folder else {
+                state = .error(InboxViewControllerContainerError.internalError)
+                return
+            }
+            
+            let vc = InboxViewController(InboxViewModel(inbox))
+            navigationController?.setViewControllers([vc], animated: false)
         }
     }
 }
@@ -129,26 +120,26 @@ extension InboxViewControllerContainer: ASTableDelegate, ASTableDataSource {
             width: tableNode.frame.size.width,
             height: max(height, 0)
         )
-        
+
         // size - retry button height
         let descriptionSize = CGSize(
             width: tableNode.frame.size.width,
             height: max(height - 100, 0)
         )
-        
+
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
-            
+
             // Retry Button
             if indexPath.row == 1 {
                 return ButtonCellNode(
-                    title: self.decorator.retytActionTitle(),
+                    title: self.decorator.retryActionTitle(),
                     insets: UIEdgeInsets.side(8)
                 ) {
                     self.fetchInboxFolder()
                 }
             }
-            
+
             switch self.state {
             case .loading:
                 return TextCellNode(
@@ -167,38 +158,5 @@ extension InboxViewControllerContainer: ASTableDelegate, ASTableDataSource {
                 return ASCellNode()
             }
         }
-    }
-}
-
-struct InboxViewControllerContainerDecorator {
-    func emptyFoldersInput(with size: CGSize) -> TextCellNode.Input {
-        TextCellNode.Input(
-            backgroundColor: .backgroundColor,
-            title: "error_no_folders".localized,
-            withSpinner: false,
-            size: size
-        )
-    }
-    
-    func errorInput(with size: CGSize, error: Error) -> TextCellNode.Input {
-        TextCellNode.Input(
-            backgroundColor: .backgroundColor,
-            title: "error_general_text".localized + "\n\n\(error)",
-            withSpinner: false,
-            size: size
-        )
-    }
-    
-    func retytActionTitle() -> NSAttributedString {
-        "retry_title".localized.attributed()
-    }
-    
-    func loadingInput(with size: CGSize) -> TextCellNode.Input {
-        TextCellNode.Input(
-           backgroundColor: .backgroundColor,
-           title: "loading_title".localized + "...",
-           withSpinner: true,
-           size: size
-       )
     }
 }
