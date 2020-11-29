@@ -10,13 +10,7 @@ import Foundation
 import GoogleSignIn
 import GoogleAPIClientForREST
 
-// TODO: - ANTON Handle common error
-enum GmailServiceError: Error {
-    case failedToParseData(Any?)
-    case missedMessagePayload
-    case missedMessageHeader
-}
-
+// TODO: - ANTON - Check. Maybe better to use class for GmailService (weak self)
 struct GmailService {
     let signInService: GIDSignIn
     let gmailService: GTLRService
@@ -28,9 +22,11 @@ struct GmailService {
     }
 }
 
-// Gmail identifier
+// Gmail string extension identifier
 extension String {
     static let me = "me"
+    static let from = "from"
+    static let subject = "subject"
+    static let date = "date"
+    static let identifier = "Message-ID"
 }
-
-// TODO: - ANTON - Check. Maybe better to use class for GmailService (weak self)

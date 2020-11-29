@@ -164,7 +164,7 @@ extension InboxViewController {
 
         let pagination = currentMessagesListPagination(from: messages.count)
         state = .fetching
-        
+
         messageProvider
             .fetchMessages(
                 for: viewModel.path,
@@ -228,6 +228,7 @@ extension InboxViewController {
     }
 
     private func handle(error: Error) {
+        // TODO: - ANTON - ADD FALLBACK TO ERROR HANDLING
         refreshControl.endRefreshing()
         let appError = AppErr(error)
 

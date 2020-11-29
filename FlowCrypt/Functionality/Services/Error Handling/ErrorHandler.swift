@@ -8,6 +8,7 @@
 
 import UIKit
 
+// TODO: - ANTON - ADD FALLBACK TO ERROR HANDLING
 extension UIViewController {
     @discardableResult
     func handleCommon(error: Error) -> Bool {

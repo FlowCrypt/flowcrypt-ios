@@ -81,7 +81,10 @@ final class InboxViewControllerContainer: TableNodeViewController {
 
     private func handleNewState() {
         switch state {
-        case .loading, .error, .empty:
+        case .loading, .empty:
+            node.reloadData()
+        case let .error(error):
+            handleCommon(error: error)
             node.reloadData()
         case .loadedFolders(let folders):
             let folder = folders

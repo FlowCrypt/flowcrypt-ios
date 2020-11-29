@@ -52,6 +52,7 @@ extension Imap: MessagesListProvider {
 private extension Message {
     init(imapMessage: MCOIMAPMessage) {
         self.init(
+            identifier: Identifier(intId: Int(imapMessage.uid)),
             date: imapMessage.header.date,
             sender: imapMessage.header.from.mailbox ?? imapMessage.header.sender.mailbox,
             subject: imapMessage.header.subject,

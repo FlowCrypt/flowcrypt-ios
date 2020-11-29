@@ -44,8 +44,9 @@ final class MessageViewController: TableNodeViewController {
         }
     }
 
-    typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
+    typealias MsgViewControllerCompletion = (MessageAction, Message) -> Void
     private let onCompletion: MsgViewControllerCompletion?
+
     private var input: MessageViewController.Input?
     private let imap: Imap
     private let decorator: MessageViewDecoratorType
@@ -67,8 +68,8 @@ final class MessageViewController: TableNodeViewController {
         self.decorator = decorator
         self.dataService = storage
         self.core = core
-        onCompletion = completion
-        message = decorator.attributed(
+        self.onCompletion = completion
+        self.message = decorator.attributed(
             text: "loading_title".localized + "...",
             color: .lightGray
         )

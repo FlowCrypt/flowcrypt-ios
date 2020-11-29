@@ -9,12 +9,6 @@
 import Foundation
 import Promises
 
-// TODO: - ANTON - Handle errors
-enum MessageSenderError: Error {
-    case providerError(Error)
-    case encode
-}
-
 protocol MessageSender {
     func sendMail(mime: Data) -> Promise<Void>
 }

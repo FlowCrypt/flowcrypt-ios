@@ -1,18 +1,12 @@
 //
-//  KeyServiceError.swift
+//  KeyServiceErrorHandler.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 13.10.2020.
+//  Created by Anton Kharchevskyi on 27.11.2020.
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
 import UIKit
-
-enum KeyServiceError: Error {
-    case retrieve
-    case parse
-    case unexpected
-}
 
 struct KeyServiceErrorHandler: ErrorHandler {
     func handle(error: Error, for viewController: UIViewController) -> Bool {

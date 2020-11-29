@@ -60,6 +60,7 @@ extension GmailService: MessagesListProvider {
 
     private func fetchMessage(with id: String) -> Promise<Message> {
         let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: id)
+        query.format = kGTLRGmailFormatFull
         return Promise { (resolve, reject) in
             self.gmailService.executeQuery(query) { (_, data, error) in
                 if let error = error {
@@ -81,13 +82,6 @@ extension GmailService: MessagesListProvider {
     }
 }
 
-// MARK: -
-private extension String {
-    static let from = "from"
-    static let subject = "subject"
-    static let date = "date"
-}
-
 // MARK: - Gmail
 private extension Message {
     init(_ message: GTLRGmail_Message) throws {
@@ -96,15 +90,22 @@ private extension Message {
         }
 
         guard let messageHeaders = payload.headers else {
-            throw GmailServiceError.missedMessageHeader
+            throw GmailServiceError.missedMessageInfo("headers")
+        }
+
+        guard let internalDate = message.internalDate as? Double else {
+            throw GmailServiceError.missedMessageInfo("date")
+        }
+
+        guard let id = message.identifier else {
+            throw GmailServiceError.missedMessageInfo("id")
         }
 
         var sender: String?
         var subject: String?
-        var dateString: String?
 
+        // TODO: - ANTON - list isMessageRead
         var isMessageRead = true
-        var size = 1
 
         messageHeaders.compactMap { $0 }.forEach {
             guard let name = $0.name?.lowercased() else { return }
@@ -112,23 +113,17 @@ private extension Message {
             switch name {
             case .from: sender = value
             case .subject: subject = value
-            case .date: dateString = value
             default: break
             }
         }
 
-        if let date = dateString {
-            print("date \(date)")
-            let df = DateFormatter()
-            let date = df.date(from: date)
-        }
-
         self.init(
-            date: Date(),
+            identifier: Identifier(stringId: id),
+            date: Date(timeIntervalSince1970: internalDate),
             sender: sender,
             subject: subject,
             isMessageRead: isMessageRead,
-            size: nil
+            size: message.sizeEstimate.flatMap(Int.init)
         )
     }
 }

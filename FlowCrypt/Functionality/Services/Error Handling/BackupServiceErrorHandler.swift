@@ -1,18 +1,12 @@
 //
-//  BackupServiceError.swift
+//  BackupServiceErrorHandler.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 14.10.2020.
+//  Created by Anton Kharchevskyi on 27.11.2020.
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
 import UIKit
-
-enum BackupServiceError: Error {
-    case parse
-    case emailNotFound
-    case keyIsNotFullyEncrypted
-}
 
 struct BackupServiceErrorHandler: ErrorHandler {
     func handle(error: Error, for viewController: UIViewController) -> Bool {

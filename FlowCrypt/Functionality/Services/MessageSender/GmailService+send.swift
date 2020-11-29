@@ -15,7 +15,7 @@ extension GmailService: MessageSender {
     func sendMail(mime: Data) -> Promise<Void> {
         Promise { (resolve, reject) in
             guard let raw = GTLREncodeBase64(mime) else {
-                return reject(MessageSenderError.encode)
+                return reject(GmailServiceError.messageEncode)
             }
 
             let gtlMessage = GTLRGmail_Message()
@@ -27,9 +27,9 @@ extension GmailService: MessageSender {
                 uploadParameters: nil
             )
 
-            self.gmailService.executeQuery(querySend) { (ticket, any, error) in
+            self.gmailService.executeQuery(querySend) { (_, _, error) in
                 if let error = error {
-                    reject(MessageSenderError.providerError(error))
+                    reject(AppErr.providerError(error))
                 }
                 resolve(())
             }
