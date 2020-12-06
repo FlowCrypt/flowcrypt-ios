@@ -6,7 +6,6 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
-// TODO: - ANTON - SINGLE MESSAGE Functionality
 final class MessageViewController: TableNodeViewController {
     struct Input {
         var objMessage: Message
@@ -48,8 +47,6 @@ final class MessageViewController: TableNodeViewController {
     private let onCompletion: MsgViewControllerCompletion?
 
     private var input: MessageViewController.Input?
-    // TODO: - ANTON REMOVE
-    private let imap: Imap
     private let decorator: MessageViewDecoratorType
     private var dataService: DataServiceType & KeyDataServiceType
     private let core: Core
@@ -58,7 +55,6 @@ final class MessageViewController: TableNodeViewController {
     private var message: NSAttributedString
 
     init(
-        imap: Imap = Imap.shared,
         messageProvider: MessageProvider = GlobalServices.shared.messageProvider,
         decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
@@ -66,7 +62,6 @@ final class MessageViewController: TableNodeViewController {
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
-        self.imap = imap
         self.messageProvider = messageProvider
         self.input = input
         self.decorator = decorator
@@ -101,10 +96,11 @@ final class MessageViewController: TableNodeViewController {
     }
 
     private func setupNavigationBar() {
-        imap.trashFolderPath()
-            .then(on: .main) { [weak self] path in
-                self?.setupNavigationBarItems(with: path)
-            }
+        // TODO: - ANTON - Trash
+//        imap.trashFolderPath()
+//            .then(on: .main) { [weak self] path in
+//                self?.setupNavigationBarItems(with: path)
+//            }
     }
 
     private func setupNavigationBarItems(with trashFolderPath: String?) {
@@ -149,7 +145,6 @@ extension MessageViewController {
         }
     }
 
-    // TODO: - ANTON - SINGLE MESSAGE
     private func fetchMessage() -> Promise<NSAttributedString> {
         Promise { [weak self] resolve, reject in
             guard let self = self, let input = self.input else { return }
@@ -211,15 +206,14 @@ extension MessageViewController {
 //            }
     }
 
-    // TODO: - ANTON - SINGLE MESSAGE
     private func handleOpSuccess(operation: MessageAction) {
-//        guard let input = input else { return }
-//        hideSpinner()
-//        operation.text.flatMap { showToast($0) }
-//
-//        navigationController?.popViewController(animated: true) { [weak self] in
-//            self?.onCompletion?(operation, input.objMessage)
-//        }
+        guard let input = input else { return }
+        hideSpinner()
+        operation.text.flatMap { showToast($0) }
+
+        navigationController?.popViewController(animated: true) { [weak self] in
+            self?.onCompletion?(operation, input.objMessage)
+        }
     }
 
     private func handleOpErr(operation: MessageAction) {
@@ -242,20 +236,20 @@ extension MessageViewController {
     @objc private func handleTrashTap() {
         showSpinner()
 
-        imap.trashFolderPath()
-            .then { [weak self] trashPath in
-                guard let strongSelf = self, let input = strongSelf.input, let path = trashPath else {
-                    self?.permanentlyDelete()
-                    return
-                }
-
-                input.path == trashPath
-                    ? strongSelf.permanentlyDelete()
-                    : strongSelf.moveToTrash(with: path)
-            }
-            .catch(on: .main) { error in
-                self.showToast(error.localizedDescription)
-            }
+//        imap.trashFolderPath()
+//            .then { [weak self] trashPath in
+//                guard let strongSelf = self, let input = strongSelf.input, let path = trashPath else {
+//                    self?.permanentlyDelete()
+//                    return
+//                }
+//
+//                input.path == trashPath
+//                    ? strongSelf.permanentlyDelete()
+//                    : strongSelf.moveToTrash(with: path)
+//            }
+//            .catch(on: .main) { error in
+//                self.showToast(error.localizedDescription)
+//            }
     }
 
     // TODO: - ANTON - SINGLE MESSAGE
@@ -320,7 +314,7 @@ extension MessageViewController {
     private func handleReplyTap() {
 //        guard let input = input else { return }
 //        let replyInfo = ComposeViewController.Input.ReplyInfo(
-//            recipient: input.objMessage.header.from,
+//            recipient: input.objMessage.se,
 //            subject: input.objMessage.header.subject,
 //            mime: input.bodyMessage,
 //            sentDate: input.objMessage.header.date,

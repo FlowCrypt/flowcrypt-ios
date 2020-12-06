@@ -17,6 +17,10 @@ extension GmailService: MessageProvider {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }
 
+            let a = GTLRGmail_ModifyMessageRequest()
+
+//            GTLRGmailQuery_UsersThreadsModify.query(withObject: , userId: <#T##String#>, identifier: <#T##String#>)
+
             let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: id)
             query.format = kGTLRGmailFormatRaw
 
@@ -31,13 +35,10 @@ extension GmailService: MessageProvider {
                     return reject(GmailServiceError.missedMessageInfo("raw"))
                 }
 
-                guard let data = GTLRDecodeBase64(raw) else {
+                guard let data = GTLRDecodeWebSafeBase64(raw) else {
                     return reject(GmailServiceError.missedMessageInfo("data"))
                 }
-
-                resolve(GTLRDecodeWebSafeBase64(raw)!)
-
-//                resolve(data)
+                resolve(data)
             }
         }
     }

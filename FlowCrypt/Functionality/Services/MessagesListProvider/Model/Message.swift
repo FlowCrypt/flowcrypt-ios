@@ -10,22 +10,39 @@ import Foundation
 import FlowCryptCommon
 import GoogleAPIClientForREST
 
-// MARK: - Data Model
 struct Message: Equatable {
     let identifier: Identifier
     let date: Date
     let sender: String?
     let subject: String?
-    let isMessageRead: Bool
     let size: Int?
+    let labels: [MessageLabel]
 
-    init(identifier: Identifier, date: Date, sender: String?, subject: String?, isMessageRead: Bool, size: Int?) {
+    var isMessageRead: Bool {
+        let types = labels.map(\.type)
+        if types.contains(.seen) {
+            return true
+        }
+        if types.contains(.unread) {
+            return false
+        }
+        return true
+    }
+
+    init(
+        identifier: Identifier,
+        date: Date,
+        sender: String?,
+        subject: String?,
+        size: Int?,
+        labels: [MessageLabel]
+    ) {
         self.identifier = identifier
         self.date = date
         self.sender = sender
         self.subject = subject
-        self.isMessageRead = isMessageRead
         self.size = size
+        self.labels = labels
     }
 }
 

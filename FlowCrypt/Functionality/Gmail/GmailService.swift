@@ -25,6 +25,9 @@ struct GmailService {
 // Gmail string extension identifier
 extension String {
     static let me = "me"
+}
+
+extension String {
     static let from = "from"
     static let subject = "subject"
     static let date = "date"

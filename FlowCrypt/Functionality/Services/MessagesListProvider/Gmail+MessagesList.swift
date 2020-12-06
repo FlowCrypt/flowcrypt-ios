@@ -101,12 +101,13 @@ private extension Message {
             throw GmailServiceError.missedMessageInfo("id")
         }
 
+        let labelTypes: [MessageLabelType] = message.labelIds?.map(MessageLabelType.init) ?? []
+        let labels = labelTypes.map(MessageLabel.init)
+
         var sender: String?
         var subject: String?
 
-        // TODO: - ANTON - list isMessageRead
-        var isMessageRead = true
-
+        print("^^ \(String(describing: message.labelIds))")
         messageHeaders.compactMap { $0 }.forEach {
             guard let name = $0.name?.lowercased() else { return }
             let value = $0.value
@@ -122,8 +123,8 @@ private extension Message {
             date: Date(timeIntervalSince1970: internalDate),
             sender: sender,
             subject: subject,
-            isMessageRead: isMessageRead,
-            size: message.sizeEstimate.flatMap(Int.init)
+            size: message.sizeEstimate.flatMap(Int.init),
+            labels: labels
         )
     }
 }
