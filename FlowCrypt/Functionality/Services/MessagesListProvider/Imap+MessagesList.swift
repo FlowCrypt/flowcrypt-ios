@@ -51,6 +51,7 @@ extension Imap: MessagesListProvider {
 // MARK: - Message
 private extension Message {
     init(imapMessage: MCOIMAPMessage) {
+        // swiftlint:disable compiler_protocol_init
         let labels = Array(arrayLiteral: imapMessage.flags).map(MessageLabelType.init).map(MessageLabel.init)
         self.init(
             identifier: Identifier(intId: Int(imapMessage.uid)),
