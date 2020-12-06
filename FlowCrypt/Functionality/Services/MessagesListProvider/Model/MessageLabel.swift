@@ -40,7 +40,7 @@ enum MessageLabelType: Equatable {
 extension MessageLabelType {
     init(imapFlag: MCOMessageFlag) {
         switch imapFlag {
-        case .seen: self = .unread
+        case .seen: self = .seen
         case .flagged: self = .starred
         case .mdnSent: self = .sent
         case .deleted: self = .trash
@@ -50,7 +50,12 @@ extension MessageLabelType {
         case .forwarded: self = .label("forwarded")
         case .submitPending: self = .label("pending")
         case .submitted: self = .label("submited")
-        default: self = .label(String(imapFlag.rawValue))
+        default:
+            if imapFlag.rawValue == 0 {
+                self = .unread
+            } else {
+                self = .label(String(imapFlag.rawValue))
+            }
         }
     }
 }

@@ -432,12 +432,7 @@ extension InboxViewController {
 // MARK: - Pagination helpers
 extension InboxViewController {
     private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        switch GlobalServices.shared.authType {
-        case .password:
-            return MessagesListPagination.byNumber(total: number ?? 0)
-        case .gmail:
-            return .byNextPage(token: state.token)
-        }
+        return GlobalServices.shared.currentMessagesListPagination(from: number, token: state.token)
     }
 
     private func messagesToLoad() -> Int {
