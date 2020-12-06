@@ -13,27 +13,32 @@ import GoogleAPIClientForREST
 extension GmailService: MessageProvider {
     func fetchMsg(message: Message, folder: String) -> Promise<Data> {
         return Promise { (resolve, reject) in
-//            GTLRGmailQuery_mes
-            return reject(AppErr.nilSelf)
-        }
+            guard let id = message.identifier.stringId else {
+                return reject(GmailServiceError.missedMessageInfo("id"))
+            }
 
-//        let query = GTL
-//        query.labelIds = [folderPath]
-//        query.maxResults = UInt(count)
-//        query.pageToken = token
-//
-//        return Promise { (resolve, reject) in
-//            self.gmailService.executeQuery(query) { (_, data, error) in
-//                if let error = error {
-//                    reject(AppErr.providerError(error))
-//                }
-//
-//                guard let messageList = data as? GTLRGmail_ListMessagesResponse else {
-//                    return reject(AppErr.cast("GTLRGmail_ListMessagesResponse"))
-//                }
-//
-//                resolve(messageList)
-//            }
-//        }
+            let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: id)
+            query.format = kGTLRGmailFormatRaw
+
+            self.gmailService.executeQuery(query) { (_, data, error) in
+                if let error = error {
+                    reject(AppErr.providerError(error))
+                }
+                guard let gmailMessage = data as? GTLRGmail_Message else {
+                    return reject(AppErr.cast("GTLRGmail_Message"))
+                }
+                guard let raw = gmailMessage.raw else {
+                    return reject(GmailServiceError.missedMessageInfo("raw"))
+                }
+
+                guard let data = GTLRDecodeBase64(raw) else {
+                    return reject(GmailServiceError.missedMessageInfo("data"))
+                }
+
+                resolve(GTLRDecodeWebSafeBase64(raw)!)
+
+//                resolve(data)
+            }
+        }
     }
 }

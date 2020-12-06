@@ -9,7 +9,7 @@ import Promises
 // TODO: - ANTON - SINGLE MESSAGE Functionality
 final class MessageViewController: TableNodeViewController {
     struct Input {
-        var objMessage: Message?
+        var objMessage: Message
         var bodyMessage: Data?
         var path = ""
     }
@@ -48,15 +48,18 @@ final class MessageViewController: TableNodeViewController {
     private let onCompletion: MsgViewControllerCompletion?
 
     private var input: MessageViewController.Input?
+    // TODO: - ANTON REMOVE
     private let imap: Imap
     private let decorator: MessageViewDecoratorType
     private var dataService: DataServiceType & KeyDataServiceType
     private let core: Core
+    private let messageProvider: MessageProvider
 
     private var message: NSAttributedString
 
     init(
         imap: Imap = Imap.shared,
+        messageProvider: MessageProvider = GlobalServices.shared.messageProvider,
         decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         core: Core = Core.shared,
@@ -64,6 +67,7 @@ final class MessageViewController: TableNodeViewController {
         completion: MsgViewControllerCompletion?
     ) {
         self.imap = imap
+        self.messageProvider = messageProvider
         self.input = input
         self.decorator = decorator
         self.dataService = storage
@@ -147,41 +151,41 @@ extension MessageViewController {
 
     // TODO: - ANTON - SINGLE MESSAGE
     private func fetchMessage() -> Promise<NSAttributedString> {
-        Promise(NSAttributedString())
-//        Promise { [weak self] resolve, reject in
-//            guard let self = self, let input = self.input else { return }
-//            let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
-//            self.input?.bodyMessage = rawMimeData
-//
-//            guard let keys = self.dataService.keys else {
-//                reject(CoreError.notReady("Could not fetch keys"))
-//                return
-//            }
-//
-//            let decrypted = try self.core.parseDecryptMsg(
-//                encrypted: rawMimeData,
-//                keys: keys,
-//                msgPwd: nil,
-//                isEmail: true
-//            )
-//            let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
-//
-//            let message: NSAttributedString
-//            if let decryptErrBlock = decryptErrBlocks.first {
-//                let rawMsg = decryptErrBlock.content
-//                let err = decryptErrBlock.decryptErr?.error
-//                message = self.decorator.attributed(
-//                    text: "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)",
-//                    color: .red
-//                )
-//            } else {
-//                message = self.decorator.attributed(
-//                    text: decrypted.text,
-//                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.mainTextColor
-//                )
-//            }
-//            resolve(message)
-//        }
+        Promise { [weak self] resolve, reject in
+            guard let self = self, let input = self.input else { return }
+
+            let rawMimeData: Data = try await(self.messageProvider.fetchMsg(message: input.objMessage, folder: input.path))
+            self.input?.bodyMessage = rawMimeData
+
+            guard let keys = self.dataService.keys else {
+                reject(CoreError.notReady("Could not fetch keys"))
+                return
+            }
+
+            let decrypted = try self.core.parseDecryptMsg(
+                encrypted: rawMimeData,
+                keys: keys,
+                msgPwd: nil,
+                isEmail: true
+            )
+            let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
+
+            let message: NSAttributedString
+            if let decryptErrBlock = decryptErrBlocks.first {
+                let rawMsg = decryptErrBlock.content
+                let err = decryptErrBlock.decryptErr?.error
+                message = self.decorator.attributed(
+                    text: "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)",
+                    color: .red
+                )
+            } else {
+                message = self.decorator.attributed(
+                    text: decrypted.text,
+                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.mainTextColor
+                )
+            }
+            resolve(message)
+        }
     }
 
     private func handleError(_ error: Error, path: String) {
@@ -337,11 +341,10 @@ extension MessageViewController {
 // MARK: - NavigationChildController
 
 extension MessageViewController: NavigationChildController {
-    // TODO: - ANTON - SINGLE MESSAGE
     func handleBackButtonTap() {
-//        guard let message = input?.objMessage else { return }
-//        onCompletion?(MessageAction.markAsRead, message)
-//        navigationController?.popViewController(animated: true)
+        guard let message = input?.objMessage else { return }
+        onCompletion?(MessageAction.markAsRead, message)
+        navigationController?.popViewController(animated: true)
     }
 }
 
@@ -352,34 +355,32 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         return Parts.allCases.count
     }
 
-    // TODO: - ANTON - SINGLE MESSAGE
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { ASCellNode() }
 //        // TODO: ANTON - input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
 //        // crash because sender is nil
-//
-//        let senderTitle = decorator.attributed(
-//            title: input?.objMessage.header.from.mailbox ?? "(unknown sender)"
-//        )
-//        let subject = decorator.attributed(
-//            subject: input?.objMessage.header.subject ?? "(no subject)"
-//        )
-//        let time = decorator.attributed(
-//            date: input?.objMessage.header.date
-//        )
-//
-//        return { [weak self] in
-//            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
-//            switch part {
-//            case .sender:
-//                return MessageSenderNode(senderTitle) { [weak self] in
-//                    self?.handleReplyTap()
-//                }
-//            case .subject:
-//                return MessageSubjectNode(subject, time: time)
-//            case .text:
-//                return MessageTextSubjectNode(self.message)
-//            }
-//        }
+
+        let senderTitle = decorator.attributed(
+            title: input?.objMessage.sender ?? "(unknown sender)"
+        )
+        let subject = decorator.attributed(
+            subject: input?.objMessage.subject ?? "(no subject)"
+        )
+        let time = decorator.attributed(
+            date: input?.objMessage.date
+        )
+
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            switch part {
+            case .sender:
+                return MessageSenderNode(senderTitle) { [weak self] in
+                    self?.handleReplyTap()
+                }
+            case .subject:
+                return MessageSubjectNode(subject, time: time)
+            case .text:
+                return MessageTextSubjectNode(self.message)
+            }
+        }
     }
 }

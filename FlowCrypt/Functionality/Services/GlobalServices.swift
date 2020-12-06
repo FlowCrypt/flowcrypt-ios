@@ -56,7 +56,14 @@ class GlobalServices {
         }
     }
 
-    var messageProvider: MessagesListProvider {
+    var messageListProvider: MessagesListProvider {
+        switch authType {
+        case .gmail: return gmailService
+        case .password: return imap
+        }
+    }
+
+    var messageProvider: MessageProvider {
         switch authType {
         case .gmail: return gmailService
         case .password: return imap

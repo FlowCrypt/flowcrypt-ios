@@ -18,7 +18,7 @@ extension GmailService: MessagesListProvider {
     ) -> Promise<MessageContext> {
         Promise { (resolve, reject) in
             let list = try await(fetchMessagesList(for: folderPath, count: count, using: pagination))
-            let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchMessage(with:)) ?? []
+            let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchFullMessage(with:)) ?? []
             all(messageRequests)
                 .then { messages in
                     let context = MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
@@ -58,7 +58,7 @@ extension GmailService: MessagesListProvider {
         }
     }
 
-    private func fetchMessage(with id: String) -> Promise<Message> {
+    private func fetchFullMessage(with id: String) -> Promise<Message> {
         let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: id)
         query.format = kGTLRGmailFormatFull
         return Promise { (resolve, reject) in

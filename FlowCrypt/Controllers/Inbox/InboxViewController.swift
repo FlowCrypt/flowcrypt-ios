@@ -62,7 +62,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel,
-        messageProvider: MessagesListProvider = GlobalServices.shared.messageProvider,
+        messageProvider: MessagesListProvider = GlobalServices.shared.messageListProvider,
         decorator: InboxViewDecoratorType = InboxViewDecorator()
     ) {
         self.viewModel = viewModel
