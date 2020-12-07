@@ -20,18 +20,21 @@ enum MessageLabelType: Equatable {
     case trash
     case draft
     case important
+    case none
     case label(String)
 
     var value: String {
         switch self {
         case .label(let result): return result
         case .unread: return "UNREAD" // Gmail supports UNREAD flag
-        case .seen: return "seen" // IMAP supports seen
         case .starred: return "STARRED"
         case .sent: return "SENT"
         case .trash: return "TRASH"
         case .draft: return "DRAFT"
         case .important: return "IMPORTANT"
+        // IMAP supports only
+        case .seen: return "seen"
+        case .none: return "none"
         }
     }
 }
@@ -53,12 +56,36 @@ extension MessageLabelType {
         case .submitted: self = .label("submited")
         default:
             if imapFlag.rawValue == 0 {
-                self = .unread
+                self = .none
             } else {
                 self = .label(String(imapFlag.rawValue))
             }
         }
     }
+
+    var imapFlagValue: Int {
+        switch self {
+        case .seen: return MCOMessageFlag.seen.rawValue
+        case .starred: return MCOMessageFlag.flagged.rawValue
+        case .sent: return MCOMessageFlag.mdnSent.rawValue
+        case .trash: return MCOMessageFlag.deleted.rawValue
+        case .draft: return MCOMessageFlag.draft.rawValue
+        case .label("answered"): return MCOMessageFlag.answered.rawValue
+        case .label("forwarded"): return MCOMessageFlag.forwarded.rawValue
+        case .label("pending"): return MCOMessageFlag.submitPending.rawValue
+        case .label("submited"): return MCOMessageFlag.submitted.rawValue
+        case .none: return 0
+        default:
+            assertionFailure("This label \(self) is not supported byt his provider")
+            return 0
+        }
+    }
+}
+
+struct ImapMessageFlags: OptionSet {
+    let rawValue: Int
+
+    static let test = ImapMessageFlags(rawValue: 0 << 0)
 }
 
 // MARK: - GMAIL

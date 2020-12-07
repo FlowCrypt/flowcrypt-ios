@@ -17,10 +17,6 @@ extension GmailService: MessageProvider {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }
 
-            let a = GTLRGmail_ModifyMessageRequest()
-
-//            GTLRGmailQuery_UsersThreadsModify.query(withObject: , userId: <#T##String#>, identifier: <#T##String#>)
-
             let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: id)
             query.format = kGTLRGmailFormatRaw
 

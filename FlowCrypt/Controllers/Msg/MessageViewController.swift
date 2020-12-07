@@ -195,7 +195,7 @@ extension MessageViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    // TODO: - ANTON - SINGLE MESSAGE
+    // TODO: - ANTON - MarkAsReadIfNotAlreadyMarked
     private func asyncMarkAsReadIfNotAlreadyMarked() {
 //        guard let input = input else { return }
 //        guard !input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return } // only proceed if not already marked as read

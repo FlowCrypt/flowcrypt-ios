@@ -16,16 +16,6 @@ extension Imap {
         }
     }
 
-    func markAsRead(message: MCOIMAPMessage, folder: String) -> Promise<Void> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.imapSess?
-                .storeFlagsOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(message.uid)), kind: MCOIMAPStoreFlagsRequestKind.add, flags: message.flags)
-                .start(self.finalizeVoid("markAsRead", resolve, reject, retry: { self.markAsRead(message: message, folder: folder) }))
-        }
-    }
-
     func moveMsg(msg: MCOIMAPMessage, folder: String, destFolder: String) -> Promise<Void> {
         Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }

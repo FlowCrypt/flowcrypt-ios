@@ -20,9 +20,11 @@ struct Message: Equatable {
 
     var isMessageRead: Bool {
         let types = labels.map(\.type)
-        if types.contains(.seen) {
-            return true
+        // imap 
+        if types.contains(.none) {
+            return false
         }
+        // gmail
         if types.contains(.unread) {
             return false
         }

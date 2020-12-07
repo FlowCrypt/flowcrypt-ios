@@ -22,7 +22,7 @@ class GlobalServices {
         case let .password(password):
             return .password(password)
         default:
-            fatalError("Service can't be resolved")
+            fatalError("Service can't be resolved. User should be authenticated")
         }
     }
 
@@ -43,6 +43,7 @@ class GlobalServices {
     }
 
     var messageSender: MessageSender {
+        return imap
         switch authType {
         case .gmail: return gmailService
         case .password: return imap
@@ -50,6 +51,7 @@ class GlobalServices {
     }
 
     var remoteFoldersProvider: RemoteFoldersProviderType {
+        return imap
         switch authType {
         case .gmail: return gmailService
         case .password: return imap
@@ -57,6 +59,7 @@ class GlobalServices {
     }
 
     var messageListProvider: MessagesListProvider {
+        return imap
         switch authType {
         case .gmail: return gmailService
         case .password: return imap
@@ -64,6 +67,7 @@ class GlobalServices {
     }
 
     var messageProvider: MessageProvider {
+        return imap
         switch authType {
         case .gmail: return gmailService
         case .password: return imap
@@ -74,6 +78,7 @@ class GlobalServices {
 // MARK: - Helpers
 extension GlobalServices {
     func currentMessagesListPagination(from number: Int? = nil, token: String? = nil) -> MessagesListPagination {
+        return .byNumber(total: nil)
         switch authType {
         case .password:
             return MessagesListPagination.byNumber(total: number ?? 0)
