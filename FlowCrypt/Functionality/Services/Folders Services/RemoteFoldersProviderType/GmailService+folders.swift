@@ -19,6 +19,7 @@ extension GmailService: RemoteFoldersProviderType {
             self.gmailService.executeQuery(query) { (_, data, error) in
                 if let error = error {
                     reject(AppErr .providerError(error))
+                    return
                 }
 
                 guard let listLabels = data as? GTLRGmail_ListLabelsResponse else {

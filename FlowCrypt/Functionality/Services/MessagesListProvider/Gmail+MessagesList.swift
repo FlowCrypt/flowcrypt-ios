@@ -47,6 +47,7 @@ extension GmailService: MessagesListProvider {
             self.gmailService.executeQuery(query) { (_, data, error) in
                 if let error = error {
                     reject(AppErr.providerError(error))
+                    return
                 }
 
                 guard let messageList = data as? GTLRGmail_ListMessagesResponse else {
@@ -65,6 +66,7 @@ extension GmailService: MessagesListProvider {
             self.gmailService.executeQuery(query) { (_, data, error) in
                 if let error = error {
                     reject(AppErr.providerError(error))
+                    return
                 }
 
                 guard let gmailMessage = data as? GTLRGmail_Message else {

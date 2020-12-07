@@ -10,17 +10,17 @@ import Foundation
 import FlowCryptCommon
 import GoogleAPIClientForREST
 
-struct Message: Equatable {
+struct Message {
     let identifier: Identifier
     let date: Date
     let sender: String?
     let subject: String?
     let size: Int?
-    let labels: [MessageLabel]
+    private(set) var labels: [MessageLabel]
 
     var isMessageRead: Bool {
         let types = labels.map(\.type)
-        // imap 
+        // imap
         if types.contains(.none) {
             return false
         }
@@ -45,6 +45,25 @@ struct Message: Equatable {
         self.subject = subject
         self.size = size
         self.labels = labels
+    }
+}
+
+extension Message: Equatable {
+    static func == (lhs: Message, rhs: Message) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
+}
+
+extension Message {
+    func markAsRead(_ isRead: Bool) -> Message {
+        var copy = self
+        if isRead {
+            copy.labels.removeAll(where: { $0.type == .unread || $0.type == .none })
+        } else {
+            copy.labels.append(MessageLabel(type: .unread))
+            copy.labels.append(MessageLabel(type: .none))
+        }
+        return copy
     }
 }
 

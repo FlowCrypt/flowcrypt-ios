@@ -51,11 +51,12 @@ final class MessageViewController: TableNodeViewController {
     private var dataService: DataServiceType & KeyDataServiceType
     private let core: Core
     private let messageProvider: MessageProvider
-
+    private let messageOperationsProvider: MessageOperationsProvider
     private var message: NSAttributedString
 
     init(
         messageProvider: MessageProvider = GlobalServices.shared.messageProvider,
+        messageOperationsProvider: MessageOperationsProvider = GlobalServices.shared.messageOperationsProvider,
         decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         core: Core = Core.shared,
@@ -63,6 +64,7 @@ final class MessageViewController: TableNodeViewController {
         completion: MsgViewControllerCompletion?
     ) {
         self.messageProvider = messageProvider
+        self.messageOperationsProvider = messageOperationsProvider
         self.input = input
         self.decorator = decorator
         self.dataService = storage
@@ -195,15 +197,18 @@ extension MessageViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    // TODO: - ANTON - MarkAsReadIfNotAlreadyMarked
     private func asyncMarkAsReadIfNotAlreadyMarked() {
-//        guard let input = input else { return }
-//        guard !input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return } // only proceed if not already marked as read
-//        input.objMessage.flags.formUnion(MCOMessageFlag.seen)
-//        imap.markAsRead(message: input.objMessage, folder: input.path)
-//            .catch(on: .main) { [weak self] error in
-//                self?.showToast("Could not mark message as read: \(error)")
-//            }
+        guard let input = input else { return }
+        messageOperationsProvider.markAsRead(message: input.objMessage, folder: input.path)
+            .then(on: .main) { [weak self] in
+                guard let message = self?.input?.objMessage else {
+                    return
+                }
+                self?.input?.objMessage = message.markAsRead(true)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.showToast("Could not mark message as read: \(error)")
+            }
     }
 
     private func handleOpSuccess(operation: MessageAction) {

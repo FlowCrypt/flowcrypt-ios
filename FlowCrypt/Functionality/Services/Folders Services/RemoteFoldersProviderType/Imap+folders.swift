@@ -22,6 +22,7 @@ extension Imap: RemoteFoldersProviderType {
                     }
                     if let error = error {
                         reject(AppErr.providerError(error))
+                        return
                     }
                     guard let folders = value as? [MCOIMAPFolder] else {
                         return reject(AppErr.cast("[MCOIMAPFolder]"))
