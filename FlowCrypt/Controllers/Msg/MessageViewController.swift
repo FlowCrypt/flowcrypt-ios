@@ -53,6 +53,7 @@ final class MessageViewController: TableNodeViewController {
     private let messageProvider: MessageProvider
     private let messageOperationsProvider: MessageOperationsProvider
     private var message: NSAttributedString
+    private let trashFolderProvider: TrashFolderProviderType
 
     init(
         messageProvider: MessageProvider = GlobalServices.shared.messageProvider,
@@ -60,6 +61,7 @@ final class MessageViewController: TableNodeViewController {
         decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         core: Core = Core.shared,
+        trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
@@ -69,6 +71,7 @@ final class MessageViewController: TableNodeViewController {
         self.decorator = decorator
         self.dataService = storage
         self.core = core
+        self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
         self.message = decorator.attributed(
             text: "loading_title".localized + "...",
@@ -98,11 +101,10 @@ final class MessageViewController: TableNodeViewController {
     }
 
     private func setupNavigationBar() {
-        // TODO: - ANTON - Trash
-//        imap.trashFolderPath()
-//            .then(on: .main) { [weak self] path in
-//                self?.setupNavigationBarItems(with: path)
-//            }
+        trashFolderProvider.getTrashFolderPath()
+            .then(on: .main) { [weak self] path in
+                self?.setupNavigationBarItems(with: path)
+            }
     }
 
     private func setupNavigationBarItems(with trashFolderPath: String?) {
@@ -241,23 +243,23 @@ extension MessageViewController {
     @objc private func handleTrashTap() {
         showSpinner()
 
-//        imap.trashFolderPath()
-//            .then { [weak self] trashPath in
-//                guard let strongSelf = self, let input = strongSelf.input, let path = trashPath else {
-//                    self?.permanentlyDelete()
-//                    return
-//                }
-//
-//                input.path == trashPath
-//                    ? strongSelf.permanentlyDelete()
-//                    : strongSelf.moveToTrash(with: path)
-//            }
-//            .catch(on: .main) { error in
-//                self.showToast(error.localizedDescription)
-//            }
+        trashFolderProvider.getTrashFolderPath()
+            .then { [weak self] trashPath in
+                guard let strongSelf = self, let input = strongSelf.input, let path = trashPath else {
+                    self?.permanentlyDelete()
+                    return
+                }
+
+                input.path == trashPath
+                    ? strongSelf.permanentlyDelete()
+                    : strongSelf.moveToTrash(with: path)
+            }
+            .catch(on: .main) { error in
+                self.showToast(error.localizedDescription)
+            }
     }
 
-    // TODO: - ANTON - SINGLE MESSAGE
+    // TODO: - ANTON - SINGLE permanentlyDelete
     private func permanentlyDelete() {
         guard let input = input else { return hideSpinner() }
 //        Promise<Bool> { [weak self] () -> Bool in
@@ -277,31 +279,23 @@ extension MessageViewController {
 //        }
     }
 
-    // TODO: - ANTON - SINGLE MESSAGE
     private func moveToTrash(with trashPath: String) {
-//        guard let input = input else { return hideSpinner() }
-//
-//        Promise<Void> { [weak self] in
-//            guard let self = self else { return }
-//            //Move message to trash
-//            try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath))
-//
-//            //Mark as deleted in the origin folder
-//            input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
-//            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
-//
-//            //Expunge origin folder
-//            try await(self.imap.expungeMsgs(folder: input.path))
-//        }
-//        .then(on: .main) { [weak self] in
-//            self?.handleOpSuccess(operation: .moveToTrash)
-//        }
-//        .catch(on: .main) { [weak self] _ in
-//            self?.handleOpErr(operation: .moveToTrash)
-//        }
+        guard let input = input else { return hideSpinner() }
+
+        messageOperationsProvider.moveMessageToTrash(
+            message: input.objMessage,
+            trashPath: trashPath,
+            from: input.path
+        )
+        .then(on: .main) { [weak self] in
+            self?.handleOpSuccess(operation: .moveToTrash)
+        }
+        .catch(on: .main) { [weak self] _ in
+            self?.handleOpErr(operation: .moveToTrash)
+        }
     }
 
-    // TODO: - ANTON - SINGLE MESSAGE
+    // TODO: - ANTON - SINGLE handleArchiveTap
     @objc private func handleArchiveTap() {
         guard let input = input else { return }
 //        showSpinner()
@@ -315,7 +309,7 @@ extension MessageViewController {
 //            }
     }
 
-    // TODO: - ANTON - SINGLE MESSAGE
+    // TODO: - ANTON - SINGLE handleReplyTap
     private func handleReplyTap() {
 //        guard let input = input else { return }
 //        let replyInfo = ComposeViewController.Input.ReplyInfo(

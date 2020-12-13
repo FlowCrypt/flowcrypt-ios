@@ -9,6 +9,10 @@
 import Foundation
 import Promises
 
+protocol TrashFolderProviderType {
+    func getTrashFolderPath() -> Promise<String?>
+}
+
 protocol FoldersServiceType {
     func fetchFolders() -> Promise<[FolderViewModel]>
 }
@@ -67,6 +71,34 @@ struct FoldersService: FoldersServiceType {
                 return
             }
             dataService.saveTrashFolder(path: path)
+        }
+    }
+}
+
+
+struct TrashFolderProvider {
+    let folderProvider: FoldersServiceType
+    let dataService: DataService
+
+    init(
+        folderProvider: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
+        dataService: DataService = .shared
+    ) {
+        self.folderProvider = folderProvider
+        self.dataService = dataService
+    }
+}
+
+extension TrashFolderProvider: TrashFolderProviderType {
+    func getTrashFolderPath() -> Promise<String?> {
+        if let path = dataService.trashFolderPath {
+            return Promise(path)
+        } else {
+            return Promise { (resolve, _) in
+                // will get all folders
+                _ = try await(folderProvider.fetchFolders())
+                resolve(dataService.trashFolderPath)
+            }
         }
     }
 }

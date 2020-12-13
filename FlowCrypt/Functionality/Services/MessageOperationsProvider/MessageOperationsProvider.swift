@@ -11,4 +11,5 @@ import Promises
 
 protocol MessageOperationsProvider {
     func markAsRead(message: Message, folder: String) -> Promise<Void>
+    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void>
 }

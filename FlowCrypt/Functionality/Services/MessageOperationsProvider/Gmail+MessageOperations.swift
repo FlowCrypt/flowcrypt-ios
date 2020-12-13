@@ -33,4 +33,26 @@ extension GmailService: MessageOperationsProvider {
             }
         }
     }
+
+    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void> {
+        return Promise { (resolve, reject) in
+            guard let id = message.identifier.stringId else {
+                return reject(GmailServiceError.missedMessageInfo("id"))
+            }
+            let request = GTLRGmail_ModifyMessageRequest()
+            request.addLabelIds = [MessageLabelType.trash.value]
+            let query = GTLRGmailQuery_UsersMessagesModify.query(
+                withObject: request,
+                userId: .me,
+                identifier: id
+            )
+
+            self.gmailService.executeQuery(query) { (_, _, error) in
+                if let error = error {
+                    reject(AppErr.providerError(error))
+                }
+                resolve(())
+            }
+        }
+    }
 }
