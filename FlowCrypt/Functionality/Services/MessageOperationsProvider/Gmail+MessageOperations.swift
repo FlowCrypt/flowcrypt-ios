@@ -55,4 +55,24 @@ extension GmailService: MessageOperationsProvider {
             }
         }
     }
+
+    func delete(message: Message, form folderPath: String?) -> Promise<Void> {
+        return Promise { (resolve, reject) in
+            guard let id = message.identifier.stringId else {
+                return reject(GmailServiceError.missedMessageInfo("id"))
+            }
+
+            let query = GTLRGmailQuery_UsersMessagesDelete.query(
+                withUserId: .me,
+                identifier: id
+            )
+
+            self.gmailService.executeQuery(query) { (_, _, error) in
+                if let error = error {
+                    reject(AppErr.providerError(error))
+                }
+                resolve(())
+            }
+        }
+    }
 }

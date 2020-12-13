@@ -259,24 +259,37 @@ extension MessageViewController {
             }
     }
 
+
+//    private func isTrashFolder() -> Bool {
+//
+//    }
+
     // TODO: - ANTON - SINGLE permanentlyDelete
     private func permanentlyDelete() {
         guard let input = input else { return hideSpinner() }
-//        Promise<Bool> { [weak self] () -> Bool in
-//            guard let self = self else { throw AppErr.nilSelf }
-//            guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-//
-//            input.objMessage.flags = MCOMessageFlag(rawValue: MCOMessageFlag.deleted.rawValue)
-//            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
-//            try await(self.imap.expungeMsgs(folder: input.path))
-//            return true
-//        }
-//        .then(on: .main) { [weak self] didPerformOp in
-//            guard didPerformOp else { self?.hideSpinner(); return  }
-//            self?.handleOpSuccess(operation: .permanentlyDelete)
-//        }.catch(on: .main) { [weak self] _ in
-//            self?.handleOpErr(operation: .permanentlyDelete)
-//        }
+
+        Promise<Bool> { [weak self] () -> Bool in
+            guard let self = self else { throw AppErr.nilSelf }
+            guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
+            try await(self.messageOperationsProvider.delete(message: input.objMessage, form: input.path))
+            return true
+        }
+        .then(on: .main) { [weak self] didPerformOp in
+            guard didPerformOp else { self?.hideSpinner(); return  }
+            self?.handleOpSuccess(operation: .permanentlyDelete)
+        }.catch(on: .main) { [weak self] _ in
+            self?.handleOpErr(operation: .permanentlyDelete)
+        }
+    }
+
+    private func awaitUserConfirmation(title: String) -> Promise<Bool> {
+        return Promise<Bool>(on: .main) { [weak self] resolve, _ in
+            guard let self = self else { throw AppErr.nilSelf }
+            let alert = UIAlertController(title: "Are you sure?", message: title, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in resolve(false) }))
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in resolve(true) }))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
     private func moveToTrash(with trashPath: String) {

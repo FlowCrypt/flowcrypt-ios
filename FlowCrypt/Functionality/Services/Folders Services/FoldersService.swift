@@ -62,20 +62,16 @@ struct FoldersService: FoldersServiceType {
     }
 
     private func saveTrashFolderPath(with folders: [FolderObject]) {
-        if dataService.email?.contains("gmail") ?? false {
-            dataService.saveTrashFolder(path: MailDestination.Gmail.trash.path)
-        } else {
-            let paths = folders.compactMap { $0.path }
-            guard let path = paths.firstCaseInsensitive("trash") ?? paths.firstCaseInsensitive("deleted") else {
-                debugPrint("###Warning### Trash folder not found")
-                return
-            }
-            dataService.saveTrashFolder(path: path)
+        let paths = folders.compactMap { $0.path }
+        guard let path = paths.firstCaseInsensitive("trash") ?? paths.firstCaseInsensitive("deleted") else {
+            debugPrint("###Warning### Trash folder not found")
+            return
         }
+        dataService.saveTrashFolder(path: path)
     }
 }
 
-
+// MARK: - TrashFolderProvider
 struct TrashFolderProvider {
     let folderProvider: FoldersServiceType
     let dataService: DataService

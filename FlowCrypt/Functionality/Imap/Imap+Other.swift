@@ -25,16 +25,6 @@ extension Imap {
         }
     }
 
-    func expungeMsgs(folder: String) -> Promise<Void> {
-        return Promise { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            self.imapSess?
-                .expungeOperation(folder)
-                .start(self.finalizeVoid("expungeMsgs", resolve, reject, retry: { self.expungeMsgs(folder: folder) }))
-        }
-    }
-
     func fetchMessagesIn(
         folder: String,
         uids: MCOIndexSet
