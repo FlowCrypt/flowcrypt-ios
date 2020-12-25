@@ -29,7 +29,7 @@ extension GmailService: MessageSender {
 
             self.gmailService.executeQuery(querySend) { (_, _, error) in
                 if let error = error {
-                    reject(AppErr.providerError(error))
+                    reject(GmailServiceError.providerError(error))
                     return
                 }
                 resolve(())

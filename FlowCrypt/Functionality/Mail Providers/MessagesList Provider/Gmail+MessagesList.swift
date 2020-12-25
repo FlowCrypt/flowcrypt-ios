@@ -52,7 +52,7 @@ extension GmailService {
         return Promise { (resolve, reject) in
             self.gmailService.executeQuery(query) { (_, data, error) in
                 if let error = error {
-                    reject(AppErr.providerError(error))
+                    reject(GmailServiceError.providerError(error))
                     return
                 }
 
@@ -71,7 +71,7 @@ extension GmailService {
         return Promise { (resolve, reject) in
             self.gmailService.executeQuery(query) { (_, data, error) in
                 if let error = error {
-                    reject(AppErr.providerError(error))
+                    reject(GmailServiceError.providerError(error))
                     return
                 }
 

@@ -17,4 +17,6 @@ enum GmailServiceError: Error {
     case missedMessagePayload
     /// Missed message part
     case missedMessageInfo(String)
+    /// Provider Error
+    case providerError(Error)
 }

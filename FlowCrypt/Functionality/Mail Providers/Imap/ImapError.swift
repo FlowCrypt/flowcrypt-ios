@@ -9,5 +9,6 @@
 import Foundation
 
 enum ImapError: Error {
+    case providerError(Error)
     case missedMessageInfo(String)
 }

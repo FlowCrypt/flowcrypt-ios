@@ -27,7 +27,7 @@ extension GmailService: MessageOperationsProvider {
 
             self.gmailService.executeQuery(query) { (_, _, error) in
                 if let error = error {
-                    reject(AppErr.providerError(error))
+                    reject(GmailServiceError.providerError(error))
                 }
                 resolve(())
             }
@@ -49,7 +49,7 @@ extension GmailService: MessageOperationsProvider {
 
             self.gmailService.executeQuery(query) { (_, _, error) in
                 if let error = error {
-                    reject(AppErr.providerError(error))
+                    reject(GmailServiceError.providerError(error))
                 }
                 resolve(())
             }
@@ -69,7 +69,7 @@ extension GmailService: MessageOperationsProvider {
 
             self.gmailService.executeQuery(query) { (_, _, error) in
                 if let error = error {
-                    reject(AppErr.providerError(error))
+                    reject(GmailServiceError.providerError(error))
                 }
                 resolve(())
             }

@@ -23,6 +23,8 @@ struct GmailServiceErrorHandler: ErrorHandler {
                 errorMessage = "Failed to parse Gmail API Response. Missed message \(context)"
             case .missedMessagePayload:
                 errorMessage = "Failed to parse Gmail API Response. Missed message payload"
+            case .providerError(let error):
+                errorMessage = "Provider error \(error)"
             }
         default:
             errorMessage = nil

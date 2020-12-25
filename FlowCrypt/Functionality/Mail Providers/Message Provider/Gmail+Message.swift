@@ -22,7 +22,7 @@ extension GmailService: MessageProvider {
 
             self.gmailService.executeQuery(query) { (_, data, error) in
                 if let error = error {
-                    reject(AppErr.providerError(error))
+                    reject(GmailServiceError.providerError(error))
                     return
                 }
                 guard let gmailMessage = data as? GTLRGmail_Message else {
