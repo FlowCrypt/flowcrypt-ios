@@ -10,8 +10,9 @@ import Foundation
 import GoogleSignIn
 import GoogleAPIClientForREST
 
-// TODO: - ANTON - Check. Maybe better to use class for GmailService (weak self)
-struct GmailService {
+struct GmailService: MailServiceProvider {
+    let mailServiceProviderType = MailServiceProviderType.gmail
+
     let signInService: GIDSignIn
     let gmailService: GTLRService
 

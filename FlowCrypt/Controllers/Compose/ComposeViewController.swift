@@ -62,7 +62,7 @@ final class ComposeViewController: TableNodeViewController {
     private var state: State = .main
 
     init(
-        messageSender: MessageSender = GlobalServices.shared.messageSender,
+        messageSender: MessageSender = MailProvider.shared.messageSender,
         notificationCenter: NotificationCenter = .default,
         dataService: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),

@@ -8,7 +8,6 @@
 
 import Foundation
 
-// TODO: - ANTON - Handle Error
 enum ImapError: Error {
     case missedMessageInfo(String)
 }

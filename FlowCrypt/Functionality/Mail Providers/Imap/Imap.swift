@@ -3,9 +3,10 @@
 //
 
 import Promises
-import UIKit
 
-final class Imap {
+final class Imap: MailServiceProvider {
+    let mailServiceProviderType = MailServiceProviderType.imap
+
     typealias Injection = ImapSessionProvider & DataServiceType
     static let shared: Imap = Imap()
 

@@ -62,7 +62,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel,
-        messageProvider: MessagesListProvider = GlobalServices.shared.messageListProvider,
+        messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
         decorator: InboxViewDecoratorType = InboxViewDecorator()
     ) {
         self.viewModel = viewModel
@@ -434,7 +434,7 @@ extension InboxViewController {
 // MARK: - Pagination helpers
 extension InboxViewController {
     private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        return GlobalServices.shared.currentMessagesListPagination(from: number, token: state.token)
+        return MailProvider.shared.currentMessagesListPagination(from: number, token: state.token)
     }
 
     private func messagesToLoad() -> Int {

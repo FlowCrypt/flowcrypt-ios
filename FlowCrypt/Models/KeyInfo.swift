@@ -10,6 +10,11 @@ enum KeySource: String {
     case imported
 }
 
+enum KeyInfoError: Error {
+    case missedPrivateKey(String)
+    case notEncrypted(String)
+}
+
 final class KeyInfo: Object {
     @objc dynamic var `private`: String = ""
     @objc dynamic var `public`: String = ""
@@ -21,11 +26,11 @@ final class KeyInfo: Object {
         self.init()
         guard let privateKey = keyDetails.private else {
             assertionFailure("storing pubkey as private") // crash tests
-            throw AppErr.value("storing pubkey as private")
+            throw KeyInfoError.missedPrivateKey("storing pubkey as private")
         }
         guard keyDetails.isFullyEncrypted! else { // already checked private above, must be set, else crash
             assertionFailure("Will not store Private Key that is not fully encrypted") // crash tests
-            throw AppErr.value("Will not store Private Key that is not fully encrypted")
+            throw KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
         `private` = privateKey
         `public` = keyDetails.public

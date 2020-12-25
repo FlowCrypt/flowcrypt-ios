@@ -56,8 +56,8 @@ final class MessageViewController: TableNodeViewController {
     private let trashFolderProvider: TrashFolderProviderType
 
     init(
-        messageProvider: MessageProvider = GlobalServices.shared.messageProvider,
-        messageOperationsProvider: MessageOperationsProvider = GlobalServices.shared.messageOperationsProvider,
+        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
+        messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         core: Core = Core.shared,

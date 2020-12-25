@@ -30,7 +30,7 @@ extension GmailService: RemoteFoldersProviderType {
                     return reject(GmailServiceError.failedToParseData(data))
                 }
 
-                // TODO: - TOM (here we filter all categories from gmail. They can be implemented if needed)
+                // TODO: - Implement categories if needed
                 let folders = labels
                     .compactMap { (label) -> GTLRGmail_Label? in
                         guard let identifier = label.identifier else {

@@ -8,7 +8,6 @@
 
 import Foundation
 
-// TODO: - ANTON Handle common error
 enum GmailServiceError: Error {
     /// Gmail API response parsing
     case failedToParseData(Any?)

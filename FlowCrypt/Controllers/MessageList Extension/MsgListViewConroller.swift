@@ -16,11 +16,10 @@ protocol MsgListViewConroller {
 }
 
 extension MsgListViewConroller where Self: UIViewController {
-    // TODO: - ANTON - SINGLE MESSAGE - message.size
     func msgListOpenMsgElseShowToast(with message: Message, path: String) {
-//        if Int(message.size) > GeneralConstants.Global.messageSizeLimit {
-//            showToast("Messages larger than 5MB are not supported yet")
-//        } else {
+        if message.size ?? 0 > GeneralConstants.Global.messageSizeLimit {
+            showToast("Messages larger than 5MB are not supported yet")
+        } else {
             let messageInput = MessageViewController.Input(
                 objMessage: message,
                 bodyMessage: nil,
@@ -30,7 +29,7 @@ extension MsgListViewConroller where Self: UIViewController {
                 self?.msgListHandleOperation(message: message, operation: operation)
             }
             navigationController?.pushViewController(msgVc, animated: true)
-//        }
+        }
     }
 
     private func msgListHandleOperation(message: Message, operation: MessageViewController.MessageAction) {

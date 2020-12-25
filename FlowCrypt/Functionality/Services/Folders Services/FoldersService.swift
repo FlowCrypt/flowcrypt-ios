@@ -24,7 +24,7 @@ struct FoldersService: FoldersServiceType {
 
     init(
         storage: @escaping @autoclosure CacheStorage,
-        remoteFoldersProvider: RemoteFoldersProviderType = GlobalServices.shared.remoteFoldersProvider,
+        remoteFoldersProvider: RemoteFoldersProviderType = MailProvider.shared.remoteFoldersProvider,
         dataService: DataService = DataService.shared
     ) {
         self.localFoldersProvider = LocalFoldersProvider(storage: storage())

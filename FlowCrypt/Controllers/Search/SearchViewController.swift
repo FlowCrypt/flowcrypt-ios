@@ -40,7 +40,7 @@ final class SearchViewController: TableNodeViewController {
     private var searchedExpression: String = ""
 
     init(
-        searchProvider: MessageSearchProvider = GlobalServices.shared.messageSearchProvider,
+        searchProvider: MessageSearchProvider = MailProvider.shared.messageSearchProvider,
         folderPath: String
     ) {
         self.searchProvider = searchProvider
