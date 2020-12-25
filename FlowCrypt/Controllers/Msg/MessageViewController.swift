@@ -259,12 +259,6 @@ extension MessageViewController {
             }
     }
 
-
-//    private func isTrashFolder() -> Bool {
-//
-//    }
-
-    // TODO: - ANTON - SINGLE permanentlyDelete
     private func permanentlyDelete() {
         guard let input = input else { return hideSpinner() }
 
@@ -362,9 +356,6 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-//        // TODO: ANTON - input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
-//        // crash because sender is nil
-
         let senderTitle = decorator.attributed(
             title: input?.objMessage.sender ?? "(unknown sender)"
         )

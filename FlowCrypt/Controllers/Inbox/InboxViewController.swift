@@ -145,18 +145,19 @@ extension InboxViewController {
 // MARK: - Functionality
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
-        messageProvider
-            .fetchMessages(
-                for: viewModel.path,
+        messageProvider.fetchMessages(
+            using: FetchMessageContext(
+                folderPath: viewModel.path,
                 count: Constants.numberOfMessagesToLoad,
-                using: currentMessagesListPagination()
+                pagination: currentMessagesListPagination()
             )
-            .then { [weak self] context in
-                self?.handleEndFetching(with: context, context: batchContext)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+        )
+        .then { [weak self] context in
+            self?.handleEndFetching(with: context, context: batchContext)
+        }
+        .catch(on: .main) { [weak self] error in
+            self?.handle(error: error)
+        }
     }
 
     private func loadMore(_ batchContext: ASBatchContext?) {
@@ -165,19 +166,20 @@ extension InboxViewController {
         let pagination = currentMessagesListPagination(from: messages.count)
         state = .fetching
 
-        messageProvider
-            .fetchMessages(
-                for: viewModel.path,
+        messageProvider.fetchMessages(
+            using: FetchMessageContext(
+                folderPath: viewModel.path,
                 count: messagesToLoad(),
-                using: pagination
+                pagination: pagination
             )
-            .then { [weak self] context in
-                self?.state = .fetched(context.pagination)
-                self?.handleEndFetching(with: context, context: batchContext)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+        )
+        .then { [weak self] context in
+            self?.state = .fetched(context.pagination)
+            self?.handleEndFetching(with: context, context: batchContext)
+        }
+        .catch(on: .main) { [weak self] error in
+            self?.handle(error: error)
+        }
     }
 
     private func handleEndFetching(with messageContext: MessageContext, context: ASBatchContext?) {

@@ -81,6 +81,13 @@ class GlobalServices {
         case .password: return imap
         }
     }
+
+    var messageSearchProvider: MessageSearchProvider {
+        switch authType {
+        case .gmail: return gmailService
+        case .password: return imap
+        }
+    }
 }
 
 // MARK: - Helpers

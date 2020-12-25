@@ -11,14 +11,11 @@ import GTMSessionFetcher
 import GoogleAPIClientForREST
 
 extension GmailService: MessagesListProvider {
-    func fetchMessages(
-        for folderPath: String,
-        count: Int,
-        using pagination: MessagesListPagination
-    ) -> Promise<MessageContext> {
+    func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
         Promise { (resolve, reject) in
-            let list = try await(fetchMessagesList(for: folderPath, count: count, using: pagination))
+            let list = try await(fetchMessagesList(using: context))
             let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchFullMessage(with:)) ?? []
+
             all(messageRequests)
                 .then { messages in
                     let context = MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
@@ -29,19 +26,28 @@ extension GmailService: MessagesListProvider {
                 }
         }
     }
+}
 
-    private func fetchMessagesList(
-        for folderPath: String,
-        count: Int,
-        using pagination: MessagesListPagination
-    ) -> Promise<GTLRGmail_ListMessagesResponse> {
-        guard case let .byNextPage(token) = pagination else {
-            fatalError("Pagination \(pagination) is not supported for this provider")
-        }
+extension GmailService {
+    private func fetchMessagesList(using context: FetchMessageContext) -> Promise<GTLRGmail_ListMessagesResponse> {
         let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
-        query.labelIds = [folderPath]
-        query.maxResults = UInt(count)
-        query.pageToken = token
+
+        if let pagination = context.pagination {
+            guard case let .byNextPage(token) = pagination else {
+                fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
+            }
+            query.pageToken = token
+        }
+
+        if let folderPath = context.folderPath {
+            query.labelIds = [folderPath]
+        }
+        if let count = context.count {
+            query.maxResults = UInt(count)
+        }
+        if let searchQuery = context.searchQuery {
+            query.q = searchQuery
+        }
 
         return Promise { (resolve, reject) in
             self.gmailService.executeQuery(query) { (_, data, error) in
@@ -109,7 +115,6 @@ private extension Message {
         var sender: String?
         var subject: String?
 
-        print("^^ \(String(describing: message.labelIds))")
         messageHeaders.compactMap { $0 }.forEach {
             guard let name = $0.name?.lowercased() else { return }
             let value = $0.value
