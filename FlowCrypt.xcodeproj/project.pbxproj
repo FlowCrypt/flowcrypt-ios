@@ -63,7 +63,7 @@
 		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
 		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
-		9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+backup.swift */; };
+		9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+Backup.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
 		9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
@@ -89,6 +89,8 @@
 		9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */; };
 		9F5C2A92257E94DF00DE9B4B /* Imap+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A91257E94DF00DE9B4B /* Imap+MessageOperations.swift */; };
 		9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */; };
+		9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE1542597399D0059BA51 /* BackupProvider.swift */; };
+		9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
 		9F716308234FC73E0031645E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9F71630A234FC73E0031645E /* Localizable.strings */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
@@ -413,7 +415,7 @@
 		9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+retry.swift"; sourceTree = "<group>"; };
 		9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+folders.swift"; sourceTree = "<group>"; };
 		9F31AB90232993F500CF87EA /* Imap+session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+session.swift"; sourceTree = "<group>"; };
-		9F31AB922329950800CF87EA /* Imap+backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+backup.swift"; sourceTree = "<group>"; };
+		9F31AB922329950800CF87EA /* Imap+Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Backup.swift"; sourceTree = "<group>"; };
 		9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
 		9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelper.swift; sourceTree = "<group>"; };
@@ -445,6 +447,8 @@
 		9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+MessageOperations.swift"; sourceTree = "<group>"; };
 		9F696292236091DD003712E1 /* SignInImageNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInImageNode.swift; sourceTree = "<group>"; };
 		9F696294236091F4003712E1 /* SignInDescriptionNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInDescriptionNode.swift; sourceTree = "<group>"; };
+		9F6EE1542597399D0059BA51 /* BackupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupProvider.swift; sourceTree = "<group>"; };
+		9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+Backup.swift"; sourceTree = "<group>"; };
 		9F716301234FC6950031645E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		9F716304234FC7200031645E /* LocalizationExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationExtensions.swift; sourceTree = "<group>"; };
 		9F716309234FC73E0031645E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -904,12 +908,10 @@
 				32DCA377D22F4D67A8FA05EB /* Imap.swift */,
 				9F31AB90232993F500CF87EA /* Imap+session.swift */,
 				9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */,
-				9F31AB922329950800CF87EA /* Imap+backup.swift */,
 				32DCA55C094E9745AA1FD210 /* Imap+msg.swift */,
 				9F56BD2B23438A8500A7371A /* Imap+messages.swift */,
 				9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */,
 				9F0C3C19231819C500299985 /* MessageKindProviderType.swift */,
-				D2F6D141243500B400DB4065 /* MailProviders */,
 				9F53CB862555E7F300C0157A /* Imap+Other.swift */,
 				9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */,
 			);
@@ -1007,6 +1009,16 @@
 			path = "MessageOperations Provider";
 			sourceTree = "<group>";
 		};
+		9F6EE156259739A40059BA51 /* Backup Provider */ = {
+			isa = PBXGroup;
+			children = (
+				9F6EE1542597399D0059BA51 /* BackupProvider.swift */,
+				9F31AB922329950800CF87EA /* Imap+Backup.swift */,
+				9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */,
+			);
+			path = "Backup Provider";
+			sourceTree = "<group>";
+		};
 		9F9361AB2573CE430009912F /* Message Provider */ = {
 			isa = PBXGroup;
 			children = (
@@ -1048,20 +1060,22 @@
 			path = "SearchMessage Provider";
 			sourceTree = "<group>";
 		};
-		9FC4114A25961CD6001180A8 /* Mail Providers */ = {
+		9FC4114A25961CD6001180A8 /* Mail Provider */ = {
 			isa = PBXGroup;
 			children = (
 				9FF0671B25520D9D00FCC9E6 /* MailProvider.swift */,
 				9FC4114B25961CEA001180A8 /* MailServiceProviderType.swift */,
+				D2F6D141243500B400DB4065 /* Mail Sessions Providers */,
 				9F31AB8F232993AC00CF87EA /* Imap */,
 				9FF0670E25520D4B00FCC9E6 /* Gmail */,
 				9FF0672225520DC500FCC9E6 /* Message Sender */,
 				9FE1B3862563F86100D6D086 /* MessagesList Provider */,
 				9F9361AB2573CE430009912F /* Message Provider */,
 				9F5C2A84257E64E400DE9B4B /* MessageOperations Provider */,
+				9F6EE156259739A40059BA51 /* Backup Provider */,
 				9FC411272595EA28001180A8 /* SearchMessage Provider */,
 			);
-			path = "Mail Providers";
+			path = "Mail Provider";
 			sourceTree = "<group>";
 		};
 		9FD22A1D230FEEC8005067A6 /* Common UI */ = {
@@ -1245,7 +1259,7 @@
 			children = (
 				A370EAB6238697E000685215 /* Pgp */,
 				D29AFFEE24092F4900C1387D /* DataManager */,
-				9FC4114A25961CD6001180A8 /* Mail Providers */,
+				9FC4114A25961CD6001180A8 /* Mail Provider */,
 				9FB22CB425715C860026EE64 /* Error Handling */,
 				9F0C3C1F23191F2000299985 /* Services */,
 			);
@@ -1577,7 +1591,7 @@
 			path = "Contacts List";
 			sourceTree = "<group>";
 		};
-		D2F6D141243500B400DB4065 /* MailProviders */ = {
+		D2F6D141243500B400DB4065 /* Mail Sessions Providers */ = {
 			isa = PBXGroup;
 			children = (
 				D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */,
@@ -1587,7 +1601,7 @@
 				D2F6D13D2434FF1400DB4065 /* providers.json */,
 				D21574B624376852006B094F /* ConnectionType.swift */,
 			);
-			path = MailProviders;
+			path = "Mail Sessions Providers";
 			sourceTree = "<group>";
 		};
 		D2FF6969243115FE007182F0 /* SignIn Other */ = {
@@ -2227,7 +2241,7 @@
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */,
 				9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */,
-				9F31AB932329950800CF87EA /* Imap+backup.swift in Sources */,
+				9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */,
 				D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserObject.swift in Sources */,
@@ -2319,6 +2333,7 @@
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				9F82D352256D74FA0069A702 /* InboxViewControllerContainer.swift in Sources */,
 				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
+				9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
 				9FF0671C25520D9D00FCC9E6 /* MailProvider.swift in Sources */,
@@ -2350,6 +2365,7 @@
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
+				9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

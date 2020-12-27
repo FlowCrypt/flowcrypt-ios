@@ -22,7 +22,7 @@ extension GmailService: MessageSearchProvider {
 extension FetchMessageContext {
     init(searchContext: MessageSearchContext) {
         let folder = searchContext.folderPath ?? "anywhere"
-        let query = "in:\(folder) \(searchContext.expression) OR subject:e\(searchContext.expression)"
+        let query = "in:\(folder) \(searchContext.expression) OR subject:\(searchContext.expression)"
         self.init(
             folderPath: searchContext.folderPath,
             count: searchContext.count,

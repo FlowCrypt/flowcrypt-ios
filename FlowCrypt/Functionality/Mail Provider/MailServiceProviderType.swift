@@ -23,13 +23,15 @@ enum MailServiceProviderType {
 // MessageProvider - show message
 // MessageOperationsProvider - delete, read, etc messages
 // MessageSearchProvider - search messages in folder
+// BackupProvider - Search for backups
 
 protocol MailServiceProvider: MessageSender,
     RemoteFoldersProviderType,
     MessagesListProvider,
     MessageProvider,
     MessageOperationsProvider,
-    MessageSearchProvider {
+    MessageSearchProvider,
+    BackupProvider {
 
     var mailServiceProviderType: MailServiceProviderType { get }
 }

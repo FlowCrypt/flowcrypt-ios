@@ -16,14 +16,14 @@ struct MessageSearchContext {
     let expression: String
     let folderPath: String?
     let searchDestinations: [MessageSearchDestinations]
-    let count: Int
+    let count: Int?
     let from: Int
 
     init(
         expression: String,
-        folderPath: String?,
+        folderPath: String? = nil,
         searchDestinations: [MessageSearchDestinations] = MessageSearchDestinations.allCases,
-        count: Int,
+        count: Int? = nil,
         from: Int = 0
     ) {
         self.expression = expression

@@ -6,11 +6,18 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
+import FlowCryptCommon
 import Promises
 
-protocol BackupProvider {
-    func searchBackups(for email: String) -> Promise<Data>
+enum BackupError: Error {
+    /// "Error while fetching folders" no folders on account
+    case missedFolders
+    /// "Error while fetching uids"
+    case missedUIDS
+    /// "Error while fetching messages"
+    case missedMessages
+    /// "Error while fetching attributes"
+    case missedAttributes
 }
 
 extension Imap: BackupProvider {
@@ -20,16 +27,13 @@ extension Imap: BackupProvider {
             var folderPaths = try await(self.fetchFolders())
                 .compactMap { $0.path }
 
-            if folderPaths.isEmpty {
-                throw AppErr.unexpected("Error while fetching folders")
+            guard folderPaths.isNotEmpty else {
+                throw BackupError.missedFolders
             }
 
-            if folderPaths.contains(GeneralConstants.Global.gmailAllMailPath) {
-                folderPaths = [GeneralConstants.Global.gmailAllMailPath]
-            } else if let inbox = folderPaths.firstCaseInsensitive("inbox") {
+            if let inbox = folderPaths.firstCaseInsensitive("inbox") {
                 folderPaths = [inbox]
             }
-
 
             let searchExpr = self.createSearchBackupExpression(for: email)
 
@@ -38,8 +42,8 @@ extension Imap: BackupProvider {
                 return UidsContext(path: folder, uids: uids)
             }
 
-            if uidsForFolders.isEmpty {
-                throw AppErr.unexpected("Error while fetching uids")
+            guard uidsForFolders.isNotEmpty else {
+                throw BackupError.missedUIDS
             }
 
             let messageContexts = try uidsForFolders.flatMap { uidsContext -> [MsgContext] in
@@ -47,8 +51,8 @@ extension Imap: BackupProvider {
                 return msgs.map { msg in MsgContext(path: uidsContext.path, msg: msg) }
             }
 
-            if messageContexts.isEmpty {
-                throw AppErr.unexpected("Error while fetching messages")
+            guard messageContexts.isNotEmpty else {
+                throw BackupError.missedMessages
             }
 
             let attContext = messageContexts.flatMap { msgContext -> [AttContext] in
@@ -56,8 +60,8 @@ extension Imap: BackupProvider {
                 return parts.map { part in AttContext(path: msgContext.path, msg: msgContext.msg, part: part) }
             }
 
-            if attContext.isEmpty {
-                throw AppErr.unexpected("Error while fetching attributes")
+            guard attContext.isNotEmpty else {
+                throw BackupError.missedAttributes
             }
 
             let dataArr = try attContext.map { attContext -> Data in
@@ -69,7 +73,7 @@ extension Imap: BackupProvider {
                 ) + [10] // newline
             }
 
-            return Data.joined(dataArr)
+            return dataArr.joined
         }
     }
 

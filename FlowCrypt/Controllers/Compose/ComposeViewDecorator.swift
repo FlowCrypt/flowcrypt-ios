@@ -90,7 +90,7 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
         dateFormatter.timeStyle = .short
         let time = dateFormatter.string(from: info.sentDate)
 
-        let from = info.recipient?.mailbox ?? "unknown sender"
+        let from = info.recipient ?? "unknown sender"
 
         let text: String = "\n\n"
             + "compose_reply_from".localizeWithArguments(date, time, from)

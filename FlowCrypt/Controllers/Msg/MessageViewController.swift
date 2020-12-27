@@ -318,23 +318,24 @@ extension MessageViewController {
 
     // TODO: - ANTON - SINGLE handleReplyTap
     private func handleReplyTap() {
-//        guard let input = input else { return }
-//        let replyInfo = ComposeViewController.Input.ReplyInfo(
-//            recipient: input.objMessage.se,
-//            subject: input.objMessage.header.subject,
-//            mime: input.bodyMessage,
-//            sentDate: input.objMessage.header.date,
-//            message: message.string
-//        )
-//
-//        navigationController?.pushViewController(
-//            ComposeViewController(
-//                input: ComposeViewController.Input(
-//                    type: .reply(replyInfo)
-//                )
-//            ),
-//            animated: true
-//        )
+        guard let input = input else { return }
+
+        let replyInfo = ComposeViewController.Input.ReplyInfo(
+            recipient: input.objMessage.sender,
+            subject: input.objMessage.subject,
+            mime: input.bodyMessage,
+            sentDate: input.objMessage.date,
+            message: message.string
+        )
+
+        navigationController?.pushViewController(
+            ComposeViewController(
+                input: ComposeViewController.Input(
+                    type: .reply(replyInfo)
+                )
+            ),
+            animated: true
+        )
     }
 }
 

@@ -8,38 +8,32 @@ enum AppErr: Error {
     // network
     case authentication
     case connection
-    case operation(Error)
     // code
     case nilSelf // guard let self = self else { throw AppErr.nilSelf }
-    case value(String) // wrong value passed into a function
     case unexpected(String) // we did not expect to ever see this error in practice
 
-    // TODO: - ANTON Handle cast Error
-    case cast(Any) // something as? Something is unexpectedly nil
-    // all others
-    case user(String) // user error, useful to throw from Promises
-    case silentAbort // useful in Promises when you want to cancel execution without showing any error (eg after user clicks cancel button)
+    /// something as? Something is unexpectedly nil
+    case cast(Any)
+    /// user error, useful to throw from Promises
+    case user(String)
+    /// useful in Promises when you want to cancel execution without showing any error (eg after user clicks cancel button)
+    case silentAbort
     case general(String)
 
     var userMessage: String {
         switch self {
         case .connection: return "error_app_connection".localized
-        case let .operation(error): return error.localizedDescription
-        case let .value(message): return message
         default: return "" // TODO: - provide description for error if needed
         }
     }
 }
 
 extension AppErr: Equatable {
-    // swiftlint:disable cyclomatic_complexity
     static func == (lhs: AppErr, rhs: AppErr) -> Bool {
         switch (lhs, rhs) {
         case (.authentication, .authentication): return true
         case (.connection, .connection): return true
-        case (.operation, .operation): return true
         case (.nilSelf, .nilSelf): return true
-        case (.value, .value): return true
         case (.unexpected, .unexpected): return true
         case (.cast, .cast): return true
         case (.user, .user): return true
@@ -65,7 +59,7 @@ extension AppErr {
              MCOErrorCode.connection.rawValue:
             self = .connection
         default:
-            self = .operation(error)
+            self = .unexpected(error.localizedDescription)
         }
     }
 }

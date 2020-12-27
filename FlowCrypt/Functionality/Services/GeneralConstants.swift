@@ -7,6 +7,8 @@ import UIKit
 enum GeneralConstants {
     enum Global {
         static let generalError = -1
+
+        // TODO: - ANTON
         static let gmailAllMailPath = "[Gmail]/All Mail"
         static let messageSizeLimit: Int = 5_000_000
     }

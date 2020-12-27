@@ -21,16 +21,16 @@ protocol BackupServiceType {
 // MARK: - BackupService
 struct BackupService {
     static let shared: BackupService = BackupService(
-        backupProvider: Imap.shared,
+        backupProvider: MailProvider.shared.backupProvider,
         core: Core.shared,
         dataService: DataService.shared,
-        imap: Imap.shared
+        messageSender: MailProvider.shared.messageSender
     )
 
     let backupProvider: BackupProvider
     let core: Core
     let dataService: DataService
-    let imap: Imap
+    let messageSender: MessageSender
 
     private var userID: UserId? {
         guard let email = dataService.email, email.isNotEmpty,
@@ -94,7 +94,7 @@ extension BackupService: BackupServiceType {
                 atts: attachments
             )
             let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: nil)
-            try await(imap.sendMail(mime: backupEmail.mimeEncoded))
+            try await(messageSender.sendMail(mime: backupEmail.mimeEncoded))
         }
     }
 

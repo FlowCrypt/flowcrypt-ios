@@ -8,6 +8,8 @@ import JavaScriptCore
 enum CoreError: Error {
     case exception(String)
     case notReady(String)
+    // wrong value passed into a function
+    case value(String)
 }
 
 final class Core {

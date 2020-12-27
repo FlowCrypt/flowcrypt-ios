@@ -80,6 +80,13 @@ final class MailProvider {
         }
         return service
     }
+
+    var backupProvider: BackupProvider {
+        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) else {
+            fatalError("Email Provider should support this functionality")
+        }
+        return service
+    }
 }
 
 struct MailServiceProviderFactory {

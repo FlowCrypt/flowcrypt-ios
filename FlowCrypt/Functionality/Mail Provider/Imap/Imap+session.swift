@@ -74,7 +74,7 @@ extension Imap {
                 .loginOperation()?
                 .start { error in
                     guard let error = error else { resolve(()); return }
-                    reject(AppErr.value("Can't establish SMTP Connection.\n\(error.localizedDescription)"))
+                    reject(AppErr.unexpected("Can't establish SMTP Connection.\n\(error.localizedDescription)"))
                 }
         }
     }
@@ -85,7 +85,7 @@ extension Imap {
                 .connectOperation()?
                 .start { error in
                     guard let error = error else { resolve(()); return }
-                    reject(AppErr.value("Can't establish IMAP Connection.\n\(error.localizedDescription)"))
+                    reject(AppErr.unexpected("Can't establish IMAP Connection.\n\(error.localizedDescription)"))
                 }
         }
     }

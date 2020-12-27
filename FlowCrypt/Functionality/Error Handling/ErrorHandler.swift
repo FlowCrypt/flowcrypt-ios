@@ -77,3 +77,4 @@ private struct ComposedErrorHandler: ErrorHandler {
 // BackupServiceError
 // ContactsError
 // KeyInfoError
+// BackupError
