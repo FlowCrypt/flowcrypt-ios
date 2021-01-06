@@ -63,7 +63,8 @@ extension Message {
             sender: imapMessage.header.from.mailbox ?? imapMessage.header.sender.mailbox,
             subject: imapMessage.header.subject,
             size: Int(imapMessage.size),
-            labels: labels
+            labels: labels,
+            attachmentIds: []
         )
     }
 }

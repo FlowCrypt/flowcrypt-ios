@@ -109,6 +109,7 @@ private extension Message {
             throw GmailServiceError.missedMessageInfo("id")
         }
 
+        let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
         let labelTypes: [MessageLabelType] = message.labelIds?.map(MessageLabelType.init) ?? []
         let labels = labelTypes.map(MessageLabel.init)
 
@@ -131,7 +132,8 @@ private extension Message {
             sender: sender,
             subject: subject,
             size: message.sizeEstimate.flatMap(Int.init),
-            labels: labels
+            labels: labels,
+            attachmentIds: attachmentsIds
         )
     }
 }

@@ -16,6 +16,7 @@ struct Message {
     let sender: String?
     let subject: String?
     let size: Int?
+    let attachmentIds: [String]
     private(set) var labels: [MessageLabel]
 
     var isMessageRead: Bool {
@@ -37,7 +38,8 @@ struct Message {
         sender: String?,
         subject: String?,
         size: Int?,
-        labels: [MessageLabel]
+        labels: [MessageLabel],
+        attachmentIds: [String]
     ) {
         self.identifier = identifier
         self.date = date
@@ -45,6 +47,7 @@ struct Message {
         self.subject = subject
         self.size = size
         self.labels = labels
+        self.attachmentIds = attachmentIds
     }
 }
 
