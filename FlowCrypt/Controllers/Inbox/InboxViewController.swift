@@ -230,7 +230,6 @@ extension InboxViewController {
     }
 
     private func handle(error: Error) {
-        // TODO: - ANTON - ADD FALLBACK TO ERROR HANDLING
         refreshControl.endRefreshing()
         let appError = AppErr(error)
 

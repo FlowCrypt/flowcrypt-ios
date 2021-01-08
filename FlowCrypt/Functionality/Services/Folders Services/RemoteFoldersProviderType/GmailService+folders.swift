@@ -43,13 +43,13 @@ extension GmailService: RemoteFoldersProviderType {
                     }
                     .compactMap(FolderObject.init)
 
-                resolve(folders)
+                resolve(folders + [self.allMailFolder])
             }
         }
     }
 
-    func saveTrashFolderPath(with folders: [MCOIMAPFolder]) {
-
+    private var allMailFolder: FolderObject {
+        FolderObject(name: "All Mail", path: "", image: nil)
     }
 }
 

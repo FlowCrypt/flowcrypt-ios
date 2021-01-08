@@ -69,7 +69,7 @@ extension Imap: MessageOperationsProvider {
 
     // MARK: - delete
     func delete(message: Message, form folderPath: String?) -> Promise<Void> {
-        return Promise<Void> { [weak self] (resolve, reject) in
+        return Promise<Void> { [weak self] (_, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             guard let id = message.identifier.intId else {
@@ -80,26 +80,24 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("folderPath"))
             }
 
-
-            try await(self.pushUpdatedMsgFlags(with: id, folder: folderPath))
+            try await(self.pushUpdatedMsgFlags(with: id, folder: folderPath, flags: MCOMessageFlag.deleted))
             try await(self.expungeMsgs(folder: folderPath))
         }
     }
 
-    private func pushUpdatedMsgFlags(with identifier: Int, folder: String) -> Promise<Void> {
+    private func pushUpdatedMsgFlags(with identifier: Int, folder: String, flags: MCOMessageFlag) -> Promise<Void> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-
+            let retry = self.pushUpdatedMsgFlags(with: identifier, folder: folder, flags: flags)
             self.imapSess?
                 .storeFlagsOperation(
                     withFolder: folder,
                     uids: MCOIndexSet(index: UInt64(identifier)),
                     kind: MCOIMAPStoreFlagsRequestKind.set,
-                    flags: MCOMessageFlag.deleted
+                    flags: flags
                 )
-                .start(self.finalizeVoid("updateMsgFlags", resolve, reject, retry: { self.pushUpdatedMsgFlags(with: identifier, folder: folder) }
-                ))
+                .start(self.finalizeVoid("updateMsgFlags", resolve, reject, retry: { retry }))
         }
     }
 
@@ -110,6 +108,19 @@ extension Imap: MessageOperationsProvider {
             self.imapSess?
                 .expungeOperation(folder)
                 .start(self.finalizeVoid("expungeMsgs", resolve, reject, retry: { self.expungeMsgs(folder: folder) }))
+        }
+    }
+
+    // MARK: - archive
+    func archiveMessage(message: Message, folderPath: String) -> Promise<Void> {
+        return Promise<Void> { [weak self] (resolve, reject) in
+            guard let self = self else { return reject(AppErr.nilSelf) }
+
+            guard let id = message.identifier.intId else {
+                return reject(ImapError.missedMessageInfo("intId"))
+            }
+
+            try await(self.pushUpdatedMsgFlags(with: id, folder: folderPath, flags: MCOMessageFlag.deleted))
         }
     }
 }

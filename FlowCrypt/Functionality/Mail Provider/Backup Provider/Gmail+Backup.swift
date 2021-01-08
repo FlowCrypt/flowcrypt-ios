@@ -29,10 +29,10 @@ extension GmailService: BackupProvider {
                 }
                 .flatMap { $0 }
                 .map(findAttachment)
-            
+
             // TODO: - TOM 1
             // Here I'm getting the correct number of attachments with backups (17 for cryptup.tester@gmail.com account)
-            
+
             let data = try await(all(attachments)).joined
             resolve(data)
         }

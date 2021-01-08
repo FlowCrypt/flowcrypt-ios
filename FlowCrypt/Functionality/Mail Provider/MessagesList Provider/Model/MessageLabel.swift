@@ -10,6 +10,13 @@ import Foundation
 
 struct MessageLabel: Equatable, Hashable {
     let type: MessageLabelType
+
+    var isLabel: Bool {
+        guard case .label = type else {
+            return false
+        }
+        return true
+    }
 }
 
 enum MessageLabelType: Equatable, Hashable {

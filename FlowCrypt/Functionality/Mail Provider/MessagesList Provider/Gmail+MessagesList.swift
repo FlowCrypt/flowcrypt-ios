@@ -39,7 +39,7 @@ extension GmailService {
             query.pageToken = token
         }
 
-        if let folderPath = context.folderPath {
+        if let folderPath = context.folderPath, folderPath.isNotEmpty {
             query.labelIds = [folderPath]
         }
         if let count = context.count {

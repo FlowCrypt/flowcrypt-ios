@@ -13,4 +13,5 @@ protocol MessageOperationsProvider {
     func markAsRead(message: Message, folder: String) -> Promise<Void>
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void>
     func delete(message: Message, form folderPath: String?) -> Promise<Void>
+    func archiveMessage(message: Message, folderPath: String) -> Promise<Void>
 }

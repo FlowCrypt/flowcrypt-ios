@@ -302,18 +302,16 @@ extension MessageViewController {
         }
     }
 
-    // TODO: - ANTON - SINGLE handleArchiveTap
     @objc private func handleArchiveTap() {
         guard let input = input else { return }
-//        showSpinner()
-//        input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
-//        imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
-//            .then(on: .main) { [weak self] _ in
-//                self?.handleOpSuccess(operation: .archive)
-//            }
-//            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
-//                self?.handleOpErr(operation: .archive)
-//            }
+        showSpinner()
+        messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
+            .then(on: .main) { [weak self] _ in
+                self?.handleOpSuccess(operation: .archive)
+            }
+            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
+                self?.handleOpErr(operation: .archive)
+            }
     }
 
     private func handleReplyTap() {
