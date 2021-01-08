@@ -8,11 +8,11 @@
 
 import Foundation
 
-struct MessageLabel: Equatable {
+struct MessageLabel: Equatable, Hashable {
     let type: MessageLabelType
 }
 
-enum MessageLabelType: Equatable {
+enum MessageLabelType: Equatable, Hashable {
     case seen
     case unread
     case starred

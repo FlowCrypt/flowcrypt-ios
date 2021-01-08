@@ -55,6 +55,8 @@ extension BackupService: BackupServiceType {
 
             do {
                 let parsed = try self.core.parseKeys(armoredOrBinary: backupData)
+                // TODO: - TOM 2
+                // After parsing keys there are 51 key instead of 17 attachments fetched.
                 let keys = parsed.keyDetails.filter { $0.private != nil }
                 resolve(keys)
             } catch {

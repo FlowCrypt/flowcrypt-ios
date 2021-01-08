@@ -12,13 +12,15 @@ import GoogleAPIClientForREST
 
 extension GmailService: BackupProvider {
     func searchBackups(for email: String) -> Promise<Data> {
-        return Promise { (resolve, reject) in
+        return Promise { (resolve, _) in
             let backupSearchExpressions = GeneralConstants.EmailConstant
                 .recoverAccountSearchSubject
                 .map { searchExpression(using: MessageSearchContext(expression: $0)) }
 
-            let messagesWithBackups = try await(all(backupSearchExpressions))
+            let backupMessages = try await(all(backupSearchExpressions))
                 .flatMap { $0 }
+            let uniqueMessages = Set(backupMessages)
+            let attachments = uniqueMessages
                 .compactMap { (message) -> [(String, String)]? in
                     guard let id = message.identifier.stringId else {
                         return nil
@@ -27,9 +29,11 @@ extension GmailService: BackupProvider {
                 }
                 .flatMap { $0 }
                 .map(findAttachment)
-
-            let data = try await(all(messagesWithBackups))
-                .joined
+            
+            // TODO: - TOM 1
+            // Here I'm getting the correct number of attachments with backups (17 for cryptup.tester@gmail.com account)
+            
+            let data = try await(all(attachments)).joined
             resolve(data)
         }
     }
@@ -54,7 +58,7 @@ extension GmailService: BackupProvider {
                     return reject(GmailServiceError.messageEncode)
                 }
 
-                resolve(data + [10]) // newline
+                resolve(data)
             }
         }
     }

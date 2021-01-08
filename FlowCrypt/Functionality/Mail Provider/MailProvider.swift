@@ -10,7 +10,7 @@ import Foundation
 import GoogleSignIn
 import GoogleAPIClientForREST
 
-/// Get proper service based on current auth type
+/// Provides with proper mail services based on current auth type
 final class MailProvider {
     static var shared: MailProvider = MailProvider(
         currentAuthType: DataService.shared.currentAuthType,
@@ -28,8 +28,35 @@ final class MailProvider {
             fatalError("Service can't be resolved. User should be authenticated")
         }
     }
-
     private let services: [MailServiceProvider]
+
+    var messageSender: MessageSender {
+        resolveService(of: MessageSender.self)
+    }
+
+    var remoteFoldersProvider: RemoteFoldersProviderType {
+        resolveService(of: RemoteFoldersProviderType.self)
+    }
+
+    var messageListProvider: MessagesListProvider {
+        resolveService(of: MessagesListProvider.self)
+    }
+
+    var messageProvider: MessageProvider {
+        resolveService(of: MessageProvider.self)
+    }
+
+    var messageOperationsProvider: MessageOperationsProvider {
+        resolveService(of: MessageOperationsProvider.self)
+    }
+
+    var messageSearchProvider: MessageSearchProvider {
+        resolveService(of: MessageSearchProvider.self)
+    }
+
+    var backupProvider: BackupProvider {
+        resolveService(of: BackupProvider.self)
+    }
 
     private init(
         currentAuthType: @autoclosure @escaping () -> (AuthType?),
@@ -39,64 +66,22 @@ final class MailProvider {
         self.services = services
     }
 
-    var messageSender: MessageSender {
-        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) else {
-            fatalError("Email Provider should support this functionality")
-        }
-        return service
-    }
-
-    var remoteFoldersProvider: RemoteFoldersProviderType {
-        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) else {
-            fatalError("Email Provider should support this functionality")
-        }
-        return service
-    }
-
-    var messageListProvider: MessagesListProvider {
-        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) else {
-            fatalError("Email Provider should support this functionality")
-        }
-        return service
-    }
-
-    var messageProvider: MessageProvider {
-        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) else {
-            fatalError("Email Provider should support this functionality")
-        }
-        return service
-    }
-
-    var messageOperationsProvider: MessageOperationsProvider {
-        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) else {
-            fatalError("Email Provider should support this functionality")
-        }
-        return service
-    }
-
-    var messageSearchProvider: MessageSearchProvider {
-        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) else {
-            fatalError("Email Provider should support this functionality")
-        }
-        return service
-    }
-
-    var backupProvider: BackupProvider {
-        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) else {
+    private func resolveService<T>(of type: T.Type) -> T {
+        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
             fatalError("Email Provider should support this functionality")
         }
         return service
     }
 }
 
-struct MailServiceProviderFactory {
+private struct MailServiceProviderFactory {
     static func services() -> [MailServiceProvider] {
         [
+            Imap.shared,
             GmailService(
                 signInService: GIDSignIn.sharedInstance(),
                 gmailService: GTLRGmailService()
-            ),
-            Imap.shared
+            )
         ]
     }
 }

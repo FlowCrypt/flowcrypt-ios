@@ -316,7 +316,6 @@ extension MessageViewController {
 //            }
     }
 
-    // TODO: - ANTON - SINGLE handleReplyTap
     private func handleReplyTap() {
         guard let input = input else { return }
 

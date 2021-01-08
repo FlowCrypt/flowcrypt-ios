@@ -10,7 +10,7 @@ import Foundation
 import FlowCryptCommon
 import GoogleAPIClientForREST
 
-struct Message {
+struct Message: Hashable {
     let identifier: Identifier
     let date: Date
     let sender: String?
@@ -70,7 +70,7 @@ extension Message {
     }
 }
 
-struct Identifier: Equatable {
+struct Identifier: Equatable, Hashable {
     let stringId: String?
     let intId: Int?
 
