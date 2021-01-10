@@ -9,6 +9,7 @@
 import Promises
 import GTMSessionFetcher
 import GoogleAPIClientForREST
+import FlowCryptCommon
 
 extension GmailService: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
@@ -65,8 +66,8 @@ extension GmailService {
         }
     }
 
-    private func fetchFullMessage(with id: String) -> Promise<Message> {
-        let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: id)
+    private func fetchFullMessage(with identifier: String) -> Promise<Message> {
+        let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
         query.format = kGTLRGmailFormatFull
         return Promise { (resolve, reject) in
             self.gmailService.executeQuery(query) { (_, data, error) in
@@ -105,7 +106,7 @@ private extension Message {
             throw GmailServiceError.missedMessageInfo("date")
         }
 
-        guard let id = message.identifier else {
+        guard let identifier = message.identifier else {
             throw GmailServiceError.missedMessageInfo("id")
         }
 
@@ -126,8 +127,13 @@ private extension Message {
             }
         }
 
+        // TODO: - Tom 3
+        // Gmail returns sender string as "Google security <googleaccount-noreply@gmail.com>"
+        // slice it to previous format, like "googleaccount-noreply@gmail.com"
+        sender = sender?.slice(from: "<", to: ">") ?? sender
+
         self.init(
-            identifier: Identifier(stringId: id),
+            identifier: Identifier(stringId: identifier),
             date: Date(timeIntervalSince1970: internalDate),
             sender: sender,
             subject: subject,

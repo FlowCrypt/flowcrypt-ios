@@ -16,14 +16,15 @@ extension Imap: MessageProvider {
                 return reject(AppErr.nilSelf)
             }
 
-            guard let id = message.identifier.intId else {
+            guard let identifier = message.identifier.intId else {
                 assertionFailure()
                 return reject(AppErr.unexpected("Missed message identifier"))
             }
 
+            let retry = { self.fetchMsg(message: message, folder: folder) }
             self.imapSess?
-                .fetchMessageOperation(withFolder: folder, uid: UInt32(id))
-                .start(self.finalize("fetchMsg", resolve, reject, retry: { self.fetchMsg(message: message, folder: folder) }))
+                .fetchMessageOperation(withFolder: folder, uid: UInt32(identifier))
+                .start(self.finalize("fetchMsg", resolve, reject, retry: retry))
         }
     }
 }

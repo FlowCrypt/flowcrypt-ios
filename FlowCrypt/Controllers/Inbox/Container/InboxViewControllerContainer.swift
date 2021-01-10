@@ -95,8 +95,8 @@ final class InboxViewControllerContainer: TableNodeViewController {
                 return
             }
 
-            let vc = InboxViewController(InboxViewModel(inbox))
-            navigationController?.setViewControllers([vc], animated: false)
+            let inboxViewController = InboxViewController(InboxViewModel(inbox))
+            navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }
 }

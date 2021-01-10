@@ -13,11 +13,11 @@ import GoogleAPIClientForREST
 extension GmailService: MessageProvider {
     func fetchMsg(message: Message, folder: String) -> Promise<Data> {
         return Promise { (resolve, reject) in
-            guard let id = message.identifier.stringId else {
+            guard let identifier = message.identifier.stringId else {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }
 
-            let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: id)
+            let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
             query.format = kGTLRGmailFormatRaw
 
             self.gmailService.executeQuery(query) { (_, data, error) in

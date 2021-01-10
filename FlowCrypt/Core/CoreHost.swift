@@ -10,7 +10,6 @@ import Security // for rng
 import SwiftyRSA // for rsa
 import BigInt
 
-
 @objc protocol CoreHostExports: JSExport {
     // crypto
     func getSecureRandomByteNumberArray(_ byteCount: Int) -> [UInt8]?

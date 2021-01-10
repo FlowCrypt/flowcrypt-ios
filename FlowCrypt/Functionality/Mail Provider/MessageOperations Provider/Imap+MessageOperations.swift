@@ -15,7 +15,7 @@ extension Imap: MessageOperationsProvider {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            guard let id = message.identifier.intId else {
+            guard let identifier = message.identifier.intId else {
                 return reject(ImapError.missedMessageInfo("intId"))
             }
 
@@ -31,7 +31,7 @@ extension Imap: MessageOperationsProvider {
             self.imapSess?
                 .storeFlagsOperation(
                     withFolder: folder,
-                    uids: MCOIndexSet(index: UInt64(id)),
+                    uids: MCOIndexSet(index: UInt64(identifier)),
                     kind: MCOIMAPStoreFlagsRequestKind.add,
                     flags: flags
                 )
@@ -44,7 +44,7 @@ extension Imap: MessageOperationsProvider {
         return Promise<Void> { [weak self] (resolve, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            guard let id = message.identifier.intId else {
+            guard let identifier = message.identifier.intId else {
                 return reject(ImapError.missedMessageInfo("intId"))
             }
 
@@ -52,7 +52,7 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("trashPath"))
             }
 
-            try await(self.moveMsg(with: id, folder: folder, destFolder: trashPath))
+            try await(self.moveMsg(with: identifier, folder: folder, destFolder: trashPath))
             resolve(())
         }
     }
@@ -72,7 +72,7 @@ extension Imap: MessageOperationsProvider {
         return Promise<Void> { [weak self] (_, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            guard let id = message.identifier.intId else {
+            guard let identifier = message.identifier.intId else {
                 return reject(ImapError.missedMessageInfo("intId"))
             }
 
@@ -80,7 +80,7 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("folderPath"))
             }
 
-            try await(self.pushUpdatedMsgFlags(with: id, folder: folderPath, flags: MCOMessageFlag.deleted))
+            try await(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
             try await(self.expungeMsgs(folder: folderPath))
         }
     }
@@ -113,14 +113,14 @@ extension Imap: MessageOperationsProvider {
 
     // MARK: - archive
     func archiveMessage(message: Message, folderPath: String) -> Promise<Void> {
-        return Promise<Void> { [weak self] (resolve, reject) in
+        return Promise<Void> { [weak self] (_, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            guard let id = message.identifier.intId else {
+            guard let identifier = message.identifier.intId else {
                 return reject(ImapError.missedMessageInfo("intId"))
             }
 
-            try await(self.pushUpdatedMsgFlags(with: id, folder: folderPath, flags: MCOMessageFlag.deleted))
+            try await(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
         }
     }
 }

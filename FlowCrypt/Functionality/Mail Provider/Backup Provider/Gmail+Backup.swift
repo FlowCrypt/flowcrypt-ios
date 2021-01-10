@@ -22,10 +22,10 @@ extension GmailService: BackupProvider {
             let uniqueMessages = Set(backupMessages)
             let attachments = uniqueMessages
                 .compactMap { (message) -> [(String, String)]? in
-                    guard let id = message.identifier.stringId else {
+                    guard let identifier = message.identifier.stringId else {
                         return nil
                     }
-                    return message.attachmentIds.map { (id, $0) }
+                    return message.attachmentIds.map { (identifier, $0) }
                 }
                 .flatMap { $0 }
                 .map(findAttachment)

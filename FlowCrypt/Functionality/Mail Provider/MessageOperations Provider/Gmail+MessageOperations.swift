@@ -22,13 +22,13 @@ extension GmailService: MessageOperationsProvider {
 
     func delete(message: Message, form folderPath: String?) -> Promise<Void> {
         Promise { (resolve, reject) in
-            guard let id = message.identifier.stringId else {
+            guard let identifier = message.identifier.stringId else {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }
 
             let query = GTLRGmailQuery_UsersMessagesDelete.query(
                 withUserId: .me,
-                identifier: id
+                identifier: identifier
             )
 
             self.gmailService.executeQuery(query) { (_, _, error) in
@@ -51,7 +51,7 @@ extension GmailService: MessageOperationsProvider {
 
     private func update(message: Message, labelsToAdd: [MessageLabelType] = [], labelsToRemove: [MessageLabelType] = []) -> Promise<Void> {
         Promise { (resolve, reject) in
-            guard let id = message.identifier.stringId else {
+            guard let identifier = message.identifier.stringId else {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }
             let request = GTLRGmail_ModifyMessageRequest()
@@ -60,7 +60,7 @@ extension GmailService: MessageOperationsProvider {
             let query = GTLRGmailQuery_UsersMessagesModify.query(
                 withObject: request,
                 userId: .me,
-                identifier: id
+                identifier: identifier
             )
 
             self.gmailService.executeQuery(query) { (_, _, error) in
