@@ -2,7 +2,7 @@
 "loading_title" = "Loading";
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
-
+"retry_title" = "retry";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -14,6 +14,8 @@
 "message_failed_load" = "Failed to load messages";
 "message_your" = "Your message";
 "message_compose_secure" = "Compose Secure Message";
+"message_unknown_sender" = "(unknown sender)";
+"message_missed_subject" = "No subject";
 
 // REPLY
 "reply_title" = "Your reply"; // not used
@@ -27,6 +29,8 @@
 "error_archive" = "Unable to archive message";
 "error_permanently_delete" = "Unable to delete message";
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
+"error_general_text" = "Something went wrong.";
+"error_no_folders" = "There are no folders on your account";
 
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";

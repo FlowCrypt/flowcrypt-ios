@@ -10,12 +10,11 @@ import FlowCryptUI
 import UIKit
 
 extension InboxCellNode.Input {
-    init(_ message: MCOIMAPMessage) {
-        // TODO: ANTON - displayName
-        let email = message.header.from.mailbox ?? message.header.sender.mailbox ?? "(unknown sender)"
-        let date = DateFormatter().formatDate(message.header.date)
-        let msg = message.header.subject ?? "No subject"
-        let isMessageRead = message.flags.rawValue != 0
+    init(_ message: Message) {
+        let email = message.sender ?? "message_unknown_sender".localized
+        let date = DateFormatter().formatDate(message.date)
+        let msg = message.subject ?? "message_missed_subject".localized
+        let isMessageRead = message.isMessageRead
 
         let style: NSAttributedString.Style = isMessageRead
             ? .regular(17)
@@ -33,6 +32,32 @@ extension InboxCellNode.Input {
             emailText: NSAttributedString.text(from: email, style: style, color: textColor),
             dateText: NSAttributedString.text(from: date, style: style, color: dateColor),
             messageText: NSAttributedString.text(from: msg, style: style, color: textColor)
+        )
+    }
+}
+
+protocol InboxViewDecoratorType {
+    func initialNodeInput(for size: CGSize) -> TextCellNode.Input
+
+    func emptyStateNodeInput(for size: CGSize, title: String) -> TextCellNode.Input
+}
+
+struct InboxViewDecorator: InboxViewDecoratorType {
+    func emptyStateNodeInput(for size: CGSize, title: String) -> TextCellNode.Input {
+        TextCellNode.Input(
+            backgroundColor: .backgroundColor,
+            title: "\(title) is empty",
+            withSpinner: false,
+            size: size
+        )
+    }
+
+    func initialNodeInput(for size: CGSize) -> TextCellNode.Input {
+        TextCellNode.Input(
+            backgroundColor: .backgroundColor,
+            title: "",
+            withSpinner: true,
+            size: size
         )
     }
 }

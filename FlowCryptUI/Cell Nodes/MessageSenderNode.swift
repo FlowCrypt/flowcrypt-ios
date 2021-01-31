@@ -30,6 +30,7 @@ public final class MessageSenderNode: CellNode {
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
+        textNode.style.flexShrink = 1.0
         buttonNode.style.preferredSize = CGSize(width: 50, height: 50)
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 2, left: 8, bottom: 0, right: 2),

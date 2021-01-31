@@ -9,14 +9,6 @@ public extension Data {
         try JSONDecoder().decode(T.self, from: self)
     }
 
-    static func joined(_ dataArray: [Data]) -> Data {
-        var data = Data()
-        for d in dataArray {
-            data += d
-        }
-        return data
-    }
-
     func toStr() -> String {
         String(decoding: self, as: UTF8.self)
     }
@@ -25,5 +17,11 @@ public extension Data {
 extension String {
     init(data: Data) {
         self = String(decoding: data, as: UTF8.self)
+    }
+}
+
+public extension Array where Element == Data {
+    var joined: Data {
+        reduce(Data(), +)
     }
 }

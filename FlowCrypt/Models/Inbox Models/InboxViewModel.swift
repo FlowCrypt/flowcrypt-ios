@@ -20,8 +20,6 @@ struct InboxViewModel {
             self.path = path
         }
     }
-
-    static var empty = InboxViewModel(folderName: "", path: "")
 }
 
 extension InboxViewModel {

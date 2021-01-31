@@ -43,7 +43,7 @@ final class UserService: NSObject {
             return
         }
         switch authType {
-        case .oAuth:
+        case .gmail:
             if dataService.isLoggedIn {
                 onLogin?()
             }

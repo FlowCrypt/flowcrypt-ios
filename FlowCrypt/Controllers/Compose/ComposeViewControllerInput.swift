@@ -13,7 +13,7 @@ extension ComposeViewController {
         static let empty = Input(type: .idle)
 
         struct ReplyInfo: Equatable {
-            let recipient: MCOAddress?
+            let recipient: String?
             let subject: String?
             let mime: Data?
             let sentDate: Date
@@ -36,7 +36,7 @@ extension ComposeViewController {
 
         var recipientReplyTitle: String? {
             guard case let .reply(info) = type else { return nil }
-            return info.recipient?.mailbox
+            return info.recipient
         }
 
         var subjectReplyTitle: String? {

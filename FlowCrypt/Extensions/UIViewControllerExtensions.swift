@@ -135,16 +135,6 @@ extension UIViewController {
         }
     }
 
-    func awaitUserConfirmation(title: String) -> Promise<Bool> {
-        return Promise<Bool>(on: .main) { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let alert = UIAlertController(title: "Are you sure?", message: title, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in resolve(false) }))
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in resolve(true) }))
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-
     func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
         Promise<String?>(on: .main) { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }

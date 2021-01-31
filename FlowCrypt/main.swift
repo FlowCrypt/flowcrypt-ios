@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-_ = autoreleasepool {
+autoreleasepool {
     if ProcessInfo().arguments.contains(AppReset.reset.rawValue) {
         AppReset.resetKeychain()
         AppReset.resetUserDefaults()

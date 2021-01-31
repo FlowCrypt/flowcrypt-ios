@@ -230,7 +230,6 @@ extension ViewController {
         if recipient.state.isSelected {
             recipient.state = .idleState
         } else {
-            // TODO: ANTON -
             recipient.state = .errorState
         }
 

@@ -9,7 +9,7 @@ import Promises
 
 final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
-        static let numberOfMessagesToLoad = 20
+        static let numberOfMessagesToLoad = 50
     }
 
     enum State {
@@ -21,38 +21,53 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         case fetching
         /// Performing refreshing
         case refresh
-        /// Fetched messages where
-        case fetched(_ totalNumberOfMessages: Int)
+        /// Fetched messages
+        case fetched(_ pagination: MessagesListPagination)
         /// error state with description message
         case error(_ message: String)
 
-        var total: Int? {
+        var canLoadMore: Bool {
             switch self {
-            case let .fetched(totalNumberOfMessages): return totalNumberOfMessages
-            default: return nil
+            case let .fetched(.byNextPage(token)):
+                return token != nil
+            case let .fetched(.byNumber(total)):
+                return (total ?? 0) > 0
+            default:
+                return false
+            }
+        }
+
+        var token: String? {
+            switch self {
+            case let .fetched(.byNextPage(token)):
+                return token
+            default:
+                return nil
             }
         }
     }
 
     private var state: State = .idle
 
-    private let messageProvider: MessageProvider
-    private let viewModel: InboxViewModel
-    private var messages: [MCOIMAPMessage] = []
+    private let messageProvider: MessagesListProvider
+    private let decorator: InboxViewDecoratorType
+    private let refreshControl = UIRefreshControl()
     private let tableNode: ASTableNode
-
     private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
 
-    private let refreshControl = UIRefreshControl()
+    private let viewModel: InboxViewModel
+    private var messages: [Message] = []
 
     init(
-        _ viewModel: InboxViewModel = .empty,
-        messageProvider: MessageProvider = Imap.shared
+        _ viewModel: InboxViewModel,
+        messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
+        decorator: InboxViewDecoratorType = InboxViewDecorator()
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
+        self.decorator = decorator
         tableNode = TableNode()
 
         super.init(node: ASDisplayNode())
@@ -101,11 +116,10 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     }
 }
 
+// MARK: - UI
 extension InboxViewController {
     private func setupUI() {
-        title = viewModel.folderName.isEmpty
-            ? "Inbox"
-            : viewModel.folderName
+        title = inboxTitle
 
         node.addSubnode(tableNode)
         node.addSubnode(composeButton)
@@ -122,47 +136,60 @@ extension InboxViewController {
             ]
         )
     }
+
+    private var inboxTitle: String {
+        viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
+    }
 }
 
+// MARK: - Functionality
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
-        messageProvider
-            .fetchMessages(
-                for: viewModel.path,
+        messageProvider.fetchMessages(
+            using: FetchMessageContext(
+                folderPath: viewModel.path,
                 count: Constants.numberOfMessagesToLoad,
-                from: 0
+                pagination: currentMessagesListPagination()
             )
-            .then { [weak self] context in
-                self?.handleEndFetching(with: context, context: batchContext)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+        )
+        .then { [weak self] context in
+            self?.handleEndFetching(with: context, context: batchContext)
+        }
+        .catch(on: .main) { [weak self] error in
+            self?.handle(error: error)
+        }
     }
 
     private func loadMore(_ batchContext: ASBatchContext?) {
-        guard let totalNumberOfMessages = state.total else { return }
+        guard state.canLoadMore else { return }
 
+        let pagination = currentMessagesListPagination(from: messages.count)
         state = .fetching
-        let from = messages.count
-        let diff = min(Constants.numberOfMessagesToLoad, totalNumberOfMessages - from)
-        messageProvider
-            .fetchMessages(for: viewModel.path, count: diff, from: from)
-            .then { [weak self] context in
-                self?.state = .fetched(context.totalMessages)
-                self?.handleEndFetching(with: context, context: batchContext)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+
+        messageProvider.fetchMessages(
+            using: FetchMessageContext(
+                folderPath: viewModel.path,
+                count: messagesToLoad(),
+                pagination: pagination
+            )
+        )
+        .then { [weak self] context in
+            self?.state = .fetched(context.pagination)
+            self?.handleEndFetching(with: context, context: batchContext)
+        }
+        .catch(on: .main) { [weak self] error in
+            self?.handle(error: error)
+        }
     }
 
     private func handleEndFetching(with messageContext: MessageContext, context: ASBatchContext?) {
         context?.completeBatchFetching(true)
 
         switch state {
-        case .idle, .refresh: handleNew(messageContext)
-        case .fetched: handleFetched(messageContext)
+        case .idle, .refresh:
+            handleNew(messageContext)
+        case .fetched:
+            handleFetched(messageContext)
         default: break
         }
     }
@@ -172,8 +199,8 @@ extension InboxViewController {
             state = .empty
         } else {
             messages = messageContext.messages
-                .sorted(by: { $0.header.date > $1.header.date })
-            state = .fetched(messageContext.totalMessages)
+                .sorted(by: { $0.date > $1.date })
+            state = .fetched(messageContext.pagination)
         }
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()
@@ -194,7 +221,7 @@ extension InboxViewController {
             .map { IndexPath(row: $0, section: 0) }
 
         messages.append(contentsOf: messageContext.messages)
-        state = .fetched(messageContext.totalMessages)
+        state = .fetched(messageContext.pagination)
 
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()
@@ -216,6 +243,7 @@ extension InboxViewController {
     }
 }
 
+// MARK: - Action handlers
 extension InboxViewController {
     @objc private func handleInfoTap() {
         #warning("ToDo")
@@ -239,26 +267,37 @@ extension InboxViewController {
     }
 }
 
+// MARK: - MsgListViewConroller
 extension InboxViewController: MsgListViewConroller {
-    func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
+    func msgListGetIndex(message: Message) -> Int? {
         return messages.firstIndex(of: message)
     }
 
-    func msgListRenderAsRemoved(message _: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRemoved(message _: Message, at index: Int) {
         guard messages[safe: index] != nil else { return }
         messages.remove(at: index)
-        if messages.isEmpty {
+
+        guard messages.isNotEmpty else {
             state = .empty
             tableNode.reloadData()
-        } else {
-            let total = state.total ?? 0
-            let newTotalCount = total - 1
-            state = .fetched(newTotalCount)
+            return
+        }
+        switch state {
+        case .fetched(.byNumber(let total)):
+            let newTotalNumber = (total ?? 0) - 1
+            if newTotalNumber == 0 {
+                state = .empty
+                tableNode.reloadData()
+            } else {
+                state = .fetched(.byNumber(total: newTotalNumber))
+                tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+            }
+        default:
             tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
         }
     }
 
-    func msgListRenderAsRead(message: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRead(message: Message, at index: Int) {
         messages[index] = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
@@ -267,6 +306,7 @@ extension InboxViewController: MsgListViewConroller {
     }
 }
 
+// MARK: - ASTableDataSource, ASTableDelegate
 extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
@@ -299,29 +339,17 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 }
 
+// MARK: - Cell Nodes
 extension InboxViewController {
-    private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock { { [weak self] in
+    private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
+        return { [weak self] in
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
             case .empty:
-                return TextCellNode(
-                    input: TextCellNode.Input(
-                        backgroundColor: .backgroundColor,
-                        title: "\(self.title ?? "") is empty",
-                        withSpinner: false,
-                        size: size
-                    )
-                )
+                return TextCellNode(input: self.decorator.emptyStateNodeInput(for: size, title: self.inboxTitle))
             case .idle:
-                return TextCellNode(
-                    input: TextCellNode.Input(
-                        backgroundColor: .backgroundColor,
-                        title: "",
-                        withSpinner: true,
-                        size: size
-                    )
-                )
+                return TextCellNode(input: self.decorator.initialNodeInput(for: size))
             case .fetched, .refresh:
                 return InboxCellNode(message: InboxCellNode.Input(self.messages[indexPath.row]))
                     .then { $0.backgroundColor = .backgroundColor }
@@ -349,14 +377,20 @@ extension InboxViewController {
             }
         }
     }
- }
+}
 
+// MARK: - Pagination
 extension InboxViewController {
     func shouldBatchFetch(for _: ASTableNode) -> Bool {
         switch state {
-        case .idle: return false
-        case .fetched: return messages.count < state.total ?? 0
-        case .error, .refresh, .fetching, .empty: return false
+        case .idle:
+            return false
+        case .fetched(.byNumber(let total)):
+            return messages.count < total ?? 0
+        case .fetched(.byNextPage(let token)):
+            return token != nil
+        case .error, .refresh, .fetching, .empty:
+            return false
         }
     }
 
@@ -369,10 +403,13 @@ extension InboxViewController {
         switch state {
         case .idle:
             break
-        case let .fetched(total):
+        case let .fetched(.byNumber(total)):
             if messages.count != total {
                 loadMore(context)
             }
+        case let .fetched(.byNextPage(token)):
+            guard token != nil else { return }
+            loadMore(context)
         case .empty:
             fetchAndRenderEmails(context)
             state = .idle
@@ -389,6 +426,28 @@ extension InboxViewController {
             fetchAndRenderEmails(context)
         case .error:
             break
+        }
+    }
+}
+
+// MARK: - Pagination helpers
+extension InboxViewController {
+    private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
+        return MailProvider.shared.currentMessagesListPagination(from: number, token: state.token)
+    }
+
+    private func messagesToLoad() -> Int {
+        switch state {
+        case .fetched(.byNextPage):
+            return Constants.numberOfMessagesToLoad
+        case .fetched(.byNumber(let totalNumberOfMessages)):
+            guard let total = totalNumberOfMessages else {
+                return Constants.numberOfMessagesToLoad
+            }
+            let from = messages.count
+            return min(Constants.numberOfMessagesToLoad, total - from)
+        default:
+            return Constants.numberOfMessagesToLoad
         }
     }
 }

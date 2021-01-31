@@ -11,14 +11,18 @@ import FlowCryptCommon
 import FlowCryptUI
 
 final class SearchViewController: TableNodeViewController {
+    private enum Constants {
+        // TODO: - Add pagination for SearchViewController
+        static let messageCount = 100
+    }
     enum State {
         enum FetchedUpdates {
             case added(Int), removed(Int)
         }
 
-        case idle, startFetching, empty, fetched([MCOIMAPMessage], FetchedUpdates?), error(String)
+        case idle, startFetching, empty, fetched([Message], FetchedUpdates?), error(String)
 
-        var messages: [MCOIMAPMessage] {
+        var messages: [Message] {
             guard case let .fetched(messages, _) = self else { return [] }
             return messages
         }
@@ -28,7 +32,7 @@ final class SearchViewController: TableNodeViewController {
         didSet { updateState() }
     }
 
-    private let messageProvider: SearchResultsProvider
+    private let searchProvider: MessageSearchProvider
     private var searchTask: DispatchWorkItem?
 
     private let searchController = UISearchController(searchResultsController: nil)
@@ -36,10 +40,10 @@ final class SearchViewController: TableNodeViewController {
     private var searchedExpression: String = ""
 
     init(
-        messageProvider: SearchResultsProvider = Imap.shared,
+        searchProvider: MessageSearchProvider = MailProvider.shared.messageSearchProvider,
         folderPath: String
     ) {
-        self.messageProvider = messageProvider
+        self.searchProvider = searchProvider
         self.folderPath = folderPath
         super.init(node: TableNode())
     }
@@ -98,20 +102,21 @@ extension SearchViewController {
 }
 
 // MARK: - MessageHandlerViewConroller
-
 extension SearchViewController: MsgListViewConroller {
-    func msgListGetIndex(message: MCOIMAPMessage) -> Int? {
-        return state.messages.firstIndex(of: message)
+    func msgListGetIndex(message: Message) -> Int? {
+        state.messages.firstIndex(of: message)
     }
 
-    func msgListRenderAsRemoved(message _: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRemoved(message _: Message, at index: Int) {
         var updatedMessages = state.messages
         guard updatedMessages[safe: index] != nil else { return }
         updatedMessages.remove(at: index)
-        state = updatedMessages.isEmpty ? .empty : .fetched(updatedMessages, .removed(index))
+        state = updatedMessages.isEmpty
+            ? .empty
+            : .fetched(updatedMessages, .removed(index))
     }
 
-    func msgListRenderAsRead(message: MCOIMAPMessage, at index: Int) {
+    func msgListRenderAsRead(message: Message, at index: Int) {
         var updatedMessages = state.messages
         updatedMessages[safe: index] = message
         state = .fetched(updatedMessages, .added(index))
@@ -264,12 +269,13 @@ extension SearchViewController: UISearchResultsUpdating {
     private func search(for searchText: String) {
         state = .startFetching
         searchedExpression = searchText
-        messageProvider.search(
-            expression: searchText,
-            in: folderPath,
-            destinaions: SearchDestinations.allCases,
-            count: 10,
-            from: 0
+
+        searchProvider.searchExpression(
+            using: MessageSearchContext(
+                expression: searchText,
+                folderPath: folderPath,
+                count: Constants.messageCount
+            )
         )
         .catch(on: .main) { [weak self] error in
             self?.handleError(with: error)
@@ -279,7 +285,7 @@ extension SearchViewController: UISearchResultsUpdating {
         }
     }
 
-    private func handleFetchedMessages(with messages: [MCOIMAPMessage]) {
+    private func handleFetchedMessages(with messages: [Message]) {
         if messages.isEmpty {
             state = .empty
         } else {

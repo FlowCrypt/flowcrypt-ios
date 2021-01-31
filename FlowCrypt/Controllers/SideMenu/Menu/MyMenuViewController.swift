@@ -20,7 +20,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     private let foldersProvider: FoldersServiceType
     private let dataService: DataServiceType
-    private let userService: UserServiceType
     private let router: GlobalRouterType
     private let decorator: MyMenuViewDecoratorType
 
@@ -33,14 +32,12 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     init(
         foldersProvider: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
         dataService: DataServiceType = DataService.shared,
-        userService: UserServiceType = UserService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
         decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
         self.foldersProvider = foldersProvider
         self.dataService = dataService
-        self.userService = userService
         router = globalRouter
         self.decorator = decorator
         self.tableNode = tableNode
@@ -61,7 +58,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
         if isFirstLaunch {
             setupUI()
-            fetchFolders()
         }
         isFirstLaunch = false
     }
@@ -219,8 +215,6 @@ extension MyMenuViewController {
 
 extension MyMenuViewController: SideMenuViewController {
     func didOpen() {
-        if folders.isEmpty {
-            fetchFolders()
-        }
+        fetchFolders()
     }
 }

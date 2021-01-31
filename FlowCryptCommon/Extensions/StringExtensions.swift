@@ -30,6 +30,14 @@ public extension String {
                 .joined()
         )
     }
+
+    func slice(from: String, to: String) -> String? {
+        (range(of: from)?.upperBound).flatMap { substringFrom in
+            (range(of: to, range: substringFrom..<endIndex)?.lowerBound).map { substringTo in
+                String(self[substringFrom..<substringTo])
+            }
+        }
+    }
 }
 
 public extension NSAttributedString {

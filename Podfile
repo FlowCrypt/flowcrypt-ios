@@ -30,10 +30,15 @@ def ui_pods
   pod 'Texture'
 end
 
+def google_pods
+  pod 'GoogleAPIClientForREST/Gmail'
+end
+
 ############################ Targets ############################
 target 'FlowCrypt' do
   shared_pods
   app_pods
+  google_pods
 end
 
 target 'FlowCryptTests' do
@@ -51,4 +56,14 @@ end
 
 target 'FlowCryptUITests' do
   pod 'GoogleSignIn'
+end
+
+
+## Set IPHONEOS_DEPLOYMENT_TARGET for all pods
+post_install do |pi|
+    pi.pods_project.targets.each do |t|
+      t.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      end
+    end
 end

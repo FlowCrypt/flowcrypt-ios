@@ -8,7 +8,7 @@ import Promises
 
 final class MessageViewController: TableNodeViewController {
     struct Input {
-        var objMessage = MCOIMAPMessage()
+        var objMessage: Message
         var bodyMessage: Data?
         var path = ""
     }
@@ -43,31 +43,37 @@ final class MessageViewController: TableNodeViewController {
         }
     }
 
-    typealias MsgViewControllerCompletion = (MessageAction, MCOIMAPMessage) -> Void
+    typealias MsgViewControllerCompletion = (MessageAction, Message) -> Void
     private let onCompletion: MsgViewControllerCompletion?
+
     private var input: MessageViewController.Input?
-    private let imap: Imap
     private let decorator: MessageViewDecoratorType
     private var dataService: DataServiceType & KeyDataServiceType
     private let core: Core
-
+    private let messageProvider: MessageProvider
+    private let messageOperationsProvider: MessageOperationsProvider
     private var message: NSAttributedString
+    private let trashFolderProvider: TrashFolderProviderType
 
     init(
-        imap: Imap = Imap.shared,
+        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
+        messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         core: Core = Core.shared,
+        trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
-        self.imap = imap
+        self.messageProvider = messageProvider
+        self.messageOperationsProvider = messageOperationsProvider
         self.input = input
         self.decorator = decorator
         self.dataService = storage
         self.core = core
-        onCompletion = completion
-        message = decorator.attributed(
+        self.trashFolderProvider = trashFolderProvider
+        self.onCompletion = completion
+        self.message = decorator.attributed(
             text: "loading_title".localized + "...",
             color: .lightGray
         )
@@ -95,7 +101,7 @@ final class MessageViewController: TableNodeViewController {
     }
 
     private func setupNavigationBar() {
-        imap.trashFolderPath()
+        trashFolderProvider.getTrashFolderPath()
             .then(on: .main) { [weak self] path in
                 self?.setupNavigationBarItems(with: path)
             }
@@ -146,7 +152,8 @@ extension MessageViewController {
     private func fetchMessage() -> Promise<NSAttributedString> {
         Promise { [weak self] resolve, reject in
             guard let self = self, let input = self.input else { return }
-            let rawMimeData = try await(self.imap.fetchMsg(message: input.objMessage, folder: input.path))
+
+            let rawMimeData: Data = try await(self.messageProvider.fetchMsg(message: input.objMessage, folder: input.path))
             self.input?.bodyMessage = rawMimeData
 
             guard let keys = self.dataService.keys else {
@@ -194,9 +201,13 @@ extension MessageViewController {
 
     private func asyncMarkAsReadIfNotAlreadyMarked() {
         guard let input = input else { return }
-        guard !input.objMessage.flags.isSuperset(of: MCOMessageFlag.seen) else { return } // only proceed if not already marked as read
-        input.objMessage.flags.formUnion(MCOMessageFlag.seen)
-        imap.markAsRead(message: input.objMessage, folder: input.path)
+        messageOperationsProvider.markAsRead(message: input.objMessage, folder: input.path)
+            .then(on: .main) { [weak self] in
+                guard let message = self?.input?.objMessage else {
+                    return
+                }
+                self?.input?.objMessage = message.markAsRead(true)
+            }
             .catch(on: .main) { [weak self] error in
                 self?.showToast("Could not mark message as read: \(error)")
             }
@@ -232,7 +243,7 @@ extension MessageViewController {
     @objc private func handleTrashTap() {
         showSpinner()
 
-        imap.trashFolderPath()
+        trashFolderProvider.getTrashFolderPath()
             .then { [weak self] trashPath in
                 guard let strongSelf = self, let input = strongSelf.input, let path = trashPath else {
                     self?.permanentlyDelete()
@@ -250,13 +261,11 @@ extension MessageViewController {
 
     private func permanentlyDelete() {
         guard let input = input else { return hideSpinner() }
+
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
             guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-
-            input.objMessage.flags = MCOMessageFlag(rawValue: MCOMessageFlag.deleted.rawValue)
-            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
-            try await(self.imap.expungeMsgs(folder: input.path))
+            try await(self.messageOperationsProvider.delete(message: input.objMessage, form: input.path))
             return true
         }
         .then(on: .main) { [weak self] didPerformOp in
@@ -267,21 +276,24 @@ extension MessageViewController {
         }
     }
 
+    private func awaitUserConfirmation(title: String) -> Promise<Bool> {
+        return Promise<Bool>(on: .main) { [weak self] resolve, _ in
+            guard let self = self else { throw AppErr.nilSelf }
+            let alert = UIAlertController(title: "Are you sure?", message: title, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in resolve(false) }))
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in resolve(true) }))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
     private func moveToTrash(with trashPath: String) {
         guard let input = input else { return hideSpinner() }
 
-        Promise<Void> { [weak self] in
-            guard let self = self else { return }
-            //Move message to trash
-            try await(self.imap.moveMsg(msg: input.objMessage, folder: input.path, destFolder: trashPath))
-
-            //Mark as deleted in the origin folder
-            input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
-            try await(self.imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path))
-
-            //Expunge origin folder
-            try await(self.imap.expungeMsgs(folder: input.path))
-        }
+        messageOperationsProvider.moveMessageToTrash(
+            message: input.objMessage,
+            trashPath: trashPath,
+            from: input.path
+        )
         .then(on: .main) { [weak self] in
             self?.handleOpSuccess(operation: .moveToTrash)
         }
@@ -293,8 +305,7 @@ extension MessageViewController {
     @objc private func handleArchiveTap() {
         guard let input = input else { return }
         showSpinner()
-        input.objMessage.flags = MCOMessageFlag(rawValue: input.objMessage.flags.rawValue | MCOMessageFlag.deleted.rawValue)
-        imap.pushUpdatedMsgFlags(msg: input.objMessage, folder: input.path)
+        messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
             .then(on: .main) { [weak self] _ in
                 self?.handleOpSuccess(operation: .archive)
             }
@@ -305,11 +316,12 @@ extension MessageViewController {
 
     private func handleReplyTap() {
         guard let input = input else { return }
+
         let replyInfo = ComposeViewController.Input.ReplyInfo(
-            recipient: input.objMessage.header.from,
-            subject: input.objMessage.header.subject,
+            recipient: input.objMessage.sender,
+            subject: input.objMessage.subject,
             mime: input.bodyMessage,
-            sentDate: input.objMessage.header.date,
+            sentDate: input.objMessage.date,
             message: message.string
         )
 
@@ -342,17 +354,14 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        // TODO: ANTON - input?.objMessage.header.sender.mailbox ?? "(unknown sender)"
-        // crash because sender is nil
-
         let senderTitle = decorator.attributed(
-            title: input?.objMessage.header.from.mailbox ?? "(unknown sender)"
+            title: input?.objMessage.sender ?? "(unknown sender)"
         )
         let subject = decorator.attributed(
-            subject: input?.objMessage.header.subject ?? "(no subject)"
+            subject: input?.objMessage.subject ?? "(no subject)"
         )
         let time = decorator.attributed(
-            date: input?.objMessage.header.date
+            date: input?.objMessage.date
         )
 
         return { [weak self] in

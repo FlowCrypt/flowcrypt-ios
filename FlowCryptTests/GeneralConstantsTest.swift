@@ -11,8 +11,6 @@ import XCTest
 class GeneralConstantsTest: XCTestCase {
     func test_general_global_constants() {
         XCTAssert(GeneralConstants.Global.generalError == -1)
-        XCTAssert(GeneralConstants.Global.gmailRootPath == "[Gmail]")
-        XCTAssert(GeneralConstants.Global.gmailAllMailPath == "[Gmail]/All Mail")
     }
 
     func test_general_email_constants() {

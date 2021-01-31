@@ -9,15 +9,15 @@
 import UIKit
 
 protocol MsgListViewConroller {
-    func msgListOpenMsgElseShowToast(with message: MCOIMAPMessage, path: String)
-    func msgListGetIndex(message: MCOIMAPMessage) -> Array<MCOIMAPMessage>.Index?
-    func msgListRenderAsRead(message: MCOIMAPMessage, at index: Int)
-    func msgListRenderAsRemoved(message _: MCOIMAPMessage, at index: Int)
+    func msgListOpenMsgElseShowToast(with message: Message, path: String)
+    func msgListGetIndex(message: Message) -> Array<Message>.Index?
+    func msgListRenderAsRead(message: Message, at index: Int)
+    func msgListRenderAsRemoved(message _: Message, at index: Int)
 }
 
 extension MsgListViewConroller where Self: UIViewController {
-    func msgListOpenMsgElseShowToast(with message: MCOIMAPMessage, path: String) {
-        if Int(message.size) > GeneralConstants.Global.messageSizeLimit {
+    func msgListOpenMsgElseShowToast(with message: Message, path: String) {
+        if message.size ?? 0 > GeneralConstants.Global.messageSizeLimit {
             showToast("Messages larger than 5MB are not supported yet")
         } else {
             let messageInput = MessageViewController.Input(
@@ -32,11 +32,13 @@ extension MsgListViewConroller where Self: UIViewController {
         }
     }
 
-    private func msgListHandleOperation(message: MCOIMAPMessage, operation: MessageViewController.MessageAction) {
+    private func msgListHandleOperation(message: Message, operation: MessageViewController.MessageAction) {
         guard let index = msgListGetIndex(message: message) else { return }
         switch operation {
-        case .markAsRead: msgListRenderAsRead(message: message, at: index)
-        case .moveToTrash, .archive, .permanentlyDelete: msgListRenderAsRemoved(message: message, at: index)
+        case .markAsRead:
+            msgListRenderAsRead(message: message, at: index)
+        case .moveToTrash, .archive, .permanentlyDelete:
+            msgListRenderAsRemoved(message: message, at: index)
         }
     }
 }

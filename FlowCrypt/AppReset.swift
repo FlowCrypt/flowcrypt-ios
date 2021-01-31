@@ -26,7 +26,7 @@ enum AppReset: String {
     }
 
     static func resetUserDefaults() {
-        guard let id = Bundle.main.bundleIdentifier else { return }
-        UserDefaults.standard.removePersistentDomain(forName: id)
+        guard let identifier = Bundle.main.bundleIdentifier else { return }
+        UserDefaults.standard.removePersistentDomain(forName: identifier)
     }
 }

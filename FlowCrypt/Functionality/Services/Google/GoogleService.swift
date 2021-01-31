@@ -26,6 +26,7 @@ final class GoogleService {
 
     enum Scope: CaseIterable {
         case userInfo, mail, contacts
+
         var value: String {
             switch self {
             case .userInfo: return "https://www.googleapis.com/auth/userinfo.profile"

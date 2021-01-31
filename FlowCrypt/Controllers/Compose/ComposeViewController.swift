@@ -44,16 +44,17 @@ final class ComposeViewController: TableNodeViewController {
         case subject, subjectDivider, text
     }
 
-    private let imap: Imap
+    private let messageSender: MessageSender
     private let notificationCenter: NotificationCenter
     private let dataService: DataServiceType & KeyDataServiceType
     private let decorator: ComposeViewDecoratorType
     private let core: Core
-    private let googleService: GoogleServiceType
-    private let searchThrottler = Throttler(seconds: 1)
-    private let userDefaults: UserDefaults
-    private let globalRouter: GlobalRouterType
     private let contactsService: ContactsServiceType
+
+    private let globalRouter: GlobalRouterType
+    private let searchThrottler = Throttler(seconds: 1)
+    private let googleService: GoogleServiceType
+    private let userDefaults: UserDefaults
 
     private var input: Input
     private var contextToSend = Context()
@@ -61,7 +62,7 @@ final class ComposeViewController: TableNodeViewController {
     private var state: State = .main
 
     init(
-        imap: Imap = Imap.shared,
+        messageSender: MessageSender = MailProvider.shared.messageSender,
         notificationCenter: NotificationCenter = .default,
         dataService: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
@@ -72,7 +73,7 @@ final class ComposeViewController: TableNodeViewController {
         globalRouter: GlobalRouterType = GlobalRouter(),
         contactsService: ContactsServiceType = ContactsService()
     ) {
-        self.imap = imap
+        self.messageSender = messageSender
         self.notificationCenter = notificationCenter
         self.dataService = dataService
         self.input = input
@@ -287,7 +288,7 @@ extension ComposeViewController {
                 to: recipients.map { $0.email }
             )
 
-            try await(self.imap.sendMail(mime: encrypted.mimeEncoded))
+            try await(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
 
             return true
         }
