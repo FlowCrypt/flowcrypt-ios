@@ -58,6 +58,10 @@ final class MailProvider {
         resolveService(of: BackupProvider.self)
     }
 
+    var sessionProvider: UsersMailSessionProvider {
+        resolveService(of: UsersMailSessionProvider.self)
+    }
+
     private init(
         currentAuthType: @autoclosure @escaping () -> (AuthType?),
         services: [MailServiceProvider]
@@ -78,10 +82,7 @@ private struct MailServiceProviderFactory {
     static func services() -> [MailServiceProvider] {
         [
             Imap.shared,
-            GmailService(
-                signInService: GIDSignIn.sharedInstance(),
-                gmailService: GTLRGmailService()
-            )
+            GmailService()
         ]
     }
 }

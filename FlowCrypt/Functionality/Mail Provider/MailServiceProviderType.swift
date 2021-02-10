@@ -31,7 +31,8 @@ protocol MailServiceProvider: MessageSender,
     MessageProvider,
     MessageOperationsProvider,
     MessageSearchProvider,
-    BackupProvider {
+    BackupProvider,
+    UsersMailSessionProvider {
 
     var mailServiceProviderType: MailServiceProviderType { get }
 }

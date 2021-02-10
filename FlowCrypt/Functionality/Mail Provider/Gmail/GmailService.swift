@@ -13,14 +13,17 @@ import GoogleAPIClientForREST
 struct GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
 
-    let signInService: GIDSignIn
-    let gmailService: GTLRService
-
-    init(signInService: GIDSignIn, gmailService: GTLRService) {
-        self.signInService = signInService
-        self.gmailService = gmailService
-        self.gmailService.authorizer = signInService.currentUser.authentication.fetcherAuthorizer()
+    var signInService: GIDSignIn {
+        GIDSignIn.sharedInstance()
     }
+
+    var gmailService: GTLRService {
+        let service = GTLRGmailService()
+        service.authorizer = signInService.currentUser.authentication.fetcherAuthorizer()
+        return service
+    }
+
+    let userService: UserService = .shared
 }
 
 // Gmail string extension identifier
