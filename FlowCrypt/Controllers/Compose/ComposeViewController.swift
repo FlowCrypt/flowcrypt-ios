@@ -44,7 +44,7 @@ final class ComposeViewController: TableNodeViewController {
         case subject, subjectDivider, text
     }
 
-    private let messageSender: MessageSender
+    private let messageSender: MessageGateway
     private let notificationCenter: NotificationCenter
     private let dataService: DataServiceType & KeyDataServiceType
     private let decorator: ComposeViewDecoratorType
@@ -62,7 +62,7 @@ final class ComposeViewController: TableNodeViewController {
     private var state: State = .main
 
     init(
-        messageSender: MessageSender = MailProvider.shared.messageSender,
+        messageSender: MessageGateway = MailProvider.shared.messageSender,
         notificationCenter: NotificationCenter = .default,
         dataService: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),

@@ -30,7 +30,7 @@ struct BackupService {
     let backupProvider: BackupProvider
     let core: Core
     let dataService: DataService
-    let messageSender: MessageSender
+    let messageSender: MessageGateway
 
     private var userID: UserId? {
         guard let email = dataService.email, email.isNotEmpty,

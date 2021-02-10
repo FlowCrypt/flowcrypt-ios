@@ -73,7 +73,7 @@ final class DataService: DataServiceType {
 
     var token: String? {
         switch currentAuthType {
-        case let .gmail(value): return value
+        case let .oAuthGmail(value): return value
         default: return nil
         }
     }

@@ -52,22 +52,6 @@ extension Imap {
         }
     }
 
-    /// renew user session on error
-    @discardableResult
-    func renewSession() -> Promise<Void> {
-        guard let currentAuthType = dataService.currentAuthType else { return Promise(()) }
-
-        switch currentAuthType {
-        case .gmail:
-            return userService.renewSession()
-                .then { [weak self] _ in
-                    self?.setupSession()
-                }
-        case .password:
-            return Promise(self.setupSession())
-        }
-    }
-
     func connectSmtp(session: SMTPSession) -> Promise<Void> {
         Promise { resolve, reject in
             MCOSMTPSession(session: session)
@@ -97,3 +81,4 @@ extension Imap {
         smtpSess = nil // smtp session has no disconnect method
     }
 }
+
