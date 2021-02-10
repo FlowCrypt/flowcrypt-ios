@@ -25,7 +25,7 @@ enum MailServiceProviderType {
 // MessageSearchProvider - search messages in folder
 // BackupProvider - Search for backups
 
-protocol MailServiceProvider: MessageSender,
+protocol MailServiceProvider: MessageGateway,
     RemoteFoldersProviderType,
     MessagesListProvider,
     MessageProvider,

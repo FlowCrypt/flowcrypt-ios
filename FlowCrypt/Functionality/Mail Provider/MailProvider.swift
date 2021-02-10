@@ -30,8 +30,8 @@ final class MailProvider {
     }
     private let services: [MailServiceProvider]
 
-    var messageSender: MessageSender {
-        resolveService(of: MessageSender.self)
+    var messageSender: MessageGateway {
+        resolveService(of: MessageGateway.self)
     }
 
     var remoteFoldersProvider: RemoteFoldersProviderType {
