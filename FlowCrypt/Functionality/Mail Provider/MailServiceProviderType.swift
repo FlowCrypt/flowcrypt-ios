@@ -40,7 +40,7 @@ protocol MailServiceProvider: MessageSender,
 extension AuthType {
     var mailServiceProviderType: MailServiceProviderType {
         switch self {
-        case .gmail: return .gmail
+        case .oAuthGmail: return .gmail
         case .password: return .imap
         }
     }

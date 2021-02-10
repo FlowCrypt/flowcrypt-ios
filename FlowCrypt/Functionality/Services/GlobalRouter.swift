@@ -35,7 +35,7 @@ struct GlobalRouter: GlobalRouterType {
 
     func wipeOutAndReset() {
         switch dataService.currentAuthType {
-        case .gmail:
+        case .oAuthGmail:
             logOutGmailSession()
         case .password:
             logOutUserSession()

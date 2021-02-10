@@ -10,7 +10,7 @@ import Foundation
 
 enum AuthType {
     /// gmail authentication with token
-    case gmail(String)
+    case oAuthGmail(String)
     /// other email provider with password
     case password(String)
 }

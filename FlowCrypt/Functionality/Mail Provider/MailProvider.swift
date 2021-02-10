@@ -20,8 +20,8 @@ final class MailProvider {
     private var currentAuthType: () -> (AuthType?)
     private var authType: AuthType {
         switch currentAuthType() {
-        case let .gmail(token):
-            return .gmail(token)
+        case let .oAuthGmail(token):
+            return .oAuthGmail(token)
         case let .password(password):
             return .password(password)
         default:
@@ -92,7 +92,7 @@ extension MailProvider {
         switch authType {
         case .password:
             return MessagesListPagination.byNumber(total: number ?? 0)
-        case .gmail:
+        case .oAuthGmail:
             return .byNextPage(token: token)
         }
     }
