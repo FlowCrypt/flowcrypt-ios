@@ -47,6 +47,7 @@ extension UIViewController {
                 return
             }
             view.hideAllToasts()
+            view.endEditing(true)
 
             view.makeToast(
                 message,
