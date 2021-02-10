@@ -5,7 +5,7 @@
 import Foundation
 import Promises
 
-extension Imap: MessageSender {
+extension Imap: MessageGateway {
     func sendMail(mime: Data) -> Promise<Void> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }

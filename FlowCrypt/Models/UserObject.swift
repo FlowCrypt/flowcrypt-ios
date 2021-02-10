@@ -59,7 +59,7 @@ extension UserObject {
             return .password(password)
         }
         if let token = smtp?.oAuth2Token {
-            return .gmail(token)
+            return .oAuthGmail(token)
         }
         return nil
     }

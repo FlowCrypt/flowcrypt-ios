@@ -20,8 +20,8 @@ final class MailProvider {
     private var currentAuthType: () -> (AuthType?)
     private var authType: AuthType {
         switch currentAuthType() {
-        case let .gmail(token):
-            return .gmail(token)
+        case let .oAuthGmail(token):
+            return .oAuthGmail(token)
         case let .password(password):
             return .password(password)
         default:
@@ -30,8 +30,8 @@ final class MailProvider {
     }
     private let services: [MailServiceProvider]
 
-    var messageSender: MessageSender {
-        resolveService(of: MessageSender.self)
+    var messageSender: MessageGateway {
+        resolveService(of: MessageGateway.self)
     }
 
     var remoteFoldersProvider: RemoteFoldersProviderType {
@@ -58,6 +58,10 @@ final class MailProvider {
         resolveService(of: BackupProvider.self)
     }
 
+    var sessionProvider: UsersMailSessionProvider {
+        resolveService(of: UsersMailSessionProvider.self)
+    }
+
     private init(
         currentAuthType: @autoclosure @escaping () -> (AuthType?),
         services: [MailServiceProvider]
@@ -78,10 +82,7 @@ private struct MailServiceProviderFactory {
     static func services() -> [MailServiceProvider] {
         [
             Imap.shared,
-            GmailService(
-                signInService: GIDSignIn.sharedInstance(),
-                gmailService: GTLRGmailService()
-            )
+            GmailService()
         ]
     }
 }
@@ -92,7 +93,7 @@ extension MailProvider {
         switch authType {
         case .password:
             return MessagesListPagination.byNumber(total: number ?? 0)
-        case .gmail:
+        case .oAuthGmail:
             return .byNextPage(token: token)
         }
     }

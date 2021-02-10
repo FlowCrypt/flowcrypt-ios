@@ -11,7 +11,7 @@ import Promises
 import GoogleAPIClientForREST
 import GTMSessionFetcher
 
-extension GmailService: MessageSender {
+extension GmailService: MessageGateway {
     func sendMail(mime: Data) -> Promise<Void> {
         Promise { (resolve, reject) in
             guard let raw = GTLREncodeBase64(mime) else {

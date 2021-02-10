@@ -56,7 +56,10 @@ struct AppStartup {
     }
 
     private func renewSessionIfValid() -> Promise<Void> {
-        Imap.shared.renewSession()
+        guard DataService.shared.currentAuthType != nil else {
+            return Promise(())
+        }
+        return MailProvider.shared.sessionProvider.renewSession()
     }
 
     private func chooseView(window: UIWindow) {

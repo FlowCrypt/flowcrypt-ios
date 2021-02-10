@@ -50,7 +50,7 @@ extension MCOIMAPSession {
         }
 
         switch session.authType {
-        case let .gmail(token):
+        case let .oAuthGmail(token):
             authType = .xoAuth2
             oAuth2Token = token
         case let .password(userPassword):

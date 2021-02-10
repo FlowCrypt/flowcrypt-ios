@@ -18,6 +18,7 @@ protocol SessionCredentialsProvider {
 enum SessionCredentialsError: Error {
     case notFound(Int)
 }
+
 struct SessionCredentialsService: SessionCredentialsProvider {
 
     let manager = MCOMailProvidersManager.shared()

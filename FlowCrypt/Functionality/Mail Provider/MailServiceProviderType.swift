@@ -25,13 +25,14 @@ enum MailServiceProviderType {
 // MessageSearchProvider - search messages in folder
 // BackupProvider - Search for backups
 
-protocol MailServiceProvider: MessageSender,
+protocol MailServiceProvider: MessageGateway,
     RemoteFoldersProviderType,
     MessagesListProvider,
     MessageProvider,
     MessageOperationsProvider,
     MessageSearchProvider,
-    BackupProvider {
+    BackupProvider,
+    UsersMailSessionProvider {
 
     var mailServiceProviderType: MailServiceProviderType { get }
 }
@@ -40,7 +41,7 @@ protocol MailServiceProvider: MessageSender,
 extension AuthType {
     var mailServiceProviderType: MailServiceProviderType {
         switch self {
-        case .gmail: return .gmail
+        case .oAuthGmail: return .gmail
         case .password: return .imap
         }
     }
