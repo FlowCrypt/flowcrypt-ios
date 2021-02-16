@@ -5,7 +5,6 @@
 import AsyncDisplayKit
 import FlowCryptUI
 import Promises
-import UIKit
 
 final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
@@ -14,8 +13,27 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         static let cellHeight: CGFloat = 60
     }
 
-    enum Sections: Int, CaseIterable {
-        case header = 0, folders, service
+    private enum Sections: Int, CaseIterable {
+        case header = 0, main, additional
+    }
+
+    private enum State {
+        case folders
+        case accountAdding
+
+        mutating func next() {
+            switch self {
+            case .accountAdding: self = .folders
+            case .folders: self = .accountAdding
+            }
+        }
+
+        var arrowImage: UIImage? {
+            switch self {
+            case .folders: return #imageLiteral(resourceName: "arrow_down").tinted(.white)
+            case .accountAdding: return #imageLiteral(resourceName: "arrow_up").tinted(.white)
+            }
+        }
     }
 
     private let foldersProvider: FoldersServiceType
@@ -28,6 +46,17 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     }
 
     private let tableNode: ASTableNode
+
+    private var state: State = .folders {
+        didSet {
+            tableNode.reloadData()
+        }
+    }
+
+    // Due to Bug in ENSideMenu
+    // we need to use this property to setup UI in viewDidAppear
+    // instead of viewDidload (ENSideMenu call self.view inside initializer)
+    private var isFirstLaunch = true
 
     init(
         foldersProvider: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
@@ -47,11 +76,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // Due to Bug in ENSideMenu
-    // we need to use this property to setup UI in viewDidAppear
-    // instead of viewDidload (ENSideMenu call self.view inside initializer)
-    private var isFirstLaunch = true
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -73,22 +97,90 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         )
     }
 
-    private func setupUI() {
-        node.addSubnode(tableNode)
-        tableNode.setup {
-            $0.dataSource = self
-            $0.delegate = self
-            $0.view.tableHeaderView = UIView().then {
-                $0.backgroundColor = .main
-                $0.frame.size.height = safeAreaWindowInsets.top
-            }
-            $0.view.alwaysBounceVertical = false
-            $0.view.alwaysBounceHorizontal = false
-            $0.backgroundColor = decorator.backgroundColor
-            $0.reloadData()
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        guard #available(iOS 13.0, *) else { return }
+        tableNode.reloadData()
+    }
+}
+
+// MARK: - ASTableDataSource, ASTableDelegate
+extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
+    func numberOfSections(in tableNode: ASTableNode) -> Int {
+        Sections.allCases.count
+    }
+
+    func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        guard let sections = Sections(rawValue: section) else { return 0 }
+
+        switch (sections, state) {
+        case (.header, _): return 1
+        case (.main, .accountAdding): return 0
+        case (.main, .folders): return folders.count
+        case (.additional, .accountAdding): return 1
+        case (.additional, .folders): return serviceItems.count
         }
     }
 
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self, let section = Sections(rawValue: indexPath.section) else {
+                return ASCellNode()
+            }
+            return self.node(for: section, row: indexPath.row)
+            //
+            //
+            //            switch (sections, self.state) {
+            //            case (.header, _):
+            //                let headerInput = self.decorator.header(
+            //                    for: self.dataService.currentUser?.name,
+            //                    email: self.dataService.email
+            //                )
+            //                return HeaderNode(input: headerInput) { [weak self] in
+            //                    self?.handleTapOnExpandArrow()
+            //                }
+            //            case (.main, .accountAdding):
+            //                return ASCellNode()
+            //            case (.main, .folders):
+            //                let folder = self.folders[safe: indexPath.row]
+            //                    .map(InfoCellNode.Input.init)
+            //                return InfoCellNode(input: folder)
+            //            case (.additional, .accountAdding):
+            //                return ASCellNode()
+            //            case (.additional, .folders):
+            //                let item = self.serviceItems[safe: indexPath.row]
+            //                    .map(InfoCellNode.Input.init)
+            //                return InfoCellNode(input:item)
+            //            }
+
+        }
+    }
+
+    // TODO: - ANTON - handle tap
+    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        //        switch indexPath.section {
+        //        case Sections.folders.rawValue:
+        //            guard let item = folders[safe: indexPath.row] else { return }
+        //            handleTapOn(folder: item)
+        //        case Sections.service.rawValue:
+        //            guard let item = serviceItems[safe: indexPath.row] else { return }
+        //            handleTapOn(folder: item)
+        //        default:
+        //            break
+        //        }
+    }
+
+    func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
+        dividerView()
+    }
+
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return section == Sections.main.rawValue ? 1 : 0
+    }
+}
+
+// MARK: - Folders functionality
+extension MyMenuViewController {
     private func fetchFolders() {
         showSpinner()
         foldersProvider.fetchFolders()
@@ -115,6 +207,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         tableNode.reloadData()
     }
 
+    // TODO: - ANTON - Handle error
     private func handleError(with error: Error) {
         switch AppErr(error) {
         case .connection:
@@ -123,82 +216,63 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
             showAlert(error: error, message: "error_fetch_folders".localized)
         }
     }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
-        tableNode.reloadData()
-    }
 }
 
-extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
-    func numberOfSections(in tableNode: ASTableNode) -> Int {
-        Sections.allCases.count
-    }
-
-    func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case Sections.header.rawValue: return 1
-        case Sections.folders.rawValue: return folders.count
-        case Sections.service.rawValue: return serviceItems.count
-        default: return 0
-        }
-    }
-
-    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
-            guard let self = self else { return ASCellNode() }
-            switch indexPath.section {
-            case Sections.header.rawValue:
-                return HeaderNode(
-                    input: self.decorator.header(
-                        for: self.dataService.currentUser?.name,
-                        email: self.dataService.email
-                    )
-                )
-            case Sections.folders.rawValue:
-                return InfoCellNode(
-                    input: self.folders[safe: indexPath.row]
-                        .map(InfoCellNode.Input.init)
-                )
-            case Sections.service.rawValue:
-                return InfoCellNode(
-                    input: self.serviceItems[safe: indexPath.row]
-                        .map(InfoCellNode.Input.init)
-                )
-            default:
-                return ASCellNode()
+// MARK: - UI
+extension MyMenuViewController {
+    private func setupUI() {
+        node.addSubnode(tableNode)
+        tableNode.setup {
+            $0.dataSource = self
+            $0.delegate = self
+            $0.view.tableHeaderView = UIView().then {
+                $0.backgroundColor = .main
+                $0.frame.size.height = safeAreaWindowInsets.top
             }
+            $0.view.alwaysBounceVertical = false
+            $0.view.alwaysBounceHorizontal = false
+            $0.backgroundColor = decorator.backgroundColor
+            $0.reloadData()
         }
     }
 
-    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.section {
-        case Sections.folders.rawValue:
-            guard let item = folders[safe: indexPath.row] else { return }
-            handleTapOn(folder: item)
-        case Sections.service.rawValue:
-            guard let item = serviceItems[safe: indexPath.row] else { return }
-            handleTapOn(folder: item)
-        default:
-            break
+    private func node(for section: Sections, row: Int) -> ASCellNode {
+        switch (section, state) {
+        case (.header, _):
+            let headerInput = decorator.header(
+                for: dataService.currentUser?.name,
+                email: dataService.email,
+                image: state.arrowImage
+            )
+            return HeaderNode(input: headerInput) { [weak self] in
+                self?.handleTapOnExpandArrow()
+            }
+        case (.main, .accountAdding):
+            return ASCellNode()
+        case (.main, .folders):
+            let folder = folders[safe: row]
+                .map(InfoCellNode.Input.init)
+            return InfoCellNode(input: folder)
+        case (.additional, .accountAdding):
+            return InfoCellNode(input: .addAccount)
+        case (.additional, .folders):
+            let item = serviceItems[safe: row]
+                .map(InfoCellNode.Input.init)
+            return InfoCellNode(input: item)
         }
     }
 
-    func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
-        return UIView().then {
+    private func dividerView() -> UIView {
+        UIView().then {
             let divider = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 16, height: 1))
             $0.addSubview(divider)
             $0.backgroundColor = .clear
             divider.backgroundColor = decorator.dividerColor
         }
     }
-
-    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return section == Sections.folders.rawValue ? 1 : 0
-    }
 }
 
+// MARK: - Actions
 extension MyMenuViewController {
     private func handleTapOn(folder: FolderViewModel) {
         switch folder.itemType {
@@ -211,8 +285,38 @@ extension MyMenuViewController {
             self.router.wipeOutAndReset()
         }
     }
+
+    private func handleTapOnExpandArrow() {
+        animateImage { [weak self] in
+            guard let self = self else {
+                return
+            }
+            switch self.state {
+            case .accountAdding: self.state = .folders
+            case .folders: self.state = .accountAdding
+            }
+        }
+    }
+
+    private func animateImage(_ completion: (() -> Void)?) {
+        guard let header = tableNode.visibleNodes.compactMap({ $0 as? HeaderNode }).first else {
+            return
+        }
+
+        UIView.animate(
+            withDuration: 0.3,
+            animations: {
+                header.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
+            },
+            completion: { _ in
+                completion?()
+            }
+        )
+
+    }
 }
 
+// MARK: - SideMenuViewController
 extension MyMenuViewController: SideMenuViewController {
     func didOpen() {
         fetchFolders()

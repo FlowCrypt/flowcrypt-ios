@@ -58,7 +58,7 @@
 
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";
-
+"folder_add_account" = "Add account";
 
 // Sign in
 "sign_in_privacy" = "Privacy";

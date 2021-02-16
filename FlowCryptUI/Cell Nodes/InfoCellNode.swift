@@ -50,15 +50,13 @@ public final class InfoCellNode: CellNode {
             ? CGSize(width: 24, height: 24)
             : .zero
 
-        let stack = ASStackLayoutSpec.horizontal()
-        stack.spacing = imageNode.image != nil
-            ? 6.0
-            : 0.0
-        stack.children = [imageNode, textNode]
-
         return ASInsetLayoutSpec(
             insets: input?.insets ?? .zero,
-            child: stack
+            child: ASStackLayoutSpec.horizontal().then {
+                $0.spacing = imageNode.image != nil ? 6.0 : 0.0
+                $0.children = [imageNode, textNode]
+                $0.alignItems = .center
+            }
         )
     }
 }

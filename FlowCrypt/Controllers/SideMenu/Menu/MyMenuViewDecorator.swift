@@ -12,14 +12,14 @@ import UIKit
 protocol MyMenuViewDecoratorType {
     var dividerColor: UIColor { get }
     var backgroundColor: UIColor { get }
-    func header(for user: String?, email: String?) -> HeaderNode.Input
+    func header(for user: String?, email: String?, image: UIImage?) -> HeaderNode.Input
 }
 
 struct MyMenuViewDecorator: MyMenuViewDecoratorType {
     var dividerColor: UIColor { .dividerColor }
     var backgroundColor: UIColor { .backgroundColor }
 
-    func header(for user: String?, email: String?) -> HeaderNode.Input {
+    func header(for user: String?, email: String?, image: UIImage?) -> HeaderNode.Input {
         let name = user?
             .split(separator: " ")
             .first
@@ -32,7 +32,8 @@ struct MyMenuViewDecorator: MyMenuViewDecoratorType {
 
         return HeaderNode.Input(
             title: name.attributed(.bold(20), color: .white, alignment: .left),
-            subtitle: email.attributed(.medium(16), color: .white, alignment: .left)
+            subtitle: email.attributed(.medium(16), color: .white, alignment: .left),
+            image: image
         )
     }
 }
@@ -57,12 +58,18 @@ extension FolderViewModel {
 }
 
 extension InfoCellNode.Input {
+    static let addAccount: InfoCellNode.Input = .init(
+        attributedText: "folder_add_account".localized
+            .attributed(.regular(17), color: .mainTextColor),
+        image: #imageLiteral(resourceName: "plus").tinted(.mainTextColor),
+        insets: .side(16),
+        backgroundColor: .backgroundColor
+    )
+
     init(_ viewModel: FolderViewModel) {
         self.init(
-            attributedText: viewModel.name.attributed(
-                .regular(17),
-                color: .mainTextColor
-            ),
+            attributedText: viewModel.name
+                .attributed(.regular(17), color: .mainTextColor),
             image: viewModel.image
         )
     }
