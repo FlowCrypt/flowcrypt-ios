@@ -11,7 +11,7 @@ import Promises
 import RealmSwift
 
 protocol DataServiceType {
-    var storage: Realm { get }
+//    var storage: Realm { get }
 
     // data
     var email: String? { get }
@@ -80,6 +80,7 @@ final class DataService: DataServiceType {
 
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
     private(set) var localStorage: LocalStorageType & LogOutHandler
+    private let migrationService: DBMigration
 
     private init(
         encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
@@ -87,6 +88,7 @@ final class DataService: DataServiceType {
     ) {
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
+        self.migrationService = DBMigrationService(localStorage: localStorage, encryptedStorage: encryptedStorage)
     }
 }
 
@@ -124,73 +126,10 @@ extension DataService: DBMigration {
     func performMigrationIfNeeded() -> Promise<Void> {
         return Promise<Void> { [weak self] in
             guard let self = self else { throw AppErr.nilSelf }
+            // migrate to encrypted storage
             try await(self.encryptedStorage.performMigrationIfNeeded())
-            self.performTokenEncryptedMigration()
-            self.performUserSessionMigration()
-            self.performGmailApiMigration()
-        }
-    }
-
-    /// Perform migration for users which has token saved in non encrypted storage
-    private func performTokenEncryptedMigration() {
-        let legacyTokenIndex = "keyCurrentToken"
-        guard previouslyStoredUser() != nil else {
-            debugPrint("Local migration not needed. User was not stored in local storage")
-            return
-        }
-        guard let token = localStorage.storage.string(forKey: legacyTokenIndex) else {
-            debugPrint("Local migration not needed. Token was not saved in local storage")
-            return
-        }
-
-        performSessionMigration(with: token)
-        localStorage.storage.removeObject(forKey: legacyTokenIndex)
-    }
-
-    /// Perform migration from google signing to generic session
-    private func performUserSessionMigration() {
-        guard let token = encryptedStorage.currentToken() else {
-            debugPrint("User migration not needed. Token was not stored or migration already finished")
-            return
-        }
-
-        performSessionMigration(with: token)
-    }
-
-    private func performSessionMigration(with token: String) {
-        guard let user = previouslyStoredUser() else {
-            debugPrint("User migration not needed. User was not stored or migration already finished")
-            return
-        }
-        debugPrint("Perform user migration for token")
-        let userObject = UserObject.googleUser(name: user.name, email: user.email, token: token)
-
-        encryptedStorage.saveUser(with: userObject)
-        UserDefaults.standard.set(nil, forKey: legacyCurrentUserIndex)
-    }
-
-    var legacyCurrentUserIndex: String { "keyCurrentUser" }
-    private func previouslyStoredUser() -> User? {
-        guard let data = UserDefaults.standard.object(forKey: legacyCurrentUserIndex) as? Data else { return nil }
-        return try? PropertyListDecoder().decode(User.self, from: data)
-    }
-
-    /// Perform migration when Gmail Api implemented
-    private func performGmailApiMigration() {
-        let key = "KeyGmailApiMigration"
-        let isMigrated = UserDefaults.standard.bool(forKey: key)
-        guard !isMigrated else {
-            return
-        }
-        UserDefaults.standard.set(true, forKey: key)
-        let folders = storage.objects(FolderObject.self)
-
-        do {
-            try storage.write {
-                storage.delete(folders)
-            }
-        } catch let error {
-            assertionFailure("Can't perform Gmail Api migration \(error)")
+            // migrate all other type of migrations
+            try await(self.migrationService.performMigrationIfNeeded())
         }
     }
 }

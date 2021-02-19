@@ -114,6 +114,7 @@
 		9FB22CF725715DC50026EE64 /* KeyServiceErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CF625715DC50026EE64 /* KeyServiceErrorHandler.swift */; };
 		9FB22D0425715DF00026EE64 /* KeyServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22D0325715DF00026EE64 /* KeyServiceError.swift */; };
 		9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */; };
+		9FBEAF3125DFB8E1009E98D4 /* DBMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAF3025DFB8E1009E98D4 /* DBMigrationService.swift */; };
 		9FC411212595EA12001180A8 /* MessageSearchProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411202595EA12001180A8 /* MessageSearchProvider.swift */; };
 		9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC4112D2595EA8B001180A8 /* Gmail+Search.swift */; };
 		9FC411352595EA94001180A8 /* Imap+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411342595EA94001180A8 /* Imap+Search.swift */; };
@@ -481,6 +482,7 @@
 		9FB22CF625715DC50026EE64 /* KeyServiceErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceErrorHandler.swift; sourceTree = "<group>"; };
 		9FB22D0325715DF00026EE64 /* KeyServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceError.swift; sourceTree = "<group>"; };
 		9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMailSessionProvider.swift; sourceTree = "<group>"; };
+		9FBEAF3025DFB8E1009E98D4 /* DBMigrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBMigrationService.swift; sourceTree = "<group>"; };
 		9FC411202595EA12001180A8 /* MessageSearchProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSearchProvider.swift; sourceTree = "<group>"; };
 		9FC4112D2595EA8B001180A8 /* Gmail+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+Search.swift"; sourceTree = "<group>"; };
 		9FC411342595EA94001180A8 /* Imap+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Search.swift"; sourceTree = "<group>"; };
@@ -1061,6 +1063,14 @@
 			path = "UsersMailSession Provider";
 			sourceTree = "<group>";
 		};
+		9FBEAF3725DFB8EB009E98D4 /* Migration */ = {
+			isa = PBXGroup;
+			children = (
+				9FBEAF3025DFB8E1009E98D4 /* DBMigrationService.swift */,
+			);
+			path = Migration;
+			sourceTree = "<group>";
+		};
 		9FC411272595EA28001180A8 /* SearchMessage Provider */ = {
 			isa = PBXGroup;
 			children = (
@@ -1274,6 +1284,7 @@
 				9FC4114A25961CD6001180A8 /* Mail Provider */,
 				9FB22CB425715C860026EE64 /* Error Handling */,
 				9F0C3C1F23191F2000299985 /* Services */,
+				9FBEAF3725DFB8EB009E98D4 /* Migration */,
 			);
 			path = Functionality;
 			sourceTree = "<group>";
@@ -2373,6 +2384,7 @@
 				9F9362062573D0C80009912F /* Gmail+MessagesList.swift in Sources */,
 				9F53CB872555E7F300C0157A /* Imap+Other.swift in Sources */,
 				D2F6D1352433753B00DB4065 /* SMTPSession.swift in Sources */,
+				9FBEAF3125DFB8E1009E98D4 /* DBMigrationService.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */,
 				5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */,
 				D227C0E6250538780070F805 /* RemoteFoldersProvider.swift in Sources */,

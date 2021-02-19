@@ -11,10 +11,6 @@ import Foundation
 import Promises
 import RealmSwift
 
-protocol DBMigration {
-    func performMigrationIfNeeded() -> Promise<Void>
-}
-
 protocol EncryptedStorageType: DBMigration {
     var storage: Realm { get }
 

@@ -48,9 +48,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private let tableNode: ASTableNode
 
     private var state: State = .folders {
-        didSet {
-            tableNode.reloadData()
-        }
+        didSet { tableNode.reloadData() }
     }
 
     // Due to Bug in ENSideMenu
@@ -128,46 +126,26 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
                 return ASCellNode()
             }
             return self.node(for: section, row: indexPath.row)
-            //
-            //
-            //            switch (sections, self.state) {
-            //            case (.header, _):
-            //                let headerInput = self.decorator.header(
-            //                    for: self.dataService.currentUser?.name,
-            //                    email: self.dataService.email
-            //                )
-            //                return HeaderNode(input: headerInput) { [weak self] in
-            //                    self?.handleTapOnExpandArrow()
-            //                }
-            //            case (.main, .accountAdding):
-            //                return ASCellNode()
-            //            case (.main, .folders):
-            //                let folder = self.folders[safe: indexPath.row]
-            //                    .map(InfoCellNode.Input.init)
-            //                return InfoCellNode(input: folder)
-            //            case (.additional, .accountAdding):
-            //                return ASCellNode()
-            //            case (.additional, .folders):
-            //                let item = self.serviceItems[safe: indexPath.row]
-            //                    .map(InfoCellNode.Input.init)
-            //                return InfoCellNode(input:item)
-            //            }
-
         }
     }
 
-    // TODO: - ANTON - handle tap
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        //        switch indexPath.section {
-        //        case Sections.folders.rawValue:
-        //            guard let item = folders[safe: indexPath.row] else { return }
-        //            handleTapOn(folder: item)
-        //        case Sections.service.rawValue:
-        //            guard let item = serviceItems[safe: indexPath.row] else { return }
-        //            handleTapOn(folder: item)
-        //        default:
-        //            break
-        //        }
+        guard let sections = Sections(rawValue: indexPath.section) else { return }
+
+        switch (sections, state) {
+        case (.header, _):
+            handleHeaderTap()
+        case (.main, .folders):
+            guard let item = folders[safe: indexPath.row] else { return }
+            handleFolderTap(with: item)
+        case (.main, .accountAdding):
+            handleAccountTap(with: indexPath.row)
+        case (.additional, .folders):
+            guard let item = serviceItems[safe: indexPath.row] else { return }
+            handleFolderTap(with: item)
+        case (.additional, .accountAdding):
+            addAccount()
+        }
     }
 
     func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
@@ -218,6 +196,20 @@ extension MyMenuViewController {
     }
 }
 
+// MARK: - Account functionality
+extension MyMenuViewController {
+    // TODO: - ANTON - switch account
+    private func switchAccount() {
+
+    }
+
+    // TODO: - ANTON - add account
+    private func addAccount() {
+        let vc = MainNavigationController(rootViewController: SignInViewController())
+        present(vc, animated: true, completion: nil)
+    }
+}
+
 // MARK: - UI
 extension MyMenuViewController {
     private func setupUI() {
@@ -245,7 +237,7 @@ extension MyMenuViewController {
                 image: state.arrowImage
             )
             return HeaderNode(input: headerInput) { [weak self] in
-                self?.handleTapOnExpandArrow()
+                self?.handleHeaderTap()
             }
         case (.main, .accountAdding):
             return ASCellNode()
@@ -270,11 +262,12 @@ extension MyMenuViewController {
             divider.backgroundColor = decorator.dividerColor
         }
     }
+
 }
 
 // MARK: - Actions
 extension MyMenuViewController {
-    private func handleTapOn(folder: FolderViewModel) {
+    private func handleFolderTap(with folder: FolderViewModel) {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
@@ -286,7 +279,7 @@ extension MyMenuViewController {
         }
     }
 
-    private func handleTapOnExpandArrow() {
+    private func handleHeaderTap() {
         animateImage { [weak self] in
             guard let self = self else {
                 return
@@ -296,6 +289,11 @@ extension MyMenuViewController {
             case .folders: self.state = .accountAdding
             }
         }
+    }
+
+    // TODO: - ANTON - handleAccountTap
+    private func handleAccountTap(with index: Int) {
+
     }
 
     private func animateImage(_ completion: (() -> Void)?) {
