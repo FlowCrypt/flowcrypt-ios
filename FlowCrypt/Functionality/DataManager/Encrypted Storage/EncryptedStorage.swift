@@ -30,10 +30,8 @@ final class EncryptedStorage: EncryptedStorageType {
         static let schemaVersion: UInt64 = 1
         // User object added to schema
         static let schemaVersionUser: UInt64 = 2
-
-        // TODO: - ANTON - change to 3
         // Account field added to Keys
-        static let schemaVersionMultipleAccounts: UInt64 = 5
+        static let schemaVersionMultipleAccounts: UInt64 = 3
 
         static let encryptedDbFilename = "encrypted.realm"
     }
@@ -189,7 +187,14 @@ extension EncryptedStorage {
 
     private func performMultipleAccount(migration: Migration) {
         debugPrint("\(debugLabel) Start Multiple account migration")
-        migration.enumerateObjects(ofType: String(describing: KeyInfo.self)) { (oldKey, newKey) in
+
+        debugPrint("\(debugLabel) Set isActive = true for a user")
+        migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (_, newUser) in
+            newUser?["isActive"] = true
+        }
+
+        debugPrint("\(debugLabel) Start add account to key")
+        migration.enumerateObjects(ofType: String(describing: KeyInfo.self)) { (_, newKey) in
             migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (user, _) in
                 newKey?["account"] = user?["email"] ?? ""
             }
@@ -246,7 +251,6 @@ extension EncryptedStorage {
 }
 
 // MARK: - User
-
 extension EncryptedStorage {
     func getUser() -> UserObject? {
         storage.objects(UserObject.self).first

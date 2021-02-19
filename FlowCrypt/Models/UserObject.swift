@@ -10,6 +10,7 @@ import Foundation
 import RealmSwift
 
 final class UserObject: Object {
+    @objc dynamic var isActive = true
     @objc dynamic var name: String = "" {
         didSet {
             imap?.username = name
