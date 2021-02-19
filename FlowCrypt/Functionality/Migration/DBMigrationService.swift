@@ -32,6 +32,7 @@ extension DBMigrationService: DBMigration {
             self.performTokenEncryptedMigration()
             self.performUserSessionMigration()
             self.performGmailApiMigration()
+            self.performMultipleAccountMigration()
         }
     }
 }
@@ -105,5 +106,12 @@ extension DBMigrationService {
         } catch let error {
             assertionFailure("Can't perform Gmail Api migration \(error)")
         }
+    }
+}
+
+// MARK: Multiple Accounts migration
+extension DBMigrationService {
+    private func performMultipleAccountMigration() {
+
     }
 }

@@ -30,6 +30,11 @@ final class EncryptedStorage: EncryptedStorageType {
         static let schemaVersion: UInt64 = 1
         // User object added to schema
         static let schemaVersionUser: UInt64 = 2
+
+        // TODO: - ANTON - change to 3
+        // Account field added to Keys
+        static let schemaVersionMultipleAccounts: UInt64 = 5
+
         static let encryptedDbFilename = "encrypted.realm"
     }
 
@@ -40,12 +45,19 @@ final class EncryptedStorage: EncryptedStorageType {
         keychainService.getStorageEncryptionKey()
     }
 
+    // TODO: - ANTON - Add some logger
+    private let debugLabel = "[EncryptedStorage][DB Migration]"
+
     private var encryptedConfiguration: Realm.Configuration {
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let latestSchemaVersion = Constants.schemaVersionMultipleAccounts
         return Realm.Configuration(
             fileURL: URL(fileURLWithPath: path),
             encryptionKey: realmKey,
-            schemaVersion: Constants.schemaVersionUser
+            schemaVersion: latestSchemaVersion,
+            migrationBlock: { [weak self] migration, oldSchemaVersion in
+                self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
+            }
         )
     }
 
@@ -155,6 +167,33 @@ extension EncryptedStorage {
             fatalError("No path direction for .documentDirectory")
         }
         return documentDirectory
+    }
+
+    private func performSchemaMigration(migration: Migration, from oldSchemaVersion: UInt64, to newVersion: UInt64) {
+        debugPrint("\(debugLabel) Check if migration needed from \(oldSchemaVersion) to \(newVersion)")
+
+        guard oldSchemaVersion < newVersion else {
+            debugPrint("\(debugLabel) Migration not needed")
+            return
+        }
+
+        switch newVersion {
+        case 0, Constants.schemaVersion, Constants.schemaVersionUser:
+            debugPrint("\(debugLabel) Schema Migration not needed")
+        case Constants.schemaVersionMultipleAccounts:
+            performMultipleAccount(migration: migration)
+        default:
+            assertionFailure("\(debugLabel) Migration is not implemented for this schema version")
+        }
+    }
+
+    private func performMultipleAccount(migration: Migration) {
+        debugPrint("\(debugLabel) Start Multiple account migration")
+        migration.enumerateObjects(ofType: String(describing: KeyInfo.self)) { (oldKey, newKey) in
+            migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (user, _) in
+                newKey?["account"] = user?["email"] ?? ""
+            }
+        }
     }
 }
 

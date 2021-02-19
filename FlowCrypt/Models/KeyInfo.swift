@@ -21,6 +21,7 @@ final class KeyInfo: Object {
     @objc dynamic var longid: String = ""
     @objc dynamic var passphrase: String = ""
     @objc dynamic var source: String = ""
+    @objc dynamic var account: String = ""
 
     convenience init(_ keyDetails: KeyDetails, passphrase: String, source: KeySource) throws {
         self.init()

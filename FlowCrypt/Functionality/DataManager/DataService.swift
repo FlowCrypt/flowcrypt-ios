@@ -11,8 +11,6 @@ import Promises
 import RealmSwift
 
 protocol DataServiceType {
-//    var storage: Realm { get }
-
     // data
     var email: String? { get }
     var currentUser: User? { get }
