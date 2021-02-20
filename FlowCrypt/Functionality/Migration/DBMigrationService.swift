@@ -32,7 +32,6 @@ extension DBMigrationService: DBMigration {
             self.performTokenEncryptedMigration()
             self.performUserSessionMigration()
             self.performGmailApiMigration()
-            self.performMultipleAccountMigration()
         }
     }
 }
@@ -76,7 +75,7 @@ extension DBMigrationService {
         debugPrint("Perform user migration for token")
         let userObject = UserObject.googleUser(name: user.name, email: user.email, token: token)
 
-        encryptedStorage.saveUser(with: userObject)
+        encryptedStorage.saveActiveUser(with: userObject)
         UserDefaults.standard.set(nil, forKey: legacyCurrentUserIndex)
     }
 
@@ -106,12 +105,5 @@ extension DBMigrationService {
         } catch let error {
             assertionFailure("Can't perform Gmail Api migration \(error)")
         }
-    }
-}
-
-// MARK: Multiple Accounts migration
-extension DBMigrationService {
-    private func performMultipleAccountMigration() {
-
     }
 }

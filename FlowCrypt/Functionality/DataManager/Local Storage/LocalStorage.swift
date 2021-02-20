@@ -11,7 +11,8 @@ import Foundation
 protocol LocalStorageType {
     var storage: UserDefaults { get }
 
-    var trashFolderPath: String? { get set }
+    var trashFolderPath: String? { get }
+    func saveTrashFolder(path: String)
 }
 
 struct LocalStorage: LocalStorageType {
@@ -28,14 +29,16 @@ struct LocalStorage: LocalStorageType {
 
 extension LocalStorage {
     var trashFolderPath: String? {
-        set { storage.set(newValue, forKey: Constants.indexTrashFolder.rawValue) }
-        // swiftlint:disable implicit_getter
-        get { storage.string(forKey: Constants.indexTrashFolder.rawValue) }
+        storage.string(forKey: Constants.indexTrashFolder.rawValue)
+    }
+
+    func saveTrashFolder(path: String) {
+        storage.set(path, forKey: Constants.indexTrashFolder.rawValue)
     }
 }
 
 extension LocalStorage: LogOutHandler {
-    func logOut() {
+    func logOut(user email: String) {
         Constants.allCases
             .compactMap { $0.rawValue }
             .forEach {

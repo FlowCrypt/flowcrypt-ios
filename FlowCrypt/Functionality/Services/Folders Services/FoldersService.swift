@@ -17,19 +17,19 @@ protocol FoldersServiceType {
     func fetchFolders() -> Promise<[FolderViewModel]>
 }
 
-struct FoldersService: FoldersServiceType {
-    let dataService: DataService
+final class FoldersService: FoldersServiceType {
+    private let localStorage: LocalStorageType
     let localFoldersProvider: LocalFoldersProviderType
     let remoteFoldersProvider: RemoteFoldersProviderType
 
     init(
         storage: @escaping @autoclosure CacheStorage,
         remoteFoldersProvider: RemoteFoldersProviderType = MailProvider.shared.remoteFoldersProvider,
-        dataService: DataService = DataService.shared
+        localStorage: LocalStorageType = LocalStorage()
     ) {
         self.localFoldersProvider = LocalFoldersProvider(storage: storage())
         self.remoteFoldersProvider = remoteFoldersProvider
-        self.dataService = dataService
+        self.localStorage = localStorage
     }
 
     func fetchFolders() -> Promise<[FolderViewModel]> {
@@ -45,7 +45,8 @@ struct FoldersService: FoldersServiceType {
 
     @discardableResult
     private func getAndSaveFolders() -> Promise<[FolderViewModel]> {
-        Promise<[FolderViewModel]> { resolve, _ in
+        Promise<[FolderViewModel]> { [weak self] resolve, _ in
+            guard let self = self else { throw AppErr.nilSelf }
             // fetch all folders
             let remoteFolders = try await(self.remoteFoldersProvider.fetchFolders())
 
@@ -54,7 +55,7 @@ struct FoldersService: FoldersServiceType {
             self.localFoldersProvider.save(folders: folders)
 
             // save trash folder path
-            saveTrashFolderPath(with: folders)
+            self.saveTrashFolderPath(with: folders)
 
             // return folders
             resolve(folders.map(FolderViewModel.init))
@@ -67,34 +68,6 @@ struct FoldersService: FoldersServiceType {
             debugPrint("###Warning### Trash folder not found")
             return
         }
-        dataService.saveTrashFolder(path: path)
-    }
-}
-
-// MARK: - TrashFolderProvider
-struct TrashFolderProvider {
-    let folderProvider: FoldersServiceType
-    let dataService: DataService
-
-    init(
-        folderProvider: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
-        dataService: DataService = .shared
-    ) {
-        self.folderProvider = folderProvider
-        self.dataService = dataService
-    }
-}
-
-extension TrashFolderProvider: TrashFolderProviderType {
-    func getTrashFolderPath() -> Promise<String?> {
-        if let path = dataService.trashFolderPath {
-            return Promise(path)
-        } else {
-            return Promise { (resolve, _) in
-                // will get all folders
-                _ = try await(folderProvider.fetchFolders())
-                resolve(dataService.trashFolderPath)
-            }
-        }
+        localStorage.saveTrashFolder(path: path)
     }
 }

@@ -9,5 +9,5 @@
 import Foundation
 
 protocol LogOutHandler {
-    func logOut()
+    func logOut(user email: String)
 }

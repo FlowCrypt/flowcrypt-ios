@@ -10,19 +10,6 @@ import Foundation
 import Promises
 
 extension Imap {
-    /// get trash folder path either form local storage in case it was already saved or tries to fetch all folders info and save it
-    func trashFolderPath() -> Promise<String?> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf )}
-
-            if let path = self.dataService.trashFolderPath {
-                resolve(path)
-            } else {
-                _ = try await(self.fetchFolders())
-                resolve(self.dataService.trashFolderPath)
-            }
-        }
-    }
 
     func fetchMessagesIn(
         folder: String,

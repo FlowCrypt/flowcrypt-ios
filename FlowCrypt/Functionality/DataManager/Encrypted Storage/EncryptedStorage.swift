@@ -20,8 +20,8 @@ protocol EncryptedStorageType: DBMigration {
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>?
 
-    func getUser() -> UserObject?
-    func saveUser(with user: UserObject)
+    func getAllUsers() -> [UserObject]
+    func saveActiveUser(with user: UserObject)
 }
 
 final class EncryptedStorage: EncryptedStorageType {
@@ -80,7 +80,17 @@ final class EncryptedStorage: EncryptedStorageType {
 
 // MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
-    func logOut() { // todo - logOut is not clear - should be called onLogOut to make it clear it's responding to an event
+    func logOut(user email: String) {
+            // TODO: - ANTON - EncryptedStorage - logOut
+        //            UserObject
+        //            KeyInfo
+        //            EmailAccessToken
+        //            SessionObject
+        //            FolderObject
+        //            ContactObject
+        //            KeyAlgoObject
+
+
         destroyEncryptedStorage()
     }
 
@@ -93,20 +103,22 @@ extension EncryptedStorage: LogOutHandler {
             assertionFailure("Error while deleting the objects from the storage \(error)")
         }
 
-        // Remove configuration if user still on plain realm
-        if let defaultPath = Realm.Configuration.defaultConfiguration.fileURL,
-            defaultPath != self.encryptedConfiguration.fileURL {
-            destroyStorage(at: defaultPath)
-        }
+        destroyPlainConfigurationIfNeeded()
     }
 
-    private func destroyStorage(at url: URL) {
+    /// Remove configuration if user still on plain realm
+    private func destroyPlainConfigurationIfNeeded() {
+        guard let defaultPath = Realm.Configuration.defaultConfiguration.fileURL else {
+            return
+        }
+        guard defaultPath != self.encryptedConfiguration.fileURL else {
+            return
+        }
+
         do {
-            try fileManager.removeItem(at: url)
-        } catch CocoaError.fileNoSuchFile {
-//            debugPrint("Realm at url \(url) did not exist")
+            try fileManager.removeItem(at: defaultPath)
         } catch {
-            fatalError("Could not delete configuration for \(url) with error: \(error)")
+            fatalError("Could not delete configuration for \(defaultPath) with error: \(error)")
         }
     }
 }
@@ -188,12 +200,12 @@ extension EncryptedStorage {
     private func performMultipleAccount(migration: Migration) {
         debugPrint("\(debugLabel) Start Multiple account migration")
 
-        debugPrint("\(debugLabel) Set isActive = true for a user")
+        debugPrint("\(debugLabel) - Set isActive = true for a user")
         migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (_, newUser) in
             newUser?["isActive"] = true
         }
 
-        debugPrint("\(debugLabel) Start add account to key")
+        debugPrint("\(debugLabel) - Add account to key")
         migration.enumerateObjects(ofType: String(describing: KeyInfo.self)) { (_, newKey) in
             migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (user, _) in
                 newKey?["account"] = user?["email"] ?? ""
@@ -252,12 +264,16 @@ extension EncryptedStorage {
 
 // MARK: - User
 extension EncryptedStorage {
-    func getUser() -> UserObject? {
-        storage.objects(UserObject.self).first
+    func getAllUsers() -> [UserObject] {
+        Array(storage.objects(UserObject.self))
     }
 
-    func saveUser(with user: UserObject) {
+    func saveActiveUser(with user: UserObject) {
         try! storage.write {
+            // Mark all users as inactive
+            self.getAllUsers().forEach {
+                $0.isActive = false
+            }
             self.storage.add(user, update: .all)
         }
     }

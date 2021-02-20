@@ -19,9 +19,7 @@ protocol DataServiceType {
     var currentAuthType: AuthType? { get }
     var token: String? { get }
 
-    // Local data
-    var trashFolderPath: String? { get }
-    func saveTrashFolder(path: String?)
+    var users: [User] { get }
 
     // login / logout
     func startFor(user type: SessionType)
@@ -58,15 +56,22 @@ final class DataService: DataServiceType {
         currentUser?.email
     }
 
+    // helper to get current user object from DB
+    private var currentUserObject: UserObject? {
+        encryptedStorage.getAllUsers().first(where: \.isActive)
+    }
+
+    var users: [User] {
+        encryptedStorage.getAllUsers()
+            .map(User.init)
+    }
+
     var currentUser: User? {
-        guard let userObject = self.encryptedStorage.getUser() else {
-            return nil
-        }
-        return User(userObject)
+        users.first(where: \.isActive)
     }
 
     var currentAuthType: AuthType? {
-        encryptedStorage.getUser()?.authType
+        currentUserObject?.authType
     }
 
     var token: String? {
@@ -113,8 +118,9 @@ extension DataService: KeyDataServiceType {
 // MARK: - LogOut
 extension DataService {
     func logOutAndDestroyStorage() {
-        localStorage.logOut()
-        encryptedStorage.logOut()
+        print("^^ DataService logOutAndDestroyStorage()")
+        //        localStorage.logOut()
+        //        encryptedStorage.logOut()
     }
 }
 
@@ -135,7 +141,7 @@ extension DataService: DBMigration {
 // MARK: - SessionProvider
 extension DataService: ImapSessionProvider {
     func imapSession() -> IMAPSession? {
-        guard let user = encryptedStorage.getUser() else {
+        guard let user = currentUserObject else {
             assertionFailure("Can't get IMAP Session without user data")
             return nil
         }
@@ -149,7 +155,7 @@ extension DataService: ImapSessionProvider {
     }
 
     func smtpSession() -> SMTPSession? {
-        guard let user = encryptedStorage.getUser() else {
+        guard let user = currentUserObject else {
             assertionFailure("Can't get SMTP Session without user data")
             return nil
         }
@@ -179,20 +185,10 @@ extension DataService {
                 email: email,
                 token: token
             )
-            encryptedStorage.saveUser(with: user)
+            encryptedStorage.saveActiveUser(with: user)
         case let .session(user):
             logOutAndDestroyStorage()
-            encryptedStorage.saveUser(with: user)
+            encryptedStorage.saveActiveUser(with: user)
         }
-    }
-}
-
-extension DataService {
-    var trashFolderPath: String? {
-        localStorage.trashFolderPath
-    }
-
-    func saveTrashFolder(path: String?) {
-        localStorage.trashFolderPath = path
     }
 }

@@ -70,5 +70,6 @@ extension User {
     init(_ userObject: UserObject) {
         self.name = userObject.name
         self.email = userObject.email
+        self.isActive = userObject.isActive
     }
 }
