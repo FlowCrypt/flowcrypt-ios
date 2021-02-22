@@ -42,8 +42,8 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private let decorator: MyMenuViewDecoratorType
 
     private var folders: [FolderViewModel] = []
-    private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems
-    }
+    private let serviceItems: [FolderViewModel] = FolderViewModel.menuItems
+    private var accounts: [User] { dataService.users.filter { !$0.isActive } }
 
     private let tableNode: ASTableNode
 
@@ -113,7 +113,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
 
         switch (sections, state) {
         case (.header, _): return 1
-        case (.main, .accountAdding): return 0
+        case (.main, .accountAdding): return accounts.count
         case (.main, .folders): return folders.count
         case (.additional, .accountAdding): return 1
         case (.additional, .folders): return serviceItems.count
@@ -232,19 +232,16 @@ extension MyMenuViewController {
         switch (section, state) {
         case (.header, _):
             let headerInput = decorator.header(
-                for: dataService.currentUser?.name,
-                email: dataService.email,
+                for: dataService.currentUser,
                 image: state.arrowImage
             )
             return HeaderNode(input: headerInput) { [weak self] in
                 self?.handleHeaderTap()
             }
         case (.main, .accountAdding):
-            return ASCellNode()
+            return InfoCellNode(input: decorator.nodeForAccount(for: accounts[row]))
         case (.main, .folders):
-            let folder = folders[safe: row]
-                .map(InfoCellNode.Input.init)
-            return InfoCellNode(input: folder)
+            return InfoCellNode(input: folders[safe: row].map(InfoCellNode.Input.init))
         case (.additional, .accountAdding):
             return InfoCellNode(input: .addAccount)
         case (.additional, .folders):
