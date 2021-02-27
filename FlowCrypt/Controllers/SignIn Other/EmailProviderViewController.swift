@@ -489,23 +489,23 @@ extension EmailProviderViewController {
     }
 
     private func handleConnection(error: Error) {
-        imap.disconnect()
-        dataService.logOutAndDestroyStorage()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let message = (error as? AppErr)?.userMessage ?? error.localizedDescription
-            self.hideSpinner()
-            self.showToast(message)
-        }
+        // TODO: - ANTON
+        GlobalRouter().logOut()
+//        dataService.logOutAndDestroyStorage()
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//            let message = (error as? AppErr)?.userMessage ?? error.localizedDescription
+//            self.hideSpinner()
+//            self.showToast(message)
+//        }
     }
 
     private func handleSuccessfulConnection() {
-        // save user only when it's possible to connect
-        dataService.startFor(user: .session(user))
-        // start session for saved user
-        imap.setupSession()
-        // hide spinner and show next screen
-        hideSpinner()
-        GlobalRouter().proceed()
+        // TODO: - ANTON
+        GlobalRouter().startFor(
+            user: .session(user),
+            executeBeforeStart: { [weak self] in
+                self?.hideSpinner()
+            })
     }
 
     private func checkCurrentUser() -> Result<UserObject, UserError> {

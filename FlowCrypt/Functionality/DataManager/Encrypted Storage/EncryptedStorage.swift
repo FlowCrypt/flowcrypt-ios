@@ -80,7 +80,7 @@ final class EncryptedStorage: EncryptedStorageType {
 
 // MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
-    func logOut(user email: String) {
+    func logOutUser(email: String) {
             // TODO: - ANTON - EncryptedStorage - logOut
         //            UserObject
         //            KeyInfo
@@ -90,8 +90,11 @@ extension EncryptedStorage: LogOutHandler {
         //            ContactObject
         //            KeyAlgoObject
 
+        let u = storage.objects(UserObject.self).filter { $0.email == email }
+        let k = storage.objects(KeyInfo.self).filter { $0.account == email }
+        let f = storage.objects(FolderObject.self)
 
-        destroyEncryptedStorage()
+//        destroyEncryptedStorage()
     }
 
     private func destroyEncryptedStorage() {

@@ -52,7 +52,7 @@ final class SetupViewController: TableNodeViewController {
     }
 
     init(
-        userService: UserServiceType = UserService.shared,
+        userService: UserServiceType = GoogleUserService.shared,
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: SetupViewDecoratorType = SetupViewDecorator(),
@@ -395,6 +395,7 @@ extension SetupViewController {
         }
     }
 
+    // TODO: - ANTON - FIX THIS IF NEEDED
     private func handleOtherAccount() {
         userService.signOut()
             .then(on: .main) { [weak self] _ in

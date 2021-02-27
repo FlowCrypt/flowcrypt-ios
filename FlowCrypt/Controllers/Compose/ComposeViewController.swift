@@ -165,7 +165,8 @@ extension ComposeViewController {
                 title: "Log out",
                 style: .default
             ) { _ in
-                self.globalRouter.wipeOutAndReset()
+                // temporary disable search contacts
+                // https://github.com/FlowCrypt/flowcrypt-ios/issues/217
             }
             let cancelAction = UIAlertAction(
                 title: "Cancel",

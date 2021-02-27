@@ -38,7 +38,7 @@ extension LocalStorage {
 }
 
 extension LocalStorage: LogOutHandler {
-    func logOut(user email: String) {
+    func logOutUser(email: String) {
         Constants.allCases
             .compactMap { $0.rawValue }
             .forEach {

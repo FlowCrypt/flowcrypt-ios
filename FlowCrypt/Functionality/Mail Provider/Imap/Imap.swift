@@ -20,17 +20,13 @@ final class Imap: MailServiceProvider {
     typealias Err = MCOErrorCode
 
     var lastErr: [String: AppErr] = [:]
-
-    let userService: UserServiceType
     let dataService: Injection
 
     private init(
-        userService: UserService = .shared,
         dataService: Injection = DataService.shared,
         helper: ImapHelperType = ImapHelper(),
         messageKindProvider: MessageKindProviderType = MessageKindProvider()
     ) {
-        self.userService = userService
         self.dataService = dataService
         self.helper = helper
         self.messageKindProvider = messageKindProvider

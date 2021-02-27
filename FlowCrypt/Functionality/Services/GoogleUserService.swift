@@ -17,8 +17,8 @@ protocol UserServiceType {
     func renewSession() -> Promise<Void>
 }
 
-final class UserService: NSObject {
-    static let shared = UserService()
+final class GoogleUserService: NSObject {
+    static let shared = GoogleUserService()
 
     private var onLogin: (() -> Void)?
     private var onError: ((AppErr) -> Void)?
@@ -51,10 +51,9 @@ final class UserService: NSObject {
             assertionFailure("Implement this one")
         }
     }
-
 }
 
-extension UserService: UserServiceType {
+extension GoogleUserService: UserServiceType {
 
     func renewSession() -> Promise<Void> {
         Promise<Void> { [weak self] resolve, reject in
@@ -91,7 +90,7 @@ extension UserService: UserServiceType {
     }
 }
 
-extension UserService: GIDSignInDelegate {
+extension GoogleUserService: GIDSignInDelegate {
     func sign(_: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         guard error == nil else {
             onError?(AppErr(error))
@@ -102,7 +101,8 @@ extension UserService: GIDSignInDelegate {
             return
         }
 
-        dataService.startFor(user: .google(user.profile.email, name: user.profile.name, token: token))
+        // TODO: - ANTON
+//        dataService.startFor(user: .google(user.profile.email, name: user.profile.name, token: token))
         onNewSession?()
         onLogin?()
     }
@@ -110,7 +110,8 @@ extension UserService: GIDSignInDelegate {
     func sign(_: GIDSignIn!, didDisconnectWith _: GIDGoogleUser!, withError _: Error!) {
         // will not wait until disconnected. errors ignored
         Imap.shared.disconnect()
-        dataService.logOutAndDestroyStorage()
+        // TODO: - ANTON
+//        dataService.logOutAndDestroyStorage()
         onLogOut?()
     }
 }

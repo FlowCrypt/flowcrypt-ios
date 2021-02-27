@@ -20,10 +20,6 @@ protocol DataServiceType {
     var token: String? { get }
 
     var users: [User] { get }
-
-    // login / logout
-    func startFor(user type: SessionType)
-    func logOutAndDestroyStorage()
 }
 
 protocol ImapSessionProvider {
@@ -37,9 +33,25 @@ enum SessionType {
 }
 
 // MARK: - DataService
-final class DataService: DataServiceType {
+final class DataService {
     static let shared = DataService()
 
+    private let encryptedStorage: EncryptedStorageType
+    private let localStorage: LocalStorageType
+    private let migrationService: DBMigration
+
+    private init(
+        encryptedStorage: EncryptedStorageType = EncryptedStorage(),
+        localStorage: LocalStorageType = LocalStorage()
+    ) {
+        self.encryptedStorage = encryptedStorage
+        self.localStorage = localStorage
+        self.migrationService = DBMigrationService(localStorage: localStorage, encryptedStorage: encryptedStorage)
+    }
+}
+
+// MARK: - DataServiceType
+extension DataService: DataServiceType {
     var storage: Realm {
         encryptedStorage.storage
     }
@@ -80,19 +92,6 @@ final class DataService: DataServiceType {
         default: return nil
         }
     }
-
-    private let encryptedStorage: EncryptedStorageType & LogOutHandler
-    private(set) var localStorage: LocalStorageType & LogOutHandler
-    private let migrationService: DBMigration
-
-    private init(
-        encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
-        localStorage: LocalStorageType & LogOutHandler = LocalStorage()
-    ) {
-        self.encryptedStorage = encryptedStorage
-        self.localStorage = localStorage
-        self.migrationService = DBMigrationService(localStorage: localStorage, encryptedStorage: encryptedStorage)
-    }
 }
 
 // MARK: - DataKeyServiceType
@@ -112,15 +111,6 @@ extension DataService: KeyDataServiceType {
 
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
         encryptedStorage.updateKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
-    }
-}
-
-// MARK: - LogOut
-extension DataService {
-    func logOutAndDestroyStorage() {
-        print("^^ DataService logOutAndDestroyStorage()")
-        //        localStorage.logOut()
-        //        encryptedStorage.logOut()
     }
 }
 
@@ -166,29 +156,5 @@ extension DataService: ImapSessionProvider {
         }
 
         return smtpSession
-    }
-}
-
-// MARK: -
-extension DataService {
-    func startFor(user type: SessionType) {
-        switch type {
-        case let .google(email, name, token):
-            // for google authentication this method will be called also on renewing access token
-            // destroy storage in case a new user logged in
-            if let currentUser = currentUser, currentUser.email != email {
-                logOutAndDestroyStorage()
-            }
-            // save new user data
-            let user = UserObject.googleUser(
-                name: name,
-                email: email,
-                token: token
-            )
-            encryptedStorage.saveActiveUser(with: user)
-        case let .session(user):
-            logOutAndDestroyStorage()
-            encryptedStorage.saveActiveUser(with: user)
-        }
     }
 }

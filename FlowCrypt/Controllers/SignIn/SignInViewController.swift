@@ -18,7 +18,7 @@ final class SignInViewController: TableNodeViewController {
     private let decorator: SignInViewDecoratorType
 
     init(
-        userService: UserServiceType = UserService.shared,
+        userService: UserServiceType = GoogleUserService.shared,
         core: Core = Core.shared,
         decorator: SignInViewDecoratorType = SignInViewDecorator()
     ) {

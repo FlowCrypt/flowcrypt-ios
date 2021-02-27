@@ -198,16 +198,36 @@ extension MyMenuViewController {
 
 // MARK: - Account functionality
 extension MyMenuViewController {
-    // TODO: - ANTON - switch account
-    private func switchAccount() {
-
-    }
-
-    // TODO: - ANTON - add account
     private func addAccount() {
         let vc = MainNavigationController(rootViewController: SignInViewController())
         present(vc, animated: true, completion: nil)
     }
+
+    // TODO: - ANTON - handleAccountTap
+    private func handleAccountTap(with index: Int) {
+        guard let account = self.accounts[safe: index] else {
+            return
+        }
+
+    }
+
+    private func animateImage(_ completion: (() -> Void)?) {
+        guard let header = tableNode.visibleNodes.compactMap({ $0 as? HeaderNode }).first else {
+            return
+        }
+
+        UIView.animate(
+            withDuration: 0.3,
+            animations: {
+                header.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
+            },
+            completion: { _ in
+                completion?()
+            }
+        )
+
+    }
+
 }
 
 // MARK: - UI
@@ -272,7 +292,11 @@ extension MyMenuViewController {
         case .settings:
             sideMenuController()?.setContentViewController(SettingsViewController())
         case .logOut:
-            self.router.wipeOutAndReset()
+            // TODO: - ANTON
+        // logout
+        // start another if possible
+//            self.router.wipeOutAndReset()
+        break
         }
     }
 
@@ -286,28 +310,6 @@ extension MyMenuViewController {
             case .folders: self.state = .accountAdding
             }
         }
-    }
-
-    // TODO: - ANTON - handleAccountTap
-    private func handleAccountTap(with index: Int) {
-
-    }
-
-    private func animateImage(_ completion: (() -> Void)?) {
-        guard let header = tableNode.visibleNodes.compactMap({ $0 as? HeaderNode }).first else {
-            return
-        }
-
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                header.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
-            },
-            completion: { _ in
-                completion?()
-            }
-        )
-
     }
 }
 

@@ -47,8 +47,13 @@
 		85F56205E0D5F5F897ACF391 /* Pods_FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D424F068875A727743993E3 /* Pods_FlowCryptUI.framework */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
+		9F003D6D25EA8F3200EB38C0 /* UserAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* UserAccountService.swift */; };
+		9F003D9E25EA910B00EB38C0 /* LocalStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */; };
+		9F003DA425EA928200EB38C0 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
+		9F003DB625EA92BC00EB38C0 /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003DB525EA92BC00EB38C0 /* LogOutHandler.swift */; };
+		9F003DBC25EA92D000EB38C0 /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003DB525EA92BC00EB38C0 /* LogOutHandler.swift */; };
 		9F0C3C0523159B1D00299985 /* AppUrlHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */; };
-		9F0C3C102316DD5B00299985 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* UserService.swift */; };
+		9F0C3C102316DD5B00299985 /* GoogleUserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */; };
 		9F0C3C122316DDA500299985 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C112316DDA500299985 /* DataService.swift */; };
 		9F0C3C142316E69300299985 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
 		9F0C3C18231819B200299985 /* LoggerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C17231819B200299985 /* LoggerService.swift */; };
@@ -80,7 +85,6 @@
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
 		9F56BD3823438C7000A7371A /* DateFormattingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */; };
 		9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
-		9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
 		9F589F11238C7DDC007FD759 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
 		9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F14238C8249007FD759 /* KeyChainService.swift */; };
 		9F589F1F238C8A90007FD759 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F1E238C8A90007FD759 /* Token.swift */; };
@@ -232,8 +236,6 @@
 		D28A1CBD2525C141003B760B /* CheckBoxTextNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */; };
 		D297990D2444A76D004A3E31 /* UserObject+Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D297990C2444A76D004A3E31 /* UserObject+Empty.swift */; };
 		D29AFFED24092D7900C1387D /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFEC24092D7900C1387D /* GoogleService.swift */; };
-		D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
-		D29AFFF42409370300C1387D /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF22409370300C1387D /* LogOutHandler.swift */; };
 		D29AFFF6240939AE00C1387D /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */; };
 		D29AFFFA2409767F00C1387D /* GoogleContactsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */; };
@@ -399,8 +401,11 @@
 		7D424F068875A727743993E3 /* Pods_FlowCryptUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
+		9F003D6C25EA8F3200EB38C0 /* UserAccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountService.swift; sourceTree = "<group>"; };
+		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
+		9F003DB525EA92BC00EB38C0 /* LogOutHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutHandler.swift; sourceTree = "<group>"; };
 		9F0C3C0423159B1D00299985 /* AppUrlHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUrlHandler.swift; sourceTree = "<group>"; };
-		9F0C3C0F2316DD5B00299985 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleUserService.swift; sourceTree = "<group>"; };
 		9F0C3C112316DDA500299985 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		9F0C3C132316E69300299985 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		9F0C3C17231819B200299985 /* LoggerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerService.swift; sourceTree = "<group>"; };
@@ -586,7 +591,6 @@
 		D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxTextNode.swift; sourceTree = "<group>"; };
 		D297990C2444A76D004A3E31 /* UserObject+Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserObject+Empty.swift"; sourceTree = "<group>"; };
 		D29AFFEC24092D7900C1387D /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
-		D29AFFF22409370300C1387D /* LogOutHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutHandler.swift; sourceTree = "<group>"; };
 		D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleContactsResponse.swift; sourceTree = "<group>"; };
 		D29AFFFD240990BE00C1387D /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowCryptUIApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -855,7 +859,7 @@
 				9F0C3C0E2316DD4B00299985 /* AppUrlHandler */,
 				D29AFFF72409765A00C1387D /* Google */,
 				A3B7C31823F576BA0022D628 /* AppStartup.swift */,
-				9F0C3C0F2316DD5B00299985 /* UserService.swift */,
+				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
 				9F0C3C17231819B200299985 /* LoggerService.swift */,
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 				32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */,
@@ -1189,6 +1193,7 @@
 				A3DAD60722E4588800F2C4CD /* TestData.swift */,
 				A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */,
 				D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */,
+				9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */,
 			);
 			path = FlowCryptTests;
 			sourceTree = "<group>";
@@ -1487,9 +1492,10 @@
 			isa = PBXGroup;
 			children = (
 				9F0C3C112316DDA500299985 /* DataService.swift */,
-				D29AFFF22409370300C1387D /* LogOutHandler.swift */,
 				9F589F1A238C85B0007FD759 /* Encrypted Storage */,
 				9F589F19238C82A1007FD759 /* Local Storage */,
+				9F003D6C25EA8F3200EB38C0 /* UserAccountService.swift */,
+				9F003DB525EA92BC00EB38C0 /* LogOutHandler.swift */,
 			);
 			path = DataManager;
 			sourceTree = "<group>";
@@ -2206,20 +2212,20 @@
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
 				9FC411902596229D001180A8 /* AppErr.swift in Sources */,
 				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
-				9F589F10238C7D2E007FD759 /* LocalStorage.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
 				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
-				D29AFFF42409370300C1387D /* LogOutHandler.swift in Sources */,
 				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				D212D36124C1AC0D00035991 /* KeyDetails.swift in Sources */,
 				9F6EE18C25A8AF970059BA51 /* GeneralConstants.swift in Sources */,
 				A3DAD60A22E458C100F2C4CD /* CodableExntensions.swift in Sources */,
 				D254733424C597CD00DEE698 /* CoreTypesTest.swift in Sources */,
+				9F003DA425EA928200EB38C0 /* LocalStorage.swift in Sources */,
 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
 				9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */,
 				5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */,
 				D212D36524C1AC4800035991 /* KeyId.swift in Sources */,
+				9F003DBC25EA92D000EB38C0 /* LogOutHandler.swift in Sources */,
 				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
@@ -2227,6 +2233,7 @@
 				D29AFFFA2409767F00C1387D /* GoogleContactsResponse.swift in Sources */,
 				9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */,
 				32DCA3847AFB3D05608CB191 /* Core.swift in Sources */,
+				9F003D9E25EA910B00EB38C0 /* LocalStorageTests.swift in Sources */,
 				32DCA1D6067D3A5B9AF03635 /* CoreHost.swift in Sources */,
 				32DCABBD224CF03500ADA985 /* CoreTypes.swift in Sources */,
 				9F589F20238C8A90007FD759 /* Token.swift in Sources */,
@@ -2269,7 +2276,6 @@
 				D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */,
 				9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */,
-				D29AFFF32409370300C1387D /* LogOutHandler.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserObject.swift in Sources */,
 				D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */,
@@ -2349,13 +2355,14 @@
 				9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */,
 				D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */,
 				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
-				9F0C3C102316DD5B00299985 /* UserService.swift in Sources */,
+				9F0C3C102316DD5B00299985 /* GoogleUserService.swift in Sources */,
 				D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */,
 				D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */,
 				D2FF6966243115EC007182F0 /* EmailProviderViewController.swift in Sources */,
 				D2CDC3D22402D4DA002B045F /* UIViewControllerExtensions.swift in Sources */,
 				D297990D2444A76D004A3E31 /* UserObject+Empty.swift in Sources */,
 				D2D27B79248A8694007346FA /* BigIntExtension.swift in Sources */,
+				9F003D6D25EA8F3200EB38C0 /* UserAccountService.swift in Sources */,
 				D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */,
 				9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */,
 				9FF0671025520D7100FCC9E6 /* MessageGateway.swift in Sources */,
@@ -2372,6 +2379,7 @@
 				9FC411352595EA94001180A8 /* Imap+Search.swift in Sources */,
 				9FC4114C25961CEA001180A8 /* MailServiceProviderType.swift in Sources */,
 				D2F6D1332433753100DB4065 /* IMAPSession.swift in Sources */,
+				9F003DB625EA92BC00EB38C0 /* LogOutHandler.swift in Sources */,
 				9F0C3C122316DDA500299985 /* DataService.swift in Sources */,
 				D20D3C6E2520AB3900D4AA9A /* BackupViewDecorator.swift in Sources */,
 				9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */,

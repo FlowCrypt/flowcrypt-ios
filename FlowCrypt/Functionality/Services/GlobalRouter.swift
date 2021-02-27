@@ -7,14 +7,25 @@
 //
 
 import UIKit
+import Promises
 
 protocol GlobalRouterType {
     func proceed()
-    func wipeOutAndReset()
+    func startFor(user type: SessionType, executeBeforeStart: (() -> Void)?) -> Promise<Void>
+    func logOut() -> Promise<Void>
 }
 
 struct GlobalRouter: GlobalRouterType {
-    private let dataService: DataServiceType = DataService.shared
+    private let dataService: DataServiceType
+    private let userAccountService: UserAccountServiceType
+
+    init(
+        dataService: DataServiceType = DataService.shared,
+        userAccountService: UserAccountServiceType = UserAccountService()
+    ) {
+        self.dataService = dataService
+        self.userAccountService = userAccountService
+    }
 
     private var keyWindow: UIWindow {
         let application = UIApplication.shared
@@ -33,35 +44,18 @@ struct GlobalRouter: GlobalRouterType {
         }
     }
 
-    func wipeOutAndReset() {
-        switch dataService.currentAuthType {
-        case .oAuthGmail:
-            logOutGmailSession()
-        case .password:
-            logOutUserSession()
-        default:
-            assertionFailure("User is not logged in")
-        }
-    }
-
-    private func logOutGmailSession() {
-        UserService.shared
-            .signOut()
-            .then(on: .main) {
-                self.proceed()
-            }
-            .catch(on: .main) { error in
-                self.keyWindow
-                .rootViewController?
-                .showAlert(error: error, message: "Could not log out")
-            }
-    }
-
-    private func logOutUserSession() {
-        Imap.shared.disconnect()
-        dataService.logOutAndDestroyStorage()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+    /// Start user session, execute block and proceed to dedicated flow
+    @discardableResult
+    func startFor(user type: SessionType, executeBeforeStart: (() -> Void)?) -> Promise<Void> {
+        Promise { (resolve, _) in
+            try await(self.userAccountService.startFor(user: type))
+            executeBeforeStart?()
             self.proceed()
+            resolve(())
         }
+    }
+
+    func logOut() -> Promise<Void> {
+        userAccountService.logOutCurrentUser()
     }
 }

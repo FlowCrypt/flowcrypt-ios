@@ -23,7 +23,7 @@ struct GmailService: MailServiceProvider {
         return service
     }
 
-    let userService: UserService = .shared
+    let userService: GoogleUserService = .shared
 }
 
 // Gmail string extension identifier
