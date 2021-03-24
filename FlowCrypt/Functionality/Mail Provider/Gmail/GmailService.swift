@@ -13,7 +13,7 @@ import GoogleAPIClientForREST
 struct GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
 
-    var signInService: GIDSignIn {
+    private var signInService: GIDSignIn {
         GIDSignIn.sharedInstance()
     }
 

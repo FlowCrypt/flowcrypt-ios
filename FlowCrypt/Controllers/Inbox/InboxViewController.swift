@@ -92,6 +92,10 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            a(in: self)
+        }
     }
 
     override func viewDidLayoutSubviews() {

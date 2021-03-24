@@ -292,11 +292,11 @@ extension MyMenuViewController {
         case .settings:
             sideMenuController()?.setContentViewController(SettingsViewController())
         case .logOut:
+            GlobalRouter().logOut()
             // TODO: - ANTON
         // logout
         // start another if possible
 //            self.router.wipeOutAndReset()
-        break
         }
     }
 

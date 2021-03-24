@@ -25,9 +25,9 @@ class LocalStorageTests: XCTestCase {
         XCTAssertTrue(UserDefaults.standard.string(forKey: trashKey) == somePath)
     }
 
-    func testLogOutForUser() {
+    func testLogOutForUser() throws {
         let user = "anton@gmail.com"
-        sut.logOutUser(email: user)
+        try sut.logOutUser(email: user)
         XCTAssertNil(UserDefaults.standard.string(forKey: trashKey))
     }
 }

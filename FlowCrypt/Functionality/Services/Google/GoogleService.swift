@@ -13,27 +13,14 @@ import Promises
 protocol GoogleServiceType {
     func setUpAuthentication() throws
     func searchContacts(query: String) -> Promise<[String]>
-    func shouldRenewToken(for scopes: [GoogleService.Scope]) -> Bool
+    func shouldRenewToken(for scopes: [GoogleScope]) -> Bool
 }
 
 final class GoogleService {
     private enum Constants {
         static let scheme = "https"
         static let host = "www.google.com"
-
         static let searchPath = "/m8/feeds/contacts/default/thin"
-    }
-
-    enum Scope: CaseIterable {
-        case userInfo, mail, contacts
-
-        var value: String {
-            switch self {
-            case .userInfo: return "https://www.googleapis.com/auth/userinfo.profile"
-            case .mail: return "https://mail.google.com/"
-            case .contacts: return "https://www.googleapis.com/auth/contacts.readonly"
-            }
-        }
     }
 
     private var instance = GIDSignIn.sharedInstance()
@@ -52,20 +39,15 @@ final class GoogleService {
 }
 
 extension GoogleService: GoogleServiceType {
-    func shouldRenewToken(for scopes: [Scope]) -> Bool {
-        Set(scopes.map { $0.value }).isSubset(
-            of: Set(instance?.scopes.compactMap { $0 as? String } ?? [])
-        )
+    func shouldRenewToken(for scopes: [GoogleScope]) -> Bool {
+        Set(scopes.map { $0.value })
+            .isSubset(of: Set(instance?.scopes.compactMap { $0 as? String } ?? []))
     }
 
     func setUpAuthentication() throws {
         guard let googleSignIn = instance else { throw AppErr.general("Unexpected nil GIDSignIn") }
-        googleSignIn.clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
-
-        // temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
-        // let scopes = Scope.allCases.compactMap { $0.value }
-
-        let scopes = [Scope.mail, Scope.userInfo].compactMap { $0.value }
+        googleSignIn.clientID = GeneralConstants.Gmail.clientID
+        let scopes = GeneralConstants.Gmail.currentScope.map(\.value)
         googleSignIn.scopes = scopes
         googleSignIn.delegate = GoogleUserService.shared
     }

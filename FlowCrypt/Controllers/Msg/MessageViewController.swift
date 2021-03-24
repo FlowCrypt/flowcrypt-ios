@@ -119,7 +119,9 @@ final class MessageViewController: TableNodeViewController {
             // in case we are in trash folder ([Gmail]/Trash or Deleted for Outlook, etc)
             // we need to have only help and trash buttons
             items = [helpButton, trashButton]
-        case MailDestination.Gmail.inbox.path.lowercased():
+
+        // TODO: - ANTON - Check of this should be fixed
+        case "inbox":
             // for Gmail inbox we also need to have archive and unread buttons
             items = [helpButton, archiveButton, trashButton, unreadButton]
         default:

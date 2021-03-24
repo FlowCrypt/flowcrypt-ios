@@ -81,6 +81,7 @@ DEPENDENCIES:
   - ENSwiftSideMenu (~> 0.1.4)
   - GoogleAPIClientForREST/Gmail
   - GoogleSignIn
+  - GTMAppAuth
   - IDZSwiftCommonCrypto
   - mailcore2-ios
   - MBProgressHUD
@@ -141,6 +142,6 @@ SPEC CHECKSUMS:
   Texture: 2f109e937850d94d1d07232041c9c7313ccddb81
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: db76bef5ac26521d4df717e2991b485d09f8ffc5
+PODFILE CHECKSUM: 6f91555731cbd62d8d40d7455a29c2e1e5ab453d
 
 COCOAPODS: 1.10.1

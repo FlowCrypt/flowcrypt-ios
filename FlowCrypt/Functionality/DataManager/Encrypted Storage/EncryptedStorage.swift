@@ -80,21 +80,23 @@ final class EncryptedStorage: EncryptedStorageType {
 
 // MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
-    func logOutUser(email: String) {
-            // TODO: - ANTON - EncryptedStorage - logOut
-        //            UserObject
-        //            KeyInfo
-        //            EmailAccessToken
-        //            SessionObject
-        //            FolderObject
-        //            ContactObject
-        //            KeyAlgoObject
+    func logOutUser(email: String) throws {
+        let users = storage.objects(UserObject.self)
 
-        let u = storage.objects(UserObject.self).filter { $0.email == email }
-        let k = storage.objects(KeyInfo.self).filter { $0.account == email }
-        let f = storage.objects(FolderObject.self)
-
-//        destroyEncryptedStorage()
+        // in case there is only one user - just delete storage
+        if users.count == 1, users.first?.email == email {
+            destroyEncryptedStorage()
+        } else {
+            // remove user and keys for this user
+            let userToDelete = users.filter { $0.email == email }
+            let keys = storage.objects(KeyInfo.self).filter { $0.account == email }
+            let folders = storage.objects(FolderObject.self)
+            try storage.write {
+                storage.delete(userToDelete)
+                storage.delete(keys)
+                storage.delete(folders)
+            }
+        }
     }
 
     private func destroyEncryptedStorage() {

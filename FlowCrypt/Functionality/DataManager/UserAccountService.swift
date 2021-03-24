@@ -14,19 +14,28 @@ protocol UserAccountServiceType {
     func startFor(user type: SessionType) -> Promise<Void>
 }
 
+// TODO: - ANTON - handle errors
+enum UserAccountServiceError: Error {
+    case userIsNotLoggedIn
+    case storage(Error)
+}
+
 final class UserAccountService: UserAccountServiceType {
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
     private let localStorage: LocalStorageType & LogOutHandler
     private let dataService: DataServiceType
+    private let imap: Imap
 
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
-        dataService: DataServiceType = DataService.shared
+        dataService: DataServiceType = DataService.shared,
+        imap: Imap = .shared
     ) {
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
         self.dataService = dataService
+        self.imap = imap
     }
 
     private var currentUser: User? {
@@ -38,22 +47,30 @@ final class UserAccountService: UserAccountServiceType {
     }
 
     func logOutCurrentUser() -> Promise<Void> {
-        guard let currentUser = dataService.currentUser else {
-            debugPrint("[UserAccountService] user is not logged in")
-            return Promise(())
-        }
-        let email = currentUser.email
-        storages.forEach { $0.logOutUser(email: email) }
+        Promise { [weak self] (_, reject) in
+            guard let self = self else { throw AppErr.nilSelf }
 
-        switch dataService.currentAuthType {
-        case .oAuthGmail:
-            return logOutGmailSession()
-        case .password:
-            return logOutImapUserSession()
-        default:
-            // TODO: - ANTON - consider reject with error
-            assertionFailure("User is not logged in")
-            return Promise(())
+            guard let currentUser = self.dataService.currentUser else {
+                debugPrint("[UserAccountService] user is not logged in")
+                return reject(UserAccountServiceError.userIsNotLoggedIn)
+            }
+            let email = currentUser.email
+
+            do {
+                try self.storages.forEach { try $0.logOutUser(email: email) }
+            } catch let error {
+                reject(UserAccountServiceError.storage(error))
+            }
+
+            switch self.dataService.currentAuthType {
+            case .oAuthGmail:
+                try await(self.logOutGmailSession())
+            case .password:
+                try await(self.logOutImapUserSession())
+            default:
+                assertionFailure("User is not logged in")
+                return reject(UserAccountServiceError.userIsNotLoggedIn)
+            }
         }
     }
 
@@ -62,9 +79,8 @@ final class UserAccountService: UserAccountServiceType {
     }
 
     private func logOutImapUserSession() -> Promise<Void> {
-        Promise<Void> { (resolve, _) in
-            // TODO: - ANTON - inject
-            Imap.shared.disconnect()
+        Promise<Void> { [weak self] (resolve, _) in
+            self?.imap.disconnect()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 resolve(())
             }
@@ -90,11 +106,24 @@ final class UserAccountService: UserAccountServiceType {
                 self.encryptedStorage.saveActiveUser(with: user)
                 resolve(())
             case let .session(user):
-                try await(self.logOutCurrentUser())
+                // perform log out only if user logged in
+                if self.currentUser != nil {
+                    try await(self.logOutCurrentUser())
+                }
                 self.encryptedStorage.saveActiveUser(with: user)
                 // start session for saved user
                 Imap.shared.setupSession()
             }
+        }
+    }
+
+    func startForNextUserIfPossible() -> Promise<Void> {
+        Promise { [weak self] (resolve, reject) in
+            guard let user = self?.encryptedStorage.getAllUsers().first else {
+               return resolve(())
+            }
+
+            // TODO: - ANTON
         }
     }
 }

@@ -7,6 +7,7 @@ use_frameworks!
 
 def app_pods
   pod 'GoogleSignIn'
+  pod 'GTMAppAuth'
   pod 'mailcore2-ios'
   pod 'MBProgressHUD'
   pod 'SwiftLint' # todo - add linting rules

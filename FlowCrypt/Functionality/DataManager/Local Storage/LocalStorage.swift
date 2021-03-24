@@ -31,14 +31,13 @@ extension LocalStorage {
     var trashFolderPath: String? {
         storage.string(forKey: Constants.indexTrashFolder.rawValue)
     }
-
     func saveTrashFolder(path: String) {
         storage.set(path, forKey: Constants.indexTrashFolder.rawValue)
     }
 }
 
 extension LocalStorage: LogOutHandler {
-    func logOutUser(email: String) {
+    func logOutUser(email: String) throws {
         Constants.allCases
             .compactMap { $0.rawValue }
             .forEach {
