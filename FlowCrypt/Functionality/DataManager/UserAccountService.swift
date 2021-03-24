@@ -75,7 +75,9 @@ final class UserAccountService: UserAccountServiceType {
     }
 
     private func logOutGmailSession() -> Promise<Void> {
-        GoogleUserService.shared.signOut()
+        // TODO: - ANTON !!!
+        Promise(())
+        // GoogleUserService.shared.signOut()
     }
 
     private func logOutImapUserSession() -> Promise<Void> {

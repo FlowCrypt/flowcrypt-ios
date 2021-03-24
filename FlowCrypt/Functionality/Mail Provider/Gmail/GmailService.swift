@@ -12,6 +12,7 @@ import GoogleAPIClientForREST
 
 struct GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
+    let userService: GoogleUserService
 
     private var signInService: GIDSignIn {
         GIDSignIn.sharedInstance()
@@ -19,11 +20,13 @@ struct GmailService: MailServiceProvider {
 
     var gmailService: GTLRService {
         let service = GTLRGmailService()
-        service.authorizer = signInService.currentUser.authentication.fetcherAuthorizer()
+        service.authorizer = userService.authorization
         return service
     }
 
-    let userService: GoogleUserService = .shared
+    init(userService: GoogleUserService = GoogleUserService()) {
+        self.userService = userService
+    }
 }
 
 // Gmail string extension identifier

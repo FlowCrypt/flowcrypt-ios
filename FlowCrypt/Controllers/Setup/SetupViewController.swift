@@ -52,7 +52,8 @@ final class SetupViewController: TableNodeViewController {
     }
 
     init(
-        userService: UserServiceType = GoogleUserService.shared,
+        // TODO: - ANTON !!! - check usage of userService
+        userService: UserServiceType = GoogleUserService(),
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: SetupViewDecoratorType = SetupViewDecorator(),

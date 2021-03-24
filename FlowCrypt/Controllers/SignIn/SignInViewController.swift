@@ -18,7 +18,8 @@ final class SignInViewController: TableNodeViewController {
     private let decorator: SignInViewDecoratorType
 
     init(
-        userService: UserServiceType = GoogleUserService.shared,
+        // TODO: - ANTON !!! - check usage of userService
+        userService: UserServiceType = GoogleUserService(),
         core: Core = Core.shared,
         decorator: SignInViewDecoratorType = SignInViewDecorator()
     ) {
@@ -102,7 +103,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 extension SignInViewController {
     private func signInWithGmail() {
         logDebug(106, "GoogleApi.signIn")
-        userService.signIn()
+        userService.signIn(in: self)
             .then(on: .main) { [weak self] _ in
                 self?.proceedToRecover()
             }

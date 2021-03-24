@@ -49,7 +49,8 @@ extension GoogleService: GoogleServiceType {
         googleSignIn.clientID = GeneralConstants.Gmail.clientID
         let scopes = GeneralConstants.Gmail.currentScope.map(\.value)
         googleSignIn.scopes = scopes
-        googleSignIn.delegate = GoogleUserService.shared
+        // TODO: - ANTON !!!
+//        googleSignIn.delegate = GoogleUserService.shared
     }
 
     func searchContacts(query: String) -> Promise<[String]> {
