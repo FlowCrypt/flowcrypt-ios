@@ -94,6 +94,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
 
+        // TODO: - ANTON
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.s.signIn(in: self).then(on: .main) { _ in
 

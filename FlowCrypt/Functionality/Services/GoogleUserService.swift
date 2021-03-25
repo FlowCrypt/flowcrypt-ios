@@ -32,6 +32,10 @@ final class GoogleUserService: NSObject {
         GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.keychainIndex)
     }
 
+    var token: String? {
+        authorization?.authState.lastTokenResponse?.accessToken
+    }
+
     let accountService: UserAccountServiceType
 
     init(accountService: UserAccountServiceType = UserAccountService()) {
@@ -41,7 +45,6 @@ final class GoogleUserService: NSObject {
 
 extension GoogleUserService: UserServiceType {
     func renewSession() -> Promise<Void> {
-
         Promise<Void> { [weak self] resolve, reject in
             resolve(())
 //            guard let self = self else { throw AppErr.nilSelf }
@@ -135,7 +138,7 @@ extension GoogleUserService {
         OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
-            scopes: [OIDScopeOpenID, OIDScopeProfile],
+            scopes: GeneralConstants.Gmail.currentScope.map { $0.value },
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
             additionalParameters: nil
@@ -155,6 +158,5 @@ extension GoogleUserService: OIDAuthStateChangeDelegate {
         saveAuth(state: state)
     }
 }
-
 // TODO: - ANTON
 // dataService.startFor(user: .google(user.profile.email, name: user.profile.name, token: token))

@@ -53,7 +53,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let globalRouter: GlobalRouterType
     private let searchThrottler = Throttler(seconds: 1)
-    private let googleService: GoogleServiceType
+    private let contactsProvider: ContactsProvider
     private let userDefaults: UserDefaults
 
     private var input: Input
@@ -68,7 +68,7 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
-        googleService: GoogleServiceType = GoogleService(),
+        contactsProvider: ContactsProvider = UserContactsProvider(),
         userDefaults: UserDefaults = .standard,
         globalRouter: GlobalRouterType = GlobalRouter(),
         contactsService: ContactsServiceType = ContactsService()
@@ -79,7 +79,7 @@ final class ComposeViewController: TableNodeViewController {
         self.input = input
         self.decorator = decorator
         self.core = core
-        self.googleService = googleService
+        self.contactsProvider = contactsProvider
         self.userDefaults = userDefaults
         self.globalRouter = globalRouter
         self.contactsService = contactsService
@@ -149,34 +149,6 @@ extension ComposeViewController {
             $0.delegate = self
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
-        }
-    }
-
-    private func showScopeAlertIfNeeded() {
-        if googleService.shouldRenewToken(for: [.mail]),
-            !userDefaults.bool(forKey: Constants.shouldShowScopeAlertIndex) {
-            userDefaults.set(true, forKey: Constants.shouldShowScopeAlertIndex)
-            let alert = UIAlertController(
-                title: "",
-                message: "compose_enable_search".localized,
-                preferredStyle: .alert
-            )
-            let okAction = UIAlertAction(
-                title: "Log out",
-                style: .default
-            ) { _ in
-                // temporary disable search contacts
-                // https://github.com/FlowCrypt/flowcrypt-ios/issues/217
-            }
-            let cancelAction = UIAlertAction(
-                title: "Cancel",
-                style: .destructive
-            ) { _ in
-            }
-            alert.addAction(okAction)
-            alert.addAction(cancelAction)
-
-            present(alert, animated: true, completion: nil)
         }
     }
 }
@@ -655,7 +627,7 @@ extension ComposeViewController {
 // MARK: - Action Handling
 extension ComposeViewController {
     private func searchEmail(with query: String) {
-        googleService.searchContacts(query: query)
+        contactsProvider.searchContacts(query: query)
             .then(on: .main) { [weak self] emails in
                 let state: State = emails.isNotEmpty
                     ? .searchEmails(emails)
@@ -769,5 +741,41 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
         node.reloadSections(IndexSet(integer: 1), with: .fade)
+    }
+}
+
+// temporary disable search contacts
+// https://github.com/FlowCrypt/flowcrypt-ios/issues/217
+extension ComposeViewController {
+    private func showScopeAlertIfNeeded() {
+        if shouldRenewToken(for: [.mail]),
+            !userDefaults.bool(forKey: Constants.shouldShowScopeAlertIndex) {
+            userDefaults.set(true, forKey: Constants.shouldShowScopeAlertIndex)
+            let alert = UIAlertController(
+                title: "",
+                message: "compose_enable_search".localized,
+                preferredStyle: .alert
+            )
+            let okAction = UIAlertAction(
+                title: "Log out",
+                style: .default
+            ) { _ in
+                debugPrint("Log out")
+            }
+            let cancelAction = UIAlertAction(
+                title: "Cancel",
+                style: .destructive
+            ) { _ in
+                debugPrint("Cancel")
+            }
+            alert.addAction(okAction)
+            alert.addAction(cancelAction)
+
+            present(alert, animated: true, completion: nil)
+        }
+    }
+
+    private func shouldRenewToken(for newScope: [GoogleScope]) -> Bool {
+        false
     }
 }

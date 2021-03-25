@@ -12,14 +12,6 @@ import Promises
 struct AppStartup {
     static var shared: AppStartup = AppStartup()
 
-    let googleService: GoogleServiceType
-
-    private init(
-        googleService: GoogleServiceType = GoogleService()
-    ) {
-        self.googleService = googleService
-    }
-
     public func initializeApp(window: UIWindow) {
         let start = DispatchTime.now()
         DispatchQueue.promises = .global()
@@ -27,7 +19,6 @@ struct AppStartup {
         window.makeKeyAndVisible()
         Promise<Void> {
             self.setupCore()
-            try self.setUpAuthentication()
             try self.setupMigrationIfNeeded()
             try self.setupSession()
         }.then(on: .main) {
@@ -41,10 +32,6 @@ struct AppStartup {
 
     private func setupCore() {
         Core.shared.startInBackgroundIfNotAlreadyRunning()
-    }
-
-    private func setUpAuthentication() throws {
-        try googleService.setUpAuthentication()
     }
 
     private func setupMigrationIfNeeded() throws {

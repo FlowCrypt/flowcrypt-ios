@@ -10,7 +10,6 @@ import Foundation
 import GoogleSignIn
 import GoogleAPIClientForREST
 
-
 // TODO - Instead of get properties use some DI mechanism
 // to reuse already initialised services
 // and remove them on logout

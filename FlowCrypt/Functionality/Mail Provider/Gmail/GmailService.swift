@@ -7,16 +7,11 @@
 //
 
 import Foundation
-import GoogleSignIn
 import GoogleAPIClientForREST
 
 struct GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
     let userService: GoogleUserService
-
-    private var signInService: GIDSignIn {
-        GIDSignIn.sharedInstance()
-    }
 
     var gmailService: GTLRService {
         let service = GTLRGmailService()

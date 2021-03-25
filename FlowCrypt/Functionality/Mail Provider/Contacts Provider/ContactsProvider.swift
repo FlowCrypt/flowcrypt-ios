@@ -1,32 +1,33 @@
 //
-//  GoogleService.swift
+//  ContactsProvider.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 28/02/2020.
-//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
+//  Created by Anton Kharchevskyi on 25.03.2021.
+//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
 import Foundation
-import GoogleSignIn
 import Promises
 
-protocol GoogleServiceType {
-    func setUpAuthentication() throws
+protocol ContactsProvider {
     func searchContacts(query: String) -> Promise<[String]>
-    func shouldRenewToken(for scopes: [GoogleScope]) -> Bool
 }
 
-final class GoogleService {
+final class UserContactsProvider {
     private enum Constants {
         static let scheme = "https"
         static let host = "www.google.com"
         static let searchPath = "/m8/feeds/contacts/default/thin"
     }
 
-    private var instance = GIDSignIn.sharedInstance()
+    private let userService: GoogleUserService
 
     private var token: String? {
-        GIDSignIn.sharedInstance().currentUser.authentication.accessToken
+        userService.token
+    }
+
+    init(userService: GoogleUserService = GoogleUserService()) {
+        self.userService = userService
     }
 
     private func components(for path: String) -> URLComponents {
@@ -38,21 +39,7 @@ final class GoogleService {
     }
 }
 
-extension GoogleService: GoogleServiceType {
-    func shouldRenewToken(for scopes: [GoogleScope]) -> Bool {
-        Set(scopes.map { $0.value })
-            .isSubset(of: Set(instance?.scopes.compactMap { $0 as? String } ?? []))
-    }
-
-    func setUpAuthentication() throws {
-        guard let googleSignIn = instance else { throw AppErr.general("Unexpected nil GIDSignIn") }
-        googleSignIn.clientID = GeneralConstants.Gmail.clientID
-        let scopes = GeneralConstants.Gmail.currentScope.map(\.value)
-        googleSignIn.scopes = scopes
-        // TODO: - ANTON !!!
-//        googleSignIn.delegate = GoogleUserService.shared
-    }
-
+extension UserContactsProvider: ContactsProvider {
     func searchContacts(query: String) -> Promise<[String]> {
         guard let token = token else {
             assertionFailure("token should not be nil")
