@@ -16,8 +16,21 @@ protocol UserServiceType {
     var accountService: UserAccountServiceType { get }
 
     func signOut() -> Promise<Void>
-    func signIn(in viewController: UIViewController) -> Promise<Void>
+    func signIn(in viewController: UIViewController) -> Promise<SessionType>
     func renewSession() -> Promise<Void>
+}
+
+enum GoogleUserServiceError: Error {
+    case missedAuthorization
+    case invalidUserEndpoint
+    case serviceError(Error)
+    case parsingError(Error)
+    case inconsistentState(String)
+}
+
+struct GoogleUser: Codable {
+    let name: String
+    let picture: URL?
 }
 
 final class GoogleUserService: NSObject {
@@ -53,45 +66,7 @@ extension GoogleUserService: UserServiceType {
         }
     }
 
-    private func fetchUser() {
-        guard let authorization = authorization else {
-            assertionFailure("authorization should not be nil at this point")
-            return
-        }
-
-        guard let userInfoEndpoint = URL(string: "https://www.googleapis.com/oauth2/v3/userinfo") else {
-            assertionFailure("userInfoEndpoint should not be nil")
-            return
-        }
-
-        let fetcherService = GTMSessionFetcherService()
-        fetcherService.authorizer = authorization
-
-        fetcherService.fetcher(with: userInfoEndpoint).beginFetch { [weak self] (data, error) in
-            if let data = data {
-                self?.handleUserInfo(data: data)
-            } else if let error = error {
-                self?.handleUserInfo(error: error)
-            } else {
-                assertionFailure("Inconsistent state for fetcher")
-            }
-        }
-    }
-
-    private func handleUserInfo(error: Error) {
-        if (error as NSError).isEqual(OIDOAuthTokenErrorDomain) {
-            debugPrint("Authorization error during token refresh, clearing state. \(error)")
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.keychainIndex)
-        } else {
-            debugPrint("Authorization error during fetching user info")
-        }
-    }
-
-    private func handleUserInfo(data: Data) {
-        print("^^ \(String(data: data, encoding: .utf8))")
-    }
-
-    func signIn(in viewController: UIViewController) -> Promise<Void> {
+    func signIn(in viewController: UIViewController) -> Promise<SessionType> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
 
@@ -102,13 +77,28 @@ extension GoogleUserService: UserServiceType {
                 presenting: viewController
             ) { (authState, error) in
                 if let authState = authState {
-                    authState.stateChangeDelegate = self
                     self.saveAuth(state: authState)
-                    self.fetchUser()
-                    resolve(())
+                    
+                    guard let email = GTMAppAuthFetcherAuthorization(authState: authState).userEmail else {
+                        reject(GoogleUserServiceError.inconsistentState("Missed email"))
+                        return
+                    }
+
+                    guard let token = authState.lastTokenResponse?.accessToken else {
+                        reject(GoogleUserServiceError.inconsistentState("Missed token"))
+                        return
+                    }
+                    
+                    self.fetchGoogleUser { result in
+                        switch result {
+                        case .success(let user):
+                            resolve(SessionType.google(email, name: user.name, token: token))
+                        case .failure(let error):
+                            self.handleUserInfo(error: error)
+                            reject(error)
+                        }
+                    }
                 } else if let error = error {
-                    // TODO: - ANTON - handle errors
-                    print("^^ error \(error)")
                     reject(error)
                 } else {
                     assertionFailure()
@@ -135,7 +125,7 @@ extension GoogleUserService {
         OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
-            scopes: GeneralConstants.Gmail.currentScope.map { $0.value },
+            scopes: GeneralConstants.Gmail.currentScope.map { $0.value } + [OIDScopeEmail],
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
             additionalParameters: nil
@@ -144,14 +134,58 @@ extension GoogleUserService {
 
     // save auth session to keychain
     private func saveAuth(state: OIDAuthState) {
+        state.stateChangeDelegate = self
         let authorization: GTMAppAuthFetcherAuthorization = GTMAppAuthFetcherAuthorization(authState: state)
         GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.keychainIndex)
+    }
+
+    private func fetchGoogleUser(_ completion: @escaping ((Result<GoogleUser, GoogleUserServiceError>) -> Void)) {
+        guard let authorization = authorization else {
+            assertionFailure("authorization should not be nil at this point")
+            completion(.failure(.missedAuthorization))
+            return
+        }
+
+        guard let userInfoEndpoint = URL(string: "https://www.googleapis.com/oauth2/v3/userinfo") else {
+            assertionFailure("userInfoEndpoint should not be nil")
+            completion(.failure(.invalidUserEndpoint))
+            return
+        }
+
+        let fetcherService = GTMSessionFetcherService()
+        fetcherService.authorizer = authorization
+
+        fetcherService.fetcher(with: userInfoEndpoint)
+            .beginFetch { (data, error) in
+                if let data = data {
+                    do {
+                        let user = try JSONDecoder().decode(GoogleUser.self, from: data)
+                        completion(.success(user))
+                    } catch let error {
+                        completion(.failure(.parsingError(error)))
+                    }
+                } else if let error = error {
+                    completion(.failure(.serviceError(error)))
+                } else {
+                    completion(.failure(.inconsistentState("Fetching user")))
+                }
+            }
+    }
+
+    private func handleUserInfo(error: Error) {
+        if (error as NSError).isEqual(OIDOAuthTokenErrorDomain) {
+            debugPrint("Authorization error during token refresh, clearing state. \(error)")
+            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.keychainIndex)
+        } else {
+            debugPrint("Authorization error during fetching user info")
+        }
     }
 }
 
 // MARK: - OIDAuthStateChangeDelegate
 extension GoogleUserService: OIDAuthStateChangeDelegate {
     func didChange(_ state: OIDAuthState) {
+        // TODO: - ANTON - check if it's possible to save session here
         saveAuth(state: state)
     }
 }

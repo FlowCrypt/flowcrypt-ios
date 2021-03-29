@@ -7,29 +7,6 @@ import FlowCryptCommon
 import FlowCryptUI
 
 final class SignInViewController: TableNodeViewController {
-    enum SignInType: String {
-        case gmail, outlook, other
-
-        var title: String {
-            switch self {
-            case .gmail: return "sign_in_gmail".localized
-            case .outlook: return "sign_in_outlook".localized
-            case .other: return "sign_in_other".localized
-            }
-        }
-
-        var image: UIImage? {
-            switch self {
-            case .gmail: return UIImage(named: "gmail_icn")
-            case .outlook: return UIImage(named: "microsoft-outlook")
-            case .other: return UIImage(named: "email_icn")?.tinted(.mainTextColor)
-            }
-        }
-
-        var attributedTitle: NSAttributedString {
-            NSAttributedString.text(from: title, style: .medium(17), color: .mainTextColor)
-        }
-    }
 
     enum AppLinks: String, CaseIterable {
         case privacy, terms, security
@@ -114,7 +91,11 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
                     self?.signInWithOutlook()
                 }
             case .other:
-                return SigninButtonNode(.other) { [weak self] in
+                let otherProviderInput = SigninButtonNode.Input(
+                    title: "sign_in_other".localized.attributed(.medium(17), color: .mainTextColor),
+                    image: UIImage(named: "email_icn")?.tinted(.mainTextColor)
+                )
+                return SigninButtonNode(input: otherProviderInput) { [weak self] in
                     self?.proceedToOtherProvider()
                 }
             }
@@ -161,10 +142,6 @@ extension SignInViewController {
             debugPrint("catch generic")
             debugPrint(error)
         }
-    }
-
-    private func proceedToRecover() {
-        GlobalRouter().proceed()
     }
 
     private func proceedToOtherProvider() {

@@ -506,12 +506,8 @@ extension EmailProviderViewController {
     }
 
     private func handleSuccessfulConnection() {
-        // TODO: - ANTON
-        GlobalRouter().startFor(
-            user: .session(user),
-            executeBeforeStart: { [weak self] in
-                self?.hideSpinner()
-            })
+        hideSpinner()
+        globalRouter.signIn(with: .other(user))
     }
 
     private func checkCurrentUser() -> Result<UserObject, UserError> {

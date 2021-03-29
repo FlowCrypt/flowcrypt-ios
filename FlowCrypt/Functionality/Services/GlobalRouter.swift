@@ -14,8 +14,16 @@ protocol GlobalRouterType {
 
     func logOut() -> Promise<Void>
 
-    func signIn(in viewController: UIViewController, with type: SignInType)
-    func signOut(in viewController: UIViewController)
+    func signIn(with type: SignInType)
+    func signOut()
+}
+
+enum SignInType {
+    case gmail, outlook, other(UserObject)
+}
+
+enum GlobalRoutingError: Error {
+    case missedRootViewController
 }
 
 final class GlobalRouter: GlobalRouterType {
@@ -28,9 +36,14 @@ final class GlobalRouter: GlobalRouterType {
     }
 
     private let userAccountService: UserAccountServiceType
+    private let googleService: GoogleUserService
 
-    init(userAccountService: UserAccountServiceType = UserAccountService()) {
+    init(
+        userAccountService: UserAccountServiceType = UserAccountService(),
+        googleService: GoogleUserService = GoogleUserService()
+    ) {
         self.userAccountService = userAccountService
+        self.googleService = googleService
     }
 }
 
@@ -48,25 +61,38 @@ extension GlobalRouter {
 
 // MARK: - SignIn
 extension GlobalRouter {
-    func signIn(in viewController: UIViewController, with type: SignInType) {
-        switch type {
-        case .gmail:
+    func signIn(with type: SignInType) {
+        guard let viewController = self.keyWindow.rootViewController else {
+            assertionFailure("Failed to sign in")
+            return
+        }
 
+        startUserSessionFor(signIn: type, in: viewController)
+            .then(on: .main) { [weak self] in
+                self?.proceed()
+            }
+            .catch(on: .main) { error in
+                viewController.showAlert(error: error, message: "Failed to sign in")
+            }
+    }
 
+    private func startUserSessionFor(signIn type: SignInType, in viewController: UIViewController) -> Promise<Void> {
+        Promise<Void> { [weak self] (resolve, reject) in
+            guard let self = self else {
+                return reject(AppErr.nilSelf)
+            }
 
-
-//            userAccountService.signIn(in: viewController)
-//                .then(on: .main) { [weak self] _ in
-//                    self?.proceedToRecover()
-//                }
-//                .catch(on: .main) { [weak self] error in
-//                    self?.showAlert(error: error, message: "Failed to sign in")
-//                }
-        break
-        case .outlook:
-            break
-        case .other:
-            break
+            switch type {
+            case .gmail:
+                let userSession = try await(self.googleService.signIn(in: viewController))
+                try await(self.userAccountService.startFor(user: userSession))
+                resolve(())
+            case .other(let user):
+                try await(self.userAccountService.startFor(user: .session(user)))
+                resolve(())
+            case .outlook:
+                resolve(())
+            }
         }
     }
 
@@ -91,7 +117,7 @@ extension GlobalRouter {
         userAccountService.logOutCurrentUser()
     }
 
-    func signOut(in viewController: UIViewController) {
+    func signOut() {
 //        userAccountService.signOut()
 //            .then(on: .main) { [weak self] _ in
 //                self?.router.proceed()

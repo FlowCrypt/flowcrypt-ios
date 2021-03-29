@@ -31,19 +31,41 @@ struct SignInViewDecorator: SignInViewDecoratorType {
     }
 }
 
+// TODO: - ANTON - refactor usage of SignInType in UI
 extension SigninButtonNode {
-    convenience init(_ buttonType: SignInViewController.SignInType, onTap: (() -> Void)?) {
+    convenience init(_ buttonType: SignInType, onTap: (() -> Void)?) {
         self.init(
             input: SigninButtonNode.Input(buttonType),
             onTap: onTap
         )
-        button.accessibilityLabel = buttonType.rawValue
     }
 }
 
 extension SigninButtonNode.Input {
-    init(_ signInType: SignInViewController.SignInType) {
+    init(_ signInType: SignInType) {
         self.init(title: signInType.attributedTitle, image: signInType.image)
+    }
+}
+
+private extension SignInType {
+    var title: String {
+        switch self {
+        case .gmail: return "sign_in_gmail".localized
+        case .outlook: return "sign_in_outlook".localized
+        case .other: return "sign_in_other".localized
+        }
+    }
+
+    var image: UIImage? {
+        switch self {
+        case .gmail: return UIImage(named: "gmail_icn")
+        case .outlook: return UIImage(named: "microsoft-outlook")
+        case .other: return UIImage(named: "email_icn")?.tinted(.mainTextColor)
+        }
+    }
+
+    var attributedTitle: NSAttributedString {
+        NSAttributedString.text(from: title, style: .medium(17), color: .mainTextColor)
     }
 }
 
