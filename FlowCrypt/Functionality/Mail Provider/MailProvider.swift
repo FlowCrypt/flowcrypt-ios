@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import GoogleSignIn
 import GoogleAPIClientForREST
 
 // TODO - Instead of get properties use some DI mechanism

@@ -89,17 +89,9 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         fetchAndRenderEmails(nil)
     }
 
-    let s = GoogleUserService()
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-
-        // TODO: - ANTON
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.s.signIn(in: self).then(on: .main) { _ in
-
-            }
-        }
     }
 
     override func viewDidLayoutSubviews() {

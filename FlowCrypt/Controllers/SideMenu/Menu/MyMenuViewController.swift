@@ -225,9 +225,7 @@ extension MyMenuViewController {
                 completion?()
             }
         )
-
     }
-
 }
 
 // MARK: - UI

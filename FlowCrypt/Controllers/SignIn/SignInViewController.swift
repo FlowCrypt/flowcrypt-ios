@@ -5,26 +5,51 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import GoogleSignIn
-import UIKit
 
 final class SignInViewController: TableNodeViewController {
+    enum SignInType: String {
+        case gmail, outlook, other
+
+        var title: String {
+            switch self {
+            case .gmail: return "sign_in_gmail".localized
+            case .outlook: return "sign_in_outlook".localized
+            case .other: return "sign_in_other".localized
+            }
+        }
+
+        var image: UIImage? {
+            switch self {
+            case .gmail: return UIImage(named: "gmail_icn")
+            case .outlook: return UIImage(named: "microsoft-outlook")
+            case .other: return UIImage(named: "email_icn")?.tinted(.mainTextColor)
+            }
+        }
+
+        var attributedTitle: NSAttributedString {
+            NSAttributedString.text(from: title, style: .medium(17), color: .mainTextColor)
+        }
+    }
+
+    enum AppLinks: String, CaseIterable {
+        case privacy, terms, security
+    }
+
     enum Parts: Int, CaseIterable {
         case links, logo, description, gmail, outlook, other
     }
 
-    private let userService: UserServiceType
+    private let globalRouter: GlobalRouterType
     private let core: Core
     private let decorator: SignInViewDecoratorType
 
     init(
-        // TODO: - ANTON !!! - check usage of userService
-        userService: UserServiceType = GoogleUserService(),
+        globalRouter: GlobalRouterType = GlobalRouter(),
         core: Core = Core.shared,
         decorator: SignInViewDecoratorType = SignInViewDecorator()
     ) {
+        self.globalRouter = globalRouter
         self.core = core
-        self.userService = userService
         self.decorator = decorator
 
         super.init(node: TableNode())
@@ -43,7 +68,6 @@ final class SignInViewController: TableNodeViewController {
     }
 
     private func setup() {
-        GIDSignIn.sharedInstance()?.presentingViewController = self
         node.view.separatorStyle = .none
         node.view.alwaysBounceVertical = false
     }
@@ -73,7 +97,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .links:
-                return LinkButtonNode(AppLinks.allCases) { [weak self] identifier in
+                return LinkButtonNode(SignInViewController.AppLinks.allCases) { [weak self] identifier in
                     guard let appLink = AppLinks(rawValue: identifier) else { return }
                     self?.handle(option: appLink)
                 }
@@ -103,13 +127,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 extension SignInViewController {
     private func signInWithGmail() {
         logDebug(106, "GoogleApi.signIn")
-        userService.signIn(in: self)
-            .then(on: .main) { [weak self] _ in
-                self?.proceedToRecover()
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.showAlert(error: error, message: "Failed to sign in")
-            }
+        globalRouter.signIn(with: .gmail)
     }
 
     private func signInWithOutlook() {
@@ -117,7 +135,6 @@ extension SignInViewController {
         // below for debugging
         do {
             let start = DispatchTime.now()
-            //            let decrypted = try Core.decryptKey(armoredPrv: TestData.k3rsa4096.prv, passphrase: TestData.k3rsa4096.passphrase)
             let keys = [
                 PrvKeyInfo(
                     private: TestData.k3rsa4096.prv,
@@ -138,15 +155,12 @@ extension SignInViewController {
             )
             debugPrint(decrypted)
             debugPrint("decrypted \(start.millisecondsSince)")
-            //            debugPrint("text: \(decrypted.text)")
         } catch CoreError.exception {
             debugPrint("catch exception")
-            //            debugPrint(msg)
         } catch {
             debugPrint("catch generic")
             debugPrint(error)
         }
-
     }
 
     private func proceedToRecover() {
@@ -158,7 +172,7 @@ extension SignInViewController {
         navigationController?.pushViewController(setupViewController, animated: true)
     }
 
-    private func handle(option: AppLinks) {
+    private func handle(option: SignInViewController.AppLinks) {
         guard let url = option.url else { assertionFailure("Issue in provided url"); return }
         if #available(iOS 13.0, *) {
             present(WebViewController(url: url), animated: true, completion: nil)

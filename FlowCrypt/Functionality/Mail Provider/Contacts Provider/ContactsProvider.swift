@@ -20,14 +20,14 @@ final class UserContactsProvider {
         static let searchPath = "/m8/feeds/contacts/default/thin"
     }
 
-    private let userService: GoogleUserService
+    private let dataService: DataService
 
     private var token: String? {
-        userService.token
+        dataService.token
     }
 
-    init(userService: GoogleUserService = GoogleUserService()) {
-        self.userService = userService
+    init(dataService: DataService = .shared) {
+        self.dataService = dataService
     }
 
     private func components(for path: String) -> URLComponents {

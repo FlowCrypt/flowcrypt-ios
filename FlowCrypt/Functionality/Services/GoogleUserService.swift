@@ -7,11 +7,8 @@
 //
 
 import Foundation
-// TODO: - ANTON - REMOVE
-import GoogleSignIn
 import Promises
 import RealmSwift
-
 import AppAuth
 import GTMAppAuth
 
@@ -158,5 +155,3 @@ extension GoogleUserService: OIDAuthStateChangeDelegate {
         saveAuth(state: state)
     }
 }
-// TODO: - ANTON
-// dataService.startFor(user: .google(user.profile.email, name: user.profile.name, token: token))

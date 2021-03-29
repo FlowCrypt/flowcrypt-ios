@@ -32,7 +32,7 @@ struct SignInViewDecorator: SignInViewDecoratorType {
 }
 
 extension SigninButtonNode {
-    convenience init(_ buttonType: SignInType, onTap: (() -> Void)?) {
+    convenience init(_ buttonType: SignInViewController.SignInType, onTap: (() -> Void)?) {
         self.init(
             input: SigninButtonNode.Input(buttonType),
             onTap: onTap
@@ -42,12 +42,12 @@ extension SigninButtonNode {
 }
 
 extension SigninButtonNode.Input {
-    init(_ signInType: SignInType) {
+    init(_ signInType: SignInViewController.SignInType) {
         self.init(title: signInType.attributedTitle, image: signInType.image)
     }
 }
 
-extension AppLinks: Link {
+extension SignInViewController.AppLinks: Link {
     var title: String {
         switch self {
         case .privacy: return "sign_in_privacy".localized

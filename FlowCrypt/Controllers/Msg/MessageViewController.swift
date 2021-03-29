@@ -120,7 +120,7 @@ final class MessageViewController: TableNodeViewController {
             // we need to have only help and trash buttons
             items = [helpButton, trashButton]
 
-        // TODO: - ANTON - Check of this should be fixed
+        // TODO: - ANTON - Check if this should be fixed
         case "inbox":
             // for Gmail inbox we also need to have archive and unread buttons
             items = [helpButton, archiveButton, trashButton, unreadButton]

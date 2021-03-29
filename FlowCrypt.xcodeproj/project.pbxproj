@@ -247,8 +247,6 @@
 		D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F696294236091F4003712E1 /* SignInDescriptionNode.swift */; };
 		D2A9CA3B242619A400E1D898 /* SignInImageNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F696292236091DD003712E1 /* SignInImageNode.swift */; };
 		D2A9CA3D242619EC00E1D898 /* SignInViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */; };
-		D2A9CA3F24261A4600E1D898 /* SignInType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA3E24261A4600E1D898 /* SignInType.swift */; };
-		D2A9CA4224261DBC00E1D898 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA4124261DBC00E1D898 /* AppLinks.swift */; };
 		D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
 		D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */; };
 		D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
@@ -598,8 +596,6 @@
 		D2A1D3C723FD64AD00D626D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2A1D3D023FD83B100D626D6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewDecorator.swift; sourceTree = "<group>"; };
-		D2A9CA3E24261A4600E1D898 /* SignInType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInType.swift; sourceTree = "<group>"; };
-		D2A9CA4124261DBC00E1D898 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralConstantsTest.swift; sourceTree = "<group>"; };
 		D2D27B78248A8694007346FA /* BigIntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigIntExtension.swift; sourceTree = "<group>"; };
 		D2E26F6224F1698100612AF1 /* ContactsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListViewController.swift; sourceTree = "<group>"; };
@@ -689,7 +685,6 @@
 		04B4728A1ECE29D200B8266F /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				D2A9CA4024261A4D00E1D898 /* SignIn Models */,
 				9FD22A20230FF9BC005067A6 /* Inbox Models */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				9F0C3C132316E69300299985 /* User.swift */,
@@ -1583,15 +1578,6 @@
 			path = Nodes;
 			sourceTree = "<group>";
 		};
-		D2A9CA4024261A4D00E1D898 /* SignIn Models */ = {
-			isa = PBXGroup;
-			children = (
-				D2A9CA3E24261A4600E1D898 /* SignInType.swift */,
-				D2A9CA4124261DBC00E1D898 /* AppLinks.swift */,
-			);
-			path = "SignIn Models";
-			sourceTree = "<group>";
-		};
 		D2E26F6424F1698F00612AF1 /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
@@ -2251,7 +2237,6 @@
 				C192421F1EC48B6900C3D251 /* SetupViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				9FC411212595EA12001180A8 /* MessageSearchProvider.swift in Sources */,
-				D2A9CA4224261DBC00E1D898 /* AppLinks.swift in Sources */,
 				D27B911D24EFE806002DF0A1 /* ContactObject.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */,
@@ -2292,7 +2277,6 @@
 				9FF0673325520DE400FCC9E6 /* GmailService+send.swift in Sources */,
 				D20D3C892520B67C00D4AA9A /* BackupOptionsViewController.swift in Sources */,
 				D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */,
-				D2A9CA3F24261A4600E1D898 /* SignInType.swift in Sources */,
 				9F0C3C18231819B200299985 /* LoggerService.swift in Sources */,
 				D2E26F6324F1698100612AF1 /* ContactsListViewController.swift in Sources */,
 				9F53CB7B2555E1E300C0157A /* GmailService+folders.swift in Sources */,

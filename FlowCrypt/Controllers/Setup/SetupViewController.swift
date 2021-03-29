@@ -12,7 +12,6 @@ final class SetupViewController: TableNodeViewController {
         case title, description, passPhrase, divider, action, optionalAction
     }
 
-    private let userService: UserServiceType
     private let router: GlobalRouterType
     private let storage: DataServiceType & KeyDataServiceType
     private let decorator: SetupViewDecoratorType
@@ -52,8 +51,6 @@ final class SetupViewController: TableNodeViewController {
     }
 
     init(
-        // TODO: - ANTON !!! - check usage of userService
-        userService: UserServiceType = GoogleUserService(),
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: SetupViewDecoratorType = SetupViewDecorator(),
@@ -62,7 +59,6 @@ final class SetupViewController: TableNodeViewController {
         attester: AttesterApiType = AttesterApi(),
         backupService: BackupServiceType = BackupService.shared
     ) {
-        self.userService = userService
         self.router = router
         self.storage = storage
         self.decorator = decorator
@@ -398,17 +394,11 @@ extension SetupViewController {
 
     // TODO: - ANTON - FIX THIS IF NEEDED
     private func handleOtherAccount() {
-        userService.signOut()
-            .then(on: .main) { [weak self] _ in
-                self?.router.proceed()
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.showAlert(error: error, message: "Could not switch accounts")
-            }
+        router.signOut()
     }
 
     private func moveToMainFlow() {
-        GlobalRouter().proceed()
+        router.proceed()
     }
 }
 

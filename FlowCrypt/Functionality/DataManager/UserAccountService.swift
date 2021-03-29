@@ -24,6 +24,7 @@ final class UserAccountService: UserAccountServiceType {
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
     private let localStorage: LocalStorageType & LogOutHandler
     private let dataService: DataServiceType
+
     private let imap: Imap
 
     init(
@@ -45,7 +46,10 @@ final class UserAccountService: UserAccountServiceType {
     private var storages: [LogOutHandler] {
         [encryptedStorage, localStorage]
     }
+}
 
+// MARK: - LogOut
+extension UserAccountService {
     func logOutCurrentUser() -> Promise<Void> {
         Promise { [weak self] (_, reject) in
             guard let self = self else { throw AppErr.nilSelf }
@@ -75,7 +79,7 @@ final class UserAccountService: UserAccountServiceType {
     }
 
     private func logOutGmailSession() -> Promise<Void> {
-        // TODO: - ANTON !!!
+        // TODO: - ANTON !!! GoogleUserService
         Promise(())
         // GoogleUserService.shared.signOut()
     }
@@ -88,7 +92,11 @@ final class UserAccountService: UserAccountServiceType {
             }
         }
     }
+}
 
+// MARK: - LogIn
+extension UserAccountService {
+    /// start session for a user, this method will log out current user if user was saved, save and start session for a new user
     func startFor(user type: SessionType) -> Promise<Void> {
         Promise<Void> { [weak self] (resolve, _) in
             guard let self = self else { throw AppErr.nilSelf }
@@ -114,7 +122,7 @@ final class UserAccountService: UserAccountServiceType {
                 }
                 self.encryptedStorage.saveActiveUser(with: user)
                 // start session for saved user
-                Imap.shared.setupSession()
+                self.imap.setupSession()
             }
         }
     }

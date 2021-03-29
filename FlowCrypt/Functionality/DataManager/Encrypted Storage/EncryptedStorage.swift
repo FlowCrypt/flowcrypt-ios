@@ -43,7 +43,7 @@ final class EncryptedStorage: EncryptedStorageType {
         keychainService.getStorageEncryptionKey()
     }
 
-    // TODO: - ANTON - Add some logger
+    // TODO: - ANTON - Add logger (https://github.com/FlowCrypt/flowcrypt-ios/issues/282)
     private let debugLabel = "[EncryptedStorage][DB Migration]"
 
     private var encryptedConfiguration: Realm.Configuration {

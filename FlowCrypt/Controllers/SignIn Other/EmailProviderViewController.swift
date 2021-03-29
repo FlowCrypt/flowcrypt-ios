@@ -21,6 +21,7 @@ final class EmailProviderViewController: TableNodeViewController {
     private var selectedSection: Section?
 
     private let dataService: DataServiceType
+    private let globalRouter: GlobalRouterType
 
     private let decorator: EmailProviderViewDecoratorType
     private let sessionCredentials: SessionCredentialsProvider
@@ -28,11 +29,13 @@ final class EmailProviderViewController: TableNodeViewController {
     private var user = UserObject.empty
 
     init(
+        globalRouter: GlobalRouterType = GlobalRouter(),
         dataService: DataServiceType = DataService.shared,
         decorator: EmailProviderViewDecoratorType = EmailProviderViewDecorator(),
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
         imap: Imap = Imap.shared
     ) {
+        self.globalRouter = globalRouter
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials
         self.dataService = dataService
@@ -489,9 +492,12 @@ extension EmailProviderViewController {
     }
 
     private func handleConnection(error: Error) {
+        globalRouter.logOut()
+            .then(on: .main) {
+
+            }
+
         // TODO: - ANTON
-        GlobalRouter().logOut()
-//        dataService.logOutAndDestroyStorage()
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 //            let message = (error as? AppErr)?.userMessage ?? error.localizedDescription
 //            self.hideSpinner()
