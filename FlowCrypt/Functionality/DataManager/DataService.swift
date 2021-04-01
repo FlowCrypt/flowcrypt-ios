@@ -88,8 +88,10 @@ extension DataService: DataServiceType {
 
     var token: String? {
         switch currentAuthType {
-        case let .oAuthGmail(value): return value
-        default: return nil
+        case .oAuthGmail:
+            return GoogleUserService.userToken
+        default:
+            return nil
         }
     }
 }

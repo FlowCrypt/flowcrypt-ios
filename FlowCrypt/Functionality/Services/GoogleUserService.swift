@@ -13,8 +13,6 @@ import AppAuth
 import GTMAppAuth
 
 protocol UserServiceType {
-    var accountService: UserAccountServiceType { get }
-
     func signOut() -> Promise<Void>
     func signIn(in viewController: UIViewController) -> Promise<SessionType>
     func renewSession() -> Promise<Void>
@@ -33,23 +31,24 @@ struct GoogleUser: Codable {
     let picture: URL?
 }
 
+private enum Constants {
+    static let keychainIndex = "GTMAppAuthAuthorizerIndex"
+}
+
 final class GoogleUserService: NSObject {
-    private enum Constants {
-        static let keychainIndex = "GTMAppAuthAuthorizerIndex"
+    static var userToken: String? {
+        GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.keychainIndex)?
+            .authState
+            .lastTokenResponse?
+            .accessToken
     }
 
     var authorization: GTMAppAuthFetcherAuthorization? {
         GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.keychainIndex)
     }
 
-    var token: String? {
-        authorization?.authState.lastTokenResponse?.accessToken
-    }
-
-    let accountService: UserAccountServiceType
-
-    init(accountService: UserAccountServiceType = UserAccountService()) {
-        self.accountService = accountService
+    var appDelegate: AppDelegate? {
+        UIApplication.shared.delegate as? AppDelegate
     }
 }
 
@@ -67,7 +66,7 @@ extension GoogleUserService: UserServiceType {
     }
 
     func signIn(in viewController: UIViewController) -> Promise<SessionType> {
-        Promise { [weak self] resolve, reject in
+        Promise(on: .main) { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
 
             let request = self.makeAuthorizationRequest()
@@ -78,7 +77,7 @@ extension GoogleUserService: UserServiceType {
             ) { (authState, error) in
                 if let authState = authState {
                     self.saveAuth(state: authState)
-                    
+
                     guard let email = GTMAppAuthFetcherAuthorization(authState: authState).userEmail else {
                         reject(GoogleUserServiceError.inconsistentState("Missed email"))
                         return
@@ -88,7 +87,7 @@ extension GoogleUserService: UserServiceType {
                         reject(GoogleUserServiceError.inconsistentState("Missed token"))
                         return
                     }
-                    
+
                     self.fetchGoogleUser { result in
                         switch result {
                         case .success(let user):
@@ -105,16 +104,15 @@ extension GoogleUserService: UserServiceType {
                 }
             }
 
-            DispatchQueue.main.async {
-                // save current session state to handle redirect url
-                (UIApplication.shared.delegate as? AppDelegate)?.googleAuthSession = googleAuthSession
-            }
+            self.appDelegate?.googleAuthSession = googleAuthSession
         }
     }
 
     func signOut() -> Promise<Void> {
-        Promise<Void> { resolve, reject in
+        Promise<Void>(on: .main) { [weak self] (resolve, _) in
+            self?.appDelegate?.googleAuthSession = nil
             GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.keychainIndex)
+            resolve(())
         }
     }
 }

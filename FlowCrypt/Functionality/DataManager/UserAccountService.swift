@@ -17,6 +17,7 @@ protocol UserAccountServiceType {
 // TODO: - ANTON - handle errors
 enum UserAccountServiceError: Error {
     case userIsNotLoggedIn
+    case authTypeMissed
     case storage(Error)
 }
 
@@ -26,17 +27,20 @@ final class UserAccountService: UserAccountServiceType {
     private let dataService: DataServiceType
 
     private let imap: Imap
+    private let googleService: GoogleUserService
 
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
         dataService: DataServiceType = DataService.shared,
-        imap: Imap = .shared
+        imap: Imap = .shared,
+        googleService: GoogleUserService = GoogleUserService()
     ) {
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
         self.dataService = dataService
         self.imap = imap
+        self.googleService = googleService
     }
 
     private var currentUser: User? {
@@ -45,52 +49,6 @@ final class UserAccountService: UserAccountServiceType {
 
     private var storages: [LogOutHandler] {
         [encryptedStorage, localStorage]
-    }
-}
-
-// MARK: - LogOut
-extension UserAccountService {
-    func logOutCurrentUser() -> Promise<Void> {
-        Promise { [weak self] (_, reject) in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            guard let currentUser = self.dataService.currentUser else {
-                debugPrint("[UserAccountService] user is not logged in")
-                return reject(UserAccountServiceError.userIsNotLoggedIn)
-            }
-            let email = currentUser.email
-
-            do {
-                try self.storages.forEach { try $0.logOutUser(email: email) }
-            } catch let error {
-                reject(UserAccountServiceError.storage(error))
-            }
-
-            switch self.dataService.currentAuthType {
-            case .oAuthGmail:
-                try await(self.logOutGmailSession())
-            case .password:
-                try await(self.logOutImapUserSession())
-            default:
-                assertionFailure("User is not logged in")
-                return reject(UserAccountServiceError.userIsNotLoggedIn)
-            }
-        }
-    }
-
-    private func logOutGmailSession() -> Promise<Void> {
-        // TODO: - ANTON !!! GoogleUserService
-        Promise(())
-        // GoogleUserService.shared.signOut()
-    }
-
-    private func logOutImapUserSession() -> Promise<Void> {
-        Promise<Void> { [weak self] (resolve, _) in
-            self?.imap.disconnect()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                resolve(())
-            }
-        }
     }
 }
 
@@ -134,6 +92,50 @@ extension UserAccountService {
             }
 
             // TODO: - ANTON
+        }
+    }
+}
+
+// MARK: - LogOut
+extension UserAccountService {
+    func logOutCurrentUser() -> Promise<Void> {
+        Promise { [weak self] (resolve, reject) in
+            guard let self = self else { throw AppErr.nilSelf }
+
+            guard let currentUser = self.dataService.currentUser else {
+                debugPrint("[UserAccountService] user is not logged in")
+                return reject(UserAccountServiceError.userIsNotLoggedIn)
+            }
+            let email = currentUser.email
+
+            switch self.dataService.currentAuthType {
+            case .oAuthGmail:
+                try await(self.logOutGmailSession())
+            case .password:
+                try await(self.logOutImapUserSession())
+            default:
+                reject(UserAccountServiceError.authTypeMissed)
+            }
+
+            do {
+                try self.storages.forEach { try $0.logOutUser(email: email) }
+                resolve(())
+            } catch let error {
+                reject(UserAccountServiceError.storage(error))
+            }
+        }
+    }
+
+    private func logOutGmailSession() -> Promise<Void> {
+        googleService.signOut()
+    }
+
+    private func logOutImapUserSession() -> Promise<Void> {
+        Promise<Void> { [weak self] (resolve, _) in
+            self?.imap.disconnect()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                resolve(())
+            }
         }
     }
 }

@@ -65,7 +65,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     ) {
         self.foldersProvider = foldersProvider
         self.dataService = dataService
-        router = globalRouter
+        self.router = globalRouter
         self.decorator = decorator
         self.tableNode = tableNode
         super.init(node: ASDisplayNode())
@@ -290,11 +290,8 @@ extension MyMenuViewController {
         case .settings:
             sideMenuController()?.setContentViewController(SettingsViewController())
         case .logOut:
-            GlobalRouter().logOut()
-            // TODO: - ANTON
-        // logout
-        // start another if possible
-//            self.router.wipeOutAndReset()
+            router.signOut()
+            // TODO: - ANTON - menu - logout - start another if possible
         }
     }
 

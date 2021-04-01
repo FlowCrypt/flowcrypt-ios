@@ -51,7 +51,6 @@ final class ComposeViewController: TableNodeViewController {
     private let core: Core
     private let contactsService: ContactsServiceType
 
-    private let globalRouter: GlobalRouterType
     private let searchThrottler = Throttler(seconds: 1)
     private let contactsProvider: ContactsProvider
     private let userDefaults: UserDefaults
@@ -70,7 +69,6 @@ final class ComposeViewController: TableNodeViewController {
         core: Core = Core.shared,
         contactsProvider: ContactsProvider = UserContactsProvider(),
         userDefaults: UserDefaults = .standard,
-        globalRouter: GlobalRouterType = GlobalRouter(),
         contactsService: ContactsServiceType = ContactsService()
     ) {
         self.messageSender = messageSender
@@ -81,7 +79,6 @@ final class ComposeViewController: TableNodeViewController {
         self.core = core
         self.contactsProvider = contactsProvider
         self.userDefaults = userDefaults
-        self.globalRouter = globalRouter
         self.contactsService = contactsService
         contextToSend.subject = input.subject
         if input.isReply {

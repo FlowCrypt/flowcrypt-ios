@@ -61,7 +61,9 @@ final class EncryptedStorage: EncryptedStorageType {
 
     var storage: Realm {
         do {
-            return try Realm(configuration: encryptedConfiguration)
+            Realm.Configuration.defaultConfiguration = encryptedConfiguration
+            let realm = try Realm(configuration: encryptedConfiguration)
+            return realm
         } catch {
 //             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
 //             return nil
@@ -117,6 +119,9 @@ extension EncryptedStorage: LogOutHandler {
             return
         }
         guard defaultPath != self.encryptedConfiguration.fileURL else {
+            return
+        }
+        guard fileManager.fileExists(atPath: defaultPath.absoluteString) else {
             return
         }
 

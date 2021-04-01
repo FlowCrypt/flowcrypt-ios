@@ -11,9 +11,9 @@ import Promises
 
 protocol BackupServiceType {
     /// get all existed backups
-    func fetchBackups() -> Promise<[KeyDetails]>
+    func fetchBackups(for email: String) -> Promise<[KeyDetails]>
     /// backup keys to user inbox
-    func backupToInbox(keys: [KeyDetails]) -> Promise<Void>
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void>
     /// show activity sheet to save keys as file
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController)
 }
@@ -23,34 +23,19 @@ struct BackupService {
     static let shared: BackupService = BackupService(
         backupProvider: MailProvider.shared.backupProvider,
         core: Core.shared,
-        dataService: DataService.shared,
         messageSender: MailProvider.shared.messageSender
     )
 
     let backupProvider: BackupProvider
     let core: Core
-    let dataService: DataService
     let messageSender: MessageGateway
-
-    private var userID: UserId? {
-        guard let email = dataService.email, email.isNotEmpty,
-              let name = dataService.email, name.isNotEmpty
-        else {
-            return nil
-        }
-        return UserId(email: email, name: name)
-    }
 }
 
 // MARK: - BackupServiceType
 extension BackupService: BackupServiceType {
-    func fetchBackups() -> Promise<[KeyDetails]> {
+    // TODO: - ANTON - check for optional
+    func fetchBackups(for email: String) -> Promise<[KeyDetails]> {
         Promise<[KeyDetails]> { resolve, reject in
-            guard let email = self.dataService.email else {
-                reject(BackupServiceError.emailNotFound)
-                return
-            }
-
             let backupData = try await(self.backupProvider.searchBackups(for: email))
 
             do {
@@ -65,12 +50,8 @@ extension BackupService: BackupServiceType {
         }
     }
 
-    func backupToInbox(keys: [KeyDetails]) -> Promise<Void> {
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void> {
         Promise { () -> Void in
-            guard let userId = self.userID else {
-                throw BackupServiceError.emailNotFound
-            }
-
             let isFullyEncryptedKeys = keys.map { $0.isFullyDecrypted }.contains(false)
 
             guard isFullyEncryptedKeys else {

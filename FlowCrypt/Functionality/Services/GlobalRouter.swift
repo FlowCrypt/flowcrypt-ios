@@ -11,9 +11,6 @@ import Promises
 
 protocol GlobalRouterType {
     func proceed()
-
-    func logOut() -> Promise<Void>
-
     func signIn(with type: SignInType)
     func signOut()
 }
@@ -26,6 +23,7 @@ enum GlobalRoutingError: Error {
     case missedRootViewController
 }
 
+// MARK: - GlobalRouter
 final class GlobalRouter: GlobalRouterType {
     private var keyWindow: UIWindow {
         let application = UIApplication.shared
@@ -111,19 +109,16 @@ extension GlobalRouter {
     }
 }
 
-// MARK: - SignIn
+// MARK: - SignOut
 extension GlobalRouter {
-    func logOut() -> Promise<Void> {
-        userAccountService.logOutCurrentUser()
-    }
-
+    // TODO: - ANTON
     func signOut() {
-//        userAccountService.signOut()
-//            .then(on: .main) { [weak self] _ in
-//                self?.router.proceed()
-//            }
-//            .catch(on: .main) { [weak self] error in
-//                viewController.showAlert(error: error, message: "Could not sign out")
-//            }
+        userAccountService.logOutCurrentUser()
+            .then(on: .main) { [weak self] _ in
+                self?.proceed()
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.keyWindow.rootViewController?.showAlert(error: error, message: "Could not sign out")
+            }
     }
 }

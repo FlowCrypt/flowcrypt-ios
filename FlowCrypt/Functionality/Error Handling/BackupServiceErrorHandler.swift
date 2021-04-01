@@ -15,8 +15,6 @@ struct BackupServiceErrorHandler: ErrorHandler {
         switch error {
         case BackupServiceError.parse:
             errorMessage = "backupServiceError_parse"
-        case BackupServiceError.emailNotFound:
-            errorMessage = "backupServiceError_email"
         case BackupServiceError.keyIsNotFullyEncrypted:
             errorMessage = "backupServiceError_notEncrypted"
         default:
