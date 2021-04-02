@@ -10,9 +10,7 @@ import Foundation
 import Promises
 
 struct AppStartup {
-    static var shared: AppStartup = AppStartup()
-
-    public func initializeApp(window: UIWindow) {
+    func initializeApp(window: UIWindow, session: SessionType?) {
         let start = DispatchTime.now()
         DispatchQueue.promises = .global()
         window.rootViewController = BootstrapViewController()
@@ -22,10 +20,10 @@ struct AppStartup {
             try self.setupMigrationIfNeeded()
             try self.setupSession()
         }.then(on: .main) {
-            self.chooseView(window: window)
+            self.chooseView(for: window, session: session)
             log("AppStartup", error: nil, res: nil, start: start)
         }.catch(on: .main) { error in
-            self.showErrorAlert(with: error, on: window)
+            self.showErrorAlert(with: error, on: window, session: session)
             log("AppStartup", error: error, res: nil, start: start)
         }
     }
@@ -49,20 +47,50 @@ struct AppStartup {
         return MailProvider.shared.sessionProvider.renewSession()
     }
 
-    private func chooseView(window: UIWindow) {
+    private func chooseView(for window: UIWindow, session: SessionType?) {
         if !DataService.shared.isLoggedIn {
             window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
+            return
         } else if DataService.shared.isSetupFinished {
             window.rootViewController = SideMenuNavigationController()
+            return
         } else {
-            window.rootViewController = MainNavigationController(rootViewController: SetupViewController())
+            guard let session = session, let userId = makeUserIdForSetup(session: session) else {
+                assertionFailure("Internal error, can't start SetupViewController without session")
+                return
+            }
+            let setupViewController = SetupViewController(user: userId)
+            window.rootViewController = MainNavigationController(rootViewController: setupViewController)
         }
     }
 
-    private func showErrorAlert(with error: Error, on window: UIWindow) {
+    private func makeUserIdForSetup(session: SessionType) -> UserId? {
+        guard let currentUser = DataService.shared.currentUser else {
+            return nil
+        }
+
+        var userId = UserId(email: currentUser.email, name: currentUser.name)
+
+        switch session {
+        case let .google(email, name, _):
+            guard currentUser.email != email else {
+                return userId
+            }
+            userId = UserId(email: email, name: name)
+        case let .session(userObject):
+            guard userObject.email != currentUser.email else {
+                return userId
+            }
+            userId = UserId(email: userObject.email, name: userObject.name)
+        }
+
+        return userId
+    }
+
+    private func showErrorAlert(with error: Error, on window: UIWindow, session: SessionType?) {
         let alert = UIAlertController(title: "Startup Error", message: "\(error)", preferredStyle: .alert)
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in
-            self.initializeApp(window: window)
+            self.initializeApp(window: window, session: session)
         }
         alert.addAction(retry)
         window.rootViewController?.present(alert, animated: true, completion: nil)

@@ -107,7 +107,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 
 extension SignInViewController {
     private func signInWithGmail() {
-        globalRouter.signIn(with: .gmail)
+        globalRouter.signIn(with: .gmailLogin(self))
     }
 
     private func signInWithOutlook() {

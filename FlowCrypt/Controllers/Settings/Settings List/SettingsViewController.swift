@@ -28,11 +28,14 @@ final class SettingsViewController: TableNodeViewController {
     }
 
     private let decorator: SettingsViewDecoratorType
+    private let currentUser: User?
 
     init(
-        decorator: SettingsViewDecoratorType = SettingsViewDecorator()
+        decorator: SettingsViewDecoratorType = SettingsViewDecorator(),
+        currentUser: User? = DataService.shared.currentUser
     ) {
         self.decorator = decorator
+        self.currentUser = currentUser
         super.init(node: TableNode())
     }
 
@@ -95,7 +98,12 @@ extension SettingsViewController {
         case .contacts:
             viewController = ContactsListViewController()
         case .backups:
-            viewController = BackupViewController()
+            guard let currentUser = currentUser else {
+                viewController = nil
+                return
+            }
+            let userId = UserId(email: currentUser.email, name: currentUser.email)
+            viewController = BackupViewController(userId: userId)
         default:
             viewController = nil
         }

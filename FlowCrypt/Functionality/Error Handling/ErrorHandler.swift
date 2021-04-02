@@ -15,7 +15,7 @@ extension UIViewController {
         let isErrorHandled = composedHandler.handle(error: error, for: self)
 
         if !isErrorHandled {
-            debugPrint("[ERROR HANDLING] - \(error) is not handled yet.\nErrorHandler should be used for this error")
+            debugPrint("[ERROR HANDLING] - ErrorHandler should be used for this error ***** \(error)")
         }
 
         return isErrorHandled

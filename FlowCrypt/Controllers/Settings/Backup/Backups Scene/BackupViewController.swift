@@ -36,14 +36,17 @@ final class BackupViewController: ASDKViewController<TableNode> {
 
     private let decorator: BackupViewDecoratorType
     private let backupProvider: BackupServiceType
+    private let userId: UserId
     private var state: State = .idle { didSet { updateState() } }
 
     init(
         decorator: BackupViewDecoratorType = BackupViewDecorator(),
-        backupProvider: BackupServiceType = BackupService.shared
+        backupProvider: BackupServiceType = BackupService.shared,
+        userId: UserId
     ) {
         self.decorator = decorator
         self.backupProvider = backupProvider
+        self.userId = userId
         super.init(node: TableNode())
     }
 
@@ -71,7 +74,7 @@ extension BackupViewController {
     }
 
     private func fetchBackups() {
-        backupProvider.fetchBackups()
+        backupProvider.fetchBackups(for: userId)
             .then { [weak self] keys in
                 self?.state = keys.isEmpty
                     ? .noBackups
@@ -125,7 +128,7 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func proceedToBackupOptionsScreen() {
-        let optionsScreen = BackupOptionsViewController(backups: state.backups)
+        let optionsScreen = BackupOptionsViewController(backups: state.backups, userId: userId)
         navigationController?.pushViewController(optionsScreen, animated: true)
     }
 }

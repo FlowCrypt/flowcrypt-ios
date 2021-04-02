@@ -57,7 +57,22 @@ extension DataService: DataServiceType {
     }
 
     var isSetupFinished: Bool {
-        isLoggedIn && (self.encryptedStorage.keys()?.count ?? 0) > 0
+        isLoggedIn && isAnyKeysForCurrentUser
+    }
+
+    private var isAnyKeysForCurrentUser: Bool {
+        guard let currentUser = currentUser else {
+            return false
+        }
+        guard let keys = encryptedStorage.keys() else {
+            return false
+        }
+        let isAnyKeysForCurrentUser = keys
+            .map(\.account)
+            .map { $0.contains(currentUser.email) }
+            .contains(true)
+
+        return isAnyKeysForCurrentUser
     }
 
     var isLoggedIn: Bool {

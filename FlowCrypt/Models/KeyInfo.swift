@@ -38,5 +38,6 @@ final class KeyInfo: Object {
         longid = keyDetails.ids[0].longid
         self.passphrase = passphrase
         self.source = source.rawValue
+        self.account = keyDetails.users.first ?? ""
     }
 }

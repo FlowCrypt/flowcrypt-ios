@@ -11,7 +11,7 @@ import Promises
 
 protocol BackupServiceType {
     /// get all existed backups
-    func fetchBackups(for email: String) -> Promise<[KeyDetails]>
+    func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]>
     /// backup keys to user inbox
     func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void>
     /// show activity sheet to save keys as file
@@ -33,10 +33,9 @@ struct BackupService {
 
 // MARK: - BackupServiceType
 extension BackupService: BackupServiceType {
-    // TODO: - ANTON - check for optional
-    func fetchBackups(for email: String) -> Promise<[KeyDetails]> {
+    func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]> {
         Promise<[KeyDetails]> { resolve, reject in
-            let backupData = try await(self.backupProvider.searchBackups(for: email))
+            let backupData = try await(self.backupProvider.searchBackups(for: userId.email))
 
             do {
                 let parsed = try self.core.parseKeys(armoredOrBinary: backupData)

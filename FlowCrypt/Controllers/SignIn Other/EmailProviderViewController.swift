@@ -504,7 +504,7 @@ extension EmailProviderViewController {
 
     private func handleSuccessfulConnection() {
         hideSpinner()
-        globalRouter.signIn(with: .other(user))
+        globalRouter.signIn(with: .other(.session(user)))
     }
 
     private func checkCurrentUser() -> Result<UserObject, UserError> {

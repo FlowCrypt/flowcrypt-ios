@@ -11,7 +11,7 @@ import Promises
 
 protocol UserAccountServiceType {
     func logOutCurrentUser() -> Promise<Void>
-    func startFor(user type: SessionType) -> Promise<Void>
+    func startFor(user type: SessionType) -> Promise<SessionType>
 }
 
 // TODO: - ANTON - handle errors
@@ -55,16 +55,11 @@ final class UserAccountService: UserAccountServiceType {
 // MARK: - LogIn
 extension UserAccountService {
     /// start session for a user, this method will log out current user if user was saved, save and start session for a new user
-    func startFor(user type: SessionType) -> Promise<Void> {
-        Promise<Void> { [weak self] (resolve, _) in
+    func startFor(user type: SessionType) -> Promise<SessionType> {
+        Promise<SessionType> { [weak self] (resolve, _) in
             guard let self = self else { throw AppErr.nilSelf }
             switch type {
             case let .google(email, name, token):
-                // for google authentication this method will be called also on renewing access token
-                // destroy storage in case a new user logged in
-                if let currentUser = self.currentUser, currentUser.email != email {
-                    try await(self.logOutCurrentUser())
-                }
                 // save new user data
                 let user = UserObject.googleUser(
                     name: name,
@@ -72,15 +67,12 @@ extension UserAccountService {
                     token: token
                 )
                 self.encryptedStorage.saveActiveUser(with: user)
-                resolve(())
+                resolve(type)
             case let .session(user):
-                // perform log out only if user logged in
-                if self.currentUser != nil {
-                    try await(self.logOutCurrentUser())
-                }
                 self.encryptedStorage.saveActiveUser(with: user)
                 // start session for saved user
                 self.imap.setupSession()
+                resolve(type)
             }
         }
     }

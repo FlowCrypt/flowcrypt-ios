@@ -19,6 +19,7 @@ final class SetupViewController: TableNodeViewController {
     private let keyMethods: KeyMethodsType
     private let attester: AttesterApiType
     private let backupService: BackupServiceType
+    private let user: UserId
 
     private var passPhrase: String?
 
@@ -57,7 +58,8 @@ final class SetupViewController: TableNodeViewController {
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(core: .shared),
         attester: AttesterApiType = AttesterApi(),
-        backupService: BackupServiceType = BackupService.shared
+        backupService: BackupServiceType = BackupService.shared,
+        user: UserId
     ) {
         self.router = router
         self.storage = storage
@@ -66,6 +68,7 @@ final class SetupViewController: TableNodeViewController {
         self.keyMethods = keyMethods
         self.attester = attester
         self.backupService = backupService
+        self.user = user
 
         super.init(node: TableNode())
     }
@@ -154,7 +157,7 @@ extension SetupViewController {
 
     private func searchBackups() {
         showSpinner()
-        backupService.fetchBackups()
+        backupService.fetchBackups(for: user)
             .then(on: .main) { [weak self] keys in
                 guard keys.isNotEmpty else {
                     self?.state = .error(.noBackups)
@@ -311,7 +314,7 @@ extension SetupViewController {
             let userId = try self.getUserId()
             try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try await(self.backupService.backupToInbox(keys: [encryptedPrv.key]))
+            try await(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
 
             let updateKey = self.attester.updateKey(
@@ -398,7 +401,7 @@ extension SetupViewController {
     }
 
     private func moveToMainFlow() {
-        router.proceed()
+        router.proceed(with: nil)
     }
 }
 

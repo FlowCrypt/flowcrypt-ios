@@ -11,7 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        GlobalRouter().proceed()
+        GlobalRouter().proceed(with: nil)
         return true
     }
 
