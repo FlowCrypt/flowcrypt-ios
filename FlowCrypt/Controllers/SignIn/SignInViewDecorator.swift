@@ -10,6 +10,10 @@ import FlowCryptCommon
 import FlowCryptUI
 import UIKit
 
+enum SignInType {
+    case gmail, outlook, other(UserObject)
+}
+
 protocol SignInViewDecoratorType {
     var description: NSAttributedString { get }
     var logo: UIImage? { get }

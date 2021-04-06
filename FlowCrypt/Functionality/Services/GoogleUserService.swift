@@ -31,28 +31,40 @@ struct GoogleUser: Codable {
     let picture: URL?
 }
 
-private enum Constants {
-    static let keychainIndex = "GTMAppAuthAuthorizerIndex"
-}
-
 final class GoogleUserService: NSObject {
-    static var userToken: String? {
-        GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.keychainIndex)?
-            .authState
+    private enum Constants {
+        static let index = "GTMAppAuthAuthorizerIndex"
+    }
+
+    var userToken: String? {
+        authorization?.authState
             .lastTokenResponse?
             .accessToken
     }
 
     var authorization: GTMAppAuthFetcherAuthorization? {
-        GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.keychainIndex)
+        getAuthorizationForCurrentUser()
     }
 
-    var appDelegate: AppDelegate? {
-        UIApplication.shared.delegate as? AppDelegate
+    private var currentUserEmail: String? {
+        DataService.shared.email
     }
+
+    private var keychainIndex: String {
+        guard let email = currentUserEmail else {
+            debugPrint("[GoogleUserService] Check keychain index")
+            return Constants.index
+        }
+        return Constants.index + email
+    }
+
 }
 
 extension GoogleUserService: UserServiceType {
+    private var appDelegate: AppDelegate? {
+        UIApplication.shared.delegate as? AppDelegate
+    }
+
     func renewSession() -> Promise<Void> {
         Promise<Void> { [weak self] resolve, reject in
             resolve(())
@@ -76,19 +88,20 @@ extension GoogleUserService: UserServiceType {
                 presenting: viewController
             ) { (authState, error) in
                 if let authState = authState {
-                    self.saveAuth(state: authState)
-
-                    guard let email = GTMAppAuthFetcherAuthorization(authState: authState).userEmail else {
+                    let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
+                    guard let email = authorization.userEmail else {
                         reject(GoogleUserServiceError.inconsistentState("Missed email"))
                         return
                     }
+
+                    self.saveAuth(state: authState, for: email)
 
                     guard let token = authState.lastTokenResponse?.accessToken else {
                         reject(GoogleUserServiceError.inconsistentState("Missed token"))
                         return
                     }
 
-                    self.fetchGoogleUser { result in
+                    self.fetchGoogleUser(with: authorization) { result in
                         switch result {
                         case .success(let user):
                             resolve(SessionType.google(email, name: user.name, token: token))
@@ -110,8 +123,9 @@ extension GoogleUserService: UserServiceType {
 
     func signOut() -> Promise<Void> {
         Promise<Void>(on: .main) { [weak self] (resolve, _) in
-            self?.appDelegate?.googleAuthSession = nil
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.keychainIndex)
+            guard let self = self else { throw AppErr.nilSelf }
+            self.appDelegate?.googleAuthSession = nil
+            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: self.keychainIndex)
             resolve(())
         }
     }
@@ -119,6 +133,7 @@ extension GoogleUserService: UserServiceType {
 
 // MARK: - Convenience
 extension GoogleUserService {
+
     private func makeAuthorizationRequest() -> OIDAuthorizationRequest {
         OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
@@ -131,13 +146,25 @@ extension GoogleUserService {
     }
 
     // save auth session to keychain
-    private func saveAuth(state: OIDAuthState) {
+    private func saveAuth(state: OIDAuthState, for email: String) {
         state.stateChangeDelegate = self
         let authorization: GTMAppAuthFetcherAuthorization = GTMAppAuthFetcherAuthorization(authState: state)
-        GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.keychainIndex)
+        GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.index + email)
     }
 
-    private func fetchGoogleUser(_ completion: @escaping ((Result<GoogleUser, GoogleUserServiceError>) -> Void)) {
+    private func getAuthorizationForCurrentUser() -> GTMAppAuthFetcherAuthorization? {
+        // get active user
+        guard currentUserEmail != nil else {
+            return nil
+        }
+        // get authorization from keychain
+        return GTMAppAuthFetcherAuthorization(fromKeychainForName: keychainIndex)
+    }
+
+    private func fetchGoogleUser(
+        with authorization: GTMAppAuthFetcherAuthorization?,
+        completion: @escaping ((Result<GoogleUser, GoogleUserServiceError>) -> Void)
+    ) {
         guard let authorization = authorization else {
             assertionFailure("authorization should not be nil at this point")
             completion(.failure(.missedAuthorization))
@@ -172,10 +199,10 @@ extension GoogleUserService {
 
     private func handleUserInfo(error: Error) {
         if (error as NSError).isEqual(OIDOAuthTokenErrorDomain) {
-            debugPrint("Authorization error during token refresh, clearing state. \(error)")
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.keychainIndex)
+            debugPrint("[GoogleUserService] Authorization error during token refresh, clearing state. \(error)")
+            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: keychainIndex)
         } else {
-            debugPrint("Authorization error during fetching user info")
+            debugPrint("[GoogleUserService] Authorization error during fetching user info")
         }
     }
 }
@@ -183,7 +210,10 @@ extension GoogleUserService {
 // MARK: - OIDAuthStateChangeDelegate
 extension GoogleUserService: OIDAuthStateChangeDelegate {
     func didChange(_ state: OIDAuthState) {
-        // TODO: - ANTON - check if it's possible to save session here
-        saveAuth(state: state)
+        guard let email = currentUserEmail else {
+            return
+        }
+
+        saveAuth(state: state, for: email)
     }
 }

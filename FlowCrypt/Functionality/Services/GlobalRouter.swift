@@ -10,13 +10,17 @@ import UIKit
 import Promises
 
 protocol GlobalRouterType {
-    func proceed(with session: SessionType?)
+    func proceed()
     func signIn(with rout: GlobalRoutingType)
+    func switchActive(user: User)
     func signOut()
 }
 
-enum SignInType {
-    case gmail, outlook, other(UserObject)
+enum GlobalRoutingType {
+    // Login using Gmail web view
+    case gmailLogin(UIViewController)
+    // Login with Google authenticated use
+    case other(SessionType)
 }
 
 enum GlobalRoutingError: Error {
@@ -48,12 +52,25 @@ final class GlobalRouter: GlobalRouterType {
 // MARK: - Proceed
 extension GlobalRouter {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
-    func proceed(with session: SessionType?) {
+    func proceed() {
+        proceed(with: nil)
+    }
+
+    private func proceed(with session: SessionType?) {
         // make sure it runs on main thread
         let window = keyWindow
         DispatchQueue.main.async {
             AppStartup().initializeApp(window: window, session: session)
         }
+    }
+}
+
+extension GlobalRouter {
+    func switchActive(user: User) {
+        userAccountService.switchActive(user: user)
+            .then(on: .main) { [weak self] session in
+                self?.proceed(with: session)
+            }
     }
 }
 
@@ -87,11 +104,4 @@ extension GlobalRouter {
                 self?.keyWindow.rootViewController?.showAlert(error: error, message: "Could not sign out")
             }
     }
-}
-
-enum GlobalRoutingType {
-    // Login using Gmail web view
-    case gmailLogin(UIViewController)
-    // Login with Google authenticated use
-    case other(SessionType)
 }

@@ -12,6 +12,7 @@ import Promises
 protocol UserAccountServiceType {
     func logOutCurrentUser() -> Promise<Void>
     func startFor(user type: SessionType) -> Promise<SessionType>
+    func switchActive(user: User) -> Promise<SessionType>
 }
 
 // TODO: - ANTON - handle errors
@@ -19,6 +20,7 @@ enum UserAccountServiceError: Error {
     case userIsNotLoggedIn
     case authTypeMissed
     case storage(Error)
+    case internalError(String)
 }
 
 final class UserAccountService: UserAccountServiceType {
@@ -84,6 +86,34 @@ extension UserAccountService {
             }
 
             // TODO: - ANTON
+        }
+    }
+
+    func switchActive(user: User) -> Promise<SessionType> {
+        Promise<SessionType> { [weak self] (resolve, reject) in
+            guard let self = self else { throw AppErr.nilSelf }
+
+            let userObj = self.encryptedStorage.getAllUsers()
+                .first(where: { $0.email == user.email })
+
+            guard let userObject = userObj else {
+                throw UserAccountServiceError.internalError("UserObject should be persisted to encrypted storage")
+            }
+
+            let oldSessionType: SessionType
+            switch userObject.authType {
+            case .oAuthGmail, .none:
+                guard let token = self.dataService.token else {
+                    throw UserAccountServiceError.internalError("Token should be saved for this auth type")
+                }
+                oldSessionType = .google(user.email, name: user.name, token: token)
+            case .password:
+                oldSessionType = .session(userObject)
+            }
+
+            let newSession = try await(self.startFor(user: oldSessionType))
+
+            resolve(newSession)
         }
     }
 }

@@ -252,6 +252,6 @@ extension EnterPassPhraseViewController {
 
     private func moveToMainFlow() {
         // TODO: - ANTON - enter pass phrase
-        router.proceed(with: nil)
+        router.proceed()
     }
 }

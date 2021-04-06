@@ -22,6 +22,7 @@ excluded:
   - FlowCrypt/Core
   - FlowCrypt/Functionality/Imap
 line_length: 140
+function_body_length: 50
 
 # type_body_length:
 #   - 400 # Warning

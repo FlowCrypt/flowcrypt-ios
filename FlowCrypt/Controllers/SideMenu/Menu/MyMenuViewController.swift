@@ -209,6 +209,7 @@ extension MyMenuViewController {
             return
         }
 
+        router.switchActive(user: account)
     }
 
     private func animateImage(_ completion: (() -> Void)?) {

@@ -401,7 +401,7 @@ extension SetupViewController {
     }
 
     private func moveToMainFlow() {
-        router.proceed(with: nil)
+        router.proceed()
     }
 }
 
