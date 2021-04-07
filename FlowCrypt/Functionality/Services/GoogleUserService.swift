@@ -13,7 +13,7 @@ import AppAuth
 import GTMAppAuth
 
 protocol UserServiceType {
-    func signOut() -> Promise<Void>
+    func signOut(user email: String)
     func signIn(in viewController: UIViewController) -> Promise<SessionType>
     func renewSession() -> Promise<Void>
 }
@@ -49,15 +49,6 @@ final class GoogleUserService: NSObject {
     private var currentUserEmail: String? {
         DataService.shared.email
     }
-
-    private var keychainIndex: String {
-        guard let email = currentUserEmail else {
-            debugPrint("[GoogleUserService] Check keychain index")
-            return Constants.index
-        }
-        return Constants.index + email
-    }
-
 }
 
 extension GoogleUserService: UserServiceType {
@@ -121,13 +112,9 @@ extension GoogleUserService: UserServiceType {
         }
     }
 
-    func signOut() -> Promise<Void> {
-        Promise<Void>(on: .main) { [weak self] (resolve, _) in
-            guard let self = self else { throw AppErr.nilSelf }
-            self.appDelegate?.googleAuthSession = nil
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: self.keychainIndex)
-            resolve(())
-        }
+    func signOut(user email: String) {
+        appDelegate?.googleAuthSession = nil
+        GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
     }
 }
 
@@ -154,11 +141,11 @@ extension GoogleUserService {
 
     private func getAuthorizationForCurrentUser() -> GTMAppAuthFetcherAuthorization? {
         // get active user
-        guard currentUserEmail != nil else {
+        guard let email = currentUserEmail else {
             return nil
         }
         // get authorization from keychain
-        return GTMAppAuthFetcherAuthorization(fromKeychainForName: keychainIndex)
+        return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
     }
 
     private func fetchGoogleUser(
@@ -200,7 +187,9 @@ extension GoogleUserService {
     private func handleUserInfo(error: Error) {
         if (error as NSError).isEqual(OIDOAuthTokenErrorDomain) {
             debugPrint("[GoogleUserService] Authorization error during token refresh, clearing state. \(error)")
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: keychainIndex)
+            if let email = currentUserEmail {
+                GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+            }
         } else {
             debugPrint("[GoogleUserService] Authorization error during fetching user info")
         }

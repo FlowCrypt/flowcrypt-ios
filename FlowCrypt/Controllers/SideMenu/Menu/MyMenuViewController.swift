@@ -203,7 +203,6 @@ extension MyMenuViewController {
         present(vc, animated: true, completion: nil)
     }
 
-    // TODO: - ANTON - handleAccountTap
     private func handleAccountTap(with index: Int) {
         guard let account = self.accounts[safe: index] else {
             return
@@ -292,7 +291,6 @@ extension MyMenuViewController {
             sideMenuController()?.setContentViewController(SettingsViewController())
         case .logOut:
             router.signOut()
-            // TODO: - ANTON - menu - logout - start another if possible
         }
     }
 

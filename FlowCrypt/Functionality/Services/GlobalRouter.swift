@@ -65,43 +65,37 @@ extension GlobalRouter {
     }
 }
 
-extension GlobalRouter {
-    func switchActive(user: User) {
-        userAccountService.switchActive(user: user)
-            .then(on: .main) { [weak self] session in
-                self?.proceed(with: session)
-            }
-    }
-}
-
-// MARK: - SignIn
+// MARK: -
 extension GlobalRouter {
     func signIn(with rout: GlobalRoutingType) {
         switch rout {
         case .gmailLogin(let viewController):
             googleService.signIn(in: viewController)
-                .then(on: .main, userAccountService.startFor(user:))
                 .then(on: .main) { [weak self] session in
+                    self?.userAccountService.startSessionFor(user: session)
                     self?.proceed(with: session)
                 }
-        case .other(let sessionType):
-            userAccountService.startFor(user: sessionType)
-                .then(on: .main) { [weak self] session in
-                    self?.proceed(with: session)
-                }
+        case .other(let session):
+            userAccountService.startSessionFor(user: session)
+            proceed(with: session)
         }
     }
-}
 
-// MARK: - SignOut
-extension GlobalRouter {
     func signOut() {
-        userAccountService.logOutCurrentUser()
-            .then(on: .main) { [weak self] _ in
-                self?.proceed(with: nil)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.keyWindow.rootViewController?.showAlert(error: error, message: "Could not sign out")
-            }
+        guard let session = userAccountService.startActiveSessionForNextUser() else {
+            // TODO: - ANTON
+            // keyWindow.rootViewController?.showAlert(error: error, message: "Could not sign out")
+            debugPrint("[GlobalRouter] signOut error")
+            return
+        }
+        proceed(with: session)
+    }
+
+    func switchActive(user: User) {
+        guard let session = userAccountService.switchActiveSessionFor(user: user) else {
+            debugPrint("[GlobalRouter] can't switch active user with \(user.email)")
+            return
+        }
+        proceed(with: session)
     }
 }
