@@ -26,7 +26,11 @@ open FlowCrypt.xcworkspace
 ```
 
 ### Useful links
+
 UI - [Texture documentation](https://texturegroup.org/docs/getting-started.html)
+
 Storage - [Realm](https://github.com/realm)
+
 Async Operations - [PromiseKit](https://github.com/mxcl/PromiseKit)
+
 IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
