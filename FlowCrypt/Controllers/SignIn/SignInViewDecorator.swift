@@ -10,10 +10,6 @@ import FlowCryptCommon
 import FlowCryptUI
 import UIKit
 
-enum SignInType {
-    case gmail, outlook, other(UserObject)
-}
-
 protocol SignInViewDecoratorType {
     var description: NSAttributedString { get }
     var logo: UIImage? { get }
@@ -35,9 +31,8 @@ struct SignInViewDecorator: SignInViewDecoratorType {
     }
 }
 
-// TODO: - ANTON - refactor usage of SignInType in UI
 extension SigninButtonNode {
-    convenience init(_ buttonType: SignInType, onTap: (() -> Void)?) {
+    convenience init(_ buttonType: UserSignInType, onTap: (() -> Void)?) {
         self.init(
             input: SigninButtonNode.Input(buttonType),
             onTap: onTap
@@ -46,13 +41,15 @@ extension SigninButtonNode {
 }
 
 extension SigninButtonNode.Input {
-    init(_ signInType: SignInType) {
+    init(_ signInType: UserSignInType) {
         self.init(title: signInType.attributedTitle, image: signInType.image)
     }
 }
 
-private extension SignInType {
-    var title: String {
+enum UserSignInType {
+    case gmail, outlook, other
+
+    fileprivate var title: String {
         switch self {
         case .gmail: return "sign_in_gmail".localized
         case .outlook: return "sign_in_outlook".localized
@@ -60,7 +57,7 @@ private extension SignInType {
         }
     }
 
-    var image: UIImage? {
+    fileprivate var image: UIImage? {
         switch self {
         case .gmail: return UIImage(named: "gmail_icn")
         case .outlook: return UIImage(named: "microsoft-outlook")
@@ -68,7 +65,7 @@ private extension SignInType {
         }
     }
 
-    var attributedTitle: NSAttributedString {
+    fileprivate var attributedTitle: NSAttributedString {
         NSAttributedString.text(from: title, style: .medium(17), color: .mainTextColor)
     }
 }

@@ -82,13 +82,14 @@ extension GlobalRouter {
     }
 
     func signOut() {
-        guard let session = userAccountService.startActiveSessionForNextUser() else {
-            // TODO: - ANTON
-            // keyWindow.rootViewController?.showAlert(error: error, message: "Could not sign out")
-            debugPrint("[GlobalRouter] signOut error")
-            return
+        if let session = userAccountService.startActiveSessionForNextUser() {
+            debugPrint("[GlobalRouter] start session for another email user")
+            proceed(with: session)
+        } else {
+            debugPrint("[GlobalRouter] sign out")
+            userAccountService.cleanup()
+            proceed()
         }
-        proceed(with: session)
     }
 
     func switchActive(user: User) {

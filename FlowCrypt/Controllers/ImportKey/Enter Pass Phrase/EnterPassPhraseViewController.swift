@@ -255,3 +255,7 @@ extension EnterPassPhraseViewController {
         router.proceed()
     }
 }
+
+// TODO: - ANTON
+// pass phrase logic
+// error handling

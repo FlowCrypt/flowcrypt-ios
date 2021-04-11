@@ -396,7 +396,6 @@ extension SetupViewController {
     }
 
     private func handleOtherAccount() {
-        // TODO: - ANTON - Setup - handleOtherAccount
         router.signOut()
     }
 

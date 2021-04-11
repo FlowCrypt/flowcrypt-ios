@@ -13,6 +13,8 @@ protocol LocalStorageType {
 
     var trashFolderPath: String? { get }
     func saveTrashFolder(path: String)
+
+    func cleanup()
 }
 
 struct LocalStorage: LocalStorageType {
@@ -38,10 +40,17 @@ extension LocalStorage {
 
 extension LocalStorage: LogOutHandler {
     func logOutUser(email: String) throws {
+        // For now we store only trash folder path in user defaults
+        // see no reason to add logic for removing data for a concrete user
+        cleanup()
+    }
+
+    func cleanup() {
         Constants.allCases
             .compactMap { $0.rawValue }
             .forEach {
                 storage.removeObject(forKey: $0)
             }
+
     }
 }

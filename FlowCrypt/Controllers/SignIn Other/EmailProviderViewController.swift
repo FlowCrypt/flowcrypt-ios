@@ -493,13 +493,6 @@ extension EmailProviderViewController {
 
     private func handleConnection(error: Error) {
         globalRouter.signOut()
-        // TODO: - ANTON email provider - logout
-
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//            let message = (error as? AppErr)?.userMessage ?? error.localizedDescription
-//            self.hideSpinner()
-//            self.showToast(message)
-//        }
     }
 
     private func handleSuccessfulConnection() {

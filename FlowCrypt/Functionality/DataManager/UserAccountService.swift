@@ -13,6 +13,7 @@ protocol UserAccountServiceType {
     func startSessionFor(user type: SessionType)
     func switchActiveSessionFor(user: User) -> SessionType?
     func startActiveSessionForNextUser() -> SessionType?
+    func cleanup()
 }
 
 // TODO: - ANTON - handle UserAccountServiceError errors
@@ -137,5 +138,12 @@ extension UserAccountService: UserAccountServiceType {
         } catch let error {
             debugPrint("[UserAccountService] storage error \(error)")
         }
+    }
+
+    /// cleanup all user sessions
+    func cleanup() {
+        debugPrint("[UserAccountService] Clean up storages")
+        encryptedStorage.cleanup()
+        localStorage.cleanup()
     }
 }

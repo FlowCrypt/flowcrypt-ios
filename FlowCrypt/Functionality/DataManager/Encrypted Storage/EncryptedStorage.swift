@@ -22,6 +22,8 @@ protocol EncryptedStorageType: DBMigration {
 
     func getAllUsers() -> [UserObject]
     func saveActiveUser(with user: UserObject)
+
+    func cleanup()
 }
 
 final class EncryptedStorage: EncryptedStorageType {
@@ -102,14 +104,7 @@ extension EncryptedStorage: LogOutHandler {
     }
 
     private func destroyEncryptedStorage() {
-        do {
-            try storage.write {
-                storage.deleteAll()
-            }
-        } catch let error {
-            assertionFailure("Error while deleting the objects from the storage \(error)")
-        }
-
+        cleanup()
         destroyPlainConfigurationIfNeeded()
     }
 
@@ -285,6 +280,18 @@ extension EncryptedStorage {
                 $0.isActive = false
             }
             self.storage.add(user, update: .all)
+        }
+    }
+}
+
+extension EncryptedStorage {
+    func cleanup() {
+        do {
+            try storage.write {
+                storage.deleteAll()
+            }
+        } catch let error {
+            assertionFailure("Error while deleting the objects from the storage \(error)")
         }
     }
 }
