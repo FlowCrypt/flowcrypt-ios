@@ -9,7 +9,7 @@
 import Foundation
 import Promises
 
-protocol ContactsProvider {
+protocol CloudContactsProvider {
     func searchContacts(query: String) -> Promise<[String]>
 }
 
@@ -39,7 +39,7 @@ final class UserContactsProvider {
     }
 }
 
-extension UserContactsProvider: ContactsProvider {
+extension UserContactsProvider: CloudContactsProvider {
     func searchContacts(query: String) -> Promise<[String]> {
         guard let token = token else {
             assertionFailure("token should not be nil")

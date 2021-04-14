@@ -52,7 +52,7 @@ final class ComposeViewController: TableNodeViewController {
     private let contactsService: ContactsServiceType
 
     private let searchThrottler = Throttler(seconds: 1)
-    private let contactsProvider: ContactsProvider
+    private let cloudContactProvider: CloudContactsProvider
     private let userDefaults: UserDefaults
 
     private var input: Input
@@ -67,7 +67,7 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
-        contactsProvider: ContactsProvider = UserContactsProvider(),
+        cloudContactProvider: CloudContactsProvider = UserContactsProvider(),
         userDefaults: UserDefaults = .standard,
         contactsService: ContactsServiceType = ContactsService()
     ) {
@@ -77,7 +77,7 @@ final class ComposeViewController: TableNodeViewController {
         self.input = input
         self.decorator = decorator
         self.core = core
-        self.contactsProvider = contactsProvider
+        self.cloudContactProvider = contactsProvider
         self.userDefaults = userDefaults
         self.contactsService = contactsService
         contextToSend.subject = input.subject
@@ -624,7 +624,7 @@ extension ComposeViewController {
 // MARK: - Action Handling
 extension ComposeViewController {
     private func searchEmail(with query: String) {
-        contactsProvider.searchContacts(query: query)
+        cloudContactProvider.searchContacts(query: query)
             .then(on: .main) { [weak self] emails in
                 let state: State = emails.isNotEmpty
                     ? .searchEmails(emails)
