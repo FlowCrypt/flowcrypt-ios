@@ -16,14 +16,6 @@ protocol UserAccountServiceType {
     func cleanup()
 }
 
-// TODO: - ANTON - handle UserAccountServiceError errors
-enum UserAccountServiceError: Error {
-    case userIsNotLoggedIn
-    case authTypeMissed
-    case storage(Error)
-    case internalError(String)
-}
-
 final class UserAccountService {
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
     private let localStorage: LocalStorageType & LogOutHandler

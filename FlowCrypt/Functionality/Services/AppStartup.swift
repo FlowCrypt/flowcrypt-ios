@@ -10,6 +10,10 @@ import Foundation
 import Promises
 
 struct AppStartup {
+    private enum EntryPoint {
+        case signIn, setupFlow(UserId), mainFlow
+    }
+
     func initializeApp(window: UIWindow, session: SessionType?) {
         let start = DispatchTime.now()
         DispatchQueue.promises = .global()
@@ -48,19 +52,33 @@ struct AppStartup {
     }
 
     private func chooseView(for window: UIWindow, session: SessionType?) {
-        if !DataService.shared.isLoggedIn {
-            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
+        guard let entryPoint = entryPointForUser(session: session) else {
+            assertionFailure("Internal error, can't choose desired entry point")
             return
-        } else if DataService.shared.isSetupFinished {
+        }
+
+        switch entryPoint {
+        case .mainFlow:
             window.rootViewController = SideMenuNavigationController()
-            return
+        case .signIn:
+            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
+        case .setupFlow(let userId):
+            let setupViewController = SetupViewController(user: userId)
+            window.rootViewController = MainNavigationController(rootViewController: setupViewController)
+        }
+    }
+
+    private func entryPointForUser(session: SessionType?) -> EntryPoint? {
+        if !DataService.shared.isLoggedIn {
+            return .signIn
+        } else if DataService.shared.isSetupFinished {
+            return .mainFlow
         } else {
             guard let session = session, let userId = makeUserIdForSetup(session: session) else {
                 assertionFailure("Internal error, can't start SetupViewController without session")
-                return
+                return nil
             }
-            let setupViewController = SetupViewController(user: userId)
-            window.rootViewController = MainNavigationController(rootViewController: setupViewController)
+            return .setupFlow(userId)
         }
     }
 

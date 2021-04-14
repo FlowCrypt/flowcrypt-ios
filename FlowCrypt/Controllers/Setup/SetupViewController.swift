@@ -375,6 +375,7 @@ extension SetupViewController {
     }
 
     private func handleButtonPressed() {
+        // TODO: - ANTON - show hud
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
 

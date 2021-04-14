@@ -19,10 +19,11 @@ protocol CacheServiceType {
 protocol CachedObject: Object {
     associatedtype Identifier: Equatable
     var identifier: Identifier { get }
+    var activeUser: UserObject? { get }
 }
 
 // MARK: - Cache
-struct CacheService<T: CachedObject>: CacheServiceType {
+final class CacheService<T: CachedObject>: CacheServiceType {
     let storage: CacheStorage
 
     init(storage: @escaping @autoclosure CacheStorage) {
@@ -61,7 +62,21 @@ struct CacheService<T: CachedObject>: CacheServiceType {
         }
     }
 
+    func removeAllForActiveUser() {
+        let allObjects = getAllForActiveUser() ?? []
+        remove(objects: allObjects)
+    }
+
     func getAll() -> [T]? {
         Array(storage().objects(T.self))
+    }
+
+    func getAllForActiveUser() -> [T]? {
+        let currentUser = storage()
+            .objects(UserObject.self)
+            .first(where: \.isActive)
+
+        return Array(storage().objects(T.self))
+            .filter { $0.activeUser?.email == currentUser?.email }
     }
 }

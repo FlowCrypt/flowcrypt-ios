@@ -185,7 +185,6 @@ extension MyMenuViewController {
         tableNode.reloadData()
     }
 
-    // TODO: - ANTON - Handle error
     private func handleError(with error: Error) {
         switch AppErr(error) {
         case .connection:

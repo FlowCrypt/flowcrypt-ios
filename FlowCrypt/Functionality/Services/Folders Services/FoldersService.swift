@@ -18,7 +18,9 @@ protocol FoldersServiceType {
 }
 
 final class FoldersService: FoldersServiceType {
+    // TODO: - ANTON - consider rework with CacheService for trash path instead
     private let localStorage: LocalStorageType
+
     let localFoldersProvider: LocalFoldersProviderType
     let remoteFoldersProvider: RemoteFoldersProviderType
 
@@ -50,15 +52,21 @@ final class FoldersService: FoldersServiceType {
             // fetch all folders
             let remoteFolders = try await(self.remoteFoldersProvider.fetchFolders())
 
-            // save to Realm
-            let folders = remoteFolders.compactMap(FolderObject.init)
-            self.localFoldersProvider.save(folders: folders)
+            DispatchQueue.main.async {
+                // TODO: - ANTON - instead of removing all folders remove only
+                // those folders which are in DB and not in remoteFolders
+                self.localFoldersProvider.removeFolders()
 
-            // save trash folder path
-            self.saveTrashFolderPath(with: folders)
+                // save to Realm
+                let folders = remoteFolders.compactMap(FolderObject.init)
+                self.localFoldersProvider.save(folders: folders)
 
-            // return folders
-            resolve(folders.map(FolderViewModel.init))
+                // save trash folder path
+                self.saveTrashFolderPath(with: folders)
+
+                // return folders
+                resolve(folders.map(FolderViewModel.init))
+            }
         }
     }
 

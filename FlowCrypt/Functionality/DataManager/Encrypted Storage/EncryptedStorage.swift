@@ -22,6 +22,7 @@ protocol EncryptedStorageType: DBMigration {
 
     func getAllUsers() -> [UserObject]
     func saveActiveUser(with user: UserObject)
+    var activeUser: UserObject? { get }
 
     func cleanup()
 }
@@ -269,6 +270,10 @@ extension EncryptedStorage {
 
 // MARK: - User
 extension EncryptedStorage {
+    var activeUser: UserObject? {
+        getAllUsers().first(where: \.isActive)
+    }
+
     func getAllUsers() -> [UserObject] {
         Array(storage.objects(UserObject.self))
     }
