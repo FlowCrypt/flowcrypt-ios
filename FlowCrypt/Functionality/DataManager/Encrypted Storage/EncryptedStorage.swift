@@ -94,14 +94,15 @@ extension EncryptedStorage: LogOutHandler {
         } else {
             // remove user and keys for this user
             let userToDelete = users.filter { $0.email == email }
-            let keys = storage.objects(KeyInfo.self).filter { $0.account == email }
-            let folders = storage.objects(FolderObject.self)
+            let keys = storage.objects(KeyInfo.self).filter { $0.account.contains(email) }
+            let sessions = storage.objects(SessionObject.self).filter { $0.email == email }
+
             try storage.write {
                 storage.delete(userToDelete)
                 storage.delete(keys)
-                storage.delete(folders)
+                storage.delete(sessions)
             }
-        }
+        } 
     }
 
     private func destroyEncryptedStorage() {

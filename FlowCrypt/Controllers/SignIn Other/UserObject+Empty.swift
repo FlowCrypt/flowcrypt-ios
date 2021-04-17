@@ -27,7 +27,8 @@ extension SessionObject {
             username: "",
             password: nil,
             oAuth2Token: nil,
-            connectionType: ""
+            connectionType: "",
+            email: ""
         )
     }
 }

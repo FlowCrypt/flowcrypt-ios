@@ -77,7 +77,7 @@ final class ComposeViewController: TableNodeViewController {
         self.input = input
         self.decorator = decorator
         self.core = core
-        self.cloudContactProvider = contactsProvider
+        self.cloudContactProvider = cloudContactProvider
         self.userDefaults = userDefaults
         self.contactsService = contactsService
         contextToSend.subject = input.subject
