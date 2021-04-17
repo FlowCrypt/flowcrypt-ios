@@ -102,7 +102,7 @@ extension EncryptedStorage: LogOutHandler {
                 storage.delete(keys)
                 storage.delete(sessions)
             }
-        } 
+        }
     }
 
     private func destroyEncryptedStorage() {

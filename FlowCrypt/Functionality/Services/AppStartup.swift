@@ -73,12 +73,10 @@ struct AppStartup {
             return .signIn
         } else if DataService.shared.isSetupFinished {
             return .mainFlow
-        } else {
-            guard let session = session, let userId = makeUserIdForSetup(session: session) else {
-                assertionFailure("Internal error, can't start SetupViewController without session")
-                return nil
-            }
+        } else if let session = session, let userId = makeUserIdForSetup(session: session) {
             return .setupFlow(userId)
+        } else {
+            return .signIn
         }
     }
 

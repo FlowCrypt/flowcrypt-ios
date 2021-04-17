@@ -140,7 +140,6 @@ extension SetupViewController {
 
 extension SetupViewController {
     private func handle(newState: State) {
-        hideSpinner()
         switch newState {
         case .idle:
             node.reloadData()
@@ -149,8 +148,10 @@ extension SetupViewController {
         case let .fetchedEncrypted(details):
             handleBackupsFetchResult(with: details)
         case let .error(error):
+            hideSpinner()
             handleError(with: error)
         case .createKey:
+            hideSpinner()
             handleCreateKey()
         }
     }
@@ -386,13 +387,17 @@ extension SetupViewController {
 
         showSpinner()
 
-        switch state {
-        case .createKey:
-            setupAccountWithGeneratedKey(with: passPhrase)
-        case let .fetchedEncrypted(backups):
-            recoverAccount(with: backups, and: passPhrase)
-        default:
-            assertionFailure("Not proper state for the screen")
+        // TODO: - fix for spinner
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            switch self.state {
+            case .createKey:
+                self.setupAccountWithGeneratedKey(with: passPhrase)
+            case let .fetchedEncrypted(backups):
+                self.recoverAccount(with: backups, and: passPhrase)
+            default:
+                assertionFailure("Not proper state for the screen")
+            }
         }
     }
 
