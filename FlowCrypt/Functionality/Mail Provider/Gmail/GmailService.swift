@@ -7,23 +7,27 @@
 //
 
 import Foundation
-import GoogleSignIn
 import GoogleAPIClientForREST
 
 struct GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
-
-    var signInService: GIDSignIn {
-        GIDSignIn.sharedInstance()
-    }
+    let userService: GoogleUserService
 
     var gmailService: GTLRService {
         let service = GTLRGmailService()
-        service.authorizer = signInService.currentUser.authentication.fetcherAuthorizer()
+
+        if userService.authorization == nil {
+            // logLevel = error
+            debugPrint("[GmailService] authorization for current user is nil")
+        }
+
+        service.authorizer = userService.authorization
         return service
     }
 
-    let userService: UserService = .shared
+    init(userService: GoogleUserService = GoogleUserService()) {
+        self.userService = userService
+    }
 }
 
 // Gmail string extension identifier

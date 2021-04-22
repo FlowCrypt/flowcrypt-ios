@@ -7,15 +7,28 @@
 //
 
 import UIKit
+import Promises
 
 protocol GlobalRouterType {
     func proceed()
-    func wipeOutAndReset()
+    func signIn(with rout: GlobalRoutingType)
+    func switchActive(user: User)
+    func signOut()
 }
 
-struct GlobalRouter: GlobalRouterType {
-    private let dataService: DataServiceType = DataService.shared
+enum GlobalRoutingType {
+    // Login using Gmail web view
+    case gmailLogin(UIViewController)
+    // Login with Google authenticated use
+    case other(SessionType)
+}
 
+enum GlobalRoutingError: Error {
+    case missedRootViewController
+}
+
+// MARK: - GlobalRouter
+final class GlobalRouter: GlobalRouterType {
     private var keyWindow: UIWindow {
         let application = UIApplication.shared
         guard let delegate = (application.delegate as? AppDelegate) else {
@@ -24,44 +37,66 @@ struct GlobalRouter: GlobalRouterType {
         return delegate.window
     }
 
+    private let userAccountService: UserAccountServiceType
+    private let googleService: GoogleUserService
+
+    init(
+        userAccountService: UserAccountServiceType = UserAccountService(),
+        googleService: GoogleUserService = GoogleUserService()
+    ) {
+        self.userAccountService = userAccountService
+        self.googleService = googleService
+    }
+}
+
+// MARK: - Proceed
+extension GlobalRouter {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
+        proceed(with: nil)
+    }
+
+    private func proceed(with session: SessionType?) {
         // make sure it runs on main thread
         let window = keyWindow
         DispatchQueue.main.async {
-            AppStartup.shared.initializeApp(window: window)
+            AppStartup().initializeApp(window: window, session: session)
+        }
+    }
+}
+
+// MARK: -
+extension GlobalRouter {
+    func signIn(with rout: GlobalRoutingType) {
+        switch rout {
+        case .gmailLogin(let viewController):
+            googleService.signIn(in: viewController)
+                .then(on: .main) { [weak self] session in
+                    self?.userAccountService.startSessionFor(user: session)
+                    self?.proceed(with: session)
+                }
+        case .other(let session):
+            userAccountService.startSessionFor(user: session)
+            proceed(with: session)
         }
     }
 
-    func wipeOutAndReset() {
-        switch dataService.currentAuthType {
-        case .oAuthGmail:
-            logOutGmailSession()
-        case .password:
-            logOutUserSession()
-        default:
-            assertionFailure("User is not logged in")
+    func signOut() {
+        if let session = userAccountService.startActiveSessionForNextUser() {
+            debugPrint("[GlobalRouter] start session for another email user")
+            proceed(with: session)
+        } else {
+            debugPrint("[GlobalRouter] sign out")
+            userAccountService.cleanup()
+            proceed()
         }
     }
 
-    private func logOutGmailSession() {
-        UserService.shared
-            .signOut()
-            .then(on: .main) {
-                self.proceed()
-            }
-            .catch(on: .main) { error in
-                self.keyWindow
-                .rootViewController?
-                .showAlert(error: error, message: "Could not log out")
-            }
-    }
-
-    private func logOutUserSession() {
-        Imap.shared.disconnect()
-        dataService.logOutAndDestroyStorage()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.proceed()
+    func switchActive(user: User) {
+        guard let session = userAccountService.switchActiveSessionFor(user: user) else {
+            debugPrint("[GlobalRouter] can't switch active user with \(user.email)")
+            return
         }
+        proceed(with: session)
     }
 }

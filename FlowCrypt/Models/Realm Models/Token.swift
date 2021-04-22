@@ -9,7 +9,8 @@
 import Foundation
 import RealmSwift
 
-@available(*, deprecated, message: "Use UserObject instead")
+// TODO: - ANTON - remove in https://github.com/FlowCrypt/flowcrypt-ios/issues/284
+@available(*, deprecated, message: "Use UserObject instead. Remove in scope of https://github.com/FlowCrypt/flowcrypt-ios/issues/284")
 final class EmailAccessToken: Object {
     @objc dynamic var value: String = ""
 

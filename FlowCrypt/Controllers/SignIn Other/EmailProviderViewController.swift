@@ -21,6 +21,7 @@ final class EmailProviderViewController: TableNodeViewController {
     private var selectedSection: Section?
 
     private let dataService: DataServiceType
+    private let globalRouter: GlobalRouterType
 
     private let decorator: EmailProviderViewDecoratorType
     private let sessionCredentials: SessionCredentialsProvider
@@ -28,11 +29,13 @@ final class EmailProviderViewController: TableNodeViewController {
     private var user = UserObject.empty
 
     init(
+        globalRouter: GlobalRouterType = GlobalRouter(),
         dataService: DataServiceType = DataService.shared,
         decorator: EmailProviderViewDecoratorType = EmailProviderViewDecorator(),
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
         imap: Imap = Imap.shared
     ) {
+        self.globalRouter = globalRouter
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials
         self.dataService = dataService
@@ -489,23 +492,12 @@ extension EmailProviderViewController {
     }
 
     private func handleConnection(error: Error) {
-        imap.disconnect()
-        dataService.logOutAndDestroyStorage()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let message = (error as? AppErr)?.userMessage ?? error.localizedDescription
-            self.hideSpinner()
-            self.showToast(message)
-        }
+        globalRouter.signOut()
     }
 
     private func handleSuccessfulConnection() {
-        // save user only when it's possible to connect
-        dataService.startFor(user: .session(user))
-        // start session for saved user
-        imap.setupSession()
-        // hide spinner and show next screen
         hideSpinner()
-        GlobalRouter().proceed()
+        globalRouter.signIn(with: .other(.session(user)))
     }
 
     private func checkCurrentUser() -> Result<UserObject, UserError> {

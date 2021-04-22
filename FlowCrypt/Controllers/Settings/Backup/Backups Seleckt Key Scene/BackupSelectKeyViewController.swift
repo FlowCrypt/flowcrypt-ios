@@ -15,18 +15,21 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
     private let decorator: BackupSelectKeyDecoratorType
     private var backupsContext: [(KeyDetails, Bool)]
     private let selectedOption: BackupOption
+    private let userId: UserId
 
     init(
         decorator: BackupSelectKeyDecoratorType = BackupSelectKeyDecorator(),
         backupService: BackupServiceType = BackupService.shared,
         selectedOption: BackupOption,
-        backups: [KeyDetails]
+        backups: [KeyDetails],
+        userId: UserId
     ) {
         self.decorator = decorator
         // set all selected bu default
         self.backupsContext = backups.map { ($0, true) }
         self.backupService = backupService
         self.selectedOption = selectedOption
+        self.userId = userId
 
         super.init(node: TableNode())
     }
@@ -81,7 +84,7 @@ extension BackupSelectKeyViewController {
             .filter { $0.1 == true }
             .map { $0.0 }
 
-        backupService.backupToInbox(keys: backupsToSave)
+        backupService.backupToInbox(keys: backupsToSave, for: userId)
             .then(on: .main) { [weak self] in
                 self?.hideSpinner()
                 self?.navigationController?.popToRootViewController(animated: true)

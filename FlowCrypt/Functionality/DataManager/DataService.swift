@@ -11,8 +11,6 @@ import Promises
 import RealmSwift
 
 protocol DataServiceType {
-    var storage: Realm { get }
-
     // data
     var email: String? { get }
     var currentUser: User? { get }
@@ -21,13 +19,7 @@ protocol DataServiceType {
     var currentAuthType: AuthType? { get }
     var token: String? { get }
 
-    // Local data
-    var trashFolderPath: String? { get }
-    func saveTrashFolder(path: String?)
-
-    // login / logout
-    func startFor(user type: SessionType)
-    func logOutAndDestroyStorage()
+    var users: [User] { get }
 }
 
 protocol ImapSessionProvider {
@@ -41,15 +33,46 @@ enum SessionType {
 }
 
 // MARK: - DataService
-final class DataService: DataServiceType {
+final class DataService {
     static let shared = DataService()
 
+    private let encryptedStorage: EncryptedStorageType
+    private let localStorage: LocalStorageType
+    private let migrationService: DBMigration
+
+    private init(
+        encryptedStorage: EncryptedStorageType = EncryptedStorage(),
+        localStorage: LocalStorageType = LocalStorage()
+    ) {
+        self.encryptedStorage = encryptedStorage
+        self.localStorage = localStorage
+        self.migrationService = DBMigrationService(localStorage: localStorage, encryptedStorage: encryptedStorage)
+    }
+}
+
+// MARK: - DataServiceType
+extension DataService: DataServiceType {
     var storage: Realm {
         encryptedStorage.storage
     }
 
     var isSetupFinished: Bool {
-        isLoggedIn && (self.encryptedStorage.keys()?.count ?? 0) > 0
+        isLoggedIn && isAnyKeysForCurrentUser
+    }
+
+    private var isAnyKeysForCurrentUser: Bool {
+        guard let currentUser = currentUser else {
+            return false
+        }
+        guard let keys = encryptedStorage.keys() else {
+            return false
+        }
+        let isAnyKeysForCurrentUser = keys
+            .map(\.account)
+            .map { $0.contains(currentUser.email) }
+            .contains(true)
+
+        return isAnyKeysForCurrentUser
     }
 
     var isLoggedIn: Bool {
@@ -60,33 +83,31 @@ final class DataService: DataServiceType {
         currentUser?.email
     }
 
+    // helper to get current user object from DB
+    private var currentUserObject: UserObject? {
+        encryptedStorage.getAllUsers().first(where: \.isActive)
+    }
+
+    var users: [User] {
+        encryptedStorage.getAllUsers()
+            .map(User.init)
+    }
+
     var currentUser: User? {
-        guard let userObject = self.encryptedStorage.getUser() else {
-            return nil
-        }
-        return User(userObject)
+        users.first(where: \.isActive)
     }
 
     var currentAuthType: AuthType? {
-        encryptedStorage.getUser()?.authType
+        currentUserObject?.authType
     }
 
     var token: String? {
         switch currentAuthType {
-        case let .oAuthGmail(value): return value
-        default: return nil
+        case .oAuthGmail:
+            return GoogleUserService().userToken
+        default:
+            return nil
         }
-    }
-
-    private let encryptedStorage: EncryptedStorageType & LogOutHandler
-    private(set) var localStorage: LocalStorageType & LogOutHandler
-
-    private init(
-        encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
-        localStorage: LocalStorageType & LogOutHandler = LocalStorage()
-    ) {
-        self.encryptedStorage = encryptedStorage
-        self.localStorage = localStorage
     }
 }
 
@@ -110,87 +131,16 @@ extension DataService: KeyDataServiceType {
     }
 }
 
-// MARK: - LogOut
-extension DataService {
-    func logOutAndDestroyStorage() {
-        localStorage.logOut()
-        encryptedStorage.logOut()
-    }
-}
-
 // MARK: - Migration
 extension DataService: DBMigration {
     /// Perform all kind of migrations
     func performMigrationIfNeeded() -> Promise<Void> {
         return Promise<Void> { [weak self] in
             guard let self = self else { throw AppErr.nilSelf }
+            // migrate to encrypted storage
             try await(self.encryptedStorage.performMigrationIfNeeded())
-            self.performTokenEncryptedMigration()
-            self.performUserSessionMigration()
-            self.performGmailApiMigration()
-        }
-    }
-
-    /// Perform migration for users which has token saved in non encrypted storage
-    private func performTokenEncryptedMigration() {
-        let legacyTokenIndex = "keyCurrentToken"
-        guard previouslyStoredUser() != nil else {
-            debugPrint("Local migration not needed. User was not stored in local storage")
-            return
-        }
-        guard let token = localStorage.storage.string(forKey: legacyTokenIndex) else {
-            debugPrint("Local migration not needed. Token was not saved in local storage")
-            return
-        }
-
-        performSessionMigration(with: token)
-        localStorage.storage.removeObject(forKey: legacyTokenIndex)
-    }
-
-    /// Perform migration from google signing to generic session
-    private func performUserSessionMigration() {
-        guard let token = encryptedStorage.currentToken() else {
-            debugPrint("User migration not needed. Token was not stored or migration already finished")
-            return
-        }
-
-        performSessionMigration(with: token)
-    }
-
-    private func performSessionMigration(with token: String) {
-        guard let user = previouslyStoredUser() else {
-            debugPrint("User migration not needed. User was not stored or migration already finished")
-            return
-        }
-        debugPrint("Perform user migration for token")
-        let userObject = UserObject.googleUser(name: user.name, email: user.email, token: token)
-
-        encryptedStorage.saveUser(with: userObject)
-        UserDefaults.standard.set(nil, forKey: legacyCurrentUserIndex)
-    }
-
-    var legacyCurrentUserIndex: String { "keyCurrentUser" }
-    private func previouslyStoredUser() -> User? {
-        guard let data = UserDefaults.standard.object(forKey: legacyCurrentUserIndex) as? Data else { return nil }
-        return try? PropertyListDecoder().decode(User.self, from: data)
-    }
-
-    /// Perform migration when Gmail Api implemented
-    private func performGmailApiMigration() {
-        let key = "KeyGmailApiMigration"
-        let isMigrated = UserDefaults.standard.bool(forKey: key)
-        guard !isMigrated else {
-            return
-        }
-        UserDefaults.standard.set(true, forKey: key)
-        let folders = storage.objects(FolderObject.self)
-
-        do {
-            try storage.write {
-                storage.delete(folders)
-            }
-        } catch let error {
-            assertionFailure("Can't perform Gmail Api migration \(error)")
+            // migrate all other type of migrations
+            try await(self.migrationService.performMigrationIfNeeded())
         }
     }
 }
@@ -198,7 +148,7 @@ extension DataService: DBMigration {
 // MARK: - SessionProvider
 extension DataService: ImapSessionProvider {
     func imapSession() -> IMAPSession? {
-        guard let user = encryptedStorage.getUser() else {
+        guard let user = currentUserObject else {
             assertionFailure("Can't get IMAP Session without user data")
             return nil
         }
@@ -212,7 +162,7 @@ extension DataService: ImapSessionProvider {
     }
 
     func smtpSession() -> SMTPSession? {
-        guard let user = encryptedStorage.getUser() else {
+        guard let user = currentUserObject else {
             assertionFailure("Can't get SMTP Session without user data")
             return nil
         }
@@ -223,39 +173,5 @@ extension DataService: ImapSessionProvider {
         }
 
         return smtpSession
-    }
-}
-
-// MARK: -
-extension DataService {
-    func startFor(user type: SessionType) {
-        switch type {
-        case let .google(email, name, token):
-            // for google authentication this method will be called also on renewing access token
-            // destroy storage in case a new user logged in
-            if let currentUser = currentUser, currentUser.email != email {
-                logOutAndDestroyStorage()
-            }
-            // save new user data
-            let user = UserObject.googleUser(
-                name: name,
-                email: email,
-                token: token
-            )
-            encryptedStorage.saveUser(with: user)
-        case let .session(user):
-            logOutAndDestroyStorage()
-            encryptedStorage.saveUser(with: user)
-        }
-    }
-}
-
-extension DataService {
-    var trashFolderPath: String? {
-        localStorage.trashFolderPath
-    }
-
-    func saveTrashFolder(path: String?) {
-        localStorage.trashFolderPath = path
     }
 }

@@ -12,6 +12,7 @@ protocol UsersMailSessionProvider {
     func renewSession() -> Promise<Void>
 }
 
+// MARK: - GmailService
 extension GmailService: UsersMailSessionProvider {
     @discardableResult
     func renewSession() -> Promise<Void> {
@@ -19,6 +20,7 @@ extension GmailService: UsersMailSessionProvider {
     }
 }
 
+// MARK: - Imap
 extension Imap: UsersMailSessionProvider {
     @discardableResult
     func renewSession() -> Promise<Void> {

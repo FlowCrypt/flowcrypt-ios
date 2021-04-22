@@ -66,20 +66,3 @@ class ImapHelperTest: XCTestCase {
         XCTAssertNotNil(three)
     }
 }
-
-// func createSet(
-//    for numberOfMessages: Int,
-//    total: Int,
-//    from: Int
-// ) -> MCOIndexSet {
-//    var length = numberOfMessages - 1
-//    if length < 0 {
-//        length = 0
-//    }
-//    var diff = total - length - from
-//    if diff < 0 {
-//        diff = 1
-//    }
-//    let range = MCORange(location: UInt64(diff), length: UInt64(length))
-//    return MCOIndexSet(range: range)
-// }

@@ -10,6 +10,7 @@ import Foundation
 import RealmSwift
 
 final class UserObject: Object {
+    @objc dynamic var isActive = true
     @objc dynamic var name: String = "" {
         didSet {
             imap?.username = name
@@ -47,8 +48,8 @@ extension UserObject {
         UserObject(
             name: name,
             email: email,
-            imap: SessionObject.googleIMAP(with: token, username: name),
-            smtp: SessionObject.googleSMTP(with: token, username: name)
+            imap: SessionObject.googleIMAP(with: token, username: name, email: email),
+            smtp: SessionObject.googleSMTP(with: token, username: name, email: email)
         )
     }
 }
@@ -69,5 +70,6 @@ extension User {
     init(_ userObject: UserObject) {
         self.name = userObject.name
         self.email = userObject.email
+        self.isActive = userObject.isActive
     }
 }

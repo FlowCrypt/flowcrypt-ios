@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import GoogleSignIn
 import GoogleAPIClientForREST
 
 enum MailServiceProviderType {
@@ -46,4 +45,3 @@ extension AuthType {
         }
     }
 }
-

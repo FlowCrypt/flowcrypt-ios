@@ -33,38 +33,52 @@ extension GmailService: RemoteFoldersProviderType {
                 // TODO: - TOM - Implement categories if needed
                 let folders = labels
                     .compactMap { (label) -> GTLRGmail_Label? in
-                        guard let identifier = label.identifier else {
+                        guard let identifier = label.identifier, identifier.isNotEmpty else {
+                            debugPrint("[GmailService] skip label with \(label.identifier ?? "")")
                             return nil
                         }
                         guard identifier.range(of: "CATEGORY_", options: .caseInsensitive) == nil else {
+                            debugPrint("[GmailService] skip category label with \(label.identifier ?? "")")
                             return nil
                         }
                         return label
                     }
-                    .compactMap(FolderObject.init)
+                    .compactMap {
+                        FolderObject(with: $0, user: self.activeUser)
+                    }
 
                 resolve(folders + [self.allMailFolder])
             }
         }
     }
 
+    private var activeUser: UserObject? {
+        EncryptedStorage().activeUser
+    }
+
     private var allMailFolder: FolderObject {
-        FolderObject(name: "All Mail", path: "", image: nil)
+        FolderObject(name: "All Mail", path: "all mail", image: nil, user: activeUser)
     }
 }
 
 // MARK: - Convenience
 private extension FolderObject {
-    convenience init?(with folder: GTLRGmail_Label) {
+    convenience init?(with folder: GTLRGmail_Label, user: UserObject?) {
         guard let name = folder.name else { return nil }
         guard let identifier = folder.identifier else {
             assertionFailure("Gmail folder \(folder) doesn't have identifier")
             return nil
         }
+        // folder.identifier is missed for hidden GTLRGmail_Labels
+        if identifier.isEmpty {
+            return nil
+        }
+
         self.init(
             name: name,
             path: identifier,
-            image: nil
+            image: nil,
+            user: user
         )
     }
 }

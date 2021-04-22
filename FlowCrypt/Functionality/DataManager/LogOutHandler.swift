@@ -2,12 +2,12 @@
 //  LogOutHandler.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 28/02/2020.
-//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
+//  Created by Anton Kharchevskyi on 27.02.2021.
+//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
 import Foundation
 
 protocol LogOutHandler {
-    func logOut()
+    func logOutUser(email: String) throws
 }

@@ -11,4 +11,5 @@ import Foundation
 struct User: Codable, Equatable {
     let email: String
     let name: String
+    let isActive: Bool
 }

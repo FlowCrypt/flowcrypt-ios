@@ -12,7 +12,6 @@ final class SetupViewController: TableNodeViewController {
         case title, description, passPhrase, divider, action, optionalAction
     }
 
-    private let userService: UserServiceType
     private let router: GlobalRouterType
     private let storage: DataServiceType & KeyDataServiceType
     private let decorator: SetupViewDecoratorType
@@ -20,6 +19,7 @@ final class SetupViewController: TableNodeViewController {
     private let keyMethods: KeyMethodsType
     private let attester: AttesterApiType
     private let backupService: BackupServiceType
+    private let user: UserId
 
     private var passPhrase: String?
 
@@ -52,16 +52,15 @@ final class SetupViewController: TableNodeViewController {
     }
 
     init(
-        userService: UserServiceType = UserService.shared,
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: SetupViewDecoratorType = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(core: .shared),
         attester: AttesterApiType = AttesterApi(),
-        backupService: BackupServiceType = BackupService.shared
+        backupService: BackupServiceType = BackupService.shared,
+        user: UserId
     ) {
-        self.userService = userService
         self.router = router
         self.storage = storage
         self.decorator = decorator
@@ -69,6 +68,7 @@ final class SetupViewController: TableNodeViewController {
         self.keyMethods = keyMethods
         self.attester = attester
         self.backupService = backupService
+        self.user = user
 
         super.init(node: TableNode())
     }
@@ -140,7 +140,6 @@ extension SetupViewController {
 
 extension SetupViewController {
     private func handle(newState: State) {
-        hideSpinner()
         switch newState {
         case .idle:
             node.reloadData()
@@ -149,15 +148,17 @@ extension SetupViewController {
         case let .fetchedEncrypted(details):
             handleBackupsFetchResult(with: details)
         case let .error(error):
+            hideSpinner()
             handleError(with: error)
         case .createKey:
+            hideSpinner()
             handleCreateKey()
         }
     }
 
     private func searchBackups() {
         showSpinner()
-        backupService.fetchBackups()
+        backupService.fetchBackups(for: user)
             .then(on: .main) { [weak self] keys in
                 guard keys.isNotEmpty else {
                     self?.state = .error(.noBackups)
@@ -314,7 +315,7 @@ extension SetupViewController {
             let userId = try self.getUserId()
             try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try await(self.backupService.backupToInbox(keys: [encryptedPrv.key]))
+            try await(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
 
             let updateKey = self.attester.updateKey(
@@ -375,6 +376,7 @@ extension SetupViewController {
     }
 
     private func handleButtonPressed() {
+        // TODO: - ANTON - show hud
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
 
@@ -385,28 +387,26 @@ extension SetupViewController {
 
         showSpinner()
 
-        switch state {
-        case .createKey:
-            setupAccountWithGeneratedKey(with: passPhrase)
-        case let .fetchedEncrypted(backups):
-            recoverAccount(with: backups, and: passPhrase)
-        default:
-            assertionFailure("Not proper state for the screen")
+        // TODO: - fix for spinner
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            switch self.state {
+            case .createKey:
+                self.setupAccountWithGeneratedKey(with: passPhrase)
+            case let .fetchedEncrypted(backups):
+                self.recoverAccount(with: backups, and: passPhrase)
+            default:
+                assertionFailure("Not proper state for the screen")
+            }
         }
     }
 
     private func handleOtherAccount() {
-        userService.signOut()
-            .then(on: .main) { [weak self] _ in
-                self?.router.proceed()
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.showAlert(error: error, message: "Could not switch accounts")
-            }
+        router.signOut()
     }
 
     private func moveToMainFlow() {
-        GlobalRouter().proceed()
+        router.proceed()
     }
 }
 

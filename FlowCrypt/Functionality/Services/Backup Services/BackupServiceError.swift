@@ -10,6 +10,5 @@ import Foundation
 
 enum BackupServiceError: Error {
     case parse
-    case emailNotFound
     case keyIsNotFullyEncrypted
 }

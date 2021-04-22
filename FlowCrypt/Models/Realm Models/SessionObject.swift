@@ -16,6 +16,7 @@ final class SessionObject: Object {
     @objc dynamic var password: String?
     @objc dynamic var oAuth2Token: String?
     @objc dynamic var connectionType: String = ""
+    @objc dynamic var email: String?
 
     convenience init(
         hostname: String,
@@ -23,7 +24,8 @@ final class SessionObject: Object {
         username: String,
         password: String?,
         oAuth2Token: String?,
-        connectionType: String
+        connectionType: String,
+        email: String
     ) {
         self.init()
         self.hostname = hostname
@@ -32,29 +34,32 @@ final class SessionObject: Object {
         self.password = password
         self.oAuth2Token = oAuth2Token
         self.connectionType = connectionType
+        self.email = email
     }
 }
 
 extension SessionObject {
-    static func googleIMAP(with token: String, username: String) -> SessionObject {
+    static func googleIMAP(with token: String, username: String, email: String) -> SessionObject {
         SessionObject(
             hostname: "imap.gmail.com",
             port: 993,
             username: username,
             password: nil,
             oAuth2Token: token,
-            connectionType: ConnectionType.tls.rawValue
+            connectionType: ConnectionType.tls.rawValue,
+            email: email
         )
     }
 
-    static func googleSMTP(with token: String, username: String) -> SessionObject {
+    static func googleSMTP(with token: String, username: String, email: String) -> SessionObject {
         SessionObject(
             hostname: "smtp.gmail.com",
             port: 465,
             username: username,
             password: nil,
             oAuth2Token: token,
-            connectionType: ConnectionType.tls.rawValue
+            connectionType: ConnectionType.tls.rawValue,
+            email: email
         )
     }
 }

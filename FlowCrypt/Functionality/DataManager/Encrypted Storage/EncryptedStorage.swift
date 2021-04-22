@@ -11,10 +11,6 @@ import Foundation
 import Promises
 import RealmSwift
 
-protocol DBMigration {
-    func performMigrationIfNeeded() -> Promise<Void>
-}
-
 protocol EncryptedStorageType: DBMigration {
     var storage: Realm { get }
 
@@ -24,8 +20,11 @@ protocol EncryptedStorageType: DBMigration {
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>?
 
-    func getUser() -> UserObject?
-    func saveUser(with user: UserObject)
+    func getAllUsers() -> [UserObject]
+    func saveActiveUser(with user: UserObject)
+    var activeUser: UserObject? { get }
+
+    func cleanup()
 }
 
 final class EncryptedStorage: EncryptedStorageType {
@@ -34,6 +33,9 @@ final class EncryptedStorage: EncryptedStorageType {
         static let schemaVersion: UInt64 = 1
         // User object added to schema
         static let schemaVersionUser: UInt64 = 2
+        // Account field added to Keys
+        static let schemaVersionMultipleAccounts: UInt64 = 3
+
         static let encryptedDbFilename = "encrypted.realm"
     }
 
@@ -44,18 +46,27 @@ final class EncryptedStorage: EncryptedStorageType {
         keychainService.getStorageEncryptionKey()
     }
 
+    // TODO: - ANTON - Add logger (https://github.com/FlowCrypt/flowcrypt-ios/issues/282)
+    private let debugLabel = "[EncryptedStorage][DB Migration]"
+
     private var encryptedConfiguration: Realm.Configuration {
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let latestSchemaVersion = Constants.schemaVersionMultipleAccounts
         return Realm.Configuration(
             fileURL: URL(fileURLWithPath: path),
             encryptionKey: realmKey,
-            schemaVersion: Constants.schemaVersionUser
+            schemaVersion: latestSchemaVersion,
+            migrationBlock: { [weak self] migration, oldSchemaVersion in
+                self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
+            }
         )
     }
 
     var storage: Realm {
         do {
-            return try Realm(configuration: encryptedConfiguration)
+            Realm.Configuration.defaultConfiguration = encryptedConfiguration
+            let realm = try Realm(configuration: encryptedConfiguration)
+            return realm
         } catch {
 //             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
 //             return nil
@@ -74,33 +85,47 @@ final class EncryptedStorage: EncryptedStorageType {
 
 // MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
-    func logOut() { // todo - logOut is not clear - should be called onLogOut to make it clear it's responding to an event
-        destroyEncryptedStorage()
+    func logOutUser(email: String) throws {
+        let users = storage.objects(UserObject.self)
+
+        // in case there is only one user - just delete storage
+        if users.count == 1, users.first?.email == email {
+            destroyEncryptedStorage()
+        } else {
+            // remove user and keys for this user
+            let userToDelete = users.filter { $0.email == email }
+            let keys = storage.objects(KeyInfo.self).filter { $0.account.contains(email) }
+            let sessions = storage.objects(SessionObject.self).filter { $0.email == email }
+
+            try storage.write {
+                storage.delete(userToDelete)
+                storage.delete(keys)
+                storage.delete(sessions)
+            }
+        }
     }
 
     private func destroyEncryptedStorage() {
-        do {
-            try storage.write {
-                storage.deleteAll()
-            }
-        } catch let error {
-            assertionFailure("Error while deleting the objects from the storage \(error)")
-        }
-
-        // Remove configuration if user still on plain realm
-        if let defaultPath = Realm.Configuration.defaultConfiguration.fileURL,
-            defaultPath != self.encryptedConfiguration.fileURL {
-            destroyStorage(at: defaultPath)
-        }
+        cleanup()
+        destroyPlainConfigurationIfNeeded()
     }
 
-    private func destroyStorage(at url: URL) {
+    /// Remove configuration if user still on plain realm
+    private func destroyPlainConfigurationIfNeeded() {
+        guard let defaultPath = Realm.Configuration.defaultConfiguration.fileURL else {
+            return
+        }
+        guard defaultPath != self.encryptedConfiguration.fileURL else {
+            return
+        }
+        guard fileManager.fileExists(atPath: defaultPath.absoluteString) else {
+            return
+        }
+
         do {
-            try fileManager.removeItem(at: url)
-        } catch CocoaError.fileNoSuchFile {
-//            debugPrint("Realm at url \(url) did not exist")
+            try fileManager.removeItem(at: defaultPath)
         } catch {
-            fatalError("Could not delete configuration for \(url) with error: \(error)")
+            fatalError("Could not delete configuration for \(defaultPath) with error: \(error)")
         }
     }
 }
@@ -160,6 +185,40 @@ extension EncryptedStorage {
         }
         return documentDirectory
     }
+
+    private func performSchemaMigration(migration: Migration, from oldSchemaVersion: UInt64, to newVersion: UInt64) {
+        debugPrint("\(debugLabel) Check if migration needed from \(oldSchemaVersion) to \(newVersion)")
+
+        guard oldSchemaVersion < newVersion else {
+            debugPrint("\(debugLabel) Migration not needed")
+            return
+        }
+
+        switch newVersion {
+        case 0, Constants.schemaVersion, Constants.schemaVersionUser:
+            debugPrint("\(debugLabel) Schema Migration not needed")
+        case Constants.schemaVersionMultipleAccounts:
+            performMultipleAccount(migration: migration)
+        default:
+            assertionFailure("\(debugLabel) Migration is not implemented for this schema version")
+        }
+    }
+
+    private func performMultipleAccount(migration: Migration) {
+        debugPrint("\(debugLabel) Start Multiple account migration")
+
+        debugPrint("\(debugLabel) - Set isActive = true for a user")
+        migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (_, newUser) in
+            newUser?["isActive"] = true
+        }
+
+        debugPrint("\(debugLabel) - Add account to key")
+        migration.enumerateObjects(ofType: String(describing: KeyInfo.self)) { (_, newKey) in
+            migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (user, _) in
+                newKey?["account"] = user?["email"] ?? ""
+            }
+        }
+    }
 }
 
 // MARK: - Keys
@@ -211,15 +270,34 @@ extension EncryptedStorage {
 }
 
 // MARK: - User
-
 extension EncryptedStorage {
-    func getUser() -> UserObject? {
-        storage.objects(UserObject.self).first
+    var activeUser: UserObject? {
+        getAllUsers().first(where: \.isActive)
     }
 
-    func saveUser(with user: UserObject) {
+    func getAllUsers() -> [UserObject] {
+        Array(storage.objects(UserObject.self))
+    }
+
+    func saveActiveUser(with user: UserObject) {
         try! storage.write {
+            // Mark all users as inactive
+            self.getAllUsers().forEach {
+                $0.isActive = false
+            }
             self.storage.add(user, update: .all)
+        }
+    }
+}
+
+extension EncryptedStorage {
+    func cleanup() {
+        do {
+            try storage.write {
+                storage.deleteAll()
+            }
+        } catch let error {
+            assertionFailure("Error while deleting the objects from the storage \(error)")
         }
     }
 }

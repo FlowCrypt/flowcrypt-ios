@@ -61,3 +61,9 @@ public extension UIColor {
         )
     }
 }
+
+public extension NSAttributedString {
+    func mutable() -> NSMutableAttributedString {
+        return NSMutableAttributedString(attributedString: self)
+    }
+}

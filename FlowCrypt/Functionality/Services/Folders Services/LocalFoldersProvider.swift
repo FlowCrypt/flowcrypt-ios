@@ -11,6 +11,7 @@ import RealmSwift
 
 protocol LocalFoldersProviderType {
     func fetchFolders() -> [FolderViewModel]
+    func removeFolders()
     func save(folders: [FolderObject])
 }
 
@@ -22,10 +23,16 @@ struct LocalFoldersProvider: LocalFoldersProviderType {
     }
 
     func fetchFolders() -> [FolderViewModel] {
-        folderCache.getAll()?.compactMap(FolderViewModel.init) ?? []
+        folderCache.getAllForActiveUser()?
+            .compactMap(FolderViewModel.init)
+            ?? []
     }
 
     func save(folders: [FolderObject]) {
         folders.forEach(folderCache.save)
+    }
+
+    func removeFolders() {
+        folderCache.removeAllForActiveUser()
     }
 }

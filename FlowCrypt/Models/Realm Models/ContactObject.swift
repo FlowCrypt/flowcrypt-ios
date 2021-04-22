@@ -95,5 +95,9 @@ extension ContactObject {
 }
 
 extension ContactObject: CachedObject {
+    // Contacts can be shared between accounts
+    // https://github.com/FlowCrypt/flowcrypt-ios/issues/269
+    var activeUser: UserObject? { nil }
+
     var identifier: String { email }
 }

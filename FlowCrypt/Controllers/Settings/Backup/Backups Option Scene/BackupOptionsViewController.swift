@@ -32,16 +32,18 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     }
     private let attester = AttesterApi()
     private let backupService: BackupServiceType
+    private let userId: UserId
 
     init(
         decorator: BackupOptionsViewDecoratorType = BackupOptionsViewDecorator(),
         backupService: BackupServiceType = BackupService.shared,
-        backups: [KeyDetails]
+        backups: [KeyDetails],
+        userId: UserId
     ) {
         self.decorator = decorator
         self.backups = backups
         self.backupService = backupService
-
+        self.userId = userId
         super.init(node: TableNode())
     }
 
@@ -82,7 +84,8 @@ extension BackupOptionsViewController {
         navigationController?.pushViewController(
             BackupSelectKeyViewController(
                 selectedOption: selectedOption,
-                backups: backups
+                backups: backups,
+                userId: userId
             ),
             animated: true
         )
@@ -99,7 +102,7 @@ extension BackupOptionsViewController {
 
     private func backupToInbox() {
         showSpinner()
-        backupService.backupToInbox(keys: backups)
+        backupService.backupToInbox(keys: backups, for: userId)
             .then(on: .main) { [weak self] in
                 self?.hideSpinner()
                 self?.navigationController?.popToRootViewController(animated: true)
