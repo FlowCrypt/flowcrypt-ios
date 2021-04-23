@@ -29,6 +29,10 @@ import Foundation
 // ******* OR *******
 // Logger.logDebug("some message")
 //
+// ******* Nested Logger *******
+// inside some class
+// let logger = Logger.nested(Self.self)
+// logger.logWarning("some")
 
 // MARK: - Implementation
 struct Logger {
@@ -193,7 +197,6 @@ extension Logger {
         logger.log(.warning, message)
     }
 }
-
 
 // MARK: - print
 // By default the print() will print to the console for both release and debug builds.
