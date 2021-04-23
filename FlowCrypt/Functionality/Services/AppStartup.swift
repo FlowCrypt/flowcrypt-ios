@@ -25,10 +25,10 @@ struct AppStartup {
             try self.setupSession()
         }.then(on: .main) {
             self.chooseView(for: window, session: session)
-            log("AppStartup", error: nil, res: nil, start: start)
+//            log("AppStartup", error: nil, res: nil, start: start)
         }.catch(on: .main) { error in
             self.showErrorAlert(with: error, on: window, session: session)
-            log("AppStartup", error: error, res: nil, start: start)
+//            log("AppStartup", error: error, res: nil, start: start)
         }
     }
 

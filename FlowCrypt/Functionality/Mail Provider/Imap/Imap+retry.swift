@@ -18,7 +18,7 @@ extension Imap {
         start: DispatchTime = DispatchTime.now()
     ) -> (Error?, T?) -> Void {
         return { [weak self] error, res in
-            log(op, error: error, res: res, start: start)
+//            log(op, error: error, res: res, start: start)
             guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
             if let res = res {
                 resolve(res)
@@ -36,7 +36,7 @@ extension Imap {
     ) -> (Error?) -> Void {
         let start = DispatchTime.now()
         return { [weak self] error in
-            log(op, error: error, res: nil, start: start)
+//            log(op, error: error, res: nil, start: start)
             guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
 
             if let error = error {
@@ -55,7 +55,7 @@ extension Imap {
     ) -> (Error?, Any?) -> Void {
         let start = DispatchTime.now()
         return { [weak self] error, _ in
-            log(op, error: error, res: nil, start: start)
+//            log(op, error: error, res: nil, start: start)
             guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
             if let error = error {
                 reject(error)
@@ -81,37 +81,37 @@ extension Imap {
             switch error {
             case .authentication:
                 if let operation = lastErr[op], operation == error { return true }
-                logDebug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
+//                logDebug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
                 lastErr[op] = error
 
                 renewSession().then { _ in
-                    logDebug(5, "(\(debugId)|\(op)) forced session refreshes")
-                    log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
+//                    logDebug(5, "(\(debugId)|\(op)) forced session refreshes")
+//                    log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
                     retry().then(resolve).catch(reject)
                 }.catch(reject)
-                logDebug(7, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
-                logDebug(11, "(\(debugId)|\(op)) return=true (need to retry)")
+//                logDebug(7, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
+//                logDebug(11, "(\(debugId)|\(op)) return=true (need to retry)")
 
                 return false
             case .connection:
                 if let operation = lastErr[op], operation == error { return true }
-                logDebug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
+//                logDebug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
 
                 imapSess = nil // the connection has dropped, so it's probably ok to not officially "close" it
                 smtpSess = nil // but maybe there could be a cleaner way to dispose of the connection?
                 lastErr[op] = error
 
-                logDebug(14, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
-                log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
+//                logDebug(14, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
+//                log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
                 retry().then(resolve).catch(reject)
-                logDebug(15, "(\(debugId)|\(op)) return=true (need to retry)")
+//                logDebug(15, "(\(debugId)|\(op)) return=true (need to retry)")
                 return false
             default:
-                logDebug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
+//                logDebug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
                 reject(error)
                 lastErr[op] = error
-                logDebug(9, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
-                logDebug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
+//                logDebug(9, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
+//                logDebug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
                 return true
             }
         } else {

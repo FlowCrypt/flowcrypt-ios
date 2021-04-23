@@ -22,7 +22,7 @@ extension Imap {
             let kind = self.messageKindProvider.imapMessagesRequestKind
 
             guard uids.count() > 0 else {
-                log("fetchMsgs_empty", error: nil, res: [], start: start)
+//                log("fetchMsgs_empty", error: nil, res: [], start: start)
                 resolve([]) // attempting to fetch an empty set of uids would cause IMAP error
                 return
             }

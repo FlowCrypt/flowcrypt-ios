@@ -76,9 +76,10 @@ extension Imap {
 
     func disconnect() {
         let start = DispatchTime.now()
-        imapSess?.disconnectOperation().start { error in log("disconnect", error: error, res: nil, start: start) }
+        imapSess?.disconnectOperation().start { error in
+//            log("disconnect", error: error, res: nil, start: start)
+        }
         imapSess = nil
         smtpSess = nil // smtp session has no disconnect method
     }
 }
-
