@@ -21,7 +21,12 @@ import Foundation
 // Configuration.default logLevel = (.level)
 //
 //
-// ******* Usage *******
+// ******* Convenience Usage *******
+//
+// let logger = Logger.nested(in: Self.self, with: "Flow name")
+// logger.logDebug("check is user logged in")
+// "⚙️[23:53:17][Flow name][GlobalRouter] check is user logged in"
+//
 // let logger = Logger.nested("App Start")
 // logger.logDebug("some message")
 //
@@ -40,13 +45,13 @@ struct Logger {
         static let `default`: Configuration = .init(
             isAll: false,
             logLevel: .debug,
-            shouldShowPath: true,
+            shouldShowPath: false,
             shouldShowTime: true
         )
 
         let isAll: Bool
         let logLevel: Logger.Level
-        /// Add path to message
+        /// Add fupath to message
         let shouldShowPath: Bool
         /// Add time to message
         let shouldShowTime: Bool
@@ -113,7 +118,7 @@ struct Logger {
 
         // "ℹ️[11:25:02][App Start]"
         if let label = self.label {
-            messageToPrint.append("[\(label)]")
+            messageToPrint.append("\(label)")
         }
 
         // "ℹ️[11:25:02][App Start][GlobalRouter-proceed-56]"
@@ -132,11 +137,17 @@ struct Logger {
 // MARK: - Nested
 extension Logger {
     static func nested(_ label: String) -> Logger {
-        Logger(config: .default, label: label)
+        Logger(config: .default, label: "[\(label)]")
     }
 
     static func nested<T>(_ type: T.Type) -> Logger {
-        Logger(config: .default, label: String.init(describing: type))
+        Logger(config: .default, label: "[\(String.init(describing: type))]")
+    }
+
+    static func nested<T>(in type: T.Type, with label: String) -> Logger {
+        var message = "[\(label)]"
+        message.append("[\(String.init(describing: type))]")
+        return Logger(config: .default, label: message)
     }
 }
 

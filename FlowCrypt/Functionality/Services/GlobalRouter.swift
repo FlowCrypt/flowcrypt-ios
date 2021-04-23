@@ -53,6 +53,8 @@ final class GlobalRouter: GlobalRouterType {
 extension GlobalRouter {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
+        let logger = Logger.nested(in: Self.self, with: "App Start")
+        logger.logDebug("check is user logged in")
         proceed(with: nil)
     }
 
