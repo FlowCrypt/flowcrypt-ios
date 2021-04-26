@@ -25,7 +25,7 @@ import Foundation
 //
 // let logger = Logger.nested(in: Self.self, with: "Flow name")
 // logger.logDebug("check is user logged in")
-// "⚙️[23:53:17][Flow name][GlobalRouter] check is user logged in"
+// "⚙️[Flow name][GlobalRouter][23:53:17] check is user logged in"
 //
 // let logger = Logger.nested("App Start")
 // logger.logDebug("some message")
@@ -111,23 +111,23 @@ struct Logger {
         // "ℹ️"
         messageToPrint.append("\(level.label)")
 
-        // "ℹ️[11:25:02]"
-        if config.shouldShowTime {
-            messageToPrint.append("[\(Self.dateFormatter.string(from: Date()))]")
-        }
-
-        // "ℹ️[11:25:02][App Start]"
+        // "ℹ️[App Start]"
         if let label = self.label {
             messageToPrint.append("\(label)")
         }
 
-        // "ℹ️[11:25:02][App Start][GlobalRouter-proceed-56]"
+        // "ℹ️[App Start][GlobalRouter-proceed-56]"
         if config.shouldShowPath {
             messageToPrint.append("[\(file)-\(function)-\(line)]")
         }
+        
+        // "ℹ️[App Start][GlobalRouter-proceed-56][11:25:02]"
+        if config.shouldShowTime {
+            messageToPrint.append("[\(Self.dateFormatter.string(from: Date()))]")
+        }
 
         messageToPrint.append(" ")
-        // "ℹ️[11:25:02][App Start][GlobalRouter-proceed-56] Some message goes here"
+        // "ℹ️[App Start][GlobalRouter-proceed-56][11:25:02] Some message goes here"
         messageToPrint.append(message())
 
         debugPrint(messageToPrint)
@@ -159,7 +159,7 @@ extension Logger {
     }
 
     /// default log level to print some information message
-    func logInfog(_ message: String) {
+    func logInfo(_ message: String) {
         log(.info, message)
     }
 
@@ -189,7 +189,7 @@ extension Logger {
     }
 
     /// default log level to print some information message
-    static func logInfog(_ message: String) {
+    static func logInfo(_ message: String) {
         logger.log(.info, message)
     }
 

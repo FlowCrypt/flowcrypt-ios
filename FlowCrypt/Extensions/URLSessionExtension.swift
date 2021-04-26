@@ -17,6 +17,8 @@ struct HttpErr: Error {
     let error: Error?
 }
 
+private let logger = Logger.nested("URLSession")
+
 extension URLSession {
     func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
         return Promise { resolve, reject in
@@ -27,7 +29,8 @@ extension URLSession {
                 let urlMethod = urlRequest.httpMethod ?? "GET"
                 let urlString = urlRequest.url?.absoluteString ?? "??"
                 let message = "URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlMethod) \(urlString)"
-                debugPrint(message)
+                Logger.nested("URLSession").logInfo(message)
+                
                 let validStatusCode = 200 ... 299
                 let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
                 let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes

@@ -43,8 +43,7 @@ final class CoreHost: NSObject, CoreHostExports {
             let decrypted = try rsaEncrypted.decrypted(with: rsaPrv, padding: .NONE)
             return decrypted.base64String
         } catch {
-            debugPrint("decryptRsaNoPadding error")
-            debugPrint(error)
+            Logger.logError("decryptRsaNoPadding error \(error)")
             return ""
         }
     }

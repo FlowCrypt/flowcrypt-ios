@@ -20,6 +20,8 @@ final class SignInViewController: TableNodeViewController {
     private let core: Core
     private let decorator: SignInViewDecoratorType
 
+    private lazy var logger = Logger.nested(Self.self)
+    
     init(
         globalRouter: GlobalRouterType = GlobalRouter(),
         core: Core = Core.shared,
@@ -133,13 +135,11 @@ extension SignInViewController {
                 msgPwd: nil,
                 isEmail: false
             )
-            debugPrint(decrypted)
-            debugPrint("decrypted \(start.millisecondsSince)")
+            logger.logInfo("\(decrypted) - start \(start.millisecondsSince)")
         } catch CoreError.exception {
-            debugPrint("catch exception")
+            logger.logError("catch exception")
         } catch {
-            debugPrint("catch generic")
-            debugPrint(error)
+            logger.logInfo("catch generic \(error)")
         }
     }
 

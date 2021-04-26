@@ -45,9 +45,8 @@ final class EncryptedStorage: EncryptedStorageType {
     private var realmKey: Data {
         keychainService.getStorageEncryptionKey()
     }
-
-    // TODO: - ANTON - Add logger (https://github.com/FlowCrypt/flowcrypt-ios/issues/282)
-    private let debugLabel = "[EncryptedStorage][DB Migration]"
+    
+    private lazy var logger = Logger.nested(in: Self.self, with: "Migration")
 
     private var encryptedConfiguration: Realm.Configuration {
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
@@ -139,16 +138,16 @@ extension EncryptedStorage {
         let plainRealmPath = documentDirectory + "/default.realm"
         let encryptedRealmPath = documentDirectory + "/" + Constants.encryptedDbFilename
         guard fileManager.fileExists(atPath: plainRealmPath) else {
-            debugPrint("Migration not needed: plain realm not used")
+            logger.logInfo("Migration not needed: plain realm not used")
             return Promise(())
         }
         guard !fileManager.fileExists(atPath: encryptedRealmPath) else {
-            debugPrint("Migration not needed: encrypted realm already set up")
+            logger.logInfo("Migration not needed: encrypted realm already set up")
             return Promise(())
         }
-        debugPrint("Performing migration from plain to encrypted Realm")
+        logger.logInfo("Performing migration from plain to encrypted Realm")
         guard let plainRealm = try? Realm(configuration: Realm.Configuration.defaultConfiguration) else {
-            debugPrint("Failed to load plain realm, although the db file was present: destroying")
+            logger.logWarning("Failed to load plain realm, although the db file was present: destroying")
             destroyEncryptedStorage() // destroys plain as well as encrypted realm (if one existed)
             return Promise(())
         }
@@ -162,13 +161,13 @@ extension EncryptedStorage {
                 fileURL: URL(fileURLWithPath: encryptedRealmPath),
                 encryptionKey: self.realmKey,
                 schemaVersion: Constants.schemaVersion,
-                migrationBlock: { migration, oldSchemaVersion in
+                migrationBlock: { [weak self] (migration, oldSchemaVersion) in
                     do {
-                        debugPrint("oldSchemaVersion \(oldSchemaVersion)")
-                        debugPrint("Performing migration \(migration)")
+                        self?.logger.logInfo("oldSchemaVersion \(oldSchemaVersion)")
+                        self?.logger.logInfo("Performing migration \(migration)")
                         // I'd rather the app crashes then to pretend it has removed the plain copy
                         // todo - remove the following line for migrations from 0.1.7 up
-                        try self.fileManager.removeItem(atPath: plainRealmPath) // delete previous configuration
+                        try self?.fileManager.removeItem(atPath: plainRealmPath) // delete previous configuration
                         resolve(())
                     } catch {
                         reject(error)
@@ -187,32 +186,30 @@ extension EncryptedStorage {
     }
 
     private func performSchemaMigration(migration: Migration, from oldSchemaVersion: UInt64, to newVersion: UInt64) {
-        debugPrint("\(debugLabel) Check if migration needed from \(oldSchemaVersion) to \(newVersion)")
+        logger.logInfo("Check if migration needed from \(oldSchemaVersion) to \(newVersion)")
 
         guard oldSchemaVersion < newVersion else {
-            debugPrint("\(debugLabel) Migration not needed")
+            logger.logInfo("Migration not needed")
             return
         }
 
         switch newVersion {
         case 0, Constants.schemaVersion, Constants.schemaVersionUser:
-            debugPrint("\(debugLabel) Schema Migration not needed")
+            logger.logInfo("Schema Migration not needed")
         case Constants.schemaVersionMultipleAccounts:
             performMultipleAccount(migration: migration)
         default:
-            assertionFailure("\(debugLabel) Migration is not implemented for this schema version")
+            logger.logWarning("Migration is not implemented for this schema version")
         }
     }
 
     private func performMultipleAccount(migration: Migration) {
-        debugPrint("\(debugLabel) Start Multiple account migration")
-
-        debugPrint("\(debugLabel) - Set isActive = true for a user")
+        logger.logInfo("Start Multiple account migration")
+        logger.logInfo("Set isActive = true for a user")
         migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (_, newUser) in
             newUser?["isActive"] = true
         }
-
-        debugPrint("\(debugLabel) - Add account to key")
+        logger.logInfo("Add account to key")
         migration.enumerateObjects(ofType: String(describing: KeyInfo.self)) { (_, newKey) in
             migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (user, _) in
                 newKey?["account"] = user?["email"] ?? ""

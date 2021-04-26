@@ -18,6 +18,8 @@ protocol KeyChainServiceType {
 }
 
 struct KeyChainService: KeyChainServiceType {
+    private static var logger = Logger.nested(in: Self.self, with: "Keychain")
+    
     // the prefix ensures that we use a different keychain index after deleting the app
     // because keychain entries survive app uninstall
     private static var keychainIndex: String = {
@@ -33,7 +35,8 @@ struct KeyChainService: KeyChainServiceType {
         let prefix = Data(randomBytes)
             .base64EncodedString()
             .replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
-        debugPrint("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+        
+        logger.logInfo("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
         UserDefaults.standard.set(prefix, forKey: prefixStorageIndex)
         return prefix + storageEncryptionKeyIndexSuffix
     }()
@@ -41,7 +44,8 @@ struct KeyChainService: KeyChainServiceType {
     private let keyByteLen = 64
 
     private func generateAndSaveStorageEncryptionKey() {
-        debugPrint("KeyChainService->generateAndSaveStorageEncryptionKey")
+        Self.logger.logInfo("generateAndSaveStorageEncryptionKey")
+
         guard let randomBytes = CoreHost().getSecureRandomByteNumberArray(keyByteLen) else {
             fatalError("KeyChainServiceType generateAndSaveStorageEncryptionKey getSecureRandomByteNumberArray bytes are nil")
         }

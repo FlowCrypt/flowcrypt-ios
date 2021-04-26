@@ -55,6 +55,7 @@ extension GlobalRouter {
     func proceed() {
         let logger = Logger.nested(in: Self.self, with: "App Start")
         logger.logDebug("check is user logged in")
+        logger.logError("error message")
         proceed(with: nil)
     }
 
