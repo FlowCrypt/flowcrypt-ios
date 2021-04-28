@@ -26,6 +26,7 @@
 		32DCAF683D87EA6221F71335 /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */; };
 		32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA55C094E9745AA1FD210 /* Imap+msg.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
+		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
 		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
 		5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
 		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
@@ -132,7 +133,6 @@
 		9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */; };
 		9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */; };
 		9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B39F2565B0CD00D6D086 /* Message.swift */; };
-		9FE233D825712E51003D7C7E /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 9FE233D725712E51003D7C7E /* test-ci-secrets.json */; };
 		9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE743062347AA54005E2DBB /* MainNavigationController.swift */; };
 		9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */; };
 		9FF0670825520CF800FCC9E6 /* GmailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF0670725520CF800FCC9E6 /* GmailService.swift */; };
@@ -368,6 +368,7 @@
 		411CEC75050F852F172CD687 /* Pods-FlowCryptTests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.testflight.xcconfig"; sourceTree = "<group>"; };
 		44D0BF0D60EF854CEC17561C /* Pods-FlowCryptUIApplication.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.testflight.xcconfig"; sourceTree = "<group>"; };
 		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
+		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
 		567BA6739257FE0D2924D82C /* Pods_FlowCryptUIApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUIApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewDecorator.swift; sourceTree = "<group>"; };
@@ -1578,6 +1579,7 @@
 				9F4453BF236B894D005D7D05 /* TableNode.swift */,
 				9F4453C1236B9273005D7D05 /* TextFieldNode.swift */,
 				D24FAFAA2520BFAE00BF46C5 /* CheckBoxNode.swift */,
+				50531BE32629B9A80039BAE9 /* AttachmentNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -1854,7 +1856,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9FE233D825712E51003D7C7E /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2406,6 +2407,7 @@
 				D28655912423B4580066F52E /* HeaderNode.swift in Sources */,
 				D271774C242558DA00BDA9A9 /* MessageTextSubjectNode.swift in Sources */,
 				D27177502425659F00BDA9A9 /* SettingsCellNode.swift in Sources */,
+				50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */,
 				D2CDC3D824047066002B045F /* RecipientEmailNode.swift in Sources */,
 				D2717753242568A600BDA9A9 /* NavigationBarItemsView.swift in Sources */,
 				D211CE7023FC35AC00D1CE38 /* TableNode.swift in Sources */,

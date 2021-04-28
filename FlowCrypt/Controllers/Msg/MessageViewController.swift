@@ -14,7 +14,7 @@ final class MessageViewController: TableNodeViewController {
     }
 
     enum Parts: Int, CaseIterable {
-        case sender, subject, text
+        case sender, subject, text, attachment
 
         var indexPath: IndexPath {
             IndexPath(row: rawValue, section: 0)
@@ -170,6 +170,10 @@ extension MessageViewController {
                 isEmail: true
             )
             let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
+
+            decrypted.blocks.forEach { block in
+                //
+            }
 
             let message: NSAttributedString
             if let decryptErrBlock = decryptErrBlocks.first {
@@ -366,6 +370,9 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             date: input?.objMessage.date
         )
 
+        let input = AttachmentsNode.Input.init(name: "Attachment 1", size: "100 MB")
+        let input2 = AttachmentsNode.Input.init(name: "Attachment 2", size: "16 MB")
+
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
@@ -377,6 +384,8 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
                 return MessageSubjectNode(subject, time: time)
             case .text:
                 return MessageTextSubjectNode(self.message)
+            case .attachment:
+                return AttachmentsNode.init(input: [input, input2])
             }
         }
     }

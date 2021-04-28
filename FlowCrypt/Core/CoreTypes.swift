@@ -19,7 +19,7 @@ struct CoreRes {
         let text: String
     }
 
-    struct ParseDecryptMsg {
+    struct ParseDecryptMsg: Decodable {
         let replyType: ReplyType
         let text: String
         let blocks: [MsgBlock]
