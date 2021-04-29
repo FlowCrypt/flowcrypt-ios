@@ -18,9 +18,9 @@ struct DBMigrationService {
     private var storage: Realm { encryptedStorage.storage }
     private let localStorage: LocalStorageType
     private let encryptedStorage: EncryptedStorageType
-    
+
     private let logger = Logger.nested(in: Self.self, with: .migration)
-    
+
     init(localStorage: LocalStorageType, encryptedStorage: EncryptedStorageType) {
         self.localStorage = localStorage
         self.encryptedStorage = encryptedStorage

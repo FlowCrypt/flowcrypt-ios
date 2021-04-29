@@ -41,7 +41,7 @@ final class GlobalRouter: GlobalRouterType {
     private let googleService: GoogleUserService
 
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
-    
+
     init(
         userAccountService: UserAccountServiceType = UserAccountService(),
         googleService: GoogleUserService = GoogleUserService()
@@ -72,7 +72,7 @@ extension GlobalRouter {
 extension GlobalRouter {
     func signIn(with rout: GlobalRoutingType) {
         logger.logInfo("Sign in with \(rout)")
-        
+
         switch rout {
         case .gmailLogin(let viewController):
             googleService.signIn(in: viewController)

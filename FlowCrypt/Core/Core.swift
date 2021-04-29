@@ -22,7 +22,7 @@ final class Core {
     private var context: JSContext?
     private dynamic var started = false
     private dynamic var ready = false
-    
+
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
 
     private init() {}

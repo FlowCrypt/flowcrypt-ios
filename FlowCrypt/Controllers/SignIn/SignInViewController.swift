@@ -21,7 +21,7 @@ final class SignInViewController: TableNodeViewController {
     private let decorator: SignInViewDecoratorType
 
     private lazy var logger = Logger.nested(Self.self)
-    
+
     init(
         globalRouter: GlobalRouterType = GlobalRouter(),
         core: Core = Core.shared,

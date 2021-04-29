@@ -35,7 +35,7 @@ final class GoogleUserService: NSObject {
     private enum Constants {
         static let index = "GTMAppAuthAuthorizerIndex"
     }
-    private lazy var logger = Logger.nested(in: Self.self, with: .appStart)
+    private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
     var userToken: String? {
         authorization?.authState

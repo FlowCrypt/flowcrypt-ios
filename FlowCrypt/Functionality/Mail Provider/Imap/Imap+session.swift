@@ -10,8 +10,8 @@ import Foundation
 import Promises
 
 extension Imap {
-    
-    
+
+
     func setupSession() {
         guard
             let imapSession = dataService.imapSession(),
@@ -75,7 +75,7 @@ extension Imap {
                 }
         }
     }
-    
+
     func disconnect() {
         let start = DispatchTime.now()
         imapSess?.disconnectOperation().start { [weak self] error in

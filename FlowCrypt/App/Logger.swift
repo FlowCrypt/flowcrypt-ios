@@ -120,7 +120,7 @@ struct Logger {
         if config.shouldShowPath {
             messageToPrint.append("[\(file)-\(function)-\(line)]")
         }
-        
+
         // "ℹ️[App Start][GlobalRouter-proceed-56][11:25:02]"
         if config.shouldShowTime {
             messageToPrint.append("[\(Self.dateFormatter.string(from: Date()))]")
@@ -136,7 +136,7 @@ struct Logger {
 
 // MARK: - Nested
 extension Logger {
-    
+
     static func nested(_ label: String) -> Logger {
         Logger(config: .default, label: "[\(label)]")
     }
@@ -157,11 +157,11 @@ extension Logger {
     enum LogLabels: String {
         /// log all events which is important for app start for a user
         case userAppStart = "App Start"
-        
+
         /// log all db migration events
         case migration
     }
-    
+
     static func nested<T>(in type: T.Type, with logLabel: LogLabels) -> Logger {
         Self.nested(in: type, with: logLabel.rawValue)
     }

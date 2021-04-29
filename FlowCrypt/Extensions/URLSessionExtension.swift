@@ -30,7 +30,7 @@ extension URLSession {
                 let urlString = urlRequest.url?.absoluteString ?? "??"
                 let message = "URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlMethod) \(urlString)"
                 Logger.nested("URLSession").logInfo(message)
-                
+
                 let validStatusCode = 200 ... 299
                 let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
                 let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes

@@ -25,7 +25,7 @@ final class UserAccountService {
     private let googleService: GoogleUserService
 
     private lazy var logger = Logger.nested(Self.self)
-    
+
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),

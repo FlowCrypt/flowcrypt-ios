@@ -45,7 +45,7 @@ final class EncryptedStorage: EncryptedStorageType {
     private var realmKey: Data {
         keychainService.getStorageEncryptionKey()
     }
-    
+
     private lazy var logger = Logger.nested(in: Self.self, with: "Migration")
 
     private var encryptedConfiguration: Realm.Configuration {
