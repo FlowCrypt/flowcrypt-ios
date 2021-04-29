@@ -40,6 +40,8 @@ final class GlobalRouter: GlobalRouterType {
     private let userAccountService: UserAccountServiceType
     private let googleService: GoogleUserService
 
+    private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
+    
     init(
         userAccountService: UserAccountServiceType = UserAccountService(),
         googleService: GoogleUserService = GoogleUserService()
@@ -53,13 +55,11 @@ final class GlobalRouter: GlobalRouterType {
 extension GlobalRouter {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        let logger = Logger.nested(in: Self.self, with: "App Start")
-        logger.logDebug("check is user logged in")
-        logger.logError("error message")
         proceed(with: nil)
     }
 
     private func proceed(with session: SessionType?) {
+        logger.logInfo("proceed for session \(session.debugDescription)")
         // make sure it runs on main thread
         let window = keyWindow
         DispatchQueue.main.async {
@@ -71,6 +71,8 @@ extension GlobalRouter {
 // MARK: -
 extension GlobalRouter {
     func signIn(with rout: GlobalRoutingType) {
+        logger.logInfo("Sign in with \(rout)")
+        
         switch rout {
         case .gmailLogin(let viewController):
             googleService.signIn(in: viewController)
@@ -86,18 +88,19 @@ extension GlobalRouter {
 
     func signOut() {
         if let session = userAccountService.startActiveSessionForNextUser() {
-            debugPrint("[GlobalRouter] start session for another email user")
+            logger.logInfo("Start session for another email user \(session)")
             proceed(with: session)
         } else {
-            debugPrint("[GlobalRouter] sign out")
+            logger.logInfo("Sign out")
             userAccountService.cleanup()
             proceed()
         }
     }
 
     func switchActive(user: User) {
+        logger.logInfo("Switching active user \(user)")
         guard let session = userAccountService.switchActiveSessionFor(user: user) else {
-            debugPrint("[GlobalRouter] can't switch active user with \(user.email)")
+            logger.logWarning("Can't switch active user with \(user.email)")
             return
         }
         proceed(with: session)

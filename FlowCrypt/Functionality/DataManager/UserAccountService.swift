@@ -24,6 +24,8 @@ final class UserAccountService {
     private let imap: Imap
     private let googleService: GoogleUserService
 
+    private lazy var logger = Logger.nested(Self.self)
+    
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
@@ -84,7 +86,7 @@ extension UserAccountService: UserAccountServiceType {
             .first(where: { $0.email == user.email })
 
         guard let userObject = userObj else {
-            debugPrint("[UserAccountService] UserObject should be persisted to encrypted storage")
+            logger.logWarning("UserObject should be persisted to encrypted storage in case of switching accounts")
             return nil
         }
 
@@ -101,7 +103,7 @@ extension UserAccountService: UserAccountServiceType {
         case .password:
             sessionType = .session(userObject)
         case .none:
-            debugPrint("[UserAccountService] authType is not defined")
+            logger.logWarning("authType is not defined in switchActiveSession")
             return nil
         }
 
@@ -112,7 +114,7 @@ extension UserAccountService: UserAccountServiceType {
 
     private func logOutCurrentUser() {
         guard let email = dataService.currentUser?.email else {
-            debugPrint("[UserAccountService] user is not logged in")
+            logger.logWarning("User is not logged in. Can't log out")
             return
         }
 
@@ -122,19 +124,19 @@ extension UserAccountService: UserAccountServiceType {
         case .password:
             imap.disconnect()
         default:
-            debugPrint("[UserAccountService] currentAuthType is not resolved")
+            logger.logWarning("currentAuthType is not resolved")
         }
 
         do {
             try self.storages.forEach { try $0.logOutUser(email: email) }
         } catch let error {
-            debugPrint("[UserAccountService] storage error \(error)")
+            logger.logError("storage error \(error)")
         }
     }
 
     /// cleanup all user sessions
     func cleanup() {
-        debugPrint("[UserAccountService] Clean up storages")
+        logger.logInfo("Clean up storages")
         encryptedStorage.cleanup()
         localStorage.cleanup()
     }

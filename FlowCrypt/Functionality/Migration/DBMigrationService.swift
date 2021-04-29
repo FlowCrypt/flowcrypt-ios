@@ -18,7 +18,9 @@ struct DBMigrationService {
     private var storage: Realm { encryptedStorage.storage }
     private let localStorage: LocalStorageType
     private let encryptedStorage: EncryptedStorageType
-
+    
+    private let logger = Logger.nested(in: Self.self, with: .migration)
+    
     init(localStorage: LocalStorageType, encryptedStorage: EncryptedStorageType) {
         self.localStorage = localStorage
         self.encryptedStorage = encryptedStorage
@@ -42,11 +44,11 @@ extension DBMigrationService {
     private func performTokenEncryptedMigration() {
         let legacyTokenIndex = "keyCurrentToken"
         guard previouslyStoredUser() != nil else {
-            debugPrint("Local migration not needed. User was not stored in local storage")
+            logger.logInfo("Local migration not needed. User was not stored in local storage")
             return
         }
         guard let token = localStorage.storage.string(forKey: legacyTokenIndex) else {
-            debugPrint("Local migration not needed. Token was not saved in local storage")
+            logger.logInfo("Local migration not needed. Token was not saved in local storage")
             return
         }
 
@@ -60,7 +62,7 @@ extension DBMigrationService {
     /// Perform migration from google signing to generic session
     private func performUserSessionMigration() {
         guard let token = encryptedStorage.currentToken() else {
-            debugPrint("User migration not needed. Token was not stored or migration already finished")
+            logger.logInfo("User migration not needed. Token was not stored or migration already finished")
             return
         }
 
@@ -69,10 +71,10 @@ extension DBMigrationService {
 
     private func performSessionMigration(with token: String) {
         guard let user = previouslyStoredUser() else {
-            debugPrint("User migration not needed. User was not stored or migration already finished")
+            logger.logInfo("User migration not needed. User was not stored or migration already finished")
             return
         }
-        debugPrint("Perform user migration for token")
+        logger.logInfo("Perform user migration for token")
         let userObject = UserObject.googleUser(name: user.name, email: user.email, token: token)
 
         encryptedStorage.saveActiveUser(with: userObject)
@@ -103,6 +105,7 @@ extension DBMigrationService {
                 storage.delete(folders)
             }
         } catch let error {
+            logger.logWarning("Can't perform Gmail Api migration \(error)")
             assertionFailure("Can't perform Gmail Api migration \(error)")
         }
     }

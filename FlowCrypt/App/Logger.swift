@@ -136,6 +136,7 @@ struct Logger {
 
 // MARK: - Nested
 extension Logger {
+    
     static func nested(_ label: String) -> Logger {
         Logger(config: .default, label: "[\(label)]")
     }
@@ -148,6 +149,21 @@ extension Logger {
         var message = "[\(label)]"
         message.append("[\(String.init(describing: type))]")
         return Logger(config: .default, label: message)
+    }
+}
+
+// MARK: - Nested with app label
+extension Logger {
+    enum LogLabels: String {
+        /// log all events which is important for app start for a user
+        case userAppStart = "App Start"
+        
+        /// log all db migration events
+        case migration
+    }
+    
+    static func nested<T>(in type: T.Type, with logLabel: LogLabels) -> Logger {
+        Self.nested(in: type, with: logLabel.rawValue)
     }
 }
 
