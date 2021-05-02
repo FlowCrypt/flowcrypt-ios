@@ -77,12 +77,12 @@ extension Imap {
     }
 
     func disconnect() {
-        let start = DispatchTime.now()
+        let start = Trace(id: "Imap disconnect")
         imapSess?.disconnectOperation().start { [weak self] error in
             if let error = error {
                 self?.logger.logError("disconnect with \(error)")
             } else {
-                self?.logger.logInfo("disconnect \(start)")
+                self?.logger.logInfo("disconnect with duration \(start.finish())")
             }
         }
         imapSess = nil

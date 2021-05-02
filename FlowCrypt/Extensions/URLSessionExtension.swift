@@ -22,13 +22,13 @@ private let logger = Logger.nested("URLSession")
 extension URLSession {
     func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
         return Promise { resolve, reject in
-            let start = DispatchTime.now()
+            let trace = Trace(id: "call")
             self.dataTask(with: urlRequest) { data, response, error in
                 let res = response as? HTTPURLResponse
                 let status = res?.statusCode ?? GeneralConstants.Global.generalError
                 let urlMethod = urlRequest.httpMethod ?? "GET"
                 let urlString = urlRequest.url?.absoluteString ?? "??"
-                let message = "URLSession.call status:\(status) ms:\(start.millisecondsSince) \(urlMethod) \(urlString)"
+                let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString)"
                 Logger.nested("URLSession").logInfo(message)
 
                 let validStatusCode = 200 ... 299
