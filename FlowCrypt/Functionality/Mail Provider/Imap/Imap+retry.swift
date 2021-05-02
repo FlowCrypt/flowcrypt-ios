@@ -18,6 +18,7 @@ extension Imap {
         start: DispatchTime = DispatchTime.now()
     ) -> (Error?, T?) -> Void {
         return { [weak self] error, res in
+            self?.logger.logError("Error \(String(describing: error))")
 //            log(op, error: error, res: res, start: start)
             guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
             if let res = res {
@@ -36,7 +37,7 @@ extension Imap {
     ) -> (Error?) -> Void {
         let start = DispatchTime.now()
         return { [weak self] error in
-//            log(op, error: error, res: nil, start: start)
+            self?.logger.logError("Error \(String(describing: error))")
             guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
 
             if let error = error {
@@ -55,7 +56,7 @@ extension Imap {
     ) -> (Error?, Any?) -> Void {
         let start = DispatchTime.now()
         return { [weak self] error, _ in
-//            log(op, error: error, res: nil, start: start)
+            self?.logger.logError("Error \(String(describing: error))")
             guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
             if let error = error {
                 reject(error)
@@ -81,16 +82,16 @@ extension Imap {
             switch error {
             case .authentication:
                 if let operation = lastErr[op], operation == error { return true }
-//                logDebug(3, "(\(debugId)|\(op)) it's a retriable auth err, will call renewAccessToken")
+//                logger.logInfo("it's a retriable auth err, will call renewAccessToken \(op)")
                 lastErr[op] = error
 
-                renewSession().then { _ in
-//                    logDebug(5, "(\(debugId)|\(op)) forced session refreshes")
-//                    log("renewAccessToken for \(op), will retry \(op)", error: nil, res: "<accessToken>", start: start)
-                    retry().then(resolve).catch(reject)
-                }.catch(reject)
-//                logDebug(7, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
-//                logDebug(11, "(\(debugId)|\(op)) return=true (need to retry)")
+                renewSession()
+                    .then { _ in
+//                        self?.logger.logInfo("forced session refreshes \(op)")
+                        retry().then(resolve).catch(reject)
+                    }
+                    .catch(reject)
+//                logger.logDebug("just set lastErr to \(lastErr[op])")
 
                 return false
             case .connection:

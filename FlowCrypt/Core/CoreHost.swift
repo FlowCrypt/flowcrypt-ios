@@ -18,8 +18,6 @@ import BigInt
     func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String
     func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8]
 
-    // other
-    func log(_ text: String) -> Void
     func setTimeout(_ callback: JSValue, _ ms: Double) -> String
     func clearTimeout(_ identifier: String)
 }
@@ -30,10 +28,6 @@ final class CoreHost: NSObject, CoreHostExports {
     // todo - things to look at for optimisation:
     //  -> a) reading rsa4096 prv key (just openpgp.key.readArmored(...)) takes 70ms. It should take about 10 ms. Could dearmor it in swift, return bytes
     //  -> b) produceHashedIteratedS2k below takes 300ms for two keys, could be 100ms or so
-
-    func log(_ message: String) {
-        debugPrint(message.split(separator: "\n").map { "Js: \($0)" }.joined(separator: "\n"))
-    }
 
     // brings total decryption time from 200->30ms (rsa2048), 3900->420ms (rsa4096)
     func decryptRsaNoPadding(_ rsaPrvDerBase64: String, _ encryptedBase64: String) -> String {
