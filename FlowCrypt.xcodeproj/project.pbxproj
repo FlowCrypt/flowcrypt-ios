@@ -77,6 +77,7 @@
 		9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA27253B75F4003B970D /* BackupSelectKeyViewController.swift */; };
 		9F41FA2F253B7624003B970D /* BackupSelectKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */; };
 		9F4300CC2571045B00791CFB /* InboxViewControllerContainerDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4300CB2571045B00791CFB /* InboxViewControllerContainerDecorator.swift */; };
+		9F44971626430710003A9FE9 /* Trace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F72E866263ECE2A0039CF81 /* Trace.swift */; };
 		9F53CB7B2555E1E300C0157A /* GmailService+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB7A2555E1E300C0157A /* GmailService+folders.swift */; };
 		9F53CB872555E7F300C0157A /* Imap+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB862555E7F300C0157A /* Imap+Other.swift */; };
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
@@ -95,8 +96,6 @@
 		9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
 		9F6EE18C25A8AF970059BA51 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
 		9F716308234FC73E0031645E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9F71630A234FC73E0031645E /* Localizable.strings */; };
-		9F72E867263ECE2A0039CF81 /* Trace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F72E866263ECE2A0039CF81 /* Trace.swift */; };
-		9F72E868264286900039CF81 /* Trace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F72E866263ECE2A0039CF81 /* Trace.swift */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
@@ -1028,7 +1027,6 @@
 				9FDF3653235A218E00614596 /* main.swift */,
 				9FDF3655235A22DA00614596 /* AppReset.swift */,
 				9F8220D426336626004B2009 /* Logger.swift */,
-				9F72E866263ECE2A0039CF81 /* Trace.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -1398,6 +1396,7 @@
 				9F56BD2D23438ABA00A7371A /* TapTicFeedback.swift */,
 				D254AA5F24092A9E0041CAE0 /* Extensions */,
 				D29AFFFD240990BE00C1387D /* Throttler.swift */,
+				9F72E866263ECE2A0039CF81 /* Trace.swift */,
 			);
 			path = FlowCryptCommon;
 			sourceTree = "<group>";
@@ -2202,7 +2201,6 @@
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
 				9FC411902596229D001180A8 /* AppErr.swift in Sources */,
 				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
-				9F72E868264286900039CF81 /* Trace.swift in Sources */,
 				9F1D5769263B540100477938 /* Logger.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
 				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
@@ -2273,7 +2271,6 @@
 				D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */,
 				9F9361A52573CE260009912F /* MessageProvider.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
-				9F72E867263ECE2A0039CF81 /* Trace.swift in Sources */,
 				D274724424FD1932006BA6EF /* FolderObject.swift in Sources */,
 				9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
@@ -2447,6 +2444,7 @@
 				D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */,
 				D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */,
 				D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */,
+				9F44971626430710003A9FE9 /* Trace.swift in Sources */,
 				D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */,
 				D29AFFF6240939AE00C1387D /* Then.swift in Sources */,
 				D2531F3423FEEF5F007E5198 /* StyleExtension.swift in Sources */,
