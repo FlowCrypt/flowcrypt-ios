@@ -15,11 +15,7 @@ final class Trace {
 
     init(id: String) {
         self.id = id
-    }
-
-    func start() -> Self {
-        startTime = CFAbsoluteTimeGetCurrent()
-        return self
+        self.startTime = CFAbsoluteTimeGetCurrent()
     }
 
     func finish() -> TimeInterval {
@@ -31,4 +27,3 @@ final class Trace {
         return endTime - startTime
     }
 }
-

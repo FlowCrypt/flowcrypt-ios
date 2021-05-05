@@ -46,7 +46,7 @@ final class EncryptedStorage: EncryptedStorageType {
         keychainService.getStorageEncryptionKey()
     }
 
-    private lazy var logger = Logger.nested(in: Self.self, with: "Migration")
+    private lazy var logger = Logger.nested(in: Self.self, with: .migration)
 
     private var encryptedConfiguration: Realm.Configuration {
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename

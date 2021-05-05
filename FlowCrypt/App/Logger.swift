@@ -42,9 +42,10 @@ import Foundation
 // MARK: - Implementation
 struct Logger {
     private struct Configuration {
+        // MARK: - Default logLevel
         static let `default`: Configuration = .init(
-            isAll: false,
-            logLevel: .debug,
+            isAll: true,
+            logLevel: .warning,
             shouldShowPath: false,
             shouldShowTime: true
         )
@@ -154,12 +155,13 @@ extension Logger {
 
 // MARK: - Nested with app label
 extension Logger {
+    // MARK: - Log Labels
     enum LogLabels: String {
         /// log all events which is important for app start for a user
         case userAppStart = "App Start"
 
         /// log all db migration events
-        case migration
+        case migration = "Migration"
     }
 
     static func nested<T>(in type: T.Type, with logLabel: LogLabels) -> Logger {

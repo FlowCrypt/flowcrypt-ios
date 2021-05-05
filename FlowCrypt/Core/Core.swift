@@ -122,7 +122,7 @@ final class Core {
                 let cb_last_value_filler: @convention(block) ([NSObject]) -> Void = { values in self.cb_last_value = values }
                 self.context!.setObject(unsafeBitCast(cb_last_value_filler, to: AnyObject.self), forKeyedSubscript: "engine_host_cb_catcher" as (NSCopying & NSObjectProtocol)?)
                 self.ready = true
-                self.logger.logInfo("JsContext took \(trace.finish()) ms to start")
+                self.logger.logInfo("JsContext took \(trace.finish()) to start")
             }
         }
     }

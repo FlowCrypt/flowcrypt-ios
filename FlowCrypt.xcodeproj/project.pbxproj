@@ -96,6 +96,7 @@
 		9F6EE18C25A8AF970059BA51 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
 		9F716308234FC73E0031645E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9F71630A234FC73E0031645E /* Localizable.strings */; };
 		9F72E867263ECE2A0039CF81 /* Trace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F72E866263ECE2A0039CF81 /* Trace.swift */; };
+		9F72E868264286900039CF81 /* Trace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F72E866263ECE2A0039CF81 /* Trace.swift */; };
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
@@ -2201,6 +2202,7 @@
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
 				9FC411902596229D001180A8 /* AppErr.swift in Sources */,
 				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
+				9F72E868264286900039CF81 /* Trace.swift in Sources */,
 				9F1D5769263B540100477938 /* Logger.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
 				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
