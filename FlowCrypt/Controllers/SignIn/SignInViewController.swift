@@ -20,6 +20,8 @@ final class SignInViewController: TableNodeViewController {
     private let core: Core
     private let decorator: SignInViewDecoratorType
 
+    private lazy var logger = Logger.nested(Self.self)
+
     init(
         globalRouter: GlobalRouterType = GlobalRouter(),
         core: Core = Core.shared,
@@ -114,7 +116,8 @@ extension SignInViewController {
         showToast("Outlook sign in not implemented yet")
         // below for debugging
         do {
-            let start = DispatchTime.now()
+            let trace = Trace(id: "sign in outlook")
+
             let keys = [
                 PrvKeyInfo(
                     private: TestData.k3rsa4096.prv,
@@ -133,13 +136,11 @@ extension SignInViewController {
                 msgPwd: nil,
                 isEmail: false
             )
-            debugPrint(decrypted)
-            debugPrint("decrypted \(start.millisecondsSince)")
+            logger.logInfo("\(decrypted) - duration \(trace.finish())")
         } catch CoreError.exception {
-            debugPrint("catch exception")
+            logger.logError("catch exception")
         } catch {
-            debugPrint("catch generic")
-            debugPrint(error)
+            logger.logInfo("catch generic \(error)")
         }
     }
 

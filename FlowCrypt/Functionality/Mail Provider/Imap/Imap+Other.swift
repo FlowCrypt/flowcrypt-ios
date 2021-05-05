@@ -18,11 +18,10 @@ extension Imap {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            let start = DispatchTime.now()
             let kind = self.messageKindProvider.imapMessagesRequestKind
 
             guard uids.count() > 0 else {
-                log("fetchMsgs_empty", error: nil, res: [], start: start)
+                self.logger.logError("Empty messages fetched")
                 resolve([]) // attempting to fetch an empty set of uids would cause IMAP error
                 return
             }
