@@ -756,15 +756,11 @@ extension ComposeViewController {
             let okAction = UIAlertAction(
                 title: "Log out",
                 style: .default
-            ) { _ in
-                debugPrint("Log out")
-            }
+            ) { _ in }
             let cancelAction = UIAlertAction(
                 title: "Cancel",
                 style: .destructive
-            ) { _ in
-                debugPrint("Cancel")
-            }
+            ) { _ in }
             alert.addAction(okAction)
             alert.addAction(cancelAction)
 

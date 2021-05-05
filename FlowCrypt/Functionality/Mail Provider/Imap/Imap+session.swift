@@ -8,8 +8,10 @@
 
 import Foundation
 import Promises
+import FlowCryptCommon
 
 extension Imap {
+
     func setupSession() {
         guard
             let imapSession = dataService.imapSession(),
@@ -24,14 +26,14 @@ extension Imap {
 
     private func createNewConnection(imapSession: IMAPSession?, smtpSession: SMTPSession?) {
         if let imap = imapSession {
-            debugPrint("IMAP: creating a new session")
+            logger.logInfo("Creating a new IMAP session")
             let newImapSession = MCOIMAPSession(session: imap)
             imapSess = newImapSession
             //logIMAPConnection(for: imapSess!)
         }
 
         if let smtp = smtpSession {
-            debugPrint("SMTP: creating a new session")
+            logger.logInfo("Creating a new SMTP session")
             let newSmtpSession = MCOSMTPSession(session: smtp)
             smtpSess = newSmtpSession
             //logSMTPConnection(for: smtpSess!)
@@ -39,16 +41,16 @@ extension Imap {
     }
 
     private func logIMAPConnection(for session: MCOIMAPSession) {
-        session.connectionLogger = { (connectionID, type, data) in
+        session.connectionLogger = { [weak self] (connectionID, type, data) in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
-            debugPrint("### IMAP:\(type):\(string)")
+            self?.logger.logInfo("connection IMAP :\(type):\(string)")
         }
     }
 
     private func logSMTPConnection(for smtpSession: MCOSMTPSession) {
-        smtpSession.connectionLogger = { (connectionID, type, data) in
+        smtpSession.connectionLogger = { [weak self] (connectionID, type, data) in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
-            debugPrint("### SMTP:\(type):\(string)")
+            self?.logger.logInfo("connection SMTP:\(type):\(string)")
         }
     }
 
@@ -75,10 +77,15 @@ extension Imap {
     }
 
     func disconnect() {
-        let start = DispatchTime.now()
-        imapSess?.disconnectOperation().start { error in log("disconnect", error: error, res: nil, start: start) }
+        let start = Trace(id: "Imap disconnect")
+        imapSess?.disconnectOperation().start { [weak self] error in
+            if let error = error {
+                self?.logger.logError("disconnect with \(error)")
+            } else {
+                self?.logger.logInfo("disconnect with duration \(start.finish())")
+            }
+        }
         imapSess = nil
         smtpSess = nil // smtp session has no disconnect method
     }
 }
-
