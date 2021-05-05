@@ -151,10 +151,6 @@ extension SignInViewController {
 
     private func handle(option: SignInViewController.AppLinks) {
         guard let url = option.url else { assertionFailure("Issue in provided url"); return }
-        if #available(iOS 13.0, *) {
-            present(WebViewController(url: url), animated: true, completion: nil)
-        } else {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        }
+        present(WebViewController(url: url), animated: true, completion: nil)
     }
 }
