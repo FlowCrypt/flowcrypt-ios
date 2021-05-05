@@ -53,6 +53,7 @@ final class MessageViewController: TableNodeViewController {
     private let messageProvider: MessageProvider
     private let messageOperationsProvider: MessageOperationsProvider
     private var message: NSAttributedString
+    private var attachments: [Attachment]
     private let trashFolderProvider: TrashFolderProviderType
 
     init(
@@ -73,6 +74,7 @@ final class MessageViewController: TableNodeViewController {
         self.core = core
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
+        self.attachments = []
         self.message = decorator.attributed(
             text: "loading_title".localized + "...",
             color: .lightGray
@@ -143,7 +145,7 @@ extension MessageViewController {
             self?.message = try await(self!.fetchMessage())
         }.then(on: .main) { [weak self] in
             self?.hideSpinner()
-            self?.node.reloadRows(at: [Parts.text.indexPath], with: .fade)
+            self?.node.reloadRows(at: [Parts.text.indexPath, Parts.attachment.indexPath], with: .fade)
             self?.asyncMarkAsReadIfNotAlreadyMarked()
         }.catch(on: .main) { [weak self] error in
             self?.hideSpinner()
@@ -170,10 +172,10 @@ extension MessageViewController {
                 isEmail: true
             )
             let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
+            let decryptAttBlocks = decrypted.blocks.filter { $0.type == .plainAtt || $0.type == .encryptedAtt || $0.type == .decryptedAtt }
 
-            decrypted.blocks.forEach { block in
-                //
-            }
+            let attachments = decryptAttBlocks.map { _ in Attachment(name: "Attachment", size: "10 MB") }
+            self.attachments = attachments
 
             let message: NSAttributedString
             if let decryptErrBlock = decryptErrBlocks.first {
@@ -244,6 +246,10 @@ extension MessageViewController {
 
     @objc private func handleMailTap() {
         showToast("Marking as unread will be implemented soon")
+    }
+
+    @objc private func handleAttachmentTap() {
+        showToast("Downloading attachments is not implemented yet")
     }
 
     @objc private func handleTrashTap() {
@@ -370,9 +376,6 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             date: input?.objMessage.date
         )
 
-        let input = AttachmentsNode.Input.init(name: "Attachment 1", size: "100 MB")
-        let input2 = AttachmentsNode.Input.init(name: "Attachment 2", size: "16 MB")
-
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
@@ -385,7 +388,9 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             case .text:
                 return MessageTextSubjectNode(self.message)
             case .attachment:
-                return AttachmentsNode.init(input: [input, input2])
+                return AttachmentsNode(attachments: self.attachments) { [weak self] in
+                    self?.handleAttachmentTap()
+                }
             }
         }
     }

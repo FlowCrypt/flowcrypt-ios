@@ -9,7 +9,15 @@
 import AsyncDisplayKit
 
 public struct Attachment {
-    var name, size: NSAttributedString
+    var name, size: String
+
+    public init(
+        name: String,
+        size: String
+    ) {
+        self.name = name
+        self.size = size
+    }
 }
 
 public final class AttachmentsNode: CellNode {
@@ -27,21 +35,21 @@ public final class AttachmentsNode: CellNode {
     }
 
     private var attachmentNodes: [AttachmentNode] = []
-
-    public init(input: [Input]) {
+    private var onTap: (() -> Void)?
+    
+    public init(attachments: [Attachment], onTap: (() -> Void)?) {
         super.init()
-        input.forEach { input in
-            attachmentNodes.append(
-                AttachmentNode(
-                    input: AttachmentNode.Input(name: input.name, size: input.size)
-                )
-            )
-        }
+        self.onTap = onTap
+        attachmentNodes = attachments.map { AttachmentNode(input: AttachmentNode.Input(name: $0.name, size: $0.size),
+                                                           onTap: {
+                                                            self.onTap?()
+                                                           })
+                                                        }
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0),
+            insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
             child: ASStackLayoutSpec(
                 direction: .vertical,
                 spacing: 8,
@@ -62,20 +70,29 @@ public final class AttachmentNode: CellNode {
     private let buttonNode = ASButtonNode()
     private let separatorNode = ASDisplayNode()
 
-    public init(input: Input) {
+    private var onTap: (() -> Void)?
+
+    public init(input: Input, onTap: (() -> Void)?) {
         super.init()
-        self.borderWidth = 0.5
-        self.borderColor = UIColor(named: "red")?.cgColor
+        self.onTap = onTap
+
+        self.borderWidth = 1.0
+        self.cornerRadius = 8.0
+        self.borderColor = UIColor.lightGray.cgColor
+
+        imageNode.tintColor = .gray
+        buttonNode.tintColor = .gray
 
         imageNode.image = UIImage(named: "paperclip")
-        buttonNode.setImage(UIImage(named: "paperclip"), for: .normal)
-        titleNode.attributedText = NSAttributedString.text(from: input.name, style: .medium(16))
-        subtitleNode.attributedText = NSAttributedString.text(from: input.size, style: .medium(12))
+        buttonNode.setImage(UIImage(named: "download"), for: .normal)
+        buttonNode.addTarget(self, action: #selector(tapHandle), forControlEvents: .touchUpInside)
+        titleNode.attributedText = NSAttributedString.text(from: input.name, style: .regular(18), color: .gray, alignment: .left)
+        subtitleNode.attributedText = NSAttributedString.text(from: input.size, style: .medium(12), color: .gray, alignment: .left)
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let verticalStack = ASStackLayoutSpec.vertical()
-        verticalStack.spacing = 6
+        verticalStack.spacing = 3
         verticalStack.style.flexShrink = 1.0
         verticalStack.style.flexGrow = 1.0
         separatorNode.style.flexGrow = 1.0
@@ -85,15 +102,19 @@ public final class AttachmentNode: CellNode {
 
         let finalSpec = ASStackLayoutSpec(
             direction: .horizontal,
-            spacing: 8,
+            spacing: 10,
             justifyContent: .start,
             alignItems: .center,
             children: [imageNode, verticalStack, separatorNode, buttonNode]
         )
 
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16),
+            insets: UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20),
             child: finalSpec
         )
+    }
+
+    @objc private func tapHandle() {
+        onTap?()
     }
 }
