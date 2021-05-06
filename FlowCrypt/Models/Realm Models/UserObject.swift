@@ -41,6 +41,10 @@ final class UserObject: Object {
     override class func primaryKey() -> String? {
         "email"
     }
+
+    override var description: String {
+        email
+    }
 }
 
 extension UserObject {

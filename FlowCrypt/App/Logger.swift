@@ -47,7 +47,7 @@ struct Logger {
             isAll: true,
             logLevel: .warning,
             shouldShowPath: false,
-            shouldShowTime: true
+            shouldShowTime: false
         )
 
         let isAll: Bool

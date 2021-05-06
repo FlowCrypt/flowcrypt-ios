@@ -43,6 +43,13 @@ final class SetupViewController: TableNodeViewController {
         case createKey
         /// error state
         case error(SetupError)
+        
+        var isSearchingBackups: Bool {
+            guard case .searchingBackups = self else {
+                return false
+            }
+            return true
+        }
     }
 
     private var state: State = .idle {
@@ -144,9 +151,11 @@ extension SetupViewController {
         case .idle:
             node.reloadData()
         case .searchingBackups:
+            showSpinner()
             searchBackups()
         case let .fetchedEncrypted(details):
             handleBackupsFetchResult(with: details)
+            hideSpinner()
         case let .error(error):
             hideSpinner()
             handleError(with: error)
@@ -157,7 +166,6 @@ extension SetupViewController {
     }
 
     private func searchBackups() {
-        showSpinner()
         backupService.fetchBackups(for: user)
             .then(on: .main) { [weak self] keys in
                 guard keys.isNotEmpty else {
@@ -171,21 +179,7 @@ extension SetupViewController {
             }
     }
 
-    private func fetchEnctyptedKeys(with backupData: Data) {
-        showSpinner()
-
-        do {
-            let parsed = try core.parseKeys(armoredOrBinary: backupData)
-            let keys = parsed.keyDetails.filter { $0.private != nil }
-            state = .fetchedEncrypted(keys)
-        } catch {
-            state = .error(.parseKey(error))
-        }
-    }
-
     private func handleBackupsFetchResult(with keys: [KeyDetails]) {
-        hideSpinner()
-
         guard keys.isNotEmpty else {
             state = .error(.emptyFetchedKeys)
             return
@@ -376,7 +370,11 @@ extension SetupViewController {
     }
 
     private func handleButtonPressed() {
-        // TODO: - ANTON - show hud
+        // ignore if we are still fetching keys
+        guard !state.isSearchingBackups else {
+            return
+        }
+
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
 
