@@ -36,7 +36,7 @@ public final class AttachmentsNode: CellNode {
 
     private var attachmentNodes: [AttachmentNode] = []
     private var onTap: (() -> Void)?
-    
+
     public init(attachments: [Attachment], onTap: (() -> Void)?) {
         super.init()
         self.onTap = onTap
@@ -83,8 +83,8 @@ public final class AttachmentNode: CellNode {
         imageNode.tintColor = .gray
         buttonNode.tintColor = .gray
 
-        imageNode.image = UIImage(named: "paperclip")
-        buttonNode.setImage(UIImage(named: "download"), for: .normal)
+        imageNode.image = UIImage(named: "paperclip")?.tinted(.gray)
+        buttonNode.setImage(UIImage(named: "download")?.tinted(.gray), for: .normal)
         buttonNode.addTarget(self, action: #selector(tapHandle), forControlEvents: .touchUpInside)
         titleNode.attributedText = NSAttributedString.text(from: input.name, style: .regular(18), color: .gray, alignment: .left)
         subtitleNode.attributedText = NSAttributedString.text(from: input.size, style: .medium(12), color: .gray, alignment: .left)
