@@ -3,15 +3,22 @@
 //
 
 import Foundation
-import Promises
+import Combine
 
 extension Imap: MessageGateway {
-    func sendMail(mime: Data) -> Promise<Void> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
+    func sendMail(mime: Data) -> Future<Void, Error> {
+        Future { [weak self] promise in
+            guard let self = self else { return promise(.failure(AppErr.nilSelf)) }
+
             self.smtpSess?
                 .sendOperation(with: mime)
-                .start(self.finalizeVoid("send", resolve, reject, retry: { self.sendMail(mime: mime) }))
+                .start { error in
+                    if let error = error {
+                        promise(.failure(error))
+                    } else {
+                        promise(.success(()))
+                    }
+                }
         }
     }
 }

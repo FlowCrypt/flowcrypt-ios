@@ -76,7 +76,7 @@ extension BackupService: BackupServiceType {
                 atts: attachments
             )
             let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: nil)
-            try await(messageSender.sendMail(mime: backupEmail.mimeEncoded))
+//            try await(messageSender.sendMail(mime: backupEmail.mimeEncoded))
         }
     }
 

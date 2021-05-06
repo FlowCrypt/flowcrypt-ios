@@ -6,6 +6,7 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 import Promises
+import Combine
 
 final class ComposeViewController: TableNodeViewController {
     struct Recipient {
@@ -43,6 +44,14 @@ final class ComposeViewController: TableNodeViewController {
     private enum ComposeParts: Int, CaseIterable {
         case subject, subjectDivider, text
     }
+
+    private enum SendMessageError: Error {
+        case internalError(String)
+        case missedSender
+        case noPubKeyForRecipient
+    }
+
+    private var cancellable = Set<AnyCancellable>()
 
     private let messageSender: MessageGateway
     private let notificationCenter: NotificationCenter
@@ -111,6 +120,8 @@ final class ComposeViewController: TableNodeViewController {
 
         // temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
         // showScopeAlertIfNeeded()
+
+        cancellable.forEach { $0.cancel() }
     }
 
     deinit {
@@ -211,57 +222,65 @@ extension ComposeViewController {
 
         showSpinner("sending_title".localized)
 
-        Promise<Bool> { [weak self] in
-            try await(self!.encryptAndSendMessage())
-        }.then(on: .main) { [weak self] sent in
-            if sent { // else it must have shown error to user
-                self?.handleSuccessfullySentMessage()
+        switch prepareMessage() {
+        case .failure(let error):
+            switch error {
+            case .internalError(let message):
+                showAlert(message: message)
+            case .missedSender:
+                showAlert(message: "compose_no_pub_sender".localized)
+            case .noPubKeyForRecipient:
+                // already handled
+                break
             }
-        }.catch(on: .main) { [weak self] error in
-            self?.showAlert(error: error, message: "compose_error".localized)
+        case .success(let data):
+            self.messageSender.sendMail(mime: data)
+                .retry(3)
+                .sink{ [weak self] result in
+                    guard case .failure(let error) = result else {
+                        return
+                    }
+                    self?.showAlert(error: error, message: "compose_error".localized)
+                } receiveValue: { [weak self] _ in
+                    self?.handleSuccessfullySentMessage()
+                }
+                .store(in: &cancellable)
         }
     }
 
-    private func encryptAndSendMessage() -> Promise<Bool> {
-        Promise<Bool> { [weak self] () -> Bool in
-            guard let self = self else { return false }
+    private func prepareMessage() -> Result<Data, SendMessageError> {
+        let recipients = contextToSend.recipients
 
-            let recipients = self.contextToSend.recipients
-
-            guard recipients.isNotEmpty else {
-                assertionFailure("Recipients should not be empty. Fail in checking")
-                return false
-            }
-
-            guard let text = self.contextToSend.message else {
-                assertionFailure("Text and Email should not be nil at this point. Fail in checking")
-                return false
-            }
-
-            let subject = self.input.subjectReplyTitle
-                ?? self.contextToSend.subject
-                ?? "(no subject)"
-
-            guard let myPubKey = self.dataService.publicKey else {
-                self.showAlert(message: "compose_no_pub_sender".localized)
-                return false
-            }
-
-            guard let allRecipientPubs = self.getPubKeys(for: recipients) else {
-                return false
-            }
-
-            let encrypted = self.encryptMsg(
-                pubkeys: allRecipientPubs + [myPubKey],
-                subject: subject,
-                message: text,
-                to: recipients.map { $0.email }
-            )
-
-            try await(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
-
-            return true
+        guard recipients.isNotEmpty else {
+            let message = "Recipients should not be empty. Fail in checking"
+            return .failure(.internalError(message))
         }
+
+        guard let text = contextToSend.message else {
+            let message = "Text and Email should not be nil at this point. Fail in checking"
+            return .failure(.internalError(message))
+        }
+
+        let subject = self.input.subjectReplyTitle
+            ?? self.contextToSend.subject
+            ?? "(no subject)"
+
+        guard let myPubKey = self.dataService.publicKey else {
+            return .failure(.missedSender)
+        }
+
+        guard let allRecipientPubs = getPubKeys(for: recipients) else {
+            return .failure(.noPubKeyForRecipient)
+        }
+
+        let encrypted = self.encryptMsg(
+            pubkeys: allRecipientPubs + [myPubKey],
+            subject: subject,
+            message: text,
+            to: recipients.map { $0.email }
+        )
+
+        return .success(encrypted.mimeEncoded)
     }
 
     private func getPubKeys(for recepients: [Recipient]) -> [String]? {

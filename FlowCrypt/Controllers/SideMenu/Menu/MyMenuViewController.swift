@@ -4,7 +4,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Promises
 
 final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {

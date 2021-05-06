@@ -8,7 +8,8 @@
 
 import Foundation
 import Promises
+import Combine
 
 protocol MessageGateway {
-    func sendMail(mime: Data) -> Promise<Void>
+    func sendMail(mime: Data) -> Future<Void, Error>
 }

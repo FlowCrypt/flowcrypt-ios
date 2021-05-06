@@ -7,15 +7,16 @@
 //
 
 import Foundation
-import Promises
 import GoogleAPIClientForREST
 import GTMSessionFetcher
+import Combine
 
 extension GmailService: MessageGateway {
-    func sendMail(mime: Data) -> Promise<Void> {
-        Promise { (resolve, reject) in
+    func sendMail(mime: Data) -> Future<Void, Error> {
+        Future { promise in
             guard let raw = GTLREncodeBase64(mime) else {
-                return reject(GmailServiceError.messageEncode)
+                promise(.failure(GmailServiceError.messageEncode))
+                return
             }
 
             let gtlMessage = GTLRGmail_Message()
@@ -29,10 +30,10 @@ extension GmailService: MessageGateway {
 
             self.gmailService.executeQuery(querySend) { (_, _, error) in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
+                    promise(.failure(GmailServiceError.providerError(error)))
                     return
                 }
-                resolve(())
+                promise(.success(()))
             }
         }
     }
