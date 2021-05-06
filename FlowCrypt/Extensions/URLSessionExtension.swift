@@ -50,7 +50,7 @@ extension URLSession {
             guard url != nil else {
                 throw HttpErr(status: -2, data: Data(), error: AppErr.unexpected("Invalid url: \(urlStr)"))
             }
-            return try await(self.call(URLRequest(url: url!), tolerateStatus: tolerateStatus))
+            return try awaitPromise(self.call(URLRequest(url: url!), tolerateStatus: tolerateStatus))
         }
     }
 }

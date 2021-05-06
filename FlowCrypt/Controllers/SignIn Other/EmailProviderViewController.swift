@@ -480,8 +480,8 @@ extension EmailProviderViewController {
         }
 
         Promise<Void> {
-            try await(self.imap.connectImap(session: imapSessionToCheck))
-            try await(self.imap.connectSmtp(session: smtpSession))
+            try awaitPromise(self.imap.connectImap(session: imapSessionToCheck))
+            try awaitPromise(self.imap.connectSmtp(session: smtpSession))
         }
         .then(on: .main) { [weak self] in
             self?.handleSuccessfulConnection()

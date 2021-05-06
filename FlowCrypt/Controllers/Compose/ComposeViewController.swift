@@ -212,7 +212,7 @@ extension ComposeViewController {
         showSpinner("sending_title".localized)
 
         Promise<Bool> { [weak self] in
-            try await(self!.encryptAndSendMessage())
+            try awaitPromise(self!.encryptAndSendMessage())
         }.then(on: .main) { [weak self] sent in
             if sent { // else it must have shown error to user
                 self?.handleSuccessfullySentMessage()
@@ -258,7 +258,7 @@ extension ComposeViewController {
                 to: recipients.map { $0.email }
             )
 
-            try await(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
+            try awaitPromise(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
 
             return true
         }

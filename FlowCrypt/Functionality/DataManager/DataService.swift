@@ -138,9 +138,9 @@ extension DataService: DBMigration {
         return Promise<Void> { [weak self] in
             guard let self = self else { throw AppErr.nilSelf }
             // migrate to encrypted storage
-            try await(self.encryptedStorage.performMigrationIfNeeded())
+            try awaitPromise(self.encryptedStorage.performMigrationIfNeeded())
             // migrate all other type of migrations
-            try await(self.migrationService.performMigrationIfNeeded())
+            try awaitPromise(self.migrationService.performMigrationIfNeeded())
         }
     }
 }

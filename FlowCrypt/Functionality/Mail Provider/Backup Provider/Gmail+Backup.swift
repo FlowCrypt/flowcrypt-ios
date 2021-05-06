@@ -17,7 +17,7 @@ extension GmailService: BackupProvider {
                 .recoverAccountSearchSubject
                 .map { searchExpression(using: MessageSearchContext(expression: $0)) }
 
-            let backupMessages = try await(all(backupSearchExpressions))
+            let backupMessages = try awaitPromise(all(backupSearchExpressions))
                 .flatMap { $0 }
             let uniqueMessages = Set(backupMessages)
             let attachments = uniqueMessages
@@ -30,10 +30,7 @@ extension GmailService: BackupProvider {
                 .flatMap { $0 }
                 .map(findAttachment)
 
-            // TODO: - TOM 1
-            // Here I'm getting the correct number of attachments with backups (17 for cryptup.tester@gmail.com account)
-
-            let data = try await(all(attachments)).joined
+            let data = try awaitPromise(all(attachments)).joined
             resolve(data)
         }
     }
