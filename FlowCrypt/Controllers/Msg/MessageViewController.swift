@@ -174,7 +174,7 @@ extension MessageViewController {
             let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
             let decryptAttBlocks = decrypted.blocks.filter { $0.type == .plainAtt || $0.type == .encryptedAtt || $0.type == .decryptedAtt }
 
-            let attachments = decryptAttBlocks.map { _ in Attachment(name: "Attachment", size: "10 MB") }
+            let attachments = decryptAttBlocks.map { Attachment(name: $0.attMeta?.name ?? "Attachment", size: $0.attMeta?.length ?? 0) }
             self.attachments = attachments
 
             let message: NSAttributedString

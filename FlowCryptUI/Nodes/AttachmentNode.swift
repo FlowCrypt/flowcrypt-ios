@@ -13,10 +13,10 @@ public struct Attachment {
 
     public init(
         name: String,
-        size: String
+        size: Int
     ) {
         self.name = name
-        self.size = size
+        self.size = ByteCountFormatter.string(fromByteCount: Int64(size), countStyle: .file)
     }
 }
 
@@ -68,7 +68,6 @@ public final class AttachmentNode: CellNode {
     private let subtitleNode = ASTextNode2()
     private let imageNode = ASImageNode()
     private let buttonNode = ASButtonNode()
-    private let separatorNode = ASDisplayNode()
 
     private var onTap: (() -> Void)?
 
@@ -95,8 +94,6 @@ public final class AttachmentNode: CellNode {
         verticalStack.spacing = 3
         verticalStack.style.flexShrink = 1.0
         verticalStack.style.flexGrow = 1.0
-        separatorNode.style.flexGrow = 1.0
-        separatorNode.style.preferredSize.height = 1.0
 
         verticalStack.children = [titleNode, subtitleNode]
 
@@ -105,7 +102,7 @@ public final class AttachmentNode: CellNode {
             spacing: 10,
             justifyContent: .start,
             alignItems: .center,
-            children: [imageNode, verticalStack, separatorNode, buttonNode]
+            children: [imageNode, verticalStack, buttonNode]
         )
 
         return ASInsetLayoutSpec(
