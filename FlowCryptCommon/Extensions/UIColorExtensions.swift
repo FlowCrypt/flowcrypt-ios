@@ -10,13 +10,9 @@ import UIKit
 
 public extension UIColor {
     static func colorFor(darkStyle: UIColor, lightStyle: UIColor) -> UIColor {
-        if #available(iOS 13.0, *) {
-            switch UITraitCollection.current.userInterfaceStyle {
-            case .dark: return darkStyle
-            default: return lightStyle
-            }
-        } else {
-            return lightStyle
+        switch UITraitCollection.current.userInterfaceStyle {
+        case .dark: return darkStyle
+        default: return lightStyle
         }
     }
 }

@@ -34,11 +34,11 @@ struct AppStartup {
     }
 
     private func setupMigrationIfNeeded() throws {
-        try await(DataService.shared.performMigrationIfNeeded())
+        try awaitPromise(DataService.shared.performMigrationIfNeeded())
     }
 
     private func setupSession() throws {
-        try await(renewSessionIfValid())
+        try awaitPromise(renewSessionIfValid())
     }
 
     private func renewSessionIfValid() -> Promise<Void> {

@@ -14,7 +14,7 @@ import FlowCryptCommon
 extension GmailService: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
         Promise { (resolve, reject) in
-            let list = try await(fetchMessagesList(using: context))
+            let list = try awaitPromise(fetchMessagesList(using: context))
             let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchFullMessage(with:)) ?? []
 
             all(messageRequests)

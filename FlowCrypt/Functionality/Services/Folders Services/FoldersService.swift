@@ -50,7 +50,7 @@ final class FoldersService: FoldersServiceType {
         Promise<[FolderViewModel]> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
             // fetch all folders
-            let remoteFolders = try await(self.remoteFoldersProvider.fetchFolders())
+            let remoteFolders = try awaitPromise(self.remoteFoldersProvider.fetchFolders())
 
             DispatchQueue.main.async {
                 // TODO: - ANTON - instead of removing all folders remove only

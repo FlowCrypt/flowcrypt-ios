@@ -131,7 +131,7 @@ extension UIViewController {
         return Promise<Void> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
             do {
-                _ = try await(promise)
+                _ = try awaitPromise(promise)
                 resolve(())
             } catch {
                 DispatchQueue.main.async {

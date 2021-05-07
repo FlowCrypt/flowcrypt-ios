@@ -52,7 +52,7 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("trashPath"))
             }
 
-            try await(self.moveMsg(with: identifier, folder: folder, destFolder: trashPath))
+            try awaitPromise(self.moveMsg(with: identifier, folder: folder, destFolder: trashPath))
             resolve(())
         }
     }
@@ -80,8 +80,8 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("folderPath"))
             }
 
-            try await(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
-            try await(self.expungeMsgs(folder: folderPath))
+            try awaitPromise(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
+            try awaitPromise(self.expungeMsgs(folder: folderPath))
         }
     }
 
@@ -120,7 +120,7 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("intId"))
             }
 
-            try await(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
+            try awaitPromise(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
         }
     }
 }

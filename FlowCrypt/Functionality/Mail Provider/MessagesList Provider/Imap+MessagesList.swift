@@ -21,7 +21,7 @@ extension Imap: MessagesListProvider {
         return Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
-            let folderInfo = try await(self.folderInfo(for: folderPath))
+            let folderInfo = try awaitPromise(self.folderInfo(for: folderPath))
             let totalCount = Int(folderInfo.messageCount)
             if totalCount == 0 {
                 resolve(MessageContext(messages: [], pagination: .byNumber(total: totalCount)))
@@ -32,7 +32,7 @@ extension Imap: MessagesListProvider {
                 from: from ?? 0
             )
             let kind = self.messageKindProvider.imapMessagesRequestKind
-            let messages = try await(self.fetchMsgsByNumber(for: folderPath, kind: kind, set: set))
+            let messages = try awaitPromise(self.fetchMsgsByNumber(for: folderPath, kind: kind, set: set))
                 .map(Message.init)
 
             resolve(MessageContext(messages: messages, pagination: .byNumber(total: totalCount)))

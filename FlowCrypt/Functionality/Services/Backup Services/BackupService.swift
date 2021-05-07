@@ -35,12 +35,10 @@ struct BackupService {
 extension BackupService: BackupServiceType {
     func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]> {
         Promise<[KeyDetails]> { resolve, reject in
-            let backupData = try await(self.backupProvider.searchBackups(for: userId.email))
+            let backupData = try awaitPromise(self.backupProvider.searchBackups(for: userId.email))
 
             do {
                 let parsed = try self.core.parseKeys(armoredOrBinary: backupData)
-                // TODO: - TOM 2
-                // After parsing keys there are 51 key instead of 17 attachments fetched.
                 let keys = parsed.keyDetails.filter { $0.private != nil }
                 resolve(keys)
             } catch {
@@ -76,7 +74,7 @@ extension BackupService: BackupServiceType {
                 atts: attachments
             )
             let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: nil)
-            try await(messageSender.sendMail(mime: backupEmail.mimeEncoded))
+            try awaitPromise(messageSender.sendMail(mime: backupEmail.mimeEncoded))
         }
     }
 

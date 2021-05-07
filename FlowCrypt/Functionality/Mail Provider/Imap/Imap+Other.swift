@@ -26,7 +26,7 @@ extension Imap {
                 return
             }
 
-            let messages = try await(self.fetchMessage(in: folder, kind: kind, uids: uids))
+            let messages = try awaitPromise(self.fetchMessage(in: folder, kind: kind, uids: uids))
             resolve(messages)
         }
     }

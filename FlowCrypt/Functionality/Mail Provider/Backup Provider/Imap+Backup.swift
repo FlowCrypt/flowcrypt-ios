@@ -24,7 +24,7 @@ extension Imap: BackupProvider {
     func searchBackups(for email: String) -> Promise<Data> {
         return Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
-            var folderPaths = try await(self.fetchFolders())
+            var folderPaths = try awaitPromise(self.fetchFolders())
                 .compactMap { $0.path }
 
             guard folderPaths.isNotEmpty else {
@@ -38,7 +38,7 @@ extension Imap: BackupProvider {
             let searchExpr = self.createSearchBackupExpression(for: email)
 
             let uidsForFolders = try folderPaths.compactMap { folder -> UidsContext in
-                let uids = try await(self.fetchUids(folder: folder, expr: searchExpr))
+                let uids = try awaitPromise(self.fetchUids(folder: folder, expr: searchExpr))
                 return UidsContext(path: folder, uids: uids)
             }
 
@@ -47,7 +47,7 @@ extension Imap: BackupProvider {
             }
 
             let messageContexts = try uidsForFolders.flatMap { uidsContext -> [MsgContext] in
-                let msgs = try await(self.fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
+                let msgs = try awaitPromise(self.fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
                 return msgs.map { msg in MsgContext(path: uidsContext.path, msg: msg) }
             }
 
@@ -65,7 +65,7 @@ extension Imap: BackupProvider {
             }
 
             let dataArr = try attContext.map { attContext -> Data in
-                try await(self.fetchMsgAttribute(
+                try awaitPromise(self.fetchMsgAttribute(
                     in: attContext.path,
                     msgUid: attContext.msg.uid,
                     part: attContext.part

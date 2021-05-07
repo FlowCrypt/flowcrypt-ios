@@ -61,7 +61,7 @@ extension UserContactsProvider: CloudContactsProvider {
         }
 
         return Promise<[String]> { () -> [String] in
-            let response = try await(URLSession.shared.call(URLRequest(url: url)))
+            let response = try awaitPromise(URLSession.shared.call(URLRequest(url: url)))
             let emails = try JSONDecoder().decode(GoogleContactsResponse.self, from: response.data).emails
             return emails
         }
