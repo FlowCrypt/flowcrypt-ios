@@ -13,12 +13,12 @@ struct GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
     let userService: GoogleUserService
 
+    let logger = Logger.nested("GmailService")
     var gmailService: GTLRService {
         let service = GTLRGmailService()
 
         if userService.authorization == nil {
-            // logLevel = error
-            debugPrint("[GmailService] authorization for current user is nil")
+            logger.logWarning("authorization for current user is nil")
         }
 
         service.authorizer = userService.authorization

@@ -313,9 +313,9 @@ extension SetupViewController {
         Promise { [weak self] in
             guard let self = self else { return }
             let userId = try self.getUserId()
-            try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
+            try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try await(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
+            try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
 
             let updateKey = self.attester.updateKey(
@@ -323,12 +323,12 @@ extension SetupViewController {
                 pubkey: encryptedPrv.key.public,
                 token: self.storage.token
             )
-            try await(self.alertAndSkipOnRejection(
+            try awaitPromise(self.alertAndSkipOnRejection(
                 updateKey,
                 fail: "Failed to submit Public Key")
             )
             let testWelcome = self.attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
-            try await(self.alertAndSkipOnRejection(
+            try awaitPromise(self.alertAndSkipOnRejection(
                 testWelcome,
                 fail: "Failed to send you welcome email")
             )
@@ -350,7 +350,7 @@ extension SetupViewController {
         return Promise {
             let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
             guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
-            let confirmPassPhrase = try await(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
+            let confirmPassPhrase = try awaitPromise(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
             guard confirmPassPhrase != nil else { throw AppErr.silentAbort }
             guard confirmPassPhrase == passPhrase else { throw AppErr.user("Pass phrases don't match") }
         }

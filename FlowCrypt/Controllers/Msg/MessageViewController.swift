@@ -142,7 +142,7 @@ extension MessageViewController {
         guard let input = input else { return }
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
         Promise { [weak self] in
-            self?.message = try await(self!.fetchMessage())
+            self?.message = try awaitPromise(self!.fetchMessage())
         }.then(on: .main) { [weak self] in
             self?.hideSpinner()
             self?.node.reloadRows(at: [Parts.text.indexPath, Parts.attachment.indexPath], with: .fade)
@@ -157,7 +157,7 @@ extension MessageViewController {
         Promise { [weak self] resolve, reject in
             guard let self = self, let input = self.input else { return }
 
-            let rawMimeData: Data = try await(self.messageProvider.fetchMsg(message: input.objMessage, folder: input.path))
+            let rawMimeData: Data = try awaitPromise(self.messageProvider.fetchMsg(message: input.objMessage, folder: input.path))
             self.input?.bodyMessage = rawMimeData
 
             guard let keys = self.dataService.keys else {
@@ -276,8 +276,8 @@ extension MessageViewController {
 
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
-            guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-            try await(self.messageOperationsProvider.delete(message: input.objMessage, form: input.path))
+            guard try awaitPromise(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
+            try awaitPromise(self.messageOperationsProvider.delete(message: input.objMessage, form: input.path))
             return true
         }
         .then(on: .main) { [weak self] didPerformOp in

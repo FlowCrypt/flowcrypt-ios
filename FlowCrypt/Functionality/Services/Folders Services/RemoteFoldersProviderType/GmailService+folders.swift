@@ -34,11 +34,11 @@ extension GmailService: RemoteFoldersProviderType {
                 let folders = labels
                     .compactMap { (label) -> GTLRGmail_Label? in
                         guard let identifier = label.identifier, identifier.isNotEmpty else {
-                            debugPrint("[GmailService] skip label with \(label.identifier ?? "")")
+                            logger.logInfo("skip label with \(label.identifier ?? "")")
                             return nil
                         }
                         guard identifier.range(of: "CATEGORY_", options: .caseInsensitive) == nil else {
-                            debugPrint("[GmailService] skip category label with \(label.identifier ?? "")")
+                            logger.logInfo("Skip category label with \(label.identifier ?? "")")
                             return nil
                         }
                         return label

@@ -83,9 +83,7 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                     attributedText: title,
                     image: nil
                 )
-                let n = InfoCellNode(input: input)
-                debugPrint(n)
-                return n
+                return InfoCellNode(input: input)
             case .emailRecipients:
                 return RecipientEmailsCellNode(recipients: self.recipients)
                     .onItemSelect { [weak self] indexPath in

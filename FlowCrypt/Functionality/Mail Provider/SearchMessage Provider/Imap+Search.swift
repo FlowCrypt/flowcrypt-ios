@@ -27,9 +27,9 @@ extension Imap: MessageSearchProvider {
 
             let kind = self.messageKindProvider.imapMessagesRequestKind
             let path = searchContext.folderPath ?? "INBOX"
-            let indexes = try await(self.fetchUids(folder: path, expr: expression))
+            let indexes = try awaitPromise(self.fetchUids(folder: path, expr: expression))
 
-            let messages = try await(
+            let messages = try awaitPromise(
                 self.fetchMessagesByUIDOperation(
                     for: path,
                     kind: kind,

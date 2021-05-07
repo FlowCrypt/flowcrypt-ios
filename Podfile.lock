@@ -41,14 +41,14 @@ PODS:
   - PINRemoteImage/PINCache (3.0.1):
     - PINCache (~> 3.0.1)
     - PINRemoteImage/Core
-  - PromisesObjC (1.2.8)
-  - PromisesSwift (1.2.8):
-    - PromisesObjC (= 1.2.8)
-  - Realm (10.7.2):
-    - Realm/Headers (= 10.7.2)
-  - Realm/Headers (10.7.2)
-  - RealmSwift (10.7.2):
-    - Realm (= 10.7.2)
+  - PromisesObjC (2.0.0)
+  - PromisesSwift (2.0.0):
+    - PromisesObjC (= 2.0.0)
+  - Realm (10.7.4):
+    - Realm/Headers (= 10.7.4)
+  - Realm/Headers (10.7.4)
+  - RealmSwift (10.7.4):
+    - Realm (= 10.7.4)
   - SwiftFormat/CLI (0.44.10)
   - SwiftLint (0.36.0)
   - SwiftyRSA (1.5.0):
@@ -132,16 +132,16 @@ SPEC CHECKSUMS:
   PINCache: bea7c404c360f6fe0f6ee783c5cd14e778fa2aab
   PINOperation: 3a967a927e7867e61976c6cc23e5770416449fbc
   PINRemoteImage: 3b7cedb118c2d357f87e9eabc7c81ba0202cb236
-  PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
-  PromisesSwift: 37bad6f4daddb02f7c9c531efe91e8b21c13ee2f
-  Realm: e523da9ade306c5ae87e85dc09fdef148d3e1cc1
-  RealmSwift: 4f6758c3adbdcc87f7b7777107226532a077f61c
+  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
+  PromisesSwift: e0b2a6433469efb0b83a2b84c62a2abab8e5e5d4
+  Realm: f08ce1a85649a41303ecfe1cbd914c62e9e6d710
+  RealmSwift: 60ec49d165f23d040ab48811d8dd177e09baf4d3
   SwiftFormat: b72e592ea0979aeee53f6052abff291181364933
   SwiftLint: fc9859e4e1752340664851f667bb1898b9c90114
   SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
   Texture: 2f109e937850d94d1d07232041c9c7313ccddb81
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: 6f91555731cbd62d8d40d7455a29c2e1e5ab453d
+PODFILE CHECKSUM: fea310024146a7697fe1f2e91fe1d27f10198833
 
 COCOAPODS: 1.10.1

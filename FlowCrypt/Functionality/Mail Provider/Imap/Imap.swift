@@ -22,6 +22,8 @@ final class Imap: MailServiceProvider {
     var lastErr: [String: AppErr] = [:]
     let dataService: Injection
 
+    lazy var logger = Logger.nested(Self.self)
+
     private init(
         dataService: Injection = DataService.shared,
         helper: ImapHelperType = ImapHelper(),
