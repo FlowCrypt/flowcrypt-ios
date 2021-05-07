@@ -43,7 +43,7 @@ final class SetupViewController: TableNodeViewController {
         case createKey
         /// error state
         case error(SetupError)
-        
+
         var isSearchingBackups: Bool {
             guard case .searchingBackups = self else {
                 return false
@@ -166,12 +166,16 @@ extension SetupViewController {
     }
 
     private func searchBackups() {
+        Logger.logInfo("[Setup] searching for backups in inbox")
         backupService.fetchBackups(for: user)
             .then(on: .main) { [weak self] keys in
+                Logger.logInfo("[Setup] done searching for backups in inbox")
                 guard keys.isNotEmpty else {
+                    Logger.logInfo("[Setup] no key backups found in inbox")
                     self?.state = .error(.noBackups)
                     return
                 }
+                Logger.logInfo("[Setup] \(keys.count) key backups found in inbox")
                 self?.state = .fetchedEncrypted(keys)
             }
             .catch(on: .main) { [weak self] error in
@@ -210,13 +214,14 @@ extension SetupViewController {
 
 extension SetupViewController {
     private func handleError(with error: SetupError) {
+        Logger.logWarning("[Setup] handling error during setup: \(error)")
         switch error {
         case .emptyFetchedKeys:
             let user = DataService.shared.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             showSearchBackupError(with: msg)
         case .noBackups:
-            showSearchBackupError(with: "setup_action_failed".localized)
+            showSearchBackupError(with: "setup_no_backups".localized)
         case let .parseKey(error):
             showErrorAlert(with: "setup_action_failed".localized, error: error)
         }
