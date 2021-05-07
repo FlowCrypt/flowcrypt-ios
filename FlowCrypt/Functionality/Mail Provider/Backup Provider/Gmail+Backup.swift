@@ -21,7 +21,7 @@ extension GmailService: BackupProvider {
             Logger.logVerbose("[GmailService] searching with \(backupSearchExpressions.count) search expressions")
             let backupMessages = try awaitPromise(all(backupSearchExpressions))
                 .flatMap { $0 }
-            Logger.logVerbose("[GmailService] searching done")
+            Logger.logVerbose("[GmailService] searching done, found \(backupMessages.count) backup messages")
             let uniqueMessages = Set(backupMessages)
             let attachments = uniqueMessages
                 .compactMap { (message) -> [(String, String)]? in
