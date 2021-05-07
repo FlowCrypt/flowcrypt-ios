@@ -29,8 +29,8 @@ struct RemoteContactsProvider {
 extension RemoteContactsProvider: ContactsProviderType {
     func searchContact(with email: String) -> Promise<Contact> {
         Promise<Contact> { resolve, _ in
-            let armoredData = try await(self.api.lookupEmail(email: email)).armored
-            let contact = try await(self.parseKey(data: armoredData, for: email))
+            let armoredData = try awaitPromise(self.api.lookupEmail(email: email)).armored
+            let contact = try awaitPromise(self.parseKey(data: armoredData, for: email))
             resolve(contact)
         }
     }
