@@ -124,15 +124,15 @@ struct SendableMsg {
 
 struct MsgBlock: Decodable {
     static func blockParseErr(with content: String) -> MsgBlock {
-        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil)
+        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil, attMeta: nil)
     }
 
     let type: BlockType
     let content: String
     let decryptErr: DecryptErr? // always present in decryptErr BlockType
     let keyDetails: KeyDetails? // always present in publicKey BlockType
+    let attMeta: AttMeta? // always present in plainAtt, encryptedAtt, decryptedAtt, encryptedAttLink
     // let verifyRes: VerifyRes?,
-    // let attMeta: AttMeta?; // always present in plainAtt, encryptedAtt, decryptedAtt, encryptedAttLink
 
     // let signature: String? // possibly not neded in Swift
 
@@ -164,6 +164,12 @@ struct MsgBlock: Decodable {
             case format
             case other
         }
+    }
+
+    struct AttMeta: Decodable {
+        let name: String
+        let data: Data
+        let length: Int
     }
 
     enum BlockType: String, Decodable {

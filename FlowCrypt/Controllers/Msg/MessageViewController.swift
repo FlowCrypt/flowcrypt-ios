@@ -14,7 +14,7 @@ final class MessageViewController: TableNodeViewController {
     }
 
     enum Parts: Int, CaseIterable {
-        case sender, subject, text
+        case sender, subject, text, attachment
 
         var indexPath: IndexPath {
             IndexPath(row: rawValue, section: 0)
@@ -53,6 +53,7 @@ final class MessageViewController: TableNodeViewController {
     private let messageProvider: MessageProvider
     private let messageOperationsProvider: MessageOperationsProvider
     private var message: NSAttributedString
+    private var attachments: [Attachment]
     private let trashFolderProvider: TrashFolderProviderType
 
     init(
@@ -73,6 +74,7 @@ final class MessageViewController: TableNodeViewController {
         self.core = core
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
+        self.attachments = []
         self.message = decorator.attributed(
             text: "loading_title".localized + "...",
             color: .lightGray
@@ -143,7 +145,7 @@ extension MessageViewController {
             self?.message = try awaitPromise(self!.fetchMessage())
         }.then(on: .main) { [weak self] in
             self?.hideSpinner()
-            self?.node.reloadRows(at: [Parts.text.indexPath], with: .fade)
+            self?.node.reloadRows(at: [Parts.text.indexPath, Parts.attachment.indexPath], with: .fade)
             self?.asyncMarkAsReadIfNotAlreadyMarked()
         }.catch(on: .main) { [weak self] error in
             self?.hideSpinner()
@@ -170,6 +172,10 @@ extension MessageViewController {
                 isEmail: true
             )
             let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
+            let decryptAttBlocks = decrypted.blocks.filter { $0.type == .plainAtt || $0.type == .encryptedAtt || $0.type == .decryptedAtt }
+
+            let attachments = decryptAttBlocks.map { Attachment(name: $0.attMeta?.name ?? "Attachment", size: $0.attMeta?.length ?? 0) }
+            self.attachments = attachments
 
             let message: NSAttributedString
             if let decryptErrBlock = decryptErrBlocks.first {
@@ -240,6 +246,10 @@ extension MessageViewController {
 
     @objc private func handleMailTap() {
         showToast("Marking as unread will be implemented soon")
+    }
+
+    @objc private func handleAttachmentTap() {
+        showToast("Downloading attachments is not implemented yet")
     }
 
     @objc private func handleTrashTap() {
@@ -377,6 +387,10 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
                 return MessageSubjectNode(subject, time: time)
             case .text:
                 return MessageTextSubjectNode(self.message)
+            case .attachment:
+                return AttachmentsNode(attachments: self.attachments) { [weak self] in
+                    self?.handleAttachmentTap()
+                }
             }
         }
     }
