@@ -12,25 +12,31 @@ import GoogleAPIClientForREST
 
 extension GmailService: BackupProvider {
     func searchBackups(for email: String) -> Promise<Data> {
+        Logger.logVerbose("[GmailService] will begin searching for backups")
         return Promise { (resolve, _) in
             let backupSearchExpressions = GeneralConstants.EmailConstant
                 .recoverAccountSearchSubject
                 .map { searchExpression(using: MessageSearchContext(expression: $0)) }
 
+            Logger.logVerbose("[GmailService] searching with \(backupSearchExpressions.count) search expressions")
             let backupMessages = try awaitPromise(all(backupSearchExpressions))
                 .flatMap { $0 }
+            Logger.logVerbose("[GmailService] searching done, found \(backupMessages.count) backup messages")
             let uniqueMessages = Set(backupMessages)
             let attachments = uniqueMessages
                 .compactMap { (message) -> [(String, String)]? in
+                    Logger.logVerbose("[GmailService] processing backup '\(message.subject ?? "-")' with \(message.attachmentIds.count) attachments")
                     guard let identifier = message.identifier.stringId else {
+                        Logger.logVerbose("[GmailService] skipping this last backup?")
                         return nil
                     }
                     return message.attachmentIds.map { (identifier, $0) }
                 }
                 .flatMap { $0 }
                 .map(findAttachment)
-
+            Logger.logVerbose("[GmailService] downloading \(attachments.count) attachments with possible backups in them")
             let data = try awaitPromise(all(attachments)).joined
+            Logger.logVerbose("[GmailService] downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
             resolve(data)
         }
     }
