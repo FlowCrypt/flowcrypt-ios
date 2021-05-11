@@ -6,9 +6,9 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import Foundation
 import Security
-import FlowCryptCommon
 
 // keychain is used to generate and retrieve encryption key which is used to encrypt local DB
 // it does not contain any actual data or keys other than the db encryption key

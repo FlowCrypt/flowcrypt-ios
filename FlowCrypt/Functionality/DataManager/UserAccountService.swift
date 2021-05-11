@@ -129,7 +129,7 @@ extension UserAccountService: UserAccountServiceType {
 
         do {
             try self.storages.forEach { try $0.logOutUser(email: email) }
-        } catch let error {
+        } catch {
             logger.logError("storage error \(error)")
         }
     }

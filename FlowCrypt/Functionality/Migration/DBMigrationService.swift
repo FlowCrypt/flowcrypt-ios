@@ -53,7 +53,7 @@ extension DBMigrationService {
             try storage.write {
                 storage.delete(folders)
             }
-        } catch let error {
+        } catch {
             logger.logWarning("Can't perform Gmail Api migration \(error)")
             assertionFailure("Can't perform Gmail Api migration \(error)")
         }

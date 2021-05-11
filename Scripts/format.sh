@@ -7,10 +7,15 @@ fi
 
 # Do not run format if swiftlint isn't installed
 if which swiftformat >/dev/null; then
-  echo "Start formating"
+  echo "Start formatting"
   swiftlint autocorrect --path .
   swiftformat . \
-     --rules trailingSpace \
+     --rules trailingSpace, blankLinesAtEndOfScope, consecutiveBlankLines, consecutiveSpaces, \
+     duplicateImports, initCoderUnavailable, isEmpty, leadingDelimiters, preferKeyPath, redundantBreak, \
+     redundantExtensionACL, redundantFileprivate, redundantGet, redundantLet, redundantLetError, \
+     redundantNilInit, redundantParens, redundantPattern, redundantReturn, redundantVoidReturnType, semicolons, \
+     sortedImports, spaceAroundBraces, spaceAroundBrackets, spaceAroundGenerics, spaceInsideBraces, spaceInsideGenerics, \
+     strongifiedSelf, trailingClosures, void, wrapArguments --wraparguments, 
      --swiftversion 5
 else
   echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"

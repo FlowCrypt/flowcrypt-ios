@@ -7,16 +7,16 @@
 //
 
 import Foundation
-import Promises
-import GTMSessionFetcher
 import GoogleAPIClientForREST
+import GTMSessionFetcher
+import Promises
 
 extension GmailService: RemoteFoldersProviderType {
     func fetchFolders() -> Promise<[FolderObject]> {
-        Promise { (resolve, reject) in
+        Promise { resolve, reject in
             let query = GTLRGmailQuery_UsersLabelsList.query(withUserId: .me)
 
-            self.gmailService.executeQuery(query) { (_, data, error) in
+            self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     reject(GmailServiceError.providerError(error))
                     return

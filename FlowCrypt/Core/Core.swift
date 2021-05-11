@@ -111,7 +111,7 @@ final class Core {
                 let jsFileSrc = try? String(contentsOfFile: jsFile)
                 self.context = JSContext(virtualMachine: self.vm)!
                 self.context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
-                self.context!.exceptionHandler = { [weak self] (_, exception) in
+                self.context!.exceptionHandler = { [weak self] _, exception in
                     guard let exception = exception else { return }
                     self?.logger.logWarning("\(exception)")
                 }

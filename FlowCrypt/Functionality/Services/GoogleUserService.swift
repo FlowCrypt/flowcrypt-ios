@@ -6,11 +6,11 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
+import AppAuth
 import Foundation
+import GTMAppAuth
 import Promises
 import RealmSwift
-import AppAuth
-import GTMAppAuth
 
 protocol UserServiceType {
     func signOut(user email: String)
@@ -59,7 +59,7 @@ extension GoogleUserService: UserServiceType {
 
     func renewSession() -> Promise<Void> {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
-        Promise<Void> { [weak self] (resolve, _) in
+        Promise<Void> { [weak self] resolve, _ in
             self?.logger.logInfo("Renew session for google user")
             resolve(())
         }
@@ -74,7 +74,7 @@ extension GoogleUserService: UserServiceType {
             let googleAuthSession = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
-            ) { (authState, error) in
+            ) { authState, error in
                 if let authState = authState {
                     let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
                     guard let email = authorization.userEmail else {
@@ -165,12 +165,12 @@ extension GoogleUserService {
         fetcherService.authorizer = authorization
 
         fetcherService.fetcher(with: userInfoEndpoint)
-            .beginFetch { (data, error) in
+            .beginFetch { data, error in
                 if let data = data {
                     do {
                         let user = try JSONDecoder().decode(GoogleUser.self, from: data)
                         completion(.success(user))
-                    } catch let error {
+                    } catch {
                         completion(.failure(.parsingError(error)))
                     }
                 } else if let error = error {

@@ -37,8 +37,8 @@ extension ExtensionTests {
         let someEmptyCollection: [String] = []
         let nonEmptyCollection = [1, 2, 3]
 
-        XCTAssert(someEmptyCollection.count == 0)
-        XCTAssert(nonEmptyCollection.count != 0)
+        XCTAssert(someEmptyCollection.isEmpty)
+        XCTAssert(!nonEmptyCollection.isEmpty)
     }
 
     func test_safe_subscript() {
