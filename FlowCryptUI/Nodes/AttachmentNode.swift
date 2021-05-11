@@ -7,6 +7,8 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptUI
+import Promises
 
 public struct Attachment {
     var name, size: String
@@ -16,9 +18,19 @@ public struct Attachment {
         size: Int
     ) {
         self.name = name
-        self.size = ByteCountFormatter.string(fromByteCount: Int64(size), countStyle: .file)
+        self.size = ByteCountFormatter.string(fromByteCount: Int64(size),
+                                              countStyle: .file)
     }
 }
+
+extension Attachment {
+    init(block: MsgBlock) {
+        self.name = block.attMeta?.name ?? "/"
+        self.size = ByteCountFormatter.string(fromByteCount: Int64(block.attMeta?.length ?? 0),
+                                              countStyle: .file)
+    }
+}
+
 
 public final class AttachmentsNode: CellNode {
     public struct Input {
@@ -40,11 +52,12 @@ public final class AttachmentsNode: CellNode {
     public init(attachments: [Attachment], onTap: (() -> Void)?) {
         super.init()
         self.onTap = onTap
-        attachmentNodes = attachments.map { AttachmentNode(input: AttachmentNode.Input(name: $0.name, size: $0.size),
-                                                           onTap: {
-                                                            self.onTap?()
-                                                           })
-                                                        }
+        attachmentNodes = attachments.map {
+            AttachmentNode(
+                input: AttachmentNode.Input(name: $0.name, size: $0.size),
+                onTap: { self.onTap?() }
+            )
+        }
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {

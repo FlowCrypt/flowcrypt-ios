@@ -53,7 +53,7 @@ final class MessageViewController: TableNodeViewController {
     private let messageProvider: MessageProvider
     private let messageOperationsProvider: MessageOperationsProvider
     private var message: NSAttributedString
-    private var attachments: [Attachment]
+    private var attachments: [Attachment] = []
     private let trashFolderProvider: TrashFolderProviderType
 
     init(
@@ -74,7 +74,6 @@ final class MessageViewController: TableNodeViewController {
         self.core = core
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
-        self.attachments = []
         self.message = decorator.attributed(
             text: "loading_title".localized + "...",
             color: .lightGray
@@ -172,9 +171,11 @@ extension MessageViewController {
                 isEmail: true
             )
             let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
-            let decryptAttBlocks = decrypted.blocks.filter { $0.type == .plainAtt || $0.type == .encryptedAtt || $0.type == .decryptedAtt }
 
-            let attachments = decryptAttBlocks.map { Attachment(name: $0.attMeta?.name ?? "Attachment", size: $0.attMeta?.length ?? 0) }
+            let attachments = decrypted.blocks
+                .filter { $0.isAttachmentBlock }
+                .map { Attachment(block: $0) }
+
             self.attachments = attachments
 
             let message: NSAttributedString
