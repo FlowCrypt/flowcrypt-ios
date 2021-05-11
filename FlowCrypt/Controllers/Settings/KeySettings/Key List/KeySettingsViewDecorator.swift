@@ -6,8 +6,8 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
 import FlowCryptCommon
+import Foundation
 
 protocol KeySettingsViewDecoratorType {
     func attributedUsers(key: KeyDetails) -> NSAttributedString

@@ -2,13 +2,13 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
+import BigInt
 import CommonCrypto // for hashing
 import Foundation
 import IDZSwiftCommonCrypto // for aes
 import JavaScriptCore // for export to js
 import Security // for rng
 import SwiftyRSA // for rsa
-import BigInt
 
 @objc protocol CoreHostExports: JSExport {
     // crypto

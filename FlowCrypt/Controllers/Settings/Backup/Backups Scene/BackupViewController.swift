@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import FlowCryptUI
 import AsyncDisplayKit
+import FlowCryptUI
 
 final class BackupViewController: ASDKViewController<TableNode> {
     private enum Parts: Int, CaseIterable {
@@ -50,6 +50,7 @@ final class BackupViewController: ASDKViewController<TableNode> {
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

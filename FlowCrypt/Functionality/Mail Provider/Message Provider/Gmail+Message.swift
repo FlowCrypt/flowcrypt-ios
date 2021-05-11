@@ -6,13 +6,13 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
-import GTMSessionFetcher
 import GoogleAPIClientForREST
+import GTMSessionFetcher
+import Promises
 
 extension GmailService: MessageProvider {
     func fetchMsg(message: Message, folder: String) -> Promise<Data> {
-        return Promise { (resolve, reject) in
+        return Promise { resolve, reject in
             guard let identifier = message.identifier.stringId else {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }
@@ -20,7 +20,7 @@ extension GmailService: MessageProvider {
             let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
             query.format = kGTLRGmailFormatRaw
 
-            self.gmailService.executeQuery(query) { (_, data, error) in
+            self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     reject(GmailServiceError.providerError(error))
                     return

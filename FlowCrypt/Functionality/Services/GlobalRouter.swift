@@ -6,8 +6,8 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import Promises
+import UIKit
 
 protocol GlobalRouterType {
     func proceed()

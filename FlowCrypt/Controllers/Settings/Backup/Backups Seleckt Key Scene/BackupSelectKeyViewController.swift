@@ -6,9 +6,9 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
-import FlowCryptUI
 import AsyncDisplayKit
+import FlowCryptUI
+import Foundation
 
 final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
     private let backupService: BackupServiceType
@@ -34,6 +34,7 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

@@ -6,9 +6,9 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import Foundation
 import Promises
-import FlowCryptCommon
 
 extension Imap {
 
@@ -41,14 +41,14 @@ extension Imap {
     }
 
     private func logIMAPConnection(for session: MCOIMAPSession) {
-        session.connectionLogger = { [weak self] (connectionID, type, data) in
+        session.connectionLogger = { [weak self] connectionID, type, data in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
             self?.logger.logInfo("connection IMAP :\(type):\(string)")
         }
     }
 
     private func logSMTPConnection(for smtpSession: MCOSMTPSession) {
-        smtpSession.connectionLogger = { [weak self] (connectionID, type, data) in
+        smtpSession.connectionLogger = { [weak self] connectionID, type, data in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
             self?.logger.logInfo("connection SMTP:\(type):\(string)")
         }

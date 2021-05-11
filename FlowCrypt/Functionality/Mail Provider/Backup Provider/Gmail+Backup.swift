@@ -6,14 +6,14 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
-import GTMSessionFetcher
 import GoogleAPIClientForREST
+import GTMSessionFetcher
+import Promises
 
 extension GmailService: BackupProvider {
     func searchBackups(for email: String) -> Promise<Data> {
         Logger.logVerbose("[GmailService] will begin searching for backups")
-        return Promise { (resolve, _) in
+        return Promise { resolve, _ in
             let backupSearchExpressions = GeneralConstants.EmailConstant
                 .recoverAccountSearchSubject
                 .map { searchExpression(using: MessageSearchContext(expression: $0)) }
@@ -47,8 +47,8 @@ extension GmailService: BackupProvider {
             messageId: context.messageId,
             identifier: context.attachmentId
         )
-        return Promise { (resolve, reject) in
-            self.gmailService.executeQuery(query) { (_, data, error) in
+        return Promise { resolve, reject in
+            self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     reject(GmailServiceError.providerError(error))
                     return

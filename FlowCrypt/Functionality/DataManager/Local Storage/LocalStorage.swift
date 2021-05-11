@@ -51,6 +51,5 @@ extension LocalStorage: LogOutHandler {
             .forEach {
                 storage.removeObject(forKey: $0)
             }
-
     }
 }

@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 protocol BackupOptionsViewDecoratorType {
     var sceneTitle: String { get }
@@ -62,7 +62,7 @@ struct BackupOptionsViewDecorator: BackupOptionsViewDecoratorType {
             ? .main
             : .lightGray
 
-        return CheckBoxTextNode.Input.init(
+        return CheckBoxTextNode.Input(
             title: attributedTitle,
             insets: .side(16),
             preferredSize: CGSize(width: 30, height: 30),

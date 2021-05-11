@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 protocol EmailProviderViewDecoratorType {
     var connectButtonTitle: NSAttributedString { get }
