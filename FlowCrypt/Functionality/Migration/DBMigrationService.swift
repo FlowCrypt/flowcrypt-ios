@@ -31,66 +31,15 @@ struct DBMigrationService {
 extension DBMigrationService: DBMigration {
     func performMigrationIfNeeded() -> Promise<Void> {
         Promise<Void> {
-            self.performTokenEncryptedMigration()
-            self.performUserSessionMigration()
-            self.performGmailApiMigration()
+            // self.performGmailApiMigration()
         }
     }
 }
 
-// MARK: Token
+// MARK: - Migration example
+// Perform migration when Gmail Api implemented
+// remove after some real migration will be implemented
 extension DBMigrationService {
-    /// Perform migration for users which has token saved in non encrypted storage
-    private func performTokenEncryptedMigration() {
-        let legacyTokenIndex = "keyCurrentToken"
-        guard previouslyStoredUser() != nil else {
-            logger.logInfo("Local migration not needed. User was not stored in local storage")
-            return
-        }
-        guard let token = localStorage.storage.string(forKey: legacyTokenIndex) else {
-            logger.logInfo("Local migration not needed. Token was not saved in local storage")
-            return
-        }
-
-        performSessionMigration(with: token)
-        localStorage.storage.removeObject(forKey: legacyTokenIndex)
-    }
-}
-
-// MARK: User session
-extension DBMigrationService {
-    /// Perform migration from google signing to generic session
-    private func performUserSessionMigration() {
-        guard let token = encryptedStorage.currentToken() else {
-            logger.logInfo("User migration not needed. Token was not stored or migration already finished")
-            return
-        }
-
-        performSessionMigration(with: token)
-    }
-
-    private func performSessionMigration(with token: String) {
-        guard let user = previouslyStoredUser() else {
-            logger.logInfo("User migration not needed. User was not stored or migration already finished")
-            return
-        }
-        logger.logInfo("Perform user migration for token")
-        let userObject = UserObject.googleUser(name: user.name, email: user.email, token: token)
-
-        encryptedStorage.saveActiveUser(with: userObject)
-        UserDefaults.standard.set(nil, forKey: legacyCurrentUserIndex)
-    }
-
-    var legacyCurrentUserIndex: String { "keyCurrentUser" }
-    private func previouslyStoredUser() -> User? {
-        guard let data = UserDefaults.standard.object(forKey: legacyCurrentUserIndex) as? Data else { return nil }
-        return try? PropertyListDecoder().decode(User.self, from: data)
-    }
-}
-
-// MARK: Gmail Api
-extension DBMigrationService {
-    /// Perform migration when Gmail Api implemented
     private func performGmailApiMigration() {
         let key = "KeyGmailApiMigration"
         let isMigrated = UserDefaults.standard.bool(forKey: key)

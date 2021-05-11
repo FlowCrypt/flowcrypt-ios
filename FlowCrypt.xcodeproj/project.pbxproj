@@ -85,8 +85,6 @@
 		9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
 		9F589F11238C7DDC007FD759 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
 		9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F14238C8249007FD759 /* KeyChainService.swift */; };
-		9F589F1F238C8A90007FD759 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F1E238C8A90007FD759 /* Token.swift */; };
-		9F589F20238C8A90007FD759 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F1E238C8A90007FD759 /* Token.swift */; };
 		9F5C2A77257D705100DE9B4B /* MessageLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A76257D705100DE9B4B /* MessageLabel.swift */; };
 		9F5C2A7E257E64D500DE9B4B /* MessageOperationsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A7D257E64D500DE9B4B /* MessageOperationsProvider.swift */; };
 		9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */; };
@@ -441,7 +439,6 @@
 		9F56BD3923438D3700A7371A /* StyleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleExtension.swift; sourceTree = "<group>"; };
 		9F589F0C238C7A9B007FD759 /* LocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
 		9F589F14238C8249007FD759 /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
-		9F589F1E238C8A90007FD759 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		9F5C2A76257D705100DE9B4B /* MessageLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLabel.swift; sourceTree = "<group>"; };
 		9F5C2A7D257E64D500DE9B4B /* MessageOperationsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageOperationsProvider.swift; sourceTree = "<group>"; };
 		9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapError.swift; sourceTree = "<group>"; };
@@ -858,7 +855,6 @@
 				D27B911C24EFE806002DF0A1 /* ContactObject.swift */,
 				D2E26F6924F25AB800612AF1 /* KeyAlgoObject.swift */,
 				D274724324FD1932006BA6EF /* FolderObject.swift */,
-				9F589F1E238C8A90007FD759 /* Token.swift */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				D2F41370243CC76E0066AFB5 /* SessionObject.swift */,
 			);
@@ -2221,7 +2217,6 @@
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
 				9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */,
 				9F003D9E25EA910B00EB38C0 /* LocalStorageTests.swift in Sources */,
-				9F589F20238C8A90007FD759 /* Token.swift in Sources */,
 				32DCAF683D87EA6221F71335 /* SequenceExtensions.swift in Sources */,
 				9F589F11238C7DDC007FD759 /* User.swift in Sources */,
 				D2E26F6D24F263B600612AF1 /* KeyAlgo.swift in Sources */,
@@ -2280,7 +2275,6 @@
 				9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */,
 				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
 				D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */,
-				9F589F1F238C8A90007FD759 /* Token.swift in Sources */,
 				9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				9FB22CDD25715CF50026EE64 /* GmailServiceError.swift in Sources */,
