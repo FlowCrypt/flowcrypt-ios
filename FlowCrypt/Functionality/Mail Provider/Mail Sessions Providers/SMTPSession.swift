@@ -49,7 +49,7 @@ extension MCOSMTPSession {
             connectionType = type
         }
 
-       switch session.authType {
+        switch session.authType {
         case let .oAuthGmail(token):
             authType = .xoAuth2
             oAuth2Token = token
@@ -58,4 +58,3 @@ extension MCOSMTPSession {
         }
     }
 }
-
