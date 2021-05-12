@@ -76,7 +76,7 @@ struct Logger {
         }
     }
 
-    static var dateFormatter = DateFormatter().then {
+    static var dateFormatter =  DateFormatter().then {
         $0.dateFormat = "HH:mm:ss"
         $0.locale = .current
         $0.timeZone = .current
@@ -143,12 +143,12 @@ extension Logger {
     }
 
     static func nested<T>(_ type: T.Type) -> Logger {
-        Logger(config: .default, label: "[\(String(describing: type))]")
+        Logger(config: .default, label: "[\(String.init(describing: type))]")
     }
 
     static func nested<T>(in type: T.Type, with label: String) -> Logger {
         var message = "[\(label)]"
-        message.append("[\(String(describing: type))]")
+        message.append("[\(String.init(describing: type))]")
         return Logger(config: .default, label: message)
     }
 }

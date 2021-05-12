@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
 import UIKit
+import Promises
 
 protocol BackupServiceType {
     /// get all existed backups
@@ -89,7 +89,7 @@ extension BackupService: BackupServiceType {
 }
 
 // MARK: - Helpers
-private extension String {
+fileprivate extension String {
     var userReadableEmail: String {
         self.replacingOccurrences(
             of: "[^a-z0-9]",
@@ -99,7 +99,7 @@ private extension String {
     }
 }
 
-private extension UserId {
+fileprivate extension UserId {
     var toMime: String {
         "\(name) <\(email)>"
     }

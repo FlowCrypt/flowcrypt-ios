@@ -80,7 +80,7 @@ public final class CheckBoxTextNode: CellNode {
                 children: [checkBox, textStack]
             )
 
-            return ASInsetLayoutSpec(
+            return  ASInsetLayoutSpec(
                 insets: input.insets,
                 child: stack
             )
@@ -93,7 +93,7 @@ public final class CheckBoxTextNode: CellNode {
                 children: [checkBox, textNode]
             )
 
-            return ASInsetLayoutSpec(
+            return  ASInsetLayoutSpec(
                 insets: input.insets,
                 child: stack
             )

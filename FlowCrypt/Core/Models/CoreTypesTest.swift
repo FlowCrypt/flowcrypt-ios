@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import FlowCryptCommon
 import XCTest
+import FlowCryptCommon
 
 class CoreTypesTest: XCTestCase {
 
@@ -59,6 +59,7 @@ class CoreTypesTest: XCTestCase {
             1,
             "If the [KeyDetails] contains two keys with the same fingerprint, only one should be added"
         )
+
     }
 
     func test_key_ids_with_same_fingerprint() {

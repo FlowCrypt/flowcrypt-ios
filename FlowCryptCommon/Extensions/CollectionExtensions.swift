@@ -47,7 +47,7 @@ public extension Array where Element == String {
     }
 
     func containsCaseInsensitive(_ stringToCompare: String) -> Bool {
-        contains(where: { $0.caseInsensitiveCompare(stringToCompare) == .orderedSame } )
+        contains(where: { $0.caseInsensitiveCompare(stringToCompare) == .orderedSame} )
     }
 }
 

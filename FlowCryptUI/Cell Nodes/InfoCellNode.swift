@@ -40,7 +40,7 @@ public final class InfoCellNode: CellNode {
         self.imageNode.image = input?.image
         self.automaticallyManagesSubnodes = true
 
-        if let backgroundColor = input?.backgroundColor {
+        if let backgroundColor = input?.backgroundColor{
             self.backgroundColor = backgroundColor
         }
     }

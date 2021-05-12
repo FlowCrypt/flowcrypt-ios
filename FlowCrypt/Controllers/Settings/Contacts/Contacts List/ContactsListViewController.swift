@@ -6,9 +6,9 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptUI
 import AsyncDisplayKit
 import FlowCryptCommon
-import FlowCryptUI
 
 final class ContactsListViewController: TableNodeViewController {
     private let decorator: ContactsListDecoratorType
@@ -24,7 +24,6 @@ final class ContactsListViewController: TableNodeViewController {
         super.init(node: TableNode())
     }
 
-    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

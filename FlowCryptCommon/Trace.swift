@@ -6,8 +6,8 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
-import CoreFoundation
 import Foundation
+import CoreFoundation
 
 public final class Trace {
     private let id: String

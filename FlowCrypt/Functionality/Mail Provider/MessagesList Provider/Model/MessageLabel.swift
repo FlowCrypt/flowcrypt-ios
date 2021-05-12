@@ -100,7 +100,7 @@ extension MessageLabelType {
     init(gmailLabel: String) {
         let types: [MessageLabelType] = [.seen, .unread, .starred, .sent, .trash, .draft, .important]
         let all = types.map { type in
-            (type, type.value)
+            return (type, type.value)
         }
         guard let label = all.first(where: { $0.1 == gmailLabel })?.0 else {
             self = .label(gmailLabel)

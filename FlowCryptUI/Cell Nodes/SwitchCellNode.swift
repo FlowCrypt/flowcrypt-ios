@@ -51,9 +51,10 @@ public final class SwitchCellNode: CellNode {
         self.textNode.attributedText = input?.attributedText
         self.automaticallyManagesSubnodes = true
 
-        if let backgroundColor = input?.backgroundColor {
+        if let backgroundColor = input?.backgroundColor{
             self.backgroundColor = backgroundColor
         }
+
     }
 
     @objc private func handleAction(_ sender: UISwitch) {

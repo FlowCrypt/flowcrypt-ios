@@ -6,9 +6,9 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import FlowCryptCommon
-import FlowCryptUI
 import UIKit
+import FlowCryptUI
+import FlowCryptCommon
 
 protocol BackupSelectKeyDecoratorType {
     var sceneTitle: String { get }
@@ -37,7 +37,7 @@ struct BackupSelectKeyDecorator: BackupSelectKeyDecoratorType {
             ? .main
             : .lightGray
 
-        return CheckBoxTextNode.Input(
+        return CheckBoxTextNode.Input.init(
             title: title,
             subtitle: subtitle,
             insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),

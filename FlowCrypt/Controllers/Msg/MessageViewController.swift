@@ -83,7 +83,6 @@ final class MessageViewController: TableNodeViewController {
         super.init(node: TableNode())
     }
 
-    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -282,7 +281,7 @@ extension MessageViewController {
             return true
         }
         .then(on: .main) { [weak self] didPerformOp in
-            guard didPerformOp else { self?.hideSpinner(); return }
+            guard didPerformOp else { self?.hideSpinner(); return  }
             self?.handleOpSuccess(operation: .permanentlyDelete)
         }.catch(on: .main) { [weak self] _ in
             self?.handleOpErr(operation: .permanentlyDelete)

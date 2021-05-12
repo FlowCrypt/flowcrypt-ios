@@ -15,6 +15,7 @@ enum ContactsError: Error {
 }
 
 protocol ContactsServiceType: PublicKeyProvider, ContactsProviderType {
+
 }
 
 protocol PublicKeyProvider {

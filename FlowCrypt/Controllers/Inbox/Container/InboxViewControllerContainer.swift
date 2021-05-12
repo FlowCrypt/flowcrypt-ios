@@ -7,8 +7,8 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptCommon
 import FlowCryptUI
+import FlowCryptCommon
 
 // MARK: - InboxViewControllerContainer
 // Used to fetch folders and get correct path for "inbox" folder
@@ -45,7 +45,6 @@ final class InboxViewControllerContainer: TableNodeViewController {
         node.dataSource = self
     }
 
-    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

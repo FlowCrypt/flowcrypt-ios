@@ -108,7 +108,7 @@ extension UIViewController {
 
     func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
         DispatchQueue.main.async {
-            guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
+            guard self.view.subviews.first(where: {$0 is MBProgressHUD}) == nil else {
                 // hud is already shown
                 return
             }

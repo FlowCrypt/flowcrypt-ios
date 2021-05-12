@@ -58,7 +58,7 @@ struct SessionCredentialsService: SessionCredentialsProvider {
         guard
             let email = email,
             let services = manager?.provider(forEmail: email)?.imapServices() as? [MCONetService],
-            let credentials = services.first(where: { $0.connectionType == MCOConnectionType(connection) })
+            let credentials = services.first(where: { $0.connectionType == MCOConnectionType(connection)})
         else {
             return error(for: connection)
         }
@@ -79,7 +79,7 @@ struct SessionCredentialsService: SessionCredentialsProvider {
         guard
             let email = email,
             let services = manager?.provider(forEmail: email)?.smtpServices() as? [MCONetService],
-            let credentials = services.first(where: { $0.connectionType == MCOConnectionType(connection) })
+            let credentials = services.first(where: { $0.connectionType == MCOConnectionType(connection)})
         else {
             return error(for: connection)
         }

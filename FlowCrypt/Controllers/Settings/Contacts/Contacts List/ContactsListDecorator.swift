@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import FlowCryptUI
 import UIKit
+import FlowCryptUI
 
 protocol ContactsListDecoratorType {
     var title: String { get }

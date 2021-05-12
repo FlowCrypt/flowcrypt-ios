@@ -65,7 +65,7 @@ extension RemoteContactsProvider: ContactsProviderType {
                 algo: keyDetail.algo
             )
             return Promise(contact)
-        } catch {
+        } catch let error {
             let message = "Armored or binary are not parsed.\n\(error.localizedDescription)"
             return Promise(ContactsError.unexpected(message))
         }

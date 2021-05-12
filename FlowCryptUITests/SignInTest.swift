@@ -208,7 +208,7 @@ extension SignInTest {
         app.tables
             .staticTexts
             .allElementsBoundByIndex
-            .first(where: { $0.label.contains("Sent" ) })?
+            .first(where: { $0.label.contains("Sent" )})?
             .tap()
 
         wait(3)
@@ -281,6 +281,8 @@ extension SignInTest {
         XCTAssert(errorAlert.exists)
     }
 }
+
+
 
 /*
  log in -> approve -> no backups -> generate pubkey -> switch accounts

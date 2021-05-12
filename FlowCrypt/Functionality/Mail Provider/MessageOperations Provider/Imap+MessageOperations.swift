@@ -41,7 +41,7 @@ extension Imap: MessageOperationsProvider {
 
     // MARK: - trash
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void> {
-        return Promise<Void> { [weak self] resolve, reject in
+        return Promise<Void> { [weak self] (resolve, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             guard let identifier = message.identifier.intId else {
@@ -69,7 +69,7 @@ extension Imap: MessageOperationsProvider {
 
     // MARK: - delete
     func delete(message: Message, form folderPath: String?) -> Promise<Void> {
-        return Promise<Void> { [weak self] _, reject in
+        return Promise<Void> { [weak self] (_, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             guard let identifier = message.identifier.intId else {
@@ -113,7 +113,7 @@ extension Imap: MessageOperationsProvider {
 
     // MARK: - archive
     func archiveMessage(message: Message, folderPath: String) -> Promise<Void> {
-        return Promise<Void> { [weak self] _, reject in
+        return Promise<Void> { [weak self] (_, reject) in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             guard let identifier = message.identifier.intId else {

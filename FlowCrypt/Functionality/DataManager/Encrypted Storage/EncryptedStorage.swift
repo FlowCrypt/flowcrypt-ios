@@ -218,7 +218,7 @@ extension EncryptedStorage {
             try storage.write {
                 storage.deleteAll()
             }
-        } catch {
+        } catch let error {
             assertionFailure("Error while deleting the objects from the storage \(error)")
         }
     }
