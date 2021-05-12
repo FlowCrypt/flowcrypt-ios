@@ -11,12 +11,11 @@ import Foundation
 import Promises
 import RealmSwift
 
-protocol EncryptedStorageType: DBMigration {
+protocol EncryptedStorageType {
     var storage: Realm { get }
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-    func currentToken() -> String?
     func publicKey() -> String?
     func keys() -> Results<KeyInfo>?
 
@@ -28,30 +27,44 @@ protocol EncryptedStorageType: DBMigration {
 }
 
 final class EncryptedStorage: EncryptedStorageType {
-    enum Constants {
-        // Encrypted schema version
-        static let schemaVersion: UInt64 = 1
-        // User object added to schema
-        static let schemaVersionUser: UInt64 = 2
-        // Account field added to Keys
-        static let schemaVersionMultipleAccounts: UInt64 = 3
+    private struct SchemaVersion {
+        /// specify app version when schema was applied
+        let appVersion: String
+        /// current schema version
+        let dbSchemaVersion: UInt64
+    }
 
+    // new schema should be added as a new case
+    private enum EncryptedStorageSchema: CaseIterable {
+        case initial
+
+        var version: SchemaVersion {
+            switch self {
+            case .initial:
+                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 1)
+            }
+        }
+    }
+
+    private enum Constants {
         static let encryptedDbFilename = "encrypted.realm"
     }
 
     private let keychainService: KeyChainServiceType
-    private let fileManager: FileManager
 
     private var realmKey: Data {
         keychainService.getStorageEncryptionKey()
     }
 
-    // TODO: - ANTON - Add logger (https://github.com/FlowCrypt/flowcrypt-ios/issues/282)
-    private let debugLabel = "[EncryptedStorage][DB Migration]"
+    private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
+
+    private let currentSchema: EncryptedStorageSchema = .initial
+    private let supportedSchemas = EncryptedStorageSchema.allCases
 
     private var encryptedConfiguration: Realm.Configuration {
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        let latestSchemaVersion = Constants.schemaVersionMultipleAccounts
+        let latestSchemaVersion = currentSchema.version.dbSchemaVersion
+
         return Realm.Configuration(
             fileURL: URL(fileURLWithPath: path),
             encryptionKey: realmKey,
@@ -74,12 +87,15 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    init(
-        fileManager: FileManager = .default,
-        keychainHelper: KeyChainServiceType = KeyChainService()
-    ) {
-        self.fileManager = fileManager
+    init(keychainHelper: KeyChainServiceType = KeyChainService()) {
         self.keychainService = KeyChainService()
+    }
+
+    private func getDocumentDirectory() -> String {
+        guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
+            fatalError("No path direction for .documentDirectory")
+        }
+        return documentDirectory
     }
 }
 
@@ -107,117 +123,31 @@ extension EncryptedStorage: LogOutHandler {
 
     private func destroyEncryptedStorage() {
         cleanup()
-        destroyPlainConfigurationIfNeeded()
-    }
-
-    /// Remove configuration if user still on plain realm
-    private func destroyPlainConfigurationIfNeeded() {
-        guard let defaultPath = Realm.Configuration.defaultConfiguration.fileURL else {
-            return
-        }
-        guard defaultPath != self.encryptedConfiguration.fileURL else {
-            return
-        }
-        guard fileManager.fileExists(atPath: defaultPath.absoluteString) else {
-            return
-        }
-
-        do {
-            try fileManager.removeItem(at: defaultPath)
-        } catch {
-            fatalError("Could not delete configuration for \(defaultPath) with error: \(error)")
-        }
     }
 }
 
-// MARK: - Migration
+// MARK: - Schema migration
 extension EncryptedStorage {
-    func performMigrationIfNeeded() -> Promise<Void> {
-        // current migration only does plain realm -> encrypted realm migration, with no database schema change
-        // during next future migration, we can delete this and only focus on database schema migration
-        let documentDirectory = getDocumentDirectory()
-        let plainRealmPath = documentDirectory + "/default.realm"
-        let encryptedRealmPath = documentDirectory + "/" + Constants.encryptedDbFilename
-        guard fileManager.fileExists(atPath: plainRealmPath) else {
-            debugPrint("Migration not needed: plain realm not used")
-            return Promise(())
-        }
-        guard !fileManager.fileExists(atPath: encryptedRealmPath) else {
-            debugPrint("Migration not needed: encrypted realm already set up")
-            return Promise(())
-        }
-        debugPrint("Performing migration from plain to encrypted Realm")
-        guard let plainRealm = try? Realm(configuration: Realm.Configuration.defaultConfiguration) else {
-            debugPrint("Failed to load plain realm, although the db file was present: destroying")
-            destroyEncryptedStorage() // destroys plain as well as encrypted realm (if one existed)
-            return Promise(())
-        }
-        // write encrypted copy of plain realm db
-        // encryptionKey is for the NEW copy
-        try! plainRealm.writeCopy(toFile: URL(fileURLWithPath: encryptedRealmPath), encryptionKey: realmKey)
-        // launch configuration and perform schema migration if needed
-        return Promise<Void> { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
-            let configuration = Realm.Configuration(
-                fileURL: URL(fileURLWithPath: encryptedRealmPath),
-                encryptionKey: self.realmKey,
-                schemaVersion: Constants.schemaVersion,
-                migrationBlock: { migration, oldSchemaVersion in
-                    do {
-                        debugPrint("oldSchemaVersion \(oldSchemaVersion)")
-                        debugPrint("Performing migration \(migration)")
-                        // I'd rather the app crashes then to pretend it has removed the plain copy
-                        // todo - remove the following line for migrations from 0.1.7 up
-                        try self.fileManager.removeItem(atPath: plainRealmPath) // delete previous configuration
-                        resolve(())
-                    } catch {
-                        reject(error)
-                    }
-                }
-            )
-            _ = try Realm(configuration: configuration) // runs migration and calls completion block
-        }
-    }
-
-    private func getDocumentDirectory() -> String {
-        guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
-            fatalError("No path direction for .documentDirectory")
-        }
-        return documentDirectory
-    }
-
     private func performSchemaMigration(migration: Migration, from oldSchemaVersion: UInt64, to newVersion: UInt64) {
-        debugPrint("\(debugLabel) Check if migration needed from \(oldSchemaVersion) to \(newVersion)")
+        migrationLogger.logInfo("Check if migration needed from \(oldSchemaVersion) to \(newVersion)")
 
         guard oldSchemaVersion < newVersion else {
-            debugPrint("\(debugLabel) Migration not needed")
+            migrationLogger.logInfo("Migration not needed")
             return
         }
 
-        switch newVersion {
-        case 0, Constants.schemaVersion, Constants.schemaVersionUser:
-            debugPrint("\(debugLabel) Schema Migration not needed")
-        case Constants.schemaVersionMultipleAccounts:
-            performMultipleAccount(migration: migration)
-        default:
-            assertionFailure("\(debugLabel) Migration is not implemented for this schema version")
+        supportedSchemas.forEach {
+            switch $0 {
+            case .initial:
+                migrationLogger.logInfo("Schema migration not needed for initial schema")
+//            case .someNewSchema:
+//                performSomeNewSchema(migration: migration)
+            }
         }
     }
 
-    private func performMultipleAccount(migration: Migration) {
-        debugPrint("\(debugLabel) Start Multiple account migration")
-
-        debugPrint("\(debugLabel) - Set isActive = true for a user")
-        migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (_, newUser) in
-            newUser?["isActive"] = true
-        }
-
-        debugPrint("\(debugLabel) - Add account to key")
-        migration.enumerateObjects(ofType: String(describing: KeyInfo.self)) { (_, newKey) in
-            migration.enumerateObjects(ofType: String(describing: UserObject.self)) { (user, _) in
-                newKey?["account"] = user?["email"] ?? ""
-            }
-        }
+    private func performSomeNewSchema(migration: Migration) {
+        migrationLogger.logInfo("Start Multiple account migration")
     }
 }
 
@@ -261,14 +191,6 @@ extension EncryptedStorage {
     }
 }
 
-// MARK: - Token
-extension EncryptedStorage {
-    @available(*, deprecated, message: "Use information from UserObject")
-    func currentToken() -> String? {
-        storage.objects(EmailAccessToken.self).first?.value
-    }
-}
-
 // MARK: - User
 extension EncryptedStorage {
     var activeUser: UserObject? {
@@ -296,7 +218,7 @@ extension EncryptedStorage {
             try storage.write {
                 storage.deleteAll()
             }
-        } catch let error {
+        } catch {
             assertionFailure("Error while deleting the objects from the storage \(error)")
         }
     }

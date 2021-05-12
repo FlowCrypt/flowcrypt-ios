@@ -6,14 +6,14 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
-import GTMSessionFetcher
 import GoogleAPIClientForREST
+import GTMSessionFetcher
+import Promises
 
 extension GmailService: MessageSearchProvider {
     func searchExpression(using context: MessageSearchContext) -> Promise<[Message]> {
-        Promise { (resolve, _) in
-            let context = try await(self.fetchMessages(using: FetchMessageContext(searchContext: context)))
+        Promise { resolve, _ in
+            let context = try awaitPromise(self.fetchMessages(using: FetchMessageContext(searchContext: context)))
             resolve(context.messages)
         }
     }

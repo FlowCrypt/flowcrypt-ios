@@ -89,6 +89,7 @@ final class ComposeViewController: TableNodeViewController {
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -212,7 +213,7 @@ extension ComposeViewController {
         showSpinner("sending_title".localized)
 
         Promise<Bool> { [weak self] in
-            try await(self!.encryptAndSendMessage())
+            try awaitPromise(self!.encryptAndSendMessage())
         }.then(on: .main) { [weak self] sent in
             if sent { // else it must have shown error to user
                 self?.handleSuccessfullySentMessage()
@@ -258,7 +259,7 @@ extension ComposeViewController {
                 to: recipients.map { $0.email }
             )
 
-            try await(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
+            try awaitPromise(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
 
             return true
         }
@@ -756,15 +757,11 @@ extension ComposeViewController {
             let okAction = UIAlertAction(
                 title: "Log out",
                 style: .default
-            ) { _ in
-                debugPrint("Log out")
-            }
+            ) { _ in }
             let cancelAction = UIAlertAction(
                 title: "Cancel",
                 style: .destructive
-            ) { _ in
-                debugPrint("Cancel")
-            }
+            ) { _ in }
             alert.addAction(okAction)
             alert.addAction(cancelAction)
 

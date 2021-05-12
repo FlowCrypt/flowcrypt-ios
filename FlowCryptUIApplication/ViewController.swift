@@ -27,6 +27,7 @@ final class ViewController: TableNodeViewController {
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -83,9 +84,7 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                     attributedText: title,
                     image: nil
                 )
-                let n = InfoCellNode(input: input)
-                debugPrint(n)
-                return n
+                return InfoCellNode(input: input)
             case .emailRecipients:
                 return RecipientEmailsCellNode(recipients: self.recipients)
                     .onItemSelect { [weak self] indexPath in
@@ -240,4 +239,3 @@ extension ViewController {
         textField?.reset()
     }
 }
-

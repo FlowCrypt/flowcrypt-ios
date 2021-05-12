@@ -43,6 +43,13 @@ final class SetupViewController: TableNodeViewController {
         case createKey
         /// error state
         case error(SetupError)
+
+        var isSearchingBackups: Bool {
+            guard case .searchingBackups = self else {
+                return false
+            }
+            return true
+        }
     }
 
     private var state: State = .idle {
@@ -73,6 +80,7 @@ final class SetupViewController: TableNodeViewController {
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -144,9 +152,11 @@ extension SetupViewController {
         case .idle:
             node.reloadData()
         case .searchingBackups:
+            showSpinner()
             searchBackups()
         case let .fetchedEncrypted(details):
             handleBackupsFetchResult(with: details)
+            hideSpinner()
         case let .error(error):
             hideSpinner()
             handleError(with: error)
@@ -157,13 +167,16 @@ extension SetupViewController {
     }
 
     private func searchBackups() {
-        showSpinner()
+        Logger.logInfo("[Setup] searching for backups in inbox")
         backupService.fetchBackups(for: user)
             .then(on: .main) { [weak self] keys in
+                Logger.logInfo("[Setup] done searching for backups in inbox")
                 guard keys.isNotEmpty else {
+                    Logger.logInfo("[Setup] no key backups found in inbox")
                     self?.state = .error(.noBackups)
                     return
                 }
+                Logger.logInfo("[Setup] \(keys.count) key backups found in inbox")
                 self?.state = .fetchedEncrypted(keys)
             }
             .catch(on: .main) { [weak self] error in
@@ -171,21 +184,7 @@ extension SetupViewController {
             }
     }
 
-    private func fetchEnctyptedKeys(with backupData: Data) {
-        showSpinner()
-
-        do {
-            let parsed = try core.parseKeys(armoredOrBinary: backupData)
-            let keys = parsed.keyDetails.filter { $0.private != nil }
-            state = .fetchedEncrypted(keys)
-        } catch {
-            state = .error(.parseKey(error))
-        }
-    }
-
     private func handleBackupsFetchResult(with keys: [KeyDetails]) {
-        hideSpinner()
-
         guard keys.isNotEmpty else {
             state = .error(.emptyFetchedKeys)
             return
@@ -216,13 +215,14 @@ extension SetupViewController {
 
 extension SetupViewController {
     private func handleError(with error: SetupError) {
+        Logger.logWarning("[Setup] handling error during setup: \(error)")
         switch error {
         case .emptyFetchedKeys:
             let user = DataService.shared.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user
             showSearchBackupError(with: msg)
         case .noBackups:
-            showSearchBackupError(with: "setup_action_failed".localized)
+            showSearchBackupError(with: "setup_no_backups".localized)
         case let .parseKey(error):
             showErrorAlert(with: "setup_action_failed".localized, error: error)
         }
@@ -313,9 +313,9 @@ extension SetupViewController {
         Promise { [weak self] in
             guard let self = self else { return }
             let userId = try self.getUserId()
-            try await(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
+            try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try await(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
+            try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
             try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
 
             let updateKey = self.attester.updateKey(
@@ -323,12 +323,12 @@ extension SetupViewController {
                 pubkey: encryptedPrv.key.public,
                 token: self.storage.token
             )
-            try await(self.alertAndSkipOnRejection(
+            try awaitPromise(self.alertAndSkipOnRejection(
                 updateKey,
                 fail: "Failed to submit Public Key")
             )
             let testWelcome = self.attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
-            try await(self.alertAndSkipOnRejection(
+            try awaitPromise(self.alertAndSkipOnRejection(
                 testWelcome,
                 fail: "Failed to send you welcome email")
             )
@@ -350,7 +350,7 @@ extension SetupViewController {
         return Promise {
             let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
             guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
-            let confirmPassPhrase = try await(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
+            let confirmPassPhrase = try awaitPromise(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
             guard confirmPassPhrase != nil else { throw AppErr.silentAbort }
             guard confirmPassPhrase == passPhrase else { throw AppErr.user("Pass phrases don't match") }
         }
@@ -376,7 +376,11 @@ extension SetupViewController {
     }
 
     private func handleButtonPressed() {
-        // TODO: - ANTON - show hud
+        // ignore if we are still fetching keys
+        guard !state.isSearchingBackups else {
+            return
+        }
+
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
 

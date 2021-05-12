@@ -6,34 +6,37 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
-import GTMSessionFetcher
 import GoogleAPIClientForREST
+import GTMSessionFetcher
+import Promises
 
 extension GmailService: BackupProvider {
     func searchBackups(for email: String) -> Promise<Data> {
-        return Promise { (resolve, _) in
+        Logger.logVerbose("[GmailService] will begin searching for backups")
+        return Promise { resolve, _ in
             let backupSearchExpressions = GeneralConstants.EmailConstant
                 .recoverAccountSearchSubject
                 .map { searchExpression(using: MessageSearchContext(expression: $0)) }
 
-            let backupMessages = try await(all(backupSearchExpressions))
+            Logger.logVerbose("[GmailService] searching with \(backupSearchExpressions.count) search expressions")
+            let backupMessages = try awaitPromise(all(backupSearchExpressions))
                 .flatMap { $0 }
+            Logger.logVerbose("[GmailService] searching done, found \(backupMessages.count) backup messages")
             let uniqueMessages = Set(backupMessages)
             let attachments = uniqueMessages
                 .compactMap { (message) -> [(String, String)]? in
+                    Logger.logVerbose("[GmailService] processing backup '\(message.subject ?? "-")' with \(message.attachmentIds.count) attachments")
                     guard let identifier = message.identifier.stringId else {
+                        Logger.logVerbose("[GmailService] skipping this last backup?")
                         return nil
                     }
                     return message.attachmentIds.map { (identifier, $0) }
                 }
                 .flatMap { $0 }
                 .map(findAttachment)
-
-            // TODO: - TOM 1
-            // Here I'm getting the correct number of attachments with backups (17 for cryptup.tester@gmail.com account)
-
-            let data = try await(all(attachments)).joined
+            Logger.logVerbose("[GmailService] downloading \(attachments.count) attachments with possible backups in them")
+            let data = try awaitPromise(all(attachments)).joined
+            Logger.logVerbose("[GmailService] downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
             resolve(data)
         }
     }
@@ -44,8 +47,8 @@ extension GmailService: BackupProvider {
             messageId: context.messageId,
             identifier: context.attachmentId
         )
-        return Promise { (resolve, reject) in
-            self.gmailService.executeQuery(query) { (_, data, error) in
+        return Promise { resolve, reject in
+            self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     reject(GmailServiceError.providerError(error))
                     return

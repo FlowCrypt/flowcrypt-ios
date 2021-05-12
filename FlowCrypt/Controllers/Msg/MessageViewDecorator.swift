@@ -8,14 +8,7 @@
 
 import UIKit
 
-protocol MessageViewDecoratorType {
-    func attributed(title: String) -> NSAttributedString
-    func attributed(subject: String) -> NSAttributedString
-    func attributed(date: Date?) -> NSAttributedString
-    func attributed(text: String?, color: UIColor) -> NSAttributedString
-}
-
-struct MessageViewDecorator: MessageViewDecoratorType {
+struct MessageViewDecorator {
     let dateFormatter: DateFormatter
 
     func attributed(title: String) -> NSAttributedString {
@@ -35,5 +28,20 @@ struct MessageViewDecorator: MessageViewDecoratorType {
 
     func attributed(text: String?, color: UIColor) -> NSAttributedString {
         (text ?? "").attributed(.regular(17), color: color)
+    }
+    
+    func attributedMessage(from fetchedMessage: FetchedMessage) -> NSAttributedString {
+        fetchedMessage.text.attributed()
+    }
+}
+
+extension AttachmentNode.Input {
+    init(msgAttachment: MessageAttachment) {
+        self.init(
+            name: msgAttachment.name
+                .attributed(.regular(18), color: .textColor, alignment: .left),
+            size: "\(msgAttachment.size)"
+                .attributed(.medium(12), color: .textColor, alignment: .left)
+        )
     }
 }

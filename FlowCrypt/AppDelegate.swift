@@ -3,8 +3,8 @@
 //  FlowCrypt
 //
 
-import UIKit
 import AppAuth
+import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var googleAuthSession: OIDExternalUserAgentSession?

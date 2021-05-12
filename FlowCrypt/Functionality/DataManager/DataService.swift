@@ -135,13 +135,7 @@ extension DataService: KeyDataServiceType {
 extension DataService: DBMigration {
     /// Perform all kind of migrations
     func performMigrationIfNeeded() -> Promise<Void> {
-        return Promise<Void> { [weak self] in
-            guard let self = self else { throw AppErr.nilSelf }
-            // migrate to encrypted storage
-            try await(self.encryptedStorage.performMigrationIfNeeded())
-            // migrate all other type of migrations
-            try await(self.migrationService.performMigrationIfNeeded())
-        }
+        migrationService.performMigrationIfNeeded()
     }
 }
 

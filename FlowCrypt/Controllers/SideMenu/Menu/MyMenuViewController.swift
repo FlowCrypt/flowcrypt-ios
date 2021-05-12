@@ -71,6 +71,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         super.init(node: ASDisplayNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -97,7 +98,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        guard #available(iOS 13.0, *) else { return }
         tableNode.reloadData()
     }
 }
@@ -276,7 +276,6 @@ extension MyMenuViewController {
             divider.backgroundColor = decorator.dividerColor
         }
     }
-
 }
 
 // MARK: - Actions

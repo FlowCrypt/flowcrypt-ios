@@ -67,13 +67,9 @@ final class SpinnerNode: ASDisplayNode {
     override init() {
         super.init()
         setViewBlock {
-            if #available(iOS 13.0, *) {
-                switch UITraitCollection.current.userInterfaceStyle {
-                case .dark: return UIActivityIndicatorView(style: .white)
-                default: return UIActivityIndicatorView(style: .gray)
-                }
-            } else {
-                return UIActivityIndicatorView(style: .gray)
+            switch UITraitCollection.current.userInterfaceStyle {
+            case .dark: return UIActivityIndicatorView(style: .white)
+            default: return UIActivityIndicatorView(style: .gray)
             }
         }
         style.preferredSize = CGSize(width: 20.0, height: 20.0)

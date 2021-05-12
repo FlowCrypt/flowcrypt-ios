@@ -41,7 +41,7 @@ extension Imap: MessageOperationsProvider {
 
     // MARK: - trash
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void> {
-        return Promise<Void> { [weak self] (resolve, reject) in
+        return Promise<Void> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             guard let identifier = message.identifier.intId else {
@@ -52,7 +52,7 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("trashPath"))
             }
 
-            try await(self.moveMsg(with: identifier, folder: folder, destFolder: trashPath))
+            try awaitPromise(self.moveMsg(with: identifier, folder: folder, destFolder: trashPath))
             resolve(())
         }
     }
@@ -69,7 +69,7 @@ extension Imap: MessageOperationsProvider {
 
     // MARK: - delete
     func delete(message: Message, form folderPath: String?) -> Promise<Void> {
-        return Promise<Void> { [weak self] (_, reject) in
+        return Promise<Void> { [weak self] _, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             guard let identifier = message.identifier.intId else {
@@ -80,8 +80,8 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("folderPath"))
             }
 
-            try await(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
-            try await(self.expungeMsgs(folder: folderPath))
+            try awaitPromise(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
+            try awaitPromise(self.expungeMsgs(folder: folderPath))
         }
     }
 
@@ -113,14 +113,14 @@ extension Imap: MessageOperationsProvider {
 
     // MARK: - archive
     func archiveMessage(message: Message, folderPath: String) -> Promise<Void> {
-        return Promise<Void> { [weak self] (_, reject) in
+        return Promise<Void> { [weak self] _, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             guard let identifier = message.identifier.intId else {
                 return reject(ImapError.missedMessageInfo("intId"))
             }
 
-            try await(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
+            try awaitPromise(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
         }
     }
 }

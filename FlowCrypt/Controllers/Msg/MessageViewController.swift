@@ -12,10 +12,14 @@ final class MessageViewController: TableNodeViewController {
         var bodyMessage: Data?
         var path = ""
     }
+    
+    enum Sections: Int, CaseIterable {
+        case main, attributes
+    }
 
     enum Parts: Int, CaseIterable {
-        case sender, subject, text, attachment
-
+        case sender, subject, text
+        
         var indexPath: IndexPath {
             IndexPath(row: rawValue, section: 0)
         }
@@ -47,41 +51,34 @@ final class MessageViewController: TableNodeViewController {
     private let onCompletion: MsgViewControllerCompletion?
 
     private var input: MessageViewController.Input?
-    private let decorator: MessageViewDecoratorType
-    private var dataService: DataServiceType & KeyDataServiceType
-    private let core: Core
-    private let messageProvider: MessageProvider
+    private let decorator: MessageViewDecorator
+    private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
-    private var message: NSAttributedString
-    private var attachments: [Attachment] = []
     private let trashFolderProvider: TrashFolderProviderType
+    private var fetchedMessage: FetchedMessage = .empty
 
     init(
-        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
+        messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
-        decorator: MessageViewDecoratorType = MessageViewDecorator(dateFormatter: DateFormatter()),
+        decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
-        core: Core = Core.shared,
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
-        self.messageProvider = messageProvider
+        self.messageService = messageService
         self.messageOperationsProvider = messageOperationsProvider
         self.input = input
         self.decorator = decorator
-        self.dataService = storage
-        self.core = core
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
-        self.message = decorator.attributed(
-            text: "loading_title".localized + "...",
-            color: .lightGray
-        )
+        
+        self.fetchedMessage = .empty
 
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -140,59 +137,21 @@ extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
         guard let input = input else { return }
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+       
         Promise { [weak self] in
-            self?.message = try await(self!.fetchMessage())
-        }.then(on: .main) { [weak self] in
+            guard let self = self else { return }
+            let promise = self.messageService.getMessage(with: input.objMessage, folder: input.path)
+            let message = try awaitPromise(promise)
+            self.fetchedMessage = message
+        }
+        .then(on: .main) { [weak self] in
             self?.hideSpinner()
-            self?.node.reloadRows(at: [Parts.text.indexPath, Parts.attachment.indexPath], with: .fade)
+            self?.node.reloadData()
             self?.asyncMarkAsReadIfNotAlreadyMarked()
-        }.catch(on: .main) { [weak self] error in
+        }
+        .catch(on: .main) { [weak self] error in
             self?.hideSpinner()
             self?.handleError(error, path: input.path)
-        }
-    }
-
-    private func fetchMessage() -> Promise<NSAttributedString> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self, let input = self.input else { return }
-
-            let rawMimeData: Data = try await(self.messageProvider.fetchMsg(message: input.objMessage, folder: input.path))
-            self.input?.bodyMessage = rawMimeData
-
-            guard let keys = self.dataService.keys else {
-                reject(CoreError.notReady("Could not fetch keys"))
-                return
-            }
-
-            let decrypted = try self.core.parseDecryptMsg(
-                encrypted: rawMimeData,
-                keys: keys,
-                msgPwd: nil,
-                isEmail: true
-            )
-            let decryptErrBlocks = decrypted.blocks.filter { $0.decryptErr != nil }
-
-            let attachments = decrypted.blocks
-                .filter { $0.isAttachmentBlock }
-                .map { Attachment(block: $0) }
-
-            self.attachments = attachments
-
-            let message: NSAttributedString
-            if let decryptErrBlock = decryptErrBlocks.first {
-                let rawMsg = decryptErrBlock.content
-                let err = decryptErrBlock.decryptErr?.error
-                message = self.decorator.attributed(
-                    text: "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)",
-                    color: .red
-                )
-            } else {
-                message = self.decorator.attributed(
-                    text: decrypted.text,
-                    color: decrypted.replyType == CoreRes.ReplyType.encrypted ? .main : UIColor.mainTextColor
-                )
-            }
-            resolve(message)
         }
     }
 
@@ -277,12 +236,12 @@ extension MessageViewController {
 
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
-            guard try await(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-            try await(self.messageOperationsProvider.delete(message: input.objMessage, form: input.path))
+            guard try awaitPromise(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
+            try awaitPromise(self.messageOperationsProvider.delete(message: input.objMessage, form: input.path))
             return true
         }
         .then(on: .main) { [weak self] didPerformOp in
-            guard didPerformOp else { self?.hideSpinner(); return  }
+            guard didPerformOp else { self?.hideSpinner(); return }
             self?.handleOpSuccess(operation: .permanentlyDelete)
         }.catch(on: .main) { [weak self] _ in
             self?.handleOpErr(operation: .permanentlyDelete)
@@ -333,9 +292,9 @@ extension MessageViewController {
         let replyInfo = ComposeViewController.Input.ReplyInfo(
             recipient: input.objMessage.sender,
             subject: input.objMessage.subject,
-            mime: input.bodyMessage,
+            mime: fetchedMessage.rawMimeData,
             sentDate: input.objMessage.date,
-            message: message.string
+            message: fetchedMessage.text
         )
 
         navigationController?.pushViewController(
@@ -362,11 +321,38 @@ extension MessageViewController: NavigationChildController {
 // MARK: - ASTableDelegate, ASTableDataSource
 
 extension MessageViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        return Parts.allCases.count
+    func numberOfSections(in tableNode: ASTableNode) -> Int {
+        Sections.allCases.count
     }
-
+    
+    func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        guard let section = Sections(rawValue: section) else {
+            return 0
+        }
+        switch section {
+        case .main:
+            return Parts.allCases.count
+        case .attributes:
+            return fetchedMessage.attachments.count
+        }
+    }
+    
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self, let section = Sections(rawValue: indexPath.section) else { return ASCellNode() }
+            
+            switch section {
+            case .main:
+                return self.mainSectionNode(for: indexPath.row)
+            case .attributes:
+                return self.attachmentNode(for: indexPath.row)
+            }
+        }
+    }
+    
+    private func mainSectionNode(for index: Int) -> ASCellNode {
+        guard let part = Parts(rawValue: index) else { return ASCellNode() }
+        
         let senderTitle = decorator.attributed(
             title: input?.objMessage.sender ?? "(unknown sender)"
         )
@@ -376,23 +362,24 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         let time = decorator.attributed(
             date: input?.objMessage.date
         )
-
-        return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
-            switch part {
-            case .sender:
-                return MessageSenderNode(senderTitle) { [weak self] in
-                    self?.handleReplyTap()
-                }
-            case .subject:
-                return MessageSubjectNode(subject, time: time)
-            case .text:
-                return MessageTextSubjectNode(self.message)
-            case .attachment:
-                return AttachmentsNode(attachments: self.attachments) { [weak self] in
-                    self?.handleAttachmentTap()
-                }
+        
+        switch part{
+        case .sender:
+            return MessageSenderNode(senderTitle) { [weak self] in
+                self?.handleReplyTap()
             }
+        case .subject:
+            return MessageSubjectNode(subject, time: time)
+        case .text:
+            let messageInput = self.decorator.attributedMessage(from: self.fetchedMessage)
+            return MessageTextSubjectNode(messageInput)
+        }
+    }
+    
+    private func attachmentNode(for index: Int) -> ASCellNode {
+        let attachment = fetchedMessage.attachments[index]
+        return AttachmentNode(input: .init(msgAttachment: attachment)) { [weak self] in
+            self?.handleAttachmentTap()
         }
     }
 }

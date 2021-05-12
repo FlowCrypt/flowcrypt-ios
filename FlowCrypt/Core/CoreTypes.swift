@@ -186,9 +186,3 @@ struct MsgBlock: Decodable {
         // case cryptupVerification; // not sure if Swift code will ever encounter this
     }
 }
-
-extension MsgBlock {
-    var isAttachmentBlock: Bool {
-        type == .plainAtt || type == .encryptedAtt || type == .decryptedAtt
-    }
-}

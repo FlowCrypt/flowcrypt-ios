@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
 import FlowCryptCommon
+import Foundation
 
 struct KeyDetails: Decodable {
     let `public`: String

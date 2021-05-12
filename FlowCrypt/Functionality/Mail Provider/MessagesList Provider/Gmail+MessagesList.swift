@@ -6,15 +6,15 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
-import GTMSessionFetcher
-import GoogleAPIClientForREST
 import FlowCryptCommon
+import GoogleAPIClientForREST
+import GTMSessionFetcher
+import Promises
 
 extension GmailService: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
-        Promise { (resolve, reject) in
-            let list = try await(fetchMessagesList(using: context))
+        Promise { resolve, reject in
+            let list = try awaitPromise(fetchMessagesList(using: context))
             let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchFullMessage(with:)) ?? []
 
             all(messageRequests)
@@ -50,8 +50,8 @@ extension GmailService {
             query.q = searchQuery
         }
 
-        return Promise { (resolve, reject) in
-            self.gmailService.executeQuery(query) { (_, data, error) in
+        return Promise { resolve, reject in
+            self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     reject(GmailServiceError.providerError(error))
                     return
@@ -69,8 +69,8 @@ extension GmailService {
     private func fetchFullMessage(with identifier: String) -> Promise<Message> {
         let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
         query.format = kGTLRGmailFormatFull
-        return Promise { (resolve, reject) in
-            self.gmailService.executeQuery(query) { (_, data, error) in
+        return Promise { resolve, reject in
+            self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     reject(GmailServiceError.providerError(error))
                     return

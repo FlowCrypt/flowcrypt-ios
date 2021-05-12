@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
 import FlowCryptUI
+import Foundation
 
 protocol ContactDetailDecoratorType {
     var title: String { get }

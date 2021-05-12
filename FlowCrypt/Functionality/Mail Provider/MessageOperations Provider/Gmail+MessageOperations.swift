@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import Promises
-import GTMSessionFetcher
 import GoogleAPIClientForREST
+import GTMSessionFetcher
+import Promises
 
 extension GmailService: MessageOperationsProvider {
     func markAsRead(message: Message, folder: String) -> Promise<Void> {
@@ -21,7 +21,7 @@ extension GmailService: MessageOperationsProvider {
     }
 
     func delete(message: Message, form folderPath: String?) -> Promise<Void> {
-        Promise { (resolve, reject) in
+        Promise { resolve, reject in
             guard let identifier = message.identifier.stringId else {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }
@@ -31,7 +31,7 @@ extension GmailService: MessageOperationsProvider {
                 identifier: identifier
             )
 
-            self.gmailService.executeQuery(query) { (_, _, error) in
+            self.gmailService.executeQuery(query) { _, _, error in
                 if let error = error {
                     reject(GmailServiceError.providerError(error))
                 }
@@ -50,7 +50,7 @@ extension GmailService: MessageOperationsProvider {
     }
 
     private func update(message: Message, labelsToAdd: [MessageLabelType] = [], labelsToRemove: [MessageLabelType] = []) -> Promise<Void> {
-        Promise { (resolve, reject) in
+        Promise { resolve, reject in
             guard let identifier = message.identifier.stringId else {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }
@@ -63,7 +63,7 @@ extension GmailService: MessageOperationsProvider {
                 identifier: identifier
             )
 
-            self.gmailService.executeQuery(query) { (_, _, error) in
+            self.gmailService.executeQuery(query) { _, _, error in
                 if let error = error {
                     reject(GmailServiceError.providerError(error))
                 }

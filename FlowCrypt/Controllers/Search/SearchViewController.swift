@@ -48,6 +48,7 @@ final class SearchViewController: TableNodeViewController {
         super.init(node: TableNode())
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -85,10 +86,7 @@ extension SearchViewController {
             $0.searchBar.setImage(#imageLiteral(resourceName: "search_icn").tinted(.white), for: .search, state: .normal)
             $0.searchBar.setImage(#imageLiteral(resourceName: "cancel.png").tinted(.white), for: .clear, state: .normal)
             $0.searchBar.delegate = self
-            $0.searchBar.textField?.textColor = .white
-            if #available(iOS 12, *) {
-                $0.searchBar.textField?.backgroundColor = .main
-            }
+            $0.searchBar.searchTextField.textColor = .white
         }
         update(searchController: searchController)
         definesPresentationContext = true
@@ -219,7 +217,7 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
     }
 
     private func update(searchController: UISearchController) {
-        searchController.searchBar.textField?
+        searchController.searchBar.searchTextField
             .attributedPlaceholder = "search_placeholder"
             .localized
             .attributed(
@@ -227,7 +225,7 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
                 color: UIColor.white.withAlphaComponent(0.7),
                 alignment: .left
             )
-        searchController.searchBar.textField?.textColor = .white
+        searchController.searchBar.searchTextField.textColor = .white
     }
 }
 
@@ -318,20 +316,6 @@ extension SearchViewController: UISearchResultsUpdating {
         case .startFetching, .idle:
             node.reloadData()
             node.bounces = false
-        }
-    }
-}
-
-// Support for iOS 12 and iOS 13 UISearchBar textField
-private extension UISearchBar {
-    var textField: UITextField? {
-        if #available(iOS 13.0, *) {
-            return searchTextField
-        } else {
-            return subviews.first?
-                .subviews
-                .compactMap { $0 as? UITextField }
-                .first
         }
     }
 }

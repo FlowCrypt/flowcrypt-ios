@@ -34,7 +34,7 @@ extension AttesterApi {
     func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
         Promise { [weak self] () -> PubkeySearchResult in
             guard let url = self?.urlPub(emailOrLongid: email) else { throw AppErr.nilSelf }
-            let res = try await(URLSession.shared.call(url, tolerateStatus: [404]))
+            let res = try awaitPromise(URLSession.shared.call(url, tolerateStatus: [404]))
 
             if res.status >= 200, res.status <= 299 {
                 return PubkeySearchResult(email: email, armored: res.data)
@@ -67,7 +67,7 @@ extension AttesterApi {
             headers: headers
         )
         return Promise { () -> String in
-            let res = try await(URLSession.shared.call(request))
+            let res = try awaitPromise(URLSession.shared.call(request))
             return res.data.toStr()
         }
     }
@@ -80,7 +80,7 @@ extension AttesterApi {
             body: pubkey.data()
         )
         return Promise { () -> String in
-            let res = try await(URLSession.shared.call(request))
+            let res = try awaitPromise(URLSession.shared.call(request))
             return res.data.toStr()
         }
     }
@@ -94,7 +94,7 @@ extension AttesterApi {
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
         return Promise { () -> Void in
-            _ = try await(URLSession.shared.call(request)) // will throw on non-200
+            _ = try awaitPromise(URLSession.shared.call(request)) // will throw on non-200
         }
     }
 }

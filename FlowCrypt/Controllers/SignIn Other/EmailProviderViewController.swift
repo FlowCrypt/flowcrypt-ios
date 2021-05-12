@@ -46,6 +46,7 @@ final class EmailProviderViewController: TableNodeViewController {
         node.dataSource = self
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -480,8 +481,8 @@ extension EmailProviderViewController {
         }
 
         Promise<Void> {
-            try await(self.imap.connectImap(session: imapSessionToCheck))
-            try await(self.imap.connectSmtp(session: smtpSession))
+            try awaitPromise(self.imap.connectImap(session: imapSessionToCheck))
+            try awaitPromise(self.imap.connectSmtp(session: smtpSession))
         }
         .then(on: .main) { [weak self] in
             self?.handleSuccessfulConnection()
@@ -511,7 +512,6 @@ extension EmailProviderViewController {
 
         return .success(user)
     }
-
 }
 
 // MARK: - Picker
