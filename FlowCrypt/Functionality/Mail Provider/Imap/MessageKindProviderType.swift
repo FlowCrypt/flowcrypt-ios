@@ -15,7 +15,7 @@ protocol MessageKindProviderType {
 
 struct MessageKindProvider: MessageKindProviderType {
     var messagesRequestKind: Int {
-        return MCOIMAPMessagesRequestKind.headers.rawValue
+        MCOIMAPMessagesRequestKind.headers.rawValue
             | MCOIMAPMessagesRequestKind.structure.rawValue
             | MCOIMAPMessagesRequestKind.internalDate.rawValue
             | MCOIMAPMessagesRequestKind.headerSubject.rawValue
@@ -24,6 +24,6 @@ struct MessageKindProvider: MessageKindProviderType {
     }
 
     var imapMessagesRequestKind: MCOIMAPMessagesRequestKind {
-        return MCOIMAPMessagesRequestKind(rawValue: messagesRequestKind)
+        MCOIMAPMessagesRequestKind(rawValue: messagesRequestKind)
     }
 }

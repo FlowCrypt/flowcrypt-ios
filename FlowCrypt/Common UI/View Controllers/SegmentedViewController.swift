@@ -87,7 +87,7 @@ final class SegmentedViewController: ASDKViewController<ASDisplayNode> {
         super.viewDidLayoutSubviews()
 
         let calculatedWidth = dataSource
-            .map { $0.title }
+            .map(\.title)
             .map { $0.size().width }
             .reduce(0, +)
         let collectionWidth = calculatedWidth
@@ -126,7 +126,7 @@ extension SegmentedViewController: ASCollectionDataSource, ASCollectionDelegate 
     }
 
     func collectionNode(_: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self, let item = self.dataSource[safe: indexPath.row] else { return ASCellNode() }
 
             return SetupTitleNode(

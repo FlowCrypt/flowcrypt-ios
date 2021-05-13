@@ -142,11 +142,11 @@ final class Core {
     // private
 
     private func call(_ endpoint: String, jsonDict: [String: Any?]?, data: Data?) throws -> RawRes {
-        return try call(endpoint, jsonData: try JSONSerialization.data(withJSONObject: jsonDict ?? [String: String]()), data: data ?? Data())
+        try call(endpoint, jsonData: try JSONSerialization.data(withJSONObject: jsonDict ?? [String: String]()), data: data ?? Data())
     }
 
     private func call(_ endpoint: String, jsonEncodable: Encodable, data: Data) throws -> RawRes {
-        return try call(endpoint, jsonData: try jsonEncodable.toJsonData(), data: data)
+        try call(endpoint, jsonData: try jsonEncodable.toJsonData(), data: data)
     }
 
     private func call(_ endpoint: String, jsonData: Data, data: Data) throws -> RawRes {

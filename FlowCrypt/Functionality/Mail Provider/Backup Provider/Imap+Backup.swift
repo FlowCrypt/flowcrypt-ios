@@ -22,10 +22,10 @@ enum BackupError: Error {
 
 extension Imap: BackupProvider {
     func searchBackups(for email: String) -> Promise<Data> {
-        return Promise { [weak self] () -> Data in
+        Promise { [weak self] () -> Data in
             guard let self = self else { throw AppErr.nilSelf }
             var folderPaths = try awaitPromise(self.fetchFolders())
-                .compactMap { $0.path }
+                .map(\.path)
 
             guard folderPaths.isNotEmpty else {
                 throw BackupError.missedFolders

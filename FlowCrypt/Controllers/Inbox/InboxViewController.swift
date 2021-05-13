@@ -270,7 +270,7 @@ extension InboxViewController {
 // MARK: - MsgListViewConroller
 extension InboxViewController: MsgListViewConroller {
     func msgListGetIndex(message: Message) -> Int? {
-        return messages.firstIndex(of: message)
+        messages.firstIndex(of: message)
     }
 
     func msgListRenderAsRemoved(message _: Message, at index: Int) {
@@ -342,7 +342,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 // MARK: - Cell Nodes
 extension InboxViewController {
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
@@ -433,7 +433,7 @@ extension InboxViewController {
 // MARK: - Pagination helpers
 extension InboxViewController {
     private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        return MailProvider.shared.currentMessagesListPagination(from: number, token: state.token)
+        MailProvider.shared.currentMessagesListPagination(from: number, token: state.token)
     }
 
     private func messagesToLoad() -> Int {

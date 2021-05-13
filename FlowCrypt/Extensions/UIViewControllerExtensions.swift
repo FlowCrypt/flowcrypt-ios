@@ -66,11 +66,11 @@ extension UIViewController {
 
 extension UIViewController {
     var safeAreaWindowInsets: UIEdgeInsets {
-        return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
+        UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
     }
 
     var statusBarHeight: CGFloat {
-        return UIApplication.shared.statusBarFrame.height
+        UIApplication.shared.statusBarFrame.height
     }
 
     private func errorToUserFriendlyString(error: Error, title: String) -> String? {
@@ -128,7 +128,7 @@ extension UIViewController {
     }
 
     func alertAndSkipOnRejection<T>(_ promise: Promise<T>, fail msg: String) -> Promise<Void> {
-        return Promise<Void> { [weak self] resolve, _ in
+        Promise<Void> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
             do {
                 _ = try awaitPromise(promise)

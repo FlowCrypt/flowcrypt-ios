@@ -35,6 +35,6 @@ extension KeyDetails: Equatable {
 extension Array where Element == KeyDetails {
     // concatenated private keys, joined with a newline
     var joinedPrivateKey: String {
-        compactMap { $0.private }.joined(separator: "\n")
+        compactMap(\.private).joined(separator: "\n")
     }
 }

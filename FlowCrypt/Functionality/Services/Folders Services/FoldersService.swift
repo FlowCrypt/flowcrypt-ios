@@ -71,7 +71,7 @@ final class FoldersService: FoldersServiceType {
     }
 
     private func saveTrashFolderPath(with folders: [FolderObject]) {
-        let paths = folders.compactMap { $0.path }
+        let paths = folders.map(\.path)
         guard let path = paths.firstCaseInsensitive("trash") ?? paths.firstCaseInsensitive("deleted") else {
             Logger.logWarning("Trash folder not found")
             return

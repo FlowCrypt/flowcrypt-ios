@@ -12,7 +12,7 @@ import Promises
 
 extension GmailService: MessageProvider {
     func fetchMsg(message: Message, folder: String) -> Promise<Data> {
-        return Promise { resolve, reject in
+        Promise { resolve, reject in
             guard let identifier = message.identifier.stringId else {
                 return reject(GmailServiceError.missedMessageInfo("id"))
             }

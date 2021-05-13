@@ -186,7 +186,7 @@ extension EncryptedStorage {
 
     func publicKey() -> String? {
         storage.objects(KeyInfo.self)
-            .map { $0.public }
+            .map(\.public)
             .first
     }
 }

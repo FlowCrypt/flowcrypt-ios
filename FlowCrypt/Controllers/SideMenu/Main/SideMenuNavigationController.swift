@@ -22,15 +22,15 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        .lightContent
     }
 
     override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-        return .slide
+        .slide
     }
 
     override var prefersStatusBarHidden: Bool {
-        return isStatusBarHidden
+        isStatusBarHidden
     }
 
     private enum Constants {

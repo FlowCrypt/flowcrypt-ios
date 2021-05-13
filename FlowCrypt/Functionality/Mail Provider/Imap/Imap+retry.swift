@@ -17,7 +17,7 @@ extension Imap {
         retry: @escaping () -> Promise<T>,
         start: DispatchTime = DispatchTime.now()
     ) -> (Error?, T?) -> Void {
-        return { [weak self] error, res in
+        { [weak self] error, res in
             self?.logger.logError("Error \(String(describing: error))")
 //            log(op, error: error, res: res, start: start)
             guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }

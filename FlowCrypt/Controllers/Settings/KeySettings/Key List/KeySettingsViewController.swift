@@ -72,7 +72,7 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self, let key = self.keys[safe: indexPath.row] else {
                 return ASCellNode()
             }

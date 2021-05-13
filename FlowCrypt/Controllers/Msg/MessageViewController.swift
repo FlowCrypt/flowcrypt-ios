@@ -290,7 +290,7 @@ extension MessageViewController {
     }
 
     private func awaitUserConfirmation(title: String) -> Promise<Bool> {
-        return Promise<Bool>(on: .main) { [weak self] resolve, _ in
+        Promise<Bool>(on: .main) { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
             let alert = UIAlertController(title: "Are you sure?", message: title, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in resolve(false) }))
@@ -363,7 +363,7 @@ extension MessageViewController: NavigationChildController {
 
 extension MessageViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        return Parts.allCases.count
+        Parts.allCases.count
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
