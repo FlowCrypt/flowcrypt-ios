@@ -24,7 +24,7 @@ def shared_pods
   pod 'SwiftyRSA'
   pod 'IDZSwiftCommonCrypto'
   pod 'mailcore2-ios'
-  pod 'BigInt', '~> 5.0'
+  pod 'BigInt', '~> 5.2'
 end
 
 def ui_pods
