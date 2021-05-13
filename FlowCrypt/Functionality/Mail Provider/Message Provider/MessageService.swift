@@ -20,7 +20,7 @@ struct FetchedMessage {
     enum MessageType {
         case error, encrypted, plain
     }
-    
+
     let rawMimeData: Data
     let text: String
     let attachments: [MessageAttachment]
@@ -42,7 +42,7 @@ final class MessageService {
     private let messageProvider: MessageProvider
     private let dataService: DataServiceType & KeyDataServiceType
     private let core: Core
-    
+
     init(
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         dataService: DataServiceType & KeyDataServiceType = DataService.shared,
@@ -52,7 +52,7 @@ final class MessageService {
         self.dataService = dataService
         self.core = core
     }
-    
+
     func getMessage(with input: Message, folder: String) -> Promise<FetchedMessage> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
@@ -82,7 +82,7 @@ final class MessageService {
 
             let messageType: FetchedMessage.MessageType
             let text: String
-            
+
             if let decryptErrBlock = decryptErrBlocks.first {
                 let rawMsg = decryptErrBlock.content
                 let err = decryptErrBlock.decryptErr?.error

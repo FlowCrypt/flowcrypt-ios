@@ -6,6 +6,7 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptUI
 import UIKit
 
 struct MessageViewDecorator {
@@ -29,7 +30,7 @@ struct MessageViewDecorator {
     func attributed(text: String?, color: UIColor) -> NSAttributedString {
         (text ?? "").attributed(.regular(17), color: color)
     }
-    
+
     func attributedMessage(from fetchedMessage: FetchedMessage) -> NSAttributedString {
         fetchedMessage.text.attributed()
     }

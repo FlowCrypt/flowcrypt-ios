@@ -27,7 +27,6 @@
 		32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA55C094E9745AA1FD210 /* Imap+msg.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
-		5084BEA6264ABB3100755E52 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
 		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
 		5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
 		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
@@ -2342,7 +2341,6 @@
 				D2CDC3D22402D4DA002B045F /* UIViewControllerExtensions.swift in Sources */,
 				D297990D2444A76D004A3E31 /* UserObject+Empty.swift in Sources */,
 				D2D27B79248A8694007346FA /* BigIntExtension.swift in Sources */,
-				5084BEA6264ABB3100755E52 /* AttachmentNode.swift in Sources */,
 				9F003D6D25EA8F3200EB38C0 /* UserAccountService.swift in Sources */,
 				D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */,
 				9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */,

@@ -12,14 +12,14 @@ final class MessageViewController: TableNodeViewController {
         var bodyMessage: Data?
         var path = ""
     }
-    
+
     enum Sections: Int, CaseIterable {
         case main, attributes
     }
 
     enum Parts: Int, CaseIterable {
         case sender, subject, text
-        
+
         var indexPath: IndexPath {
             IndexPath(row: rawValue, section: 0)
         }
@@ -135,7 +135,7 @@ extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
         guard let input = input else { return }
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
-       
+
         Promise { [weak self] in
             guard let self = self else { return }
             let promise = self.messageService.getMessage(with: input.objMessage, folder: input.path)
@@ -322,7 +322,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
         Sections.allCases.count
     }
-    
+
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         guard let section = Sections(rawValue: section) else {
             return 0
@@ -334,11 +334,11 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             return fetchedMessage.attachments.count
         }
     }
-    
+
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self, let section = Sections(rawValue: indexPath.section) else { return ASCellNode() }
-            
+
             switch section {
             case .main:
                 return self.mainSectionNode(for: indexPath.row)
@@ -347,10 +347,10 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             }
         }
     }
-    
+
     private func mainSectionNode(for index: Int) -> ASCellNode {
         guard let part = Parts(rawValue: index) else { return ASCellNode() }
-        
+
         let senderTitle = decorator.attributed(
             title: input?.objMessage.sender ?? "(unknown sender)"
         )
@@ -360,8 +360,8 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         let time = decorator.attributed(
             date: input?.objMessage.date
         )
-        
-        switch part{
+
+        switch part {
         case .sender:
             return MessageSenderNode(senderTitle) { [weak self] in
                 self?.handleReplyTap()
@@ -373,11 +373,12 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             return MessageTextSubjectNode(messageInput)
         }
     }
-    
+
     private func attachmentNode(for index: Int) -> ASCellNode {
-        let attachment = fetchedMessage.attachments[index]
-        return AttachmentNode(input: .init(msgAttachment: attachment)) { [weak self] in
-            self?.handleAttachmentTap()
-        }
+        AttachmentNode(
+            input: .init(
+                msgAttachment: fetchedMessage.attachments[index]
+            )
+        )
     }
 }
