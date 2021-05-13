@@ -31,7 +31,12 @@ blocks:
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
       jobs:
-        - name: FlowCryptTests
+        - name: 'FlowCryptTests'
           commands:
             - bundle exec fastlane do_everything
+
+        - name: 'FlowCryptTests(with email server)'
+          commands:
+            # Run an email server
+            - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd -
 
