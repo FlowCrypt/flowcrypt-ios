@@ -53,7 +53,7 @@ struct Message: Hashable {
 
 extension Message: Equatable {
     static func == (lhs: Message, rhs: Message) -> Bool {
-        return lhs.identifier == rhs.identifier
+        lhs.identifier == rhs.identifier
     }
 }
 

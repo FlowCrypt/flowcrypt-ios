@@ -256,7 +256,7 @@ extension ComposeViewController {
                 pubkeys: allRecipientPubs + [myPubKey],
                 subject: subject,
                 message: text,
-                to: recipients.map { $0.email }
+                to: recipients.map(\.email)
             )
 
             try awaitPromise(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
@@ -270,14 +270,14 @@ extension ComposeViewController {
             ($0.email, contactsService.retrievePubKey(for: $0.email))
         }
 
-        let emailsWithoutPubKeys = pubKeys.filter { $0.1 == nil }.map { $0.0 }
+        let emailsWithoutPubKeys = pubKeys.filter { $0.1 == nil }.map(\.0)
 
         guard emailsWithoutPubKeys.isEmpty else {
             showNoPubKeyAlert(for: emailsWithoutPubKeys)
             return nil
         }
 
-        return pubKeys.compactMap { $0.1 }
+        return pubKeys.compactMap(\.1)
     }
 
     private func showNoPubKeyAlert(for emails: [String]) {
@@ -323,7 +323,7 @@ extension ComposeViewController {
     }
 
     private func isInputValid() -> Bool {
-        let emails = recipients.map { $0.email }
+        let emails = recipients.map(\.email)
         let hasContent = emails.filter { $0.hasContent }
 
         guard emails.count == hasContent.count else {

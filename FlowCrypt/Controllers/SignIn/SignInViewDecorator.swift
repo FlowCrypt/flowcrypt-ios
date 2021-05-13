@@ -49,7 +49,7 @@ extension SigninButtonNode.Input {
 enum UserSignInType {
     case gmail, outlook, other
 
-    fileprivate var title: String {
+    private var title: String {
         switch self {
         case .gmail: return "sign_in_gmail".localized
         case .outlook: return "sign_in_outlook".localized

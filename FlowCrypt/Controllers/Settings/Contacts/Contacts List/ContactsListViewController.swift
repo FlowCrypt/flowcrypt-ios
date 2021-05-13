@@ -54,7 +54,7 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self else { return ASCellNode() }
             return ContactCellNode(
                 input: self.decorator.contactNodeInput(with: self.contacts[indexPath.row]),

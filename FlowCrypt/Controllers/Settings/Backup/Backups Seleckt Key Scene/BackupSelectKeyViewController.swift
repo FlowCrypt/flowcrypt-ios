@@ -83,7 +83,7 @@ extension BackupSelectKeyViewController {
         showSpinner()
         let backupsToSave = backupsContext
             .filter { $0.1 == true }
-            .map { $0.0 }
+            .map(\.0)
 
         backupService.backupToInbox(keys: backupsToSave, for: userId)
             .then(on: .main) { [weak self] in
@@ -96,7 +96,7 @@ extension BackupSelectKeyViewController {
     }
 
     private func backupAsFile() {
-        backupService.backupAsFile(keys: backupsContext.map { $0.0 }, for: self)
+        backupService.backupAsFile(keys: backupsContext.map(\.0), for: self)
     }
 }
 
@@ -107,7 +107,7 @@ extension BackupSelectKeyViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self else { return ASCellNode() }
 
             return CheckBoxTextNode(

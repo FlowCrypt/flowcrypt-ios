@@ -122,7 +122,7 @@ extension GoogleUserService {
         OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
-            scopes: GeneralConstants.Gmail.currentScope.map { $0.value } + [OIDScopeEmail],
+            scopes: GeneralConstants.Gmail.currentScope.map(\.value) + [OIDScopeEmail],
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
             additionalParameters: nil

@@ -47,7 +47,7 @@ extension Contact {
         self.pubkeyLastChecked = contactObject.pubkeyLastChecked
         self.pubkeyExpiresOn = contactObject.pubkeyExpiresOn
         self.lastUsed = contactObject.lastUsed
-        self.longids = contactObject.longids.map { $0.value }
+        self.longids = contactObject.longids.map(\.value)
         self.fingerprints = contactObject.fingerprints.split(separator: ",").map(String.init)
         self.algo = contactObject.keyAlgo.flatMap(KeyAlgo.init)
         self.pubkeyCreated = contactObject.pubkeyCreated

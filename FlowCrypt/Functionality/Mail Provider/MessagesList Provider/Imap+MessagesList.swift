@@ -40,7 +40,7 @@ extension Imap: MessagesListProvider {
     }
 
     private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
-        return Promise { [weak self] resolve, reject in
+        Promise { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
 
             self.imapSess?

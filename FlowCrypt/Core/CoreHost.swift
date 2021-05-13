@@ -45,7 +45,7 @@ final class CoreHost: NSObject, CoreHostExports {
     // aes256 msglen:1300, original 11ms, now 7ms
     // performance untested for larger messages
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8] {
-        return Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
+        Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
     }
 
     // rsa verify is used by OpenPGP.js during decryption as well to figure out our own key preferences

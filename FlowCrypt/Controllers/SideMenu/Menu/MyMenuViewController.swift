@@ -121,7 +121,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self, let section = Sections(rawValue: indexPath.section) else {
                 return ASCellNode()
             }
@@ -153,7 +153,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return section == Sections.main.rawValue ? 1 : 0
+        section == Sections.main.rawValue ? 1 : 0
     }
 }
 
