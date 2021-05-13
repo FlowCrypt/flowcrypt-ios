@@ -79,11 +79,11 @@ final class ImportKeyViewController: TableNodeViewController {
 
 extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        return Parts.allCases.count
+        Parts.allCases.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:

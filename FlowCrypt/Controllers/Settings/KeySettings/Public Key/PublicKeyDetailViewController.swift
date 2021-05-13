@@ -38,7 +38,7 @@ extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt _: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             SetupTitleNode(
                 SetupTitleNode.Input(
                     title: (self?.text ?? "").attributed(.regular(16)),

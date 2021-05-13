@@ -21,7 +21,7 @@ private let logger = Logger.nested("URLSession")
 
 extension URLSession {
     func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
-        return Promise { resolve, reject in
+        Promise { resolve, reject in
             let trace = Trace(id: "call")
             self.dataTask(with: urlRequest) { data, response, error in
                 let res = response as? HTTPURLResponse
@@ -45,7 +45,7 @@ extension URLSession {
     }
 
     func call(_ urlStr: String, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
-        return Promise { () -> HttpRes in
+        Promise { () -> HttpRes in
             let url = URL(string: urlStr)
             guard url != nil else {
                 throw HttpErr(status: -2, data: Data(), error: AppErr.unexpected("Invalid url: \(urlStr)"))

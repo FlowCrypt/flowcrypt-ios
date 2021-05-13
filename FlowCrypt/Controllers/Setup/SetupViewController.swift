@@ -347,7 +347,7 @@ extension SetupViewController {
     }
 
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
-        return Promise {
+        Promise {
             let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
             guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
             let confirmPassPhrase = try awaitPromise(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
@@ -422,7 +422,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
+        { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:

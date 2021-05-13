@@ -72,8 +72,6 @@ final class MessageViewController: TableNodeViewController {
         self.decorator = decorator
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
-        
-        self.fetchedMessage = .empty
 
         super.init(node: TableNode())
     }
@@ -249,7 +247,7 @@ extension MessageViewController {
     }
 
     private func awaitUserConfirmation(title: String) -> Promise<Bool> {
-        return Promise<Bool>(on: .main) { [weak self] resolve, _ in
+        Promise<Bool>(on: .main) { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
             let alert = UIAlertController(title: "Are you sure?", message: title, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in resolve(false) }))
