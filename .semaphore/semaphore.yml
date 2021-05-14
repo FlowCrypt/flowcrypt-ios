@@ -37,6 +37,10 @@ blocks:
 
         - name: 'FlowCryptTests(with email server)'
           commands:
+            # Install Docker
+            - brew install --cask docker
+            # Install Docker-compose
+            - brew install docker-compose
             # Run an email server
             - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd -
 
