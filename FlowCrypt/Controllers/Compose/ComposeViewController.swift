@@ -324,7 +324,7 @@ extension ComposeViewController {
 
     private func isInputValid() -> Bool {
         let emails = recipients.map(\.email)
-        let hasContent = emails.filter(\.hasContent)
+        let hasContent = emails.filter { $0.hasContent }
 
         guard emails.count == hasContent.count else {
             showAlert(message: "compose_enter_recipient".localized)
@@ -468,7 +468,7 @@ extension ComposeViewController {
         .onShouldReturn { [weak self] textField -> Bool in
             self?.shouldReturn(with: textField) ?? true
         }
-        .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
+        .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
             self?.shouldChange(with: textField, and: character) ?? true
         }
         .then {
@@ -584,7 +584,7 @@ extension ComposeViewController {
         guard textField.text == "" else { return }
 
         let selectedRecipients = recipients
-            .filter(\.state.isSelected)
+            .filter { $0.state.isSelected }
 
         guard selectedRecipients.isEmpty else {
             // remove selected recipients

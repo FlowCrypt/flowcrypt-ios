@@ -24,7 +24,7 @@ extension GmailService: BackupProvider {
             Logger.logVerbose("[GmailService] searching done, found \(backupMessages.count) backup messages")
             let uniqueMessages = Set(backupMessages)
             let attachments = uniqueMessages
-                .compactMap { message -> [(String, String)]? in
+                .compactMap { (message) -> [(String, String)]? in
                     Logger.logVerbose("[GmailService] processing backup '\(message.subject ?? "-")' with \(message.attachmentIds.count) attachments")
                     guard let identifier = message.identifier.stringId else {
                         Logger.logVerbose("[GmailService] skipping this last backup?")
