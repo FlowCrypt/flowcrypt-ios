@@ -16,7 +16,7 @@ public extension Data {
         static let bitsInByte = 8
     }
 
-    func zBase32EncodedString() -> String {
+    func zBase32EncodedBytes() -> [UInt8] {
         
         let bytes = [UInt8](self)
         let capacity = (bytes.count / Constants.bitsInZBase32Character) * Constants.bitsInZBase32Character
@@ -63,7 +63,7 @@ public extension Data {
             }
         }
 
-        return String(decoding: encoded, as: Unicode.UTF8.self)
+        return encoded
     }
 
     private func encode(firstByte: UInt8) -> UInt8 {

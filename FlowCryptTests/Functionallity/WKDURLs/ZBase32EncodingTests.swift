@@ -14,6 +14,17 @@ class ZBase32EncodingTests: XCTestCase {
         let inputString = "example@email.com"
         let encodedString = "cihgn5mopt1wy3mpcfwsamudp7so"
 
-        XCTAssert(inputString.data().zBase32EncodedString() == encodedString)
+        XCTAssert(
+            String(decoding: inputString.data().zBase32EncodedBytes(), as: Unicode.UTF8.self) == encodedString
+        )
+    }
+    
+    func testEncryptedStringEncoding() throws {
+        let inputString = "example@email.com"
+        let encodedString = "8dkp15twcw7feu1i8em784qtw91y3cs7"
+        print(String(decoding: inputString.data().SHA1.zBase32EncodedBytes(), as: Unicode.UTF8.self))
+        XCTAssert(
+            String(decoding: inputString.data().SHA1.zBase32EncodedBytes(), as: Unicode.UTF8.self) == encodedString
+        )
     }
 }
