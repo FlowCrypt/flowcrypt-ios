@@ -214,7 +214,7 @@ extension InboxViewController {
         // insert new messages
         let indexesToInsert = messageContext.messages
             .enumerated()
-            .map { (index, _) -> Int in
+            .map { index, _ -> Int in
                 let indexInTableView = index + count
                 return indexInTableView
             }
