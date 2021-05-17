@@ -42,5 +42,8 @@ blocks:
             # Install Docker-compose
             - brew install docker-compose
             # Run an email server
+            - brew install --cask docker-toolbox
+            - docker-machine create --driver "virtualbox" box
+            - docker-machine start box
             - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd -
 
