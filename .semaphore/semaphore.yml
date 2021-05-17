@@ -31,14 +31,14 @@ blocks:
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
       jobs:
-        - name: 'FlowCryptTests'
-          commands:
-            - bundle exec fastlane do_everything
+        #- name: 'FlowCryptTests'
+        #  commands:
+        #    - bundle exec fastlane do_everything
 
         - name: 'FlowCryptTests(with email server)'
           commands:
             # Install Docker
-            - brew install --cask docker
+            # - brew install --cask docker
             # Install Docker-compose
             - brew install docker-compose
             # Run an email server
