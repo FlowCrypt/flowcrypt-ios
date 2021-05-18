@@ -10,7 +10,7 @@ import XCTest
 
 class ZBase32EncodingTests: XCTestCase {
 
-    func testStringEncoding() throws {
+    func test_string_encoding() throws {
         let inputString = "example@email.com"
         let encodedString = "cihgn5mopt1wy3mpcfwsamudp7so"
 
@@ -19,10 +19,10 @@ class ZBase32EncodingTests: XCTestCase {
         )
     }
     
-    func testEncryptedStringEncoding() throws {
+    func test_hashed_string_encoding() throws {
         let inputString = "example@email.com"
         let encodedString = "8dkp15twcw7feu1i8em784qtw91y3cs7"
-        print(String(decoding: inputString.data().SHA1.zBase32EncodedBytes(), as: Unicode.UTF8.self))
+        
         XCTAssert(
             String(decoding: inputString.data().SHA1.zBase32EncodedBytes(), as: Unicode.UTF8.self) == encodedString
         )
