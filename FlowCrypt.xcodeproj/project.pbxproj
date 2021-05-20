@@ -11,6 +11,12 @@
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		21CE25E62650070300ADFF4B /* WKDURLsConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CE25E52650070300ADFF4B /* WKDURLsConstructor.swift */; };
+		21EA3B2326565B5D00691848 /* DomainRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B2226565B5D00691848 /* DomainRulesTests.swift */; };
+		21EA3B2F26565B7400691848 /* domain_rules.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B2E26565B7400691848 /* domain_rules.json */; };
+		21EA3B3626565B8100691848 /* domain_rules_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B3526565B8100691848 /* domain_rules_empty.json */; };
+		21EA3B3D26565B9800691848 /* domain_rules_partly_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B3C26565B9800691848 /* domain_rules_partly_empty.json */; };
+		21EA3B532656611C00691848 /* OrganisationalRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* OrganisationalRule.swift */; };
+		21EA3B592656611D00691848 /* OrganisationalRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* OrganisationalRule.swift */; };
 		21F836A02652A19A00B2448C /* WKDURLsConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CE25E52650070300ADFF4B /* WKDURLsConstructor.swift */; };
 		21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */; };
 		21F836CC2652A38700B2448C /* ZBase32EncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */; };
@@ -351,6 +357,11 @@
 		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
 		11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		21CE25E52650070300ADFF4B /* WKDURLsConstructor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructor.swift; sourceTree = "<group>"; };
+		21EA3B15265647C400691848 /* OrganisationalRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRule.swift; sourceTree = "<group>"; };
+		21EA3B2226565B5D00691848 /* DomainRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainRulesTests.swift; sourceTree = "<group>"; };
+		21EA3B2E26565B7400691848 /* domain_rules.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = domain_rules.json; sourceTree = "<group>"; };
+		21EA3B3526565B8100691848 /* domain_rules_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = domain_rules_empty.json; sourceTree = "<group>"; };
+		21EA3B3C26565B9800691848 /* domain_rules_partly_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = domain_rules_partly_empty.json; sourceTree = "<group>"; };
 		21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataExntensions+ZBase32Encoding.swift"; sourceTree = "<group>"; };
 		21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZBase32EncodingTests.swift; sourceTree = "<group>"; };
 		21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructorTests.swift; sourceTree = "<group>"; };
@@ -697,6 +708,7 @@
 				9F1B49E02624E19D00420472 /* Realm Models */,
 				9F0C3C132316E69300299985 /* User.swift */,
 				9F9AAFFC2383E216000A00F1 /* Document.swift */,
+				21EA3B15265647C400691848 /* OrganisationalRule.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -727,6 +739,17 @@
 				21CE25E52650070300ADFF4B /* WKDURLsConstructor.swift */,
 			);
 			path = WKDURLs;
+			sourceTree = "<group>";
+		};
+		21EA3B2126565B4100691848 /* Models Parsing */ = {
+			isa = PBXGroup;
+			children = (
+				21EA3B2226565B5D00691848 /* DomainRulesTests.swift */,
+				21EA3B2E26565B7400691848 /* domain_rules.json */,
+				21EA3B3C26565B9800691848 /* domain_rules_partly_empty.json */,
+				21EA3B3526565B8100691848 /* domain_rules_empty.json */,
+			);
+			path = "Models Parsing";
 			sourceTree = "<group>";
 		};
 		21F836A62652A1B700B2448C /* Functionallity */ = {
@@ -1240,6 +1263,7 @@
 		A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */ = {
 			isa = PBXGroup;
 			children = (
+				21EA3B2126565B4100691848 /* Models Parsing */,
 				21F836A62652A1B700B2448C /* Functionallity */,
 				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
@@ -1920,6 +1944,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D24B8FEC24B79BF600521D74 /* flowcrypt-ios-prod.js.txt in Resources */,
+				21EA3B3D26565B9800691848 /* domain_rules_partly_empty.json in Resources */,
+				21EA3B2F26565B7400691848 /* domain_rules.json in Resources */,
+				21EA3B3626565B8100691848 /* domain_rules_empty.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2248,9 +2275,11 @@
 				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
 				9F1D5769263B540100477938 /* Logger.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
+				21EA3B2326565B5D00691848 /* DomainRulesTests.swift in Sources */,
 				21F836CC2652A38700B2448C /* ZBase32EncodingTests.swift in Sources */,
 				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
 				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
+				21EA3B532656611C00691848 /* OrganisationalRule.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				D212D36124C1AC0D00035991 /* KeyDetails.swift in Sources */,
 				9F6EE18C25A8AF970059BA51 /* GeneralConstants.swift in Sources */,
@@ -2419,6 +2448,7 @@
 				9F5C2A7E257E64D500DE9B4B /* MessageOperationsProvider.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
 				32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */,
+				21EA3B592656611D00691848 /* OrganisationalRule.swift in Sources */,
 				32DCAD9F3A6B6101B78F0918 /* AttesterApi.swift in Sources */,
 				32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */,
 				5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */,
