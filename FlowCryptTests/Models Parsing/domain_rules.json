@@ -1,0 +1,8 @@
+{
+  "flags": ["NO_PRV_BACKUP", "NO_KEY_MANAGER_PUB_LOOKUP"],
+  "custom_keyserver_url": "https://hello",
+  "key_manager_url": "https://there",
+  "disallow_attester_search_for_domains": [],
+  "enforce_keygen_algo": "curve25519",
+  "enforce_keygen_expire_months": 12
+}
