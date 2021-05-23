@@ -53,7 +53,7 @@ blocks:
             # Install docker toolbox
             - brew install --cask docker-toolbox
             # Start virtualbox
-            - docker-machine create -d virtualbox --virtualbox-no-vtx-check default
+            - docker-machine create -d virtualbox --virtualbox-no-vtx-check default || true
             # Start Docker
             - docker-machine start default
             # Run mail server
