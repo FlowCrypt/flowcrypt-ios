@@ -47,7 +47,7 @@ blocks:
             - brew install docker-machine docker
             # docker-machine relies on VirtualBox
             # install Virtualbox
-            - brew cask install virtualbox
+            - brew install --cask virtualbox
             # Install telnet
             - brew install telnet
             # Install docker toolbox
