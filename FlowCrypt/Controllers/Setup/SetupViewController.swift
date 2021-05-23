@@ -14,7 +14,7 @@ final class SetupViewController: TableNodeViewController {
 
     private let router: GlobalRouterType
     private let storage: DataServiceType & KeyDataServiceType
-    private let decorator: SetupViewDecoratorType
+    private let decorator: SetupViewDecorator
     private let core: Core
     private let keyMethods: KeyMethodsType
     private let attester: AttesterApiType
@@ -39,8 +39,6 @@ final class SetupViewController: TableNodeViewController {
         case searchingBackups
         /// encrypted keys found
         case fetchedEncrypted([KeyDetails])
-        /// creating new key
-        case createKey
         /// error state
         case error(SetupError)
 
@@ -61,7 +59,7 @@ final class SetupViewController: TableNodeViewController {
     init(
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
-        decorator: SetupViewDecoratorType = SetupViewDecorator(),
+        decorator: SetupViewDecorator = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
         attester: AttesterApiType = AttesterApi(),
@@ -160,9 +158,6 @@ extension SetupViewController {
         case let .error(error):
             hideSpinner()
             handleError(with: error)
-        case .createKey:
-            hideSpinner()
-            handleCreateKey()
         }
     }
 
@@ -196,10 +191,6 @@ extension SetupViewController {
             .compactMap { $0 as? TextFieldCellNode }
             .first?
             .becomeFirstResponder()
-    }
-
-    private func handleCreateKey() {
-        reloadNodes()
     }
 
     private func reloadNodes() {
@@ -272,14 +263,14 @@ extension SetupViewController {
             title: "setup_action_import".localized,
             style: .default
         ) { [weak self] _ in
-            self?.handleImportKey()
+            self?.proceedToKeyImport()
         }
 
         let createNewPrivateKeyAction = UIAlertAction(
             title: "setup_action_create_new".localized,
             style: .default
         ) { [weak self] _ in
-            self?.state = .createKey
+            self?.proceedToCreatingNewKey()
         }
 
         alert.addAction(importAction)
@@ -309,71 +300,28 @@ extension SetupViewController {
         moveToMainFlow()
     }
 
-    private func setupAccountWithGeneratedKey(with passPhrase: String) {
-        Promise { [weak self] in
-            guard let self = self else { return }
-            let userId = try self.getUserId()
-            try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
-            let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
-            try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
-
-            let updateKey = self.attester.updateKey(
-                email: userId.email,
-                pubkey: encryptedPrv.key.public,
-                token: self.storage.token
-            )
-            try awaitPromise(self.alertAndSkipOnRejection(
-                updateKey,
-                fail: "Failed to submit Public Key")
-            )
-            let testWelcome = self.attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
-            try awaitPromise(self.alertAndSkipOnRejection(
-                testWelcome,
-                fail: "Failed to send you welcome email")
-            )
-        }
-        .then(on: .main) { [weak self] in
-            self?.moveToMainFlow()
-        }
-        .catch(on: .main) { [weak self] error in
-            guard let self = self else { return }
-            let isErrorHandled = self.handleCommon(error: error)
-
-            if !isErrorHandled {
-                self.showAlert(error: error, message: "Could not finish setup, please try again")
-            }
-        }
-    }
-
-    private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
-        Promise {
-            let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
-            guard strength.word.pass else { throw AppErr.user("Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.") }
-            let confirmPassPhrase = try awaitPromise(self.awaitUserPassPhraseEntry(title: "Confirm Pass Phrase"))
-            guard confirmPassPhrase != nil else { throw AppErr.silentAbort }
-            guard confirmPassPhrase == passPhrase else { throw AppErr.user("Pass phrases don't match") }
-        }
-    }
-
-    private func getUserId() throws -> UserId {
-        guard let email = DataService.shared.email, !email.isEmpty else { throw AppErr.unexpected("Missing user email") }
-        guard let name = DataService.shared.email, !name.isEmpty else { throw AppErr.unexpected("Missing user name") }
-        return UserId(email: email, name: name)
-    }
-
     private func storePrvs(prvs: [KeyDetails], passPhrase: String, source: KeySource) throws {
         storage.addKeys(keyDetails: prvs, passPhrase: passPhrase, source: source)
+    }
+}
+
+// MARK: - Navigation
+
+extension SetupViewController {
+    private func proceedToKeyImport() {
+        hideSpinner()
+        let viewController = ImportKeyViewController()
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func proceedToCreatingNewKey() {
+        hideSpinner()
     }
 }
 
 // MARK: - Events
 
 extension SetupViewController {
-    private func handleImportKey() {
-        let viewController = ImportKeyViewController()
-        navigationController?.pushViewController(viewController, animated: true)
-    }
 
     private func handleButtonPressed() {
         // ignore if we are still fetching keys
@@ -395,8 +343,6 @@ extension SetupViewController {
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             switch self.state {
-            case .createKey:
-                self.setupAccountWithGeneratedKey(with: passPhrase)
             case let .fetchedEncrypted(backups):
                 self.recoverAccount(with: backups, and: passPhrase)
             default:
@@ -429,7 +375,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 return SetupTitleNode(
                     SetupTitleNode.Input(
                         title: self.decorator.title,
-                        insets: self.decorator.titleInset,
+                        insets: self.decorator.insets.titleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
@@ -437,7 +383,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 return SetupTitleNode(
                     SetupTitleNode.Input(
                         title: self.decorator.subtitle(for: self.state),
-                        insets: self.decorator.subTitleInset,
+                        insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
@@ -456,8 +402,8 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 }
             case .action:
                 return ButtonCellNode(
-                    title: self.decorator.buttonTitle(for: self.state),
-                    insets: self.decorator.buttonInsets
+                    title: self.decorator.buttonTitle,
+                    insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
                     self?.handleButtonPressed()
                 }
@@ -467,13 +413,13 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .optionalAction:
                 return ButtonCellNode(
                     title: self.decorator.useAnotherAccountTitle,
-                    insets: self.decorator.optionalButtonInsets,
+                    insets: self.decorator.insets.optionalButtonInsets,
                     color: .white
                 ) { [weak self] in
                     self?.handleOtherAccount()
                 }
             case .divider:
-                return DividerCellNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
+                return DividerCellNode(inset: self.decorator.insets.dividerInsets)
             }
         }
     }

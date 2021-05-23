@@ -123,6 +123,8 @@
 		9FA0157A26565B7800CBBA05 /* KeyMethodsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA0157926565B7800CBBA05 /* KeyMethodsTest.swift */; };
 		9FA0158026565B9D00CBBA05 /* KeyMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F953E08238310D500AEB98B /* KeyMethods.swift */; };
 		9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA1988F253C841F008C9CF2 /* TableViewController.swift */; };
+		9FA405C7265AEBA50084D133 /* CreatePrivateKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA405C6265AEBA40084D133 /* CreatePrivateKeyViewController.swift */; };
+		9FA405CF265AEBC10084D133 /* CreatePrivateKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA405CE265AEBC10084D133 /* CreatePrivateKeyDecorator.swift */; };
 		9FA9C83C264C2D75005A9670 /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA9C83B264C2D75005A9670 /* MessageService.swift */; };
 		9FB22CD625715CA10026EE64 /* BackupServiceErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CD525715CA10026EE64 /* BackupServiceErrorHandler.swift */; };
 		9FB22CDD25715CF50026EE64 /* GmailServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CDC25715CF50026EE64 /* GmailServiceError.swift */; };
@@ -498,6 +500,8 @@
 		9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContext.swift; sourceTree = "<group>"; };
 		9FA0157926565B7800CBBA05 /* KeyMethodsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMethodsTest.swift; sourceTree = "<group>"; };
 		9FA1988F253C841F008C9CF2 /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
+		9FA405C6265AEBA40084D133 /* CreatePrivateKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePrivateKeyViewController.swift; sourceTree = "<group>"; };
+		9FA405CE265AEBC10084D133 /* CreatePrivateKeyDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePrivateKeyDecorator.swift; sourceTree = "<group>"; };
 		9FA9C83B264C2D75005A9670 /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
 		9FB22CD525715CA10026EE64 /* BackupServiceErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceErrorHandler.swift; sourceTree = "<group>"; };
 		9FB22CDC25715CF50026EE64 /* GmailServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GmailServiceError.swift; sourceTree = "<group>"; };
@@ -955,13 +959,13 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		9F268892237DC55E00428A94 /* ImportKey */ = {
+		9F268892237DC55E00428A94 /* Key */ = {
 			isa = PBXGroup;
 			children = (
 				D29A0000240C133E00C1387D /* Import Key */,
 				D29AFFFF240C133800C1387D /* Enter Pass Phrase */,
 			);
-			path = ImportKey;
+			path = Key;
 			sourceTree = "<group>";
 		};
 		9F2A939F23363D2400014A92 /* Main */ = {
@@ -1108,6 +1112,15 @@
 				9FA9C83B264C2D75005A9670 /* MessageService.swift */,
 			);
 			path = "Message Provider";
+			sourceTree = "<group>";
+		};
+		9FA405CD265AEBA90084D133 /* Create Private Key */ = {
+			isa = PBXGroup;
+			children = (
+				9FA405C6265AEBA40084D133 /* CreatePrivateKeyViewController.swift */,
+				9FA405CE265AEBC10084D133 /* CreatePrivateKeyDecorator.swift */,
+			);
+			path = "Create Private Key";
 			sourceTree = "<group>";
 		};
 		9FB22CB425715C860026EE64 /* Error Handling */ = {
@@ -1353,7 +1366,7 @@
 				D2FF6969243115FE007182F0 /* SignIn Other */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
 				C192421D1EC48B5600C3D251 /* Setup */,
-				9F268892237DC55E00428A94 /* ImportKey */,
+				9F268892237DC55E00428A94 /* Key */,
 				D29AFFF12409301300C1387D /* Bootstrap */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				04B4728F1ECE29F600B8266F /* Compose */,
@@ -1361,6 +1374,7 @@
 				D29AFFF02409300600C1387D /* Search */,
 				5A39F42E239EC32B001F4607 /* Settings */,
 				D29A0001240C137700C1387D /* MessageList Extension */,
+				9FA405CD265AEBA90084D133 /* Create Private Key */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2365,6 +2379,7 @@
 				D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */,
 				9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
+				9FA405CF265AEBC10084D133 /* CreatePrivateKeyDecorator.swift in Sources */,
 				9FB22CDD25715CF50026EE64 /* GmailServiceError.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
@@ -2432,6 +2447,7 @@
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				9F82D352256D74FA0069A702 /* InboxViewControllerContainer.swift in Sources */,
 				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
+				9FA405C7265AEBA50084D133 /* CreatePrivateKeyViewController.swift in Sources */,
 				9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
