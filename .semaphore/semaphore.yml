@@ -53,6 +53,9 @@ blocks:
             # Install docker toolbox
             - brew install --cask docker-toolbox
             - docker-machine create --driver virtualbox default
+
+            - docker-machine create -d virtualbox --virtualbox-no-vtx-check default
+
             - docker-machine start default
             - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd -
 
