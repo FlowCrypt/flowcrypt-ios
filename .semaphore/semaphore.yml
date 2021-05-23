@@ -52,11 +52,11 @@ blocks:
             - brew install telnet
             # Install docker toolbox
             - brew install --cask docker-toolbox
-            - docker-machine create --driver virtualbox default
-
+            # Start virtualbox
             - docker-machine create -d virtualbox --virtualbox-no-vtx-check default
-
+            # Start Docker
             - docker-machine start default
+            # Run mail server
             - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd -
 
 
