@@ -2,4 +2,4 @@
 
 # stop docker-mailserver
 
-docker-compose down
+docker compose down

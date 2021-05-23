@@ -36,14 +36,29 @@ blocks:
         #    - bundle exec fastlane do_everything
 
         - name: 'FlowCryptTests(with email server)'
-          commands:
+          commands: 
             # Install Docker
-            # - brew install --cask docker
+            - brew install --cask docker
             # Install Docker-compose
             - brew install docker-compose
             # Run an email server
+            # Docker daemon uses Linux-specific kernel features. 
+            # Install docker-machine in order to create VM and attach to it.
+            - brew install docker-machine docker
+            # docker-machine relies on VirtualBox
+            # install Virtualbox
+            - brew cask install virtualbox
+            # Install telnet
+            - brew install telnet
+            # Install docker toolbox
             - brew install --cask docker-toolbox
-            - docker-machine create --driver "virtualbox" box
-            - docker-machine start box
+            - docker-machine create --driver virtualbox default
+            - docker-machine start default
             - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd -
+
+
+            # - brew install --cask docker-toolbox
+            # - docker-machine create --driver "virtualbox" box --virtualbox-no-vtx-check
+            # - docker-machine start box 
+            # - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd -
 
