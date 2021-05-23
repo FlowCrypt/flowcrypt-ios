@@ -27,9 +27,18 @@ protocol ImapSessionProvider {
     func smtpSession() -> SMTPSession?
 }
 
-enum SessionType {
+enum SessionType: CustomStringConvertible {
     case google(_ email: String, name: String, token: String)
     case session(_ userObject: UserObject)
+
+    var description: String {
+        switch self {
+        case let .google(email, name, _):
+            return "Google \(email) \(name)"
+        case let .session(user):
+            return "Session \(user.email)"
+        }
+    }
 }
 
 // MARK: - DataService

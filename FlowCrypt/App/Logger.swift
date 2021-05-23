@@ -162,6 +162,9 @@ extension Logger {
 
         /// log all db migration events
         case migration = "Migration"
+
+        /// Core related logs
+        case core = "Core"
     }
 
     static func nested<T>(in type: T.Type, with logLabel: LogLabels) -> Logger {

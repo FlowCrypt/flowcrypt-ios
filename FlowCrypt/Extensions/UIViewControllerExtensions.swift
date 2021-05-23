@@ -141,6 +141,7 @@ extension UIViewController {
         }
     }
 
+    // TODO: - ANTON
     func awaitUserPassPhraseEntry(title: String) -> Promise<String?> {
         Promise<String?>(on: .main) { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }

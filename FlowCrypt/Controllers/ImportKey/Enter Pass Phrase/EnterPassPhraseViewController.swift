@@ -30,7 +30,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
 
     init(
         decorator: EnterPassPhraseViewDecoratorType = EnterPassPhraseViewDecorator(),
-        keyMethods: KeyMethodsType = KeyMethods(core: .shared),
+        keyMethods: KeyMethodsType = KeyMethods(),
         keysService: KeyDataServiceType = DataService.shared,
         router: GlobalRouterType = GlobalRouter(),
         keyService: KeyServiceType = KeyService(),
@@ -255,3 +255,5 @@ extension EnterPassPhraseViewController {
         router.proceed()
     }
 }
+
+// TODO: - ANTON

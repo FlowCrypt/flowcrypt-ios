@@ -120,6 +120,8 @@
 		9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F953E08238310D500AEB98B /* KeyMethods.swift */; };
 		9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
 		9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */; };
+		9FA0157A26565B7800CBBA05 /* KeyMethodsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA0157926565B7800CBBA05 /* KeyMethodsTest.swift */; };
+		9FA0158026565B9D00CBBA05 /* KeyMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F953E08238310D500AEB98B /* KeyMethods.swift */; };
 		9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA1988F253C841F008C9CF2 /* TableViewController.swift */; };
 		9FA9C83C264C2D75005A9670 /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA9C83B264C2D75005A9670 /* MessageService.swift */; };
 		9FB22CD625715CA10026EE64 /* BackupServiceErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CD525715CA10026EE64 /* BackupServiceErrorHandler.swift */; };
@@ -494,6 +496,7 @@
 		9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninButtonNode.swift; sourceTree = "<group>"; };
 		9F9AAFFC2383E216000A00F1 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContext.swift; sourceTree = "<group>"; };
+		9FA0157926565B7800CBBA05 /* KeyMethodsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMethodsTest.swift; sourceTree = "<group>"; };
 		9FA1988F253C841F008C9CF2 /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
 		9FA9C83B264C2D75005A9670 /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
 		9FB22CD525715CA10026EE64 /* BackupServiceErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceErrorHandler.swift; sourceTree = "<group>"; };
@@ -1273,6 +1276,7 @@
 				A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */,
 				D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */,
 				9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */,
+				9FA0157926565B7800CBBA05 /* KeyMethodsTest.swift */,
 			);
 			path = FlowCryptTests;
 			sourceTree = "<group>";
@@ -2270,6 +2274,7 @@
 			files = (
 				D2D27B7A248A874C007346FA /* BigIntExtension.swift in Sources */,
 				9F3EF32B23B16ADE00FA0CEF /* CommonExtensions.swift in Sources */,
+				9FA0157A26565B7800CBBA05 /* KeyMethodsTest.swift in Sources */,
 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
 				9FC411902596229D001180A8 /* AppErr.swift in Sources */,
 				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
@@ -2297,6 +2302,7 @@
 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
 				9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */,
 				9F003D9E25EA910B00EB38C0 /* LocalStorageTests.swift in Sources */,
+				9FA0158026565B9D00CBBA05 /* KeyMethods.swift in Sources */,
 				32DCAF683D87EA6221F71335 /* SequenceExtensions.swift in Sources */,
 				9F589F11238C7DDC007FD759 /* User.swift in Sources */,
 				21F836D32652A46E00B2448C /* WKDURLsConstructorTests.swift in Sources */,

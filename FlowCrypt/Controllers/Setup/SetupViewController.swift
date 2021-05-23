@@ -63,7 +63,7 @@ final class SetupViewController: TableNodeViewController {
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: SetupViewDecoratorType = SetupViewDecorator(),
         core: Core = Core.shared,
-        keyMethods: KeyMethodsType = KeyMethods(core: .shared),
+        keyMethods: KeyMethodsType = KeyMethods(),
         attester: AttesterApiType = AttesterApi(),
         backupService: BackupServiceType = BackupService.shared,
         user: UserId
@@ -422,7 +422,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
@@ -478,3 +478,27 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 }
+
+// TODO: - ANTON
+
+/*
+ During setup
+    new key
+    when importing key
+    when loading from backup
+    creating
+    entering pass phrase
+
+the user should see two radio buttons:
+
+ o store pass phrase locally -  Default is to store.
+ o keep pass phrase in memory
+
+ If the user switches it,
+ then we do not store pass phrase with the key (or at all).
+ We only keep it in memory for up to 4 hours from the moment it was stored - then it needs to be forgotten.
+ During those 4 hours, the key will be used for actions (eg decrypt messages).
+ After those 4 hours, the user will be prompted for a pass phrase with a modal / alert to re-enter it, at which point it will be again remembered for 4 hours.
+
+ If app gets killed, pass phrase gets forgotten.
+ */

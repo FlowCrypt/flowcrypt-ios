@@ -13,7 +13,7 @@ if which swiftformat >/dev/null; then
      --rules trailingSpace, blankLinesAtEndOfScope, consecutiveBlankLines, consecutiveSpaces, \
      duplicateImports, initCoderUnavailable, isEmpty, leadingDelimiters, preferKeyPath, redundantBreak, \
      redundantExtensionACL, redundantFileprivate, redundantGet, redundantLet, redundantLetError, \
-     redundantNilInit, redundantParens, redundantPattern, redundantReturn, redundantVoidReturnType, semicolons, \
+     redundantNilInit, redundantParens, redundantPattern, redundantVoidReturnType, semicolons, \
      sortedImports, spaceAroundBraces, spaceAroundBrackets, spaceAroundGenerics, spaceInsideBraces, spaceInsideGenerics, \
      strongifiedSelf, trailingClosures, void
 else
@@ -23,3 +23,4 @@ else
 fi
 
 ################### RULES https://github.com/nicklockwood/SwiftFormat/blob/master/Rules.md
+# ASCellNodeBlock - removed due to Opening Brace Spacing Violation when dealing with ASCellNodeBlock
