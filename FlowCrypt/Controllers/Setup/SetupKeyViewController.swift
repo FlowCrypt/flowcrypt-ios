@@ -23,13 +23,13 @@ enum CreateKeyError: Error {
     case conformingPassPhraseError
 }
 
-final class CreatePrivateKeyViewController: TableNodeViewController {
+final class SetupKeyViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, subtitle
     }
 
     private let parts = Parts.allCases
-    private let decorator: CreatePrivateKeyDecorator
+    private let decorator: SetupViewDecorator
     private let core: Core
     private let router: GlobalRouterType
     private let user: UserId
@@ -42,7 +42,7 @@ final class CreatePrivateKeyViewController: TableNodeViewController {
         backupService: BackupServiceType = BackupService(),
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
-        decorator: CreatePrivateKeyDecorator = CreatePrivateKeyDecorator(),
+        decorator: SetupViewDecorator = SetupViewDecorator(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         attester: AttesterApiType = AttesterApi()
     ) {
@@ -70,7 +70,7 @@ final class CreatePrivateKeyViewController: TableNodeViewController {
 
 // MARK: - UI
 
-extension CreatePrivateKeyViewController {
+extension SetupKeyViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -107,7 +107,7 @@ extension CreatePrivateKeyViewController {
 
 // MARK: - Setup
 
-extension CreatePrivateKeyViewController {
+extension SetupKeyViewController {
     private func setupAccountWithGeneratedKey(with passPhrase: String) {
         Promise { [weak self] in
             guard let self = self else { return }
@@ -209,7 +209,7 @@ extension CreatePrivateKeyViewController {
     }
 }
 
-extension CreatePrivateKeyViewController {
+extension SetupKeyViewController {
     private func moveToMainFlow() {
         router.proceed()
     }
@@ -222,7 +222,7 @@ extension CreatePrivateKeyViewController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension CreatePrivateKeyViewController: ASTableDelegate, ASTableDataSource {
+extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         parts.count
     }
@@ -234,7 +234,7 @@ extension CreatePrivateKeyViewController: ASTableDelegate, ASTableDataSource {
             case .title:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.title,
+                        title: self.decorator.setupTitle,
                         insets: self.decorator.insets.titleInset,
                         backgroundColor: .backgroundColor
                     )
@@ -242,13 +242,13 @@ extension CreatePrivateKeyViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.subtitle,
+                        title: self.decorator.subtitle(for: .choosingPassPhrase),
                         insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
             case .passPhrase:
-                return TextFieldCellNode(input: self.decorator.textFieldStyle) { [weak self] action in
+                return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                 }
                 .onShouldReturn { [weak self] _ in
@@ -261,14 +261,14 @@ extension CreatePrivateKeyViewController: ASTableDelegate, ASTableDataSource {
                 }
             case .action:
                 return ButtonCellNode(
-                    title: self.decorator.buttonTitle,
+                    title: self.decorator.buttonTitle(for: .setPassPhrase),
                     insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
                 }
             case .subtitle:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.optionalDescription,
+                        title: self.decorator.passPhraseLostDescription,
                         insets: .side(8),
                         backgroundColor: .backgroundColor
                     )
@@ -280,13 +280,7 @@ extension CreatePrivateKeyViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard let part = Parts(rawValue: indexPath.row) else { return }
-
-        switch part {
-        case .description:
-            showChoosingOptions()
-        default:
-            break
-        }
+        guard let part = Parts(rawValue: indexPath.row), case .description = part else { return }
+        showChoosingOptions()
     }
 }

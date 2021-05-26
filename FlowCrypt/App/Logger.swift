@@ -165,6 +165,9 @@ extension Logger {
 
         /// Core related logs
         case core = "Core"
+        
+        /// Setup Flow logs
+        case setup = "Setup"
     }
 
     static func nested<T>(in type: T.Type, with logLabel: LogLabels) -> Logger {

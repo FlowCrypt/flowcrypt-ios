@@ -17,10 +17,10 @@ final class SetupViewController: TableNodeViewController {
     private let decorator: SetupViewDecorator
     private let core: Core
     private let keyMethods: KeyMethodsType
-    private let backupService: BackupServiceType
     private let user: UserId
 
     private var passPhrase: String?
+    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     enum SetupError: Error {
         /// fetched keys error
@@ -30,46 +30,24 @@ final class SetupViewController: TableNodeViewController {
         /// no backups found while searching
         case noBackups
     }
-
-    enum State {
-        /// initial state
-        case idle
-        /// start searching backups
-        case searchingBackups
-        /// encrypted keys found
-        case fetchedEncrypted([KeyDetails])
-        /// error state
-        case error(SetupError)
-
-        var isSearchingBackups: Bool {
-            guard case .searchingBackups = self else {
-                return false
-            }
-            return true
-        }
-    }
-
-    private var state: State = .idle {
-        didSet {
-            handle(newState: state)
-        }
-    }
+    
+    private let fetchedEncryptedKeys: [KeyDetails]
 
     init(
+        fetchedEncryptedKeys: [KeyDetails],
         router: GlobalRouterType = GlobalRouter(),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
-        backupService: BackupServiceType = BackupService(),
         user: UserId
     ) {
+        self.fetchedEncryptedKeys = fetchedEncryptedKeys
         self.router = router
         self.storage = storage
         self.decorator = decorator
         self.core = core
         self.keyMethods = keyMethods
-        self.backupService = backupService
         self.user = user
 
         super.init(node: TableNode())
@@ -82,22 +60,13 @@ final class SetupViewController: TableNodeViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setupUI()
+        processBackupsFetchResult()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        state = .searchingBackups
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 }
 
@@ -108,8 +77,6 @@ extension SetupViewController {
         node.delegate = self
         node.dataSource = self
         observeKeyboardNotifications()
-
-        state = .idle
     }
 
     // swiftlint:disable discarded_notification_center_observer
@@ -139,63 +106,22 @@ extension SetupViewController {
     }
 }
 
-// MARK: - State Handling
+// MARK: - Key processing
 
 extension SetupViewController {
-    private func handle(newState: State) {
-        switch newState {
-        case .idle:
-            node.reloadData()
-        case .searchingBackups:
-            showSpinner()
-            searchBackups()
-        case let .fetchedEncrypted(details):
-            handleBackupsFetchResult(with: details)
-            hideSpinner()
-        case let .error(error):
-            hideSpinner()
-            handleError(with: error)
-        }
-    }
-
-    private func searchBackups() {
-        Logger.logInfo("[Setup] searching for backups in inbox")
-        backupService.fetchBackups(for: user)
-            .then(on: .main) { [weak self] keys in
-                Logger.logInfo("[Setup] done searching for backups in inbox")
-                guard keys.isNotEmpty else {
-                    Logger.logInfo("[Setup] no key backups found in inbox")
-                    self?.state = .error(.noBackups)
-                    return
-                }
-                Logger.logInfo("[Setup] \(keys.count) key backups found in inbox")
-                self?.state = .fetchedEncrypted(keys)
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handleCommon(error: error)
-            }
-    }
-
-    private func handleBackupsFetchResult(with keys: [KeyDetails]) {
-        guard keys.isNotEmpty else {
-            state = .error(.emptyFetchedKeys)
+    private func processBackupsFetchResult() {
+        guard fetchedEncryptedKeys.isNotEmpty else {
+            // TODO: - ANTON - double check
+            handleError(with: .emptyFetchedKeys)
             return
         }
 
-        reloadNodes()
+        node.reloadData()
 
         node.visibleNodes
             .compactMap { $0 as? TextFieldCellNode }
             .first?
             .becomeFirstResponder()
-    }
-
-    private func reloadNodes() {
-        let indexes = [
-            IndexPath(row: Parts.action.rawValue, section: 0),
-            IndexPath(row: Parts.description.rawValue, section: 0)
-        ]
-        node.reloadRows(at: indexes, with: .fade)
     }
 }
 
@@ -203,7 +129,9 @@ extension SetupViewController {
 
 extension SetupViewController {
     private func handleError(with error: SetupError) {
-        Logger.logWarning("[Setup] handling error during setup: \(error)")
+        hideSpinner()
+        logger.logWarning("handling error during setup: \(error)")
+        
         switch error {
         case .emptyFetchedKeys:
             let user = DataService.shared.email ?? "unknown_title".localized
@@ -230,8 +158,7 @@ extension SetupViewController {
             title: "Retry",
             style: .default
         ) { [weak self] _ in
-            self?.state = .idle
-            self?.state = .searchingBackups
+            // TODO: - ANTON - rework retry logic - proceed to searching
         }
 
         alert.addAction(useOtherAccountAction)
@@ -306,7 +233,7 @@ extension SetupViewController {
 
     private func proceedToCreatingNewKey() {
         hideSpinner()
-        let viewController = CreatePrivateKeyViewController(user: user)
+        let viewController = SetupKeyViewController(user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
 }
@@ -316,11 +243,6 @@ extension SetupViewController {
 extension SetupViewController {
 
     private func handleButtonPressed() {
-        // ignore if we are still fetching keys
-        guard !state.isSearchingBackups else {
-            return
-        }
-
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
 
@@ -333,13 +255,9 @@ extension SetupViewController {
 
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            switch self.state {
-            case let .fetchedEncrypted(backups):
-                self.recoverAccount(with: backups, and: passPhrase)
-            default:
-                assertionFailure("Not proper state for the screen")
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+            self.recoverAccount(with: self.fetchedEncryptedKeys, and: passPhrase)
         }
     }
 
@@ -366,7 +284,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .title:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.title,
+                        title: self.decorator.setupTitle,
                         insets: self.decorator.insets.titleInset,
                         backgroundColor: .backgroundColor
                     )
@@ -440,6 +358,3 @@ the user should see two radio buttons:
 
  If app gets killed, pass phrase gets forgotten.
  */
-
-// TODO: - ANTON
-// - make intermediate screen to distinguish which flow to show (setup/create)

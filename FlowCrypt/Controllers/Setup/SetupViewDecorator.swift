@@ -18,40 +18,14 @@ struct SetupViewInsets {
     let dividerInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
 }
 
-enum SetupCommonStyle {
-    static let passPhraseTextFieldStyle: TextFieldCellNode.Input = TextFieldCellNode.Input(
-        placeholder: "setup_enter"
-            .localized
-            .attributed(
-                .bold(16),
-                color: .lightGray,
-                alignment: .center
-            ),
-            isSecureTextEntry: true,
-            textInsets: 0,
-            textAlignment: .center,
-            insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-    )
-}
-
 struct SetupViewDecorator {
     let insets = SetupViewInsets()
 
-    let textFieldStyle = SetupCommonStyle.passPhraseTextFieldStyle
-
-    let title = "setup_title"
+    let setupTitle = "setup_title"
         .localized
         .attributed(
             .bold(35),
             color: .mainTextColor,
-            alignment: .center
-        )
-
-    let buttonTitle = "setup_load"
-        .localized
-        .attributed(
-            .regular(17),
-            color: .white,
             alignment: .center
         )
 
@@ -65,17 +39,71 @@ struct SetupViewDecorator {
             ),
             alignment: .center
         )
+    
+    let passPhraseLostDescription = "create_pass_phrase_lost"
+        .localized
+        .attributed(
+            .regular(16),
+            color: .lightGray,
+            alignment: .center
+        )
+    
+    // MARK: TextField
+    let passPhraseTextFieldStyle: TextFieldCellNode.Input = TextFieldCellNode.Input(
+        placeholder: "setup_enter"
+            .localized
+            .attributed(
+                .bold(16),
+                color: .lightGray,
+                alignment: .center
+            ),
+            isSecureTextEntry: true,
+            textInsets: 0,
+            textAlignment: .center,
+            insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    )
+    
+    // MARK: Subtitle
+    enum SubtitleType {
+        case common, fetchedKeys(Int), choosingPassPhrase
+    }
 
-    func subtitle(for state: SetupViewController.State) -> NSAttributedString {
-        let subtitle: String = {
-            switch state {
-            case let .fetchedEncrypted(keys):
-                return "Found \(keys.count) key backup\(keys.count > 1 ? "s" : "")"
-            default:
-                return "setup_description".localized
-            }
-        }()
+    func subtitle(for subtitleType: SubtitleType) -> NSAttributedString {
+        let subtitle: String
+        
+        switch subtitleType {
+        case let .fetchedKeys(count):
+            subtitle = "Found \(count) key backup\(count > 1 ? "s" : "")"
+        case .common:
+            subtitle = "setup_description".localized
+        case .choosingPassPhrase:
+            subtitle = "create_pass_phrase_description".localized
+        }
 
         return subtitle.attributed(.regular(17))
+    }
+    
+    // MARK: Button
+    enum ButtonAction {
+        case loadAccount, setPassPhrase
+    }
+    
+    func buttonTitle(for action: ButtonAction) -> NSAttributedString {
+        let buttonTitle: String
+        
+        switch action {
+        case .loadAccount:
+            buttonTitle = "setup_load"
+        case .setPassPhrase:
+            buttonTitle = "create_pass_phrase_set_title"
+        }
+        
+        return buttonTitle
+            .localized
+            .attributed(
+                .regular(17),
+                color: .white,
+                alignment: .center
+            )
     }
 }
