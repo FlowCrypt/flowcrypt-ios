@@ -25,7 +25,7 @@ enum CreateKeyError: Error {
 
 final class CreatePrivateKeyViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, action
+        case title, description, passPhrase, divider, action, subtitle
     }
 
     private let parts = Parts.allCases
@@ -34,19 +34,25 @@ final class CreatePrivateKeyViewController: TableNodeViewController {
     private let router: GlobalRouterType
     private let user: UserId
     private let backupService: BackupServiceType
+    private let storage: DataServiceType & KeyDataServiceType
+    private let attester: AttesterApiType
 
     init(
         user: UserId,
-        backupService: BackupServiceType,
+        backupService: BackupServiceType = BackupService(),
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
-        decorator: CreatePrivateKeyDecorator = CreatePrivateKeyDecorator()
+        decorator: CreatePrivateKeyDecorator = CreatePrivateKeyDecorator(),
+        storage: DataServiceType & KeyDataServiceType = DataService.shared,
+        attester: AttesterApiType = AttesterApi()
     ) {
         self.user = user
         self.core = core
         self.router = router
         self.decorator = decorator
         self.backupService = backupService
+        self.storage = storage
+        self.attester = attester
 
         super.init(node: TableNode())
     }
@@ -54,6 +60,48 @@ final class CreatePrivateKeyViewController: TableNodeViewController {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+    }
+}
+
+// MARK: - UI
+
+extension CreatePrivateKeyViewController {
+    private func setupUI() {
+        node.delegate = self
+        node.dataSource = self
+        observeKeyboardNotifications()
+    }
+
+    // TODO: - ANTON - Unify this logic for all controllers
+    // swiftlint:disable discarded_notification_center_observer
+    private func observeKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillShowNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self else { return }
+            self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: UIResponder.keyboardWillHideNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.adjustForKeyboard(height: 0)
+        }
+    }
+
+    private func adjustForKeyboard(height: CGFloat) {
+        let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
+        node.contentInset = insets
+        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
     }
 }
 
@@ -63,17 +111,17 @@ extension CreatePrivateKeyViewController {
     private func setupAccountWithGeneratedKey(with passPhrase: String) {
         Promise { [weak self] in
             guard let self = self else { return }
-            
+
             let userId = try self.getUserId()
-            
+
             try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
-            
+
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-            
+
             try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
-            
-            try self.storePrvs(prvs: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
-    
+
+            self.storage.addKeys(keyDetails: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
+
             let updateKey = self.attester.updateKey(
                 email: userId.email,
                 pubkey: encryptedPrv.key.public,
@@ -95,13 +143,13 @@ extension CreatePrivateKeyViewController {
         .catch(on: .main) { [weak self] error in
             guard let self = self else { return }
             let isErrorHandled = self.handleCommon(error: error)
-    
+
             if !isErrorHandled {
                 self.showAlert(error: error, message: "Could not finish setup, please try again")
             }
         }
     }
-    
+
     private func getUserId() throws -> UserId {
         guard let email = DataService.shared.email, !email.isEmpty else {
             throw CreateKeyError.missedUserEmail
@@ -111,29 +159,29 @@ extension CreatePrivateKeyViewController {
         }
         return UserId(email: email, name: name)
     }
-    
+
     private func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
         Promise { [weak self] in
             guard let self = self else { throw AppErr.nilSelf }
-            
+
             let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
-            
+
             guard strength.word.pass else {
                 throw CreateKeyError.weakPassPhrase(strength)
             }
-            
+
             let confirmPassPhrase = try awaitPromise(self.awaitUserPassPhraseEntry())
-            
+
             guard confirmPassPhrase != nil else {
                 throw CreateKeyError.conformingPassPhraseError
             }
-            
+
             guard confirmPassPhrase == passPhrase else {
                 throw CreateKeyError.doesntMatch
             }
         }
     }
-    
+
     private func awaitUserPassPhraseEntry() -> Promise<String?> {
         Promise<String?>(on: .main) { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
@@ -142,7 +190,7 @@ extension CreatePrivateKeyViewController {
                 message: "Confirm Pass Phrase",
                 preferredStyle: .alert
             )
-            
+
             alert.addTextField { textField in
                 textField.isSecureTextEntry = true
                 textField.accessibilityLabel = "textField"
@@ -155,7 +203,7 @@ extension CreatePrivateKeyViewController {
             alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak alert] _ in
                 resolve(alert?.textFields?[0].text)
             })
-            
+
             self.present(alert, animated: true, completion: nil)
         }
     }
@@ -164,6 +212,11 @@ extension CreatePrivateKeyViewController {
 extension CreatePrivateKeyViewController {
     private func moveToMainFlow() {
         router.proceed()
+    }
+
+    private func showChoosingOptions() {
+        //
+        showToast("Not implemented yet")
     }
 }
 
@@ -187,32 +240,53 @@ extension CreatePrivateKeyViewController: ASTableDelegate, ASTableDataSource {
                     )
                 )
             case .description:
-                // TODO: - ANTON
-                // see choosing secure pass phrase
-                return ASCellNode()
+                return SetupTitleNode(
+                    SetupTitleNode.Input(
+                        title: self.decorator.subtitle,
+                        insets: self.decorator.insets.subTitleInset,
+                        backgroundColor: .backgroundColor
+                    )
+                )
             case .passPhrase:
                 return TextFieldCellNode(input: self.decorator.textFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
-                    
-                }
-                .then {
-                    $0.becomeFirstResponder()
                 }
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
-                    
+
                     return true
+                }
+                .then {
+                    $0.becomeFirstResponder()
                 }
             case .action:
                 return ButtonCellNode(
                     title: self.decorator.buttonTitle,
                     insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
-                    
                 }
+            case .subtitle:
+                return SetupTitleNode(
+                    SetupTitleNode.Input(
+                        title: self.decorator.optionalDescription,
+                        insets: .side(8),
+                        backgroundColor: .backgroundColor
+                    )
+                )
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
             }
+        }
+    }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard let part = Parts(rawValue: indexPath.row) else { return }
+
+        switch part {
+        case .description:
+            showChoosingOptions()
+        default:
+            break
         }
     }
 }

@@ -17,7 +17,6 @@ final class SetupViewController: TableNodeViewController {
     private let decorator: SetupViewDecorator
     private let core: Core
     private let keyMethods: KeyMethodsType
-    private let attester: AttesterApiType
     private let backupService: BackupServiceType
     private let user: UserId
 
@@ -62,8 +61,7 @@ final class SetupViewController: TableNodeViewController {
         decorator: SetupViewDecorator = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
-        attester: AttesterApiType = AttesterApi(),
-        backupService: BackupServiceType = BackupService.shared,
+        backupService: BackupServiceType = BackupService(),
         user: UserId
     ) {
         self.router = router
@@ -71,7 +69,6 @@ final class SetupViewController: TableNodeViewController {
         self.decorator = decorator
         self.core = core
         self.keyMethods = keyMethods
-        self.attester = attester
         self.backupService = backupService
         self.user = user
 
@@ -292,16 +289,9 @@ extension SetupViewController {
             return
         }
 
-        do {
-            try storePrvs(prvs: matchingKeyBackups, passPhrase: passPhrase, source: .backup)
-        } catch {
-            fatalError()
-        }
-        moveToMainFlow()
-    }
+        storage.addKeys(keyDetails: matchingKeyBackups, passPhrase: passPhrase, source: .backup)
 
-    private func storePrvs(prvs: [KeyDetails], passPhrase: String, source: KeySource) throws {
-        storage.addKeys(keyDetails: prvs, passPhrase: passPhrase, source: source)
+        moveToMainFlow()
     }
 }
 
@@ -316,6 +306,8 @@ extension SetupViewController {
 
     private func proceedToCreatingNewKey() {
         hideSpinner()
+        let viewController = CreatePrivateKeyViewController(user: user)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 
@@ -448,3 +440,6 @@ the user should see two radio buttons:
 
  If app gets killed, pass phrase gets forgotten.
  */
+
+// TODO: - ANTON
+// - make intermediate screen to distinguish which flow to show (setup/create)

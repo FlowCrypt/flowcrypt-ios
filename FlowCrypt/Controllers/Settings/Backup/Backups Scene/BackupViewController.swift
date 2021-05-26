@@ -41,7 +41,7 @@ final class BackupViewController: ASDKViewController<TableNode> {
 
     init(
         decorator: BackupViewDecoratorType = BackupViewDecorator(),
-        backupProvider: BackupServiceType = BackupService.shared,
+        backupProvider: BackupServiceType = BackupService(),
         userId: UserId
     ) {
         self.decorator = decorator

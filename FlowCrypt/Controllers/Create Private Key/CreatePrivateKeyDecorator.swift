@@ -22,7 +22,7 @@ final class CreatePrivateKeyDecorator {
             alignment: .center
         )
 
-    let buttonTitle = "setup_create_key"
+    let buttonTitle = "create_pass_phrase_set_title"
         .localized
         .attributed(
             .regular(17),
@@ -30,7 +30,15 @@ final class CreatePrivateKeyDecorator {
             alignment: .center
         )
 
-    let subtitle = "setup_action_create_new_subtitle"
+    let subtitle = "create_pass_phrase_description"
         .localized
         .attributed(.regular(17))
+
+    let optionalDescription = "Lost pass phrase cannot be recovered"
+        .localized
+        .attributed(
+            .regular(16),
+            color: .lightGray,
+            alignment: .center
+        )
 }
