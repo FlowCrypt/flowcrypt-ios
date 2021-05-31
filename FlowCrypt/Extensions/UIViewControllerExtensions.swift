@@ -65,10 +65,6 @@ extension UIViewController {
 }
 
 extension UIViewController {
-    var safeAreaWindowInsets: UIEdgeInsets {
-        UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
-    }
-
     var statusBarHeight: CGFloat {
         UIApplication.shared.statusBarFrame.height
     }

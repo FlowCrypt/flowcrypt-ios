@@ -18,7 +18,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
         }
     }
 
-    private let decorator: EnterPassPhraseViewDecoratorType
+    private let decorator: EnterPassPhraseViewDecorator
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
@@ -29,7 +29,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
     private var passPhrase: String?
 
     init(
-        decorator: EnterPassPhraseViewDecoratorType = EnterPassPhraseViewDecorator(),
+        decorator: EnterPassPhraseViewDecorator = EnterPassPhraseViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(),
         keysService: KeyDataServiceType = DataService.shared,
         router: GlobalRouterType = GlobalRouter(),
@@ -139,7 +139,7 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                     )
                 )
             case .passPhrase:
-                return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { [weak self] action in
+                return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(text) = action else { return }
                     self?.passPhrase = text
                 }
@@ -256,4 +256,4 @@ extension EnterPassPhraseViewController {
     }
 }
 
-// TODO: - ANTON
+// TODO: - ANTON - add radio button

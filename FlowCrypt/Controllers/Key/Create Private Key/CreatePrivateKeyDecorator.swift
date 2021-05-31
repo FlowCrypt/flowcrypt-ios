@@ -9,4 +9,3 @@
 import FlowCryptCommon
 import FlowCryptUI
 import UIKit
-

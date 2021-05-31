@@ -36,13 +36,7 @@ extension InboxCellNode.Input {
     }
 }
 
-protocol InboxViewDecoratorType {
-    func initialNodeInput(for size: CGSize) -> TextCellNode.Input
-
-    func emptyStateNodeInput(for size: CGSize, title: String) -> TextCellNode.Input
-}
-
-struct InboxViewDecorator: InboxViewDecoratorType {
+struct InboxViewDecorator {
     func emptyStateNodeInput(for size: CGSize, title: String) -> TextCellNode.Input {
         TextCellNode.Input(
             backgroundColor: .backgroundColor,

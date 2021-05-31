@@ -54,15 +54,17 @@ struct AppStartup {
             return
         }
 
-        switch entryPoint {
-        case .mainFlow:
-            window.rootViewController = SideMenuNavigationController()
-        case .signIn:
-            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
-        case .setupFlow(let userId):
-            let setupViewController = SetupViewController(user: userId)
+//        switch entryPoint {
+//        case .mainFlow:
+//            window.rootViewController = SideMenuNavigationController()
+//        case .signIn:
+//            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
+//        case .setupFlow(let userId):
+            // TODO: - ANTON
+//            let setupViewController = SetupInitialViewController(user: userId)
+        let setupViewController = SetupInitialViewController(user: .init(email: "flow.test.anton@gmail.com", name: "Name"))
             window.rootViewController = MainNavigationController(rootViewController: setupViewController)
-        }
+//        }
     }
 
     private func entryPointForUser(session: SessionType?) -> EntryPoint? {

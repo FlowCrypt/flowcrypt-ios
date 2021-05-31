@@ -30,7 +30,7 @@ final class SetupViewController: TableNodeViewController {
         /// no backups found while searching
         case noBackups
     }
-    
+
     private let fetchedEncryptedKeys: [KeyDetails]
 
     init(
@@ -42,6 +42,9 @@ final class SetupViewController: TableNodeViewController {
         keyMethods: KeyMethodsType = KeyMethods(),
         user: UserId
     ) {
+        if fetchedEncryptedKeys.isEmpty {
+            assertionFailure("Should be handled in SetupInitialViewController")
+        }
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
         self.router = router
         self.storage = storage
@@ -110,12 +113,6 @@ extension SetupViewController {
 
 extension SetupViewController {
     private func processBackupsFetchResult() {
-        guard fetchedEncryptedKeys.isNotEmpty else {
-            // TODO: - ANTON - double check
-            handleError(with: .emptyFetchedKeys)
-            return
-        }
-
         node.reloadData()
 
         node.visibleNodes
@@ -131,7 +128,7 @@ extension SetupViewController {
     private func handleError(with error: SetupError) {
         hideSpinner()
         logger.logWarning("handling error during setup: \(error)")
-        
+
         switch error {
         case .emptyFetchedKeys:
             let user = DataService.shared.email ?? "unknown_title".localized
@@ -227,7 +224,8 @@ extension SetupViewController {
 extension SetupViewController {
     private func proceedToKeyImport() {
         hideSpinner()
-        let viewController = ImportKeyViewController()
+        // TODO: - ANTON - check proceedToKeyImport
+        let viewController = UIViewController()
         navigationController?.pushViewController(viewController, animated: true)
     }
 
@@ -292,13 +290,15 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.subtitle(for: self.state),
+                        // TODO: - ANTON - check text
+                        title: self.decorator.subtitle(for: .choosingPassPhrase),
                         insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
             case .passPhrase:
-                return TextFieldCellNode(input: self.decorator.textFieldStyle) { [weak self] action in
+                // TODO: - ANTON - check text
+                return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
                 }
@@ -312,7 +312,8 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                 }
             case .action:
                 return ButtonCellNode(
-                    title: self.decorator.buttonTitle,
+                    // TODO: - ANTON - check text
+                    title: self.decorator.buttonTitle(for: .loadAccount),
                     insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
                     self?.handleButtonPressed()

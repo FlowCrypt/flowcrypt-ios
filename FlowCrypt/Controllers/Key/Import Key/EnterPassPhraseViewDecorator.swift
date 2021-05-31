@@ -9,24 +9,7 @@
 import FlowCryptUI
 import UIKit
 
-protocol EnterPassPhraseViewDecoratorType {
-    var sceneTitle: String { get }
-    var title: NSAttributedString { get }
-    var fileImportTitle: NSAttributedString { get }
-    var pasteBoardTitle: NSAttributedString { get }
-    var titleInsets: UIEdgeInsets { get }
-    var subTitleInset: UIEdgeInsets { get }
-    var buttonInsets: UIEdgeInsets { get }
-    var subtitleStyle: (String) -> NSAttributedString { get }
-
-    var passPhraseTitle: NSAttributedString { get }
-    var passPhraseContine: NSAttributedString { get }
-    var passPhraseChooseAnother: NSAttributedString { get }
-    var passPhraseInsets: UIEdgeInsets { get }
-    var passPhraseTextFieldStyle: TextFieldCellNode.Input { get }
-}
-
-struct EnterPassPhraseViewDecorator: EnterPassPhraseViewDecoratorType {
+struct EnterPassPhraseViewDecorator {
     let sceneTitle = "import_key_title".localized
 
     var title: NSAttributedString {
@@ -67,6 +50,4 @@ struct EnterPassPhraseViewDecorator: EnterPassPhraseViewDecoratorType {
     private func attributed(subTitle: String, color: UIColor = .white) -> NSAttributedString {
         subTitle.localized.attributed(.regular(17), color: color, alignment: .center)
     }
-
-    let passPhraseTextFieldStyle = SetupCommonStyle.passPhraseTextFieldStyle
 }

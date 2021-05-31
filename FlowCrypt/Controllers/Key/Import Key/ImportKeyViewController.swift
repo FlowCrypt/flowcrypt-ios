@@ -19,7 +19,7 @@ final class ImportKeyViewController: TableNodeViewController {
         }
     }
 
-    private let decorator: EnterPassPhraseViewDecoratorType
+    private let decorator: EnterPassPhraseViewDecorator
     private let pasteboard: UIPasteboard
     private let dataService: DataServiceType
     private let core: Core
@@ -29,7 +29,7 @@ final class ImportKeyViewController: TableNodeViewController {
     }
 
     init(
-        decorator: EnterPassPhraseViewDecoratorType = EnterPassPhraseViewDecorator(),
+        decorator: EnterPassPhraseViewDecorator = EnterPassPhraseViewDecorator(),
         pasteboard: UIPasteboard = UIPasteboard.general,
         core: Core = Core.shared,
         dataService: DataServiceType = DataService.shared
@@ -209,4 +209,4 @@ extension ImportKeyViewController: UIDocumentPickerDelegate {
     }
 }
 
-// TODO: - ANTON
+// TODO: - ANTON - add radio button

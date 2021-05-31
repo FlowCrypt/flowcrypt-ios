@@ -248,7 +248,7 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
                     )
                 )
             case .passPhrase:
-                return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { [weak self] action in
+                return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                 }
                 .onShouldReturn { [weak self] _ in

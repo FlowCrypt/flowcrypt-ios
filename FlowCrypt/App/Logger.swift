@@ -165,7 +165,7 @@ extension Logger {
 
         /// Core related logs
         case core = "Core"
-        
+
         /// Setup Flow logs
         case setup = "Setup"
     }

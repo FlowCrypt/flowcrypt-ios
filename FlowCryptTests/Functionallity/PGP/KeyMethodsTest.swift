@@ -100,10 +100,6 @@ extension KeyMethodsTest {
 }
 
 class MockKeyDecrypter: KeyDecrypter {
-    enum MockError: Error {
-        case some
-    }
-    
     var result: Result<CoreRes.DecryptKey, MockError> = .success(CoreRes.DecryptKey(decryptedKey: "decrypted"))
     
     func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey {

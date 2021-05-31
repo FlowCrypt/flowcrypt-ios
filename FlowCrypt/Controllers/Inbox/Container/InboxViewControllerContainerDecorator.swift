@@ -31,13 +31,4 @@ struct InboxViewControllerContainerDecorator {
     func retryActionTitle() -> NSAttributedString {
         "retry_title".localized.attributed(color: .white)
     }
-
-    func loadingInput(with size: CGSize) -> TextCellNode.Input {
-        TextCellNode.Input(
-           backgroundColor: .backgroundColor,
-           title: "loading_title".localized,
-           withSpinner: true,
-           size: size
-       )
-    }
 }

@@ -11,9 +11,9 @@ import FlowCryptUI
 import UIKit
 
 struct SetupViewInsets {
-    let titleInset = UIEdgeInsets(top: 92, left: 16, bottom: 20, right: 16)
+    let titleInset = UIEdgeInsets(top: 92, left: 16, bottom: 100, right: 16)
     let subTitleInset = UIEdgeInsets(top: 0, left: 16, bottom: 60, right: 16)
-    let buttonInsets = UIEdgeInsets(top: 80, left: 24, bottom: 8, right: 24)
+    let buttonInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
     let optionalButtonInsets = UIEdgeInsets(top: 0, left: 24, bottom: 8, right: 24)
     let dividerInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
 }
@@ -39,7 +39,7 @@ struct SetupViewDecorator {
             ),
             alignment: .center
         )
-    
+
     let passPhraseLostDescription = "create_pass_phrase_lost"
         .localized
         .attributed(
@@ -47,9 +47,58 @@ struct SetupViewDecorator {
             color: .lightGray,
             alignment: .center
         )
-    
-    // MARK: TextField
-    let passPhraseTextFieldStyle: TextFieldCellNode.Input = TextFieldCellNode.Input(
+
+    // MARK: Subtitle
+    enum SubtitleType {
+        case common, fetchedKeys(Int), choosingPassPhrase
+    }
+
+    func subtitle(for subtitleType: SubtitleType) -> NSAttributedString {
+        let subtitle: String
+
+        switch subtitleType {
+        case let .fetchedKeys(count):
+            subtitle = "Found \(count) key backup\(count > 1 ? "s" : "")"
+        case .common:
+            subtitle = "setup_description".localized
+        case .choosingPassPhrase:
+            subtitle = "create_pass_phrase_description".localized
+        }
+
+        return subtitle.attributed(.regular(17))
+    }
+
+    // MARK: Button
+    enum ButtonAction {
+        case createKey, importKey, loadAccount, setPassPhrase
+    }
+
+    func buttonTitle(for action: ButtonAction) -> NSAttributedString {
+        let buttonTitle: String
+
+        switch action {
+        case .createKey:
+            buttonTitle = "setup_initial_create_key"
+        case .importKey:
+            buttonTitle = "setup_initial_import_key"
+        case .loadAccount:
+            buttonTitle = "setup_load"
+        case .setPassPhrase:
+            buttonTitle = "create_pass_phrase_set_title"
+        }
+
+        return buttonTitle
+            .localized
+            .attributed(
+                .regular(17),
+                color: .white,
+                alignment: .center
+            )
+    }
+}
+
+extension TextFieldCellNode.Input {
+    static let passPhraseTextFieldStyle: TextFieldCellNode.Input = TextFieldCellNode.Input(
         placeholder: "setup_enter"
             .localized
             .attributed(
@@ -62,48 +111,4 @@ struct SetupViewDecorator {
             textAlignment: .center,
             insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     )
-    
-    // MARK: Subtitle
-    enum SubtitleType {
-        case common, fetchedKeys(Int), choosingPassPhrase
-    }
-
-    func subtitle(for subtitleType: SubtitleType) -> NSAttributedString {
-        let subtitle: String
-        
-        switch subtitleType {
-        case let .fetchedKeys(count):
-            subtitle = "Found \(count) key backup\(count > 1 ? "s" : "")"
-        case .common:
-            subtitle = "setup_description".localized
-        case .choosingPassPhrase:
-            subtitle = "create_pass_phrase_description".localized
-        }
-
-        return subtitle.attributed(.regular(17))
-    }
-    
-    // MARK: Button
-    enum ButtonAction {
-        case loadAccount, setPassPhrase
-    }
-    
-    func buttonTitle(for action: ButtonAction) -> NSAttributedString {
-        let buttonTitle: String
-        
-        switch action {
-        case .loadAccount:
-            buttonTitle = "setup_load"
-        case .setPassPhrase:
-            buttonTitle = "create_pass_phrase_set_title"
-        }
-        
-        return buttonTitle
-            .localized
-            .attributed(
-                .regular(17),
-                color: .white,
-                alignment: .center
-            )
-    }
 }
