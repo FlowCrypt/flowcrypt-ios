@@ -9,7 +9,8 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class EnterPassPhraseViewController: TableNodeViewController {
+// TODO: - ANTON - add radio button
+final class SetupEnterPassPhraseViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, enterPhrase, chooseAnother
 
@@ -18,7 +19,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
         }
     }
 
-    private let decorator: EnterPassPhraseViewDecorator
+    private let decorator: SetupViewDecorator
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
@@ -29,7 +30,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
     private var passPhrase: String?
 
     init(
-        decorator: EnterPassPhraseViewDecorator = EnterPassPhraseViewDecorator(),
+        decorator: SetupViewDecorator = SetupViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(),
         keysService: KeyDataServiceType = DataService.shared,
         router: GlobalRouterType = GlobalRouter(),
@@ -67,7 +68,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
-        title = decorator.sceneTitle
+        title = decorator.sceneTitle(for: .enterPassPhrase)
         node.view.contentInsetAdjustmentBehavior = .never
     }
 
@@ -83,7 +84,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
 
 // MARK: - Keyboard
 
-extension EnterPassPhraseViewController {
+extension SetupEnterPassPhraseViewController {
     // swiftlint:disable discarded_notification_center_observer
     /// Observation should be removed in a place where subscription is
     private func observeKeyboardNotifications() {
@@ -113,7 +114,7 @@ extension EnterPassPhraseViewController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
+extension SetupEnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
@@ -125,8 +126,8 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
             case .title:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.passPhraseTitle,
-                        insets: self.decorator.titleInsets,
+                        title: self.decorator.title(for: .enterPassPhrase),
+                        insets: self.decorator.insets.titleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
@@ -134,7 +135,7 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                 return SetupTitleNode(
                     SetupTitleNode.Input(
                         title: self.decorator.subtitleStyle(self.email),
-                        insets: self.decorator.subTitleInset,
+                        insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
@@ -152,15 +153,15 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                 }
             case .enterPhrase:
                 return ButtonCellNode(
-                    title: self.decorator.passPhraseContine,
-                    insets: self.decorator.passPhraseInsets
+                    title: self.decorator.buttonTitle(for: .passPhraseContinue),
+                    insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
                     self?.handleContinueAction()
                 }
             case .chooseAnother:
                 return ButtonCellNode(
-                    title: self.decorator.passPhraseChooseAnother,
-                    insets: self.decorator.buttonInsets,
+                    title: self.decorator.buttonTitle(for: .passPhraseChooseAnother),
+                    insets: self.decorator.insets.buttonInsets,
                     color: .lightGray
                 ) { [weak self] in
                     self?.navigationController?.popViewController(animated: true)
@@ -174,7 +175,7 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
 
 // MARK: - Actions
 
-extension EnterPassPhraseViewController {
+extension SetupEnterPassPhraseViewController {
     private func handleContinueAction() {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
@@ -255,5 +256,3 @@ extension EnterPassPhraseViewController {
         router.proceed()
     }
 }
-
-// TODO: - ANTON - add radio button

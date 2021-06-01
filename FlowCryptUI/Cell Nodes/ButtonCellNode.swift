@@ -17,7 +17,7 @@ public final class ButtonCellNode: CellNode {
         public init(
             title: NSAttributedString,
             insets: UIEdgeInsets,
-            color: UIColor?
+            color: UIColor? = nil
         ) {
             self.title = title
             self.insets = insets

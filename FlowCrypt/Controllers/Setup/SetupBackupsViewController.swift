@@ -6,8 +6,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
-// swiftlint:disable line_length
-final class SetupViewController: TableNodeViewController {
+final class SetupBackupsViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, action, optionalAction
     }
@@ -18,20 +17,10 @@ final class SetupViewController: TableNodeViewController {
     private let core: Core
     private let keyMethods: KeyMethodsType
     private let user: UserId
+    private let fetchedEncryptedKeys: [KeyDetails]
 
     private var passPhrase: String?
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
-
-    enum SetupError: Error {
-        /// fetched keys error
-        case emptyFetchedKeys
-        /// error while key parsing (associated error for verbose message)
-        case parseKey(Error)
-        /// no backups found while searching
-        case noBackups
-    }
-
-    private let fetchedEncryptedKeys: [KeyDetails]
 
     init(
         fetchedEncryptedKeys: [KeyDetails],
@@ -42,9 +31,6 @@ final class SetupViewController: TableNodeViewController {
         keyMethods: KeyMethodsType = KeyMethods(),
         user: UserId
     ) {
-        if fetchedEncryptedKeys.isEmpty {
-            assertionFailure("Should be handled in SetupInitialViewController")
-        }
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
         self.router = router
         self.storage = storage
@@ -64,18 +50,18 @@ final class SetupViewController: TableNodeViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        processBackupsFetchResult()
+        handleBackups()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 }
 
 // MARK: - Setup
 
-extension SetupViewController {
+extension SetupBackupsViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -109,10 +95,14 @@ extension SetupViewController {
     }
 }
 
-// MARK: - Key processing
+// MARK: - Actions
 
-extension SetupViewController {
-    private func processBackupsFetchResult() {
+extension SetupBackupsViewController {
+    private func handleBackups() {
+        guard fetchedEncryptedKeys.isNotEmpty else {
+            return assertionFailure("Should be handled in SetupInitialViewController")
+        }
+
         node.reloadData()
 
         node.visibleNodes
@@ -120,90 +110,7 @@ extension SetupViewController {
             .first?
             .becomeFirstResponder()
     }
-}
 
-// MARK: - Error Handling
-
-extension SetupViewController {
-    private func handleError(with error: SetupError) {
-        hideSpinner()
-        logger.logWarning("handling error during setup: \(error)")
-
-        switch error {
-        case .emptyFetchedKeys:
-            let user = DataService.shared.email ?? "unknown_title".localized
-            let msg = "setup_no_backups".localized + user
-            showSearchBackupError(with: msg)
-        case .noBackups:
-            showSearchBackupError(with: "setup_no_backups".localized)
-        case let .parseKey(error):
-            showErrorAlert(with: "setup_action_failed".localized, error: error)
-        }
-    }
-
-    private func errorAlert(with message: String) -> UIAlertController {
-        let alert = UIAlertController(title: "Notice", message: message, preferredStyle: .alert)
-
-        let useOtherAccountAction = UIAlertAction(
-            title: "setup_use_otherAccount".localized,
-            style: .default
-        ) { [weak self] _ in
-            self?.handleOtherAccount()
-        }
-
-        let retryAction = UIAlertAction(
-            title: "Retry",
-            style: .default
-        ) { [weak self] _ in
-            // TODO: - ANTON - rework retry logic - proceed to searching
-        }
-
-        alert.addAction(useOtherAccountAction)
-        alert.addAction(retryAction)
-
-        return alert
-    }
-
-    private func showErrorAlert(with msg: String, error: Error? = nil) {
-        hideSpinner()
-
-        let errStr: String = {
-            guard let err = error else { return "" }
-            return "\n\n\(err)"
-        }()
-
-        let alert = errorAlert(with: msg + errStr)
-
-        present(alert, animated: true, completion: nil)
-    }
-
-    private func showSearchBackupError(with message: String) {
-        let alert = errorAlert(with: message)
-
-        let importAction = UIAlertAction(
-            title: "setup_action_import".localized,
-            style: .default
-        ) { [weak self] _ in
-            self?.proceedToKeyImport()
-        }
-
-        let createNewPrivateKeyAction = UIAlertAction(
-            title: "setup_action_create_new".localized,
-            style: .default
-        ) { [weak self] _ in
-            self?.proceedToCreatingNewKey()
-        }
-
-        alert.addAction(importAction)
-        alert.addAction(createNewPrivateKeyAction)
-
-        present(alert, animated: true, completion: nil)
-    }
-}
-
-// MARK: - Recover account
-
-extension SetupViewController {
     private func recoverAccount(with backups: [KeyDetails], and passPhrase: String) {
 
         let matchingKeyBackups = keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase)
@@ -217,28 +124,6 @@ extension SetupViewController {
 
         moveToMainFlow()
     }
-}
-
-// MARK: - Navigation
-
-extension SetupViewController {
-    private func proceedToKeyImport() {
-        hideSpinner()
-        // TODO: - ANTON - check proceedToKeyImport
-        let viewController = UIViewController()
-        navigationController?.pushViewController(viewController, animated: true)
-    }
-
-    private func proceedToCreatingNewKey() {
-        hideSpinner()
-        let viewController = SetupKeyViewController(user: user)
-        navigationController?.pushViewController(viewController, animated: true)
-    }
-}
-
-// MARK: - Events
-
-extension SetupViewController {
 
     private func handleButtonPressed() {
         view.endEditing(true)
@@ -270,7 +155,7 @@ extension SetupViewController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension SetupViewController: ASTableDelegate, ASTableDataSource {
+extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
@@ -282,7 +167,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
             case .title:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.setupTitle,
+                        title: self.decorator.title(for: .setup),
                         insets: self.decorator.insets.titleInset,
                         backgroundColor: .backgroundColor
                     )
@@ -322,11 +207,7 @@ extension SetupViewController: ASTableDelegate, ASTableDataSource {
                     $0.button.accessibilityIdentifier = "load_account"
                 }
             case .optionalAction:
-                return ButtonCellNode(
-                    title: self.decorator.useAnotherAccountTitle,
-                    insets: self.decorator.insets.optionalButtonInsets,
-                    color: .white
-                ) { [weak self] in
+                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
                     self?.handleOtherAccount()
                 }
             case .divider:

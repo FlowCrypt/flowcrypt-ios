@@ -25,7 +25,7 @@ enum CreateKeyError: Error {
 
 final class SetupKeyViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, action, subtitle
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle
     }
 
     private let parts = Parts.allCases
@@ -36,6 +36,10 @@ final class SetupKeyViewController: TableNodeViewController {
     private let backupService: BackupServiceType
     private let storage: DataServiceType & KeyDataServiceType
     private let attester: AttesterApiType
+
+    private var shouldSaveLocally = true {
+        didSet { handleSelectedOption() }
+    }
 
     init(
         user: UserId,
@@ -74,6 +78,8 @@ extension SetupKeyViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
+
+        title = decorator.sceneTitle(for: .createKey)
         observeKeyboardNotifications()
     }
 
@@ -102,6 +108,11 @@ extension SetupKeyViewController {
         let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
         node.contentInset = insets
         node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
+    }
+
+    private func handleSelectedOption() {
+        let rows = [Parts.saveLocally, Parts.saveInMemory].map { IndexPath(row: $0.rawValue, section: 0) }
+        node.reloadRows(at: rows, with: .automatic)
     }
 }
 
@@ -234,7 +245,7 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
             case .title:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.setupTitle,
+                        title: self.decorator.title(for: .setup),
                         insets: self.decorator.insets.titleInset,
                         backgroundColor: .backgroundColor
                     )
@@ -275,12 +286,26 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
                 )
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
+            case .saveLocally:
+                return CheckBoxTextNode(input: .passPhraseLocally(isSelected: self.shouldSaveLocally))
+            case .saveInMemory:
+                return CheckBoxTextNode(input: .passPhraseMemory(isSelected: !self.shouldSaveLocally))
             }
         }
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard let part = Parts(rawValue: indexPath.row), case .description = part else { return }
-        showChoosingOptions()
+        guard let part = Parts(rawValue: indexPath.row) else { return }
+
+        switch part {
+        case .description:
+            showChoosingOptions()
+        case .saveLocally:
+            shouldSaveLocally = true
+        case .saveInMemory:
+            shouldSaveLocally = false
+        default:
+            break
+        }
     }
 }

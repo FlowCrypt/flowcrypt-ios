@@ -63,9 +63,10 @@ extension KeySettingsViewController {
 
 extension KeySettingsViewController {
     @objc private func handleAddButtonTap() {
-        navigationController?.pushViewController(ImportKeyViewController(), animated: true)
+        navigationController?.pushViewController(SetupImportKeyViewController(), animated: true)
     }
 }
+
 extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         keys.count

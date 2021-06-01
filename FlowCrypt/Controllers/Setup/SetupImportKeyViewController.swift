@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import MobileCoreServices
 
-final class ImportKeyViewController: TableNodeViewController {
+final class SetupImportKeyViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, fileImport, pasteBoardImport
 
@@ -19,7 +19,7 @@ final class ImportKeyViewController: TableNodeViewController {
         }
     }
 
-    private let decorator: EnterPassPhraseViewDecorator
+    private let decorator: SetupViewDecorator
     private let pasteboard: UIPasteboard
     private let dataService: DataServiceType
     private let core: Core
@@ -29,7 +29,7 @@ final class ImportKeyViewController: TableNodeViewController {
     }
 
     init(
-        decorator: EnterPassPhraseViewDecorator = EnterPassPhraseViewDecorator(),
+        decorator: SetupViewDecorator = SetupViewDecorator(),
         pasteboard: UIPasteboard = UIPasteboard.general,
         core: Core = Core.shared,
         dataService: DataServiceType = DataService.shared
@@ -65,7 +65,7 @@ final class ImportKeyViewController: TableNodeViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
-        title = decorator.sceneTitle
+        title = decorator.sceneTitle(for: .importKey)
     }
 
     private func updateSubtitle() {
@@ -77,20 +77,20 @@ final class ImportKeyViewController: TableNodeViewController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
+extension SetupImportKeyViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.title,
-                        insets: self.decorator.titleInsets,
+                        title: self.decorator.title(for: .importKey),
+                        insets: self.decorator.insets.titleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
@@ -98,21 +98,21 @@ extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
                 return SetupTitleNode(
                     SetupTitleNode.Input(
                         title: self.decorator.subtitleStyle(self.userInfoMessage),
-                        insets: self.decorator.subTitleInset,
+                        insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
             case .fileImport:
                 return ButtonCellNode(
-                    title: self.decorator.fileImportTitle,
-                    insets: self.decorator.buttonInsets
+                    title: self.decorator.buttonTitle(for: .fileImport),
+                    insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
                     self?.proceedToKeyImportFromFile()
                 }
             case .pasteBoardImport:
                 return ButtonCellNode(
-                    title: self.decorator.pasteBoardTitle,
-                    insets: self.decorator.buttonInsets
+                    title: self.decorator.buttonTitle(for: .pasteBoard),
+                    insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
                     self?.proceedToKeyImportFromPasteboard()
                 }
@@ -126,7 +126,7 @@ extension ImportKeyViewController: ASTableDelegate, ASTableDataSource {
 
 // MARK: - Actions
 
-extension ImportKeyViewController {
+extension SetupImportKeyViewController {
     private func proceedToKeyImportFromFile() {
         let acceptableDocumentTypes = [
             String(kUTTypeText),
@@ -171,7 +171,7 @@ extension ImportKeyViewController {
     }
 
     private func proceedToPassPhrase(with email: String, keys: [KeyDetails]) {
-        let viewController = EnterPassPhraseViewController(
+        let viewController = SetupEnterPassPhraseViewController(
             decorator: decorator,
             email: email,
             fetchedKeys: keys
@@ -186,7 +186,7 @@ extension ImportKeyViewController {
 
 // MARK: - UIDocumentPickerDelegate
 
-extension ImportKeyViewController: UIDocumentPickerDelegate {
+extension SetupImportKeyViewController: UIDocumentPickerDelegate {
     func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let pickedURL = urls.first else { return }
         handlePicked(document: pickedURL)
@@ -208,5 +208,3 @@ extension ImportKeyViewController: UIDocumentPickerDelegate {
         }
     }
 }
-
-// TODO: - ANTON - add radio button

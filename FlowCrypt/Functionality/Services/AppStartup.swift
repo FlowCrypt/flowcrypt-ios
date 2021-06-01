@@ -54,17 +54,22 @@ struct AppStartup {
             return
         }
 
-//        switch entryPoint {
-//        case .mainFlow:
-//            window.rootViewController = SideMenuNavigationController()
-//        case .signIn:
-//            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
-//        case .setupFlow(let userId):
-            // TODO: - ANTON
-//            let setupViewController = SetupInitialViewController(user: userId)
-        let setupViewController = SetupInitialViewController(user: .init(email: "flow.test.anton@gmail.com", name: "Name"))
-            window.rootViewController = MainNavigationController(rootViewController: setupViewController)
-//        }
+        let viewController: UIViewController
+
+        switch entryPoint {
+        case .mainFlow:
+            viewController = SideMenuNavigationController()
+        case .signIn:
+            viewController = MainNavigationController(rootViewController: SignInViewController())
+        case .setupFlow(let userId):
+            let setupViewController = SetupInitialViewController(user: userId)
+            viewController = MainNavigationController(rootViewController: setupViewController)
+        }
+
+        // TODO: - ANTON - warning
+        // SetupEnterPassPhraseViewController(email: "", fetchedKeys: [])
+        window.rootViewController = MainNavigationController(rootViewController: SetupKeyViewController(user: UserId.init(email: "a", name: "a")))
+//        window.rootViewController = viewController
     }
 
     private func entryPointForUser(session: SessionType?) -> EntryPoint? {

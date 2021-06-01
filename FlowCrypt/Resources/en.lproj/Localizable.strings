@@ -88,6 +88,9 @@
 "setup_create_key" = "Create";
 "setup_initial_create_key" = "Create a new key";
 "setup_initial_import_key" = "Import my key";
+"setup_create_key_title" = "Create key";
+"setup_save_pass_locally" = "Store pass phrase locally";
+"setup_save_pass_in_memory" = "Keep pass phrase in memory";
 
 // Key Import
 "import_key_title" = "Import Key";

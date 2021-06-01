@@ -9,9 +9,10 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+// TODO: - ANTON - add refresh controller
 final class SetupInitialViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
-        case title, createKey, importKey, anotherAccount
+        case title, description, createKey, importKey, anotherAccount
     }
 
     private enum State {
@@ -37,6 +38,10 @@ final class SetupInitialViewController: TableNodeViewController {
         didSet { handleNewState() }
     }
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .default
+    }
+
     private let backupService: BackupServiceType
     private let user: UserId
     private let router: GlobalRouterType
@@ -46,7 +51,7 @@ final class SetupInitialViewController: TableNodeViewController {
 
     init(
         user: UserId,
-        backupService: BackupServiceType = BackupServiceMock(),
+        backupService: BackupServiceType = BackupService(),
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
@@ -66,26 +71,22 @@ final class SetupInitialViewController: TableNodeViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        state = .searching
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        setNeedsStatusBarAppearanceUpdate()
         state = .searching
-    }
-
-    private func setupUI() {
-        node.delegate = self
-        node.dataSource = self
     }
 }
 
+// MARK: - Action Handling
 extension SetupInitialViewController {
+
     private func handleNewState() {
+        logger.logInfo("Changed to new state \(state)")
+
         switch state {
         case .searching:
             searchBackups()
@@ -96,7 +97,7 @@ extension SetupInitialViewController {
     }
 
     private func searchBackups() {
-        logger.logInfo("[Setup] searching for backups in inbox")
+        logger.logInfo("Searching for backups in inbox")
 
         backupService.fetchBackups(for: user)
             .then(on: .main) { [weak self] keys in
@@ -111,25 +112,13 @@ extension SetupInitialViewController {
         router.signOut()
     }
 
-    private func proceedToSetupWith(keys: [KeyDetails]) {
-        logger.logInfo("Finish searching for backups in inbox")
-
-        if keys.isEmpty {
-            logger.logInfo("No key backups found in inbox")
-            state = .noKeyBackups
-        } else {
-            logger.logInfo("\(keys.count) key backups found in inbox")
-            let viewController = SetupViewController(fetchedEncryptedKeys: keys, user: user)
-            navigationController?.pushViewController(viewController, animated: true)
-        }
-    }
-
     private func handle(error: Error) {
         handleCommon(error: error)
         state = .error(error)
     }
 }
 
+// MARK: - ASTableDelegate, ASTableDataSource
 extension SetupInitialViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         state.numberOfRows
@@ -153,13 +142,21 @@ extension SetupInitialViewController: ASTableDelegate, ASTableDataSource {
     }
 }
 
+// MARK: - UI
 extension SetupInitialViewController {
+    private func setupUI() {
+        node.delegate = self
+        node.dataSource = self
+
+        title = decorator.sceneTitle(for: .setup)
+    }
+
     private func searchStateNode(for indexPath: IndexPath) -> ASCellNode {
         switch indexPath.row {
         case 0:
             return SetupTitleNode(
                 SetupTitleNode.Input(
-                    title: self.decorator.setupTitle,
+                    title: self.decorator.title(for: .setup),
                     insets: self.decorator.insets.titleInset,
                     backgroundColor: .backgroundColor
                 )
@@ -176,29 +173,37 @@ extension SetupInitialViewController {
         case .title:
             return SetupTitleNode(
                 SetupTitleNode.Input(
-                    title: self.decorator.setupTitle,
+                    title: self.decorator.title(for: .setup),
                     insets: self.decorator.insets.titleInset,
                     backgroundColor: .backgroundColor
                 )
             )
+        case .description:
+            return SetupTitleNode(
+                SetupTitleNode.Input(
+                    title: self.decorator.subtitle(for: .noBackups),
+                    insets: self.decorator.insets.subTitleInset,
+                    backgroundColor: .backgroundColor
+                )
+            )
         case .createKey:
-            return ButtonCellNode(
+            let input = ButtonCellNode.Input(
                 title: self.decorator.buttonTitle(for: .createKey),
                 insets: self.decorator.insets.buttonInsets
-            ) { [weak self] in
+            )
+            return ButtonCellNode(input: input) { [weak self] in
+                self?.proceedToCreatingNewKey()
             }
         case .importKey:
-            return ButtonCellNode(
+            let input = ButtonCellNode.Input(
                 title: self.decorator.buttonTitle(for: .importKey),
                 insets: self.decorator.insets.buttonInsets
-            ) { [weak self] in
+            )
+            return ButtonCellNode(input: input) { [weak self] in
+                self?.proceedToKeyImport()
             }
         case .anotherAccount:
-            return ButtonCellNode(
-                title: self.decorator.useAnotherAccountTitle,
-                insets: self.decorator.insets.optionalButtonInsets,
-                color: .white
-            ) { [weak self] in
+            return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
                 self?.handleOtherAccount()
             }
         }
@@ -209,7 +214,7 @@ extension SetupInitialViewController {
         case 0:
             return SetupTitleNode(
                 SetupTitleNode.Input(
-                    title: self.decorator.setupTitle,
+                    title: self.decorator.title(for: .setup),
                     insets: self.decorator.insets.titleInset,
                     backgroundColor: .backgroundColor
                 )
@@ -229,6 +234,32 @@ extension SetupInitialViewController {
             }
         default:
             return ASCellNode()
+        }
+    }
+}
+
+// MARK: - Navigation
+extension SetupInitialViewController {
+    private func proceedToKeyImport() {
+        let viewController = SetupImportKeyViewController()
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func proceedToCreatingNewKey() {
+        let viewController = SetupKeyViewController(user: user)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func proceedToSetupWith(keys: [KeyDetails]) {
+        logger.logInfo("Finish searching for backups in inbox")
+
+        if keys.isEmpty {
+            logger.logInfo("No key backups found in inbox")
+            state = .noKeyBackups
+        } else {
+            logger.logInfo("\(keys.count) key backups found in inbox")
+            let viewController = SetupBackupsViewController(fetchedEncryptedKeys: keys, user: user)
+            navigationController?.pushViewController(viewController, animated: true)
         }
     }
 }

@@ -9,7 +9,6 @@
 import Foundation
 import Promises
 
-// TODO: - ANTON - remove from FlowCrypt target
 protocol BackupServiceType {
     /// get all existed backups
     func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]>
