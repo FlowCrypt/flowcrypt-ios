@@ -50,7 +50,7 @@ extension ExtensionTests {
         XCTAssertNil(emptyCollection[safe: 5])
     }
 
-    func test_mutable_collection_subsctipt() {
+    func test_mutable_collection_subscript() {
         var collection: [String]?
 
         collection?[safe: 0] = "zero"
@@ -62,5 +62,23 @@ extension ExtensionTests {
         collection = ["zero"]
 
         XCTAssertNotNil(collection?[safe: 0])
+    }
+}
+
+// MARK: - Calendar
+extension ExtensionTests {
+    func test_calendar_date_formatting() {
+        // 18:34
+        let sameDayDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        // Jan 24
+        let sameYearDate = Date(timeIntervalSince1970: 1611506052)
+        // Jan 24, 2020
+        let otherYearDate = Date(timeIntervalSince1970: 1579883652)
+        
+        XCTAssertTrue(dateFormatter.date(from: DateFormatter().formatDate(sameDayDate)) != nil)
+        XCTAssertEqual(DateFormatter().formatDate(sameYearDate), "Jan 24")
+        XCTAssertEqual(DateFormatter().formatDate(otherYearDate), "Jan 24, 2020")
     }
 }
