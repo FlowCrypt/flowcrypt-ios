@@ -10,9 +10,9 @@ import AsyncDisplayKit
 import FlowCryptUI
 
 // TODO: - ANTON - add radio button
-final class SetupEnterPassPhraseViewController: TableNodeViewController {
+final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, enterPhrase, chooseAnother
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, enterPhrase, chooseAnother
 
         var indexPath: IndexPath {
             IndexPath(row: rawValue, section: 0)
@@ -28,6 +28,17 @@ final class SetupEnterPassPhraseViewController: TableNodeViewController {
     private let router: GlobalRouterType
 
     private var passPhrase: String?
+
+    var shouldSaveLocally = true {
+        didSet {
+            handleSelectedPassPhraseOption()
+        }
+    }
+
+    var passPhraseIndexes: [IndexPath] {
+        [Parts.saveLocally, Parts.saveInMemory]
+            .map { IndexPath(row: $0.rawValue, section: 0) }
+    }
 
     init(
         decorator: SetupViewDecorator = SetupViewDecorator(),
@@ -168,7 +179,24 @@ extension SetupEnterPassPhraseViewController: ASTableDelegate, ASTableDataSource
                 }
             case .divider:
                 return DividerCellNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
+            case .saveLocally:
+                return self.saveLocallyNode
+            case .saveInMemory:
+                return self.saveInMemoryNode
             }
+        }
+    }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard let part = Parts(rawValue: indexPath.row) else { return }
+
+        switch part {
+        case .saveLocally:
+            shouldSaveLocally = true
+        case .saveInMemory:
+            shouldSaveLocally = false
+        default:
+            break
         }
     }
 }

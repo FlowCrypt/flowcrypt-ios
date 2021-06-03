@@ -23,7 +23,7 @@ enum CreateKeyError: Error {
     case conformingPassPhraseError
 }
 
-final class SetupKeyViewController: TableNodeViewController {
+final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable {
     enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle
     }
@@ -37,8 +37,15 @@ final class SetupKeyViewController: TableNodeViewController {
     private let storage: DataServiceType & KeyDataServiceType
     private let attester: AttesterApiType
 
-    private var shouldSaveLocally = true {
-        didSet { handleSelectedOption() }
+    var shouldSaveLocally = true {
+        didSet {
+            handleSelectedPassPhraseOption()
+        }
+    }
+
+    var passPhraseIndexes: [IndexPath] {
+        [Parts.saveLocally, Parts.saveInMemory]
+            .map { IndexPath(row: $0.rawValue, section: 0) }
     }
 
     init(
@@ -108,11 +115,6 @@ extension SetupKeyViewController {
         let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
         node.contentInset = insets
         node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
-    }
-
-    private func handleSelectedOption() {
-        let rows = [Parts.saveLocally, Parts.saveInMemory].map { IndexPath(row: $0.rawValue, section: 0) }
-        node.reloadRows(at: rows, with: .automatic)
     }
 }
 
@@ -262,6 +264,9 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                 }
+
+                // TODO: - ANTON - passPhrase didEndEditing
+
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
 
@@ -275,6 +280,7 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
                     title: self.decorator.buttonTitle(for: .setPassPhrase),
                     insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
+                    // TODO: - ANTON - setPassPhrase
                 }
             case .subtitle:
                 return SetupTitleNode(
@@ -287,9 +293,9 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
             case .saveLocally:
-                return CheckBoxTextNode(input: .passPhraseLocally(isSelected: self.shouldSaveLocally))
+                return self.saveLocallyNode
             case .saveInMemory:
-                return CheckBoxTextNode(input: .passPhraseMemory(isSelected: !self.shouldSaveLocally))
+                return self.saveInMemoryNode
             }
         }
     }

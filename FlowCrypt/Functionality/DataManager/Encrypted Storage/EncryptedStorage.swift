@@ -11,13 +11,15 @@ import Foundation
 import Promises
 import RealmSwift
 
-protocol EncryptedStorageType {
-    var storage: Realm { get }
-
+protocol KeyStorageType {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func publicKey() -> String?
-    func keys() -> Results<KeyInfo>?
+    func keys() -> [KeyInfo]
+}
+
+protocol EncryptedStorageType: KeyStorageType {
+    var storage: Realm { get }
 
     func getAllUsers() -> [UserObject]
     func saveActiveUser(with user: UserObject)
@@ -180,8 +182,9 @@ extension EncryptedStorage {
         }
     }
 
-    func keys() -> Results<KeyInfo>? {
-        storage.objects(KeyInfo.self)
+    func keys() -> [KeyInfo] {
+        let result = storage.objects(KeyInfo.self)
+        return Array(result)
     }
 
     func publicKey() -> String? {

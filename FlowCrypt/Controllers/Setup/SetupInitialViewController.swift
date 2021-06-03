@@ -263,3 +263,22 @@ extension SetupInitialViewController {
         }
     }
 }
+
+// TODO: - ANTON
+
+/*
+ During setup
+    new key - SetupKeyViewController
+    when loading from backup - SetupBackupsViewController
+    when importing key
+    creating
+    entering pass phrase
+
+ If the user switches it,
+ then we do not store pass phrase with the key (or at all).
+ We only keep it in memory for up to 4 hours from the moment it was stored - then it needs to be forgotten.
+ During those 4 hours, the key will be used for actions (eg decrypt messages).
+ After those 4 hours, the user will be prompted for a pass phrase with a modal / alert to re-enter it, at which point it will be again remembered for 4 hours.
+
+ If app gets killed, pass phrase gets forgotten.
+ */

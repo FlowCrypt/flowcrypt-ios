@@ -73,10 +73,8 @@ extension DataService: DataServiceType {
         guard let currentUser = currentUser else {
             return false
         }
-        guard let keys = encryptedStorage.keys() else {
-            return false
-        }
-        let isAnyKeysForCurrentUser = keys
+
+        let isAnyKeysForCurrentUser = encryptedStorage.keys()
             .map(\.account)
             .map { $0.contains(currentUser.email) }
             .contains(true)
@@ -123,8 +121,8 @@ extension DataService: DataServiceType {
 // MARK: - DataKeyServiceType
 extension DataService: KeyDataServiceType {
     var keys: [PrvKeyInfo]? {
-        guard let keys = encryptedStorage.keys() else { return nil }
-        return Array(keys).map(PrvKeyInfo.init)
+        encryptedStorage.keys()
+            .map(PrvKeyInfo.init)
     }
 
     var publicKey: String? {

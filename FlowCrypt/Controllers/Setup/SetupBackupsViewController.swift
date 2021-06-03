@@ -6,9 +6,9 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
-final class SetupBackupsViewController: TableNodeViewController {
+final class SetupBackupsViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, action, optionalAction
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction
     }
 
     private let router: GlobalRouterType
@@ -21,6 +21,17 @@ final class SetupBackupsViewController: TableNodeViewController {
 
     private var passPhrase: String?
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
+
+    var shouldSaveLocally = true {
+        didSet {
+            handleSelectedPassPhraseOption()
+        }
+    }
+
+    var passPhraseIndexes: [IndexPath] {
+        [Parts.saveLocally, Parts.saveInMemory]
+            .map { IndexPath(row: $0.rawValue, section: 0) }
+    }
 
     init(
         fetchedEncryptedKeys: [KeyDetails],
@@ -60,7 +71,6 @@ final class SetupBackupsViewController: TableNodeViewController {
 }
 
 // MARK: - Setup
-
 extension SetupBackupsViewController {
     private func setupUI() {
         node.delegate = self
@@ -96,7 +106,6 @@ extension SetupBackupsViewController {
 }
 
 // MARK: - Actions
-
 extension SetupBackupsViewController {
     private func handleBackups() {
         guard fetchedEncryptedKeys.isNotEmpty else {
@@ -130,7 +139,7 @@ extension SetupBackupsViewController {
         guard let passPhrase = passPhrase else { return }
 
         guard passPhrase.isNotEmpty else {
-            showAlert(message: "setup_enter_pass_phrase".localized)
+            showPassPhraseErrorAlert()
             return
         }
 
@@ -154,7 +163,6 @@ extension SetupBackupsViewController {
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
-
 extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
@@ -175,14 +183,12 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        // TODO: - ANTON - check text
-                        title: self.decorator.subtitle(for: .choosingPassPhrase),
+                        title: self.decorator.subtitle(for: .common),
                         insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
             case .passPhrase:
-                // TODO: - ANTON - check text
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
                     self?.passPhrase = value
@@ -196,11 +202,11 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                     return true
                 }
             case .action:
-                return ButtonCellNode(
-                    // TODO: - ANTON - check text
+                let input = ButtonCellNode.Input(
                     title: self.decorator.buttonTitle(for: .loadAccount),
                     insets: self.decorator.insets.buttonInsets
-                ) { [weak self] in
+                )
+                return ButtonCellNode(input: input) { [weak self] in
                     self?.handleButtonPressed()
                 }
                 .then {
@@ -212,31 +218,24 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                 }
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
+            case .saveLocally:
+                return self.saveLocallyNode
+            case .saveInMemory:
+                return self.saveInMemoryNode
             }
         }
     }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard let part = Parts(rawValue: indexPath.row) else { return }
+
+        switch part {
+        case .saveLocally:
+            shouldSaveLocally = true
+        case .saveInMemory:
+            shouldSaveLocally = false
+        default:
+            break
+        }
+    }
 }
-
-// TODO: - ANTON
-
-/*
- During setup
-    new key
-    when importing key
-    when loading from backup
-    creating
-    entering pass phrase
-
-the user should see two radio buttons:
-
- o store pass phrase locally -  Default is to store.
- o keep pass phrase in memory
-
- If the user switches it,
- then we do not store pass phrase with the key (or at all).
- We only keep it in memory for up to 4 hours from the moment it was stored - then it needs to be forgotten.
- During those 4 hours, the key will be used for actions (eg decrypt messages).
- After those 4 hours, the user will be prompted for a pass phrase with a modal / alert to re-enter it, at which point it will be again remembered for 4 hours.
-
- If app gets killed, pass phrase gets forgotten.
- */
