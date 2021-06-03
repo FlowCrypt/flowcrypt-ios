@@ -61,7 +61,6 @@ final class MessageViewController: TableNodeViewController {
         messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
-        storage: DataServiceType & KeyDataServiceType = DataService.shared,
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
@@ -285,7 +284,7 @@ extension MessageViewController {
     }
 
     private func handleReplyTap() {
-        guard let input = input else { return }
+        guard let input = input, let email = DataService.shared.email else { return }
 
         let replyInfo = ComposeViewController.Input.ReplyInfo(
             recipient: input.objMessage.sender,
@@ -295,12 +294,9 @@ extension MessageViewController {
             message: fetchedMessage.text
         )
 
+        let composeInput = ComposeViewController.Input(type: .reply(replyInfo))
         navigationController?.pushViewController(
-            ComposeViewController(
-                input: ComposeViewController.Input(
-                    type: .reply(replyInfo)
-                )
-            ),
+            ComposeViewController(email: email, input: composeInput),
             animated: true
         )
     }

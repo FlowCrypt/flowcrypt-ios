@@ -261,8 +261,11 @@ extension InboxViewController {
     }
 
     private func btnComposeTap() {
+        guard let email = DataService.shared.email else {
+            return
+        }
         TapTicFeedback.generate(.light)
-        let composeVc = ComposeViewController()
+        let composeVc = ComposeViewController(email: email)
         navigationController?.pushViewController(composeVc, animated: true)
     }
 }

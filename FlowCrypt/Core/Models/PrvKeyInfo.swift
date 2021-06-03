@@ -14,10 +14,11 @@ struct PrvKeyInfo: Encodable {
     let passphrase: String?
 }
 
-extension PrvKeyInfo {
-    init(from keyInfo: KeyInfo) {
-        self.private = keyInfo.private
-        self.longid = keyInfo.longid
-        self.passphrase = keyInfo.passphrase
-    }
-}
+// TODO: - ANTON
+//extension PrvKeyInfo {
+//    init(from keyInfo: KeyInfo) {
+//        self.private = keyInfo.private
+//        self.longid = keyInfo.longid
+//        self.passphrase = keyInfo.passphrase
+//    }
+//}

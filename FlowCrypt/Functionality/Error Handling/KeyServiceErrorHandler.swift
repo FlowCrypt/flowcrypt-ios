@@ -11,13 +11,16 @@ import UIKit
 struct KeyServiceErrorHandler: ErrorHandler {
     func handle(error: Error, for viewController: UIViewController) -> Bool {
         let errorMessage: String?
-        switch error {
-        case KeyServiceError.retrieve:
+        switch error as? KeyServiceError {
+        case .retrieve:
             errorMessage = "keyServiceError_retrieve_error"
-        case KeyServiceError.parse:
+        case .parsingError:
             errorMessage = "keyServiceError_retrieve_parse"
-        case KeyServiceError.unexpected:
+        case .unexpected:
             errorMessage = "keyServiceError_retrieve_unexpected"
+        case .emptyKeys:
+            // TODO: - ANTON
+            errorMessage = ""
         default:
             errorMessage = nil
         }

@@ -34,7 +34,8 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
     private let router: GlobalRouterType
     private let user: UserId
     private let backupService: BackupServiceType
-    private let storage: DataServiceType & KeyDataServiceType
+    private let storage: DataServiceType
+    private let keyStorage: KeyDataStorageType
     private let attester: AttesterApiType
 
     var shouldSaveLocally = true {
@@ -54,7 +55,8 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType & KeyDataServiceType = DataService.shared,
+        storage: DataServiceType = DataService.shared,
+        keyStorage: KeyDataStorageType = KeyDataStorage(),
         attester: AttesterApiType = AttesterApi()
     ) {
         self.user = user
@@ -64,6 +66,7 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
         self.backupService = backupService
         self.storage = storage
         self.attester = attester
+        self.keyStorage = keyStorage
 
         super.init(node: TableNode())
     }
@@ -133,7 +136,7 @@ extension SetupKeyViewController {
 
             try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
 
-            self.storage.addKeys(keyDetails: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
+            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
 
             let updateKey = self.attester.updateKey(
                 email: userId.email,

@@ -31,21 +31,21 @@ final class PassPhraseStorageService {
     }
 }
 
-import RealmSwift
-class KeyStorageMock: KeyStorageType {
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-    }
-
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-    }
-
-    var publicKeyResult: () -> (String?) = { nil }
-    func publicKey() -> String? {
-        publicKeyResult()
-    }
-
-    var keysResult: () -> ([KeyInfo]) = { [] }
-    func keys() -> [KeyInfo] {
-        keysResult()
-    }
-}
+//import RealmSwift
+//class KeyStorageMock: KeyStorageType {
+//    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+//    }
+//
+//    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+//    }
+//
+//    var publicKeyResult: () -> (String?) = { nil }
+//    func publicKey() -> String? {
+//        publicKeyResult()
+//    }
+//
+//    var keysResult: () -> ([KeyInfo]) = { [] }
+//    func keys() -> [KeyInfo] {
+//        keysResult()
+//    }
+//}

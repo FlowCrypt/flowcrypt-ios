@@ -12,7 +12,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     }
 
     private let router: GlobalRouterType
-    private let storage: DataServiceType & KeyDataServiceType
+    private let storage: KeyDataStorageType
     private let decorator: SetupViewDecorator
     private let core: Core
     private let keyMethods: KeyMethodsType
@@ -36,7 +36,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     init(
         fetchedEncryptedKeys: [KeyDetails],
         router: GlobalRouterType = GlobalRouter(),
-        storage: DataServiceType & KeyDataServiceType = DataService.shared,
+        storage: KeyDataStorageType = KeyDataStorage(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),

@@ -23,7 +23,7 @@ final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhr
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let keysDataService: KeyDataServiceType
+    private let keysDataService: KeyDataStorageType
     private let keyService: KeyServiceType
     private let router: GlobalRouterType
 
@@ -43,7 +43,7 @@ final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhr
     init(
         decorator: SetupViewDecorator = SetupViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(),
-        keysService: KeyDataServiceType = DataService.shared,
+        keysService: KeyDataStorageType = KeyDataStorage(),
         router: GlobalRouterType = GlobalRouter(),
         keyService: KeyServiceType = KeyService(),
         email: String,

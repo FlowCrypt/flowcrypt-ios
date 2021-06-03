@@ -40,16 +40,16 @@ extension FetchedMessage {
 // MARK: - MessageService
 final class MessageService {
     private let messageProvider: MessageProvider
-    private let dataService: DataServiceType & KeyDataServiceType
+    private let keyService: KeyServiceType
     private let core: Core
 
     init(
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
-        dataService: DataServiceType & KeyDataServiceType = DataService.shared,
+        keyService: KeyServiceType = KeyService(),
         core: Core = Core.shared
     ) {
         self.messageProvider = messageProvider
-        self.dataService = dataService
+        self.keyService = keyService
         self.core = core
     }
 
@@ -61,11 +61,17 @@ final class MessageService {
                 self.messageProvider.fetchMsg(message: input, folder: folder)
             )
 
-            guard let keys = self.dataService.keys else {
+            guard let keys = try? self.keyService.getPrivateKeys().get() else {
+                // TODO: - ANTON
+                return
+            }
+
+            guard keys.isNotEmpty else {
                 reject(CoreError.notReady("Could not fetch keys"))
                 return
             }
 
+            // TODO: - ANTON - match keys and pass phrase
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
                 keys: keys,

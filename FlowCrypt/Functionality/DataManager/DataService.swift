@@ -74,7 +74,7 @@ extension DataService: DataServiceType {
             return false
         }
 
-        let isAnyKeysForCurrentUser = encryptedStorage.keys()
+        let isAnyKeysForCurrentUser = encryptedStorage.keysInfo()
             .map(\.account)
             .map { $0.contains(currentUser.email) }
             .contains(true)
@@ -115,26 +115,6 @@ extension DataService: DataServiceType {
         default:
             return nil
         }
-    }
-}
-
-// MARK: - DataKeyServiceType
-extension DataService: KeyDataServiceType {
-    var keys: [PrvKeyInfo]? {
-        encryptedStorage.keys()
-            .map(PrvKeyInfo.init)
-    }
-
-    var publicKey: String? {
-        encryptedStorage.publicKey()
-    }
-
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
-    }
-
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        encryptedStorage.updateKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
     }
 }
 

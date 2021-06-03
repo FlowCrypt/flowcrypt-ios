@@ -19,7 +19,6 @@ final class KeyInfo: Object {
     @objc dynamic var `private`: String = ""
     @objc dynamic var `public`: String = ""
     @objc dynamic var longid: String = ""
-    @objc dynamic var passphrase: String = ""
     @objc dynamic var source: String = ""
     @objc dynamic var account: String = ""
 
@@ -33,10 +32,9 @@ final class KeyInfo: Object {
             assertionFailure("Will not store Private Key that is not fully encrypted") // crash tests
             throw KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
-        `private` = privateKey
-        `public` = keyDetails.public
-        longid = keyDetails.ids[0].longid
-        self.passphrase = passphrase
+        self.`private` = privateKey
+        self.`public` = keyDetails.public
+        self.longid = keyDetails.ids[0].longid
         self.source = source.rawValue
         self.account = keyDetails.users.first ?? ""
     }

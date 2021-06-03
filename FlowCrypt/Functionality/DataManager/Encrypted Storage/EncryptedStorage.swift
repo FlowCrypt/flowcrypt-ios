@@ -15,7 +15,7 @@ protocol KeyStorageType {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
     func publicKey() -> String?
-    func keys() -> [KeyInfo]
+    func keysInfo() -> [KeyInfo]
 }
 
 protocol EncryptedStorageType: KeyStorageType {
@@ -182,7 +182,7 @@ extension EncryptedStorage {
         }
     }
 
-    func keys() -> [KeyInfo] {
+    func keysInfo() -> [KeyInfo] {
         let result = storage.objects(KeyInfo.self)
         return Array(result)
     }
