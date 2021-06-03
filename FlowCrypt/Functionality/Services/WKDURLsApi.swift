@@ -10,11 +10,14 @@ import CryptoKit
 import Promises
 
 protocol WKDURLsApiType {
-    func lookupEmail(_ email: String) -> Promise<[String]>
-    func rawLookupEmail(_ email: String) -> Promise<CoreRes.ParseKeys?>
+    func lookupEmail(_ email: String) -> Promise<[KeyDetails]>
 }
 
 class WKDURLsApi: WKDURLsApiType {
+
+    private enum Constants {
+        static let lookupEmailRequestTimeout: TimeInterval = 4
+    }
 
     private let wkdURLsConstructor: WKDURLsConstructorType
     private let core: Core
@@ -27,8 +30,8 @@ class WKDURLsApi: WKDURLsApiType {
         self.core = core
     }
 
-    func lookupEmail(_ email: String) -> Promise<[String]> {
-        Promise<[String]> { [weak self] resolve, _ in
+    func lookupEmail(_ email: String) -> Promise<[KeyDetails]> {
+        Promise<[KeyDetails]> { [weak self] resolve, _ in
             guard let self = self else { return }
             let response = try awaitPromise(self.rawLookupEmail(email))
             guard let safeResponse = response else {
@@ -37,9 +40,10 @@ class WKDURLsApi: WKDURLsApiType {
             }
             let pubKeys = safeResponse.keyDetails
                     .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
-                    .map(\.public)
             resolve(pubKeys)
         }
+        .timeout(Constants.lookupEmailRequestTimeout)
+        .recoverFromTimeOut(result: [])
     }
 
     func rawLookupEmail(_ email: String) -> Promise<CoreRes.ParseKeys?> {

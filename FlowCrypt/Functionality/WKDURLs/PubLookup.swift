@@ -27,9 +27,9 @@ class PubLookup {
         self.core = core
     }
 
-    func lookupEmail(_ email: String) -> Promise<[String]> {
+    func lookupEmail(_ email: String) -> Promise<[KeyDetails]> {
 
-        return Promise<[String]> { [weak self] resolve, _ in
+        Promise<[KeyDetails]> { [weak self] resolve, _ in
             guard let self = self else {
                 resolve([])
                 return
@@ -47,7 +47,6 @@ class PubLookup {
             }
             let attesterPubKeys = attesterKeys.keyDetails
                     .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
-                    .map(\.public)
             resolve(attesterPubKeys)
         }
     }
