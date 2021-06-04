@@ -18,6 +18,11 @@ protocol AttesterApiType {
 }
 
 final class AttesterApi: AttesterApiType {
+
+    private enum Constants {
+        static let lookupEmailRequestTimeout: TimeInterval = 10
+    }
+
     private enum Endpoint {
         static let baseURL = "https://flowcrypt.com/attester/"
     }
@@ -45,6 +50,7 @@ extension AttesterApi {
             // programming error because should never happen
             throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
         }
+        .timeout(Constants.lookupEmailRequestTimeout)
     }
 
     @discardableResult
