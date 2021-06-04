@@ -51,7 +51,6 @@ extension AttesterApi {
             throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
         }
         .timeout(Constants.lookupEmailRequestTimeout)
-        .recoverFromTimeOut(result: PubkeySearchResult(email: email, armored: nil))
     }
 
     @discardableResult
