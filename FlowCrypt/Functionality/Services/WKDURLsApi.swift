@@ -22,6 +22,8 @@ class WKDURLsApi: WKDURLsApiType {
     private let wkdURLsConstructor: WKDURLsConstructorType
     private let core: Core
 
+    private let excludedDomains = ["gmail.com", "googlemail.com"]
+
     init(
         wkdURLsConstructor: WKDURLsConstructorType = WKDURLsConstructor(),
         core: Core = Core.shared
@@ -47,8 +49,10 @@ class WKDURLsApi: WKDURLsApiType {
     }
 
     func rawLookupEmail(_ email: String) -> Promise<CoreRes.ParseKeys?> {
-        guard let advancedUrlConstructorResult = wkdURLsConstructor.construct(from: email, mode: .advanced),
-              let directUrlConstructorResult = wkdURLsConstructor.construct(from: email, mode: .direct) else {
+        guard !excludedDomains.contains(email.recipientDomain ?? ""),
+              let advancedUrlConstructorResult = wkdURLsConstructor.construct(from: email, mode: .advanced),
+              let directUrlConstructorResult = wkdURLsConstructor.construct(from: email, mode: .direct)
+               else {
             return Promise { resolve, _ in
                 resolve(nil)
             }
@@ -104,30 +108,21 @@ extension WKDURLsApi {
             body: nil
         )
 
-        do {
-            _ = try awaitPromise(URLSession.shared.call(policyRequest))
-        } catch {
-            Logger.nested("WKDURLsService").logInfo("Failed to load \(baseUrlString)/policy with error \(error)")
-            return Promise { resolve, _ in
+        return Promise<(hasPolicy: Bool, key: Data?)> { resolve, _ in
+            do {
+                _ = try awaitPromise(URLSession.shared.call(policyRequest))
+            } catch {
+                Logger.nested("WKDURLsService").logInfo("Failed to load \(baseUrlString)/policy with error \(error)")
                 resolve((false, nil))
             }
-        }
-
-        do {
-            let result = try awaitPromise(URLSession.shared.call(publicKeyRequest))
-            if !result.data.toStr().isEmpty {
+            let publicKeyResponse = try awaitPromise(URLSession.shared.call(publicKeyRequest, tolerateStatus: [404]))
+            if !publicKeyResponse.data.toStr().isEmpty {
                 Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(baseUrlString)/\(userPart) and will try to extract Public Keys")
             }
-            return Promise { resolve, _ in
-                resolve((false, result.data))
-            }
-
-        } catch {
-            Logger.nested("WKDURLsService")
-                .logInfo("Failed to load \(baseUrlString)/\(userPart) with error \(error)")
-            return Promise { resolve, _ in
+            if publicKeyResponse.status == 404 {
                 resolve((true, nil))
             }
+            resolve((true, publicKeyResponse.data))
         }
     }
 }
