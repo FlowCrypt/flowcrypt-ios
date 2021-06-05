@@ -15,59 +15,46 @@ protocol ContactsProviderType {
 
 struct RemoteContactsProvider {
     let api: AttesterApiType
-    let core: Core
 
     init(
-        api: AttesterApiType = AttesterApi(),
-        core: Core = .shared
+        api: AttesterApiType = AttesterApi()
     ) {
         self.api = api
-        self.core = core
     }
 }
 
 extension RemoteContactsProvider: ContactsProviderType {
     func searchContact(with email: String) -> Promise<Contact> {
         Promise<Contact> { resolve, _ in
-            let armoredData = try awaitPromise(self.api.lookupEmail(email: email)).armored
-            let contact = try awaitPromise(self.parseKey(data: armoredData, for: email))
+            let keyDetails = try awaitPromise(self.api.lookupEmail(email: email))
+            let contact = try awaitPromise(self.parseKey(keyDetails: keyDetails, for: email))
             resolve(contact)
         }
     }
 
-    private func parseKey(data armoredData: Data?, for email: String) -> Promise<Contact> {
-        guard let data = armoredData else {
+    private func parseKey(keyDetails: [KeyDetails], for email: String) -> Promise<Contact> {
+
+        guard let keyDetail = keyDetails.first else {
             return Promise(ContactsError.keyMissing)
         }
 
-        do {
-            let parsedKey = try core.parseKeys(armoredOrBinary: data)
+        let keyIds = keyDetails.flatMap(\.ids)
+        let longids = keyIds.map(\.longid)
+        let fingerprints = keyIds.map(\.fingerprint)
 
-            guard let keyDetail = parsedKey.keyDetails.first else {
-                return Promise(ContactsError.unexpected("Key details are not parsed"))
-            }
-
-            let keyIds = parsedKey.keyDetails.flatMap(\.ids)
-            let longids = keyIds.map(\.longid)
-            let fingerprints = keyIds.map(\.fingerprint)
-
-            let contact = Contact(
-                email: email,
-                name: keyDetail.users.first ?? email,
-                pubKey: keyDetail.public,
-                pubKeyLastSig: nil, // TODO: - will be provided later
-                pubkeyLastChecked: Date(),
-                pubkeyExpiresOn: nil, // TODO: - will be provided later
-                longids: longids,
-                lastUsed: nil,
-                fingerprints: fingerprints,
-                pubkeyCreated: Date(timeIntervalSince1970: Double(keyDetail.created)),
-                algo: keyDetail.algo
-            )
-            return Promise(contact)
-        } catch {
-            let message = "Armored or binary are not parsed.\n\(error.localizedDescription)"
-            return Promise(ContactsError.unexpected(message))
-        }
+        let contact = Contact(
+            email: email,
+            name: keyDetail.users.first ?? email,
+            pubKey: keyDetail.public,
+            pubKeyLastSig: nil, // TODO: - will be provided later
+            pubkeyLastChecked: Date(),
+            pubkeyExpiresOn: nil, // TODO: - will be provided later
+            longids: longids,
+            lastUsed: nil,
+            fingerprints: fingerprints,
+            pubkeyCreated: Date(timeIntervalSince1970: Double(keyDetail.created)),
+            algo: keyDetail.algo
+        )
+        return Promise(contact)
     }
 }
