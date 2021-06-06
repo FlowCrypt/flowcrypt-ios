@@ -9,5 +9,5 @@
 import Foundation
 
 class Configuration {
-    static let excludedDomains = ["gmail.com", "googlemail.com", "outlook.com"]
+    static let publicEmailProviderDomains = ["gmail.com", "googlemail.com", "outlook.com"]
 }
