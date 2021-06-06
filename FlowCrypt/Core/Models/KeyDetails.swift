@@ -18,6 +18,10 @@ struct KeyDetails: Decodable {
     let created: Int
     let users: [String]
     let algo: KeyAlgo?
+
+    var longid: String {
+        ids[0].longid
+    }
 }
 
 extension KeyDetails: Hashable {

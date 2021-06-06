@@ -12,12 +12,13 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     }
 
     private let router: GlobalRouterType
-    private let storage: KeyDataStorageType
     private let decorator: SetupViewDecorator
     private let core: Core
     private let keyMethods: KeyMethodsType
     private let user: UserId
     private let fetchedEncryptedKeys: [KeyDetails]
+    private let keyStorage: KeyStorageType
+    let passPhraseStorage: PassPhraseStorageType
 
     private var passPhrase: String?
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
@@ -36,19 +37,21 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     init(
         fetchedEncryptedKeys: [KeyDetails],
         router: GlobalRouterType = GlobalRouter(),
-        storage: KeyDataStorageType = KeyDataStorage(),
+        keyStorage: KeyStorageType = KeyDataStorage(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
-        user: UserId
+        user: UserId,
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage()
     ) {
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
         self.router = router
-        self.storage = storage
+        self.keyStorage = keyStorage
         self.decorator = decorator
         self.core = core
         self.keyMethods = keyMethods
         self.user = user
+        self.passPhraseStorage = passPhraseStorage
 
         super.init(node: TableNode())
     }
@@ -121,15 +124,24 @@ extension SetupBackupsViewController {
     }
 
     private func recoverAccount(with backups: [KeyDetails], and passPhrase: String) {
-
-        let matchingKeyBackups = keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase)
+        let matchingKeyBackups = Set(keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase))
 
         guard matchingKeyBackups.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
 
-        storage.addKeys(keyDetails: matchingKeyBackups, passPhrase: passPhrase, source: .backup)
+        // save pass phrase
+        matchingKeyBackups
+            .map {
+                PassPhrase(value: passPhrase, longid: $0.longid)
+            }
+            .forEach {
+                passPhraseStorage.savePassPhrase(with: $0, isLocally: shouldSaveLocally)
+            }
+
+        // save keys
+        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups), source: .backup)
 
         moveToMainFlow()
     }

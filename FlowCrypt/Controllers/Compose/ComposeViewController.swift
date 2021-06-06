@@ -46,7 +46,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let messageSender: MessageGateway
     private let notificationCenter: NotificationCenter
-    private let dataService: KeyDataStorageType
+    private let dataService: KeyStorageType
     private let decorator: ComposeViewDecoratorType
     private let core: Core
     private let contactsService: ContactsServiceType
@@ -65,7 +65,7 @@ final class ComposeViewController: TableNodeViewController {
         email: String,
         messageSender: MessageGateway = MailProvider.shared.messageSender,
         notificationCenter: NotificationCenter = .default,
-        dataService: KeyDataStorageType = KeyDataStorage(),
+        dataService: KeyStorageType = KeyDataStorage(),
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
@@ -246,23 +246,25 @@ extension ComposeViewController {
                 ?? self.contextToSend.subject
                 ?? "(no subject)"
 
-            guard let myPubKey = self.dataService.publicKey else {
-                self.showAlert(message: "compose_no_pub_sender".localized)
-                return false
-            }
+            // TODO: - ANTON - encryptAndSendMessage
+//
+//            guard let myPubKey = self.dataService.publicKey else {
+//                self.showAlert(message: "compose_no_pub_sender".localized)
+//                return false
+//            }
+//
+//            guard let allRecipientPubs = self.getPubKeys(for: recipients) else {
+//                return false
+//            }
+//
+//            let encrypted = self.encryptMsg(
+//                pubkeys: allRecipientPubs + [myPubKey],
+//                subject: subject,
+//                message: text,
+//                to: recipients.map(\.email)
+//            )
 
-            guard let allRecipientPubs = self.getPubKeys(for: recipients) else {
-                return false
-            }
-
-            let encrypted = self.encryptMsg(
-                pubkeys: allRecipientPubs + [myPubKey],
-                subject: subject,
-                message: text,
-                to: recipients.map(\.email)
-            )
-
-            try awaitPromise(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
+//            try awaitPromise(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
 
             return true
         }

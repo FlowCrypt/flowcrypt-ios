@@ -9,7 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-// TODO: - ANTON - add refresh controller
 final class SetupInitialViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, createKey, importKey, anotherAccount
@@ -71,7 +70,6 @@ final class SetupInitialViewController: TableNodeViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        state = .searching
     }
 
     override func viewWillAppear(_ animated: Bool) {

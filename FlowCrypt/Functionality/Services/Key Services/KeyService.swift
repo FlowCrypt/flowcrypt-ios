@@ -14,32 +14,33 @@ protocol KeyServiceType {
 }
 
 enum KeyServiceError: Error {
-    case emptyKeys, unexpected, parsingError, retrieve, test // TODO: - ANTON
+    case emptyKeys, unexpected, parsingError, retrieve
 }
 
-struct KeyService: KeyServiceType {
+final class KeyService: KeyServiceType {
     let coreService: Core = .shared
-    let dataService: KeyDataStorageType = KeyDataStorage()
+    let storage: KeyStorageType
+    let passPhraseStorage: PassPhraseStorageType
+    let currentUserEmail: () -> (String?)
+
+    init(
+        storage: KeyStorageType = KeyDataStorage(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(),
+        currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
+    ) {
+        self.storage = storage
+        self.passPhraseStorage = passPhraseStorage
+        self.currentUserEmail = currentUserEmail
+    }
 
     func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
-        let keysInfo = dataService.keysInfo
-
-        // TODO: - ANTON - Match all keysInfo
-        // TODO: - ANTON - get all available pass phrases
-        // TODO: - ANTON - match them by longId to create PrvKeyInfo
-        // TODO: - ANTON - Handle error by showing alert for user
-
-        let privateKeys: [PrvKeyInfo] = []
-
-//        let keys = dataService.privateKeys
-        guard privateKeys.isNotEmpty else {
+        guard let privateKeys = try? getPrivateKeys().get(), privateKeys.isNotEmpty else {
             return .failure(.emptyKeys)
         }
 
         let keyDetails = privateKeys
             .compactMap {
-                try? coreService
-                    .parseKeys(armoredOrBinary: $0.private.data())
+                try? coreService.parseKeys(armoredOrBinary: $0.private.data())
                     .keyDetails
             }
             .flatMap { $0 }
@@ -52,6 +53,41 @@ struct KeyService: KeyServiceType {
     }
 
     func getPrivateKeys() -> Result<[PrvKeyInfo], KeyServiceError> {
-        .failure(.test)
+        guard let email = currentUserEmail() else {
+            return .failure(.retrieve)
+        }
+
+        let keysInfo = storage.keysInfo()
+            .filter { $0.account.contains(email) }
+
+        let passPhrases = passPhraseStorage.getPassPhrases()
+
+        guard keysInfo.isNotEmpty, passPhrases.isNotEmpty else {
+            return .failure(.emptyKeys)
+        }
+
+        let privateKeys = keysInfo.compactMap { (keyInfo) -> PrvKeyInfo? in
+            guard let passPhrase = passPhrases.first(where: { $0.longid == keyInfo.longid }) else {
+                return nil
+            }
+
+            let passPhraseValue = passPhrase.value
+
+            guard passPhraseValue.isNotEmpty else {
+                return nil
+            }
+
+            return PrvKeyInfo(
+                private: keyInfo.private,
+                longid: keyInfo.longid,
+                passphrase: passPhraseValue
+            )
+        }
+
+        guard privateKeys.isNotEmpty else {
+            return .failure(.emptyKeys)
+        }
+
+        return .success(privateKeys)
     }
 }

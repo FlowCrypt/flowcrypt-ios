@@ -56,12 +56,14 @@ final class MessageViewController: TableNodeViewController {
     private let messageOperationsProvider: MessageOperationsProvider
     private let trashFolderProvider: TrashFolderProviderType
     private var fetchedMessage: FetchedMessage = .empty
+    private let passPhraseStorage: PassPhraseStorageType
 
     init(
         messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
@@ -71,6 +73,7 @@ final class MessageViewController: TableNodeViewController {
         self.decorator = decorator
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
+        self.passPhraseStorage = passPhraseStorage
 
         super.init(node: TableNode())
     }
@@ -115,7 +118,7 @@ final class MessageViewController: TableNodeViewController {
             // we need to have only help and trash buttons
             items = [helpButton, trashButton]
 
-        // TODO: - ANTON - Check if this should be fixed
+        // TODO: - Ticket - Check if this should be fixed
         case "inbox":
             // for Gmail inbox we also need to have archive and unread buttons
             items = [helpButton, archiveButton, trashButton, unreadButton]
@@ -153,15 +156,51 @@ extension MessageViewController {
     }
 
     private func handleError(_ error: Error, path: String) {
-        if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
-            // todo - the missing msg should be removed from the list in inbox view
-            // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
-            showToast("Message not found in folder: \(path)")
+        // TODO: - Ticket - Improve error handling for MessageViewController
+        if error is MessageServiceError {
+            showPassPhraseAlert()
         } else {
-            // todo - this should be a retry / cancel alert
-            showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
+            if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
+                // todo - the missing msg should be removed from the list in inbox view
+                // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
+                showToast("Message not found in folder: \(path)")
+            } else {
+                // todo - this should be a retry / cancel alert
+                showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
+            }
+            navigationController?.popViewController(animated: true)
         }
-        navigationController?.popViewController(animated: true)
+    }
+
+    private func showPassPhraseAlert() {
+        hideSpinner()
+        let alert = UIAlertController(title: "Please enter pass phrase", message: nil, preferredStyle: .alert)
+        alert.addTextField { tf in
+            tf.isSecureTextEntry = true
+        }
+
+        let saveAction = UIAlertAction(title: "Save", style: .default) { [weak self] _ in
+            guard let textField = alert.textFields?.first,
+                  let passPhrase = textField.text,
+                  passPhrase.isNotEmpty
+            else {
+                alert.dismiss(animated: true, completion: nil)
+                return
+            }
+            self?.passPhraseStorage.saveLocally(passPhrase: passPhrase)
+            alert.dismiss(animated: true) {
+                self?.fetchDecryptAndRenderMsg()
+            }
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
+            alert.dismiss(animated: true, completion: nil)
+        }
+
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+
+        present(alert, animated: true, completion: nil)
     }
 
     private func asyncMarkAsReadIfNotAlreadyMarked() {

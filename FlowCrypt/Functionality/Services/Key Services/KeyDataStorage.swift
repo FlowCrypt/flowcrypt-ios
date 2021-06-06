@@ -8,13 +8,6 @@
 
 import Foundation
 
-protocol KeyDataStorageType {
-    var keysInfo: [KeyInfo] { get }
-    var publicKey: String? { get }
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-}
-
 final class KeyDataStorage {
     private let encryptedStorage: EncryptedStorageType
     private let passPhraseStorage: PassPhraseStorageType
@@ -28,20 +21,20 @@ final class KeyDataStorage {
     }
 }
 
-extension KeyDataStorage: KeyDataStorageType {
-    var keysInfo: [KeyInfo] {
-        encryptedStorage.keysInfo()
+extension KeyDataStorage: KeyStorageType {
+    func updateKeys(keyDetails: [KeyDetails], source: KeySource) {
+        encryptedStorage.updateKeys(keyDetails: keyDetails, source: source)
     }
 
-    var publicKey: String? {
+    func publicKey() -> String? {
         encryptedStorage.publicKey()
     }
 
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
+    func keysInfo() -> [KeyInfo] {
+        encryptedStorage.keysInfo()
     }
 
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        encryptedStorage.updateKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source)
+    func addKeys(keyDetails: [KeyDetails], source: KeySource) {
+        encryptedStorage.addKeys(keyDetails: keyDetails, source: source)
     }
 }

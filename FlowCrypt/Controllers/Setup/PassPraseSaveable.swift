@@ -14,6 +14,8 @@ protocol PassPhraseSaveable {
     var saveLocallyNode: CellNode { get }
     var saveInMemoryNode: CellNode { get }
 
+    var passPhraseStorage: PassPhraseStorageType { get }
+
     func handleSelectedPassPhraseOption()
     func showPassPhraseErrorAlert()
 }
@@ -28,7 +30,7 @@ extension PassPhraseSaveable where Self: TableNodeViewController {
     }
 
     var saveInMemoryNode: CellNode {
-        CheckBoxTextNode(input: .passPhraseLocally(isSelected: !self.shouldSaveLocally))
+        CheckBoxTextNode(input: .passPhraseMemory(isSelected: !self.shouldSaveLocally))
     }
 
     func showPassPhraseErrorAlert() {

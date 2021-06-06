@@ -28,7 +28,7 @@ struct FetchedMessage {
 }
 
 extension FetchedMessage {
-    // TODO: - ANTON - fix with empty state for MessageViewController
+    // TODO: - Ticket - fix with empty state for MessageViewController
     static let empty = FetchedMessage(
         rawMimeData: Data(),
         text: "loading_title".localized + "...",
@@ -38,6 +38,10 @@ extension FetchedMessage {
 }
 
 // MARK: - MessageService
+enum MessageServiceError: Error {
+    case missedPassPhrase
+}
+
 final class MessageService {
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
@@ -62,8 +66,7 @@ final class MessageService {
             )
 
             guard let keys = try? self.keyService.getPrivateKeys().get() else {
-                // TODO: - ANTON
-                return
+                return reject(MessageServiceError.missedPassPhrase)
             }
 
             guard keys.isNotEmpty else {
@@ -71,7 +74,6 @@ final class MessageService {
                 return
             }
 
-            // TODO: - ANTON - match keys and pass phrase
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
                 keys: keys,

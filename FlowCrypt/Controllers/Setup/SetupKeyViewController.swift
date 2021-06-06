@@ -35,8 +35,9 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
     private let user: UserId
     private let backupService: BackupServiceType
     private let storage: DataServiceType
-    private let keyStorage: KeyDataStorageType
+    private let keyStorage: KeyStorageType
     private let attester: AttesterApiType
+    let passPhraseStorage: PassPhraseStorageType
 
     var shouldSaveLocally = true {
         didSet {
@@ -56,8 +57,9 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         storage: DataServiceType = DataService.shared,
-        keyStorage: KeyDataStorageType = KeyDataStorage(),
-        attester: AttesterApiType = AttesterApi()
+        keyStorage: KeyStorageType = KeyDataStorage(),
+        attester: AttesterApiType = AttesterApi(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage()
     ) {
         self.user = user
         self.core = core
@@ -67,6 +69,7 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
         self.storage = storage
         self.attester = attester
         self.keyStorage = keyStorage
+        self.passPhraseStorage = passPhraseStorage
 
         super.init(node: TableNode())
     }
@@ -93,7 +96,7 @@ extension SetupKeyViewController {
         observeKeyboardNotifications()
     }
 
-    // TODO: - ANTON - Unify this logic for all controllers
+    // TODO: - Ticket? - Unify this logic for all controllers
     // swiftlint:disable discarded_notification_center_observer
     private func observeKeyboardNotifications() {
         NotificationCenter.default.addObserver(
@@ -136,13 +139,17 @@ extension SetupKeyViewController {
 
             try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
 
-            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], passPhrase: passPhrase, source: .generated)
+            let passPhrase = PassPhrase(value: passPhrase, longid: encryptedPrv.key.longid)
+
+            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated)
+            self.passPhraseStorage.savePassPhrase(with: passPhrase, isLocally: self.shouldSaveLocally)
 
             let updateKey = self.attester.updateKey(
                 email: userId.email,
                 pubkey: encryptedPrv.key.public,
                 token: self.storage.token
             )
+
             try awaitPromise(self.alertAndSkipOnRejection(
                 updateKey,
                 fail: "Failed to submit Public Key")
@@ -268,7 +275,7 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
                     guard case let .didEndEditing(value) = action else { return }
                 }
 
-                // TODO: - ANTON - passPhrase didEndEditing
+                // TODO: - ANTON - ui logic - passPhrase didEndEditing
 
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
@@ -283,7 +290,7 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
                     title: self.decorator.buttonTitle(for: .setPassPhrase),
                     insets: self.decorator.insets.buttonInsets
                 ) { [weak self] in
-                    // TODO: - ANTON - setPassPhrase
+                    // TODO: - ANTON - ui logic - passPhrase didEndEditing
                 }
             case .subtitle:
                 return SetupTitleNode(

@@ -9,7 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-// TODO: - ANTON - add radio button
 final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, enterPhrase, chooseAnother
@@ -23,9 +22,10 @@ final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhr
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let keysDataService: KeyDataStorageType
+    private let keysStorage: KeyStorageType
     private let keyService: KeyServiceType
     private let router: GlobalRouterType
+    let passPhraseStorage: PassPhraseStorageType
 
     private var passPhrase: String?
 
@@ -43,9 +43,10 @@ final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhr
     init(
         decorator: SetupViewDecorator = SetupViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(),
-        keysService: KeyDataStorageType = KeyDataStorage(),
+        keysService: KeyStorageType = KeyDataStorage(),
         router: GlobalRouterType = GlobalRouter(),
         keyService: KeyServiceType = KeyService(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
@@ -53,9 +54,11 @@ final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhr
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.keysDataService = keysService
+        self.keysStorage = keysService
         self.router = router
         self.keyService = keyService
+        self.passPhraseStorage = passPhraseStorage
+
         super.init(node: TableNode())
     }
 
@@ -163,18 +166,15 @@ extension SetupEnterPassPhraseViewController: ASTableDelegate, ASTableDataSource
                     return true
                 }
             case .enterPhrase:
-                return ButtonCellNode(
+                let input = ButtonCellNode.Input(
                     title: self.decorator.buttonTitle(for: .passPhraseContinue),
                     insets: self.decorator.insets.buttonInsets
-                ) { [weak self] in
+                )
+                return ButtonCellNode(input: input) { [weak self] in
                     self?.handleContinueAction()
                 }
             case .chooseAnother:
-                return ButtonCellNode(
-                    title: self.decorator.buttonTitle(for: .passPhraseChooseAnother),
-                    insets: self.decorator.insets.buttonInsets,
-                    color: .lightGray
-                ) { [weak self] in
+                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
                     self?.navigationController?.popViewController(animated: true)
                 }
             case .divider:
@@ -236,17 +236,24 @@ extension SetupEnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        keysDataService.addKeys(
-            keyDetails: newKeysToAdd,
-            passPhrase: passPhrase,
-            source: .imported
-        )
+        keysStorage.addKeys(keyDetails: newKeysToAdd, source: .imported)
+        keysStorage.updateKeys(keyDetails: keysToUpdate, source: .imported)
 
-        keysDataService.updateKeys(
-            keyDetails: keysToUpdate,
-            passPhrase: passPhrase,
-            source: .imported
-        )
+        keysToUpdate
+            .map {
+                PassPhrase(value: passPhrase, longid: $0.longid)
+            }
+            .forEach {
+                passPhraseStorage.updatePassPhrase(with: $0, isLocally: shouldSaveLocally)
+            }
+
+        newKeysToAdd
+            .map {
+                PassPhrase(value: passPhrase, longid: $0.longid)
+            }
+            .forEach {
+                passPhraseStorage.savePassPhrase(with: $0, isLocally: shouldSaveLocally)
+            }
 
         hideSpinner()
 
