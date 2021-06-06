@@ -44,7 +44,7 @@ final class Core {
 
     public func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) throws -> CoreRes.ParseDecryptMsg {
         let json: [String : Any?]? = [
-            "keys": try keys.map { try $0.toDict() },
+            "keys": try keys.map { try $0.toJsonEncodedDict() },
             "isEmail": isEmail,
             "msgPwd": msgPwd
         ]
@@ -91,7 +91,7 @@ final class Core {
     }
 
     public func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) throws -> CoreRes.GenerateKey {
-        let request: [String: Any] = ["passphrase": passphrase, "variant": String(variant.rawValue), "userIds": try userIds.map { try $0.toDict() }]
+        let request: [String: Any] = ["passphrase": passphrase, "variant": String(variant.rawValue), "userIds": try userIds.map { try $0.toJsonEncodedDict() }]
         let r = try call("generateKey", jsonDict: request, data: nil)
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
     }

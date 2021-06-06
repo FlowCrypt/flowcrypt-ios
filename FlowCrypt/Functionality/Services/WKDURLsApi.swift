@@ -22,8 +22,6 @@ class WKDURLsApi: WKDURLsApiType {
     private let wkdURLsConstructor: WKDURLsConstructorType
     private let core: Core
 
-    private let excludedDomains = ["gmail.com", "googlemail.com"]
-
     init(
         wkdURLsConstructor: WKDURLsConstructorType = WKDURLsConstructor(),
         core: Core = Core.shared
@@ -49,7 +47,7 @@ class WKDURLsApi: WKDURLsApiType {
     }
 
     func rawLookupEmail(_ email: String) -> Promise<CoreRes.ParseKeys?> {
-        guard !excludedDomains.contains(email.recipientDomain ?? ""),
+        guard !Configuration.publicEmailProviderDomains.contains(email.recipientDomain ?? ""),
               let advancedUrlConstructorResult = wkdURLsConstructor.construct(from: email, mode: .advanced),
               let directUrlConstructorResult = wkdURLsConstructor.construct(from: email, mode: .direct)
                else {
