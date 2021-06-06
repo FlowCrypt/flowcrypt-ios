@@ -30,7 +30,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             }
             let urlString = "https://fes.\(userDomain)/"
             let request = URLRequest.urlRequest(
-                with: "\(urlString)api/fdsfsdf",
+                with: "\(urlString)api/",
                 method: .get,
                 body: nil
             )
