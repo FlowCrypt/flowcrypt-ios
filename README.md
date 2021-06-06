@@ -34,3 +34,8 @@ Storage - [Realm](https://github.com/realm)
 Async Operations - [PromiseKit](https://github.com/mxcl/PromiseKit)
 
 IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
+
+### Admin - generating .ipa for pen tester
+
+1) get uuid of their device and input it into https://developer.apple.com/account/ -> Devices
+2) xCode -> Product -> Archive
