@@ -37,7 +37,7 @@ struct KeyServiceErrorHandler: ErrorHandler {
 struct CreateKeyErrorHandler: ErrorHandler {
     func handle(error: Error, for viewController: UIViewController) -> Bool {
         let errorMessage: String?
-        
+
         switch error as? CreateKeyError {
         case .weakPassPhrase(let strength):
             errorMessage = "Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase."
@@ -52,11 +52,11 @@ struct CreateKeyErrorHandler: ErrorHandler {
         case .none:
             errorMessage = nil
         }
-        
+
         guard let message = errorMessage else { return false }
-        
+
         viewController.showAlert(message: message)
-        
+
         return true
     }
 }

@@ -14,7 +14,10 @@ final class KeyDataStorage {
 
     init(
         encryptedStorage: EncryptedStorageType = EncryptedStorage(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage()
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        )
     ) {
         self.encryptedStorage = encryptedStorage
         self.passPhraseStorage = passPhraseStorage

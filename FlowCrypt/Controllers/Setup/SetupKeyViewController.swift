@@ -62,7 +62,10 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
         storage: DataServiceType = DataService.shared,
         keyStorage: KeyStorageType = KeyDataStorage(),
         attester: AttesterApiType = AttesterApi(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage()
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        )
     ) {
         self.user = user
         self.core = core
@@ -253,6 +256,7 @@ extension SetupKeyViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
+        logger.logInfo("Setup account with \(passPhrase)")
         setupAccountWithGeneratedKey(with: passPhrase)
     }
 }

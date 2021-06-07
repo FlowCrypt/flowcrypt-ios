@@ -63,7 +63,10 @@ final class MessageViewController: TableNodeViewController {
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        ),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {

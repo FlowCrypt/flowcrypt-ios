@@ -10,7 +10,7 @@ import Foundation
 import Promises
 import RealmSwift
 
-protocol DataServiceType {
+protocol DataServiceType: EmailProviderType {
     // data
     var email: String? { get }
     var currentUser: User? { get }

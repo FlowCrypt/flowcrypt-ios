@@ -25,7 +25,10 @@ final class KeyService: KeyServiceType {
 
     init(
         storage: KeyStorageType = KeyDataStorage(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        ),
         currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
     ) {
         self.storage = storage

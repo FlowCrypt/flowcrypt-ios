@@ -42,7 +42,10 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
         user: UserId,
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage()
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        )
     ) {
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
         self.router = router

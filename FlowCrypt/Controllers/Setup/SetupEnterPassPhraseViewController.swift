@@ -46,7 +46,10 @@ final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhr
         keysService: KeyStorageType = KeyDataStorage(),
         router: GlobalRouterType = GlobalRouter(),
         keyService: KeyServiceType = KeyService(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        ),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {

@@ -16,48 +16,33 @@ protocol PassPhraseStorageType {
     func saveLocally(passPhrase: String)
 }
 
+protocol EmailProviderType {
+    var email: String? { get }
+}
+
 final class PassPhraseStorage: PassPhraseStorageType {
-    private enum Constants {
-        static let passPhraseIndex = "passPhraseIndex"
-    }
     private lazy var logger = Logger.nested(Self.self)
 
-    let currentUserEmail: () -> (String?)
-    let storage: EncryptedStorage
-    let localStorage: UserDefaults
-    let encoder = JSONEncoder()
-    let decoder = JSONDecoder()
+    let currentUserEmail: String?
+    let storage: EncryptedPassPhraseStorage
+    let localStorage: LocalPassPhraseStorageType
     let timeoutContext: (component: Calendar.Component, timeout: Int)
 
-    private var subscription: NSObjectProtocol?
+    /// used for tests only, otherwise seconds will be used
+    let isHours: Bool
 
     init(
-        storage: EncryptedStorage = EncryptedStorage(),
-        localStorage: UserDefaults = .standard,
+        storage: EncryptedPassPhraseStorage,
+        localStorage: LocalPassPhraseStorageType = LocalPassPhraseStorage(),
         timeoutContext: (Calendar.Component, Int) = (.hour, 4),
-        currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
+        emailProvider: EmailProviderType,
+        isHours: Bool = true
     ) {
         self.storage = storage
         self.localStorage = localStorage
         self.timeoutContext = timeoutContext
-        self.currentUserEmail = currentUserEmail
-    }
-
-    deinit {
-        if let subscription = subscription {
-            NotificationCenter.default.removeObserver(subscription)
-        }
-    }
-
-    private func subscribeToTerminateNotification() {
-        subscription = NotificationCenter.default.addObserver(
-            forName: UIApplication.willTerminateNotification,
-            object: nil,
-            queue: .main
-        ) { _ in
-            self.logger.logInfo("App is about to terminate")
-            self.localStorage.removeObject(forKey: Constants.passPhraseIndex)
-        }
+        self.currentUserEmail = emailProvider.email
+        self.isHours = isHours
     }
 
     func savePassPhrase(with passPhrase: PassPhrase, isLocally: Bool) {
@@ -93,15 +78,22 @@ final class PassPhraseStorage: PassPhraseStorageType {
         var validPassPhrases: [PassPhrase] = []
         var invalidPassPhrases: [LocalPassPhrase] = []
 
-        getAllLocallySavedPassPhrases()
+        localStorage.getAllLocallySavedPassPhrases()
             .forEach { localPassPhrases in
-                let calculatedTime = calendar.dateComponents(
+                let components = calendar.dateComponents(
                     [timeoutContext.component],
                     from: localPassPhrases.date,
                     to: Date()
-                ).hour ?? 0
+                )
 
-                let isPassPhraseValid = calculatedTime < timeoutContext.timeout
+                let timePassed: Int
+                if self.isHours {
+                    timePassed = components.hour ?? 0
+                } else {
+                    timePassed = components.second ?? 0
+                }
+
+                let isPassPhraseValid = timePassed < timeoutContext.timeout
 
                 if isPassPhraseValid {
                     validPassPhrases.append(localPassPhrases.passPhrase)
@@ -119,7 +111,7 @@ final class PassPhraseStorage: PassPhraseStorageType {
     }
 
     func saveLocally(passPhrase: String) {
-        guard let email = currentUserEmail() else {
+        guard let email = currentUserEmail else {
             return
         }
 
@@ -134,39 +126,20 @@ final class PassPhraseStorage: PassPhraseStorageType {
 
     private func saveLocally(passPhrase: PassPhrase) {
         // get all saved
-        var temporaryPassPhrases = getAllLocallySavedPassPhrases()
+        var temporaryPassPhrases = localStorage.getAllLocallySavedPassPhrases()
         // update with new pass
         temporaryPassPhrases.append(LocalPassPhrase(passPhrase: passPhrase, date: Date()))
         // save to storage
-        encodeAndSave(passPhrases: temporaryPassPhrases)
+        localStorage.encodeAndSave(passPhrases: temporaryPassPhrases)
     }
 
     private func removeInvalidPassPhrases(with objects: [LocalPassPhrase]) {
-        var temporaryPassPhrases = getAllLocallySavedPassPhrases()
+        var temporaryPassPhrases = localStorage.getAllLocallySavedPassPhrases()
 
         objects.forEach { localPassPhrases in
             temporaryPassPhrases.removeAll(where: { $0.date == localPassPhrases.date })
         }
 
-        encodeAndSave(passPhrases: temporaryPassPhrases)
+        localStorage.encodeAndSave(passPhrases: temporaryPassPhrases)
     }
-
-    private func getAllLocallySavedPassPhrases() -> [LocalPassPhrase] {
-        guard let data = localStorage.data(forKey: Constants.passPhraseIndex),
-              let result = try? decoder.decode([LocalPassPhrase].self, from: data) else {
-            return []
-        }
-
-        return result
-    }
-
-    private func encodeAndSave(passPhrases: [LocalPassPhrase]) {
-        let objectsToSave = try? encoder.encode(passPhrases)
-        localStorage.set(objectsToSave, forKey: Constants.passPhraseIndex)
-    }
-}
-
-private struct LocalPassPhrase: Codable {
-    let passPhrase: PassPhrase
-    let date: Date
 }
