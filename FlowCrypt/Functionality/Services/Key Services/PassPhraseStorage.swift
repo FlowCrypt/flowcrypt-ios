@@ -25,21 +25,21 @@ final class PassPhraseStorage: PassPhraseStorageType {
     let currentUserEmail: () -> (String?)
     let storage: EncryptedStorage
     let localStorage: UserDefaults
-    let timeout: Int
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
+    let timeoutContext: (component: Calendar.Component, timeout: Int)
 
     private var subscription: NSObjectProtocol?
 
     init(
         storage: EncryptedStorage = EncryptedStorage(),
         localStorage: UserDefaults = .standard,
-        timeout: Int = 4,
+        timeoutContext: (Calendar.Component, Int) = (.hour, 4),
         currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
     ) {
         self.storage = storage
         self.localStorage = localStorage
-        self.timeout = timeout
+        self.timeoutContext = timeoutContext
         self.currentUserEmail = currentUserEmail
     }
 
@@ -95,12 +95,22 @@ final class PassPhraseStorage: PassPhraseStorageType {
 
         getAllLocallySavedPassPhrases()
             .forEach { localPassPhrases in
-                guard calendar.component(.hour, from: localPassPhrases.date) < timeout else {
-                    self.logger.logInfo("pass phrase is invalid \(localPassPhrases.passPhrase.longid)")
+                let calculatedTime = calendar.dateComponents(
+                    [timeoutContext.component],
+                    from: localPassPhrases.date,
+                    to: Date()
+                ).hour ?? 0
+
+                let isPassPhraseValid = calculatedTime < timeoutContext.timeout
+
+                if isPassPhraseValid {
+                    validPassPhrases.append(localPassPhrases.passPhrase)
+                } else {
                     invalidPassPhrases.append(localPassPhrases)
-                    return
                 }
-                validPassPhrases.append(localPassPhrases.passPhrase)
+
+                let message = "pass phrase is \(isPassPhraseValid ? "valid" : "invalid") \(localPassPhrases.passPhrase.longid)"
+                self.logger.logInfo(message)
             }
         removeInvalidPassPhrases(with: invalidPassPhrases)
 

@@ -174,7 +174,7 @@ extension MessageViewController {
 
     private func showPassPhraseAlert() {
         hideSpinner()
-        let alert = UIAlertController(title: "Please enter pass phrase", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: "setup_enter_pass_phrase".localized, message: nil, preferredStyle: .alert)
         alert.addTextField { tf in
             tf.isSecureTextEntry = true
         }
@@ -417,3 +417,4 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         )
     }
 }
+

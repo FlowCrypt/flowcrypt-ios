@@ -3,6 +3,8 @@
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
 "retry_title" = "retry";
+"ok" = "Ok";
+"cancel" = "Cancel";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -91,6 +93,7 @@
 "setup_create_key_title" = "Create key";
 "setup_save_pass_locally" = "Store pass phrase locally";
 "setup_save_pass_in_memory" = "Keep pass phrase in memory";
+"setup_enter_pass_phrase" = "Please enter pass phrase";
 
 // Key Import
 "import_key_title" = "Import Key";

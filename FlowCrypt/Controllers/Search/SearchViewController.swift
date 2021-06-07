@@ -12,7 +12,7 @@ import FlowCryptUI
 
 final class SearchViewController: TableNodeViewController {
     private enum Constants {
-        // TODO: - Add pagination for SearchViewController
+        // TODO: - Ticket - Add pagination for SearchViewController
         static let messageCount = 100
     }
     enum State {

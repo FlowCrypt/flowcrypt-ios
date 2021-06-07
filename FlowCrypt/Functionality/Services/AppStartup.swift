@@ -65,15 +65,7 @@ struct AppStartup {
             let setupViewController = SetupInitialViewController(user: userId)
             viewController = MainNavigationController(rootViewController: setupViewController)
         }
-
-        // TODO: - ANTON - warning
-        // SetupEnterPassPhraseViewController(email: "", fetchedKeys: [])
-//        window.rootViewController = MainNavigationController(
-//            rootViewController:
-////                SetupKeyViewController(user: UserId.init(email: "a", name: "a")
-//                SetupBackupsViewController(fetchedEncryptedKeys: [], user: UserId.init(email: "test@gmail.com", name: "a"))
-////                SetupEnterPassPhraseViewController(email: "test@gmail.com", fetchedKeys: [])
-//        )
+        
         window.rootViewController = viewController
     }
 

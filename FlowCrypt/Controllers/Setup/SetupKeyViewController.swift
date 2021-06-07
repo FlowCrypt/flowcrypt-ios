@@ -50,6 +50,8 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
             .map { IndexPath(row: $0.rawValue, section: 0) }
     }
 
+    private var passPhrase: String?
+
     init(
         user: UserId,
         backupService: BackupServiceType = BackupService(),
@@ -130,6 +132,7 @@ extension SetupKeyViewController {
     private func setupAccountWithGeneratedKey(with passPhrase: String) {
         Promise { [weak self] in
             guard let self = self else { return }
+            self.showSpinner()
 
             let userId = try self.getUserId()
 
@@ -161,10 +164,13 @@ extension SetupKeyViewController {
             )
         }
         .then(on: .main) { [weak self] in
+            self?.hideSpinner()
             self?.moveToMainFlow()
         }
         .catch(on: .main) { [weak self] error in
             guard let self = self else { return }
+            self.hideSpinner()
+
             let isErrorHandled = self.handleCommon(error: error)
 
             if !isErrorHandled {
@@ -219,11 +225,11 @@ extension SetupKeyViewController {
                 textField.accessibilityLabel = "textField"
             }
 
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default) { _ in
+            alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
                 resolve(nil)
             })
 
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak alert] _ in
+            alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
                 resolve(alert?.textFields?[0].text)
             })
 
@@ -238,8 +244,15 @@ extension SetupKeyViewController {
     }
 
     private func showChoosingOptions() {
-        //
         showToast("Not implemented yet")
+    }
+
+    private func handleButtonAction() {
+        guard let passPhrase = passPhrase, passPhrase.isNotEmpty else {
+            showAlert(message: "setup_wrong_pass_phrase_retry".localized)
+            return
+        }
+        setupAccountWithGeneratedKey(with: passPhrase)
     }
 }
 
@@ -273,24 +286,23 @@ extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
             case .passPhrase:
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(value) = action else { return }
+                    self?.passPhrase = value
                 }
-
-                // TODO: - ANTON - ui logic - passPhrase didEndEditing
-
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
-
+                    self?.handleButtonAction()
                     return true
                 }
                 .then {
                     $0.becomeFirstResponder()
                 }
             case .action:
-                return ButtonCellNode(
+                let input = ButtonCellNode.Input(
                     title: self.decorator.buttonTitle(for: .setPassPhrase),
                     insets: self.decorator.insets.buttonInsets
-                ) { [weak self] in
-                    // TODO: - ANTON - ui logic - passPhrase didEndEditing
+                )
+                return ButtonCellNode(input: input) { [weak self] in
+                    self?.handleButtonAction()
                 }
             case .subtitle:
                 return SetupTitleNode(

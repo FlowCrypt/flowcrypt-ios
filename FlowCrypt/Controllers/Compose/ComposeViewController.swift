@@ -246,25 +246,23 @@ extension ComposeViewController {
                 ?? self.contextToSend.subject
                 ?? "(no subject)"
 
-            // TODO: - ANTON - encryptAndSendMessage
-//
-//            guard let myPubKey = self.dataService.publicKey else {
-//                self.showAlert(message: "compose_no_pub_sender".localized)
-//                return false
-//            }
-//
-//            guard let allRecipientPubs = self.getPubKeys(for: recipients) else {
-//                return false
-//            }
-//
-//            let encrypted = self.encryptMsg(
-//                pubkeys: allRecipientPubs + [myPubKey],
-//                subject: subject,
-//                message: text,
-//                to: recipients.map(\.email)
-//            )
+            guard let myPubKey = self.dataService.publicKey() else {
+                self.showAlert(message: "compose_no_pub_sender".localized)
+                return false
+            }
 
-//            try awaitPromise(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
+            guard let allRecipientPubs = self.getPubKeys(for: recipients) else {
+                return false
+            }
+
+            let encrypted = self.encryptMsg(
+                pubkeys: allRecipientPubs + [myPubKey],
+                subject: subject,
+                message: text,
+                to: recipients.map(\.email)
+            )
+
+            try awaitPromise(self.messageSender.sendMail(mime: encrypted.mimeEncoded))
 
             return true
         }
