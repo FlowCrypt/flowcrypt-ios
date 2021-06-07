@@ -11,7 +11,6 @@ import FlowCryptUI
 import Promises
 
 enum CreateKeyError: Error {
-    // "Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase.")
     case weakPassPhrase(_ strength: CoreRes.ZxcvbnStrengthBar)
     // Missing user email
     case missedUserEmail
@@ -51,6 +50,8 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
     }
 
     private var passPhrase: String?
+
+    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
         user: UserId,

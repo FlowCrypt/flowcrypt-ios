@@ -65,7 +65,7 @@ struct AppStartup {
             let setupViewController = SetupInitialViewController(user: userId)
             viewController = MainNavigationController(rootViewController: setupViewController)
         }
-        
+
         window.rootViewController = viewController
     }
 

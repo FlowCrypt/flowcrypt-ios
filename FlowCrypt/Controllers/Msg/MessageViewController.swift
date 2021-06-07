@@ -194,7 +194,9 @@ extension MessageViewController {
         }
 
         let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
-            alert.dismiss(animated: true, completion: nil)
+            alert.dismiss(animated: true) { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }
         }
 
         alert.addAction(saveAction)
@@ -417,4 +419,3 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         )
     }
 }
-
