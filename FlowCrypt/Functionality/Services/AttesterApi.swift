@@ -11,15 +11,26 @@ struct PubkeySearchResult {
 }
 
 protocol AttesterApiType {
-    func lookupEmail(email: String) -> Promise<PubkeySearchResult>
+    func lookupEmail(email: String) -> Promise<[KeyDetails]>
     func updateKey(email: String, pubkey: String, token: String?) -> Promise<String>
     func replaceKey(email: String, pubkey: String) -> Promise<String>
     func testWelcome(email: String, pubkey: String) -> Promise<Void>
 }
 
 final class AttesterApi: AttesterApiType {
+
+    private enum Constants {
+        static let lookupEmailRequestTimeout: TimeInterval = 10
+    }
+
     private enum Endpoint {
         static let baseURL = "https://flowcrypt.com/attester/"
+    }
+
+    private let core: Core
+
+    init(core: Core = .shared) {
+        self.core = core
     }
 
     private func urlPub(emailOrLongid: String) -> String {
@@ -31,20 +42,25 @@ final class AttesterApi: AttesterApiType {
 }
 
 extension AttesterApi {
-    func lookupEmail(email: String) -> Promise<PubkeySearchResult> {
-        Promise { [weak self] () -> PubkeySearchResult in
-            guard let url = self?.urlPub(emailOrLongid: email) else { throw AppErr.nilSelf }
-            let res = try awaitPromise(URLSession.shared.call(url, tolerateStatus: [404]))
+    func lookupEmail(email: String) -> Promise<[KeyDetails]> {
+        Promise { [weak self] () -> [KeyDetails] in
+            guard let self = self else { throw AppErr.nilSelf }
+
+            let res = try awaitPromise(URLSession.shared.call(self.urlPub(emailOrLongid: email), tolerateStatus: [404]))
 
             if res.status >= 200, res.status <= 299 {
-                return PubkeySearchResult(email: email, armored: res.data)
+                let keys = try self.core.parseKeys(armoredOrBinary: res.data)
+                let pubKeys = keys.keyDetails
+                        .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
+                return pubKeys
             }
             if res.status == 404 {
-                return PubkeySearchResult(email: email, armored: nil)
+                return []
             }
             // programming error because should never happen
             throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
         }
+        .timeout(Constants.lookupEmailRequestTimeout)
     }
 
     @discardableResult

@@ -134,7 +134,9 @@ private extension Message {
 
         self.init(
             identifier: Identifier(stringId: identifier),
-            date: Date(timeIntervalSince1970: internalDate),
+            // Should be divided by 1000, because Date(timeIntervalSince1970:) expects seconds
+            // but GTLRGmail_Message.internalDate is in miliseconds
+            date: Date(timeIntervalSince1970: internalDate / 1000),
             sender: sender,
             subject: subject,
             size: message.sizeEstimate.flatMap(Int.init),

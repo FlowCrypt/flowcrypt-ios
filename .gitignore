@@ -1,12 +1,10 @@
 .build
 Pods/
 *.xcworkspacedata
-
 *.xcuserstate
-
 xcschememanagement.plist
-
 *.xcbkptlist
+cmake-build-debug/
 
 # Xcode private settings (window sizes, bookmarks, breakpoints, custom executables, smart groups)
 *.pbxuser
