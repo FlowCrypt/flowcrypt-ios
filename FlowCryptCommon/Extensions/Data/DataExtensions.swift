@@ -12,6 +12,13 @@ public extension Data {
     func toStr() -> String {
         String(decoding: self, as: UTF8.self)
     }
+    
+    func toDict() throws -> [String: Any] {
+        guard let dictionary = try JSONSerialization.jsonObject(with: self, options: .allowFragments) as? [String: Any] else {
+            throw NSError()
+        }
+        return dictionary
+    }
 }
 
 extension String {

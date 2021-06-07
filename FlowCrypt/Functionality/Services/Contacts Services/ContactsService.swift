@@ -17,6 +17,10 @@ enum ContactsError: Error {
 protocol ContactsServiceType: PublicKeyProvider, ContactsProviderType {
 }
 
+protocol ContactsProviderType {
+    func searchContact(with email: String) -> Promise<Contact>
+}
+
 protocol PublicKeyProvider {
     func retrievePubKey(for email: String) -> String?
 }
@@ -25,14 +29,14 @@ protocol PublicKeyProvider {
 
 struct ContactsService: ContactsServiceType {
     let localContactsProvider: LocalContactsProviderType
-    let remoteContactsProvider: ContactsProviderType
+    let pubLookup: PubLookupType
 
     init(
         localContactsProvider: LocalContactsProviderType = LocalContactsProvider(storage: DataService.shared.storage),
-        remoteContactsProvider: ContactsProviderType = RemoteContactsProvider()
+        pubLookup: PubLookupType = PubLookup()
     ) {
         self.localContactsProvider = localContactsProvider
-        self.remoteContactsProvider = remoteContactsProvider
+        self.pubLookup = pubLookup
     }
 }
 
@@ -45,8 +49,8 @@ extension ContactsService: ContactsProviderType {
     }
 
     private func searchRemote(for email: String) -> Promise<Contact> {
-        remoteContactsProvider
-            .searchContact(with: email)
+        pubLookup
+            .lookup(with: email)
             .then { contact in
                 self.localContactsProvider.save(contact: contact)
             }

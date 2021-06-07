@@ -9,7 +9,7 @@ public extension Encodable {
         try JSONEncoder().encode(self)
     }
 
-    func toDict() throws -> [String: Any] {
+    func toJsonEncodedDict() throws -> [String: Any] {
         let data = try JSONEncoder().encode(self)
         guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
             throw NSError()
