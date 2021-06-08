@@ -9,7 +9,5 @@
 import Foundation
 
 class EmailProviderMock: EmailProviderType {
-    var email: String? {
-        "test@gmail.com"
-    }
+    var email: String? = "test@gmail.com"
 }

@@ -24,8 +24,9 @@ class EncryptedPassPhraseStorageMock: EncryptedPassPhraseStorage {
         getPassPhrasesResult()
     }
     
+    var isRemovePassPhraseResult: ((PassPhraseObject) -> ())?
     func removePassPhrase(object: PassPhraseObject) {
-        
+        isRemovePassPhraseResult?(object)
     }
     
     var keysInfoResult: () -> ([KeyInfo]) = { [] }

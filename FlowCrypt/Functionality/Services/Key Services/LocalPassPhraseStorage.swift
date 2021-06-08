@@ -17,6 +17,10 @@ protocol LocalPassPhraseStorageType {
 struct LocalPassPhrase: Codable, Hashable, Equatable {
     let passPhrase: PassPhrase
     let date: Date
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.passPhrase.longid == rhs.passPhrase.longid
+    }
 }
 
 final class LocalPassPhraseStorage: LocalPassPhraseStorageType {

@@ -9,7 +9,7 @@
 import XCTest
 
 class PassPhraseStorageTests: XCTestCase {
-
+    
     var sut: PassPhraseStorage!
     var storage: EncryptedPassPhraseStorageMock!
     var emailProvider: EmailProviderMock!
@@ -66,7 +66,7 @@ class PassPhraseStorageTests: XCTestCase {
         
         XCTAssertTrue(result.count == 2)
     }
-
+    
     func testGetValidPassPhraseInLocalStorage() {
         storage.getPassPhrasesResult = { [] }
         
@@ -131,5 +131,118 @@ class PassPhraseStorageTests: XCTestCase {
         
         let result = sut.getPassPhrases()
         XCTAssertTrue(result.count == 3)
+    }
+    
+    func testSavePassPhraseWithEmptEmail() {
+        emailProvider.email = nil
+        sut.saveLocally(passPhrase: "Pass phrase")
+        XCTAssertFalse(localStorage.isSaveCalled)
+    }
+    
+    func testSavePassPhraseString() {
+        let account = "test@gmail.com"
+        let passPhrase = "Pass Phrase"
+        
+        //
+        emailProvider.email = account
+        
+        // encrypted storage contains key for account
+        storage.keysInfoResult = {
+            [
+                KeyInfo.mock(with: "public 1", longid: "longid1"),
+                KeyInfo.mock(with: "public 2", account: account, longid: "longid2"),
+                KeyInfo.mock(with: "public 2", account: account, longid: "longid3")
+            ]
+        }
+        
+        sut.saveLocally(passPhrase: passPhrase)
+        
+        let ids = Set(sut.localStorage.passPhrases.map(\.passPhrase.longid))
+        let expected = Set(["longid2", "longid3"])
+        XCTAssert(ids == expected)
+        XCTAssertTrue(localStorage.isSaveCalled)
+    }
+    
+    func testSavePassPhraseLocally() {
+        let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
+        
+        let expectation = XCTestExpectation()
+        expectation.expectedFulfillmentCount = 1
+        
+        // encrypted storage contains pass phrase which should be saved locally
+        storage.getPassPhrasesResult = {
+            [
+                PassPhraseObject(longid: "12345", value: "pass")
+            ]
+        }
+        
+        
+        // encrypted storage should not contains pass phrase which user decide to save locally
+        storage.isRemovePassPhraseResult = { passPhraseToRemove in
+            if passPhraseToRemove.longid == "12345" {
+                expectation.fulfill()
+            }
+        }
+        
+        sut.savePassPhrase(with: passPhraseToSave, isLocally: true)
+        
+        XCTAssertTrue(localStorage.isSaveCalled)
+        
+        wait(for: [expectation], timeout: 0.1, enforceOrder: false)
+    }
+    
+    func testSavePassPhraseLocallyWithoutAnyPassPhrases() {
+        let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
+        
+        let expectation = XCTestExpectation()
+        expectation.isInverted = true
+        
+        // encrypted storage is empty
+        storage.getPassPhrasesResult = { [ ] }
+        
+        storage.isRemovePassPhraseResult = { _ in
+            expectation.fulfill()
+        }
+        
+        sut.savePassPhrase(with: passPhraseToSave, isLocally: true)
+        
+        XCTAssertTrue(localStorage.isSaveCalled)
+        
+        wait(for: [expectation], timeout: 0.1, enforceOrder: false)
+    }
+    
+    func testSavePassPhraseInStorage() {
+        let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
+        sut.savePassPhrase(with: passPhraseToSave, isLocally: false)
+        
+        XCTAssertFalse(localStorage.isSaveCalled)
+    }
+}
+
+extension KeyInfo {
+    // extend with more parameters if needed
+    static func mock(
+        with publicValue: String,
+        account: String = "",
+        longid: String
+    ) -> KeyInfo {
+        let key = try! KeyInfo(
+            KeyDetails(
+                public: publicValue,
+                private: "private",
+                isFullyDecrypted: true,
+                isFullyEncrypted: true,
+                ids: [
+                    KeyId(shortid: "shortId", longid: "longid", fingerprint: "fingerprint", keywords: "keywords")
+                ],
+                created: 1234,
+                users: [],
+                algo: nil
+            ),
+            source: .backup
+        )
+        key.account = account
+        key.longid = longid
+        return key
     }
 }

@@ -65,7 +65,12 @@ final class PassPhraseStorage: PassPhraseStorageType {
     }
 
     func updatePassPhrase(with passPhrase: PassPhrase, isLocally: Bool) {
-        storage.updatePassPhrase(object: PassPhraseObject(passPhrase))
+        if isLocally {
+            let updated = LocalPassPhrase(passPhrase: passPhrase, date: Date())
+            localStorage.save(passPhrase: updated)
+        } else {
+            storage.updatePassPhrase(object: PassPhraseObject(passPhrase))
+        }
     }
 
     func getPassPhrases() -> [PassPhrase] {

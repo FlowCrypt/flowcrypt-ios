@@ -11,8 +11,12 @@ import Foundation
 class LocalPassPhraseStorageMock: LocalPassPhraseStorageType {
     var passPhrases: Set<LocalPassPhrase> = []
     
+    var isSaveCalled = false
     func save(passPhrase: LocalPassPhrase) {
+        isSaveCalled = true
         passPhrases.insert(passPhrase)
+        
+        print("^^ \(passPhrases)")
     }
     
     func removePassPhrases(with objects: [LocalPassPhrase]) {
