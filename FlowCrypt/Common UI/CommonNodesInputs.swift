@@ -48,7 +48,7 @@ extension ButtonCellNode.Input {
 extension CheckBoxTextNode.Input {
     static func common(with text: String, isSelected: Bool) -> CheckBoxTextNode.Input {
         let attributedTitle = text
-            .attributed(.bold(14), color: .textColor, alignment: .center)
+            .attributed(.bold(14), color: .mainTextColor, alignment: .center)
 
         let checkboxColor: UIColor = isSelected
             ? .main

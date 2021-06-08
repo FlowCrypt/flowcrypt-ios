@@ -376,7 +376,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self, let section = Sections(rawValue: indexPath.section) else { return ASCellNode() }
 
             switch section {
