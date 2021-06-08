@@ -9,15 +9,15 @@
 import Foundation
 
 class LocalPassPhraseStorageMock: LocalPassPhraseStorageType {
-    var getAllLocallySavedPassPhrasesResult: () -> ([LocalPassPhrase]) = { [] }
-    func getAllLocallySavedPassPhrases() -> [LocalPassPhrase] {
-        getAllLocallySavedPassPhrasesResult()
+    var passPhrases: Set<LocalPassPhrase> = []
+    
+    func save(passPhrase: LocalPassPhrase) {
+        passPhrases.insert(passPhrase)
     }
     
-    var encodeAndSaveResult: ([LocalPassPhrase]) -> () = { _ in
-        
-    }
-    func encodeAndSave(passPhrases: [LocalPassPhrase]) {
-        encodeAndSaveResult(passPhrases)
+    func removePassPhrases(with objects: [LocalPassPhrase]) {
+        objects.forEach {
+            passPhrases.remove($0)
+        }
     }
 }

@@ -33,7 +33,7 @@ final class PassPhraseStorage: PassPhraseStorageType {
 
     init(
         storage: EncryptedPassPhraseStorage,
-        localStorage: LocalPassPhraseStorageType = LocalPassPhraseStorage(),
+        localStorage: LocalPassPhraseStorageType = LocalPassPhraseStorage.shared,
         timeoutContext: (Calendar.Component, Int) = (.hour, 4),
         emailProvider: EmailProviderType,
         isHours: Bool = true
@@ -49,7 +49,8 @@ final class PassPhraseStorage: PassPhraseStorageType {
         if isLocally {
             logger.logInfo("Save locally \(passPhrase.longid)")
 
-            saveLocally(passPhrase: passPhrase)
+            let locallPassPhrase = LocalPassPhrase(passPhrase: passPhrase, date: Date())
+            localStorage.save(passPhrase: locallPassPhrase)
 
             let alreadySaved = storage.getPassPhrases()
 
@@ -78,7 +79,7 @@ final class PassPhraseStorage: PassPhraseStorageType {
         var validPassPhrases: [PassPhrase] = []
         var invalidPassPhrases: [LocalPassPhrase] = []
 
-        localStorage.getAllLocallySavedPassPhrases()
+        localStorage.passPhrases
             .forEach { localPassPhrases in
                 let components = calendar.dateComponents(
                     [timeoutContext.component],
@@ -104,7 +105,8 @@ final class PassPhraseStorage: PassPhraseStorageType {
                 let message = "pass phrase is \(isPassPhraseValid ? "valid" : "invalid") \(localPassPhrases.passPhrase.longid)"
                 self.logger.logInfo(message)
             }
-        removeInvalidPassPhrases(with: invalidPassPhrases)
+
+        localStorage.removePassPhrases(with: invalidPassPhrases)
 
         logger.logInfo("validPassPhrases \(validPassPhrases.count)")
         return dbPassPhrases + validPassPhrases
@@ -120,26 +122,8 @@ final class PassPhraseStorage: PassPhraseStorageType {
                 $0.account.contains(email)
             }
             .forEach {
-                saveLocally(passPhrase: PassPhrase(value: passPhrase, longid: $0.longid))
+                let passPhrase = PassPhrase(value: passPhrase, longid: $0.longid)
+                localStorage.save(passPhrase: LocalPassPhrase(passPhrase: passPhrase, date: Date()))
             }
-    }
-
-    private func saveLocally(passPhrase: PassPhrase) {
-        // get all saved
-        var temporaryPassPhrases = localStorage.getAllLocallySavedPassPhrases()
-        // update with new pass
-        temporaryPassPhrases.append(LocalPassPhrase(passPhrase: passPhrase, date: Date()))
-        // save to storage
-        localStorage.encodeAndSave(passPhrases: temporaryPassPhrases)
-    }
-
-    private func removeInvalidPassPhrases(with objects: [LocalPassPhrase]) {
-        var temporaryPassPhrases = localStorage.getAllLocallySavedPassPhrases()
-
-        objects.forEach { localPassPhrases in
-            temporaryPassPhrases.removeAll(where: { $0.date == localPassPhrases.date })
-        }
-
-        localStorage.encodeAndSave(passPhrases: temporaryPassPhrases)
     }
 }

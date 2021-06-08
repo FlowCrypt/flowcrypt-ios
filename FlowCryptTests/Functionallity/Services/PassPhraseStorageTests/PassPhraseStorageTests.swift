@@ -33,7 +33,7 @@ class PassPhraseStorageTests: XCTestCase {
         // no pass phrases in storage
         storage.getPassPhrasesResult = { [] }
         // no pass phrases in localStorage
-        localStorage.getAllLocallySavedPassPhrasesResult = { [] }
+        localStorage.passPhrases = []
         
         let result = sut.getPassPhrases()
         
@@ -49,7 +49,7 @@ class PassPhraseStorageTests: XCTestCase {
         // no pass phrases in storage
         storage.getPassPhrasesResult = { [passPhrase] }
         // no pass phrases in localStorage
-        localStorage.getAllLocallySavedPassPhrasesResult = { [] }
+        localStorage.passPhrases = []
         
         let result = sut.getPassPhrases()
         

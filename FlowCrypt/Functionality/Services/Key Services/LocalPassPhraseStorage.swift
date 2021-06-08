@@ -9,60 +9,33 @@
 import UIKit
 
 protocol LocalPassPhraseStorageType {
-    func getAllLocallySavedPassPhrases() -> [LocalPassPhrase]
-    func encodeAndSave(passPhrases: [LocalPassPhrase])
+    var passPhrases: Set<LocalPassPhrase> { get }
+    func save(passPhrase: LocalPassPhrase)
+    func removePassPhrases(with objects: [LocalPassPhrase])
 }
 
-struct LocalPassPhrase: Codable {
+struct LocalPassPhrase: Codable, Hashable, Equatable {
     let passPhrase: PassPhrase
     let date: Date
 }
 
 final class LocalPassPhraseStorage: LocalPassPhraseStorageType {
-    private enum Constants {
-        static let passPhraseIndex = "passPhraseIndex"
-    }
-    private lazy var logger = Logger.nested(Self.self)
+    static let shared: LocalPassPhraseStorage = LocalPassPhraseStorage()
 
-    let localStorage: UserDefaults
-    let encoder = JSONEncoder()
-    let decoder = JSONDecoder()
+    private(set) var passPhrases: Set<LocalPassPhrase> = []
 
-    private var subscription: NSObjectProtocol?
-
-    init(localStorage: UserDefaults = .standard) {
-        self.localStorage = localStorage
-        subscribeToTerminateNotification()
+    private init() {
     }
 
-    deinit {
-        if let subscription = subscription {
-            NotificationCenter.default.removeObserver(subscription)
+    func save(passPhrase: LocalPassPhrase) {
+        passPhrases.insert(passPhrase)
+    }
+
+    func removePassPhrases(with objects: [LocalPassPhrase]) {
+        objects.forEach {
+            if passPhrases.contains($0) {
+                passPhrases.remove($0)
+            }
         }
-    }
-
-    private func subscribeToTerminateNotification() {
-        subscription = NotificationCenter.default.addObserver(
-            forName: UIApplication.willTerminateNotification,
-            object: nil,
-            queue: .main
-        ) { _ in
-            self.logger.logInfo("App is about to terminate")
-            self.localStorage.removeObject(forKey: Constants.passPhraseIndex)
-        }
-    }
-
-    func getAllLocallySavedPassPhrases() -> [LocalPassPhrase] {
-        guard let data = localStorage.data(forKey: Constants.passPhraseIndex),
-              let result = try? decoder.decode([LocalPassPhrase].self, from: data) else {
-            return []
-        }
-
-        return result
-    }
-
-    func encodeAndSave(passPhrases: [LocalPassPhrase]) {
-        let objectsToSave = try? encoder.encode(passPhrases)
-        localStorage.set(objectsToSave, forKey: Constants.passPhraseIndex)
     }
 }

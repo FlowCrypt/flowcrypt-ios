@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 // Should be operated in app
-struct PassPhrase: Codable {
+struct PassPhrase: Codable, Hashable, Equatable {
     let value: String
     let longid: String
 
