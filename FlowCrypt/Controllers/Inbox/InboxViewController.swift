@@ -248,9 +248,9 @@ extension InboxViewController {
 
     private func checkFES() {
         enterpriseServerApi.getActiveFesUrlForCurrentUser()
-            .then(on: .main) { [weak self] email in
-                guard let email = email else { return }
-                self?.showToast("FES at \(email) not supported on iOS yet")
+            .then(on: .main) { [weak self] urlString in
+                guard let urlString = urlString else { return }
+                self?.showToast("FES at \(urlString) not supported on iOS yet")
             }
     }
 }
