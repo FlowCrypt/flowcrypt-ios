@@ -10,6 +10,7 @@ import Promises
 
 protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) -> Promise<String?>
+    func getActiveFesUrlForCurrentUser() -> Promise<String?>
 }
 
 class EnterpriseServerApi: EnterpriseServerApiType {
@@ -19,6 +20,15 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
         static let serviceKey = "service"
         static let serviceNeededValue = "enterprise-server"
+    }
+
+    func getActiveFesUrlForCurrentUser() -> Promise<String?> {
+        guard let email = DataService.shared.currentUser?.email else {
+            return Promise<String?> { resolve, _ in
+                resolve(nil)
+            }
+        }
+        return getActiveFesUrl(for: email)
     }
 
     func getActiveFesUrl(for email: String) -> Promise<String?> {
