@@ -56,6 +56,7 @@ blocks:
             - docker-machine create -d virtualbox --virtualbox-no-vtx-check default || true
             # Start Docker
             - docker-machine start default || true
+            - docker-compose --version
             # Run mail server
             - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd -
 
