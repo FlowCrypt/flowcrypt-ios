@@ -1,10 +1,11 @@
 #!/bin/bash
 
-## Do not run format on CI
-if [ -z "$CI" ]; then
-  echo "Not on CI - running"
+set -euxo pipefail # debug + fail when any command fails
+
+if [ -z "${CI:-}" ]; then
+  echo "Not on CI - running SwiftFormat"
 else
-  echo "On CI - skipping"
+  echo "On CI - skipping SwiftFormat"
   exit 0
 fi
 
@@ -41,10 +42,6 @@ if which swiftformat >/dev/null; then
     --rules trailingClosures \
     --rules void
 
-# following rules were not available on swiftformat version 0.40.12
-#    --rules preferKeyPath \
-#    --rules initCoderUnavailable \
-
 else
   echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"
   brew install swiftformat
@@ -53,3 +50,7 @@ fi
 
 ################### RULES https://github.com/nicklockwood/SwiftFormat/blob/master/Rules.md
 # ASCellNodeBlock - removed due to Opening Brace Spacing Violation when dealing with ASCellNodeBlock
+
+# following rules were not available on swiftformat version 0.40.12
+#    --rules preferKeyPath \
+#    --rules initCoderUnavailable \
