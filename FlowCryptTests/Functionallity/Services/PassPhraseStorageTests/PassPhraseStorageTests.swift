@@ -163,11 +163,12 @@ class PassPhraseStorageTests: XCTestCase {
         XCTAssertTrue(localStorage.isSaveCalled)
     }
     
-    func testSavePassPhraseLocally() {
+    func testSavePassPhraseInStorage() {
         let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
         
         let expectation = XCTestExpectation()
         expectation.expectedFulfillmentCount = 1
+        expectation.isInverted = true
         
         // encrypted storage contains pass phrase which should be saved locally
         storage.getPassPhrasesResult = {
@@ -186,12 +187,12 @@ class PassPhraseStorageTests: XCTestCase {
         
         sut.savePassPhrase(with: passPhraseToSave, isLocally: true)
         
-        XCTAssertTrue(localStorage.isSaveCalled)
+        XCTAssertFalse(localStorage.isSaveCalled)
         
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
     
-    func testSavePassPhraseLocallyWithoutAnyPassPhrases() {
+    func testSavePassPhraseInStorageWithoutAnyPassPhrases() {
         let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
         
         let expectation = XCTestExpectation()
@@ -206,16 +207,16 @@ class PassPhraseStorageTests: XCTestCase {
         
         sut.savePassPhrase(with: passPhraseToSave, isLocally: true)
         
-        XCTAssertTrue(localStorage.isSaveCalled)
+        XCTAssertFalse(localStorage.isSaveCalled)
         
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
     
-    func testSavePassPhraseInStorage() {
+    func testSavePassPhraseInMemory() {
         let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
         sut.savePassPhrase(with: passPhraseToSave, isLocally: false)
-        
-        XCTAssertFalse(localStorage.isSaveCalled)
+
+        XCTAssertTrue(localStorage.isSaveCalled)
     }
 }
 

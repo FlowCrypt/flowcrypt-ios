@@ -47,6 +47,9 @@ final class PassPhraseStorage: PassPhraseStorageType {
 
     func savePassPhrase(with passPhrase: PassPhrase, isLocally: Bool) {
         if isLocally {
+            logger.logInfo("Save to storage \(passPhrase.longid)")
+            storage.addPassPhrase(object: PassPhraseObject(passPhrase))
+        } else {
             logger.logInfo("Save locally \(passPhrase.longid)")
 
             let locallPassPhrase = LocalPassPhrase(passPhrase: passPhrase, date: Date())
@@ -57,19 +60,15 @@ final class PassPhraseStorage: PassPhraseStorageType {
             if alreadySaved.contains(where: { $0.longid == passPhrase.longid }) {
                 storage.removePassPhrase(object: PassPhraseObject(passPhrase))
             }
-        } else {
-            logger.logInfo("Save to storage \(passPhrase.longid)")
-
-            storage.addPassPhrase(object: PassPhraseObject(passPhrase))
         }
     }
 
     func updatePassPhrase(with passPhrase: PassPhrase, isLocally: Bool) {
         if isLocally {
+            storage.updatePassPhrase(object: PassPhraseObject(passPhrase))
+        } else {
             let updated = LocalPassPhrase(passPhrase: passPhrase, date: Date())
             localStorage.save(passPhrase: updated)
-        } else {
-            storage.updatePassPhrase(object: PassPhraseObject(passPhrase))
         }
     }
 
