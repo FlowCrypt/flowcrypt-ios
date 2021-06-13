@@ -1,0 +1,5 @@
+{
+  "flags": ["NO_PRV_BACKUP", "NO_KEY_MANAGER_PUB_LOOKUP"],
+  "enforce_keygen_algo": "curve25519",
+  "enforce_keygen_expire_months": 12
+}
