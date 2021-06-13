@@ -2,4 +2,4 @@
 
 # run docker-mailserver
 
-docker compose up -D mail
+docker compose up mail
