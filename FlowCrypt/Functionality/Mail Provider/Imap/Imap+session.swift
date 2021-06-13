@@ -69,9 +69,11 @@ extension Imap {
          Promise { resolve, reject in
             MCOIMAPSession(session: session)
                 .connectOperation()?
-                .start { error in
+                .start { [weak self] error in
                     guard let error = error else { resolve(()); return }
-                    reject(AppErr.unexpected("Can't establish IMAP Connection.\n\(error.localizedDescription)"))
+                    let message = "Can't establish IMAP Connection.\n\(error.localizedDescription)"
+                    self?.logger.logError(message)
+                    reject(AppErr.unexpected(message))
                 }
         }
     }
