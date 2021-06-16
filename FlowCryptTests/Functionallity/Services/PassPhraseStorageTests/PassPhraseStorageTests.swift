@@ -133,36 +133,6 @@ class PassPhraseStorageTests: XCTestCase {
         XCTAssertTrue(result.count == 3)
     }
     
-    func testSavePassPhraseWithEmptEmail() {
-        emailProvider.email = nil
-        sut.saveLocally(passPhrase: "Pass phrase")
-        XCTAssertFalse(localStorage.isSaveCalled)
-    }
-    
-    func testSavePassPhraseString() {
-        let account = "test@gmail.com"
-        let passPhrase = "Pass Phrase"
-        
-        //
-        emailProvider.email = account
-        
-        // encrypted storage contains key for account
-        storage.keysInfoResult = {
-            [
-                KeyInfo.mock(with: "public 1", longid: "longid1"),
-                KeyInfo.mock(with: "public 2", account: account, longid: "longid2"),
-                KeyInfo.mock(with: "public 2", account: account, longid: "longid3")
-            ]
-        }
-        
-        sut.saveLocally(passPhrase: passPhrase)
-        
-        let ids = Set(sut.localStorage.passPhrases.map(\.passPhrase.longid))
-        let expected = Set(["longid2", "longid3"])
-        XCTAssert(ids == expected)
-        XCTAssertTrue(localStorage.isSaveCalled)
-    }
-    
     func testSavePassPhraseInStorage() {
         let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
         
@@ -185,7 +155,7 @@ class PassPhraseStorageTests: XCTestCase {
             }
         }
         
-        sut.savePassPhrase(with: passPhraseToSave, isLocally: true)
+        sut.savePassPhrase(with: passPhraseToSave, inStorage: true)
         
         XCTAssertFalse(localStorage.isSaveCalled)
         
@@ -205,7 +175,7 @@ class PassPhraseStorageTests: XCTestCase {
             expectation.fulfill()
         }
         
-        sut.savePassPhrase(with: passPhraseToSave, isLocally: true)
+        sut.savePassPhrase(with: passPhraseToSave, inStorage: true)
         
         XCTAssertFalse(localStorage.isSaveCalled)
         
@@ -214,7 +184,7 @@ class PassPhraseStorageTests: XCTestCase {
     
     func testSavePassPhraseInMemory() {
         let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
-        sut.savePassPhrase(with: passPhraseToSave, isLocally: false)
+        sut.savePassPhrase(with: passPhraseToSave, inStorage: false)
 
         XCTAssertTrue(localStorage.isSaveCalled)
     }

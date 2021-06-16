@@ -39,22 +39,72 @@ extension FetchedMessage {
 
 // MARK: - MessageService
 enum MessageServiceError: Error {
-    case missedPassPhrase
+    case missedPassPhrase(_ rawMimeData: Data)
+    case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
+    // Could not fetch keys
+    case emptyKeys
 }
 
 final class MessageService {
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
+    private let passPhraseStorage: PassPhraseStorageType
     private let core: Core
 
     init(
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         keyService: KeyServiceType = KeyService(),
-        core: Core = Core.shared
+        core: Core = Core.shared,
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        )
     ) {
         self.messageProvider = messageProvider
         self.keyService = keyService
         self.core = core
+        self.passPhraseStorage = passPhraseStorage
+    }
+
+    func validateMessage(rawMimeData: Data, with passPhrase: String) -> Promise<FetchedMessage> {
+        Promise<FetchedMessage> { [weak self] resolve, reject in
+            guard let self = self else { return }
+
+            guard let keys = try? self.keyService.getPrivateKeys(with: passPhrase).get(), keys.isNotEmpty else {
+                return reject(MessageServiceError.emptyKeys)
+            }
+
+            // TODO: - Tom - is it possible to get longid of the key which was used for decryption?
+            let decrypted = try self.core.parseDecryptMsg(
+                encrypted: rawMimeData,
+                keys: keys,
+                msgPwd: nil,
+                isEmail: true
+            )
+
+            let isDecryptError = decrypted.blocks.isAnyError
+
+            if isDecryptError {
+                reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
+            } else {
+                keys
+                    .map { PassPhrase(value: passPhrase, longid: $0.longid) }
+                    .forEach { self.passPhraseStorage.savePassPhrase(with: $0, inStorage: false) }
+
+                let attachments = decrypted.blocks
+                    .filter(\.isAttachmentBlock)
+                    .map(MessageAttachment.init)
+
+                let fetchedMessage = FetchedMessage(
+                    rawMimeData: rawMimeData,
+                    text: decrypted.text,
+                    attachments: attachments,
+                    messageType: decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
+                )
+
+                resolve(fetchedMessage)
+            }
+        }
     }
 
     func getMessage(with input: Message, folder: String) -> Promise<FetchedMessage> {
@@ -65,8 +115,8 @@ final class MessageService {
                 self.messageProvider.fetchMsg(message: input, folder: folder)
             )
 
-            guard let keys = try? self.keyService.getPrivateKeys().get() else {
-                return reject(MessageServiceError.missedPassPhrase)
+            guard let keys = try? self.keyService.getPrivateKeys(with: nil).get() else {
+                return reject(MessageServiceError.missedPassPhrase(rawMimeData))
             }
 
             guard keys.isNotEmpty else {
@@ -117,11 +167,5 @@ private extension MessageAttachment {
     init(block: MsgBlock) {
         self.name = block.attMeta?.name ?? "Attachment"
         self.size = block.attMeta?.length ?? 0
-    }
-}
-
-private extension MsgBlock {
-    var isAttachmentBlock: Bool {
-        type == .plainAtt || type == .encryptedAtt || type == .decryptedAtt
     }
 }

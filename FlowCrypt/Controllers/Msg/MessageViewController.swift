@@ -148,64 +148,30 @@ extension MessageViewController {
             self.fetchedMessage = message
         }
         .then(on: .main) { [weak self] in
-            self?.hideSpinner()
-            self?.node.reloadData()
-            self?.asyncMarkAsReadIfNotAlreadyMarked()
+            self?.handleReceivedMessage()
         }
         .catch(on: .main) { [weak self] error in
-            self?.hideSpinner()
-            self?.handleError(error, path: input.path)
+            self?.handleError(error)
         }
     }
 
-    private func handleError(_ error: Error, path: String) {
-        // TODO: - Ticket - Improve error handling for MessageViewController
-        if error is MessageServiceError {
-            showPassPhraseAlert()
-        } else {
-            if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
-                // todo - the missing msg should be removed from the list in inbox view
-                // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
-                showToast("Message not found in folder: \(path)")
-            } else {
-                // todo - this should be a retry / cancel alert
-                showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
+    private func validateMessage(rawMimeData: Data, with passPhrase: String) {
+        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+
+        messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+            .then(on: .main) { [weak self] message in
+                self?.fetchedMessage = message
+                self?.handleReceivedMessage()
             }
-            navigationController?.popViewController(animated: true)
-        }
+            .catch(on: .main) { [weak self] error in
+                self?.handleError(error)
+            }
     }
 
-    private func showPassPhraseAlert() {
+    private func handleReceivedMessage() {
         hideSpinner()
-        let alert = UIAlertController(title: "setup_enter_pass_phrase".localized, message: nil, preferredStyle: .alert)
-        alert.addTextField { tf in
-            tf.isSecureTextEntry = true
-        }
-
-        let saveAction = UIAlertAction(title: "Save", style: .default) { [weak self] _ in
-            guard let textField = alert.textFields?.first,
-                  let passPhrase = textField.text,
-                  passPhrase.isNotEmpty
-            else {
-                alert.dismiss(animated: true, completion: nil)
-                return
-            }
-            self?.passPhraseStorage.saveLocally(passPhrase: passPhrase)
-            alert.dismiss(animated: true) {
-                self?.fetchDecryptAndRenderMsg()
-            }
-        }
-
-        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
-            alert.dismiss(animated: true) { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            }
-        }
-
-        alert.addAction(saveAction)
-        alert.addAction(cancelAction)
-
-        present(alert, animated: true, completion: nil)
+        node.reloadData()
+        asyncMarkAsReadIfNotAlreadyMarked()
     }
 
     private func asyncMarkAsReadIfNotAlreadyMarked() {
@@ -230,6 +196,55 @@ extension MessageViewController {
         navigationController?.popViewController(animated: true) { [weak self] in
             self?.onCompletion?(operation, input.objMessage)
         }
+    }
+}
+
+// MARK: - Error Handling
+
+extension MessageViewController {
+    private func handleError(_ error: Error) {
+        hideSpinner()
+
+        switch error as? MessageServiceError {
+        case let .missedPassPhrase(rawMimeData):
+            handleMissedPassPhrase(for: rawMimeData)
+        case let .wrongPassPhrase(rawMimeData, passPhrase):
+            handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+        default:
+            // TODO: - Ticket - Improve error handling for MessageViewController
+            if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
+                // todo - the missing msg should be removed from the list in inbox view
+                // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
+                showToast("Message not found in folder: \(input?.path ?? "N/A")")
+            } else {
+                // todo - this should be a retry / cancel alert
+                showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
+            }
+            navigationController?.popViewController(animated: true)
+        }
+    }
+
+    private func handleMissedPassPhrase(for rawMimeData: Data) {
+        let alert = AppAlertFactory.makePassPhraseAlert(
+            onCancel: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            onCompletion: { [weak self] passPhrase in
+                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+            })
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func handleWrongPathPhrase(for rawMimeData: Data, with phrase: String) {
+        let alert = AppAlertFactory.makeWrongPassPhraseAlert(
+            onCancel: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            onCompletion: { [weak self] passPhrase in
+                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+            })
+        present(alert, animated: true, completion: nil)
     }
 
     private func handleOpErr(operation: MessageAction) {

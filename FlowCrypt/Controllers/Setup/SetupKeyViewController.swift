@@ -149,7 +149,7 @@ extension SetupKeyViewController {
             let passPhrase = PassPhrase(value: passPhrase, longid: encryptedPrv.key.longid)
 
             self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated)
-            self.passPhraseStorage.savePassPhrase(with: passPhrase, isLocally: self.shouldSaveLocally)
+            self.passPhraseStorage.savePassPhrase(with: passPhrase, inStorage: self.shouldSaveLocally)
 
             let updateKey = self.attester.updateKey(
                 email: userId.email,

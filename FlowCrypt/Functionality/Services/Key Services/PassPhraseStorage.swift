@@ -10,10 +10,8 @@ import UIKit
 
 protocol PassPhraseStorageType {
     func getPassPhrases() -> [PassPhrase]
-    func savePassPhrase(with passPhrase: PassPhrase, isLocally: Bool)
-    func updatePassPhrase(with passPhrase: PassPhrase, isLocally: Bool)
-
-    func saveLocally(passPhrase: String)
+    func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool)
+    func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool)
 }
 
 protocol EmailProviderType {
@@ -45,8 +43,8 @@ final class PassPhraseStorage: PassPhraseStorageType {
         self.isHours = isHours
     }
 
-    func savePassPhrase(with passPhrase: PassPhrase, isLocally: Bool) {
-        if isLocally {
+    func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
+        if inStorage {
             logger.logInfo("Save to storage \(passPhrase.longid)")
             storage.addPassPhrase(object: PassPhraseObject(passPhrase))
         } else {
@@ -63,8 +61,8 @@ final class PassPhraseStorage: PassPhraseStorageType {
         }
     }
 
-    func updatePassPhrase(with passPhrase: PassPhrase, isLocally: Bool) {
-        if isLocally {
+    func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
+        if inStorage {
             storage.updatePassPhrase(object: PassPhraseObject(passPhrase))
         } else {
             let updated = LocalPassPhrase(passPhrase: passPhrase, date: Date())
@@ -114,20 +112,5 @@ final class PassPhraseStorage: PassPhraseStorageType {
 
         logger.logInfo("validPassPhrases \(validPassPhrases.count)")
         return dbPassPhrases + validPassPhrases
-    }
-
-    func saveLocally(passPhrase: String) {
-        guard let email = currentUserEmail else {
-            return
-        }
-
-        storage.keysInfo()
-            .filter {
-                $0.account.contains(email)
-            }
-            .forEach {
-                let passPhrase = PassPhrase(value: passPhrase, longid: $0.longid)
-                localStorage.save(passPhrase: LocalPassPhrase(passPhrase: passPhrase, date: Date()))
-            }
     }
 }

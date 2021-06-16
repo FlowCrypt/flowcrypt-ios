@@ -247,7 +247,7 @@ extension SetupEnterPassPhraseViewController {
                 PassPhrase(value: passPhrase, longid: $0.longid)
             }
             .forEach {
-                passPhraseStorage.updatePassPhrase(with: $0, isLocally: shouldSaveLocally)
+                passPhraseStorage.updatePassPhrase(with: $0, inStorage: shouldSaveLocally)
             }
 
         newKeysToAdd
@@ -255,7 +255,7 @@ extension SetupEnterPassPhraseViewController {
                 PassPhrase(value: passPhrase, longid: $0.longid)
             }
             .forEach {
-                passPhraseStorage.savePassPhrase(with: $0, isLocally: shouldSaveLocally)
+                passPhraseStorage.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
             }
 
         hideSpinner()
