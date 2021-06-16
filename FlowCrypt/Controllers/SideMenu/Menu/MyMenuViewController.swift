@@ -43,7 +43,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     private var folders: [FolderViewModel] = []
     private let serviceItems: [FolderViewModel] = FolderViewModel.menuItems
-    private var accounts: [User] { dataService.users.filter { !$0.isActive } }
+    private var accounts: [User] { dataService.validAccounts() }
 
     private let tableNode: ASTableNode
 

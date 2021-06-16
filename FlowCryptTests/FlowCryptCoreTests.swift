@@ -15,7 +15,9 @@ class FlowCryptCoreTests: XCTestCase {
         super.setUp()
         // DispatchQueue.promises = .global() // this helps prevent Promise deadlocks - but currently Promises are not in use by tests
         core = Core.shared
-        core.startInBackgroundIfNotAlreadyRunning()
+        core.startInBackgroundIfNotAlreadyRunning {
+            
+        }
         do {
             try core.blockUntilReadyOrThrow()
         } catch {

@@ -101,7 +101,10 @@ final class Core {
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
-    public func startInBackgroundIfNotAlreadyRunning() {
+    public func startInBackgroundIfNotAlreadyRunning(_ completion: @escaping (() -> Void)) {
+        if self.ready {
+            completion()
+        }
         if !started {
             started = true
             DispatchQueue.global(qos: .default).async { [weak self] in
@@ -123,6 +126,7 @@ final class Core {
                 self.context!.setObject(unsafeBitCast(cb_last_value_filler, to: AnyObject.self), forKeyedSubscript: "engine_host_cb_catcher" as (NSCopying & NSObjectProtocol)?)
                 self.ready = true
                 self.logger.logInfo("JsContext took \(trace.finish()) to start")
+                completion()
             }
         }
     }

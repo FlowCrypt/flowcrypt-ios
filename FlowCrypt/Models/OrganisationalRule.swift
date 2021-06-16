@@ -43,12 +43,12 @@ class OrganisationalRules {
         self.domainRules = domainRules
         self.domain = domain
     }
-    
+
     init?(domainRules: DomainRules, email: String) {
         guard let recipientDomain = email.recipientDomain else {
             return nil
         }
-        
+
         self.domain = recipientDomain
         self.domainRules = domainRules
     }

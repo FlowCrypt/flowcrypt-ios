@@ -22,6 +22,7 @@ protocol EncryptedStorageType {
     func getAllUsers() -> [UserObject]
     func saveActiveUser(with user: UserObject)
     var activeUser: UserObject? { get }
+    func isAnyKey(for email: String) -> Bool
 
     func cleanup()
 }
@@ -189,6 +190,16 @@ extension EncryptedStorage {
             .map(\.public)
             .first
     }
+
+    func isAnyKey(for email: String) -> Bool {
+        guard let keys = keys() else {
+            return false
+        }
+        return keys
+            .map(\.account)
+            .map { $0.contains(email) }
+            .contains(true)
+    }
 }
 
 // MARK: - User
@@ -207,6 +218,7 @@ extension EncryptedStorage {
             self.getAllUsers().forEach {
                 $0.isActive = false
             }
+            user.isActive = true
             self.storage.add(user, update: .all)
         }
     }

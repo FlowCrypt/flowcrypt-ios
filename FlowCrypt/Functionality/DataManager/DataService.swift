@@ -20,6 +20,8 @@ protocol DataServiceType {
     var token: String? { get }
 
     var users: [User] { get }
+
+    func validAccounts() -> [User]
 }
 
 protocol ImapSessionProvider {
@@ -64,15 +66,7 @@ extension DataService: DataServiceType {
         guard let currentUser = currentUser else {
             return false
         }
-        guard let keys = encryptedStorage.keys() else {
-            return false
-        }
-        let isAnyKeysForCurrentUser = keys
-            .map(\.account)
-            .map { $0.contains(currentUser.email) }
-            .contains(true)
-
-        return isAnyKeysForCurrentUser
+        return encryptedStorage.isAnyKey(for: currentUser.email)
     }
 
     var isLoggedIn: Bool {
@@ -108,6 +102,13 @@ extension DataService: DataServiceType {
         default:
             return nil
         }
+    }
+
+    func validAccounts() -> [User] {
+        encryptedStorage.getAllUsers()
+            .filter { encryptedStorage.isAnyKey(for: $0.email) }
+            .filter { $0.email != currentUser?.email }
+            .map(User.init)
     }
 }
 
