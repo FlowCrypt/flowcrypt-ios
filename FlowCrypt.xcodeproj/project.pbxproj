@@ -124,7 +124,7 @@
 		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
-		9F7E5101267A0AAC00CE37C3 /* AppAlertFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E5100267A0AAC00CE37C3 /* AppAlertFactory.swift */; };
+		9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */; };
 		9F8220D526336626004B2009 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
 		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewControllerContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewControllerContainer.swift */; };
@@ -516,7 +516,7 @@
 		9F7920F42667CEF100DA3D80 /* PassPraseSaveable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPraseSaveable.swift; sourceTree = "<group>"; };
 		9F79228726696B0200DA3D80 /* PassPhraseStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassPhraseStorage.swift; sourceTree = "<group>"; };
 		9F79229326696B9300DA3D80 /* KeyDataStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyDataStorage.swift; sourceTree = "<group>"; };
-		9F7E5100267A0AAC00CE37C3 /* AppAlertFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppAlertFactory.swift; path = ../../../../AppAlertFactory.swift; sourceTree = "<group>"; };
+		9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsFactory.swift; sourceTree = "<group>"; };
 		9F8220D426336626004B2009 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9F8277952373732000E19C07 /* UIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
 		9F82779723737E0900E19C07 /* MessageViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewDecorator.swift; sourceTree = "<group>"; };
@@ -1788,7 +1788,7 @@
 			children = (
 				D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */,
 				9F82779723737E0900E19C07 /* MessageViewDecorator.swift */,
-				9F7E5100267A0AAC00CE37C3 /* AppAlertFactory.swift */,
+				9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */,
 			);
 			path = Msg;
 			sourceTree = "<group>";
@@ -2457,6 +2457,7 @@
 				9FB22CDD25715CF50026EE64 /* GmailServiceError.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
 				9F416428266575DC00106194 /* BackupServiceType.swift in Sources */,
+				9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9FF0673325520DE400FCC9E6 /* GmailService+send.swift in Sources */,
 				D20D3C892520B67C00D4AA9A /* BackupOptionsViewController.swift in Sources */,
@@ -2512,7 +2513,6 @@
 				D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */,
 				D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */,
 				9FC7EBAA266EBD3700F3BF5D /* LocalPassPhraseStorage.swift in Sources */,
-				9F7E5101267A0AAC00CE37C3 /* AppAlertFactory.swift in Sources */,
 				9FA9C83C264C2D75005A9670 /* MessageService.swift in Sources */,
 				D2FF6966243115EC007182F0 /* EmailProviderViewController.swift in Sources */,
 				D2CDC3D22402D4DA002B045F /* UIViewControllerExtensions.swift in Sources */,

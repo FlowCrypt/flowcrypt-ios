@@ -225,7 +225,7 @@ extension MessageViewController {
     }
 
     private func handleMissedPassPhrase(for rawMimeData: Data) {
-        let alert = AppAlertFactory.makePassPhraseAlert(
+        let alert = AlertsFactory.makePassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
@@ -237,7 +237,7 @@ extension MessageViewController {
     }
 
     private func handleWrongPathPhrase(for rawMimeData: Data, with phrase: String) {
-        let alert = AppAlertFactory.makeWrongPassPhraseAlert(
+        let alert = AlertsFactory.makeWrongPassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
