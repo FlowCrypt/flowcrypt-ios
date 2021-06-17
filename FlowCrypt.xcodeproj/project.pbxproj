@@ -11,6 +11,9 @@
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		211392A5266511E6009202EC /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
+		21489B6B267B7BD800BDE4AC /* FilesManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */; };
+		21489B6C267B7C6A00BDE4AC /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
+		21489B6E267B7D5000BDE4AC /* FileMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B6D267B7D5000BDE4AC /* FileMock.swift */; };
 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
 		21C7DEFC26669A3700C44800 /* CalendarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DEFB26669A3700C44800 /* CalendarExtension.swift */; };
 		21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */; };
@@ -363,6 +366,8 @@
 		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
 		11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		211392A4266511E6009202EC /* PubLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubLookup.swift; sourceTree = "<group>"; };
+		21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManagerTests.swift; sourceTree = "<group>"; };
+		21489B6D267B7D5000BDE4AC /* FileMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMock.swift; sourceTree = "<group>"; };
 		215897E7267A553200423694 /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
 		21C7DEFB26669A3700C44800 /* CalendarExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExtension.swift; sourceTree = "<group>"; };
 		21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseKitExtension.swift; sourceTree = "<group>"; };
@@ -745,6 +750,15 @@
 			path = SideMenu;
 			sourceTree = "<group>";
 		};
+		21489B69267B7BC300BDE4AC /* FilesManager */ = {
+			isa = PBXGroup;
+			children = (
+				21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */,
+				21489B6D267B7D5000BDE4AC /* FileMock.swift */,
+			);
+			path = FilesManager;
+			sourceTree = "<group>";
+		};
 		215897E6267A551300423694 /* FilesManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -776,6 +790,7 @@
 		21F836A62652A1B700B2448C /* Functionallity */ = {
 			isa = PBXGroup;
 			children = (
+				21489B69267B7BC300BDE4AC /* FilesManager */,
 				21F836A72652A1CD00B2448C /* WKDURLs */,
 			);
 			path = Functionallity;
@@ -2301,9 +2316,11 @@
 				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
 				9F1D5769263B540100477938 /* Logger.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
+				21489B6B267B7BD800BDE4AC /* FilesManagerTests.swift in Sources */,
 				21EA3B2326565B5D00691848 /* DomainRulesTests.swift in Sources */,
 				21F836CC2652A38700B2448C /* ZBase32EncodingTests.swift in Sources */,
 				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
+				21489B6C267B7C6A00BDE4AC /* FilesManager.swift in Sources */,
 				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
 				21EA3B532656611C00691848 /* OrganisationalRule.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
@@ -2315,6 +2332,7 @@
 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
 				9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */,
 				5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */,
+				21489B6E267B7D5000BDE4AC /* FileMock.swift in Sources */,
 				D212D36524C1AC4800035991 /* KeyId.swift in Sources */,
 				9F003DBC25EA92D000EB38C0 /* LogOutHandler.swift in Sources */,
 				21F836A02652A19A00B2448C /* WKDURLsConstructor.swift in Sources */,

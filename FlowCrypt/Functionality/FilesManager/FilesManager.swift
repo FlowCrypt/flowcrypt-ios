@@ -15,7 +15,7 @@ protocol FileType {
 }
 
 protocol FilesManagerType {
-    func download(file: FileType) -> Promise<Void>
+    func save(file: FileType) -> Promise<Void>
 }
 
 class FilesManager: FilesManagerType {
@@ -26,7 +26,7 @@ class FilesManager: FilesManagerType {
 
     private let queue: DispatchQueue = DispatchQueue.global(qos: .background)
 
-    func download(file: FileType) -> Promise<Void> {
+    func save(file: FileType) -> Promise<Void> {
         Promise<Void> { [weak self] resolve, reject in
             guard let self = self else {
                 throw AppErr.nilSelf

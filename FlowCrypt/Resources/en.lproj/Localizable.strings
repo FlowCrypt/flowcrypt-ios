@@ -16,6 +16,8 @@
 "message_compose_secure" = "Compose Secure Message";
 "message_unknown_sender" = "(unknown sender)";
 "message_missed_subject" = "No subject";
+"message_attachment_saved_successfully" = "Attachemt was saved";
+"message_attachment_saved_with_error" = "Attachment could not saved.";
 
 // REPLY
 "reply_title" = "Your reply"; // not used

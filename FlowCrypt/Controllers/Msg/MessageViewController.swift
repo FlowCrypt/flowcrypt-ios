@@ -55,6 +55,7 @@ final class MessageViewController: TableNodeViewController {
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let trashFolderProvider: TrashFolderProviderType
+    private let filesManager: FilesManagerType
     private var fetchedMessage: FetchedMessage = .empty
 
     init(
@@ -63,6 +64,7 @@ final class MessageViewController: TableNodeViewController {
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         storage: DataServiceType & KeyDataServiceType = DataService.shared,
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
+        filesManager: FilesManagerType = FilesManager(),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
@@ -72,6 +74,7 @@ final class MessageViewController: TableNodeViewController {
         self.decorator = decorator
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
+        self.filesManager = filesManager
 
         super.init(node: TableNode())
     }
@@ -378,7 +381,18 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         AttachmentNode(
             input: .init(
                 msgAttachment: fetchedMessage.attachments[index]
-            )
+            ),
+            onDownloadTap: { [weak self] in
+                guard let self = self else { return }
+                self.filesManager.save(file: self.fetchedMessage.attachments[index])
+                    .then { _ in
+                        self.showToast("message_attachment_saved_successfully".localized)
+                    }.catch { error in
+                        self.showToast(
+                            "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
+                        )
+                    }
+            }
         )
     }
 }
