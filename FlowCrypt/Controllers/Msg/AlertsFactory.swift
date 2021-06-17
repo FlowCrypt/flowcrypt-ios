@@ -6,14 +6,21 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 enum AlertsFactory {
     typealias PassPhraseCompletion = ((String) -> Void)
     typealias CancelCompletion = (() -> Void)
-    
-    static func makePassPhraseAlert(onCancel: @escaping CancelCompletion, onCompletion: @escaping  PassPhraseCompletion) -> UIAlertController {
-        let alert = UIAlertController(title: "setup_enter_pass_phrase".localized, message: nil, preferredStyle: .alert)
+
+    static func makePassPhraseAlert(
+        onCancel: @escaping CancelCompletion,
+        onCompletion: @escaping PassPhraseCompletion
+    ) -> UIAlertController {
+        let alert = UIAlertController(
+            title: "setup_enter_pass_phrase".localized,
+            message: nil,
+            preferredStyle: .alert
+        )
         alert.addTextField { tf in
             tf.isSecureTextEntry = true
         }
@@ -40,12 +47,20 @@ enum AlertsFactory {
 
         alert.addAction(cancelAction)
         alert.addAction(saveAction)
-        
+
         return alert
     }
-    
-    static func makeWrongPassPhraseAlert(onCancel: @escaping CancelCompletion, onCompletion: @escaping  PassPhraseCompletion) -> UIAlertController {
-        let alert = UIAlertController(title: "setup_wrong_pass_phrase_retry".localized, message: nil, preferredStyle: .alert)
+
+    static func makeWrongPassPhraseAlert(
+        onCancel: @escaping CancelCompletion,
+        onCompletion: @escaping PassPhraseCompletion
+    ) -> UIAlertController {
+        let alert = UIAlertController(
+            title: "setup_wrong_pass_phrase_retry".localized,
+            message: nil,
+            preferredStyle: .alert
+        )
+
         alert.addTextField { tf in
             tf.isSecureTextEntry = true
         }
@@ -69,10 +84,10 @@ enum AlertsFactory {
                 onCancel()
             }
         }
-        
+
         alert.addAction(cancelAction)
         alert.addAction(saveAction)
-        
+
         return alert
     }
 }
