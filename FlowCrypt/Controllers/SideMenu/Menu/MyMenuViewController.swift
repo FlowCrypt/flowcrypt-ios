@@ -161,7 +161,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
 extension MyMenuViewController {
     private func fetchFolders() {
         showSpinner()
-        foldersProvider.fetchFolders()
+        foldersProvider.fetchFolders(isForceReload: false)
             .then(on: .main) { [weak self] folders in
                 self?.handleNewFolders(with: folders)
             }

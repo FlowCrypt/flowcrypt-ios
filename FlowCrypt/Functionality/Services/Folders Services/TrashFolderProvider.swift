@@ -28,7 +28,7 @@ extension TrashFolderProvider: TrashFolderProviderType {
         } else {
             return Promise { resolve, _ in
                 // will get all folders
-                _ = try awaitPromise(folderProvider.fetchFolders())
+                _ = try awaitPromise(folderProvider.fetchFolders(isForceReload: true))
                 resolve(localStorage.trashFolderPath)
             }
         }
