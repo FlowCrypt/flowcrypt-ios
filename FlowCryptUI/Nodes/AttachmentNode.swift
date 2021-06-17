@@ -34,6 +34,7 @@ public final class AttachmentNode: CellNode {
         borderNode.borderWidth = 1.0
         borderNode.cornerRadius = 8.0
         borderNode.borderColor = UIColor.lightGray.cgColor
+        borderNode.isUserInteractionEnabled = false
 
         imageNode.tintColor = .gray
         buttonNode.tintColor = .gray
@@ -45,13 +46,6 @@ public final class AttachmentNode: CellNode {
         
         buttonNode.addTarget(self, action: #selector(onDownloadButtonTap), forControlEvents: .touchUpInside)
         
-    }
-    
-    public override func layoutDidFinish() {
-        super.layoutDidFinish()
-        DispatchQueue.main.async {
-            self.view.bringSubviewToFront(self.buttonNode.view)
-        }
     }
     
     @objc private func onDownloadButtonTap() {
