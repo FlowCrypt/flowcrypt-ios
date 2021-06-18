@@ -83,7 +83,6 @@
 		9F268891237DC55600428A94 /* ImportKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268890237DC55600428A94 /* ImportKeyViewController.swift */; };
 		9F268894237DD98900428A94 /* EnterPassPhraseViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268893237DD98900428A94 /* EnterPassPhraseViewDecorator.swift */; };
 		9F2AC5B1267BDED100F6149B /* GmailSearchExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2AC5B0267BDED100F6149B /* GmailSearchExpressionGenerator.swift */; };
-		9F2AC5C9267BE99E00F6149B /* FlowCryptAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2AC5C8267BE99E00F6149B /* FlowCryptAppTests.swift */; };
 		9F2AC5D7267BE9B100F6149B /* GmailSearchExpressionGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2AC59E267BDE0700F6149B /* GmailSearchExpressionGeneratorTests.swift */; };
 		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
@@ -460,7 +459,6 @@
 		9F2AC59E267BDE0700F6149B /* GmailSearchExpressionGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GmailSearchExpressionGeneratorTests.swift; sourceTree = "<group>"; };
 		9F2AC5B0267BDED100F6149B /* GmailSearchExpressionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GmailSearchExpressionGenerator.swift; sourceTree = "<group>"; };
 		9F2AC5C6267BE99E00F6149B /* FlowCryptAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9F2AC5C8267BE99E00F6149B /* FlowCryptAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCryptAppTests.swift; sourceTree = "<group>"; };
 		9F2AC5CA267BE99E00F6149B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+retry.swift"; sourceTree = "<group>"; };
 		9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+folders.swift"; sourceTree = "<group>"; };
@@ -1018,7 +1016,6 @@
 			isa = PBXGroup;
 			children = (
 				9F2AC59E267BDE0700F6149B /* GmailSearchExpressionGeneratorTests.swift */,
-				9F2AC5C8267BE99E00F6149B /* FlowCryptAppTests.swift */,
 				9F2AC5CA267BE99E00F6149B /* Info.plist */,
 			);
 			path = FlowCryptAppTests;
@@ -2364,7 +2361,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F2AC5D7267BE9B100F6149B /* GmailSearchExpressionGeneratorTests.swift in Sources */,
-				9F2AC5C9267BE99E00F6149B /* FlowCryptAppTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
