@@ -122,6 +122,16 @@
                ReferencedContainer = "container:FlowCrypt.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "9F2AC5C5267BE99E00F6149B"
+               BuildableName = "FlowCryptAppTests.xctest"
+               BlueprintName = "FlowCryptAppTests"
+               ReferencedContainer = "container:FlowCrypt.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

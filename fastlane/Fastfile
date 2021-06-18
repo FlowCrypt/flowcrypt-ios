@@ -46,6 +46,15 @@ platform :ios do
   )
   end
 
+  # UnitTests
+  desc "Run Tests"
+  lane :test do 
+    scan(
+      scheme: "FlowCryptAppTests",
+      skip_build: true    
+  )
+  end
+
   desc "Build"
   desc "Build without code sign. Just to see if the build is working"
   lane :build do |options|
