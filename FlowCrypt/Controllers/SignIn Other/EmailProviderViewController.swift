@@ -493,7 +493,9 @@ extension EmailProviderViewController {
     }
 
     private func handleConnection(error: Error) {
-        globalRouter.signOut()
+        showAlert(error: error, message: "Connection Error") { [weak self] in
+            self?.globalRouter.signOut()
+        }
     }
 
     private func handleSuccessfulConnection() {

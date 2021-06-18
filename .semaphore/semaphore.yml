@@ -31,7 +31,31 @@ blocks:
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
       jobs:
-        - name: FlowCryptTests
+        - name: 'FlowCryptTests'
           commands:
             - bundle exec fastlane do_everything
 
+        # - name: 'FlowCryptTests(with email server)'
+        #   commands: 
+        #     # Install Docker
+        #     - brew install --cask docker
+        #     # Install Docker-compose
+        #     - brew install docker-compose
+        #     # Run an email server
+        #     # Docker daemon uses Linux-specific kernel features. 
+        #     # Install docker-machine in order to create VM and attach to it.
+        #     - brew install docker-machine docker
+        #     # docker-machine relies on VirtualBox
+        #     # install Virtualbox
+        #     - brew install --cask virtualbox
+        #     # Install telnet
+        #     - brew install telnet
+        #     # Install docker toolbox
+        #     - brew install --cask docker-toolbox
+        #     # Start virtualbox
+        #     - docker-machine create -d virtualbox --virtualbox-no-vtx-check default || true
+        #     # Start Docker
+        #     - docker-machine start default || true
+        #     - docker-compose --version
+        #     # Run mail server
+        #     - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd - 
