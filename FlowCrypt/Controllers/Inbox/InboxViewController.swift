@@ -51,7 +51,6 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     private let messageProvider: MessagesListProvider
     private let decorator: InboxViewDecoratorType
-    private let enterpriseServerApi: EnterpriseServerApiType
     private let refreshControl = UIRefreshControl()
     private let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
@@ -64,13 +63,11 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     init(
         _ viewModel: InboxViewModel,
         messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
-        decorator: InboxViewDecoratorType = InboxViewDecorator(),
-        enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi()
+        decorator: InboxViewDecoratorType = InboxViewDecorator()
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
         self.decorator = decorator
-        self.enterpriseServerApi = enterpriseServerApi
         tableNode = TableNode()
 
         super.init(node: ASDisplayNode())
@@ -218,7 +215,7 @@ extension InboxViewController {
         // insert new messages
         let indexesToInsert = messageContext.messages
             .enumerated()
-            .map { (index, _) -> Int in
+            .map { index, _ -> Int in
                 let indexInTableView = index + count
                 return indexInTableView
             }
@@ -244,14 +241,6 @@ extension InboxViewController {
         default:
             showAlert(error: error, message: "message_failed_load".localized)
         }
-    }
-
-    private func checkFES() {
-        enterpriseServerApi.getActiveFesUrlForCurrentUser()
-            .then(on: .main) { [weak self] urlString in
-                guard let urlString = urlString else { return }
-                self?.showToast("FES at \(urlString) not supported on iOS yet")
-            }
     }
 }
 

@@ -11,17 +11,20 @@
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		211392A5266511E6009202EC /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
+		21489B78267CB42400BDE4AC /* DomainRulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* DomainRulesProvider.swift */; };
+		21489B7A267CB4DF00BDE4AC /* DomainRulesObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B79267CB4DF00BDE4AC /* DomainRulesObject.swift */; };
+		21489B7C267CBA0E00BDE4AC /* DomainRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7B267CBA0E00BDE4AC /* DomainRules.swift */; };
+		21489B80267CC39E00BDE4AC /* OrganisationalRulesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */; };
+		21489B83267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */; };
 		21C7DEFC26669A3700C44800 /* CalendarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DEFB26669A3700C44800 /* CalendarExtension.swift */; };
 		21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */; };
 		21C7DF0526697DA500C44800 /* PromiseKitExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */; };
 		21C7DF09266C0D8F00C44800 /* EnterpriseServerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */; };
 		21C7DF0B266C0E3600C44800 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF0A266C0E3600C44800 /* Configuration.swift */; };
 		21CE25E62650070300ADFF4B /* WKDURLsConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CE25E52650070300ADFF4B /* WKDURLsConstructor.swift */; };
-		21EA3B2326565B5D00691848 /* DomainRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B2226565B5D00691848 /* DomainRulesTests.swift */; };
 		21EA3B2F26565B7400691848 /* domain_rules.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B2E26565B7400691848 /* domain_rules.json */; };
 		21EA3B3626565B8100691848 /* domain_rules_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B3526565B8100691848 /* domain_rules_empty.json */; };
 		21EA3B3D26565B9800691848 /* domain_rules_partly_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B3C26565B9800691848 /* domain_rules_partly_empty.json */; };
-		21EA3B532656611C00691848 /* OrganisationalRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* OrganisationalRule.swift */; };
 		21EA3B592656611D00691848 /* OrganisationalRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* OrganisationalRule.swift */; };
 		21EFF61F265A5C6700AB0B71 /* WKDURLsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EFF61E265A5C6700AB0B71 /* WKDURLsApi.swift */; };
 		21F836A02652A19A00B2448C /* WKDURLsConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CE25E52650070300ADFF4B /* WKDURLsConstructor.swift */; };
@@ -362,6 +365,11 @@
 		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
 		11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		211392A4266511E6009202EC /* PubLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubLookup.swift; sourceTree = "<group>"; };
+		21489B77267CB42400BDE4AC /* DomainRulesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainRulesProvider.swift; sourceTree = "<group>"; };
+		21489B79267CB4DF00BDE4AC /* DomainRulesObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainRulesObject.swift; sourceTree = "<group>"; };
+		21489B7B267CBA0E00BDE4AC /* DomainRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainRules.swift; sourceTree = "<group>"; };
+		21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesService.swift; sourceTree = "<group>"; };
+		21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesServiceError.swift; sourceTree = "<group>"; };
 		21C7DEFB26669A3700C44800 /* CalendarExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExtension.swift; sourceTree = "<group>"; };
 		21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseKitExtension.swift; sourceTree = "<group>"; };
 		21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApi.swift; sourceTree = "<group>"; };
@@ -719,6 +727,7 @@
 				9F0C3C132316E69300299985 /* User.swift */,
 				9F9AAFFC2383E216000A00F1 /* Document.swift */,
 				21EA3B15265647C400691848 /* OrganisationalRule.swift */,
+				21489B7B267CBA0E00BDE4AC /* DomainRules.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -741,6 +750,16 @@
 				9F1F8A1D235F84D6006463A1 /* NavigationController */,
 			);
 			path = SideMenu;
+			sourceTree = "<group>";
+		};
+		21489B81267CC3BC00BDE4AC /* Organisational Rules Service */ = {
+			isa = PBXGroup;
+			children = (
+				21489B77267CB42400BDE4AC /* DomainRulesProvider.swift */,
+				21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */,
+				21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */,
+			);
+			path = "Organisational Rules Service";
 			sourceTree = "<group>";
 		};
 		21CE25D32650034500ADFF4B /* WKDURLs */ = {
@@ -919,14 +938,15 @@
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 				32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */,
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
-				21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */,
 				21EFF61E265A5C6700AB0B71 /* WKDURLsApi.swift */,
+				21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */,
 				D274724024F97C5C006BA6EF /* CacheService.swift */,
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				9FB22CFD25715DDF0026EE64 /* Key Services */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
 				D227C0E4250538190070F805 /* Folders Services */,
 				D27B911724EFE787002DF0A1 /* Contacts Services */,
+				21489B81267CC3BC00BDE4AC /* Organisational Rules Service */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -940,6 +960,7 @@
 				D274724324FD1932006BA6EF /* FolderObject.swift */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				D2F41370243CC76E0066AFB5 /* SessionObject.swift */,
+				21489B79267CB4DF00BDE4AC /* DomainRulesObject.swift */,
 			);
 			path = "Realm Models";
 			sourceTree = "<group>";
@@ -2290,11 +2311,9 @@
 				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
 				9F1D5769263B540100477938 /* Logger.swift in Sources */,
 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
-				21EA3B2326565B5D00691848 /* DomainRulesTests.swift in Sources */,
 				21F836CC2652A38700B2448C /* ZBase32EncodingTests.swift in Sources */,
 				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
 				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
-				21EA3B532656611C00691848 /* OrganisationalRule.swift in Sources */,
 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
 				D212D36124C1AC0D00035991 /* KeyDetails.swift in Sources */,
 				9F6EE18C25A8AF970059BA51 /* GeneralConstants.swift in Sources */,
@@ -2329,6 +2348,7 @@
 				9FB22CE425715D3E0026EE64 /* GmailServiceErrorHandler.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
+				21489B7C267CBA0E00BDE4AC /* DomainRules.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
@@ -2357,6 +2377,7 @@
 				D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
 				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
+				21489B80267CC39E00BDE4AC /* OrganisationalRulesService.swift in Sources */,
 				D28655932423B4EE0066F52E /* MyMenuViewDecorator.swift in Sources */,
 				04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */,
 				9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */,
@@ -2426,6 +2447,7 @@
 				9F9362192573D10E0009912F /* Imap+Message.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */,
+				21489B83267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift in Sources */,
 				D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */,
 				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* GoogleUserService.swift in Sources */,
@@ -2447,6 +2469,7 @@
 				9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
+				21489B78267CB42400BDE4AC /* DomainRulesProvider.swift in Sources */,
 				9FF0671C25520D9D00FCC9E6 /* MailProvider.swift in Sources */,
 				9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */,
 				9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */,
@@ -2462,6 +2485,7 @@
 				D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
+				21489B7A267CB4DF00BDE4AC /* DomainRulesObject.swift in Sources */,
 				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,
 				9F5C2A7E257E64D500DE9B4B /* MessageOperationsProvider.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,

@@ -8,30 +8,6 @@
 
 import Foundation
 
-enum DomainRulesFlag: String, Codable {
-
-    case noPRVBackup = "NO_PRV_BACKUP"
-    case noPRVCreate = "NO_PRV_CREATE"
-    case noKeyManagerPubLookup = "NO_KEY_MANAGER_PUB_LOOKUP"
-    case PRVAutoimportOrAutogen = "PRV_AUTOIMPORT_OR_AUTOGEN"
-    case passphraseQuietAutogen = "PASS_PHRASE_QUIET_AUTOGEN"
-    case enforceAttesterSubmit = "ENFORCE_ATTESTER_SUBMIT"
-    case noAttesterSubmit = "NO_ATTESTER_SUBMIT"
-    case useLegacyAttesterSubmit = "USE_LEGACY_ATTESTER_SUBMIT"
-    case defaultRememberPassphrase = "DEFAULT_REMEMBER_PASS_PHRASE"
-    case hideArmorMeta = "HIDE_ARMOR_META"
-}
-
-struct DomainRules: Codable, Equatable {
-
-    let flags: [DomainRulesFlag]?
-    let customKeyserverUrl: String?
-    let keyManagerUrl: String?
-    let disallowAttesterSearchForDomains: [String]?
-    let enforceKeygenAlgo: String?
-    let enforceKeygenExpireMonths: Int?
-}
-
 /// Organisational rules, set domain-wide, and delivered from FlowCrypt Backend
 /// These either enforce, alter or forbid various behavior to fit customer needs
 class OrganisationalRules {
@@ -43,12 +19,12 @@ class OrganisationalRules {
         self.domainRules = domainRules
         self.domain = domain
     }
-    
+
     init?(domainRules: DomainRules, email: String) {
         guard let recipientDomain = email.recipientDomain else {
             return nil
         }
-        
+
         self.domain = recipientDomain
         self.domainRules = domainRules
     }
