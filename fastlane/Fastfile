@@ -80,6 +80,7 @@ platform :ios do
     cocoapod_update
     build
     test
+    unit_tests
     # test_ui
     # record_tests
   end 
