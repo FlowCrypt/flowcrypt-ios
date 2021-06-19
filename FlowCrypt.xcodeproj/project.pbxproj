@@ -105,6 +105,8 @@
 		9F8220D526336626004B2009 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
 		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewControllerContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewControllerContainer.swift */; };
+		9F8BF96F267E231D00B7C863 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8BF96E267E231D00B7C863 /* TestSupport.swift */; };
+		9F8BF977267E236800B7C863 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8BF976267E236800B7C863 /* TestSupport.swift */; };
 		9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		9F9361A52573CE260009912F /* MessageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9361A42573CE260009912F /* MessageProvider.swift */; };
 		9F9362062573D0C80009912F /* Gmail+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9362052573D0C80009912F /* Gmail+MessagesList.swift */; };
@@ -503,6 +505,8 @@
 		9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSubjectNode.swift; sourceTree = "<group>"; };
 		9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextSubjectNode.swift; sourceTree = "<group>"; };
 		9F82D351256D74FA0069A702 /* InboxViewControllerContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerContainer.swift; sourceTree = "<group>"; };
+		9F8BF96E267E231D00B7C863 /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
+		9F8BF976267E236800B7C863 /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
 		9F8D5E61236B04E300186E43 /* CellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
 		9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCellNode.swift; sourceTree = "<group>"; };
 		9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedStorage.swift; sourceTree = "<group>"; };
@@ -1020,6 +1024,7 @@
 				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 				D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */,
 				9F2AC5CA267BE99E00F6149B /* Info.plist */,
+				9F8BF96E267E231D00B7C863 /* TestSupport.swift */,
 			);
 			path = FlowCryptAppTests;
 			sourceTree = "<group>";
@@ -1148,6 +1153,7 @@
 				9FDF3655235A22DA00614596 /* AppReset.swift */,
 				9F8220D426336626004B2009 /* Logger.swift */,
 				21C7DF0A266C0E3600C44800 /* Configuration.swift */,
+				9F8BF976267E236800B7C863 /* TestSupport.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -2382,6 +2388,7 @@
 				9F97653D267E17C90058419D /* LocalStorageTests.swift in Sources */,
 				9F2AC5D7267BE9B100F6149B /* GmailSearchExpressionGeneratorTests.swift in Sources */,
 				9F9764F4267E15CC0058419D /* ExtensionTests.swift in Sources */,
+				9F8BF96F267E231D00B7C863 /* TestSupport.swift in Sources */,
 				9F976556267E186D0058419D /* DomainRulesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2463,6 +2470,7 @@
 				D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */,
 				9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */,
+				9F8BF977267E236800B7C863 /* TestSupport.swift in Sources */,
 				9F1B4A342624E49300420472 /* KeyAlgoObject.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserObject.swift in Sources */,
