@@ -308,6 +308,7 @@ extension MyMenuViewController {
 // MARK: - SideMenuViewController
 extension MyMenuViewController: SideMenuViewController {
     func didOpen() {
+        tableNode.reloadData()
         fetchFolders()
     }
 }

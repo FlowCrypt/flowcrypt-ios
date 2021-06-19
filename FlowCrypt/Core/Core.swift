@@ -12,7 +12,11 @@ enum CoreError: Error {
     case value(String)
 }
 
-final class Core {
+protocol KeyDecrypter {
+    func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey
+}
+
+final class Core: KeyDecrypter {
     static let shared = Core()
 
     private var jsEndpointListener: JSValue?
@@ -101,7 +105,7 @@ final class Core {
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
-    public func startInBackgroundIfNotAlreadyRunning() {
+    public func startInBackgroundIfNotAlreadyRunning(_ completion: (() -> Void)? = nil) {
         if !started {
             started = true
             DispatchQueue.global(qos: .default).async { [weak self] in
@@ -123,6 +127,7 @@ final class Core {
                 self.context!.setObject(unsafeBitCast(cb_last_value_filler, to: AnyObject.self), forKeyedSubscript: "engine_host_cb_catcher" as (NSCopying & NSObjectProtocol)?)
                 self.ready = true
                 self.logger.logInfo("JsContext took \(trace.finish()) to start")
+                completion?()
             }
         }
     }

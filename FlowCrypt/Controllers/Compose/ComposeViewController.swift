@@ -46,7 +46,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let messageSender: MessageGateway
     private let notificationCenter: NotificationCenter
-    private let dataService: DataServiceType & KeyDataServiceType
+    private let dataService: KeyStorageType
     private let decorator: ComposeViewDecoratorType
     private let core: Core
     private let contactsService: ContactsServiceType
@@ -59,11 +59,13 @@ final class ComposeViewController: TableNodeViewController {
     private var contextToSend = Context()
 
     private var state: State = .main
+    private let email: String
 
     init(
+        email: String,
         messageSender: MessageGateway = MailProvider.shared.messageSender,
         notificationCenter: NotificationCenter = .default,
-        dataService: DataServiceType & KeyDataServiceType = DataService.shared,
+        dataService: KeyStorageType = KeyDataStorage(),
         decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
         input: ComposeViewController.Input = .empty,
         core: Core = Core.shared,
@@ -71,6 +73,7 @@ final class ComposeViewController: TableNodeViewController {
         userDefaults: UserDefaults = .standard,
         contactsService: ContactsServiceType = ContactsService()
     ) {
+        self.email = email
         self.messageSender = messageSender
         self.notificationCenter = notificationCenter
         self.dataService = dataService
@@ -243,7 +246,7 @@ extension ComposeViewController {
                 ?? self.contextToSend.subject
                 ?? "(no subject)"
 
-            guard let myPubKey = self.dataService.publicKey else {
+            guard let myPubKey = self.dataService.publicKey() else {
                 self.showAlert(message: "compose_no_pub_sender".localized)
                 return false
             }
@@ -309,7 +312,7 @@ extension ComposeViewController {
             to: to,
             cc: cc,
             bcc: bcc,
-            from: dataService.email ?? "",
+            from: email,
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: atts

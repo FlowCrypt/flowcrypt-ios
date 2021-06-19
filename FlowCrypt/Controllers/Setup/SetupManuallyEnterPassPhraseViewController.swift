@@ -9,31 +9,47 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class EnterPassPhraseViewController: TableNodeViewController {
+final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, enterPhrase, chooseAnother
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, enterPhrase, chooseAnother
 
         var indexPath: IndexPath {
             IndexPath(row: rawValue, section: 0)
         }
     }
 
-    private let decorator: EnterPassPhraseViewDecoratorType
+    private let decorator: SetupViewDecorator
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let keysDataService: KeyDataServiceType
+    private let keysStorage: KeyStorageType
     private let keyService: KeyServiceType
     private let router: GlobalRouterType
+    let passPhraseStorage: PassPhraseStorageType
 
     private var passPhrase: String?
 
+    var shouldSaveLocally = true {
+        didSet {
+            handleSelectedPassPhraseOption()
+        }
+    }
+
+    var passPhraseIndexes: [IndexPath] {
+        [Parts.saveLocally, Parts.saveInMemory]
+            .map { IndexPath(row: $0.rawValue, section: 0) }
+    }
+
     init(
-        decorator: EnterPassPhraseViewDecoratorType = EnterPassPhraseViewDecorator(),
-        keyMethods: KeyMethodsType = KeyMethods(core: .shared),
-        keysService: KeyDataServiceType = DataService.shared,
+        decorator: SetupViewDecorator = SetupViewDecorator(),
+        keyMethods: KeyMethodsType = KeyMethods(),
+        keysService: KeyStorageType = KeyDataStorage(),
         router: GlobalRouterType = GlobalRouter(),
         keyService: KeyServiceType = KeyService(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        ),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
@@ -41,9 +57,11 @@ final class EnterPassPhraseViewController: TableNodeViewController {
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.keysDataService = keysService
+        self.keysStorage = keysService
         self.router = router
         self.keyService = keyService
+        self.passPhraseStorage = passPhraseStorage
+
         super.init(node: TableNode())
     }
 
@@ -67,7 +85,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
-        title = decorator.sceneTitle
+        title = decorator.sceneTitle(for: .enterPassPhrase)
         node.view.contentInsetAdjustmentBehavior = .never
     }
 
@@ -83,7 +101,7 @@ final class EnterPassPhraseViewController: TableNodeViewController {
 
 // MARK: - Keyboard
 
-extension EnterPassPhraseViewController {
+extension SetupManuallyEnterPassPhraseViewController {
     // swiftlint:disable discarded_notification_center_observer
     /// Observation should be removed in a place where subscription is
     private func observeKeyboardNotifications() {
@@ -113,20 +131,20 @@ extension EnterPassPhraseViewController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
+extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.passPhraseTitle,
-                        insets: self.decorator.titleInsets,
+                        title: self.decorator.title(for: .enterPassPhrase),
+                        insets: self.decorator.insets.titleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
@@ -134,12 +152,12 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                 return SetupTitleNode(
                     SetupTitleNode.Input(
                         title: self.decorator.subtitleStyle(self.email),
-                        insets: self.decorator.subTitleInset,
+                        insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )
                 )
             case .passPhrase:
-                return TextFieldCellNode(input: self.decorator.passPhraseTextFieldStyle) { [weak self] action in
+                return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     guard case let .didEndEditing(text) = action else { return }
                     self?.passPhrase = text
                 }
@@ -151,30 +169,44 @@ extension EnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
                     return true
                 }
             case .enterPhrase:
-                return ButtonCellNode(
-                    title: self.decorator.passPhraseContine,
-                    insets: self.decorator.passPhraseInsets
-                ) { [weak self] in
+                let input = ButtonCellNode.Input(
+                    title: self.decorator.buttonTitle(for: .passPhraseContinue),
+                    insets: self.decorator.insets.buttonInsets
+                )
+                return ButtonCellNode(input: input) { [weak self] in
                     self?.handleContinueAction()
                 }
             case .chooseAnother:
-                return ButtonCellNode(
-                    title: self.decorator.passPhraseChooseAnother,
-                    insets: self.decorator.buttonInsets,
-                    color: .lightGray
-                ) { [weak self] in
+                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
                     self?.navigationController?.popViewController(animated: true)
                 }
             case .divider:
                 return DividerCellNode(inset: UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24))
+            case .saveLocally:
+                return self.saveLocallyNode
+            case .saveInMemory:
+                return self.saveInMemoryNode
             }
+        }
+    }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard let part = Parts(rawValue: indexPath.row) else { return }
+
+        switch part {
+        case .saveLocally:
+            shouldSaveLocally = true
+        case .saveInMemory:
+            shouldSaveLocally = false
+        default:
+            break
         }
     }
 }
 
 // MARK: - Actions
 
-extension EnterPassPhraseViewController {
+extension SetupManuallyEnterPassPhraseViewController {
     private func handleContinueAction() {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
@@ -207,17 +239,24 @@ extension EnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        keysDataService.addKeys(
-            keyDetails: newKeysToAdd,
-            passPhrase: passPhrase,
-            source: .imported
-        )
+        keysStorage.addKeys(keyDetails: newKeysToAdd, source: .imported)
+        keysStorage.updateKeys(keyDetails: keysToUpdate, source: .imported)
 
-        keysDataService.updateKeys(
-            keyDetails: keysToUpdate,
-            passPhrase: passPhrase,
-            source: .imported
-        )
+        keysToUpdate
+            .map {
+                PassPhrase(value: passPhrase, longid: $0.longid)
+            }
+            .forEach {
+                passPhraseStorage.updatePassPhrase(with: $0, inStorage: shouldSaveLocally)
+            }
+
+        newKeysToAdd
+            .map {
+                PassPhrase(value: passPhrase, longid: $0.longid)
+            }
+            .forEach {
+                passPhraseStorage.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
+            }
 
         hideSpinner()
 

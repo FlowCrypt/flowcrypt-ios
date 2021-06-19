@@ -19,7 +19,7 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
 
     init(
         decorator: BackupSelectKeyDecoratorType = BackupSelectKeyDecorator(),
-        backupService: BackupServiceType = BackupService.shared,
+        backupService: BackupServiceType = BackupService(),
         selectedOption: BackupOption,
         backups: [KeyDetails],
         userId: UserId
