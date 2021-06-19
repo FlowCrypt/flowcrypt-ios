@@ -183,10 +183,7 @@ extension EncryptedStorage {
     }
 
     func isAnyKey(for email: String) -> Bool {
-        guard let keys = keys() else {
-            return false
-        }
-        return keys
+        keysInfo()
             .map(\.account)
             .map { $0.contains(email) }
             .contains(true)
