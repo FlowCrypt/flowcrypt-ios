@@ -22,19 +22,19 @@ final class PassPhraseStorage: PassPhraseStorageType {
     private lazy var logger = Logger.nested(Self.self)
 
     let currentUserEmail: String?
-    let storage: EncryptedPassPhraseStorage
-    let localStorage: LocalPassPhraseStorageType
+    let encryptedStorage: EncryptedPassPhraseStorage
+    let inMemoryStorage: InMemoryPassPhraseStorageType
     let timeoutInSeconds: Int
 
     init(
         storage: EncryptedPassPhraseStorage,
-        localStorage: LocalPassPhraseStorageType = LocalPassPhraseStorage.shared,
+        localStorage: InMemoryPassPhraseStorageType = InMemoryPassPhraseStorage.shared,
         timeoutInSeconds: Int = 4*60*60, // 4 hours
         emailProvider: EmailProviderType,
         isHours: Bool = true
     ) {
-        self.storage = storage
-        self.localStorage = localStorage
+        self.encryptedStorage = storage
+        self.inMemoryStorage = localStorage
         self.timeoutInSeconds = timeoutInSeconds
         self.currentUserEmail = emailProvider.email
     }
@@ -42,32 +42,32 @@ final class PassPhraseStorage: PassPhraseStorageType {
     func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
         if inStorage {
             logger.logInfo("Save to storage \(passPhrase.longid)")
-            storage.addPassPhrase(object: PassPhraseObject(passPhrase))
+            encryptedStorage.addPassPhrase(object: PassPhraseObject(passPhrase))
         } else {
             logger.logInfo("Save locally \(passPhrase.longid)")
 
-            let locallPassPhrase = LocalPassPhrase(passPhrase: passPhrase, date: Date())
-            localStorage.save(passPhrase: locallPassPhrase)
+            let inMemoryPassPhrase = InMemoryPassPhrase(passPhrase: passPhrase, date: Date())
+            inMemoryStorage.save(passPhrase: inMemoryPassPhrase)
 
-            let alreadySaved = storage.getPassPhrases()
+            let alreadySaved = encryptedStorage.getPassPhrases()
 
             if alreadySaved.contains(where: { $0.longid == passPhrase.longid }) {
-                storage.removePassPhrase(object: PassPhraseObject(passPhrase))
+                encryptedStorage.removePassPhrase(object: PassPhraseObject(passPhrase))
             }
         }
     }
 
     func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
         if inStorage {
-            storage.updatePassPhrase(object: PassPhraseObject(passPhrase))
+            encryptedStorage.updatePassPhrase(object: PassPhraseObject(passPhrase))
         } else {
-            let updated = LocalPassPhrase(passPhrase: passPhrase, date: Date())
-            localStorage.save(passPhrase: updated)
+            let updated = InMemoryPassPhrase(passPhrase: passPhrase, date: Date())
+            inMemoryStorage.save(passPhrase: updated)
         }
     }
 
     func getPassPhrases() -> [PassPhrase] {
-        let dbPassPhrases = storage.getPassPhrases()
+        let dbPassPhrases = encryptedStorage.getPassPhrases()
             .map(PassPhrase.init)
 
         logger.logInfo("dbPassPhrases \(dbPassPhrases.count)")
@@ -75,9 +75,9 @@ final class PassPhraseStorage: PassPhraseStorageType {
         let calendar = Calendar.current
 
         var validPassPhrases: [PassPhrase] = []
-        var invalidPassPhrases: [LocalPassPhrase] = []
+        var invalidPassPhrases: [InMemoryPassPhrase] = []
 
-        localStorage.passPhrases
+        inMemoryStorage.passPhrases
             .forEach { localPassPhrases in
                 let components = calendar.dateComponents(
                     [.second],
@@ -99,7 +99,7 @@ final class PassPhraseStorage: PassPhraseStorageType {
                 self.logger.logInfo(message)
             }
 
-        localStorage.removePassPhrases(with: invalidPassPhrases)
+        inMemoryStorage.removePassPhrases(with: invalidPassPhrases)
 
         logger.logInfo("validPassPhrases \(validPassPhrases.count)")
         return dbPassPhrases + validPassPhrases

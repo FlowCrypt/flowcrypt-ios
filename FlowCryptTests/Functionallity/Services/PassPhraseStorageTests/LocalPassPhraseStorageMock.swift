@@ -8,18 +8,18 @@
 
 import Foundation
 
-class LocalPassPhraseStorageMock: LocalPassPhraseStorageType {
-    var passPhrases: Set<LocalPassPhrase> = []
+class LocalPassPhraseStorageMock: InMemoryPassPhraseStorageType {
+    var passPhrases: Set<InMemoryPassPhrase> = []
     
     var isSaveCalled = false
-    func save(passPhrase: LocalPassPhrase) {
+    func save(passPhrase: InMemoryPassPhrase) {
         isSaveCalled = true
         passPhrases.insert(passPhrase)
         
         print("^^ \(passPhrases)")
     }
     
-    func removePassPhrases(with objects: [LocalPassPhrase]) {
+    func removePassPhrases(with objects: [InMemoryPassPhrase]) {
         objects.forEach {
             passPhrases.remove($0)
         }

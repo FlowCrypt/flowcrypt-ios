@@ -71,7 +71,7 @@ class PassPhraseStorageTests: XCTestCase {
         storage.getPassPhrasesResult = { [] }
         
         let savedDate = Date()
-        let localPassPhrase = LocalPassPhrase(
+        let localPassPhrase = InMemoryPassPhrase(
             passPhrase: PassPhrase(
                 value: "value",
                 longid: "longid"),
@@ -90,7 +90,7 @@ class PassPhraseStorageTests: XCTestCase {
         storage.getPassPhrasesResult = { [] }
         
         let savedDate = Date()
-        let localPassPhrase = LocalPassPhrase(
+        let localPassPhrase = InMemoryPassPhrase(
             passPhrase: PassPhrase(
                 value: "value",
                 longid: "longid"),
@@ -120,7 +120,7 @@ class PassPhraseStorageTests: XCTestCase {
         }
         
         let savedDate = Date()
-        let localPassPhrase = LocalPassPhrase(
+        let localPassPhrase = InMemoryPassPhrase(
             passPhrase: PassPhrase(
                 value: "value",
                 longid: "longid"),
