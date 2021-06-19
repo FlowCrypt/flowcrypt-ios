@@ -21,7 +21,7 @@ class GmailSearchExpressionGeneratorTests: XCTestCase {
         let expressions = GeneralConstants.EmailConstant.recoverAccountSearchSubject
         let result = sut.makeBackupQuery(with: expressions)
         
-        XCTAssertTrue(result.contains("in:anywhere !!!"))
+        XCTAssertTrue(result.contains("in:anywhere "))
         XCTAssertTrue(result.contains("\"Your FlowCrypt Backup\""))
         XCTAssertTrue(result.contains("\"Your CryptUp Backup\""))
         XCTAssertTrue(result.contains("\"CryptUP Account Backup\""))
