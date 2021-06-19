@@ -147,7 +147,7 @@ extension InboxViewControllerContainer: ASTableDelegate, ASTableDataSource {
             switch self.state {
             case .loading:
                 return TextCellNode(
-                    input: self.decorator.loadingInput(with: size)
+                    input: .loading(with: size)
                 )
             case .error(let error):
                 return TextCellNode(

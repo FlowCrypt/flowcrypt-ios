@@ -12,7 +12,11 @@ enum CoreError: Error {
     case value(String)
 }
 
-final class Core {
+protocol KeyDecrypter {
+    func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey
+}
+
+final class Core: KeyDecrypter {
     static let shared = Core()
 
     private var jsEndpointListener: JSValue?

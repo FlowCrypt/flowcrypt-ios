@@ -18,7 +18,7 @@ protocol FoldersServiceType {
 }
 
 final class FoldersService: FoldersServiceType {
-    // TODO: - ANTON - consider rework with CacheService for trash path instead
+    // TODO: - Ticket? - consider rework with CacheService for trash path instead
     private let localStorage: LocalStorageType
 
     let localFoldersProvider: LocalFoldersProviderType
@@ -57,7 +57,7 @@ final class FoldersService: FoldersServiceType {
             let remoteFolders = try awaitPromise(self.remoteFoldersProvider.fetchFolders())
 
             DispatchQueue.main.async {
-                // TODO: - ANTON - instead of removing all folders remove only
+                // TODO: - Ticket? - instead of removing all folders remove only
                 // those folders which are in DB and not in remoteFolders
                 self.localFoldersProvider.removeFolders()
 
