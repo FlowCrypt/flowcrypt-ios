@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import FlowCrypt
 
 class FlowCryptCoreTests: XCTestCase {
     var core: Core!
