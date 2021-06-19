@@ -15,8 +15,8 @@ struct MessageAttachment {
     let size: Int
 }
 
-// MARK: - FetchedMessage
-struct FetchedMessage {
+// MARK: - ProcessedMessage
+struct ProcessedMessage {
     enum MessageType {
         case error, encrypted, plain
     }
@@ -27,9 +27,9 @@ struct FetchedMessage {
     let messageType: MessageType
 }
 
-extension FetchedMessage {
+extension ProcessedMessage {
     // TODO: - Ticket - fix with empty state for MessageViewController
-    static let empty = FetchedMessage(
+    static let empty = ProcessedMessage(
         rawMimeData: Data(),
         text: "loading_title".localized + "...",
         attachments: [],
@@ -66,8 +66,8 @@ final class MessageService {
         self.passPhraseStorage = passPhraseStorage
     }
 
-    func validateMessage(rawMimeData: Data, with passPhrase: String) -> Promise<FetchedMessage> {
-        Promise<FetchedMessage> { [weak self] resolve, reject in
+    func validateMessage(rawMimeData: Data, with passPhrase: String) -> Promise<ProcessedMessage> {
+        Promise<ProcessedMessage> { [weak self] resolve, reject in
             guard let self = self else { return }
 
             guard let keys = try? self.keyService.getPrivateKeys(with: passPhrase).get(), keys.isNotEmpty else {
@@ -95,19 +95,19 @@ final class MessageService {
                     .filter(\.isAttachmentBlock)
                     .map(MessageAttachment.init)
 
-                let fetchedMessage = FetchedMessage(
+                let processedMessage = ProcessedMessage(
                     rawMimeData: rawMimeData,
                     text: decrypted.text,
                     attachments: attachments,
                     messageType: decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
                 )
 
-                resolve(fetchedMessage)
+                resolve(processedMessage)
             }
         }
     }
 
-    func getMessage(with input: Message, folder: String) -> Promise<FetchedMessage> {
+    func getMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
 
@@ -138,7 +138,7 @@ final class MessageService {
                 .filter(\.isAttachmentBlock)
                 .map(MessageAttachment.init)
 
-            let messageType: FetchedMessage.MessageType
+            let messageType: ProcessedMessage.MessageType
             let text: String
 
             if let decryptErrBlock = decryptErrBlocks.first {
@@ -151,14 +151,14 @@ final class MessageService {
                 messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
             }
 
-            let fetchedMessage = FetchedMessage(
+            let processedMessage = ProcessedMessage(
                 rawMimeData: rawMimeData,
                 text: text,
                 attachments: attachments,
                 messageType: messageType
             )
 
-            resolve(fetchedMessage)
+            resolve(processedMessage)
         }
     }
 }

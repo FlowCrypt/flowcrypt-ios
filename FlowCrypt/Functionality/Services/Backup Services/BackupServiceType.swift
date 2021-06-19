@@ -11,7 +11,7 @@ import Promises
 
 protocol BackupServiceType {
     /// get all existed backups
-    func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]>
+    func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]>
     /// backup keys to user inbox
     func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void>
     /// show activity sheet to save keys as file

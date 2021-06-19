@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhraseSaveable {
+final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, enterPhrase, chooseAnother
 
@@ -101,7 +101,7 @@ final class SetupEnterPassPhraseViewController: TableNodeViewController, PassPhr
 
 // MARK: - Keyboard
 
-extension SetupEnterPassPhraseViewController {
+extension SetupManuallyEnterPassPhraseViewController {
     // swiftlint:disable discarded_notification_center_observer
     /// Observation should be removed in a place where subscription is
     private func observeKeyboardNotifications() {
@@ -131,7 +131,7 @@ extension SetupEnterPassPhraseViewController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension SetupEnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
+extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
@@ -206,7 +206,7 @@ extension SetupEnterPassPhraseViewController: ASTableDelegate, ASTableDataSource
 
 // MARK: - Actions
 
-extension SetupEnterPassPhraseViewController {
+extension SetupManuallyEnterPassPhraseViewController {
     private func handleContinueAction() {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }

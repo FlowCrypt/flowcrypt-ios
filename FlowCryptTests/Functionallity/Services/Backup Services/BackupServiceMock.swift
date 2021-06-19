@@ -11,7 +11,7 @@ import Promises
 
 final class BackupServiceMock: BackupServiceType {
     var fetchBackupsResult: Result<[KeyDetails], Error> = .success([])
-    func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]> {
+    func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]> {
         Promise<[KeyDetails]>.resolveAfter(with: fetchBackupsResult)
     }
 

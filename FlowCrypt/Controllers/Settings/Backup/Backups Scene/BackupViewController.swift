@@ -75,7 +75,7 @@ extension BackupViewController {
     }
 
     private func fetchBackups() {
-        backupProvider.fetchBackups(for: userId)
+        backupProvider.fetchBackupsFromInbox(for: userId)
             .then { [weak self] keys in
                 self?.state = keys.isEmpty
                     ? .noBackups

@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 import MobileCoreServices
 
-final class SetupImportKeyViewController: TableNodeViewController {
+final class SetupManuallyImportKeyViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, fileImport, pasteBoardImport
 
@@ -77,7 +77,7 @@ final class SetupImportKeyViewController: TableNodeViewController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension SetupImportKeyViewController: ASTableDelegate, ASTableDataSource {
+extension SetupManuallyImportKeyViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         Parts.allCases.count
     }
@@ -128,7 +128,7 @@ extension SetupImportKeyViewController: ASTableDelegate, ASTableDataSource {
 
 // MARK: - Actions
 
-extension SetupImportKeyViewController {
+extension SetupManuallyImportKeyViewController {
     private func proceedToKeyImportFromFile() {
         let acceptableDocumentTypes = [
             String(kUTTypeText),
@@ -152,10 +152,10 @@ extension SetupImportKeyViewController {
 
     private func proceedToKeyImportFromPasteboard() {
         guard let armoredKey = pasteboard.string else { return }
-        parseFetched(data: Data(armoredKey.utf8))
+        parseUserProvided(data: Data(armoredKey.utf8))
     }
 
-    private func parseFetched(data keyData: Data) {
+    private func parseUserProvided(data keyData: Data) {
         do {
             let keys = try core.parseKeys(armoredOrBinary: keyData)
             let privateKey = keys.keyDetails.filter { $0.private != nil }
@@ -173,7 +173,7 @@ extension SetupImportKeyViewController {
     }
 
     private func proceedToPassPhrase(with email: String, keys: [KeyDetails]) {
-        let viewController = SetupEnterPassPhraseViewController(
+        let viewController = SetupManuallyEnterPassPhraseViewController(
             decorator: decorator,
             email: email,
             fetchedKeys: keys
@@ -188,7 +188,7 @@ extension SetupImportKeyViewController {
 
 // MARK: - UIDocumentPickerDelegate
 
-extension SetupImportKeyViewController: UIDocumentPickerDelegate {
+extension SetupManuallyImportKeyViewController: UIDocumentPickerDelegate {
     func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let pickedURL = urls.first else { return }
         handlePicked(document: pickedURL)
@@ -206,7 +206,7 @@ extension SetupImportKeyViewController: UIDocumentPickerDelegate {
         document.open { [weak self] success in
             guard success else { assertionFailure("Failed to open doc"); return }
             guard let metadata = document.data else { assertionFailure("Failed to fetch data"); return }
-            self?.parseFetched(data: metadata)
+            self?.parseUserProvided(data: metadata)
         }
     }
 }

@@ -27,7 +27,7 @@ final class BackupService {
 
 // MARK: - BackupServiceType
 extension BackupService: BackupServiceType {
-    func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]> {
+    func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]> {
         Promise<[KeyDetails]> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
 
@@ -59,7 +59,7 @@ extension BackupService: BackupServiceType {
 
             let privateKeyData = privateKeyContext.data().base64EncodedString()
 
-            let filename = "flowcrypt-backup-\(userId.email.userReadableEmail).key"
+            let filename = "flowcrypt-backup-\(userId.email.withoutSpecialCharacters).key"
             let attachments = [SendableMsg.Attachment(name: filename, type: "text/plain", base64: privateKeyData)]
             let message = SendableMsg(
                 text: "setup_backup_email".localized,
@@ -88,7 +88,7 @@ extension BackupService: BackupServiceType {
 
 // MARK: - Helpers
 private extension String {
-    var userReadableEmail: String {
+    var withoutSpecialCharacters: String {
         self.replacingOccurrences(
             of: "[^a-z0-9]",
             with: "",

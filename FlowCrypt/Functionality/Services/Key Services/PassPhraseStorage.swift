@@ -24,23 +24,19 @@ final class PassPhraseStorage: PassPhraseStorageType {
     let currentUserEmail: String?
     let storage: EncryptedPassPhraseStorage
     let localStorage: LocalPassPhraseStorageType
-    let timeoutContext: (component: Calendar.Component, timeout: Int)
-
-    /// used for tests only, otherwise seconds will be used
-    let isHours: Bool
+    let timeoutInSeconds: Int
 
     init(
         storage: EncryptedPassPhraseStorage,
         localStorage: LocalPassPhraseStorageType = LocalPassPhraseStorage.shared,
-        timeoutContext: (Calendar.Component, Int) = (.hour, 4),
+        timeoutInSeconds: Int = 4*60*60, // 4 hours
         emailProvider: EmailProviderType,
         isHours: Bool = true
     ) {
         self.storage = storage
         self.localStorage = localStorage
-        self.timeoutContext = timeoutContext
+        self.timeoutInSeconds = timeoutInSeconds
         self.currentUserEmail = emailProvider.email
-        self.isHours = isHours
     }
 
     func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
@@ -84,19 +80,14 @@ final class PassPhraseStorage: PassPhraseStorageType {
         localStorage.passPhrases
             .forEach { localPassPhrases in
                 let components = calendar.dateComponents(
-                    [timeoutContext.component],
+                    [.second],
                     from: localPassPhrases.date,
                     to: Date()
                 )
 
-                let timePassed: Int
-                if self.isHours {
-                    timePassed = components.hour ?? 0
-                } else {
-                    timePassed = components.second ?? 0
-                }
+                let timePassed = components.second ?? 0
 
-                let isPassPhraseValid = timePassed < timeoutContext.timeout
+                let isPassPhraseValid = timePassed < timeoutInSeconds
 
                 if isPassPhraseValid {
                     validPassPhrases.append(localPassPhrases.passPhrase)

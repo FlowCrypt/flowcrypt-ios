@@ -23,7 +23,7 @@ class PassPhraseStorageTests: XCTestCase {
         sut = PassPhraseStorage(
             storage: storage,
             localStorage: localStorage,
-            timeoutContext: (Calendar.Component.second, 2),
+            timeoutInSeconds: 2,
             emailProvider: emailProvider,
             isHours: false
         )

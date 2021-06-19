@@ -63,7 +63,7 @@ extension KeySettingsViewController {
 
 extension KeySettingsViewController {
     @objc private func handleAddButtonTap() {
-        navigationController?.pushViewController(SetupImportKeyViewController(), animated: true)
+        navigationController?.pushViewController(SetupManuallyImportKeyViewController(), animated: true)
     }
 }
 

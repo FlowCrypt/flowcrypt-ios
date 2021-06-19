@@ -55,7 +55,7 @@ final class MessageViewController: TableNodeViewController {
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let trashFolderProvider: TrashFolderProviderType
-    private var fetchedMessage: FetchedMessage = .empty
+    private var processedMessage: ProcessedMessage = .empty
     private let passPhraseStorage: PassPhraseStorageType
 
     init(
@@ -145,7 +145,7 @@ extension MessageViewController {
             guard let self = self else { return }
             let promise = self.messageService.getMessage(with: input.objMessage, folder: input.path)
             let message = try awaitPromise(promise)
-            self.fetchedMessage = message
+            self.processedMessage = message
         }
         .then(on: .main) { [weak self] in
             self?.handleReceivedMessage()
@@ -160,7 +160,7 @@ extension MessageViewController {
 
         messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
             .then(on: .main) { [weak self] message in
-                self?.fetchedMessage = message
+                self?.processedMessage = message
                 self?.handleReceivedMessage()
             }
             .catch(on: .main) { [weak self] error in
@@ -348,9 +348,9 @@ extension MessageViewController {
         let replyInfo = ComposeViewController.Input.ReplyInfo(
             recipient: input.objMessage.sender,
             subject: input.objMessage.subject,
-            mime: fetchedMessage.rawMimeData,
+            mime: processedMessage.rawMimeData,
             sentDate: input.objMessage.date,
-            message: fetchedMessage.text
+            message: processedMessage.text
         )
 
         let composeInput = ComposeViewController.Input(type: .reply(replyInfo))
@@ -386,7 +386,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         case .main:
             return Parts.allCases.count
         case .attributes:
-            return fetchedMessage.attachments.count
+            return processedMessage.attachments.count
         }
     }
 
@@ -424,7 +424,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         case .subject:
             return MessageSubjectNode(subject, time: time)
         case .text:
-            let messageInput = self.decorator.attributedMessage(from: self.fetchedMessage)
+            let messageInput = self.decorator.attributedMessage(from: self.processedMessage)
             return MessageTextSubjectNode(messageInput)
         }
     }
@@ -432,7 +432,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     private func attachmentNode(for index: Int) -> ASCellNode {
         AttachmentNode(
             input: .init(
-                msgAttachment: fetchedMessage.attachments[index]
+                msgAttachment: processedMessage.attachments[index]
             )
         )
     }

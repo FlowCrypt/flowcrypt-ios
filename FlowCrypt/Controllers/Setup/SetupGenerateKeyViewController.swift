@@ -22,7 +22,7 @@ enum CreateKeyError: Error {
     case conformingPassPhraseError
 }
 
-final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable {
+final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseSaveable {
     enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle
     }
@@ -93,7 +93,7 @@ final class SetupKeyViewController: TableNodeViewController, PassPhraseSaveable 
 
 // MARK: - UI
 
-extension SetupKeyViewController {
+extension SetupGenerateKeyViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -132,7 +132,7 @@ extension SetupKeyViewController {
 
 // MARK: - Setup
 
-extension SetupKeyViewController {
+extension SetupGenerateKeyViewController {
     private func setupAccountWithGeneratedKey(with passPhrase: String) {
         Promise { [weak self] in
             guard let self = self else { return }
@@ -242,7 +242,7 @@ extension SetupKeyViewController {
     }
 }
 
-extension SetupKeyViewController {
+extension SetupGenerateKeyViewController {
     private func moveToMainFlow() {
         router.proceed()
     }
@@ -263,7 +263,7 @@ extension SetupKeyViewController {
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension SetupKeyViewController: ASTableDelegate, ASTableDataSource {
+extension SetupGenerateKeyViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         parts.count
     }

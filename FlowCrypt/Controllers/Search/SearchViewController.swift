@@ -279,11 +279,11 @@ extension SearchViewController: UISearchResultsUpdating {
             self?.handleError(with: error)
         }
         .then(on: .main) { [weak self] messages in
-            self?.handleFetchedMessages(with: messages)
+            self?.handleProcessedMessage(with: messages)
         }
     }
 
-    private func handleFetchedMessages(with messages: [Message]) {
+    private func handleProcessedMessage(with messages: [Message]) {
         if messages.isEmpty {
             state = .empty
         } else {

@@ -31,9 +31,9 @@ struct MessageViewDecorator {
         (text ?? "").attributed(.regular(17), color: color)
     }
 
-    func attributedMessage(from fetchedMessage: FetchedMessage) -> NSAttributedString {
+    func attributedMessage(from processedMessage: ProcessedMessage) -> NSAttributedString {
         let textColor: UIColor
-        switch fetchedMessage.messageType {
+        switch processedMessage.messageType {
         case .encrypted:
             textColor = .main
         case .error:
@@ -41,7 +41,7 @@ struct MessageViewDecorator {
         case .plain:
             textColor = .mainTextColor
         }
-        return fetchedMessage.text.attributed(color: textColor)
+        return processedMessage.text.attributed(color: textColor)
     }
 }
 

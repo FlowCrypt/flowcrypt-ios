@@ -97,7 +97,7 @@ extension SetupInitialViewController {
     private func searchBackups() {
         logger.logInfo("Searching for backups in inbox")
 
-        backupService.fetchBackups(for: user)
+        backupService.fetchBackupsFromInbox(for: user)
             .then(on: .main) { [weak self] keys in
                 self?.proceedToSetupWith(keys: keys)
             }
@@ -239,12 +239,12 @@ extension SetupInitialViewController {
 // MARK: - Navigation
 extension SetupInitialViewController {
     private func proceedToKeyImport() {
-        let viewController = SetupImportKeyViewController()
+        let viewController = SetupManuallyImportKeyViewController()
         navigationController?.pushViewController(viewController, animated: true)
     }
 
     private func proceedToCreatingNewKey() {
-        let viewController = SetupKeyViewController(user: user)
+        let viewController = SetupGenerateKeyViewController(user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
