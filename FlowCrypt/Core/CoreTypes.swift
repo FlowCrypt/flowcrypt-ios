@@ -193,9 +193,3 @@ extension MsgBlock {
         type == .plainAtt || type == .encryptedAtt || type == .decryptedAtt
     }
 }
-
-extension Array where Element == MsgBlock {
-    var isAnyError: Bool {
-        self.first(where: { $0.decryptErr != nil }) != nil
-    }
-}

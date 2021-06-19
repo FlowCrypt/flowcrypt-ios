@@ -35,7 +35,7 @@ extension ButtonCellNode.Input {
             .attributed(
                 .regular(15),
                 color: UIColor.colorFor(
-                    darkStyle: .black,
+                    darkStyle: .white,
                     lightStyle: .blueColor
                 ),
                 alignment: .center

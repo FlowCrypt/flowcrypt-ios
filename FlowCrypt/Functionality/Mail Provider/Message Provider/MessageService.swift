@@ -82,25 +82,21 @@ final class MessageService {
                 isEmail: true
             )
 
-            let isDecryptError = decrypted.blocks.isAnyError
+            let isWrongPassPhraseError = decrypted.blocks.first(where: { (block) -> Bool in
+                guard let errorBlock = block.decryptErr, case .needPassphrase = errorBlock.error.type else {
+                    return false
+                }
+                return true
+            })
 
-            if isDecryptError {
+            if isWrongPassPhraseError != nil {
                 reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
             } else {
                 keys
                     .map { PassPhrase(value: passPhrase, longid: $0.longid) }
                     .forEach { self.passPhraseStorage.savePassPhrase(with: $0, inStorage: false) }
 
-                let attachments = decrypted.blocks
-                    .filter(\.isAttachmentBlock)
-                    .map(MessageAttachment.init)
-
-                let processedMessage = ProcessedMessage(
-                    rawMimeData: rawMimeData,
-                    text: decrypted.text,
-                    attachments: attachments,
-                    messageType: decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
-                )
+                let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
 
                 resolve(processedMessage)
             }
@@ -123,7 +119,6 @@ final class MessageService {
                 reject(CoreError.notReady("Could not fetch keys"))
                 return
             }
-
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
                 keys: keys,
@@ -131,35 +126,38 @@ final class MessageService {
                 isEmail: true
             )
 
-            let decryptErrBlocks = decrypted.blocks
-                .filter { $0.decryptErr != nil }
-
-            let attachments = decrypted.blocks
-                .filter(\.isAttachmentBlock)
-                .map(MessageAttachment.init)
-
-            let messageType: ProcessedMessage.MessageType
-            let text: String
-
-            if let decryptErrBlock = decryptErrBlocks.first {
-                let rawMsg = decryptErrBlock.content
-                let err = decryptErrBlock.decryptErr?.error
-                text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
-                messageType = .error
-            } else {
-                text = decrypted.text
-                messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
-            }
-
-            let processedMessage = ProcessedMessage(
-                rawMimeData: rawMimeData,
-                text: text,
-                attachments: attachments,
-                messageType: messageType
-            )
-
+            let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
             resolve(processedMessage)
         }
+    }
+
+    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg) -> ProcessedMessage {
+        let decryptErrBlocks = decrypted.blocks
+            .filter { $0.decryptErr != nil }
+
+        let attachments = decrypted.blocks
+            .filter(\.isAttachmentBlock)
+            .map(MessageAttachment.init)
+
+        let messageType: ProcessedMessage.MessageType
+        let text: String
+
+        if let decryptErrBlock = decryptErrBlocks.first {
+            let rawMsg = decryptErrBlock.content
+            let err = decryptErrBlock.decryptErr?.error
+            text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
+            messageType = .error
+        } else {
+            text = decrypted.text
+            messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
+        }
+
+        return ProcessedMessage(
+            rawMimeData: rawMimeData,
+            text: text,
+            attachments: attachments,
+            messageType: messageType
+        )
     }
 }
 
