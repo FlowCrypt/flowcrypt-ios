@@ -30,7 +30,7 @@ public final class TextCellNode: CellNode {
     }
 
     private let spinner = SpinnerNode()
-    private let text = ASTextNode2()
+    private let textNode = ASTextNode2()
     private let size: CGSize
     private let withSpinner: Bool
 
@@ -38,8 +38,8 @@ public final class TextCellNode: CellNode {
         withSpinner = input.withSpinner
         size = input.size
         super.init()
-        addSubnode(text)
-        text.attributedText = NSAttributedString.text(from: input.title, style: .medium(16), color: .lightGray)
+        addSubnode(textNode)
+        textNode.attributedText = NSAttributedString.text(from: input.title, style: .medium(16), color: .lightGray)
         if input.withSpinner {
             addSubnode(spinner)
         }
@@ -48,13 +48,15 @@ public final class TextCellNode: CellNode {
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let spec = ASStackLayoutSpec(
-            direction: .horizontal,
+            direction: .vertical,
             spacing: 16,
             justifyContent: .center,
             alignItems: .center,
-            children: withSpinner ? [text, spinner] : [text]
+            children: withSpinner
+                ? [textNode, spinner]
+                : [textNode]
         )
-        spec.style.preferredSize = size
+        
         return spec
     }
 }
@@ -67,10 +69,7 @@ final class SpinnerNode: ASDisplayNode {
     override init() {
         super.init()
         setViewBlock {
-            switch UITraitCollection.current.userInterfaceStyle {
-            case .dark: return UIActivityIndicatorView(style: .white)
-            default: return UIActivityIndicatorView(style: .gray)
-            }
+            UIActivityIndicatorView(style: .medium)
         }
         style.preferredSize = CGSize(width: 20.0, height: 20.0)
     }
