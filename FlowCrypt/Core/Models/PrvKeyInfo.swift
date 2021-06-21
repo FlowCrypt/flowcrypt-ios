@@ -11,13 +11,5 @@ import Foundation
 struct PrvKeyInfo: Encodable {
     let `private`: String
     let longid: String
-    let passphrase: String?
-}
-
-extension PrvKeyInfo {
-    init(from keyInfo: KeyInfo) {
-        self.private = keyInfo.private
-        self.longid = keyInfo.longid
-        self.passphrase = keyInfo.passphrase
-    }
+    let passphrase: String
 }

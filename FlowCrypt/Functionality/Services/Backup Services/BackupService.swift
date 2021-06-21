@@ -9,32 +9,28 @@
 import Promises
 import UIKit
 
-protocol BackupServiceType {
-    /// get all existed backups
-    func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]>
-    /// backup keys to user inbox
-    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void>
-    /// show activity sheet to save keys as file
-    func backupAsFile(keys: [KeyDetails], for viewController: UIViewController)
-}
-
-// MARK: - BackupService
-struct BackupService {
-    static let shared: BackupService = BackupService(
-        backupProvider: MailProvider.shared.backupProvider,
-        core: Core.shared,
-        messageSender: MailProvider.shared.messageSender
-    )
-
+final class BackupService {
     let backupProvider: BackupProvider
     let core: Core
     let messageSender: MessageGateway
+
+    init(
+        backupProvider: BackupProvider = MailProvider.shared.backupProvider,
+        core: Core = .shared,
+        messageSender: MessageGateway = MailProvider.shared.messageSender
+    ) {
+        self.backupProvider = backupProvider
+        self.core = core
+        self.messageSender = messageSender
+    }
 }
 
 // MARK: - BackupServiceType
 extension BackupService: BackupServiceType {
-    func fetchBackups(for userId: UserId) -> Promise<[KeyDetails]> {
-        Promise<[KeyDetails]> { resolve, reject in
+    func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]> {
+        Promise<[KeyDetails]> { [weak self] resolve, reject in
+            guard let self = self else { throw AppErr.nilSelf }
+
             let backupData = try awaitPromise(self.backupProvider.searchBackups(for: userId.email))
 
             do {
@@ -48,7 +44,9 @@ extension BackupService: BackupServiceType {
     }
 
     func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void> {
-        Promise { () -> Void in
+        Promise { [weak self] () -> Void in
+            guard let self = self else { throw AppErr.nilSelf }
+
             let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
 
             guard isFullyEncryptedKeys else {
@@ -61,7 +59,7 @@ extension BackupService: BackupServiceType {
 
             let privateKeyData = privateKeyContext.data().base64EncodedString()
 
-            let filename = "flowcrypt-backup-\(userId.email.userReadableEmail).key"
+            let filename = "flowcrypt-backup-\(userId.email.withoutSpecialCharacters).key"
             let attachments = [SendableMsg.Attachment(name: filename, type: "text/plain", base64: privateKeyData)]
             let message = SendableMsg(
                 text: "setup_backup_email".localized,
@@ -74,7 +72,7 @@ extension BackupService: BackupServiceType {
                 atts: attachments
             )
             let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: nil)
-            try awaitPromise(messageSender.sendMail(mime: backupEmail.mimeEncoded))
+            try awaitPromise(self.messageSender.sendMail(mime: backupEmail.mimeEncoded))
         }
     }
 
@@ -90,7 +88,7 @@ extension BackupService: BackupServiceType {
 
 // MARK: - Helpers
 private extension String {
-    var userReadableEmail: String {
+    var withoutSpecialCharacters: String {
         self.replacingOccurrences(
             of: "[^a-z0-9]",
             with: "",

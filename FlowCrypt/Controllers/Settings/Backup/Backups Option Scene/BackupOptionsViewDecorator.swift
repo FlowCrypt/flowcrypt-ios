@@ -54,22 +54,9 @@ struct BackupOptionsViewDecorator: BackupOptionsViewDecoratorType {
         default: title = ""
         }
 
-        let attributedTitle = title
-            .localized
-            .attributed(.bold(14), color: .textColor, alignment: .center)
-
-        let checkboxColor: UIColor = isSelected
-            ? .main
-            : .lightGray
-
-        return CheckBoxTextNode.Input(
-            title: attributedTitle,
-            insets: .side(16),
-            preferredSize: CGSize(width: 30, height: 30),
-            checkBoxInput: CheckBoxNode.Input(
-                color: checkboxColor,
-                strokeWidth: 2
-            )
+        return CheckBoxTextNode.Input.common(
+            with: title.localized,
+            isSelected: isSelected
         )
     }
 }

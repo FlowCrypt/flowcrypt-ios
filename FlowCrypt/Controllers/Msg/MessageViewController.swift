@@ -56,15 +56,19 @@ final class MessageViewController: TableNodeViewController {
     private let messageOperationsProvider: MessageOperationsProvider
     private let trashFolderProvider: TrashFolderProviderType
     private let filesManager: FilesManagerType
-    private var fetchedMessage: FetchedMessage = .empty
+    private var processedMessage: ProcessedMessage = .empty
+    private let passPhraseStorage: PassPhraseStorageType
 
     init(
         messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
-        storage: DataServiceType & KeyDataServiceType = DataService.shared,
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         filesManager: FilesManagerType = FilesManager(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        ),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
@@ -75,6 +79,7 @@ final class MessageViewController: TableNodeViewController {
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
         self.filesManager = filesManager
+        self.passPhraseStorage = passPhraseStorage
 
         super.init(node: TableNode())
     }
@@ -119,7 +124,7 @@ final class MessageViewController: TableNodeViewController {
             // we need to have only help and trash buttons
             items = [helpButton, trashButton]
 
-        // TODO: - ANTON - Check if this should be fixed
+        // TODO: - Ticket - Check if this should be fixed
         case "inbox":
             // for Gmail inbox we also need to have archive and unread buttons
             items = [helpButton, archiveButton, trashButton, unreadButton]
@@ -143,29 +148,33 @@ extension MessageViewController {
             guard let self = self else { return }
             let promise = self.messageService.getMessage(with: input.objMessage, folder: input.path)
             let message = try awaitPromise(promise)
-            self.fetchedMessage = message
+            self.processedMessage = message
         }
         .then(on: .main) { [weak self] in
-            self?.hideSpinner()
-            self?.node.reloadData()
-            self?.asyncMarkAsReadIfNotAlreadyMarked()
+            self?.handleReceivedMessage()
         }
         .catch(on: .main) { [weak self] error in
-            self?.hideSpinner()
-            self?.handleError(error, path: input.path)
+            self?.handleError(error)
         }
     }
 
-    private func handleError(_ error: Error, path: String) {
-        if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
-            // todo - the missing msg should be removed from the list in inbox view
-            // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
-            showToast("Message not found in folder: \(path)")
-        } else {
-            // todo - this should be a retry / cancel alert
-            showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
-        }
-        navigationController?.popViewController(animated: true)
+    private func validateMessage(rawMimeData: Data, with passPhrase: String) {
+        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+
+        messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+            .then(on: .main) { [weak self] message in
+                self?.processedMessage = message
+                self?.handleReceivedMessage()
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.handleError(error)
+            }
+    }
+
+    private func handleReceivedMessage() {
+        hideSpinner()
+        node.reloadData()
+        asyncMarkAsReadIfNotAlreadyMarked()
     }
 
     private func asyncMarkAsReadIfNotAlreadyMarked() {
@@ -190,6 +199,55 @@ extension MessageViewController {
         navigationController?.popViewController(animated: true) { [weak self] in
             self?.onCompletion?(operation, input.objMessage)
         }
+    }
+}
+
+// MARK: - Error Handling
+
+extension MessageViewController {
+    private func handleError(_ error: Error) {
+        hideSpinner()
+
+        switch error as? MessageServiceError {
+        case let .missedPassPhrase(rawMimeData):
+            handleMissedPassPhrase(for: rawMimeData)
+        case let .wrongPassPhrase(rawMimeData, passPhrase):
+            handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+        default:
+            // TODO: - Ticket - Improve error handling for MessageViewController
+            if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
+                // todo - the missing msg should be removed from the list in inbox view
+                // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
+                showToast("Message not found in folder: \(input?.path ?? "N/A")")
+            } else {
+                // todo - this should be a retry / cancel alert
+                showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
+            }
+            navigationController?.popViewController(animated: true)
+        }
+    }
+
+    private func handleMissedPassPhrase(for rawMimeData: Data) {
+        let alert = AlertsFactory.makePassPhraseAlert(
+            onCancel: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            onCompletion: { [weak self] passPhrase in
+                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+            })
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func handleWrongPathPhrase(for rawMimeData: Data, with phrase: String) {
+        let alert = AlertsFactory.makeWrongPassPhraseAlert(
+            onCancel: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            onCompletion: { [weak self] passPhrase in
+                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+            })
+        present(alert, animated: true, completion: nil)
     }
 
     private func handleOpErr(operation: MessageAction) {
@@ -288,22 +346,19 @@ extension MessageViewController {
     }
 
     private func handleReplyTap() {
-        guard let input = input else { return }
+        guard let input = input, let email = DataService.shared.email else { return }
 
         let replyInfo = ComposeViewController.Input.ReplyInfo(
             recipient: input.objMessage.sender,
             subject: input.objMessage.subject,
-            mime: fetchedMessage.rawMimeData,
+            mime: processedMessage.rawMimeData,
             sentDate: input.objMessage.date,
-            message: fetchedMessage.text
+            message: processedMessage.text
         )
 
+        let composeInput = ComposeViewController.Input(type: .reply(replyInfo))
         navigationController?.pushViewController(
-            ComposeViewController(
-                input: ComposeViewController.Input(
-                    type: .reply(replyInfo)
-                )
-            ),
+            ComposeViewController(email: email, input: composeInput),
             animated: true
         )
     }
@@ -334,12 +389,12 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         case .main:
             return Parts.allCases.count
         case .attributes:
-            return fetchedMessage.attachments.count
+            return processedMessage.attachments.count
         }
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self, let section = Sections(rawValue: indexPath.section) else { return ASCellNode() }
 
             switch section {
@@ -372,7 +427,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         case .subject:
             return MessageSubjectNode(subject, time: time)
         case .text:
-            let messageInput = self.decorator.attributedMessage(from: self.fetchedMessage)
+            let messageInput = self.decorator.attributedMessage(from: self.processedMessage)
             return MessageTextSubjectNode(messageInput)
         }
     }
@@ -380,11 +435,11 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     private func attachmentNode(for index: Int) -> ASCellNode {
         AttachmentNode(
             input: .init(
-                msgAttachment: fetchedMessage.attachments[index]
+                msgAttachment: processedMessage.attachments[index]
             ),
             onDownloadTap: { [weak self] in
                 guard let self = self else { return }
-                self.filesManager.save(file: self.fetchedMessage.attachments[index])
+                self.filesManager.save(file: self.processedMessage.attachments[index])
                     .then { _ in
                         self.showToast("message_attachment_saved_successfully".localized)
                     }.catch { error in

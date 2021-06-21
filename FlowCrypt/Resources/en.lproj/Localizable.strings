@@ -3,6 +3,8 @@
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
 "retry_title" = "retry";
+"ok" = "Ok";
+"cancel" = "Cancel";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -41,7 +43,9 @@
 
 "backupServiceError_parse" = "Key can't be parsed";
 "backupServiceError_email" = "Missing user email";
+"backupServiceError_name" = "Missing user name";
 "backupServiceError_notEncrypted" = "Private Key must be fully encrypted before backing up";
+"pass_phrase_match_error" = "Pass phrases don't match";
 
 // Compose
 "compose_enter_recipient" = "Enter recipient";
@@ -88,6 +92,12 @@
 "setup_wrong_pass_phrase_retry" = "Wrong pass phrase, please try again";
 "setup_backup_email" = "This email contains a key backup. It will help you access your encrypted messages from other computers (along with your pass phrase). You can safely leave it in your inbox or archive it.\n\nThe key below is protected with pass phrase that only you know. You should make sure to note your pass phrase down.\n\nDO NOT DELETE THIS EMAIL. Write us at human@flowcrypt.com so that we can help.";
 "setup_create_key" = "Create";
+"setup_initial_create_key" = "Create a new key";
+"setup_initial_import_key" = "Import my key";
+"setup_create_key_title" = "Create key";
+"setup_save_pass_locally" = "Store pass phrase locally";
+"setup_save_pass_in_memory" = "Keep pass phrase in memory";
+"setup_enter_pass_phrase" = "Please enter pass phrase";
 
 // Key Import
 "import_key_title" = "Import Key";
@@ -100,6 +110,11 @@
 "import_key_add_both" = "Keys imported: %@\nKeys updated: %@";
 "import_key_add_new" = "Keys imported: %@";
 "import_key_add_update" = "Keys updated: %@";
+
+// Key Create
+"create_pass_phrase_description" = "See choosing secure pass phrase ?";
+"create_pass_phrase_set_title" = "Set pass phrase";
+"create_pass_phrase_lost" = "Lost pass phrase cannot be recovered";
 
 // Search
 "search_title" = "Search";

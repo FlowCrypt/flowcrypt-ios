@@ -50,7 +50,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private var state: State = .idle
 
     private let messageProvider: MessagesListProvider
-    private let decorator: InboxViewDecoratorType
+    private let decorator: InboxViewDecorator
     private let enterpriseServerApi: EnterpriseServerApiType
     private let refreshControl = UIRefreshControl()
     private let tableNode: ASTableNode
@@ -64,7 +64,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     init(
         _ viewModel: InboxViewModel,
         messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
-        decorator: InboxViewDecoratorType = InboxViewDecorator(),
+        decorator: InboxViewDecorator = InboxViewDecorator(),
         enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
         self.viewModel = viewModel
@@ -218,7 +218,7 @@ extension InboxViewController {
         // insert new messages
         let indexesToInsert = messageContext.messages
             .enumerated()
-            .map { (index, _) -> Int in
+            .map { index, _ -> Int in
                 let indexInTableView = index + count
                 return indexInTableView
             }
@@ -273,8 +273,11 @@ extension InboxViewController {
     }
 
     private func btnComposeTap() {
+        guard let email = DataService.shared.email else {
+            return
+        }
         TapTicFeedback.generate(.light)
-        let composeVc = ComposeViewController()
+        let composeVc = ComposeViewController(email: email)
         navigationController?.pushViewController(composeVc, animated: true)
     }
 }
@@ -330,17 +333,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        let height = tableNode.frame.size.height
-            - (navigationController?.navigationBar.frame.size.height ?? 0.0)
-            - safeAreaWindowInsets.top
-            - safeAreaWindowInsets.bottom
-
-        let size = CGSize(
-            width: tableNode.frame.size.width,
-            height: max(height, 0)
-        )
-
-        return cellNode(for: indexPath, and: size)
+        cellNode(for: indexPath, and: visibleSize(for: tableNode))
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
@@ -368,12 +361,7 @@ extension InboxViewController {
             case .fetching:
                 guard let message = self.messages[safe: indexPath.row] else {
                     return TextCellNode(
-                        input: TextCellNode.Input(
-                            backgroundColor: .backgroundColor,
-                            title: "Loading ...",
-                            withSpinner: true,
-                            size: CGSize(width: 44, height: 44)
-                        )
+                        input: .loading(with: CGSize(width: 44, height: 44))
                     )
                 }
                 return InboxCellNode(message: InboxCellNode.Input(message))

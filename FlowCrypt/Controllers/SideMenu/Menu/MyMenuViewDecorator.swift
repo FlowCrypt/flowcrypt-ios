@@ -30,8 +30,9 @@ struct MyMenuViewDecorator: MyMenuViewDecoratorType {
     }
 
     func nodeForAccount(for user: User) -> InfoCellNode.Input {
-        let name = nameFor(user: user).attributed(.medium(18), color: .black, alignment: .left)
-        let email = emailFor(user: user).attributed(.medium(16), color: .black, alignment: .left)
+        let name = nameFor(user: user)
+            .attributed(.medium(18), color: .mainTextColor, alignment: .left)
+        let email = emailFor(user: user).attributed(.medium(16), color: .mainTextColor, alignment: .left)
         let text = name.mutable() + "\n".attributed() + email
 
         return InfoCellNode.Input(attributedText: text, image: nil, insets: .side(16))
@@ -66,13 +67,16 @@ extension FolderViewModel {
 }
 
 extension InfoCellNode.Input {
-    static let addAccount: InfoCellNode.Input = .init(
-        attributedText: "folder_add_account".localized
-            .attributed(.regular(17), color: .mainTextColor),
-        image: #imageLiteral(resourceName: "plus").tinted(.mainTextColor),
-        insets: .side(16),
-        backgroundColor: .backgroundColor
-    )
+    static var addAccount: InfoCellNode.Input {
+        .init(
+            attributedText: "folder_add_account"
+                .localized
+                .attributed(.regular(17), color: .mainTextColor),
+            image: #imageLiteral(resourceName: "plus").tinted(.mainTextColor),
+            insets: .side(16),
+            backgroundColor: .backgroundColor
+        )
+    }
 
     init(_ viewModel: FolderViewModel) {
         self.init(
