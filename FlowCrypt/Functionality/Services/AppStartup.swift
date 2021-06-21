@@ -19,7 +19,7 @@ struct AppStartup {
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
         Promise<Void> {
-            self.setupCore()
+            try awaitPromise(self.setupCore())
             try self.setupMigrationIfNeeded()
             try self.setupSession()
         }.then(on: .main) {
@@ -29,8 +29,12 @@ struct AppStartup {
         }
     }
 
-    private func setupCore() {
-        Core.shared.startInBackgroundIfNotAlreadyRunning()
+    private func setupCore() -> Promise<Void> {
+        Promise { resolve, _ in
+            Core.shared.startInBackgroundIfNotAlreadyRunning {
+                resolve(())
+            }
+        }
     }
 
     private func setupMigrationIfNeeded() throws {

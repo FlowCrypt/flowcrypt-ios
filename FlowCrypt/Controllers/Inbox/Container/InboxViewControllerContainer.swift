@@ -56,7 +56,7 @@ final class InboxViewControllerContainer: TableNodeViewController {
     }
 
     private func fetchInboxFolder() {
-        folderService.fetchFolders()
+        folderService.fetchFolders(isForceReload: true)
             .then(on: .main) { [weak self] folders in
                 self?.handleFetched(folders: folders)
             }
