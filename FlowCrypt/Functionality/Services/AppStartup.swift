@@ -56,15 +56,19 @@ struct AppStartup {
             return
         }
 
+        let viewController: UIViewController
+
         switch entryPoint {
         case .mainFlow:
-            window.rootViewController = SideMenuNavigationController()
+            viewController = SideMenuNavigationController()
         case .signIn:
-            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
+            viewController = MainNavigationController(rootViewController: SignInViewController())
         case .setupFlow(let userId):
-            let setupViewController = SetupViewController(user: userId)
-            window.rootViewController = MainNavigationController(rootViewController: setupViewController)
+            let setupViewController = SetupInitialViewController(user: userId)
+            viewController = MainNavigationController(rootViewController: setupViewController)
         }
+
+        window.rootViewController = viewController
     }
 
     private func entryPointForUser(session: SessionType?) -> EntryPoint? {

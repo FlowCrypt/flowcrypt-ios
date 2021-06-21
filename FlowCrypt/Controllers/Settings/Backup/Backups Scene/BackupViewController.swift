@@ -41,7 +41,7 @@ final class BackupViewController: ASDKViewController<TableNode> {
 
     init(
         decorator: BackupViewDecoratorType = BackupViewDecorator(),
-        backupProvider: BackupServiceType = BackupService.shared,
+        backupProvider: BackupServiceType = BackupService(),
         userId: UserId
     ) {
         self.decorator = decorator
@@ -75,7 +75,7 @@ extension BackupViewController {
     }
 
     private func fetchBackups() {
-        backupProvider.fetchBackups(for: userId)
+        backupProvider.fetchBackupsFromInbox(for: userId)
             .then { [weak self] keys in
                 self?.state = keys.isEmpty
                     ? .noBackups

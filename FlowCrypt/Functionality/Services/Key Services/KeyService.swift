@@ -8,39 +8,104 @@
 
 import Foundation
 
-// Data Service
-protocol KeyDataServiceType {
-    var keys: [PrvKeyInfo]? { get }
-    var publicKey: String? { get }
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-}
-
 protocol KeyServiceType {
     func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError>
+    func getPrivateKeys(with passPhrase: String?) -> Result<[PrvKeyInfo], KeyServiceError>
 }
 
-struct KeyService: KeyServiceType {
+enum KeyServiceError: Error {
+    case emptyKeys, unexpected, parsingError, retrieve
+}
+
+final class KeyService: KeyServiceType {
     let coreService: Core = .shared
-    let dataService: KeyDataServiceType = DataService.shared
+    let storage: KeyStorageType
+    let passPhraseStorage: PassPhraseStorageType
+    let currentUserEmail: () -> (String?)
+
+    init(
+        storage: KeyStorageType = KeyDataStorage(),
+        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
+            storage: EncryptedStorage(),
+            emailProvider: DataService.shared
+        ),
+        currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
+    ) {
+        self.storage = storage
+        self.passPhraseStorage = passPhraseStorage
+        self.currentUserEmail = currentUserEmail
+    }
 
     func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
-        guard let keys = dataService.keys else {
-            return .failure(.retrieve)
+        guard let privateKeys = try? getPrivateKeys().get(), privateKeys.isNotEmpty else {
+            return .failure(.emptyKeys)
         }
 
-        let keyDetails = keys
+        let keyDetails = privateKeys
             .compactMap {
-                try? coreService
-                    .parseKeys(armoredOrBinary: $0.private.data())
+                try? coreService.parseKeys(armoredOrBinary: $0.private.data())
                     .keyDetails
             }
             .flatMap { $0 }
 
-        guard keyDetails.count == keys.count else {
-            return .failure(.parse)
+        guard keyDetails.count == privateKeys.count else {
+            return .failure(.parsingError)
         }
 
         return .success(keyDetails)
+    }
+
+    func getPrivateKeys(with passPhrase: String? = nil) -> Result<[PrvKeyInfo], KeyServiceError> {
+        guard let email = currentUserEmail() else {
+            return .failure(.retrieve)
+        }
+
+        let keysInfo = storage.keysInfo()
+            .filter { $0.account.contains(email) }
+
+        let storedPassPhrases = passPhraseStorage.getPassPhrases()
+
+        guard keysInfo.isNotEmpty else {
+            return .failure(.emptyKeys)
+        }
+
+        // get all private keys with already saved pass phrases
+        var privateKeys = keysInfo
+            .compactMap { (keyInfo) -> PrvKeyInfo? in
+                guard let passPhrase = storedPassPhrases.first(where: { $0.longid == keyInfo.longid }) else {
+                    return nil
+                }
+
+                let passPhraseValue = passPhrase.value
+
+                guard passPhraseValue.isNotEmpty else {
+                    return nil
+                }
+
+                return PrvKeyInfo(
+                    private: keyInfo.private,
+                    longid: keyInfo.longid,
+                    passphrase: passPhraseValue
+                )
+            }
+
+        // append keys to ensure with a pass phrase
+        if let passPhrase = passPhrase {
+            let keysToEnsure = keysInfo.map {
+                PrvKeyInfo(
+                    private: $0.private,
+                    longid: $0.longid,
+                    passphrase: passPhrase
+                )
+            }
+
+            privateKeys.append(contentsOf: keysToEnsure)
+        }
+
+        guard privateKeys.isNotEmpty else {
+            return .failure(.emptyKeys)
+        }
+
+        return .success(privateKeys)
     }
 }
