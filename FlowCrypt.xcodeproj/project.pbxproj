@@ -30,9 +30,7 @@
 		32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC9C0512037018F434A1 /* BackendApi.swift */; };
 		32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
 		32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAF8424D0185FAA9401A7 /* Imap+send.swift */; };
-		32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
 		32DCAD9F3A6B6101B78F0918 /* AttesterApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */; };
-		32DCAF683D87EA6221F71335 /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */; };
 		32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA55C094E9745AA1FD210 /* Imap+msg.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
@@ -55,7 +53,6 @@
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* UserAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* UserAccountService.swift */; };
 		9F003DB625EA92BC00EB38C0 /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003DB525EA92BC00EB38C0 /* LogOutHandler.swift */; };
-		9F003DBC25EA92D000EB38C0 /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003DB525EA92BC00EB38C0 /* LogOutHandler.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleUserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */; };
 		9F0C3C122316DDA500299985 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C112316DDA500299985 /* DataService.swift */; };
 		9F0C3C142316E69300299985 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
@@ -63,7 +60,6 @@
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */; };
 		9F1B4A342624E49300420472 /* KeyAlgoObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6924F25AB800612AF1 /* KeyAlgoObject.swift */; };
-		9F1D5769263B540100477938 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
 		9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA523C673AD005D2CB6 /* Springboard.swift */; };
 		9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA823C67587005D2CB6 /* UserCredentials.swift */; };
 		9F228BAA23C67729005D2CB6 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
@@ -78,7 +74,6 @@
 		9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+Backup.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
-		9F3EF32B23B16ADE00FA0CEF /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* CommonExtensions.swift */; };
 		9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */; };
 		9F3EF33123B1785600FA0CEF /* MsgListViewConroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF33023B1785600FA0CEF /* MsgListViewConroller.swift */; };
 		9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA27253B75F4003B970D /* BackupSelectKeyViewController.swift */; };
@@ -89,7 +84,6 @@
 		9F53CB872555E7F300C0157A /* Imap+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB862555E7F300C0157A /* Imap+Other.swift */; };
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
 		9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
-		9F589F11238C7DDC007FD759 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
 		9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F14238C8249007FD759 /* KeyChainService.swift */; };
 		9F5C2A77257D705100DE9B4B /* MessageLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A76257D705100DE9B4B /* MessageLabel.swift */; };
 		9F5C2A7E257E64D500DE9B4B /* MessageOperationsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A7D257E64D500DE9B4B /* MessageOperationsProvider.swift */; };
@@ -99,14 +93,9 @@
 		9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE1542597399D0059BA51 /* BackupProvider.swift */; };
 		9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
 		9F716308234FC73E0031645E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9F71630A234FC73E0031645E /* Localizable.strings */; };
-		9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
-		9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
-		9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
 		9F8220D526336626004B2009 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
 		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewControllerContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewControllerContainer.swift */; };
-		9F8BF96F267E231D00B7C863 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8BF96E267E231D00B7C863 /* TestSupport.swift */; };
-		9F8BF977267E236800B7C863 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8BF976267E236800B7C863 /* TestSupport.swift */; };
 		9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		9F9361A52573CE260009912F /* MessageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9361A42573CE260009912F /* MessageProvider.swift */; };
 		9F9362062573D0C80009912F /* Gmail+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9362052573D0C80009912F /* Gmail+MessagesList.swift */; };
@@ -138,11 +127,11 @@
 		9FB22D0425715DF00026EE64 /* KeyServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22D0325715DF00026EE64 /* KeyServiceError.swift */; };
 		9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */; };
 		9FBEAF3125DFB8E1009E98D4 /* DBMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAF3025DFB8E1009E98D4 /* DBMigrationService.swift */; };
+		9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D254733324C597CD00DEE698 /* CoreTypesTest.swift */; };
 		9FC411212595EA12001180A8 /* MessageSearchProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411202595EA12001180A8 /* MessageSearchProvider.swift */; };
 		9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC4112D2595EA8B001180A8 /* Gmail+Search.swift */; };
 		9FC411352595EA94001180A8 /* Imap+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411342595EA94001180A8 /* Imap+Search.swift */; };
 		9FC4114C25961CEA001180A8 /* MailServiceProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC4114B25961CEA001180A8 /* MailServiceProviderType.swift */; };
-		9FC411902596229D001180A8 /* AppErr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4B11D4531B3B04D01D1 /* AppErr.swift */; };
 		9FD364862381EFCB00657302 /* EnterPassPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD364852381EFCB00657302 /* EnterPassPhraseViewController.swift */; };
 		9FDF364D235A1CCD00614596 /* SignInTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF364C235A1CCD00614596 /* SignInTest.swift */; };
 		9FDF3650235A1D3F00614596 /* UITestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF364F235A1D3F00614596 /* UITestHelper.swift */; };
@@ -161,10 +150,7 @@
 		9FF0673325520DE400FCC9E6 /* GmailService+send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF0673225520DE400FCC9E6 /* GmailService+send.swift */; };
 		9FFC7E5A260C946100282FCE /* CloudContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FFC7E59260C946000282FCE /* CloudContactsProvider.swift */; };
 		A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */; };
-		A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeyInfo.swift */; };
 		A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B7C31823F576BA0022D628 /* AppStartup.swift */; };
-		A3DAD60A22E458C100F2C4CD /* CodableExntensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */; };
-		A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
 		A40B9DB9E27967AC623BA60B /* Pods_FlowCrypt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 069059B887A8580765029BF9 /* Pods_FlowCrypt.framework */; };
 		C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9B31EC2DBD800763715 /* AppDelegate.swift */; };
 		C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C132B9BA1EC2DBD800763715 /* Assets.xcassets */; };
@@ -190,11 +176,8 @@
 		D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3637235A0B3100614596 /* InfoCellNode.swift */; };
 		D212D35D24C1AACF00035991 /* PrvKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */; };
-		D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */; };
 		D212D36024C1AC0D00035991 /* KeyDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D35F24C1AC0D00035991 /* KeyDetails.swift */; };
-		D212D36124C1AC0D00035991 /* KeyDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D35F24C1AC0D00035991 /* KeyDetails.swift */; };
 		D212D36424C1AC4800035991 /* KeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D36324C1AC4800035991 /* KeyId.swift */; };
-		D212D36524C1AC4800035991 /* KeyId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D212D36324C1AC4800035991 /* KeyId.swift */; };
 		D21574B724376852006B094F /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21574B624376852006B094F /* ConnectionType.swift */; };
 		D216D05E242D32EA0083EDD6 /* TestCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D216D05D242D32EA0083EDD6 /* TestCredentials.swift */; };
 		D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E2250538100070F805 /* LocalFoldersProvider.swift */; };
@@ -204,7 +187,6 @@
 		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
-		D24B8FEC24B79BF600521D74 /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
 		D24FAFA42520BF9100BF46C5 /* CheckBoxCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24FAFA32520BF9100BF46C5 /* CheckBoxCircleView.swift */; };
 		D24FAFAB2520BFAE00BF46C5 /* CheckBoxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24FAFAA2520BFAE00BF46C5 /* CheckBoxNode.swift */; };
@@ -215,7 +197,6 @@
 		D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */; };
 		D2531F462402C62D007E5198 /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F452402C62D007E5198 /* CollectionExtensions.swift */; };
 		D2531F472402C9DE007E5198 /* IntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtensions.swift */; };
-		D254733424C597CD00DEE698 /* CoreTypesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D254733324C597CD00DEE698 /* CoreTypesTest.swift */; };
 		D254AA6024092AB80041CAE0 /* TapTicFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2D23438ABA00A7371A /* TapTicFeedback.swift */; };
 		D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F716304234FC7200031645E /* LocalizationExtensions.swift */; };
 		D269E02724103A20000495C3 /* ComposeViewControllerInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */; };
@@ -277,12 +258,10 @@
 		D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D2CDC3E324052D54002B045F /* FlowCryptCommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2D27B79248A8694007346FA /* BigIntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtension.swift */; };
-		D2D27B7A248A874C007346FA /* BigIntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtension.swift */; };
 		D2E26F6324F1698100612AF1 /* ContactsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6224F1698100612AF1 /* ContactsListViewController.swift */; };
 		D2E26F6624F169B400612AF1 /* ContactsListDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6524F169B400612AF1 /* ContactsListDecorator.swift */; };
 		D2E26F6824F169E300612AF1 /* ContactCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6724F169E300612AF1 /* ContactCellNode.swift */; };
 		D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */; };
-		D2E26F6D24F263B600612AF1 /* KeyAlgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */; };
 		D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6F24F266F300612AF1 /* ContactDetailViewController.swift */; };
 		D2E26F7224F26FFF00612AF1 /* ContactDetailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F7124F26FFF00612AF1 /* ContactDetailNode.swift */; };
 		D2E26F7424F2705B00612AF1 /* ContactDetailDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F7324F2705B00612AF1 /* ContactDetailDecorator.swift */; };
@@ -303,7 +282,6 @@
 		D2FF6966243115EC007182F0 /* EmailProviderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* EmailProviderViewController.swift */; };
 		D2FF6968243115F9007182F0 /* EmailProviderViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* EmailProviderViewDecorator.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */; };
-		D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */; };
 		E29491346F23FA1463A07459 /* Pods_FlowCryptAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 990E5AB8A4A7F69E1C113365 /* Pods_FlowCryptAppTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -316,13 +294,6 @@
 			remoteInfo = FlowCrypt;
 		};
 		9FDF3646235A1B0100614596 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C132B9A81EC2DBD800763715 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C132B9AF1EC2DBD800763715;
-			remoteInfo = FlowCrypt;
-		};
-		A3DAD60022E4574B00F2C4CD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C132B9A81EC2DBD800763715 /* Project object */;
 			proxyType = 1;
@@ -505,8 +476,6 @@
 		9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSubjectNode.swift; sourceTree = "<group>"; };
 		9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextSubjectNode.swift; sourceTree = "<group>"; };
 		9F82D351256D74FA0069A702 /* InboxViewControllerContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerContainer.swift; sourceTree = "<group>"; };
-		9F8BF96E267E231D00B7C863 /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
-		9F8BF976267E236800B7C863 /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
 		9F8D5E61236B04E300186E43 /* CellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
 		9F92EE6F236F144C009BE0D7 /* TextFieldCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCellNode.swift; sourceTree = "<group>"; };
 		9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedStorage.swift; sourceTree = "<group>"; };
@@ -561,14 +530,11 @@
 		9FFC7E59260C946000282FCE /* CloudContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudContactsProvider.swift; sourceTree = "<group>"; };
 		A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flowcrypt-ios-icon.png"; sourceTree = "<group>"; };
 		A37A1CF523C6254F001CF774 /* IntExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtensions.swift; sourceTree = "<group>"; };
-		A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCryptTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		A3B7C31523E436E10022D628 /* FlowCrypt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowCrypt.entitlements; sourceTree = "<group>"; };
 		A3B7C31623E437370022D628 /* FlowCryptRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowCryptRelease.entitlements; sourceTree = "<group>"; };
 		A3B7C31723E43B260022D628 /* FlowCryptTestFlight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowCryptTestFlight.entitlements; sourceTree = "<group>"; };
 		A3B7C31823F576BA0022D628 /* AppStartup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStartup.swift; sourceTree = "<group>"; };
-		A3DAD5FB22E4574A00F2C4CD /* FlowCryptTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCryptCoreTests.swift; sourceTree = "<group>"; };
-		A3DAD5FF22E4574B00F2C4CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A3DAD60722E4588800F2C4CD /* TestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestData.swift; sourceTree = "<group>"; };
 		A8E25B5340E41CA59482FC34 /* Pods-FlowCryptAppTests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptAppTests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests.testflight.xcconfig"; sourceTree = "<group>"; };
 		B2D5E6D67A7C2E406945F9B9 /* Pods-FlowCryptAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptAppTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -686,14 +652,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CB5986DFBB2B4FF4AD555821 /* Pods_FlowCryptUITests.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A3DAD5F822E4574A00F2C4CD /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D962475CF984E83B040B8666 /* Pods_FlowCryptTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1017,6 +975,7 @@
 				21F836A62652A1B700B2448C /* Functionallity */,
 				21EA3B2126565B4100691848 /* Models Parsing */,
 				9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */,
+				D254733324C597CD00DEE698 /* CoreTypesTest.swift */,
 				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				9F2AC59E267BDE0700F6149B /* GmailSearchExpressionGeneratorTests.swift */,
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
@@ -1024,7 +983,6 @@
 				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 				D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */,
 				9F2AC5CA267BE99E00F6149B /* Info.plist */,
-				9F8BF96E267E231D00B7C863 /* TestSupport.swift */,
 			);
 			path = FlowCryptAppTests;
 			sourceTree = "<group>";
@@ -1153,7 +1111,6 @@
 				9FDF3655235A22DA00614596 /* AppReset.swift */,
 				9F8220D426336626004B2009 /* Logger.swift */,
 				21C7DF0A266C0E3600C44800 /* Configuration.swift */,
-				9F8BF976267E236800B7C863 /* TestSupport.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -1323,15 +1280,6 @@
 			path = Pgp;
 			sourceTree = "<group>";
 		};
-		A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */ = {
-			isa = PBXGroup;
-			children = (
-				A3DAD5FF22E4574B00F2C4CD /* Info.plist */,
-				A3A680EF22EEF0BF00905813 /* FlowCryptTests-Bridging-Header.h */,
-			);
-			path = FlowCryptTests;
-			sourceTree = "<group>";
-		};
 		A3DAD60C22E469E400F2C4CD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1349,7 +1297,6 @@
 			children = (
 				D2324CB22471E60300FD1C6F /* .swiftlint.yml */,
 				C132B9B21EC2DBD800763715 /* FlowCrypt */,
-				A3DAD5FC22E4574B00F2C4CD /* FlowCryptTests */,
 				D2324CAB2471DCF800FD1C6F /* Scripts */,
 				2DC3601602226D74335E18F4 /* Pods */,
 				9FDF3642235A1B0100614596 /* FlowCryptUITests */,
@@ -1366,7 +1313,6 @@
 			isa = PBXGroup;
 			children = (
 				C132B9B01EC2DBD800763715 /* FlowCrypt.app */,
-				A3DAD5FB22E4574A00F2C4CD /* FlowCryptTests.xctest */,
 				9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */,
 				D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */,
 				D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */,
@@ -1478,7 +1424,6 @@
 			isa = PBXGroup;
 			children = (
 				D212D35F24C1AC0D00035991 /* KeyDetails.swift */,
-				D254733324C597CD00DEE698 /* CoreTypesTest.swift */,
 				D212D36324C1AC4800035991 /* KeyId.swift */,
 				D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */,
 				D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */,
@@ -1848,26 +1793,6 @@
 			productReference = 9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		A3DAD5FA22E4574A00F2C4CD /* FlowCryptTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A3DAD60222E4574B00F2C4CD /* Build configuration list for PBXNativeTarget "FlowCryptTests" */;
-			buildPhases = (
-				2DF61115A2BD5F1DEB320500 /* [CP] Check Pods Manifest.lock */,
-				A3DAD5F722E4574A00F2C4CD /* Sources */,
-				A3DAD5F822E4574A00F2C4CD /* Frameworks */,
-				A3DAD5F922E4574A00F2C4CD /* Resources */,
-				55C9BCF9885AE6B05C39978A /* [CP] Embed Pods Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A3DAD60122E4574B00F2C4CD /* PBXTargetDependency */,
-			);
-			name = FlowCryptTests;
-			productName = FlowCryptUITests;
-			productReference = A3DAD5FB22E4574A00F2C4CD /* FlowCryptTests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		C132B9AF1EC2DBD800763715 /* FlowCrypt */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */;
@@ -1967,10 +1892,6 @@
 						CreatedOnToolsVersion = 11.0;
 						TestTargetID = C132B9AF1EC2DBD800763715;
 					};
-					A3DAD5FA22E4574A00F2C4CD = {
-						CreatedOnToolsVersion = 10.2.1;
-						TestTargetID = C132B9AF1EC2DBD800763715;
-					};
 					C132B9AF1EC2DBD800763715 = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = W57XRJ27NX;
@@ -2004,7 +1925,6 @@
 			projectRoot = "";
 			targets = (
 				C132B9AF1EC2DBD800763715 /* FlowCrypt */,
-				A3DAD5FA22E4574A00F2C4CD /* FlowCryptTests */,
 				9FDF3640235A1B0100614596 /* FlowCryptUITests */,
 				D204DB9D23FB35700083B9D6 /* FlowCryptUI */,
 				D2A1D3B623FD64AB00D626D6 /* FlowCryptUIApplication */,
@@ -2029,14 +1949,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A3DAD5F922E4574A00F2C4CD /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D24B8FEC24B79BF600521D74 /* flowcrypt-ios-prod.js.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2141,28 +2053,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2DF61115A2BD5F1DEB320500 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlowCryptTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		2EA601B887F9BA327C9A5438 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2217,23 +2107,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		55C9BCF9885AE6B05C39978A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5F5CFBA7F01EBBFD1F1B1EFA /* [CP] Check Pods Manifest.lock */ = {
@@ -2379,6 +2252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */,
 				9F976584267E194F0058419D /* TestData.swift in Sources */,
 				9F976490267E11880058419D /* ImapHelperTest.swift in Sources */,
 				9F9764C5267E14AB0058419D /* GeneralConstantsTest.swift in Sources */,
@@ -2388,7 +2262,6 @@
 				9F97653D267E17C90058419D /* LocalStorageTests.swift in Sources */,
 				9F2AC5D7267BE9B100F6149B /* GmailSearchExpressionGeneratorTests.swift in Sources */,
 				9F9764F4267E15CC0058419D /* ExtensionTests.swift in Sources */,
-				9F8BF96F267E231D00B7C863 /* TestSupport.swift in Sources */,
 				9F976556267E186D0058419D /* DomainRulesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2408,32 +2281,6 @@
 				9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */,
 				D2F18464244B0C63000CC5D1 /* SignInGoogleTest.swift in Sources */,
 				9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A3DAD5F722E4574A00F2C4CD /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D2D27B7A248A874C007346FA /* BigIntExtension.swift in Sources */,
-				9F3EF32B23B16ADE00FA0CEF /* CommonExtensions.swift in Sources */,
-				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
-				9FC411902596229D001180A8 /* AppErr.swift in Sources */,
-				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
-				9F1D5769263B540100477938 /* Logger.swift in Sources */,
-				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
-				D212D36124C1AC0D00035991 /* KeyDetails.swift in Sources */,
-				A3DAD60A22E458C100F2C4CD /* CodableExntensions.swift in Sources */,
-				D254733424C597CD00DEE698 /* CoreTypesTest.swift in Sources */,
-				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
-				D212D36524C1AC4800035991 /* KeyId.swift in Sources */,
-				9F003DBC25EA92D000EB38C0 /* LogOutHandler.swift in Sources */,
-				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
-				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
-				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
-				32DCAF683D87EA6221F71335 /* SequenceExtensions.swift in Sources */,
-				9F589F11238C7DDC007FD759 /* User.swift in Sources */,
-				D2E26F6D24F263B600612AF1 /* KeyAlgo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2470,7 +2317,6 @@
 				D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */,
 				9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */,
-				9F8BF977267E236800B7C863 /* TestSupport.swift in Sources */,
 				9F1B4A342624E49300420472 /* KeyAlgoObject.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserObject.swift in Sources */,
@@ -2701,11 +2547,6 @@
 			isa = PBXTargetDependency;
 			target = C132B9AF1EC2DBD800763715 /* FlowCrypt */;
 			targetProxy = 9FDF3646235A1B0100614596 /* PBXContainerItemProxy */;
-		};
-		A3DAD60122E4574B00F2C4CD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C132B9AF1EC2DBD800763715 /* FlowCrypt */;
-			targetProxy = A3DAD60022E4574B00F2C4CD /* PBXContainerItemProxy */;
 		};
 		D2CDC3DC24052D0F002B045F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3009,99 +2850,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = TestFlight;
-		};
-		A37A4606233823230085630A /* TestFlight */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 411CEC75050F852F172CD687 /* Pods-FlowCryptTests.testflight.xcconfig */;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W57XRJ27NX;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FlowCryptTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = flowcrypt.FlowCryptTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "FlowCryptTests/FlowCryptTests-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FlowCrypt;
-			};
-			name = TestFlight;
-		};
-		A3DAD60322E4574B00F2C4CD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W57XRJ27NX;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FlowCryptTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = flowcrypt.FlowCryptTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "FlowCryptTests/FlowCryptTests-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FlowCrypt;
-			};
-			name = Debug;
-		};
-		A3DAD60422E4574B00F2C4CD /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W57XRJ27NX;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FlowCryptTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = flowcrypt.FlowCryptTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "FlowCryptTests/FlowCryptTests-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FlowCrypt;
-			};
-			name = Release;
 		};
 		C132B9C01EC2DBD800763715 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3614,16 +3362,6 @@
 				9FDF3648235A1B0100614596 /* Debug */,
 				9FDF3649235A1B0100614596 /* Release */,
 				9FDF364A235A1B0100614596 /* TestFlight */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A3DAD60222E4574B00F2C4CD /* Build configuration list for PBXNativeTarget "FlowCryptTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A3DAD60322E4574B00F2C4CD /* Debug */,
-				A3DAD60422E4574B00F2C4CD /* Release */,
-				A37A4606233823230085630A /* TestFlight */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

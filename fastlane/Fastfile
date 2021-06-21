@@ -35,16 +35,6 @@ platform :ios do
   lane :test_ui_prepare do
     reset_simulator_contents()
   end
-  
-
-  # UnitTests
-  desc "Run Tests"
-  lane :test do 
-    scan(
-      scheme: "FlowCryptTests",
-      skip_build: true    
-  )
-  end
 
   # UnitTests
   desc "Run Tests"
@@ -79,7 +69,6 @@ platform :ios do
   lane :do_everything do 
     cocoapod_update
     build
-    test
     unit_tests
     # test_ui
     # record_tests

@@ -8,6 +8,7 @@
 
 import FlowCryptCommon
 import XCTest
+@testable import FlowCrypt
 
 class CoreTypesTest: XCTestCase {
 
