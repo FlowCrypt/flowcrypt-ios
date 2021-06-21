@@ -40,12 +40,7 @@ target 'FlowCrypt' do
   shared_pods
   app_pods
   google_pods
-end
-
-target 'FlowCryptTests' do
-  shared_pods
-  inherit! :search_paths
-end
+end 
 
 target 'FlowCryptUI' do
   ui_pods
