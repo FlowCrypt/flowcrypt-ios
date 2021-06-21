@@ -40,7 +40,8 @@ platform :ios do
   desc "Run Tests"
   lane :unit_tests do 
     scan(
-      scheme: "FlowCryptAppTests"
+      scheme: "FlowCryptAppTests",
+      skip_build: true
   )
   end
 
