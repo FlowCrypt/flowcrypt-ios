@@ -58,6 +58,7 @@ target 'FlowCryptAppTests' do
     inherit! :search_paths
     pod 'mailcore2-ios'
     pod 'IDZSwiftCommonCrypto'
+    pod 'PromisesSwift'
 end
 
 ## Set IPHONEOS_DEPLOYMENT_TARGET for all pods

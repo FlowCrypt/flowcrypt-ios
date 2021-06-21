@@ -12,15 +12,38 @@ protocol KeyMethodsType {
     func filterByPassPhraseMatch(keys: [KeyDetails], passPhrase: String) -> [KeyDetails]
 }
 
-struct KeyMethods: KeyMethodsType {
-    let core: Core
+final class KeyMethods: KeyMethodsType {
+
+    let decrypter: KeyDecrypter
+
+    init(decrypter: KeyDecrypter = Core.shared) {
+        self.decrypter = decrypter
+    }
 
     func filterByPassPhraseMatch(keys: [KeyDetails], passPhrase: String) -> [KeyDetails] {
-        keys.compactMap { key -> KeyDetails? in
-            guard let privateKey = key.private,
-                  let decrypted = try? self.core.decryptKey(armoredPrv: privateKey, passphrase: passPhrase),
-                  decrypted.decryptedKey != nil
-            else { return nil }
+        let logger = Logger.nested(in: Self.self, with: .core)
+
+        guard keys.isNotEmpty else {
+            logger.logInfo("Keys are empty")
+            return []
+        }
+
+        return keys.compactMap { key -> KeyDetails? in
+            guard let privateKey = key.private else {
+                logger.logInfo("Filtered not private key")
+                return nil
+            }
+
+            guard let decrypted = try? self.decrypter.decryptKey(armoredPrv: privateKey, passphrase: passPhrase) else {
+                logger.logInfo("Filtered not decrypted key")
+                return nil
+            }
+
+            guard decrypted.decryptedKey != nil else {
+                logger.logInfo("Filtered. decryptedKey = nil")
+                return nil
+            }
+
             return key
         }
     }
