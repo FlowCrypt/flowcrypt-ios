@@ -6,6 +6,14 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
+/**
+ * Scene which is responsible for recovering user account with backups and entered pass phrase
+ * - User is sent here from **SetupInitialViewController** if there was key backups found
+ * - User will be prompted to enter his pass phrase
+ * - Pass phrase can be save in memory or in encrypted storage
+ * - In case pass phrase matches with backups User will be redirected to **main flow**
+ */
+
 final class SetupBackupsViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction

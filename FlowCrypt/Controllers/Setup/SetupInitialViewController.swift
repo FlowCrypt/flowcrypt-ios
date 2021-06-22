@@ -9,6 +9,14 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+/**
+ * Initial controller for setup flow which is responsible for searching backups.
+ * - In case backup keys are found user will be redirected to **SetupBackupsViewController**
+ * - In case there are no backups, user will have two options:
+ * - Import keys - **SetupManuallyImportKeyViewController**
+ * - Create new keys - **SetupGenerateKeyViewController**
+ */
+
 final class SetupInitialViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, createKey, importKey, anotherAccount

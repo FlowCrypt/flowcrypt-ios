@@ -9,6 +9,11 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+/**
+ * Controller which is responsible for entering pass phrase after key/keys was imported or pasted
+ * User will be sent here from **SetupManuallyImportKeyViewController** from setup flow or from settings
+ */
+
 final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, enterPhrase, chooseAnother
