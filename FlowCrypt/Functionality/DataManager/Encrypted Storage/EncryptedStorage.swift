@@ -17,7 +17,7 @@ protocol EncryptedStorageType: KeyStorageType {
     func getAllUsers() -> [UserObject]
     func saveActiveUser(with user: UserObject)
     var activeUser: UserObject? { get }
-    func isAnyKey(for email: String) -> Bool
+    func doesAnyKeyExist(for email: String) -> Bool
 
     func cleanup()
 }
@@ -181,7 +181,7 @@ extension EncryptedStorage {
             .first
     }
 
-    func isAnyKey(for email: String) -> Bool {
+    func doesAnyKeyExist(for email: String) -> Bool {
         keysInfo()
             .map(\.account)
             .map { $0.contains(email) }

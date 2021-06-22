@@ -68,14 +68,14 @@ extension DataService: DataServiceType {
     }
 
     var isSetupFinished: Bool {
-        isLoggedIn && isAnyKeysForCurrentUser
+        isLoggedIn && doesAnyKeyExistForCurrentUser
     }
 
-    private var isAnyKeysForCurrentUser: Bool {
+    private var doesAnyKeyExistForCurrentUser: Bool {
         guard let currentUser = currentUser else {
             return false
         }
-        return encryptedStorage.isAnyKey(for: currentUser.email)
+        return encryptedStorage.doesAnyKeyExist(for: currentUser.email)
     }
 
     var isLoggedIn: Bool {
@@ -115,7 +115,7 @@ extension DataService: DataServiceType {
 
     func validAccounts() -> [User] {
         encryptedStorage.getAllUsers()
-            .filter { encryptedStorage.isAnyKey(for: $0.email) }
+            .filter { encryptedStorage.doesAnyKeyExist(for: $0.email) }
             .filter { $0.email != currentUser?.email }
             .map(User.init)
     }
