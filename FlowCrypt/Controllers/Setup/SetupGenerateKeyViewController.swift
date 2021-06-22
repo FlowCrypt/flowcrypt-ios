@@ -23,10 +23,10 @@ enum CreateKeyError: Error {
 }
 
 /**
- * Controller which is responsible for generating key
+ * Controller which is responsible for generating a new key during setup
  * - User is sent here from **SetupInitialViewController** in case there are no backups found
- * - Here user can enter a pass phrase (can be saved in memory or in storage) and generate a key
- * - After key is generated, user will be redirected to **main flow**
+ * - Here user can enter a pass phrase (can be saved in memory or in encrypted storage) and generate a key
+ * - After key is generated, user will be redirected to **main flow** (inbox view)
  */
 
 final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseSaveable {
