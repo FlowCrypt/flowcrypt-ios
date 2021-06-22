@@ -191,21 +191,21 @@ extension EncryptedStorage {
 
 // MARK: - PassPhrase
 extension EncryptedStorage: EncryptedPassPhraseStorage {
-    func addPassPhrase(object: PassPhraseObject) {
+    func save(passPhrase: PassPhraseObject) {
         try! storage.write {
-            storage.add(object)
+            storage.add(passPhrase)
         }
     }
 
-    func updatePassPhrase(object: PassPhraseObject) {
+    func update(passPhrase: PassPhraseObject) {
         try! storage.write {
-            storage.add(object, update: .all)
+            storage.add(passPhrase, update: .all)
         }
     }
 
-    func removePassPhrase(object: PassPhraseObject) {
+    func remove(passPhrase: PassPhraseObject) {
         try! storage.write {
-            storage.delete(object)
+            storage.delete(passPhrase)
         }
     }
 
