@@ -31,22 +31,22 @@ final class Core: KeyDecrypter {
 
     private init() {}
 
-    public func version() throws -> CoreRes.Version {
+    func version() throws -> CoreRes.Version {
         let r = try call("version", jsonDict: nil, data: nil)
         return try r.json.decodeJson(as: CoreRes.Version.self)
     }
 
-    public func parseKeys(armoredOrBinary: Data) throws -> CoreRes.ParseKeys {
+    func parseKeys(armoredOrBinary: Data) throws -> CoreRes.ParseKeys {
         let r = try call("parseKeys", jsonDict: [String: String](), data: armoredOrBinary)
         return try r.json.decodeJson(as: CoreRes.ParseKeys.self)
     }
 
-    public func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey {
+    func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey {
         let r = try call("decryptKey", jsonDict: ["armored": armoredPrv, "passphrases": [passphrase]], data: nil)
         return try r.json.decodeJson(as: CoreRes.DecryptKey.self)
     }
 
-    public func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) throws -> CoreRes.ParseDecryptMsg {
+    func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) throws -> CoreRes.ParseDecryptMsg {
         let json: [String : Any?]? = [
             "keys": try keys.map { try $0.toJsonEncodedDict() },
             "isEmail": isEmail,
@@ -77,7 +77,7 @@ final class Core: KeyDecrypter {
         )
     }
 
-    public func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) throws -> CoreRes.ComposeEmail {
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) throws -> CoreRes.ComposeEmail {
         let r = try call("composeEmail", jsonDict: [
             "text": msg.text,
             "to": msg.to,
@@ -94,18 +94,18 @@ final class Core: KeyDecrypter {
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
 
-    public func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) throws -> CoreRes.GenerateKey {
+    func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) throws -> CoreRes.GenerateKey {
         let request: [String: Any] = ["passphrase": passphrase, "variant": String(variant.rawValue), "userIds": try userIds.map { try $0.toJsonEncodedDict() }]
         let r = try call("generateKey", jsonDict: request, data: nil)
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
     }
 
-    public func zxcvbnStrengthBar(passPhrase: String) throws -> CoreRes.ZxcvbnStrengthBar {
+    func zxcvbnStrengthBar(passPhrase: String) throws -> CoreRes.ZxcvbnStrengthBar {
         let r = try call("zxcvbnStrengthBar", jsonDict: ["value": passPhrase, "purpose": "passphrase"], data: nil)
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
-    public func startInBackgroundIfNotAlreadyRunning(_ completion: @escaping (() -> Void)) {
+    func startInBackgroundIfNotAlreadyRunning(_ completion: @escaping (() -> Void)) {
         if self.ready {
             completion()
         }
@@ -135,7 +135,7 @@ final class Core: KeyDecrypter {
         }
     }
 
-    public func blockUntilReadyOrThrow() throws {
+    func blockUntilReadyOrThrow() throws {
         // This will block the thread for up to 1000ms if the app was just started and Core method was called before JSContext is ready
         // It should only affect the user if Core method was called within 500-800ms of starting the app
         let start = DispatchTime.now()
@@ -145,6 +145,12 @@ final class Core: KeyDecrypter {
             }
             usleep(50000) // 50ms
         }
+    }
+
+    func gmailBackupSearch(for email: String) -> String? {
+        let response = try? call("gmailBackupSearch", jsonDict: ["acctEmail": email], data: nil)
+        let result = try? response?.json.decodeJson(as: GmailBackupSearchResponse.self)
+        return result?.query
     }
 
     // private
@@ -178,4 +184,8 @@ final class Core: KeyDecrypter {
         let json: Data
         let data: Data
     }
+}
+
+private struct GmailBackupSearchResponse: Decodable {
+    let query: String
 }

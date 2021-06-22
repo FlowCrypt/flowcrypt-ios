@@ -12,9 +12,12 @@ import Promises
 
 extension GmailService: BackupProvider {
     func searchBackups(for email: String) -> Promise<Data> {
-        Promise { resolve, _ in
+        Promise { resolve, reject in
             logger.logVerbose("will begin searching for backups")
-            let query = backupGenerator.makeBackupQuery(with: GeneralConstants.EmailConstant.recoverAccountSearchSubject)
+            guard let query = backupSearchQueryProvider.makeBackupQuery(for: email) else {
+                return reject(GmailServiceError.missedBackupQuery)
+            }
+
             let backupMessages = try awaitPromise(searchExpression(using: MessageSearchContext(expression: query)))
             logger.logVerbose("searching done, found \(backupMessages.count) backup messages")
             let uniqueMessages = Set(backupMessages)

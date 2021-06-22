@@ -8,15 +8,18 @@
 
 import Foundation
 
-protocol GmailSearchBackupGenerator {
-    func makeBackupQuery(with expressions: [String]) -> String
+protocol GmailBackupSearchQueryProviderType {
+    func makeBackupQuery(for email: String) -> String?
 }
 
-final class GmailSearchExpressionGenerator: GmailSearchBackupGenerator {
-    func makeBackupQuery(with expressions: [String]) -> String {
-        let folderQuery = "in:anywhere"
-        let search = expressions.map { "\"\($0)\"" }
-        let searchExpressionQuery = search.joined(separator: " OR ")
-        return folderQuery + " " + searchExpressionQuery + " has:attachment"
+final class GmailBackupSearchQueryProvider: GmailBackupSearchQueryProviderType {
+    let core: Core
+
+    init(core: Core = .shared) {
+        self.core = core
+    }
+
+    func makeBackupQuery(for email: String) -> String? {
+        core.gmailBackupSearch(for: email)
     }
 }
