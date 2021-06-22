@@ -12,8 +12,8 @@ import FlowCryptUI
 /**
  * Controller which is responsible for entering pass phrase after key/keys was imported or pasted
  * User will be sent here from **SetupManuallyImportKeyViewController** from setup flow or from settings
+ * After user enters pass phrase sccessfully, account will be set up and they will be sent to main flow (inbox view)
  */
-
 final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, enterPhrase, chooseAnother
