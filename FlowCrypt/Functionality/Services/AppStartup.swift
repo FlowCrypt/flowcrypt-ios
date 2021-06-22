@@ -19,7 +19,7 @@ struct AppStartup {
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
         Promise<Void> {
-            self.setupCore()
+            try awaitPromise(self.setupCore())
             try self.setupMigrationIfNeeded()
             try self.setupSession()
         }.then(on: .main) {
@@ -29,8 +29,12 @@ struct AppStartup {
         }
     }
 
-    private func setupCore() {
-        Core.shared.startInBackgroundIfNotAlreadyRunning()
+    private func setupCore() -> Promise<Void> {
+        Promise { resolve, _ in
+            Core.shared.startInBackgroundIfNotAlreadyRunning {
+                resolve(())
+            }
+        }
     }
 
     private func setupMigrationIfNeeded() throws {
@@ -54,15 +58,19 @@ struct AppStartup {
             return
         }
 
+        let viewController: UIViewController
+
         switch entryPoint {
         case .mainFlow:
-            window.rootViewController = SideMenuNavigationController()
+            viewController = SideMenuNavigationController()
         case .signIn:
-            window.rootViewController = MainNavigationController(rootViewController: SignInViewController())
+            viewController = MainNavigationController(rootViewController: SignInViewController())
         case .setupFlow(let userId):
-            let setupViewController = SetupViewController(user: userId)
-            window.rootViewController = MainNavigationController(rootViewController: setupViewController)
+            let setupViewController = SetupInitialViewController(user: userId)
+            viewController = MainNavigationController(rootViewController: setupViewController)
         }
+
+        window.rootViewController = viewController
     }
 
     private func entryPointForUser(session: SessionType?) -> EntryPoint? {

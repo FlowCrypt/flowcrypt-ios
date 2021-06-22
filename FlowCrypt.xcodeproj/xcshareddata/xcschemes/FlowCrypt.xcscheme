@@ -7,8 +7,8 @@
       buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
+            buildForTesting = "NO"
+            buildForRunning = "NO"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
             buildForAnalyzing = "NO">
@@ -84,7 +84,8 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "NO"
       language = "en"
-      region = "GB">
+      region = "GB"
+      codeCoverageEnabled = "YES">
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-AppleLanguages (en-US)"
@@ -97,7 +98,7 @@
       </CommandLineArguments>
       <Testables>
          <TestableReference
-            skipped = "NO"
+            skipped = "YES"
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
@@ -112,13 +113,12 @@
             </LocationScenarioReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A3DAD5FA22E4574A00F2C4CD"
-               BuildableName = "FlowCryptTests.xctest"
-               BlueprintName = "FlowCryptTests"
+               BlueprintIdentifier = "9F2AC5C5267BE99E00F6149B"
+               BuildableName = "FlowCryptAppTests.xctest"
+               BlueprintName = "FlowCryptAppTests"
                ReferencedContainer = "container:FlowCrypt.xcodeproj">
             </BuildableReference>
          </TestableReference>

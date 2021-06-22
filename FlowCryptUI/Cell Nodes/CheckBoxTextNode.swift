@@ -55,22 +55,11 @@ public final class CheckBoxTextNode: CellNode {
         checkBox.style.preferredSize = input.preferredSize
 
         if input.subtitle != nil {
-//            textNode.style.flexGrow = 1
-//            textNode.style.flexShrink = 1
-//            subtitleTextNode.style.flexGrow = 1
-//            subtitleTextNode.style.flexShrink = 1
-
             let textStack = ASStackLayoutSpec()
             textStack.direction = .vertical
             textStack.style.flexGrow = 1
             textStack.style.flexShrink = 1
             textStack.children = [textNode, subtitleTextNode]
-//                direction: .vertical,
-//                spacing: 8,
-//                justifyContent: .start,
-//                alignItems: .baselineFirst,
-//                children:
-//            )
 
             let stack = ASStackLayoutSpec(
                 direction: .horizontal,

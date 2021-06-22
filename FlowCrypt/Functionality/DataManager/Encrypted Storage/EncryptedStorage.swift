@@ -11,17 +11,13 @@ import Foundation
 import Promises
 import RealmSwift
 
-protocol EncryptedStorageType {
+protocol EncryptedStorageType: KeyStorageType {
     var storage: Realm { get }
-
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource)
-    func publicKey() -> String?
-    func keys() -> Results<KeyInfo>?
 
     func getAllUsers() -> [UserObject]
     func saveActiveUser(with user: UserObject)
     var activeUser: UserObject? { get }
+    func isAnyKey(for email: String) -> Bool
 
     func cleanup()
 }
@@ -82,7 +78,6 @@ final class EncryptedStorage: EncryptedStorageType {
             return realm
         } catch {
 //             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
-//             return nil
             fatalError("failed to initiate realm: \(error)")
         }
     }
@@ -109,14 +104,20 @@ extension EncryptedStorage: LogOutHandler {
             destroyEncryptedStorage()
         } else {
             // remove user and keys for this user
-            let userToDelete = users.filter { $0.email == email }
-            let keys = storage.objects(KeyInfo.self).filter { $0.account.contains(email) }
-            let sessions = storage.objects(SessionObject.self).filter { $0.email == email }
+            let userToDelete = users
+                .filter { $0.email == email }
+            let keys = storage.objects(KeyInfo.self)
+                .filter { $0.account.contains(email) }
+            let passPhrases = storage.objects(PassPhraseObject.self)
+                .filter { keys.map(\.longid).contains($0.longid) }
+            let sessions = storage.objects(SessionObject.self)
+                .filter { $0.email == email }
 
             try storage.write {
                 storage.delete(userToDelete)
                 storage.delete(keys)
                 storage.delete(sessions)
+                storage.delete(passPhrases)
             }
         }
     }
@@ -153,41 +154,63 @@ extension EncryptedStorage {
 
 // MARK: - Keys
 extension EncryptedStorage {
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
+    func addKeys(keyDetails: [KeyDetails], source: KeySource) {
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source))
+                storage.add(try! KeyInfo(key, source: source))
             }
         }
     }
 
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String, source: KeySource) {
-        // KeyInfo doesn't have primaty key, to avoid migration we need to delete keys and then save them
-
-        // delete keys
-        keyDetails.forEach { keyDetail in
-            try? storage.write {
-                storage.delete(storage.objects(KeyInfo.self)
-                    .filter("longid=%@", keyDetail.ids[0].longid))
-            }
-        }
-
-        // add new keys
+    func updateKeys(keyDetails: [KeyDetails], source: KeySource) {
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source))
+                storage.add(try! KeyInfo(key, source: source), update: .all)
             }
         }
     }
 
-    func keys() -> Results<KeyInfo>? {
-        storage.objects(KeyInfo.self)
+    func keysInfo() -> [KeyInfo] {
+        let result = storage.objects(KeyInfo.self)
+        return Array(result)
     }
 
     func publicKey() -> String? {
         storage.objects(KeyInfo.self)
             .map(\.public)
             .first
+    }
+
+    func isAnyKey(for email: String) -> Bool {
+        keysInfo()
+            .map(\.account)
+            .map { $0.contains(email) }
+            .contains(true)
+    }
+}
+
+// MARK: - PassPhrase
+extension EncryptedStorage: EncryptedPassPhraseStorage {
+    func addPassPhrase(object: PassPhraseObject) {
+        try! storage.write {
+            storage.add(object)
+        }
+    }
+
+    func updatePassPhrase(object: PassPhraseObject) {
+        try! storage.write {
+            storage.add(object, update: .all)
+        }
+    }
+
+    func removePassPhrase(object: PassPhraseObject) {
+        try! storage.write {
+            storage.delete(object)
+        }
+    }
+
+    func getPassPhrases() -> [PassPhraseObject] {
+        Array(storage.objects(PassPhraseObject.self))
     }
 }
 
@@ -207,6 +230,7 @@ extension EncryptedStorage {
             self.getAllUsers().forEach {
                 $0.isActive = false
             }
+            user.isActive = true
             self.storage.add(user, update: .all)
         }
     }

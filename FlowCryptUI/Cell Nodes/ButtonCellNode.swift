@@ -9,6 +9,22 @@
 import AsyncDisplayKit
 
 public final class ButtonCellNode: CellNode {
+    public struct Input {
+        let title: NSAttributedString
+        let insets: UIEdgeInsets
+        let color: UIColor?
+        
+        public init(
+            title: NSAttributedString,
+            insets: UIEdgeInsets,
+            color: UIColor? = nil
+        ) {
+            self.title = title
+            self.insets = insets
+            self.color = color
+        }
+    }
+    
     private var onTap: (() -> Void)?
     public lazy var button = ButtonNode { [weak self] in
         self?.onTap?()
@@ -25,7 +41,19 @@ public final class ButtonCellNode: CellNode {
                 .withAlphaComponent(alpha)
         }
     }
+    
+    public init(input: Input, action: (() -> Void)?) {
+        onTap = action
+        self.insets = input.insets
+        buttonColor = input.color
+        super.init()
+        button.cornerRadius = 5
+        button.backgroundColor = input.color ?? .main
+        button.style.preferredSize.height = 50
+        button.setAttributedTitle(input.title, for: .normal)
+    }
 
+    @available(*, deprecated, message: "Deprecated. Use init(input: Input)")
     public init(title: NSAttributedString, insets: UIEdgeInsets, color: UIColor? = nil, action: (() -> Void)?) {
         onTap = action
         self.insets = insets

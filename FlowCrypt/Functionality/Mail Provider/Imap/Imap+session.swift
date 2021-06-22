@@ -29,14 +29,14 @@ extension Imap {
             logger.logInfo("Creating a new IMAP session")
             let newImapSession = MCOIMAPSession(session: imap)
             imapSess = newImapSession
-            //logIMAPConnection(for: imapSess!)
+            logIMAPConnection(for: imapSess!)
         }
 
         if let smtp = smtpSession {
             logger.logInfo("Creating a new SMTP session")
             let newSmtpSession = MCOSMTPSession(session: smtp)
             smtpSess = newSmtpSession
-            //logSMTPConnection(for: smtpSess!)
+            logSMTPConnection(for: smtpSess!)
         }
     }
 

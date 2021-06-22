@@ -19,11 +19,10 @@ final class KeyInfo: Object {
     @objc dynamic var `private`: String = ""
     @objc dynamic var `public`: String = ""
     @objc dynamic var longid: String = ""
-    @objc dynamic var passphrase: String = ""
     @objc dynamic var source: String = ""
     @objc dynamic var account: String = ""
 
-    convenience init(_ keyDetails: KeyDetails, passphrase: String, source: KeySource) throws {
+    convenience init(_ keyDetails: KeyDetails, source: KeySource) throws {
         self.init()
         guard let privateKey = keyDetails.private else {
             assertionFailure("storing pubkey as private") // crash tests
@@ -33,11 +32,18 @@ final class KeyInfo: Object {
             assertionFailure("Will not store Private Key that is not fully encrypted") // crash tests
             throw KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
-        `private` = privateKey
-        `public` = keyDetails.public
-        longid = keyDetails.ids[0].longid
-        self.passphrase = passphrase
+        self.`private` = privateKey
+        self.`public` = keyDetails.public
+        self.longid = keyDetails.longid
         self.source = source.rawValue
         self.account = keyDetails.users.first ?? ""
+    }
+
+    override class func primaryKey() -> String? {
+        "private"
+    }
+
+    override var description: String {
+        "account = \(account) ####### longid = \(longid)"
     }
 }

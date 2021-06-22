@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import FlowCrypt
 
 class FlowCryptCoreTests: XCTestCase {
     var core: Core!
@@ -15,11 +16,12 @@ class FlowCryptCoreTests: XCTestCase {
         super.setUp()
         // DispatchQueue.promises = .global() // this helps prevent Promise deadlocks - but currently Promises are not in use by tests
         core = Core.shared
-        core.startInBackgroundIfNotAlreadyRunning()
-        do {
-            try core.blockUntilReadyOrThrow()
-        } catch {
-            XCTFail("Core did not get ready in time")
+        core.startInBackgroundIfNotAlreadyRunning() { [weak self] in
+            do {
+                try self?.core.blockUntilReadyOrThrow()
+            } catch {
+                XCTFail("Core did not get ready in time")
+            }
         }
     }
 
@@ -67,13 +69,13 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertNil(k0.private)
         XCTAssertNil(k0.isFullyDecrypted)
         XCTAssertNil(k0.isFullyEncrypted)
-        XCTAssertEqual(k0.ids[0].longid, TestData.k0.longid)
+        XCTAssertEqual(k0.longid, TestData.k0.longid)
         // k1 is private
         let k1 = r.keyDetails[1]
         XCTAssertNotNil(k1.private)
         XCTAssertEqual(k1.isFullyDecrypted, false)
         XCTAssertEqual(k1.isFullyEncrypted, true)
-        XCTAssertEqual(k1.ids[0].longid, TestData.k1.longid)
+        XCTAssertEqual(k1.longid, TestData.k1.longid)
         // todo - could test user ids
     }
 
