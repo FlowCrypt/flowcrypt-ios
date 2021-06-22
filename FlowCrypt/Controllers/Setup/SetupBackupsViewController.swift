@@ -7,11 +7,12 @@ import FlowCryptUI
 import Promises
 
 /**
- * Scene which is responsible for recovering user account with backups and entered pass phrase
- * - User is sent here from **SetupInitialViewController** if there was key backups found
+ * Scene which is responsible for recovering user account with backups from inbox and entered pass phrase
+ * (typically used for end-users, enterprises tend to either import manually or with EKM)
+ * - User is sent here from **SetupInitialViewController** if there was key backups found in inbox
  * - User will be prompted to enter his pass phrase
- * - Pass phrase can be save in memory or in encrypted storage
- * - In case pass phrase matches with backups User will be redirected to **main flow**
+ * - Pass phrase can be saved in memory for 4 hours or in encrypted local storage
+ * - In case entered pass phrase matches with backups, user will be redirected to **main flow** (inbox view)
  */
 
 final class SetupBackupsViewController: TableNodeViewController, PassPhraseSaveable {
