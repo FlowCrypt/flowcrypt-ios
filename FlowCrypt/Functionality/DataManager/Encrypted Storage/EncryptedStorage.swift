@@ -78,7 +78,6 @@ final class EncryptedStorage: EncryptedStorageType {
             return realm
         } catch {
 //             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
-//             return nil
             fatalError("failed to initiate realm: \(error)")
         }
     }

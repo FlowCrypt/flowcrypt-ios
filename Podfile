@@ -40,12 +40,7 @@ target 'FlowCrypt' do
   shared_pods
   app_pods
   google_pods
-end
-
-target 'FlowCryptTests' do
-  shared_pods
-  inherit! :search_paths
-end
+end 
 
 target 'FlowCryptUI' do
   ui_pods
@@ -59,6 +54,12 @@ target 'FlowCryptUITests' do
   pod 'GoogleSignIn'
 end
 
+target 'FlowCryptAppTests' do
+    inherit! :search_paths
+    pod 'mailcore2-ios'
+    pod 'IDZSwiftCommonCrypto'
+    pod 'PromisesSwift'
+end
 
 ## Set IPHONEOS_DEPLOYMENT_TARGET for all pods
 post_install do |installer|

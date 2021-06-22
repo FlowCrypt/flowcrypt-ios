@@ -7,6 +7,7 @@
 //
 
 import Foundation
+@testable import FlowCrypt
 
 class EncryptedPassPhraseStorageMock: EncryptedPassPhraseStorage {
     func addPassPhrase(object: PassPhraseObject) {

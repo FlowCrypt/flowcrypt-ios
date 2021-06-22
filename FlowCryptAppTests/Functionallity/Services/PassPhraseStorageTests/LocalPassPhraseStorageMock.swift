@@ -7,6 +7,7 @@
 //
 
 import Foundation
+@testable import FlowCrypt
 
 class LocalPassPhraseStorageMock: InMemoryPassPhraseStorageType {
     var passPhrases: Set<InMemoryPassPhrase> = []
