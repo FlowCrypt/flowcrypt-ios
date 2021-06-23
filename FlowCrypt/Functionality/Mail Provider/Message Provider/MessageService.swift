@@ -82,7 +82,7 @@ final class MessageService {
                 isEmail: true
             )
 
-            let isWrongPassPhraseError = decrypted.blocks.first(where: { (block) -> Bool in
+            let isWrongPassPhraseError = decrypted.blocks.first(where: { block -> Bool in
                 guard let errorBlock = block.decryptErr, case .needPassphrase = errorBlock.error.type else {
                     return false
                 }
