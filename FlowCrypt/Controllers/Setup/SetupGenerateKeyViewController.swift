@@ -36,7 +36,7 @@ final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseS
     private let storage: DataServiceType
     private let keyStorage: KeyStorageType
     private let attester: AttesterApiType
-    let passPhraseStorage: PassPhraseStorageType
+    let passPhraseService: PassPhraseServiceType
 
     var shouldSaveLocally = true {
         didSet {
@@ -62,10 +62,7 @@ final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseS
         storage: DataServiceType = DataService.shared,
         keyStorage: KeyStorageType = KeyDataStorage(),
         attester: AttesterApiType = AttesterApi(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
-            storage: EncryptedStorage(),
-            emailProvider: DataService.shared
-        )
+        passPhraseService: PassPhraseServiceType = PassPhraseService()
     ) {
         self.user = user
         self.core = core
@@ -75,7 +72,7 @@ final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseS
         self.storage = storage
         self.attester = attester
         self.keyStorage = keyStorage
-        self.passPhraseStorage = passPhraseStorage
+        self.passPhraseService = passPhraseService
 
         super.init(node: TableNode())
     }
@@ -149,7 +146,7 @@ extension SetupGenerateKeyViewController {
             let passPhrase = PassPhrase(value: passPhrase, longid: encryptedPrv.key.longid)
 
             self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated)
-            self.passPhraseStorage.savePassPhrase(with: passPhrase, inStorage: self.shouldSaveLocally)
+            self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldSaveLocally)
 
             let updateKey = self.attester.updateKey(
                 email: userId.email,

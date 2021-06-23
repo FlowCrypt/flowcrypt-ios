@@ -35,5 +35,6 @@ extension PassPhrase {
     init(object: PassPhraseObject) {
         self.value = object.value
         self.longid = object.longid
+        self.date = nil
     }
 }

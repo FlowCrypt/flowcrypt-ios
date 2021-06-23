@@ -190,27 +190,27 @@ extension EncryptedStorage {
 }
 
 // MARK: - PassPhrase
-extension EncryptedStorage: EncryptedPassPhraseStorage {
-    func save(passPhrase: PassPhraseObject) {
+extension EncryptedStorage: PassPhraseStorageType {
+    func save(passPhrase: PassPhrase) {
         try! storage.write {
-            storage.add(passPhrase)
+            storage.add(PassPhraseObject(passPhrase))
         }
     }
 
-    func update(passPhrase: PassPhraseObject) {
+    func update(passPhrase: PassPhrase) {
         try! storage.write {
-            storage.add(passPhrase, update: .all)
+            storage.add(PassPhraseObject(passPhrase), update: .all)
         }
     }
 
-    func remove(passPhrase: PassPhraseObject) {
+    func remove(passPhrase: PassPhrase) {
         try! storage.write {
-            storage.delete(passPhrase)
+            storage.delete(PassPhraseObject(passPhrase))
         }
     }
 
-    func getPassPhrases() -> [PassPhraseObject] {
-        Array(storage.objects(PassPhraseObject.self))
+    func getPassPhrases() -> [PassPhrase] {
+        Array(storage.objects(PassPhraseObject.self)).map(PassPhrase.init)
     }
 }
 
