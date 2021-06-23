@@ -43,7 +43,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
-    private var accounts: [User] { dataService.users.filter { !$0.isActive } }
+    private var accounts: [User] { dataService.validAccounts() }
 
     private let tableNode: ASTableNode
 
@@ -161,7 +161,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
 extension MyMenuViewController {
     private func fetchFolders() {
         showSpinner()
-        foldersProvider.fetchFolders()
+        foldersProvider.fetchFolders(isForceReload: false)
             .then(on: .main) { [weak self] folders in
                 self?.handleNewFolders(with: folders)
             }

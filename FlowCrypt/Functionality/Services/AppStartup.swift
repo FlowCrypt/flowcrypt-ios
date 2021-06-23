@@ -19,7 +19,7 @@ struct AppStartup {
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
         Promise<Void> {
-            self.setupCore()
+            try awaitPromise(self.setupCore())
             try self.setupMigrationIfNeeded()
             try self.setupSession()
             // Fetching of org rules is being called async in purpose we don't need to wait until it's fetched
@@ -31,8 +31,12 @@ struct AppStartup {
         }
     }
 
-    private func setupCore() {
-        Core.shared.startInBackgroundIfNotAlreadyRunning()
+    private func setupCore() -> Promise<Void> {
+        Promise { resolve, _ in
+            Core.shared.startInBackgroundIfNotAlreadyRunning {
+                resolve(())
+            }
+        }
     }
 
     private func setupMigrationIfNeeded() throws {

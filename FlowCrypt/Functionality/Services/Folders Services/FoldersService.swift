@@ -14,7 +14,7 @@ protocol TrashFolderProviderType {
 }
 
 protocol FoldersServiceType {
-    func fetchFolders() -> Promise<[FolderViewModel]>
+    func fetchFolders(isForceReload: Bool) -> Promise<[FolderViewModel]>
 }
 
 final class FoldersService: FoldersServiceType {
@@ -34,7 +34,11 @@ final class FoldersService: FoldersServiceType {
         self.localStorage = localStorage
     }
 
-    func fetchFolders() -> Promise<[FolderViewModel]> {
+    func fetchFolders(isForceReload: Bool) -> Promise<[FolderViewModel]> {
+        if isForceReload {
+            return getAndSaveFolders()
+        }
+
         let localFolders = self.localFoldersProvider.fetchFolders()
 
         if localFolders.isEmpty {

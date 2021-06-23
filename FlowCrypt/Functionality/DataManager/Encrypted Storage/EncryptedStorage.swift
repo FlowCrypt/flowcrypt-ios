@@ -17,6 +17,7 @@ protocol EncryptedStorageType: KeyStorageType {
     func getAllUsers() -> [UserObject]
     func saveActiveUser(with user: UserObject)
     var activeUser: UserObject? { get }
+    func doesAnyKeyExist(for email: String) -> Bool
 
     func cleanup()
 }
@@ -77,7 +78,6 @@ final class EncryptedStorage: EncryptedStorageType {
             return realm
         } catch {
 //             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
-//             return nil
             fatalError("failed to initiate realm: \(error)")
         }
     }
@@ -180,6 +180,13 @@ extension EncryptedStorage {
             .map(\.public)
             .first
     }
+
+    func doesAnyKeyExist(for email: String) -> Bool {
+        keysInfo()
+            .map(\.account)
+            .map { $0.contains(email) }
+            .contains(true)
+    }
 }
 
 // MARK: - PassPhrase
@@ -223,6 +230,7 @@ extension EncryptedStorage {
             self.getAllUsers().forEach {
                 $0.isActive = false
             }
+            user.isActive = true
             self.storage.add(user, update: .all)
         }
     }

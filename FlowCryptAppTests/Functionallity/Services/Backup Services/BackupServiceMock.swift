@@ -8,6 +8,7 @@
 
 import Foundation
 import Promises
+@testable import FlowCrypt
 
 final class BackupServiceMock: BackupServiceType {
     var fetchBackupsResult: Result<[KeyDetails], Error> = .success([])
