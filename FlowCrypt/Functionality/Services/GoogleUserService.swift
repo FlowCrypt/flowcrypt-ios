@@ -31,7 +31,12 @@ struct GoogleUser: Codable {
     let picture: URL?
 }
 
-final class GoogleUserService: NSObject {
+protocol GoogleUserServiceType {
+    var authorization: GTMAppAuthFetcherAuthorization? { get }
+    func renewSession() -> Promise<Void>
+}
+
+final class GoogleUserService: NSObject, GoogleUserServiceType {
     private enum Constants {
         static let index = "GTMAppAuthAuthorizerIndex"
     }

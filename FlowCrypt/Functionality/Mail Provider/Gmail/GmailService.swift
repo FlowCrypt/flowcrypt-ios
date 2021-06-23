@@ -11,7 +11,7 @@ import GoogleAPIClientForREST
 
 struct GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
-    let userService: GoogleUserService
+    let userService: GoogleUserServiceType
     let backupSearchQueryProvider: GmailBackupSearchQueryProviderType
 
     let logger = Logger.nested("GmailService")
@@ -27,7 +27,7 @@ struct GmailService: MailServiceProvider {
     }
 
     init(
-        userService: GoogleUserService = GoogleUserService(),
+        userService: GoogleUserServiceType = GoogleUserService(),
         backupSearchQueryProvider: GmailBackupSearchQueryProviderType = GmailBackupSearchQueryProvider()
     ) {
         self.userService = userService
