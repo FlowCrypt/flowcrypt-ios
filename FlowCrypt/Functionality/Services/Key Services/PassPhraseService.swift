@@ -67,7 +67,7 @@ final class PassPhraseService: PassPhraseServiceType {
             logger.logInfo("Save to storage \(passPhrase.longid)")
             encryptedStorage.save(passPhrase: passPhrase)
         } else {
-            logger.logInfo("Save locally \(passPhrase.longid)")
+            logger.logInfo("Save in memory \(passPhrase.longid)")
 
             inMemoryStorage.save(passPhrase: passPhrase)
 
