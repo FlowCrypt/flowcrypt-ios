@@ -198,7 +198,7 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.subtitle(for: .common),
+                        title: self.decorator.subtitle(for: .fetchedKeys(self.fetchedEncryptedKeys.count)),
                         insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )

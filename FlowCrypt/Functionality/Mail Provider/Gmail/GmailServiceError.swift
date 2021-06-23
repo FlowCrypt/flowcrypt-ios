@@ -20,5 +20,5 @@ enum GmailServiceError: Error {
     /// Provider Error
     case providerError(Error)
     /// Empty or invalid backup search query
-    case missedBackupQuery
+    case missedBackupQuery(Error)
 }

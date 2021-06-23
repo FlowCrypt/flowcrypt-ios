@@ -147,10 +147,10 @@ final class Core: KeyDecrypter {
         }
     }
 
-    func gmailBackupSearch(for email: String) -> String? {
-        let response = try? call("gmailBackupSearch", jsonDict: ["acctEmail": email], data: nil)
-        let result = try? response?.json.decodeJson(as: GmailBackupSearchResponse.self)
-        return result?.query
+    func gmailBackupSearch(for email: String) throws -> String {
+        let response = try call("gmailBackupSearch", jsonDict: ["acctEmail": email], data: nil)
+        let result = try response.json.decodeJson(as: GmailBackupSearchResponse.self)
+        return result.query
     }
 
     // private

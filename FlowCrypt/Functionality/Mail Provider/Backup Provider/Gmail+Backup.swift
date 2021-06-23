@@ -13,29 +13,30 @@ import Promises
 extension GmailService: BackupProvider {
     func searchBackups(for email: String) -> Promise<Data> {
         Promise { resolve, reject in
-            logger.logVerbose("will begin searching for backups")
-            guard let query = backupSearchQueryProvider.makeBackupQuery(for: email) else {
-                return reject(GmailServiceError.missedBackupQuery)
-            }
-
-            let backupMessages = try awaitPromise(searchExpression(using: MessageSearchContext(expression: query)))
-            logger.logVerbose("searching done, found \(backupMessages.count) backup messages")
-            let uniqueMessages = Set(backupMessages)
-            let attachments = uniqueMessages
-                .compactMap { message -> [(String, String)]? in
-                    logger.logVerbose("processing backup '\(message.subject ?? "-")' with \(message.attachmentIds.count) attachments")
-                    guard let identifier = message.identifier.stringId else {
-                        logger.logVerbose("skipping this last backup?")
-                        return nil
+            do {
+                logger.logVerbose("will begin searching for backups")
+                let query = try backupSearchQueryProvider.makeBackupQuery(for: email)
+                let backupMessages = try awaitPromise(searchExpression(using: MessageSearchContext(expression: query)))
+                logger.logVerbose("searching done, found \(backupMessages.count) backup messages")
+                let uniqueMessages = Set(backupMessages)
+                let attachments = uniqueMessages
+                    .compactMap { message -> [(String, String)]? in
+                        logger.logVerbose("processing backup '\(message.subject ?? "-")' with \(message.attachmentIds.count) attachments")
+                        guard let identifier = message.identifier.stringId else {
+                            logger.logVerbose("skipping this last backup?")
+                            return nil
+                        }
+                        return message.attachmentIds.map { (identifier, $0) }
                     }
-                    return message.attachmentIds.map { (identifier, $0) }
-                }
-                .flatMap { $0 }
-                .map(findAttachment)
-            logger.logVerbose("downloading \(attachments.count) attachments with possible backups in them")
-            let data = try awaitPromise(all(attachments)).joined
-            logger.logVerbose("downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
-            resolve(data)
+                    .flatMap { $0 }
+                    .map(findAttachment)
+                logger.logVerbose("downloading \(attachments.count) attachments with possible backups in them")
+                let data = try awaitPromise(all(attachments)).joined
+                logger.logVerbose("downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
+                resolve(data)
+            } catch {
+                reject(GmailServiceError.missedBackupQuery(error))
+            }
         }
     }
 
