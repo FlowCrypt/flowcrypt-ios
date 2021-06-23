@@ -4,6 +4,10 @@ name: FlowCrypt iOS App
 execution_time_limit:
   minutes: 30
 
+auto_cancel: # cancel running CI for older commits on same branch if new commits are added
+  running:
+    when: "branch != 'master'"
+
 agent:
   machine:
     type: a1-standard-4

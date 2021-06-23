@@ -98,13 +98,13 @@ extension UserAccountService: UserAccountServiceType {
 
     func cleanupSessions() {
         encryptedStorage.getAllUsers()
-            .filter { !encryptedStorage.isAnyKey(for: $0.email) }
+            .filter { !encryptedStorage.doesAnyKeyExist(for: $0.email) }
             .map(\.email)
             .forEach(logOut)
 
         let users = encryptedStorage.getAllUsers()
 
-        if !users.contains(where: { $0.isActive }), let user = users.first(where: { encryptedStorage.isAnyKey(for: $0.email ) }) {
+        if !users.contains(where: { $0.isActive }), let user = users.first(where: { encryptedStorage.doesAnyKeyExist(for: $0.email ) }) {
             switchActiveSession(for: user)
         }
     }
