@@ -50,7 +50,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private var state: State = .idle
 
     private let messageProvider: MessagesListProvider
-    private let decorator: InboxViewDecoratorType
+    private let decorator: InboxViewDecorator
     private let enterpriseServerApi: EnterpriseServerApiType
     private let refreshControl = UIRefreshControl()
     private let tableNode: ASTableNode
@@ -64,12 +64,13 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     init(
         _ viewModel: InboxViewModel,
         messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
-        decorator: InboxViewDecoratorType = InboxViewDecorator(),
+        decorator: InboxViewDecorator = InboxViewDecorator(),
         enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
         self.viewModel = viewModel
         self.messageProvider = messageProvider
         self.decorator = decorator
+        self.enterpriseServerApi = enterpriseServerApi
         tableNode = TableNode()
 
         super.init(node: ASDisplayNode())
@@ -90,7 +91,6 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         setupUI()
         setupNavigationBar()
         fetchAndRenderEmails(nil)
-        checkFES()
     }
 
     override func viewWillAppear(_ animated: Bool) {

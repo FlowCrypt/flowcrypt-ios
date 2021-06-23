@@ -1,5 +1,5 @@
 //
-//  DomainRulesObject.swift
+//  ClientConfigurationObject.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 18.06.2021.
@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-final class DomainRulesObject: Object {
+final class ClientConfigurationObject: Object {
 
     @objc dynamic var flags: Data?
     @objc dynamic var customKeyserverUrl: String?
@@ -45,16 +45,16 @@ final class DomainRulesObject: Object {
     }
 
     convenience init(
-        _ domainRules: DomainRules,
+        _ clientConfiguration: ClientConfiguration,
         user: UserObject?
     ) {
         self.init(
-            flags: domainRules.flags?.map(\.rawValue),
-            customKeyserverUrl: domainRules.customKeyserverUrl,
-            keyManagerUrl: domainRules.keyManagerUrl,
-            disallowAttesterSearchForDomains: domainRules.disallowAttesterSearchForDomains,
-            enforceKeygenAlgo: domainRules.enforceKeygenAlgo,
-            enforceKeygenExpireMonths: domainRules.enforceKeygenExpireMonths,
+            flags: clientConfiguration.flags?.map(\.rawValue),
+            customKeyserverUrl: clientConfiguration.customKeyserverUrl,
+            keyManagerUrl: clientConfiguration.keyManagerUrl,
+            disallowAttesterSearchForDomains: clientConfiguration.disallowAttesterSearchForDomains,
+            enforceKeygenAlgo: clientConfiguration.enforceKeygenAlgo,
+            enforceKeygenExpireMonths: clientConfiguration.enforceKeygenExpireMonths,
             user: user
         )
     }
@@ -64,7 +64,7 @@ final class DomainRulesObject: Object {
     }
 }
 
-extension DomainRulesObject: CachedObject {
+extension ClientConfigurationObject: CachedObject {
     var identifier: String { userEmail ?? "" }
 
     var activeUser: UserObject? { user }

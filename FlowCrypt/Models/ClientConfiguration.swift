@@ -1,5 +1,5 @@
 //
-//  DomainRules.swift
+//  ClientConfiguration.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 18.06.2021.
@@ -8,12 +8,12 @@
 
 import Foundation
 
-enum DomainRulesFlag: String, Codable {
+enum ClientConfigurationFlag: String, Codable {
 
-    case noPRVBackup = "NO_PRV_BACKUP"
-    case noPRVCreate = "NO_PRV_CREATE"
+    case noPrivateKeyBackup = "NO_PRV_BACKUP"
+    case noPrivateKeyCreate = "NO_PRV_CREATE"
     case noKeyManagerPubLookup = "NO_KEY_MANAGER_PUB_LOOKUP"
-    case PRVAutoimportOrAutogen = "PRV_AUTOIMPORT_OR_AUTOGEN"
+    case privateKeyAutoimportOrAutogen = "PRV_AUTOIMPORT_OR_AUTOGEN"
     case passphraseQuietAutogen = "PASS_PHRASE_QUIET_AUTOGEN"
     case enforceAttesterSubmit = "ENFORCE_ATTESTER_SUBMIT"
     case noAttesterSubmit = "NO_ATTESTER_SUBMIT"
@@ -22,9 +22,9 @@ enum DomainRulesFlag: String, Codable {
     case hideArmorMeta = "HIDE_ARMOR_META"
 }
 
-struct DomainRules: Codable, Equatable {
+struct ClientConfiguration: Codable, Equatable {
 
-    let flags: [DomainRulesFlag]?
+    let flags: [ClientConfigurationFlag]?
     let customKeyserverUrl: String?
     let keyManagerUrl: String?
     let disallowAttesterSearchForDomains: [String]?
@@ -33,8 +33,8 @@ struct DomainRules: Codable, Equatable {
 }
 
 // MARK: - Map from realm model
-extension DomainRules {
-    init?(_ object: DomainRulesObject?) {
+extension ClientConfiguration {
+    init?(_ object: ClientConfigurationObject?) {
         guard let unwrappedObject = object else {
             return nil
         }
@@ -51,7 +51,7 @@ extension DomainRules {
         }
 
         self.init(
-            flags: decodedFlags?.compactMap(DomainRulesFlag.init),
+            flags: decodedFlags?.compactMap(ClientConfigurationFlag.init),
             customKeyserverUrl: unwrappedObject.customKeyserverUrl,
             keyManagerUrl: unwrappedObject.keyManagerUrl,
             disallowAttesterSearchForDomains: decodedDisallowAttesterSearchForDomains,

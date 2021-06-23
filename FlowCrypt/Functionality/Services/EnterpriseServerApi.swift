@@ -12,8 +12,8 @@ protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) -> Promise<String?>
     func getActiveFesUrlForCurrentUser() -> Promise<String?>
 
-    func getDomainRules(for email: String) -> Promise<DomainRules?>
-    func getDomainRulesForCurrentUser() -> Promise<DomainRules?>
+    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration?>
+    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration?>
 }
 
 class EnterpriseServerApi: EnterpriseServerApiType {
@@ -25,11 +25,11 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         static let serviceNeededValue = "enterprise-server"
     }
 
-    private struct ClientConfiguration: Codable {
-        let domainRules: DomainRules
+    private struct ClientConfigurationContainer: Codable {
+        let clientConfiguration: ClientConfiguration
 
         private enum CodingKeys: String, CodingKey {
-            case domainRules = "clientConfiguration"
+            case clientConfiguration = "clientConfiguration"
         }
     }
 
@@ -71,9 +71,9 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         .recoverFromTimeOut(result: nil)
     }
 
-    func getDomainRules(for email: String) -> Promise<DomainRules?> {
-        Promise<DomainRules?> { resolve, _ in
-            guard let userDomain = email.recipientDomain,
+    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration?> {
+        Promise<ClientConfiguration?> { resolve, _ in
+            guard let userDomain = "name@flowcrypt.com".recipientDomain,
                   !Configuration.publicEmailProviderDomains.contains(userDomain) else {
                 resolve(nil)
                 return
@@ -88,20 +88,24 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             decoder.keyDecodingStrategy = .convertFromSnakeCase
 
             guard let safeReponse = response,
-                  let domainRules = (try? decoder.decode(ClientConfiguration.self, from: safeReponse.data))?.domainRules else {
+                  let clientConfiguration = (try? decoder.decode(
+                    ClientConfigurationContainer.self,
+                    from: safeReponse.data
+                  ))?.clientConfiguration
+            else {
                 resolve(nil)
                 return
             }
-            resolve(domainRules)
+            resolve(clientConfiguration)
         }
     }
 
-    func getDomainRulesForCurrentUser() -> Promise<DomainRules?> {
+    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration?> {
         guard let email = DataService.shared.currentUser?.email else {
-            return Promise<DomainRules?> { resolve, _ in
+            return Promise<ClientConfiguration?> { resolve, _ in
                 resolve(nil)
             }
         }
-        return getDomainRules(for: email)
+        return getClientConfiguration(for: email)
     }
 }

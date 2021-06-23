@@ -17,14 +17,14 @@ protocol OrganisationalRulesServiceType {
 final class OrganisationalRulesService {
 
     private let enterpriseServerApi: EnterpriseServerApiType
-    private let domainRulesProvider: DomainRulesProviderType
+    private let clientConfigurationProvider: ClientConfigurationProviderType
 
     init(
         storage: @escaping @autoclosure CacheStorage = DataService.shared.storage,
         enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
         self.enterpriseServerApi = enterpriseServerApi
-        self.domainRulesProvider = DomainRulesProvider(storage: storage())
+        self.clientConfigurationProvider = ClientConfigurationProvider(storage: storage())
     }
 }
 
@@ -44,21 +44,21 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
         Promise<OrganisationalRules> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
 
-            guard let domainRulesResponse = try awaitPromise(
-                    self.enterpriseServerApi.getDomainRules(for: email)
+            guard let clientConfigurationResponse = try awaitPromise(
+                    self.enterpriseServerApi.getClientConfiguration(for: email)
             ) else {
                 reject(OrganisationalRulesServiceError.parse)
                 return
             }
             guard let organisationalRules = OrganisationalRules(
-                    domainRules: domainRulesResponse,
+                    clientConfiguration: clientConfigurationResponse,
                     email: email
             ) else {
                 reject(OrganisationalRulesServiceError.emailFormat)
                 return
             }
 
-            self.domainRulesProvider.save(domainRules: domainRulesResponse)
+            self.clientConfigurationProvider.save(clientConfiguration: clientConfigurationResponse)
 
             resolve(organisationalRules)
         }
