@@ -11,6 +11,11 @@
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		211392A5266511E6009202EC /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
+		21489B6B267B7BD800BDE4AC /* FilesManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */; };
+ 		21489B6C267B7C6A00BDE4AC /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
+ 		21489B6E267B7D5000BDE4AC /* FileMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B6D267B7D5000BDE4AC /* FileMock.swift */; };
+ 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
+		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
 		21489B78267CB42400BDE4AC /* ClientConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */; };
 		21489B7A267CB4DF00BDE4AC /* ClientConfigurationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B79267CB4DF00BDE4AC /* ClientConfigurationObject.swift */; };
 		21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */; };
@@ -359,6 +364,10 @@
 		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
 		11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		211392A4266511E6009202EC /* PubLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubLookup.swift; sourceTree = "<group>"; };
+		21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManagerTests.swift; sourceTree = "<group>"; };
+		21489B6D267B7D5000BDE4AC /* FileMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMock.swift; sourceTree = "<group>"; };
+		215897E7267A553200423694 /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
+		2196A21F2684B9BE001B9E00 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
 		21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationProvider.swift; sourceTree = "<group>"; };
 		21489B79267CB4DF00BDE4AC /* ClientConfigurationObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationObject.swift; sourceTree = "<group>"; };
 		21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfiguration.swift; sourceTree = "<group>"; };
@@ -765,6 +774,23 @@
 			path = SideMenu;
 			sourceTree = "<group>";
 		};
+		21489B69267B7BC300BDE4AC /* FilesManager */ = {
+			isa = PBXGroup;
+			children = (
+				21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */,
+				21489B6D267B7D5000BDE4AC /* FileMock.swift */,
+			);
+			path = FilesManager;
+			sourceTree = "<group>";
+		};
+		215897E6267A551300423694 /* FilesManager */ = {
+			isa = PBXGroup;
+			children = (
+				215897E7267A553200423694 /* FilesManager.swift */,
+			);
+			path = FilesManager;
+			sourceTree = "<group>";
+		};
 		21489B81267CC3BC00BDE4AC /* Organisational Rules Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -798,6 +824,7 @@
 		21F836A62652A1B700B2448C /* Functionallity */ = {
 			isa = PBXGroup;
 			children = (
+				21489B69267B7BC300BDE4AC /* FilesManager */,
 				9F4164162665757700106194 /* PGP */,
 				21F836A72652A1CD00B2448C /* WKDURLs */,
 				9F4163F3266574CF00106194 /* Services */,
@@ -1450,6 +1477,7 @@
 		C132B9C61EC2DCC000763715 /* Functionality */ = {
 			isa = PBXGroup;
 			children = (
+				215897E6267A551300423694 /* FilesManager */,
 				21CE25D32650034500ADFF4B /* WKDURLs */,
 				A370EAB6238697E000685215 /* Pgp */,
 				D29AFFEE24092F4900C1387D /* DataManager */,
@@ -1568,6 +1596,7 @@
 				9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */,
 				21C7DEFB26669A3700C44800 /* CalendarExtension.swift */,
 				9F716304234FC7200031645E /* LocalizationExtensions.swift */,
+				2196A21F2684B9BE001B9E00 /* URLExtension.swift */,
 				9F56BD3923438D3700A7371A /* StyleExtension.swift */,
 				9F0C3C2723194E8500299985 /* CommonExtensions.swift */,
 				32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */,
@@ -2456,6 +2485,7 @@
 				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
 				21C7DF09266C0D8F00C44800 /* EnterpriseServerApi.swift in Sources */,
 				9FF0670825520CF800FCC9E6 /* GmailService.swift in Sources */,
+				215897E8267A553300423694 /* FilesManager.swift in Sources */,
 				9F5C2A77257D705100DE9B4B /* MessageLabel.swift in Sources */,
 				9F93623F2573D16F0009912F /* Gmail+Message.swift in Sources */,
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
@@ -2605,6 +2635,7 @@
 				D29AFFF6240939AE00C1387D /* Then.swift in Sources */,
 				21C7DEFC26669A3700C44800 /* CalendarExtension.swift in Sources */,
 				D2531F3423FEEF5F007E5198 /* StyleExtension.swift in Sources */,
+				2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */,
 				D254AA6024092AB80041CAE0 /* TapTicFeedback.swift in Sources */,
 				D2531F472402C9DE007E5198 /* IntExtensions.swift in Sources */,
 				D2FD0F692453245E00259FF0 /* Either.swift in Sources */,
