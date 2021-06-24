@@ -8,6 +8,10 @@
 
 import UIKit
 
+/**
+ * View controller which shows legal information (privacy, license, sources, terms)
+ * - User can be redirected here from settings *SettingsViewController*
+ */
 final class LegalViewController: UIViewController {
     private let provider: LegalViewControllersProviderType
     private lazy var segment: SegmentedViewController = SegmentedViewController(
