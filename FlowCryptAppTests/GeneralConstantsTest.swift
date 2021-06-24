@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import FlowCrypt
 
 class GeneralConstantsTest: XCTestCase {
     func testGeneralGlobalConstants() {

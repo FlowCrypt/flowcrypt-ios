@@ -10,17 +10,11 @@ import Foundation
 
 final class KeyDataStorage {
     private let encryptedStorage: EncryptedStorageType
-    private let passPhraseStorage: PassPhraseStorageType
 
     init(
-        encryptedStorage: EncryptedStorageType = EncryptedStorage(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
-            storage: EncryptedStorage(),
-            emailProvider: DataService.shared
-        )
+        encryptedStorage: EncryptedStorageType = EncryptedStorage()
     ) {
         self.encryptedStorage = encryptedStorage
-        self.passPhraseStorage = passPhraseStorage
     }
 }
 

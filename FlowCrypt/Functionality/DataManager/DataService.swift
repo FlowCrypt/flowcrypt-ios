@@ -10,6 +10,10 @@ import Foundation
 import Promises
 import RealmSwift
 
+protocol EmailProviderType {
+    var email: String? { get }
+}
+
 protocol DataServiceType: EmailProviderType {
     // data
     var email: String? { get }
@@ -20,6 +24,8 @@ protocol DataServiceType: EmailProviderType {
     var token: String? { get }
 
     var users: [User] { get }
+
+    func validAccounts() -> [User]
 }
 
 protocol ImapSessionProvider {
@@ -66,20 +72,14 @@ extension DataService: DataServiceType {
     }
 
     var isSetupFinished: Bool {
-        isLoggedIn && isAnyKeysForCurrentUser
+        isLoggedIn && doesAnyKeyExistForCurrentUser
     }
 
-    private var isAnyKeysForCurrentUser: Bool {
+    private var doesAnyKeyExistForCurrentUser: Bool {
         guard let currentUser = currentUser else {
             return false
         }
-
-        let isAnyKeysForCurrentUser = encryptedStorage.keysInfo()
-            .map(\.account)
-            .map { $0.contains(currentUser.email) }
-            .contains(true)
-
-        return isAnyKeysForCurrentUser
+        return encryptedStorage.doesAnyKeyExist(for: currentUser.email)
     }
 
     var isLoggedIn: Bool {
@@ -115,6 +115,13 @@ extension DataService: DataServiceType {
         default:
             return nil
         }
+    }
+
+    func validAccounts() -> [User] {
+        encryptedStorage.getAllUsers()
+            .filter { encryptedStorage.doesAnyKeyExist(for: $0.email) }
+            .filter { $0.email != currentUser?.email }
+            .map(User.init)
     }
 }
 

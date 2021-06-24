@@ -8,38 +8,86 @@
 
 import UIKit
 
-protocol InMemoryPassPhraseStorageType {
-    var passPhrases: Set<InMemoryPassPhrase> { get }
-    func save(passPhrase: InMemoryPassPhrase)
-    func removePassPhrases(with objects: [InMemoryPassPhrase])
-}
+final class InMemoryPassPhraseStorage: PassPhraseStorageType {
+    private lazy var logger = Logger.nested(Self.self)
 
-struct InMemoryPassPhrase: Codable, Hashable, Equatable {
-    let passPhrase: PassPhrase
-    let date: Date
+    let timeoutInSeconds: Int
+    let calendar = Calendar.current
+    let passPhraseProvider: InMemoryPassPhraseProviderType
 
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.passPhrase.longid == rhs.passPhrase.longid
+    init(
+        passPhraseProvider: InMemoryPassPhraseProviderType = InMemoryPassPhraseProvider.shared,
+        timeoutInSeconds: Int = 4*60*60 // 4 hours
+    ) {
+        self.passPhraseProvider = passPhraseProvider
+        self.timeoutInSeconds = timeoutInSeconds
+    }
+
+    func save(passPhrase: PassPhrase) {
+        let passPhraseToSave = passPhrase.withUpdatedDate()
+        passPhraseProvider.save(passPhrase: passPhraseToSave)
+    }
+
+    func update(passPhrase: PassPhrase) {
+        let passPhraseToSave = passPhrase.withUpdatedDate()
+        passPhraseProvider.save(passPhrase: passPhraseToSave)
+    }
+
+    func remove(passPhrase: PassPhrase) {
+        passPhraseProvider.removePassPhrases(with: passPhrase)
+    }
+
+    func getPassPhrases() -> [PassPhrase] {
+        passPhraseProvider.passPhrases
+            .compactMap { passPhrase -> PassPhrase? in
+                guard let dateToCompare = passPhrase.date else {
+                    logger.logError("Date should not be nil")
+                    return nil
+                }
+
+                let components = calendar.dateComponents(
+                    [.second],
+                    from: dateToCompare,
+                    to: Date()
+                )
+
+                let timePassed = components.second ?? 0
+
+                let isPassPhraseValid = timePassed < timeoutInSeconds
+
+                if isPassPhraseValid {
+                    return passPhrase
+                } else {
+                    return nil
+                }
+            }
     }
 }
 
-final class InMemoryPassPhraseStorage: InMemoryPassPhraseStorageType {
-    static let shared: InMemoryPassPhraseStorage = InMemoryPassPhraseStorage()
+// MARK: - Convenience
 
-    private(set) var passPhrases: Set<InMemoryPassPhrase> = []
+protocol InMemoryPassPhraseProviderType {
+    var passPhrases: Set<PassPhrase> { get }
+    func save(passPhrase: PassPhrase)
+    func removePassPhrases(with objects: PassPhrase)
+}
+
+/// - Warning: - should be shared instance
+final class InMemoryPassPhraseProvider: InMemoryPassPhraseProviderType {
+    static let shared: InMemoryPassPhraseProvider = InMemoryPassPhraseProvider()
+
+    private(set) var passPhrases: Set<PassPhrase> = []
 
     private init() {
     }
 
-    func save(passPhrase: InMemoryPassPhrase) {
+    func save(passPhrase: PassPhrase) {
         passPhrases.insert(passPhrase)
     }
 
-    func removePassPhrases(with objects: [InMemoryPassPhrase]) {
-        objects.forEach {
-            if passPhrases.contains($0) {
-                passPhrases.remove($0)
-            }
+    func removePassPhrases(with objects: PassPhrase) {
+        if passPhrases.contains(objects) {
+            passPhrases.remove(objects)
         }
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import FlowCrypt
 
 class ImapHelperTest: XCTestCase {
     var sut: ImapHelperType!

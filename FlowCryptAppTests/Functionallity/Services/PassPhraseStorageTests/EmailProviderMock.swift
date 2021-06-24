@@ -7,6 +7,7 @@
 //
 
 import Foundation
+@testable import FlowCrypt
 
 class EmailProviderMock: EmailProviderType {
     var email: String? = "test@gmail.com"

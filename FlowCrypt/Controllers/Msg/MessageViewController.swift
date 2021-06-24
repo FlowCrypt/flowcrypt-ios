@@ -57,7 +57,6 @@ final class MessageViewController: TableNodeViewController {
     private let trashFolderProvider: TrashFolderProviderType
     private let filesManager: FilesManagerType
     private var processedMessage: ProcessedMessage = .empty
-    private let passPhraseStorage: PassPhraseStorageType
 
     init(
         messageService: MessageService = MessageService(),
@@ -65,10 +64,6 @@ final class MessageViewController: TableNodeViewController {
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         filesManager: FilesManagerType = FilesManager(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
-            storage: EncryptedStorage(),
-            emailProvider: DataService.shared
-        ),
         input: MessageViewController.Input,
         completion: MsgViewControllerCompletion?
     ) {
@@ -79,7 +74,6 @@ final class MessageViewController: TableNodeViewController {
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
         self.filesManager = filesManager
-        self.passPhraseStorage = passPhraseStorage
 
         super.init(node: TableNode())
     }

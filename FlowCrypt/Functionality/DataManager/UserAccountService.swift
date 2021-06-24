@@ -13,6 +13,7 @@ protocol UserAccountServiceType {
     func startSessionFor(user type: SessionType)
     func switchActiveSessionFor(user: User) -> SessionType?
     func startActiveSessionForNextUser() -> SessionType?
+    func cleanupSessions()
     func cleanup()
 }
 
@@ -95,6 +96,20 @@ extension UserAccountService: UserAccountServiceType {
         return session
     }
 
+    func cleanupSessions() {
+        encryptedStorage.getAllUsers()
+            .filter { !encryptedStorage.doesAnyKeyExist(for: $0.email) }
+            .map(\.email)
+            .forEach(logOut)
+
+        let users = encryptedStorage.getAllUsers()
+
+        if !users.contains(where: { $0.isActive }), let user = users.first(where: { encryptedStorage.doesAnyKeyExist(for: $0.email ) }) {
+            switchActiveSession(for: user)
+        }
+    }
+
+    @discardableResult
     private func switchActiveSession(for userObject: UserObject) -> SessionType? {
         let sessionType: SessionType
         switch userObject.authType {
@@ -117,7 +132,10 @@ extension UserAccountService: UserAccountServiceType {
             logger.logWarning("User is not logged in. Can't log out")
             return
         }
+        logOut(user: email)
+    }
 
+    private func logOut(user email: String) {
         switch dataService.currentAuthType {
         case .oAuthGmail:
             googleService.signOut(user: email)

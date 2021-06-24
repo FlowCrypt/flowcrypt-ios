@@ -9,24 +9,6 @@
 import Foundation
 import RealmSwift
 
-// Should be operated in app
-struct PassPhrase: Codable, Hashable, Equatable {
-    let value: String
-    let longid: String
-
-    init(value: String, longid: String) {
-        self.value = value
-        self.longid = longid
-    }
-}
-
-extension PassPhrase {
-    init(object: PassPhraseObject) {
-        self.value = object.value
-        self.longid = object.longid
-    }
-}
-
 /// PassPhrase object to store in Realm
 final class PassPhraseObject: Object {
     @objc dynamic var longid: String = ""
@@ -42,8 +24,17 @@ final class PassPhraseObject: Object {
     }
 }
 
+// MARK: - Convenience
 extension PassPhraseObject {
     convenience init(_ passPhrase: PassPhrase) {
         self.init(longid: passPhrase.longid, value: passPhrase.value)
+    }
+}
+
+extension PassPhrase {
+    init(object: PassPhraseObject) {
+        self.value = object.value
+        self.longid = object.longid
+        self.date = nil
     }
 }

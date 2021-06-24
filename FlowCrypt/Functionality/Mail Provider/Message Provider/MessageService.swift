@@ -49,22 +49,19 @@ enum MessageServiceError: Error {
 final class MessageService {
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
-    private let passPhraseStorage: PassPhraseStorageType
+    private let passPhraseService: PassPhraseServiceType
     private let core: Core
 
     init(
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         keyService: KeyServiceType = KeyService(),
         core: Core = Core.shared,
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
-            storage: EncryptedStorage(),
-            emailProvider: DataService.shared
-        )
+        passPhraseService: PassPhraseServiceType = PassPhraseService()
     ) {
         self.messageProvider = messageProvider
         self.keyService = keyService
         self.core = core
-        self.passPhraseStorage = passPhraseStorage
+        self.passPhraseService = passPhraseService
     }
 
     func validateMessage(rawMimeData: Data, with passPhrase: String) -> Promise<ProcessedMessage> {
@@ -95,7 +92,7 @@ final class MessageService {
             } else {
                 keys
                     .map { PassPhrase(value: passPhrase, longid: $0.longid) }
-                    .forEach { self.passPhraseStorage.savePassPhrase(with: $0, inStorage: false) }
+                    .forEach { self.passPhraseService.savePassPhrase(with: $0, inStorage: false) }
 
                 let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
 
