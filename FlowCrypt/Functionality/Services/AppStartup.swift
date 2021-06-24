@@ -22,6 +22,8 @@ struct AppStartup {
             try awaitPromise(self.setupCore())
             try self.setupMigrationIfNeeded()
             try self.setupSession()
+            // Fetching of org rules is being called async in purpose we don't need to wait until it's fetched
+            self.getUserOrgRulesIfNeeded()
         }.then(on: .main) {
             self.chooseView(for: window, session: session)
         }.catch(on: .main) { error in
@@ -82,6 +84,12 @@ struct AppStartup {
             return .setupFlow(userId)
         } else {
             return .signIn
+        }
+    }
+
+    private func getUserOrgRulesIfNeeded() {
+        if DataService.shared.isLoggedIn {
+            _ = OrganisationalRulesService().fetchOrganisationalRulesForCurrentUser()
         }
     }
 

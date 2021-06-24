@@ -37,7 +37,7 @@ final class EncryptedStorage: EncryptedStorageType {
         var version: SchemaVersion {
             switch self {
             case .initial:
-                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 1)
+                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 4)
             }
         }
     }
@@ -190,27 +190,27 @@ extension EncryptedStorage {
 }
 
 // MARK: - PassPhrase
-extension EncryptedStorage: EncryptedPassPhraseStorage {
-    func addPassPhrase(object: PassPhraseObject) {
+extension EncryptedStorage: PassPhraseStorageType {
+    func save(passPhrase: PassPhrase) {
         try! storage.write {
-            storage.add(object)
+            storage.add(PassPhraseObject(passPhrase))
         }
     }
 
-    func updatePassPhrase(object: PassPhraseObject) {
+    func update(passPhrase: PassPhrase) {
         try! storage.write {
-            storage.add(object, update: .all)
+            storage.add(PassPhraseObject(passPhrase), update: .all)
         }
     }
 
-    func removePassPhrase(object: PassPhraseObject) {
+    func remove(passPhrase: PassPhrase) {
         try! storage.write {
-            storage.delete(object)
+            storage.delete(PassPhraseObject(passPhrase))
         }
     }
 
-    func getPassPhrases() -> [PassPhraseObject] {
-        Array(storage.objects(PassPhraseObject.self))
+    func getPassPhrases() -> [PassPhrase] {
+        Array(storage.objects(PassPhraseObject.self)).map(PassPhrase.init)
     }
 }
 
