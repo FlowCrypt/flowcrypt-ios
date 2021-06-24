@@ -8,7 +8,8 @@ import FlowCryptUI
 import Promises
 
 /**
- * View controller to show context of the message (sender, subject, message, attachments)
+ * View controller to render an email message (sender, subject, message body, attachments)
+ * Also contains buttons to archive, move to trash, move to inbox, mark as unread, and reply
  */
 final class MessageViewController: TableNodeViewController {
     struct Input {
