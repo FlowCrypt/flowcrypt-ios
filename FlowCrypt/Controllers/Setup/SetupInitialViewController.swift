@@ -10,8 +10,8 @@ import AsyncDisplayKit
 import FlowCryptUI
 
 /**
- * Initial controller for setup flow which is responsible for searching backups and 
- *       then redirecting user to appropriate setup flow.
+ * Initial controller for setup flow which is responsible for searching backups and
+ * then redirecting user to appropriate setup flow.
  * - In case backup keys are found, user will be redirected to **SetupBackupsViewController**
  * - In case there are no backups, user will have two options presented in this view:
  *      - Import key - **SetupManuallyImportKeyViewController**
