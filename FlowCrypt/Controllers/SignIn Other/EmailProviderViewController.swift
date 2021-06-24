@@ -13,7 +13,7 @@ import Promises
 /**
  * Controller that gives a possibility for the user to enter information about his email provider like, account, imap/smtp information
  * - User redirects here from SignInViewController
- * - After successful connection user will be redirected to *main flow*
+ * - After successful connection user will be redirected to *main flow* which would typically means *SetupInitialViewController*
  */
 final class EmailProviderViewController: TableNodeViewController {
     private enum UserError: Error {
