@@ -10,6 +10,10 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
+/**
+ * View controller which shows saved user contacts list
+ * - User can be redirected here from settings *SettingsViewController*
+ */
 final class ContactsListViewController: TableNodeViewController {
     private let decorator: ContactsListDecoratorType
     private let contactsProvider: LocalContactsProviderType
