@@ -6,6 +6,9 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
+/**
+ * View controller to show context of the message (sender, subject, message, attachments)
+ */
 final class MessageViewController: TableNodeViewController {
     struct Input {
         var objMessage: Message
