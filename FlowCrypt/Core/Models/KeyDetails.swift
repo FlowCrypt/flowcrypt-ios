@@ -20,7 +20,7 @@ struct KeyDetails: Decodable {
     let algo: KeyAlgo?
 
     var longid: String {
-        ids[0].longid
+        ids.first?.longid ?? ""
     }
 }
 
