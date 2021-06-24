@@ -10,7 +10,7 @@ import AsyncDisplayKit
 import FlowCryptUI
 
 /**
- * View controller which shows information about key details (key words, fingerprint ...)
+ * View controller which shows information about our own private and public key details (key words, fingerprint ...)
  * - User can be redirected here from *KeyDetailViewController*
  */
 final class KeyDetailInfoViewController: TableNodeViewController {
