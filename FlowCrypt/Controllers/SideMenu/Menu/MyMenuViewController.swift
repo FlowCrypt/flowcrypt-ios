@@ -13,7 +13,6 @@ import Promises
  * On tap on each folder user should be redirected to `InboxViewController` with selected folder
  * On settings tap user will be redirected to `SettingsViewController`
  */
-
 final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
         static let allMail = "folder_all_mail".localized
