@@ -10,8 +10,10 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-// MARK: - InboxViewControllerContainer
-// Used to fetch folders and get correct path for "inbox" folder
+/**
+ * View controller which serves as intermediate controller
+ * - Used to fetch folders and get correct path for "inbox" folder
+ */
 final class InboxViewControllerContainer: TableNodeViewController {
     private let inbox = "inbox"
 
