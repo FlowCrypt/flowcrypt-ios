@@ -73,7 +73,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
     func getClientConfiguration(for email: String) -> Promise<ClientConfiguration?> {
         Promise<ClientConfiguration?> { resolve, _ in
-            guard let userDomain = "name@flowcrypt.com".recipientDomain,
+            guard let userDomain = email.recipientDomain,
                   !Configuration.publicEmailProviderDomains.contains(userDomain) else {
                 resolve(nil)
                 return
