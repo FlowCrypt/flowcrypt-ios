@@ -11,7 +11,7 @@ import FlowCryptUI
 
 /**
  * View controller which shows information about public key
- * - User can be redirected here from settings *KeyDetailViewController*
+ * - User can be redirected here from *KeyDetailViewController*
  */
 final class PublicKeyDetailViewController: TableNodeViewController {
     private let text: String

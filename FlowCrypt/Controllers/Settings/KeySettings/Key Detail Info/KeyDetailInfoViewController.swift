@@ -11,7 +11,7 @@ import FlowCryptUI
 
 /**
  * View controller which shows information about key details (key words, fingerprint ...)
- * - User can be redirected here from settings *KeyDetailViewController*
+ * - User can be redirected here from *KeyDetailViewController*
  */
 final class KeyDetailInfoViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
