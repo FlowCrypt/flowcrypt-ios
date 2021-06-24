@@ -24,8 +24,12 @@ struct PassPhrase: Codable, Hashable, Equatable {
         PassPhrase(value: self.value, longid: self.longid, date: Date())
     }
 
-    static func == (lhs: Self, rhs: Self) -> Bool {
+    static func == (lhs: PassPhrase, rhs: PassPhrase) -> Bool {
         lhs.longid == rhs.longid
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(longid)
     }
 }
 
