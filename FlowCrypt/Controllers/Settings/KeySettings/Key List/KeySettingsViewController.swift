@@ -9,6 +9,12 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+/**
+ * View controller shows list of user keys
+ * - User can be redirected here from settings *SettingsViewController*
+ * - User can proceed to importing keys *SetupManuallyImportKeyViewController*
+ * - User can see detail information for the key in *KeyDetailViewController*
+ */
 final class KeySettingsViewController: TableNodeViewController {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecoratorType

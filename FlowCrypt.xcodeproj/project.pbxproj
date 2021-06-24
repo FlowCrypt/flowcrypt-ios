@@ -904,9 +904,9 @@
 		5A39F43B239ECFA0001F4607 /* KeySettings */ = {
 			isa = PBXGroup;
 			children = (
+				5ADEDCB423A4262600EC495E /* Key List */,
 				D29A0002240C140500C1387D /* Key Detail Info */,
 				D29A0003240C141200C1387D /* Public Key */,
-				5ADEDCB423A4262600EC495E /* Key List */,
 				5ADEDCB723A426E900EC495E /* Key Details */,
 			);
 			path = KeySettings;
