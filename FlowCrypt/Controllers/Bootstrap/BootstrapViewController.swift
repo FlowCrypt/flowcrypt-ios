@@ -8,14 +8,14 @@
 
 import UIKit
 
+/**
+ * View controller with activity indicator which is presented before all AppStartup activity finished (setup Core, migration of the DB...)
+ */
 final class BootstrapViewController: UIViewController {
-    let imap = Imap.shared
-    var completion: ((Error?) -> Void)?
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .backgroundColor
-        let activityIndicator = UIActivityIndicatorView(style: .gray)
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
         activityIndicator.startAnimating()
         view.addSubview(activityIndicator)
         activityIndicator.center = view.center
