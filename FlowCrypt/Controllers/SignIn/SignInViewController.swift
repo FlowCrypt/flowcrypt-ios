@@ -6,6 +6,14 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
+/**
+ * Sign in controller
+ * - User can sign in with:
+ * - Gmail
+ * - Outlook (not implemented yet)
+ * - Other email provider (*EmailProviderViewController*)
+ * - User can also check privacy, terms and security links via *WebViewController*
+ */
 final class SignInViewController: TableNodeViewController {
 
     enum AppLinks: String, CaseIterable {
