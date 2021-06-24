@@ -20,19 +20,16 @@ enum KeyServiceError: Error {
 final class KeyService: KeyServiceType {
     let coreService: Core = .shared
     let storage: KeyStorageType
-    let passPhraseStorage: PassPhraseStorageType
+    let passPhraseService: PassPhraseServiceType
     let currentUserEmail: () -> (String?)
 
     init(
         storage: KeyStorageType = KeyDataStorage(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
-            storage: EncryptedStorage(),
-            emailProvider: DataService.shared
-        ),
+        passPhraseService: PassPhraseServiceType = PassPhraseService(),
         currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
     ) {
         self.storage = storage
-        self.passPhraseStorage = passPhraseStorage
+        self.passPhraseService = passPhraseService
         self.currentUserEmail = currentUserEmail
     }
 
@@ -63,7 +60,7 @@ final class KeyService: KeyServiceType {
         let keysInfo = storage.keysInfo()
             .filter { $0.account.contains(email) }
 
-        let storedPassPhrases = passPhraseStorage.getPassPhrases()
+        let storedPassPhrases = passPhraseService.getPassPhrases()
 
         guard keysInfo.isNotEmpty else {
             return .failure(.emptyKeys)

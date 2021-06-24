@@ -14,11 +14,3 @@ protocol KeyStorageType {
     func publicKey() -> String?
     func keysInfo() -> [KeyInfo]
 }
-
-protocol EncryptedPassPhraseStorage {
-    func addPassPhrase(object: PassPhraseObject)
-    func updatePassPhrase(object: PassPhraseObject)
-    func getPassPhrases() -> [PassPhraseObject]
-    func removePassPhrase(object: PassPhraseObject)
-    func keysInfo() -> [KeyInfo]
-}

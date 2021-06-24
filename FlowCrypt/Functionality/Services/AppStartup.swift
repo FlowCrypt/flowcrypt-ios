@@ -29,6 +29,8 @@ final class AppStartup {
             try awaitPromise(self.setupCore())
             try self.setupMigrationIfNeeded()
             try self.setupSession()
+            // Fetching of org rules is being called async in purpose we don't need to wait until it's fetched
+            self.getUserOrgRulesIfNeeded()
         }.then(on: .main) { [weak self] in
             self?.chooseView(for: window, session: session)
         }.catch(on: .main) { [weak self] error in
@@ -93,6 +95,12 @@ final class AppStartup {
         } else {
             logger.logInfo("User us not signed in -> mainFlow")
             return .signIn
+        }
+    }
+
+    private func getUserOrgRulesIfNeeded() {
+        if DataService.shared.isLoggedIn {
+            _ = OrganisationalRulesService().fetchOrganisationalRulesForCurrentUser()
         }
     }
 

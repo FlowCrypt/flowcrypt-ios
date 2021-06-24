@@ -91,7 +91,6 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         setupUI()
         setupNavigationBar()
         fetchAndRenderEmails(nil)
-        checkFES()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -218,7 +217,7 @@ extension InboxViewController {
         // insert new messages
         let indexesToInsert = messageContext.messages
             .enumerated()
-            .map { (index, _) -> Int in
+            .map { index, _ -> Int in
                 let indexInTableView = index + count
                 return indexInTableView
             }
@@ -244,14 +243,6 @@ extension InboxViewController {
         default:
             showAlert(error: error, message: "message_failed_load".localized)
         }
-    }
-
-    private func checkFES() {
-        enterpriseServerApi.getActiveFesUrlForCurrentUser()
-            .then(on: .main) { [weak self] urlString in
-                guard let urlString = urlString else { return }
-                self?.showToast("FES at \(urlString) not supported on iOS yet")
-            }
     }
 }
 

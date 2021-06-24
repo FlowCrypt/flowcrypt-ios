@@ -25,7 +25,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
     private let keysStorage: KeyStorageType
     private let keyService: KeyServiceType
     private let router: GlobalRouterType
-    let passPhraseStorage: PassPhraseStorageType
+    let passPhraseService: PassPhraseServiceType
 
     private var passPhrase: String?
 
@@ -46,10 +46,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         keysService: KeyStorageType = KeyDataStorage(),
         router: GlobalRouterType = GlobalRouter(),
         keyService: KeyServiceType = KeyService(),
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
-            storage: EncryptedStorage(),
-            emailProvider: DataService.shared
-        ),
+        passPhraseService: PassPhraseServiceType = PassPhraseService(),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
@@ -60,7 +57,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         self.keysStorage = keysService
         self.router = router
         self.keyService = keyService
-        self.passPhraseStorage = passPhraseStorage
+        self.passPhraseService = passPhraseService
 
         super.init(node: TableNode())
     }
@@ -247,7 +244,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                 PassPhrase(value: passPhrase, longid: $0.longid)
             }
             .forEach {
-                passPhraseStorage.updatePassPhrase(with: $0, inStorage: shouldSaveLocally)
+                passPhraseService.updatePassPhrase(with: $0, inStorage: shouldSaveLocally)
             }
 
         newKeysToAdd
@@ -255,7 +252,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                 PassPhrase(value: passPhrase, longid: $0.longid)
             }
             .forEach {
-                passPhraseStorage.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
+                passPhraseService.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
             }
 
         hideSpinner()

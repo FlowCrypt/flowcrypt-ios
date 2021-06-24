@@ -19,7 +19,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     private let user: UserId
     private let fetchedEncryptedKeys: [KeyDetails]
     private let keyStorage: KeyStorageType
-    let passPhraseStorage: PassPhraseStorageType
+    let passPhraseService: PassPhraseServiceType
 
     private var passPhrase: String?
 
@@ -42,10 +42,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
         user: UserId,
-        passPhraseStorage: PassPhraseStorageType = PassPhraseStorage(
-            storage: EncryptedStorage(),
-            emailProvider: DataService.shared
-        )
+        passPhraseService: PassPhraseServiceType = PassPhraseService()
     ) {
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
         self.router = router
@@ -54,7 +51,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
         self.core = core
         self.keyMethods = keyMethods
         self.user = user
-        self.passPhraseStorage = passPhraseStorage
+        self.passPhraseService = passPhraseService
 
         super.init(node: TableNode())
     }
@@ -142,7 +139,7 @@ extension SetupBackupsViewController {
                 PassPhrase(value: passPhrase, longid: $0.longid)
             }
             .forEach {
-                passPhraseStorage.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
+                passPhraseService.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
             }
 
         // save keys
