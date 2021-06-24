@@ -1,5 +1,5 @@
 //
-//  DomainRulesTests.swift
+//  ClientConfigurationTests.swift
 //  FlowCryptTests
 //
 //  Created by Yevhen Kyivskyi on 20.05.2021.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import FlowCrypt
 
-class DomainRulesTests: XCTestCase {
+class ClientConfigurationTests: XCTestCase {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -19,14 +19,14 @@ class DomainRulesTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func test_complete_domain_rules_json_parse() {
-        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "domain_rules", ofType: "json")!)
+    func test_complete_client_configuraion_json_parse() {
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "client_configuraion", ofType: "json")!)
         let data = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
         
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(DomainRules.self, from: data)
+        let model = try? decoder.decode(ClientConfiguration.self, from: data)
         
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.customKeyserverUrl != nil)
@@ -36,14 +36,14 @@ class DomainRulesTests: XCTestCase {
         XCTAssert(model?.enforceKeygenExpireMonths != nil)
     }
     
-    func test_partial_domain_rules_json_parse() {
-        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "domain_rules_partly_empty", ofType: "json")!)
+    func test_partial_client_configuraion_json_parse() {
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "client_configuraion_partly_empty", ofType: "json")!)
         let data = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
         
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(DomainRules.self, from: data)
+        let model = try? decoder.decode(ClientConfiguration.self, from: data)
         
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.enforceKeygenAlgo != nil)
@@ -54,14 +54,14 @@ class DomainRulesTests: XCTestCase {
         XCTAssert(model?.disallowAttesterSearchForDomains == nil)
     }
     
-    func test_empty_domain_rules_json_parse() {
-        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "domain_rules_empty", ofType: "json")!)
+    func test_empty_client_configuraion_json_parse() {
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "client_configuraion_empty", ofType: "json")!)
         let data = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
         
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(DomainRules.self, from: data)
+        let model = try? decoder.decode(ClientConfiguration.self, from: data)
         
         XCTAssert(model != nil)
         
