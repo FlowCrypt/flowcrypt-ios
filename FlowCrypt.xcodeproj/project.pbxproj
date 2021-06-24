@@ -11,7 +11,10 @@
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		211392A5266511E6009202EC /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
-		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
+		21489B6B267B7BD800BDE4AC /* FilesManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */; };
+ 		21489B6C267B7C6A00BDE4AC /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
+ 		21489B6E267B7D5000BDE4AC /* FileMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B6D267B7D5000BDE4AC /* FileMock.swift */; };
+ 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
 		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
 		21489B78267CB42400BDE4AC /* ClientConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */; };
 		21489B7A267CB4DF00BDE4AC /* ClientConfigurationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B79267CB4DF00BDE4AC /* ClientConfigurationObject.swift */; };
@@ -786,6 +789,8 @@
 				215897E7267A553200423694 /* FilesManager.swift */,
 			);
 			path = FilesManager;
+			sourceTree = "<group>";
+		};
 		21489B81267CC3BC00BDE4AC /* Organisational Rules Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -2386,6 +2391,62 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A3DAD5F722E4574A00F2C4CD /* Sources */ = {
+ 			isa = PBXSourcesBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+ 				D2D27B7A248A874C007346FA /* BigIntExtension.swift in Sources */,
+ 				9FC7EB7C266EB67D00F3BF5D /* EncryptedStorageProtocols.swift in Sources */,
+ 				9F3EF32B23B16ADE00FA0CEF /* CommonExtensions.swift in Sources */,
+ 				9FC7EBC2266EBE0100F3BF5D /* EmailProviderMock.swift in Sources */,
+ 				9FC7EBD0266EBE1D00F3BF5D /* EncryptedPassPhraseStorageMock.swift in Sources */,
+ 				9FA0157A26565B7800CBBA05 /* KeyMethodsTest.swift in Sources */,
+ 				A357699622EA2BC8009242C4 /* KeyInfo.swift in Sources */,
+ 				9FC411902596229D001180A8 /* AppErr.swift in Sources */,
+ 				9FC7EB69266EB64F00F3BF5D /* PassPhraseStorage.swift in Sources */,
+ 				D212D35E24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
+ 				9F1D5769263B540100477938 /* Logger.swift in Sources */,
+ 				9FC7EBC9266EBE0F00F3BF5D /* LocalPassPhraseStorageMock.swift in Sources */,
+ 				A3DAD5FE22E4574B00F2C4CD /* FlowCryptCoreTests.swift in Sources */,
+ 				21489B6B267B7BD800BDE4AC /* FilesManagerTests.swift in Sources */,
+ 				9FC7EBB0266EBD4600F3BF5D /* InMemoryPassPhraseStorage.swift in Sources */,
+ 				21EA3B2326565B5D00691848 /* DomainRulesTests.swift in Sources */,
+ 				9F4164102665754A00106194 /* PromiseExtensions.swift in Sources */,
+ 				21F836CC2652A38700B2448C /* ZBase32EncodingTests.swift in Sources */,
+ 				9FC7EBA3266EB95300F3BF5D /* PassPhraseStorageTests.swift in Sources */,
+ 				9F7920EE2666D32500DA3D80 /* BackupServiceType.swift in Sources */,
+ 				9FC7EB6F266EB66200F3BF5D /* PassPhrase.swift in Sources */,
+ 				D2A9CA45242622F800E1D898 /* GeneralConstantsTest.swift in Sources */,
+ 				21489B6C267B7C6A00BDE4AC /* FilesManager.swift in Sources */,
+ 				A3DAD60B22E458C300F2C4CD /* DataExtensions.swift in Sources */,
+ 				21EA3B532656611C00691848 /* OrganisationalRule.swift in Sources */,
+ 				A3DAD60822E4588800F2C4CD /* TestData.swift in Sources */,
+ 				D212D36124C1AC0D00035991 /* KeyDetails.swift in Sources */,
+ 				9F6EE18C25A8AF970059BA51 /* GeneralConstants.swift in Sources */,
+ 				A3DAD60A22E458C100F2C4CD /* CodableExntensions.swift in Sources */,
+ 				D254733424C597CD00DEE698 /* CoreTypesTest.swift in Sources */,
+ 				9F003DA425EA928200EB38C0 /* LocalStorage.swift in Sources */,
+ 				9F7DE8C6232029D000F10B3E /* CoreTypes.swift in Sources */,
+ 				9F3EF32A23B15C9600FA0CEF /* ImapHelperTest.swift in Sources */,
+ 				5A39F439239ECDD0001F4607 /* ExtensionTests.swift in Sources */,
+ 				21489B6E267B7D5000BDE4AC /* FileMock.swift in Sources */,
+ 				D212D36524C1AC4800035991 /* KeyId.swift in Sources */,
+ 				9F003DBC25EA92D000EB38C0 /* LogOutHandler.swift in Sources */,
+ 				21F836A02652A19A00B2448C /* WKDURLsConstructor.swift in Sources */,
+ 				9F7920E32666D28400DA3D80 /* BackupServiceMock.swift in Sources */,
+ 				9F7DE8C5232029BD00F10B3E /* Core.swift in Sources */,
+ 				32DCAD6360C9EFF4FDD8EF6F /* DispatchTimeExtension.swift in Sources */,
+ 				9F7DE8C723202A0200F10B3E /* CoreHost.swift in Sources */,
+ 				9F3EF32823B15C8400FA0CEF /* ImapHelper.swift in Sources */,
+ 				9F003D9E25EA910B00EB38C0 /* LocalStorageTests.swift in Sources */,
+ 				9FA0158026565B9D00CBBA05 /* KeyMethods.swift in Sources */,
+ 				32DCAF683D87EA6221F71335 /* SequenceExtensions.swift in Sources */,
+ 				9F589F11238C7DDC007FD759 /* User.swift in Sources */,
+ 				21F836D32652A46E00B2448C /* WKDURLsConstructorTests.swift in Sources */,
+ 				D2E26F6D24F263B600612AF1 /* KeyAlgo.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
 		C132B9AC1EC2DBD800763715 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
