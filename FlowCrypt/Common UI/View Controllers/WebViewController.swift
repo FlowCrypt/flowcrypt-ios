@@ -9,6 +9,9 @@
 import UIKit
 import WebKit
 
+/**
+ * InApp WebViewController to show web content
+ */
 final class WebViewController: UIViewController {
     private lazy var webView = WKWebView()
 
