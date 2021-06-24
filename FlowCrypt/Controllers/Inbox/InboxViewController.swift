@@ -7,6 +7,11 @@ import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
+/**
+ * View controller which shows message list of selected folder or inbox
+ * - Initial view controller of the *main flow* when user is already signed in
+ * - User can be redirected here via selecting folder from menu *MyMenuViewController*
+ */
 final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
         static let numberOfMessagesToLoad = 50

@@ -14,6 +14,12 @@ protocol SideMenuViewController {
     func didOpen()
 }
 
+/**
+ * Navigation Controller inherited from ENSideMenuNavigationController
+ * - Encapsulates logic of status bar appearance, burger menu width, offsets and etc
+ * - Responsible for disabling gestures on side controllers when menu is shown
+ * - Adds menu button or back button as part of navigation item, based on pushed controller
+ */
 final class SideMenuNavigationController: ENSideMenuNavigationController {
     private var isStatusBarHidden = false {
         didSet {
@@ -47,7 +53,7 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
     convenience init() {
         let menu = MyMenuViewController()
-        let contentViewController = InboxViewControllerContainer()
+        let contentViewController = InboxViewContainerController()
         self.init(menuViewController: menu, contentViewController: contentViewController)
         menuViewContoller = menu
         sideMenu = ENSideMenu(sourceView: view, menuViewController: menu, menuPosition: .left).then {

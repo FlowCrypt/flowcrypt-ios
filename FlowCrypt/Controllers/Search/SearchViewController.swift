@@ -10,6 +10,10 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
+/**
+ * View controller to search messages in folders
+ * - User can be redirected here from *InboxViewController* by tapping on search icon
+ */
 final class SearchViewController: TableNodeViewController {
     private enum Constants {
         // TODO: - Ticket - Add pagination for SearchViewController

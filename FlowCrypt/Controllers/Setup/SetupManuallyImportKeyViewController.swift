@@ -10,6 +10,13 @@ import AsyncDisplayKit
 import FlowCryptUI
 import MobileCoreServices
 
+/**
+ * Controller which is responsible for importing key from a file or to paste it from pasteBoard
+ * - User can reach this screen:
+ *           - when there are no backups found from **SetupInitialViewController**  in setup flow
+ *           - or from key settings **KeySettingsViewController**
+ * - After key is added user will be redirected to **SetupManuallyEnterPassPhraseViewController**
+ */
 final class SetupManuallyImportKeyViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case title, description, fileImport, pasteBoardImport

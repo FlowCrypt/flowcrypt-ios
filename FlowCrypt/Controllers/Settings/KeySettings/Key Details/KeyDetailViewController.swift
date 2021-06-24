@@ -9,6 +9,10 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+/**
+ * View controller which shows possible option for the keys, like show it's public part, details, copy or share it.
+ * - User can be redirected here from *KeyDetailViewController*
+ */
 final class KeyDetailViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
         case description, publicInfo, keyDetails, copy, save, privateInfo
