@@ -3,6 +3,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
@@ -433,15 +434,44 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             ),
             onDownloadTap: { [weak self] in
                 guard let self = self else { return }
-                self.filesManager.save(file: self.processedMessage.attachments[index])
-                    .then { _ in
-                        self.showToast("message_attachment_saved_successfully".localized)
-                    }.catch { error in
+                self.filesManager.saveToFilesApp(file: self.processedMessage.attachments[index], from: self)
+                    .catch { error in
                         self.showToast(
                             "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
                         )
                     }
             }
         )
+    }
+}
+
+// MARK: - UIDocumentPickerDelegate
+
+extension MessageViewController: UIDocumentPickerDelegate {
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+
+        guard let savedUrl = urls.first,
+              let sharedDocumentUrl = savedUrl.sharedDocumentURL else {
+            return
+        }
+        showFileSharedAlert(with: sharedDocumentUrl)
+    }
+
+    private func showFileSharedAlert(with url: URL) {
+        let alert = UIAlertController(
+            title: "message_attachment_saved_successfully_title".localized,
+            message: "message_attachment_saved_successfully_message".localized,
+            preferredStyle: .alert
+        )
+
+        let cancel = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in }
+        let open = UIAlertAction(title: "open".localized, style: .default) { _ in
+            UIApplication.shared.open(url)
+        }
+
+        alert.addAction(cancel)
+        alert.addAction(open)
+
+        present(alert, animated: true)
     }
 }

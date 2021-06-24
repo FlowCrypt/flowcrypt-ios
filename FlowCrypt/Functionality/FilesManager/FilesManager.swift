@@ -7,6 +7,7 @@
 //
 
 import Promises
+import UIKit
 
 protocol FileType {
     var name: String { get }
@@ -15,7 +16,8 @@ protocol FileType {
 }
 
 protocol FilesManagerType {
-    func save(file: FileType) -> Promise<Void>
+    func save(file: FileType) -> Promise<URL>
+    func saveToFilesApp(file: FileType, from viewController: UIViewController & UIDocumentPickerDelegate) -> Promise<Void>
 }
 
 class FilesManager: FilesManagerType {
@@ -26,8 +28,8 @@ class FilesManager: FilesManagerType {
 
     private let queue: DispatchQueue = DispatchQueue.global(qos: .background)
 
-    func save(file: FileType) -> Promise<Void> {
-        Promise<Void> { [weak self] resolve, reject in
+    func save(file: FileType) -> Promise<URL> {
+        Promise<URL> { [weak self] resolve, reject in
             guard let self = self else {
                 throw AppErr.nilSelf
             }
@@ -37,10 +39,28 @@ class FilesManager: FilesManagerType {
 
                 do {
                     try file.data.write(to: url)
-                    resolve(())
+                    resolve(url)
                 } catch {
                     reject(error)
                 }
+            }
+        }
+    }
+
+    func saveToFilesApp(
+        file: FileType,
+        from viewController: UIViewController & UIDocumentPickerDelegate
+    ) -> Promise<Void> {
+        Promise<Void> { [weak self] resolve, _ in
+            guard let self = self else {
+                throw AppErr.nilSelf
+            }
+            let url = try? awaitPromise(self.save(file: file))
+            DispatchQueue.main.async {
+                let documentController = UIDocumentPickerViewController(url: url!, in: .exportToService)
+                documentController.delegate = viewController
+                viewController.present(documentController, animated: true)
+                resolve(())
             }
         }
     }

@@ -5,6 +5,7 @@
 "retry_title" = "retry";
 "ok" = "Ok";
 "cancel" = "Cancel";
+"open" = "Open";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -18,7 +19,8 @@
 "message_compose_secure" = "Compose Secure Message";
 "message_unknown_sender" = "(unknown sender)";
 "message_missed_subject" = "No subject";
-"message_attachment_saved_successfully" = "Attachemt was saved";
+"message_attachment_saved_successfully_title" = "Attachment Saved";
+"message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved.";
 
 // REPLY
