@@ -37,7 +37,7 @@ final class EncryptedStorage: EncryptedStorageType {
         var version: SchemaVersion {
             switch self {
             case .initial:
-                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 3)
+                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 4)
             }
         }
     }
