@@ -9,6 +9,10 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+/**
+ * View controller which shows information about public key
+ * - User can be redirected here from settings *KeyDetailViewController*
+ */
 final class PublicKeyDetailViewController: TableNodeViewController {
     private let text: String
 
