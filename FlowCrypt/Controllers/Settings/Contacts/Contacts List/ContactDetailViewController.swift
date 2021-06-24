@@ -9,6 +9,10 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+/**
+ * View controller which shows contacts details(information about ids, fingerprints...)
+ * - User can be redirected here from settings *ContactsListViewController*
+ */
 final class ContactDetailViewController: TableNodeViewController {
     typealias ContactDetailAction = (Action) -> Void
 
