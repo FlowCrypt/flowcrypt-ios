@@ -32,7 +32,7 @@ extension GmailService: RemoteFoldersProviderType {
 
                 // TODO: - TOM - Implement categories if needed
                 let folders = labels
-                    .compactMap { (label) -> GTLRGmail_Label? in
+                    .compactMap { label -> GTLRGmail_Label? in
                         guard let identifier = label.identifier, identifier.isNotEmpty else {
                             logger.logInfo("skip label with \(label.identifier ?? "")")
                             return nil

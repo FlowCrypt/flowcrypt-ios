@@ -22,12 +22,19 @@ public final class AttachmentNode: CellNode {
     private let buttonNode = ASButtonNode()
     private let borderNode = ASDisplayNode()
     
-    public init(input: Input) {
+    private var onDownloadTap: (() -> Void)?
+    
+    public init(
+        input: Input,
+        onDownloadTap: (() -> Void)?
+    ) {
+        self.onDownloadTap = onDownloadTap
         super.init()
-        
+        automaticallyManagesSubnodes = true
         borderNode.borderWidth = 1.0
         borderNode.cornerRadius = 8.0
         borderNode.borderColor = UIColor.lightGray.cgColor
+        borderNode.isUserInteractionEnabled = false
 
         imageNode.tintColor = .gray
         buttonNode.tintColor = .gray
@@ -36,6 +43,13 @@ public final class AttachmentNode: CellNode {
         buttonNode.setImage(UIImage(named: "download")?.tinted(.gray), for: .normal)
         titleNode.attributedText = input.name
         subtitleNode.attributedText = input.size
+        
+        buttonNode.addTarget(self, action: #selector(onDownloadButtonTap), forControlEvents: .touchUpInside)
+        
+    }
+    
+    @objc private func onDownloadButtonTap() {
+        onDownloadTap?()
     }
     
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {

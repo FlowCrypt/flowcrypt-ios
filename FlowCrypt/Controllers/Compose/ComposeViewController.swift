@@ -476,7 +476,7 @@ extension ComposeViewController {
         .onShouldReturn { [weak self] textField -> Bool in
             self?.shouldReturn(with: textField) ?? true
         }
-        .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
+        .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
             self?.shouldChange(with: textField, and: character) ?? true
         }
         .then {
