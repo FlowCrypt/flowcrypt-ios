@@ -15,7 +15,7 @@ public extension URL {
         let urlString = self.absoluteString
         let sharedDocumentUrlString = urlString.replacingOccurrences(
             of: scheme,
-            with: "shareddocuments://"
+            with: "shareddocuments"
         )
         
         return URL(string: sharedDocumentUrlString)
