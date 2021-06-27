@@ -68,7 +68,7 @@ final class KeyService: KeyServiceType {
 
         // get all private keys with already saved pass phrases
         var privateKeys = keysInfo
-            .compactMap { (keyInfo) -> PrvKeyInfo? in
+            .compactMap { keyInfo -> PrvKeyInfo? in
                 guard let passPhrase = storedPassPhrases.first(where: { $0.longid == keyInfo.longid }) else {
                     return nil
                 }

@@ -9,6 +9,12 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+/**
+ * User settings view controller
+ * - Shows list of possible settings(backups, privacy, contacts, keys, atteseter, notifications, legal, experimental)
+ * - User can be redirected here from side menu
+ * - Tap on each row will navigate user to appropriate settings controller
+ */
 final class SettingsViewController: TableNodeViewController {
     private enum Settings: Int, CaseIterable {
         case backups, privacy, contacts, keys, atteseter, notifications, legal, experimental

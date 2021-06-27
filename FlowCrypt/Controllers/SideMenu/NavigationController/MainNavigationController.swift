@@ -17,6 +17,9 @@ final class MainNavigationController: ASNavigationController {
     }
 }
 
+/**
+ * Default  styled UINavigationController for the app
+ */
 extension MainNavigationController: UINavigationControllerDelegate {
     func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated _: Bool) {
         viewController.navigationItem.hidesBackButton = true

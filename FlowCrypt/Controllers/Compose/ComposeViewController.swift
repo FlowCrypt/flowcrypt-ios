@@ -7,6 +7,11 @@ import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
+/**
+ * View controller to compose the message and send it
+ * - User can be redirected here from *InboxViewController* by tapping on *+*
+ * - Or from *MessageViewController* controller by tapping on *reply*
+ */
 final class ComposeViewController: TableNodeViewController {
     struct Recipient {
         let email: String
@@ -471,7 +476,7 @@ extension ComposeViewController {
         .onShouldReturn { [weak self] textField -> Bool in
             self?.shouldReturn(with: textField) ?? true
         }
-        .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
+        .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
             self?.shouldChange(with: textField, and: character) ?? true
         }
         .then {

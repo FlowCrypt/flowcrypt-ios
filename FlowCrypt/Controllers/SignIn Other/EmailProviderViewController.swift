@@ -10,6 +10,11 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Promises
 
+/**
+ * Controller that gives a possibility for the user to enter information about his email provider like, account, imap/smtp information
+ * - User redirects here from SignInViewController
+ * - After successful connection user will be redirected to *setup flow* which would typically means *SetupInitialViewController*
+ */
 final class EmailProviderViewController: TableNodeViewController {
     private enum UserError: Error {
         case password
@@ -261,10 +266,11 @@ extension EmailProviderViewController {
     }
 
     private func buttonNode() -> ButtonCellNode {
-        ButtonCellNode(
+        let input = ButtonCellNode.Input(
             title: decorator.connectButtonTitle,
             insets: decorator.connectButtonInsets
-        ) { [weak self] in
+        )
+        return ButtonCellNode(input: input) { [weak self] in
             self?.connect()
         }
     }

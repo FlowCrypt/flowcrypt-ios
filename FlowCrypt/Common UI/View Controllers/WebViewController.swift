@@ -9,6 +9,9 @@
 import UIKit
 import WebKit
 
+/**
+ * InApp WebViewController to show web content. Used for showing privacy policy etc in splash screen and settings
+ */
 final class WebViewController: UIViewController {
     private lazy var webView = WKWebView()
 

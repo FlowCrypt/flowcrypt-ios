@@ -22,6 +22,13 @@ enum CreateKeyError: Error {
     case conformingPassPhraseError
 }
 
+/**
+ * Controller which is responsible for generating a new key during setup
+ * - User is sent here from **SetupInitialViewController** in case there are no backups found
+ * - Here user can enter a pass phrase (can be saved in memory or in encrypted storage) and generate a key
+ * - After key is generated, user will be redirected to **main flow** (inbox view)
+ */
+
 final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseSaveable {
     enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle

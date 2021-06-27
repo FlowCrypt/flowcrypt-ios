@@ -10,9 +10,11 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-// MARK: - InboxViewControllerContainer
-// Used to fetch folders and get correct path for "inbox" folder
-final class InboxViewControllerContainer: TableNodeViewController {
+/**
+ * View controller which serves as intermediate controller
+ * - Used to fetch folders and get correct path for "inbox" folder
+ */
+final class InboxViewContainerController: TableNodeViewController {
     private let inbox = "inbox"
 
     private enum InboxViewControllerContainerError: Error {
@@ -102,7 +104,7 @@ final class InboxViewControllerContainer: TableNodeViewController {
     }
 }
 
-extension InboxViewControllerContainer: ASTableDelegate, ASTableDataSource {
+extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         switch state {
         case .empty, .loading:

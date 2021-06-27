@@ -10,9 +10,10 @@ import Foundation
 import Promises
 
 // MARK: - MessageAttachment
-struct MessageAttachment {
+struct MessageAttachment: FileType {
     let name: String
     let size: Int
+    let data: Data
 }
 
 // MARK: - ProcessedMessage
@@ -162,5 +163,6 @@ private extension MessageAttachment {
     init(block: MsgBlock) {
         self.name = block.attMeta?.name ?? "Attachment"
         self.size = block.attMeta?.length ?? 0
+        self.data = block.attMeta?.data ?? Data()
     }
 }

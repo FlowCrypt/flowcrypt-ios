@@ -9,6 +9,10 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+/**
+ * View controller which shows information about our own private and public key details (key words, fingerprint ...)
+ * - User can be redirected here from *KeyDetailViewController*
+ */
 final class KeyDetailInfoViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
         case keyWord, fingerptint, longId, date, users, separator
