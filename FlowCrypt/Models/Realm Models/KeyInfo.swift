@@ -36,7 +36,12 @@ final class KeyInfo: Object {
         self.`public` = keyDetails.public
         self.longid = keyDetails.longid
         self.source = source.rawValue
-        self.account = keyDetails.users.first ?? ""
+        if let account = keyDetails.users.first {
+            self.account = account
+        } else {
+            Logger.logError("Key Details users is empty for \(keyDetails.longid)")
+            self.account = ""
+        }
     }
 
     override class func primaryKey() -> String? {
