@@ -13,12 +13,24 @@ enum KeySource: String {
 enum KeyInfoError: Error {
     case missedPrivateKey(String)
     case notEncrypted(String)
+    case missedKeyIds
 }
 
 final class KeyInfo: Object {
+    var primaryFingerprint: String? {
+        allFingerprints.first
+    }
+    var primaryLongid: String {
+        // explicitly force unwrap
+        allLongids.first!
+    }
+
     @objc dynamic var `private`: String = ""
     @objc dynamic var `public`: String = ""
-    @objc dynamic var longid: String = ""
+
+    let allFingerprints = List<String>()
+    let allLongids = List<String>()
+
     @objc dynamic var source: String = ""
     @objc dynamic var account: String = ""
 
@@ -32,9 +44,15 @@ final class KeyInfo: Object {
             assertionFailure("Will not store Private Key that is not fully encrypted") // crash tests
             throw KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
+        guard keyDetails.ids.isNotEmpty else {
+            assertionFailure("KeyDetails KeyIds should not be empty")
+            throw KeyInfoError.missedKeyIds
+        }
+
         self.`private` = privateKey
         self.`public` = keyDetails.public
-        self.longid = keyDetails.longid
+        self.allFingerprints.append(objectsIn: keyDetails.ids.map(\.fingerprint))
+        self.allLongids.append(objectsIn: keyDetails.ids.map(\.longid))
         self.source = source.rawValue
         self.account = keyDetails.users.first ?? ""
     }
@@ -44,6 +62,6 @@ final class KeyInfo: Object {
     }
 
     override var description: String {
-        "account = \(account) ####### longid = \(longid)"
+        "account = \(account) ####### longid = \(primaryLongid)"
     }
 }

@@ -9,25 +9,14 @@
 import FlowCryptCommon
 import UIKit
 
-protocol KeyDetailInfoViewDecoratorType {
-    var insets: UIEdgeInsets { get }
-    var dividerInsets: UIEdgeInsets { get }
-
-    func attributedTitle(
-        for part: KeyDetailInfoViewController.Parts,
-        keyId: KeyId,
-        date: Date,
-        user: String
-    ) -> NSAttributedString
-}
-
-struct KeyDetailInfoViewDecorator: KeyDetailInfoViewDecoratorType {
+struct KeyDetailInfoViewDecorator {
     let insets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
     let dividerInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
 
     func attributedTitle(
         for part: KeyDetailInfoViewController.Parts,
         keyId: KeyId,
+        keywords: String,
         date: Date,
         user: String
     ) -> NSAttributedString {
@@ -36,7 +25,8 @@ struct KeyDetailInfoViewDecorator: KeyDetailInfoViewDecoratorType {
         case .keyWord:
             title = "key_settings_detail_key_words".localized + ":" + " "
             return title.attributed(.medium(16))
-                + keyId.keywords.attributed(.regular(16), color: .main)
+            // TODO: - Tom?
+                // + keyId.keywords.attributed(.regular(16), color: .main)
         case .fingerptint:
             title = "key_settings_detail_fingerprint".localized + ":" + " "
 

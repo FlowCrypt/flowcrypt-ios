@@ -23,12 +23,12 @@ final class KeyDetailInfoViewController: TableNodeViewController {
         }
     }
 
-    private let decorator: KeyDetailInfoViewDecoratorType
+    private let decorator: KeyDetailInfoViewDecorator
     private let key: KeyDetails
 
     init(
         key: KeyDetails,
-        decorator: KeyDetailInfoViewDecoratorType = KeyDetailInfoViewDecorator()
+        decorator: KeyDetailInfoViewDecorator = KeyDetailInfoViewDecorator()
     ) {
         self.key = key
         self.decorator = decorator
@@ -60,7 +60,7 @@ extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self,
                 let part = Parts(rawValue: indexPath.row),
                 let keyId = self.key.ids[safe: indexPath.section]
@@ -71,6 +71,7 @@ extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
             let title = self.decorator.attributedTitle(
                 for: part,
                 keyId: keyId,
+                keywords: "",
                 date: self.key.created.toDate(),
                 user: self.key.users.joined(separator: " ")
             )
