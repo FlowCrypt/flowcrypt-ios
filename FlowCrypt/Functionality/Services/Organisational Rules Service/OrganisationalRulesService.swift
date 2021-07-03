@@ -10,8 +10,10 @@ import Foundation
 import Promises
 
 protocol OrganisationalRulesServiceType {
-    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules>
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules>
+    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules?>
+    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules?>
+
+    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules?
 }
 
 final class OrganisationalRulesService {
@@ -31,30 +33,30 @@ final class OrganisationalRulesService {
 // MARK: - OrganisationalRulesServiceType
 extension OrganisationalRulesService: OrganisationalRulesServiceType {
 
-    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules> {
+    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules?> {
         guard let currentUser = DataService.shared.currentUser else {
-            return Promise<OrganisationalRules> { _, reject in
+            return Promise<OrganisationalRules?> { _, reject in
                 reject(OrganisationalRulesServiceError.noCurrentUser)
             }
         }
         return fetchOrganisationalRules(for: currentUser.email)
     }
 
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules> {
-        Promise<OrganisationalRules> { [weak self] resolve, reject in
+    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules?> {
+        Promise<OrganisationalRules?> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
 
             guard let clientConfigurationResponse = try awaitPromise(
                     self.enterpriseServerApi.getClientConfiguration(for: email)
             ) else {
-                reject(OrganisationalRulesServiceError.parse)
+                resolve(nil)
                 return
             }
             guard let organisationalRules = OrganisationalRules(
                     clientConfiguration: clientConfigurationResponse,
                     email: email
             ) else {
-                reject(OrganisationalRulesServiceError.emailFormat)
+                resolve(nil)
                 return
             }
 
@@ -62,5 +64,18 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
 
             resolve(organisationalRules)
         }
+    }
+
+    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules? {
+        guard let currentUser = DataService.shared.currentUser,
+              let configuration = self.clientConfigurationProvider.fetch()
+        else {
+            return nil
+        }
+
+        return OrganisationalRules(
+            clientConfiguration: configuration,
+            email: currentUser.email
+        )
     }
 }

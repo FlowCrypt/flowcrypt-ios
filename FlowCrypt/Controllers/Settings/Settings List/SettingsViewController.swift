@@ -31,17 +31,35 @@ final class SettingsViewController: TableNodeViewController {
             case .experimental: return "settings_screen_experimental".localized
             }
         }
+
+        static func allCases(with rules: OrganisationalRules?) -> [Settings] {
+            guard let rules = rules else {
+                return allCases
+            }
+            let cases: [Settings]
+            if !rules.canBackupKeys {
+                cases = [.privacy, .contacts, .keys, .atteseter, .notifications, .legal, .experimental]
+            } else {
+                cases = allCases
+            }
+            return cases
+        }
     }
 
     private let decorator: SettingsViewDecoratorType
     private let currentUser: User?
+    private let organisationalRules: OrganisationalRules?
+    private let rows: [Settings]
 
     init(
         decorator: SettingsViewDecoratorType = SettingsViewDecorator(),
-        currentUser: User? = DataService.shared.currentUser
+        currentUser: User? = DataService.shared.currentUser,
+        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()
     ) {
         self.decorator = decorator
         self.currentUser = currentUser
+        self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
+        self.rows = Settings.allCases(with: self.organisationalRules)
         super.init(node: TableNode())
     }
 
@@ -71,13 +89,13 @@ final class SettingsViewController: TableNodeViewController {
 
 extension SettingsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        Settings.allCases.count
+        rows.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
-            guard let self = self, let setting = Settings(rawValue: indexPath.row) else { return ASCellNode() }
-
+            guard let self = self else { return ASCellNode() }
+            let setting = self.rows[indexPath.row]
             return SettingsCellNode(
                 title: self.decorator.attributedSetting(setting.title),
                 insets: self.decorator.insets
@@ -86,7 +104,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard let setting = Settings(rawValue: indexPath.row) else { return assertionFailure() }
+        let setting = rows[indexPath.row]
         proceed(to: setting)
     }
 }
@@ -105,7 +123,9 @@ extension SettingsViewController {
         case .contacts:
             viewController = ContactsListViewController()
         case .backups:
-            guard let currentUser = currentUser else {
+            guard let currentUser = currentUser,
+                  let organisationalRules = self.organisationalRules,
+                  !organisationalRules.canBackupKeys else {
                 viewController = nil
                 return
             }

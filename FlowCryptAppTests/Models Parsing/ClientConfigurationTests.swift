@@ -72,4 +72,23 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssert(model?.keyManagerUrl == nil)
         XCTAssert(model?.disallowAttesterSearchForDomains == nil)
     }
+    
+    func test_client_configuraion_with_unknown_flag_json_parse() {
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "client_configuraion_with_unknown_flag", ofType: "json")!)
+        let data = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
+        
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        
+        XCTAssert(model?.flags != nil)
+        XCTAssert(model?.customKeyserverUrl != nil)
+        XCTAssert(model?.keyManagerUrl != nil)
+        XCTAssert(model?.disallowAttesterSearchForDomains != nil)
+        XCTAssert(model?.enforceKeygenAlgo != nil)
+        XCTAssert(model?.enforceKeygenExpireMonths != nil)
+        
+        XCTAssert(model?.flags?.contains(.unknown) == true)
+    }
 }
