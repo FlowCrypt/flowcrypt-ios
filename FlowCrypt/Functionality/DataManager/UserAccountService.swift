@@ -98,7 +98,7 @@ extension UserAccountService: UserAccountServiceType {
 
     func cleanupSessions() {
         logger.logInfo("Clean up sessions")
-        
+
         encryptedStorage.getAllUsers()
             .filter {
                 !encryptedStorage.doesAnyKeyExist(for: $0.email)
@@ -119,7 +119,7 @@ extension UserAccountService: UserAccountServiceType {
     @discardableResult
     private func switchActiveSession(for userObject: UserObject) -> SessionType? {
         logger.logInfo("Try to switch session for \(userObject.email)")
-        
+
         let sessionType: SessionType
         switch userObject.authType {
         case .oAuthGmail(let token):
@@ -146,7 +146,7 @@ extension UserAccountService: UserAccountServiceType {
 
     private func logOut(user email: String) {
         logger.logInfo("Log out user with \(email)")
-        
+
         switch dataService.currentAuthType {
         case .oAuthGmail:
             googleService.signOut(user: email)

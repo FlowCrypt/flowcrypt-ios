@@ -10,7 +10,7 @@ import Foundation
 
 final class KeyDataStorage {
     private lazy var logger = Logger.nested(Self.self)
-    
+
     private let encryptedStorage: EncryptedStorageType
 
     init(
@@ -34,7 +34,10 @@ extension KeyDataStorage: KeyStorageType {
     }
 
     func addKeys(keyDetails: [KeyDetails], source: KeySource) {
+        debugPrint("Tom: keyDetails \(keyDetails)")
+
         keyDetails.forEach {
+            debugPrint("Tom: keyDetails - Add keys for \($0.users)")
             logger.logInfo("Add keys for \($0.users)")
         }
         encryptedStorage.addKeys(keyDetails: keyDetails, source: source)

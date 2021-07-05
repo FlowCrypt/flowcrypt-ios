@@ -9,7 +9,7 @@
 import FlowCryptCommon
 import Foundation
 
-struct KeyDetails: Decodable {
+struct KeyDetails: Decodable, CustomStringConvertible {
     let `public`: String
     let `private`: String? // ony if this is prv
     let isFullyDecrypted: Bool? // only if this is prv
@@ -21,6 +21,10 @@ struct KeyDetails: Decodable {
 
     var longid: String {
         ids.first?.longid ?? ""
+    }
+
+    var description: String {
+        "public = \(`public`) ### ids = \(ids) ### users = \(users) ### algo = \(algo.debugDescription)"
     }
 }
 
