@@ -192,8 +192,8 @@ extension EncryptedStorage {
 
     func doesAnyKeyExist(for email: String) -> Bool {
         keysInfo()
-            .compactMap(\.user)
-            .map { $0.email.contains(email) }
+            .map(\.account)
+            .map { $0 == email }
             .contains(true)
     }
 
