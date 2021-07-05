@@ -152,7 +152,7 @@ extension SetupBackupsViewController {
             }
 
         // save keys
-        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups), source: .backup)
+        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups), source: .backup, for: user.email)
 
         moveToMainFlow()
     }
