@@ -70,6 +70,6 @@ extension CheckBoxTextNode.Input {
     }
 
     static func passPhraseMemory(isSelected: Bool) -> CheckBoxTextNode.Input {
-        Self.common(with: "setup_save_pass_in_memory".localized, isSelected: isSelected)
+        Self.common(with: "setup_save_pass_temporarily".localized, isSelected: isSelected)
     }
 }
