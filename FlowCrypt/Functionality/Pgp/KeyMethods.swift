@@ -40,7 +40,7 @@ final class KeyMethods: KeyMethodsType {
             }
 
             guard decrypted.decryptedKey != nil else {
-                logger.logInfo("Filtered. decryptedKey = nil")
+                logger.logInfo("Filtered. decryptedKey = nil for key \(key.longid)")
                 return nil
             }
 

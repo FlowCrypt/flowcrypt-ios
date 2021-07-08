@@ -9,15 +9,20 @@
 import Foundation
 import Promises
 
+private let logger = Logger.nested("AppStart")
+
 struct AppStartup {
     private enum EntryPoint {
         case signIn, setupFlow(UserId), mainFlow
     }
 
     func initializeApp(window: UIWindow, session: SessionType?) {
+        logger.logInfo("Initialize application with session \(session.debugDescription)")
+
         DispatchQueue.promises = .global()
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
+
         Promise<Void> {
             try awaitPromise(self.setupCore())
             try self.setupMigrationIfNeeded()
@@ -32,6 +37,7 @@ struct AppStartup {
 
     private func setupCore() -> Promise<Void> {
         Promise { resolve, _ in
+            logger.logInfo("Setup Core")
             Core.shared.startInBackgroundIfNotAlreadyRunning {
                 resolve(())
             }
@@ -39,10 +45,12 @@ struct AppStartup {
     }
 
     private func setupMigrationIfNeeded() throws {
+        logger.logInfo("Setup Migration")
         try awaitPromise(DataService.shared.performMigrationIfNeeded())
     }
 
     private func setupSession() throws {
+        logger.logInfo("Setup Session")
         try awaitPromise(renewSessionIfValid())
     }
 
@@ -54,10 +62,7 @@ struct AppStartup {
     }
 
     private func chooseView(for window: UIWindow, session: SessionType?) {
-        guard let entryPoint = entryPointForUser(session: session) else {
-            assertionFailure("Internal error, can't choose desired entry point")
-            return
-        }
+        let entryPoint = entryPointForUser(session: session)
 
         let viewController: UIViewController
 
@@ -74,14 +79,18 @@ struct AppStartup {
         window.rootViewController = viewController
     }
 
-    private func entryPointForUser(session: SessionType?) -> EntryPoint? {
+    private func entryPointForUser(session: SessionType?) -> EntryPoint {
         if !DataService.shared.isLoggedIn {
+            logger.logInfo("User is not logged in -> signIn")
             return .signIn
         } else if DataService.shared.isSetupFinished {
+            logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
         } else if let session = session, let userId = makeUserIdForSetup(session: session) {
+            logger.logInfo("User with session \(session) -> setupFlow")
             return .setupFlow(userId)
         } else {
+            logger.logInfo("User us not signed in -> mainFlow")
             return .signIn
         }
     }
@@ -95,6 +104,7 @@ struct AppStartup {
 
     private func makeUserIdForSetup(session: SessionType) -> UserId? {
         guard let currentUser = DataService.shared.currentUser else {
+            Logger.logInfo("Can't create user id for setup")
             return nil
         }
 
@@ -103,13 +113,17 @@ struct AppStartup {
         switch session {
         case let .google(email, name, _):
             guard currentUser.email != email else {
+                Logger.logInfo("UserId = current user id")
                 return userId
             }
+            Logger.logInfo("UserId = google user id")
             userId = UserId(email: email, name: name)
         case let .session(userObject):
             guard userObject.email != currentUser.email else {
+                Logger.logInfo("UserId = current user id")
                 return userId
             }
+            Logger.logInfo("UserId = session user id")
             userId = UserId(email: userObject.email, name: userObject.name)
         }
 

@@ -53,6 +53,7 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
+    private lazy var logger = Logger.nested(Self.self)
 
     private let currentSchema: EncryptedStorageSchema = .initial
     private let supportedSchemas = EncryptedStorageSchema.allCases
@@ -107,17 +108,17 @@ extension EncryptedStorage: LogOutHandler {
             let userToDelete = users
                 .filter { $0.email == email }
             let keys = storage.objects(KeyInfo.self)
-                .filter { $0.account.contains(email) }
+                .filter { $0.account == email }
             let passPhrases = storage.objects(PassPhraseObject.self)
                 .filter { keys.map(\.longid).contains($0.longid) }
             let sessions = storage.objects(SessionObject.self)
                 .filter { $0.email == email }
 
             try storage.write {
-                storage.delete(userToDelete)
                 storage.delete(keys)
                 storage.delete(sessions)
                 storage.delete(passPhrases)
+                storage.delete(userToDelete)
             }
         }
     }
@@ -154,18 +155,26 @@ extension EncryptedStorage {
 
 // MARK: - Keys
 extension EncryptedStorage {
-    func addKeys(keyDetails: [KeyDetails], source: KeySource) {
+    func addKeys(keyDetails: [KeyDetails], source: KeySource, for email: String) {
+        guard let user = storage.objects(UserObject.self).first(where: { $0.email == email }) else {
+            logger.logError("Can't find user with given email to add keys. User should be already saved")
+            return
+        }
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, source: source))
+                storage.add(try! KeyInfo(key, source: source, user: user))
             }
         }
     }
 
-    func updateKeys(keyDetails: [KeyDetails], source: KeySource) {
+    func updateKeys(keyDetails: [KeyDetails], source: KeySource, for email: String) {
+        guard let user = getUserObject(for: email) else {
+            logger.logError("Can't find user with given email to update keys. User should be already saved")
+            return
+        }
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, source: source), update: .all)
+                storage.add(try! KeyInfo(key, source: source, user: user), update: .all)
             }
         }
     }
@@ -184,8 +193,12 @@ extension EncryptedStorage {
     func doesAnyKeyExist(for email: String) -> Bool {
         keysInfo()
             .map(\.account)
-            .map { $0.contains(email) }
+            .map { $0 == email }
             .contains(true)
+    }
+
+    private func getUserObject(for email: String) -> UserObject? {
+        storage.objects(UserObject.self).first(where: { $0.email == email })
     }
 }
 
