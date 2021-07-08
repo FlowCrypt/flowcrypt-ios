@@ -15,7 +15,7 @@ import FlowCryptUI
  */
 final class KeyDetailInfoViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
-        case keyWord, fingerptint, longId, date, users, separator
+        case fingerprint, longId, date, users, separator
 
         var isSeparator: Bool {
             guard case .separator = self else { return false }
@@ -71,7 +71,6 @@ extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
             let title = self.decorator.attributedTitle(
                 for: part,
                 keyId: keyId,
-                keywords: "",
                 date: self.key.created.toDate(),
                 user: self.key.users.joined(separator: " ")
             )

@@ -9,12 +9,6 @@
 import FlowCryptCommon
 import Foundation
 
-protocol KeySettingsViewDecoratorType {
-    func attributedUsers(key: KeyDetails) -> NSAttributedString
-    func attributedKeyWords(key: KeyDetails) -> NSAttributedString
-    func attributedDateCreated(key: KeyDetails) -> NSAttributedString
-}
-
 extension DateFormatter {
     static let keySettingsFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -24,27 +18,27 @@ extension DateFormatter {
     }()
 }
 
-struct KeySettingsViewDecorator: KeySettingsViewDecoratorType {
+struct KeySettingsViewDecorator {
     private let dateFormatter: DateFormatter
 
     init(dateFormatter: DateFormatter = .keySettingsFormatter) {
         self.dateFormatter = dateFormatter
     }
 
-    func attributedUsers(key: KeyDetails) -> NSAttributedString {
+    func attributedUsers(with key: KeyDetails) -> NSAttributedString {
         key.users
             .joined(separator: " ")
             .attributed(.medium(16))
     }
 
-    func attributedKeyWords(key: KeyDetails) -> NSAttributedString {
+    func attributedFingerprints(with key: KeyDetails) -> NSAttributedString {
         key.ids
             .compactMap { $0.fingerprint.separate(every: 4, with: " ") }
             .joined(separator: "\n")
             .attributed(.regular(14), color: .main)
     }
 
-    func attributedDateCreated(key: KeyDetails) -> NSAttributedString {
+    func attributedDateCreated(with key: KeyDetails) -> NSAttributedString {
         dateFormatter.string(from: key.created.toDate())
             .attributed(.medium(12))
     }

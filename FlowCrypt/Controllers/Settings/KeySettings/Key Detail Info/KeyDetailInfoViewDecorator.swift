@@ -16,18 +16,12 @@ struct KeyDetailInfoViewDecorator {
     func attributedTitle(
         for part: KeyDetailInfoViewController.Parts,
         keyId: KeyId,
-        keywords: String,
         date: Date,
         user: String
     ) -> NSAttributedString {
         let title: String
         switch part {
-        case .keyWord:
-            title = "key_settings_detail_key_words".localized + ":" + " "
-            return title.attributed(.medium(16))
-            // TODO: - Tom?
-                // + keyId.keywords.attributed(.regular(16), color: .main)
-        case .fingerptint:
+        case .fingerprint:
             title = "key_settings_detail_fingerprint".localized + ":" + " "
 
             return title.attributed(.medium(16))

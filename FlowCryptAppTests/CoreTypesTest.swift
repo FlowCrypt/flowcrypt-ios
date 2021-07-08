@@ -19,10 +19,8 @@ class CoreTypesTest: XCTestCase {
             isFullyEncrypted: false,
             ids: [
                 KeyId(
-                    shortid: "shortid1",
                     longid: "longid",
-                    fingerprint: "SAMEFINGERPRINT",
-                    keywords: "keywords"
+                    fingerprint: "SAMEFINGERPRINT"
                 )
             ],
             created: 0,
@@ -36,10 +34,8 @@ class CoreTypesTest: XCTestCase {
             isFullyEncrypted: false,
             ids: [
                 KeyId(
-                    shortid: "shortid2",
                     longid: "longid2",
-                    fingerprint: "SAMEFINGERPRINT",
-                    keywords: "keywords2"
+                    fingerprint: "SAMEFINGERPRINT"
                 )
             ],
             created: 0,
@@ -63,16 +59,12 @@ class CoreTypesTest: XCTestCase {
 
     func test_key_ids_with_same_fingerprint() {
         let key1 = KeyId(
-            shortid: "shortid1",
             longid: "longid1",
-            fingerprint: "SAMEFINGERPRINT",
-            keywords: "keywords1"
+            fingerprint: "SAMEFINGERPRINT"
         )
         let key2 = KeyId(
-            shortid: "shortid2",
             longid: "longid2",
-            fingerprint: "SAMEFINGERPRINT",
-            keywords: "keywords2"
+            fingerprint: "SAMEFINGERPRINT"
         )
         let keys = [key1, key2]
 
