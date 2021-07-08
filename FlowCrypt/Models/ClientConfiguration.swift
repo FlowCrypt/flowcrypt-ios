@@ -39,6 +39,20 @@ struct ClientConfiguration: Codable, Equatable {
     let enforceKeygenExpireMonths: Int?
 }
 
+// MARK: - Empty model
+extension ClientConfiguration {
+    static var empty: ClientConfiguration {
+        return ClientConfiguration(
+            flags: [],
+            customKeyserverUrl: nil,
+            keyManagerUrl: nil,
+            disallowAttesterSearchForDomains: nil,
+            enforceKeygenAlgo: nil,
+            enforceKeygenExpireMonths: nil
+        )
+    }
+}
+
 // MARK: - Map from realm model
 extension ClientConfiguration {
     init?(_ object: ClientConfigurationObject?) {

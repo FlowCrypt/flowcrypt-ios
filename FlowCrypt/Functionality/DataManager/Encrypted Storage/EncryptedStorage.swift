@@ -113,12 +113,15 @@ extension EncryptedStorage: LogOutHandler {
                 .filter { keys.map(\.longid).contains($0.longid) }
             let sessions = storage.objects(SessionObject.self)
                 .filter { $0.email == email }
+            let clientConfigurations = storage.objects(ClientConfigurationObject.self)
+                .filter { $0.userEmail == email }
 
             try storage.write {
                 storage.delete(keys)
                 storage.delete(sessions)
                 storage.delete(passPhrases)
                 storage.delete(userToDelete)
+                storage.delete(clientConfigurations)
             }
         }
     }

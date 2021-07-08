@@ -13,19 +13,8 @@ import Foundation
 class OrganisationalRules {
 
     private let clientConfiguration: ClientConfiguration
-    let domain: String
 
-    init(clientConfiguration: ClientConfiguration, domain: String) {
-        self.clientConfiguration = clientConfiguration
-        self.domain = domain
-    }
-
-    init?(clientConfiguration: ClientConfiguration, email: String) {
-        guard let recipientDomain = email.recipientDomain else {
-            return nil
-        }
-
-        self.domain = recipientDomain
+    init(clientConfiguration: ClientConfiguration) {
         self.clientConfiguration = clientConfiguration
     }
 

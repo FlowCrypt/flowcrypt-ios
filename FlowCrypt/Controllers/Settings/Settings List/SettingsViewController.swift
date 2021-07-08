@@ -32,10 +32,7 @@ final class SettingsViewController: TableNodeViewController {
             }
         }
 
-        static func allCases(with rules: OrganisationalRules?) -> [SettingsMenuItem] {
-            guard let rules = rules else {
-                return allCases
-            }
+        static func filtered(with rules: OrganisationalRules) -> [SettingsMenuItem] {
             var cases = SettingsMenuItem.allCases
 
             if !rules.canBackupKeys {
@@ -48,7 +45,7 @@ final class SettingsViewController: TableNodeViewController {
 
     private let decorator: SettingsViewDecoratorType
     private let currentUser: User?
-    private let organisationalRules: OrganisationalRules?
+    private let organisationalRules: OrganisationalRules
     private let rows: [SettingsMenuItem]
 
     init(
@@ -59,7 +56,7 @@ final class SettingsViewController: TableNodeViewController {
         self.decorator = decorator
         self.currentUser = currentUser
         self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
-        self.rows = SettingsMenuItem.allCases(with: self.organisationalRules)
+        self.rows = SettingsMenuItem.filtered(with: self.organisationalRules)
         super.init(node: TableNode())
     }
 
@@ -125,7 +122,6 @@ extension SettingsViewController {
             viewController = ContactsListViewController()
         case .backups:
             guard let currentUser = currentUser,
-                  let organisationalRules = self.organisationalRules,
                   !organisationalRules.canBackupKeys else {
                 viewController = nil
                 return

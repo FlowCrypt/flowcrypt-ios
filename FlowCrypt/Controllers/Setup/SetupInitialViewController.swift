@@ -53,7 +53,7 @@ final class SetupInitialViewController: TableNodeViewController {
     private let user: UserId
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
-    private let organisationalRules: OrganisationalRules?
+    private let organisationalRules: OrganisationalRules
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -106,7 +106,7 @@ extension SetupInitialViewController {
     }
 
     private func searchBackups() {
-        if organisationalRules?.canBackupKeys == false {
+        if !organisationalRules.canBackupKeys {
             logger.logInfo("Skipping backups searching because canBackupKeys == false")
             proceedToSetupWith(keys: [])
             return

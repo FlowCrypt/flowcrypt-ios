@@ -10,10 +10,10 @@ import Foundation
 import Promises
 
 protocol OrganisationalRulesServiceType {
-    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules?>
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules?>
+    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules>
+    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules>
 
-    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules?
+    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules
 }
 
 final class OrganisationalRulesService {
@@ -33,49 +33,46 @@ final class OrganisationalRulesService {
 // MARK: - OrganisationalRulesServiceType
 extension OrganisationalRulesService: OrganisationalRulesServiceType {
 
-    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules?> {
+    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules> {
         guard let currentUser = DataService.shared.currentUser else {
-            return Promise<OrganisationalRules?> { _, reject in
+            return Promise<OrganisationalRules> { _, reject in
                 reject(OrganisationalRulesServiceError.noCurrentUser)
             }
         }
         return fetchOrganisationalRules(for: currentUser.email)
     }
 
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules?> {
-        Promise<OrganisationalRules?> { [weak self] resolve, _ in
+    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules> {
+        Promise<OrganisationalRules> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
 
-            guard let clientConfigurationResponse = try awaitPromise(
-                    self.enterpriseServerApi.getClientConfiguration(for: email)
-            ) else {
-                resolve(nil)
-                return
-            }
-            guard let organisationalRules = OrganisationalRules(
-                    clientConfiguration: clientConfigurationResponse,
-                    email: email
-            ) else {
-                resolve(nil)
-                return
-            }
+            let clientConfigurationResponse = try awaitPromise(
+                self.enterpriseServerApi.getClientConfiguration(for: email)
+            )
+
+            let organisationalRules = OrganisationalRules(
+                clientConfiguration: clientConfigurationResponse
+            )
 
             self.clientConfigurationProvider.save(clientConfiguration: clientConfigurationResponse)
 
             resolve(organisationalRules)
         }
+        .recover { [weak self] error -> OrganisationalRules in
+            guard let self = self else { throw AppErr.nilSelf }
+            guard let clientConfig = self.clientConfigurationProvider.fetch() else {
+                throw error
+            }
+            return OrganisationalRules(clientConfiguration: clientConfig)
+        }
     }
 
-    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules? {
-        guard let currentUser = DataService.shared.currentUser,
-              let configuration = self.clientConfigurationProvider.fetch()
-        else {
-            return nil
+    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules {
+        guard let configuration = self.clientConfigurationProvider.fetch() else {
+            assertionFailure("There should not be a user without OrganisationalRules")
+            return OrganisationalRules(clientConfiguration: .empty)
         }
 
-        return OrganisationalRules(
-            clientConfiguration: configuration,
-            email: currentUser.email
-        )
+        return OrganisationalRules(clientConfiguration: configuration)
     }
 }

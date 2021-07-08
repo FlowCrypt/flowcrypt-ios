@@ -131,7 +131,7 @@ struct AppStartup {
     }
 
     private func showErrorAlert(with error: Error, on window: UIWindow, session: SessionType?) {
-        let alert = UIAlertController(title: "Startup Error", message: "\(error)", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Startup Error", message: "\(error.localizedDescription)", preferredStyle: .alert)
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in
             self.initializeApp(window: window, session: session)
         }
