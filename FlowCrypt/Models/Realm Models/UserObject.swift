@@ -77,3 +77,14 @@ extension User {
         self.isActive = userObject.isActive
     }
 }
+
+extension UserObject {
+    static var empty: UserObject {
+        UserObject(
+            name: "",
+            email: "",
+            imap: .empty,
+            smtp: .empty
+        )
+    }
+}

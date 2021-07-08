@@ -1,5 +1,5 @@
 //
-//  EmailProviderViewController.swift
+//  SetupImapViewController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 29/03/2020.
@@ -15,7 +15,7 @@ import Promises
  * - User redirects here from SignInViewController
  * - After successful connection user will be redirected to *setup flow* which would typically means *SetupInitialViewController*
  */
-final class EmailProviderViewController: TableNodeViewController {
+final class SetupImapViewController: TableNodeViewController {
     private enum UserError: Error {
         case password
         case empty
@@ -28,7 +28,7 @@ final class EmailProviderViewController: TableNodeViewController {
     private let dataService: DataServiceType
     private let globalRouter: GlobalRouterType
 
-    private let decorator: EmailProviderViewDecoratorType
+    private let decorator: SetupImapViewDecorator
     private let sessionCredentials: SessionCredentialsProvider
     private let imap: Imap
     private var user = UserObject.empty
@@ -36,7 +36,7 @@ final class EmailProviderViewController: TableNodeViewController {
     init(
         globalRouter: GlobalRouterType = GlobalRouter(),
         dataService: DataServiceType = DataService.shared,
-        decorator: EmailProviderViewDecoratorType = EmailProviderViewDecorator(),
+        decorator: SetupImapViewDecorator = SetupImapViewDecorator(),
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
         imap: Imap = Imap.shared
     ) {
@@ -67,7 +67,7 @@ final class EmailProviderViewController: TableNodeViewController {
 }
 
 // MARK: - Parts
-extension EmailProviderViewController {
+extension SetupImapViewController {
     enum Section {
         case account(AccountPart)
         case imap(ServerPart)
@@ -156,7 +156,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Setup
-extension EmailProviderViewController {
+extension SetupImapViewController {
     private func setupUI() {
         title = "Email Provider"
         observeKeyboardNotifications()
@@ -202,7 +202,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
-extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
+extension SetupImapViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
         Section.numberOfSections
     }
@@ -227,7 +227,7 @@ extension EmailProviderViewController: ASTableDelegate, ASTableDataSource {
 }
 
 // MARK: - Nodes
-extension EmailProviderViewController {
+extension SetupImapViewController {
     private func titleNode(for indexPath: IndexPath) -> ASCellNode {
         guard let section = Section(indexPath: indexPath) else {
             assertionFailure()
@@ -277,7 +277,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Helpers
-extension EmailProviderViewController {
+extension SetupImapViewController {
     private var connections: [ConnectionType] {
         ConnectionType.allCases
     }
@@ -310,7 +310,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Actions
-extension EmailProviderViewController {
+extension SetupImapViewController {
     private func handleTextField(_ action: TextFieldActionType, for indexPath: IndexPath) {
         guard let section = Section(indexPath: indexPath) else { return }
         selectedSection = section
@@ -461,7 +461,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Connect
-extension EmailProviderViewController {
+extension SetupImapViewController {
     private func connect() {
         let result = checkCurrentUser()
         switch result {
@@ -523,7 +523,7 @@ extension EmailProviderViewController {
 }
 
 // MARK: - Picker
-extension EmailProviderViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+extension SetupImapViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         1
     }

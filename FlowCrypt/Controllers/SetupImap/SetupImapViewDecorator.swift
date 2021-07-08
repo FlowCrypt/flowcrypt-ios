@@ -1,5 +1,5 @@
 //
-//  EmailProviderViewDecorator.swift
+//  SetupImapViewDecorator.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 29/03/2020.
@@ -9,22 +9,7 @@
 import FlowCryptUI
 import UIKit
 
-protocol EmailProviderViewDecoratorType {
-    var connectButtonTitle: NSAttributedString { get }
-    var connectButtonInsets: UIEdgeInsets { get }
-    func title(for section: EmailProviderViewController.Section) -> InfoCellNode.Input
-    func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input?
-    func stringFor(user: UserObject, for section: EmailProviderViewController.Section) -> NSAttributedString?
-    func switchInput(isOn: Bool) -> SwitchCellNode.Input
-    func shouldAddToolBar(for section: EmailProviderViewController.Section) -> Bool
-    func pickerView(
-        for: EmailProviderViewController.Section,
-        delegate: UIPickerViewDelegate,
-        dataSource: UIPickerViewDataSource
-    ) -> UIPickerView?
-}
-
-struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
+struct SetupImapViewDecorator {
     var connectButtonTitle: NSAttributedString {
         "other_provider_connect"
             .localized
@@ -47,7 +32,7 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
         )
     }
 
-    func title(for section: EmailProviderViewController.Section) -> InfoCellNode.Input {
+    func title(for section: SetupImapViewController.Section) -> InfoCellNode.Input {
         let title: String = {
             switch section {
             case .account(.title): return "other_provider_account_title"
@@ -78,8 +63,8 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
         )
     }
 
-    // swiftlint:disable cyclomatic_complexity
-    func textFieldInput(for section: EmailProviderViewController.Section) -> TextFieldCellNode.Input? {
+    // swiftlint:disable cyclomatic_complexity function_body_length
+    func textFieldInput(for section: SetupImapViewController.Section) -> TextFieldCellNode.Input? {
         let placeholder: String?
         var isSecure = false
         var keyboardType: UIKeyboardType = .default
@@ -150,7 +135,7 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
         )
     }
 
-    func stringFor(user: UserObject, for section: EmailProviderViewController.Section) -> NSAttributedString? {
+    func stringFor(user: UserObject, for section: SetupImapViewController.Section) -> NSAttributedString? {
         switch section {
         case let .account(part):
             switch part {
@@ -209,7 +194,7 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
     }
 
     func pickerView(
-        for section: EmailProviderViewController.Section,
+        for section: SetupImapViewController.Section,
         delegate: UIPickerViewDelegate,
         dataSource: UIPickerViewDataSource
     ) -> UIPickerView? {
@@ -224,7 +209,7 @@ struct EmailProviderViewDecorator: EmailProviderViewDecoratorType {
         }
     }
 
-    func shouldAddToolBar(for section: EmailProviderViewController.Section) -> Bool {
+    func shouldAddToolBar(for section: SetupImapViewController.Section) -> Bool {
         switch section {
         case .imap(.security),
              .smtp(.security),
