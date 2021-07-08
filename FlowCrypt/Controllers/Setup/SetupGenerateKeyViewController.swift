@@ -152,7 +152,7 @@ extension SetupGenerateKeyViewController {
 
             let passPhrase = PassPhrase(value: passPhrase, longid: encryptedPrv.key.longid)
 
-            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated)
+            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated, for: self.user.email)
             self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldSaveLocally)
 
             let updateKey = self.attester.updateKey(
@@ -256,6 +256,7 @@ extension SetupGenerateKeyViewController {
     }
 
     private func handleButtonAction() {
+        view.endEditing(true)
         guard let passPhrase = passPhrase, passPhrase.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return

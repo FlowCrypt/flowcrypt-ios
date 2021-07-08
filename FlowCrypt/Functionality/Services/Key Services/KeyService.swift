@@ -58,7 +58,7 @@ final class KeyService: KeyServiceType {
         }
 
         let keysInfo = storage.keysInfo()
-            .filter { $0.account.contains(email) }
+            .filter { $0.account == email }
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
 
