@@ -182,9 +182,14 @@ extension KeyInfo {
                 users: [],
                 algo: nil
             ),
-            source: .backup
+            source: .backup,
+            user: UserObject(
+                name: "name",
+                email: "email@gmail.com",
+                imap: nil,
+                smtp: nil
+            )
         )
-        key.account = account
         key.longid = longid
         return key
     }

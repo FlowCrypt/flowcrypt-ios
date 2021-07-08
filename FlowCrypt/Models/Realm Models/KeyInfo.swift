@@ -20,10 +20,11 @@ final class KeyInfo: Object {
     @objc dynamic var `public`: String = ""
     @objc dynamic var longid: String = ""
     @objc dynamic var source: String = ""
-    @objc dynamic var account: String = ""
+    @objc dynamic var user: UserObject!
 
-    convenience init(_ keyDetails: KeyDetails, source: KeySource) throws {
+    convenience init(_ keyDetails: KeyDetails, source: KeySource, user: UserObject) throws {
         self.init()
+
         guard let privateKey = keyDetails.private else {
             assertionFailure("storing pubkey as private") // crash tests
             throw KeyInfoError.missedPrivateKey("storing pubkey as private")
@@ -36,7 +37,7 @@ final class KeyInfo: Object {
         self.`public` = keyDetails.public
         self.longid = keyDetails.longid
         self.source = source.rawValue
-        self.account = keyDetails.users.first ?? ""
+        self.user = user
     }
 
     override class func primaryKey() -> String? {
@@ -44,6 +45,13 @@ final class KeyInfo: Object {
     }
 
     override var description: String {
-        "account = \(account) ####### longid = \(longid)"
+        "account = \(user?.email ?? "N/A") ####### longid = \(longid)"
+    }
+}
+
+extension KeyInfo {
+    /// associated user email
+    var account: String {
+        user.email
     }
 }

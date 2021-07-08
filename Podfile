@@ -59,6 +59,7 @@ target 'FlowCryptAppTests' do
     pod 'mailcore2-ios'
     pod 'IDZSwiftCommonCrypto'
     pod 'PromisesSwift'
+    pod 'GTMAppAuth'
 end
 
 ## Set IPHONEOS_DEPLOYMENT_TARGET for all pods
