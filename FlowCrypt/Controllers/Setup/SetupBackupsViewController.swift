@@ -20,6 +20,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction
     }
 
+    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
     private let core: Core
@@ -30,7 +31,6 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     let passPhraseService: PassPhraseServiceType
 
     private var passPhrase: String?
-    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     var shouldSaveLocally = true {
         didSet {
@@ -133,8 +133,10 @@ extension SetupBackupsViewController {
     }
 
     private func recoverAccount(with backups: [KeyDetails], and passPhrase: String) {
+        logger.logInfo("Start recoverAccount with \(backups.count)")
         let matchingKeyBackups = Set(keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase))
 
+        logger.logInfo("matchingKeyBackups = \(matchingKeyBackups.count)")
         guard matchingKeyBackups.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
@@ -150,7 +152,7 @@ extension SetupBackupsViewController {
             }
 
         // save keys
-        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups), source: .backup)
+        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups), source: .backup, for: user.email)
 
         moveToMainFlow()
     }
@@ -204,7 +206,7 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.decorator.subtitle(for: .common),
+                        title: self.decorator.subtitle(for: .fetchedKeys(self.fetchedEncryptedKeys.count)),
                         insets: self.decorator.insets.subTitleInset,
                         backgroundColor: .backgroundColor
                     )

@@ -241,8 +241,8 @@ extension SetupManuallyEnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        keysStorage.addKeys(keyDetails: newKeysToAdd, source: .imported)
-        keysStorage.updateKeys(keyDetails: keysToUpdate, source: .imported)
+        keysStorage.addKeys(keyDetails: newKeysToAdd, source: .imported, for: email)
+        keysStorage.updateKeys(keyDetails: keysToUpdate, source: .imported, for: email)
 
         keysToUpdate
             .map {

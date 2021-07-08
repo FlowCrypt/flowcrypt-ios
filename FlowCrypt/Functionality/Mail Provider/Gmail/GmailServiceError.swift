@@ -19,4 +19,6 @@ enum GmailServiceError: Error {
     case missedMessageInfo(String)
     /// Provider Error
     case providerError(Error)
+    /// Empty or invalid backup search query
+    case missedBackupQuery(Error)
 }
