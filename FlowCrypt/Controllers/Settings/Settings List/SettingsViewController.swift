@@ -16,8 +16,8 @@ import FlowCryptUI
  * - Tap on each row will navigate user to appropriate settings controller
  */
 final class SettingsViewController: TableNodeViewController {
-    private enum Settings: Int, CaseIterable {
-        case backups, privacy, contacts, keys, atteseter, notifications, legal, experimental
+    private enum SettingsMenuItem: Int, CaseIterable {
+        case backups, privacy, contacts, keys, attester, notifications, legal, experimental
 
         var title: String {
             switch self {
@@ -25,23 +25,23 @@ final class SettingsViewController: TableNodeViewController {
             case .privacy: return "settings_screen_security".localized
             case .contacts: return "settings_screen_contacts".localized
             case .keys: return "settings_screen_keys".localized
-            case .atteseter: return "settings_screen_attester".localized
+            case .attester: return "settings_screen_attester".localized
             case .notifications: return "settings_screen_notifications".localized
             case .legal: return "settings_screen_legal".localized
             case .experimental: return "settings_screen_experimental".localized
             }
         }
 
-        static func allCases(with rules: OrganisationalRules?) -> [Settings] {
+        static func allCases(with rules: OrganisationalRules?) -> [SettingsMenuItem] {
             guard let rules = rules else {
                 return allCases
             }
-            let cases: [Settings]
+            var cases = SettingsMenuItem.allCases
+
             if !rules.canBackupKeys {
-                cases = [.privacy, .contacts, .keys, .atteseter, .notifications, .legal, .experimental]
-            } else {
-                cases = allCases
+                cases.removeAll(where: { $0 == .backups })
             }
+
             return cases
         }
     }
@@ -49,7 +49,7 @@ final class SettingsViewController: TableNodeViewController {
     private let decorator: SettingsViewDecoratorType
     private let currentUser: User?
     private let organisationalRules: OrganisationalRules?
-    private let rows: [Settings]
+    private let rows: [SettingsMenuItem]
 
     init(
         decorator: SettingsViewDecoratorType = SettingsViewDecorator(),
@@ -59,7 +59,7 @@ final class SettingsViewController: TableNodeViewController {
         self.decorator = decorator
         self.currentUser = currentUser
         self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
-        self.rows = Settings.allCases(with: self.organisationalRules)
+        self.rows = SettingsMenuItem.allCases(with: self.organisationalRules)
         super.init(node: TableNode())
     }
 
@@ -94,6 +94,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
+
             guard let self = self else { return ASCellNode() }
             let setting = self.rows[indexPath.row]
             return SettingsCellNode(
@@ -112,7 +113,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
 // MARK: - Actions
 
 extension SettingsViewController {
-    private func proceed(to setting: Settings) {
+    private func proceed(to setting: SettingsMenuItem) {
         let viewController: UIViewController?
 
         switch setting {
