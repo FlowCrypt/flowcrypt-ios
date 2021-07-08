@@ -115,10 +115,10 @@ extension EncryptedStorage: LogOutHandler {
                 .filter { $0.email == email }
 
             try storage.write {
-                storage.delete(userToDelete)
                 storage.delete(keys)
                 storage.delete(sessions)
                 storage.delete(passPhrases)
+                storage.delete(userToDelete)
             }
         }
     }
