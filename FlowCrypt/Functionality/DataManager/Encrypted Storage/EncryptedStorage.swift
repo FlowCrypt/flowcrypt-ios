@@ -110,7 +110,7 @@ extension EncryptedStorage: LogOutHandler {
             let keys = storage.objects(KeyInfo.self)
                 .filter { $0.account == email }
             let passPhrases = storage.objects(PassPhraseObject.self)
-                .filter { keys.map(\.longid).contains($0.longid) }
+                .filter { keys.map(\.primaryLongid).contains($0.longid) }
             let sessions = storage.objects(SessionObject.self)
                 .filter { $0.email == email }
             let clientConfigurations = storage.objects(ClientConfigurationObject.self)

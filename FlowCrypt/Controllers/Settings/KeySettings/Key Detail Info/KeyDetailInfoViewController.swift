@@ -15,7 +15,7 @@ import FlowCryptUI
  */
 final class KeyDetailInfoViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
-        case keyWord, fingerptint, longId, date, users, separator
+        case fingerprint, longId, date, users, separator
 
         var isSeparator: Bool {
             guard case .separator = self else { return false }
@@ -23,12 +23,12 @@ final class KeyDetailInfoViewController: TableNodeViewController {
         }
     }
 
-    private let decorator: KeyDetailInfoViewDecoratorType
+    private let decorator: KeyDetailInfoViewDecorator
     private let key: KeyDetails
 
     init(
         key: KeyDetails,
-        decorator: KeyDetailInfoViewDecoratorType = KeyDetailInfoViewDecorator()
+        decorator: KeyDetailInfoViewDecorator = KeyDetailInfoViewDecorator()
     ) {
         self.key = key
         self.decorator = decorator
@@ -60,7 +60,7 @@ extension KeyDetailInfoViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self,
                 let part = Parts(rawValue: indexPath.row),
                 let keyId = self.key.ids[safe: indexPath.section]

@@ -169,14 +169,14 @@ extension KeyInfo {
         account: String = "",
         longid: String
     ) -> KeyInfo {
-        let key = try! KeyInfo(
+        try! KeyInfo(
             KeyDetails(
                 public: publicValue,
                 private: "private",
                 isFullyDecrypted: true,
                 isFullyEncrypted: true,
                 ids: [
-                    KeyId(shortid: "shortId", longid: "longid", fingerprint: "fingerprint", keywords: "keywords")
+                    KeyId(longid: "longid", fingerprint: "fingerprint")
                 ],
                 created: 1234,
                 users: [],
@@ -190,7 +190,5 @@ extension KeyInfo {
                 smtp: nil
             )
         )
-        key.longid = longid
-        return key
     }
 }

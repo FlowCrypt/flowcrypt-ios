@@ -11,14 +11,25 @@ enum KeySource: String {
 }
 
 enum KeyInfoError: Error {
-    case missedPrivateKey(String)
+    case missingPrivateKey(String)
     case notEncrypted(String)
+    case missingKeyIds
 }
 
 final class KeyInfo: Object {
+    var primaryFingerprint: String {
+        allFingerprints[0]
+    }
+    var primaryLongid: String {
+        allLongids[0]
+    }
+
     @objc dynamic var `private`: String = ""
     @objc dynamic var `public`: String = ""
-    @objc dynamic var longid: String = ""
+
+    let allFingerprints = List<String>()
+    let allLongids = List<String>()
+
     @objc dynamic var source: String = ""
     @objc dynamic var user: UserObject!
 
@@ -26,16 +37,19 @@ final class KeyInfo: Object {
         self.init()
 
         guard let privateKey = keyDetails.private else {
-            assertionFailure("storing pubkey as private") // crash tests
-            throw KeyInfoError.missedPrivateKey("storing pubkey as private")
+            throw KeyInfoError.missingPrivateKey("storing pubkey as private")
         }
-        guard keyDetails.isFullyEncrypted! else { // already checked private above, must be set, else crash
-            assertionFailure("Will not store Private Key that is not fully encrypted") // crash tests
+        guard keyDetails.isFullyEncrypted! else {
             throw KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
+        guard keyDetails.ids.isNotEmpty else {
+            throw KeyInfoError.missingKeyIds
+        }
+
         self.`private` = privateKey
         self.`public` = keyDetails.public
-        self.longid = keyDetails.longid
+        self.allFingerprints.append(objectsIn: keyDetails.ids.map(\.fingerprint))
+        self.allLongids.append(objectsIn: keyDetails.ids.map(\.longid))
         self.source = source.rawValue
         self.user = user
     }
@@ -45,7 +59,7 @@ final class KeyInfo: Object {
     }
 
     override var description: String {
-        "account = \(user?.email ?? "N/A") ####### longid = \(longid)"
+        "account = \(user?.email ?? "N/A") ####### longid = \(primaryLongid)"
     }
 }
 

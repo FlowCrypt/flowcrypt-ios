@@ -9,10 +9,13 @@
 import Foundation
 
 struct KeyId: Decodable {
-    let shortid: String
     let longid: String
     let fingerprint: String
-    let keywords: String
+
+    init(longid: String, fingerprint: String) {
+        self.longid = longid
+        self.fingerprint = fingerprint
+    }
 }
 
 extension KeyId: Hashable {
