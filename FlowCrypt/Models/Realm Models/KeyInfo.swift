@@ -11,18 +11,17 @@ enum KeySource: String {
 }
 
 enum KeyInfoError: Error {
-    case missedPrivateKey(String)
+    case missingPrivateKey(String)
     case notEncrypted(String)
-    case missedKeyIds
+    case missingKeyIds
 }
 
 final class KeyInfo: Object {
-    var primaryFingerprint: String? {
-        allFingerprints.first
+    var primaryFingerprint: String {
+        allFingerprints[0]
     }
     var primaryLongid: String {
-        // explicitly force unwrap
-        allLongids.first!
+        allLongids[0]
     }
 
     @objc dynamic var `private`: String = ""
@@ -38,16 +37,13 @@ final class KeyInfo: Object {
         self.init()
 
         guard let privateKey = keyDetails.private else {
-            assertionFailure("storing pubkey as private") // crash tests
-            throw KeyInfoError.missedPrivateKey("storing pubkey as private")
+            throw KeyInfoError.missingPrivateKey("storing pubkey as private")
         }
-        guard keyDetails.isFullyEncrypted! else { // already checked private above, must be set, else crash
-            assertionFailure("Will not store Private Key that is not fully encrypted") // crash tests
+        guard keyDetails.isFullyEncrypted! else {
             throw KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
         guard keyDetails.ids.isNotEmpty else {
-            assertionFailure("KeyDetails KeyIds should not be empty")
-            throw KeyInfoError.missedKeyIds
+            throw KeyInfoError.missingKeyIds
         }
 
         self.`private` = privateKey
