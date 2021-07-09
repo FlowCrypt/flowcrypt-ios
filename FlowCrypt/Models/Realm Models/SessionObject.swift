@@ -63,3 +63,17 @@ extension SessionObject {
         )
     }
 }
+
+extension SessionObject {
+    static var empty: SessionObject {
+        SessionObject(
+            hostname: "",
+            port: 0,
+            username: "",
+            password: nil,
+            oAuth2Token: nil,
+            connectionType: "",
+            email: ""
+        )
+    }
+}

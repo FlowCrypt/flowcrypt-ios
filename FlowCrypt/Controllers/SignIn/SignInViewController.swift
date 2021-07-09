@@ -11,7 +11,7 @@ import FlowCryptUI
  * - User can sign in with:
  * - Gmail
  * - Outlook (not implemented yet)
- * - Other email provider (*EmailProviderViewController*)
+ * - Other email provider (*SetupImapViewController*)
  * - User can also check privacy, terms and security links via *WebViewController*
  */
 final class SignInViewController: TableNodeViewController {
@@ -154,7 +154,7 @@ extension SignInViewController {
     }
 
     private func proceedToOtherProvider() {
-        let setupViewController = EmailProviderViewController()
+        let setupViewController = SetupImapViewController()
         navigationController?.pushViewController(setupViewController, animated: true)
     }
 
