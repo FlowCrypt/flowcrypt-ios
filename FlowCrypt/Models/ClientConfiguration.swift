@@ -20,6 +20,13 @@ enum ClientConfigurationFlag: String, Codable {
     case useLegacyAttesterSubmit = "USE_LEGACY_ATTESTER_SUBMIT"
     case defaultRememberPassphrase = "DEFAULT_REMEMBER_PASS_PHRASE"
     case hideArmorMeta = "HIDE_ARMOR_META"
+    case forbidStoringPassphrase = "FORBID_STORING_PASS_PHRASE"
+
+    case unknown
+
+    init(from decoder: Decoder) throws {
+        self = try ClientConfigurationFlag(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
+    }
 }
 
 struct ClientConfiguration: Codable, Equatable {
@@ -30,6 +37,20 @@ struct ClientConfiguration: Codable, Equatable {
     let disallowAttesterSearchForDomains: [String]?
     let enforceKeygenAlgo: String?
     let enforceKeygenExpireMonths: Int?
+}
+
+// MARK: - Empty model
+extension ClientConfiguration {
+    static var empty: ClientConfiguration {
+        return ClientConfiguration(
+            flags: [],
+            customKeyserverUrl: nil,
+            keyManagerUrl: nil,
+            disallowAttesterSearchForDomains: nil,
+            enforceKeygenAlgo: nil,
+            enforceKeygenExpireMonths: nil
+        )
+    }
 }
 
 // MARK: - Map from realm model

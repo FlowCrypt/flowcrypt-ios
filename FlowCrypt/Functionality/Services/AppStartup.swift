@@ -27,8 +27,7 @@ struct AppStartup {
             try awaitPromise(self.setupCore())
             try self.setupMigrationIfNeeded()
             try self.setupSession()
-            // Fetching of org rules is being called async in purpose we don't need to wait until it's fetched
-            self.getUserOrgRulesIfNeeded()
+            try self.getUserOrgRulesIfNeeded()
         }.then(on: .main) {
             self.chooseView(for: window, session: session)
         }.catch(on: .main) { error in
@@ -96,9 +95,10 @@ struct AppStartup {
         }
     }
 
-    private func getUserOrgRulesIfNeeded() {
+    private func getUserOrgRulesIfNeeded() throws {
         if DataService.shared.isLoggedIn {
-            _ = OrganisationalRulesService().fetchOrganisationalRulesForCurrentUser()
+            let service = OrganisationalRulesService()
+            _ = try awaitPromise(service.fetchOrganisationalRulesForCurrentUser())
         }
     }
 
@@ -131,7 +131,7 @@ struct AppStartup {
     }
 
     private func showErrorAlert(with error: Error, on window: UIWindow, session: SessionType?) {
-        let alert = UIAlertController(title: "Startup Error", message: "\(error)", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Startup Error", message: "\(error.localizedDescription)", preferredStyle: .alert)
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in
             self.initializeApp(window: window, session: session)
         }

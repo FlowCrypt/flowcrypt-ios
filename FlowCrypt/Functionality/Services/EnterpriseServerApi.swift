@@ -12,8 +12,21 @@ protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) -> Promise<String?>
     func getActiveFesUrlForCurrentUser() -> Promise<String?>
 
-    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration?>
-    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration?>
+    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration>
+    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration>
+}
+
+enum EnterpriseServerApiError: Error {
+    case parse
+    case emailFormat
+}
+extension EnterpriseServerApiError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .parse: return "organisational_rules_parse_error_description".localized
+        case .emailFormat: return "organisational_rules_email_format_error_description".localized
+        }
+    }
 }
 
 class EnterpriseServerApi: EnterpriseServerApiType {
@@ -71,11 +84,14 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         .recoverFromTimeOut(result: nil)
     }
 
-    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration?> {
-        Promise<ClientConfiguration?> { resolve, _ in
-            guard let userDomain = email.recipientDomain,
-                  !Configuration.publicEmailProviderDomains.contains(userDomain) else {
-                resolve(nil)
+    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration> {
+        Promise<ClientConfiguration> { resolve, reject in
+            guard let userDomain = email.recipientDomain else {
+                reject(EnterpriseServerApiError.emailFormat)
+                return
+            }
+            if Configuration.publicEmailProviderDomains.contains(userDomain) {
+                resolve(.empty)
                 return
             }
             let request = URLRequest.urlRequest(
@@ -93,17 +109,18 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                     from: safeReponse.data
                   ))?.clientConfiguration
             else {
-                resolve(nil)
+                reject(EnterpriseServerApiError.parse)
                 return
             }
             resolve(clientConfiguration)
         }
     }
 
-    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration?> {
+    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
         guard let email = DataService.shared.currentUser?.email else {
-            return Promise<ClientConfiguration?> { resolve, _ in
-                resolve(nil)
+            return Promise<ClientConfiguration> { _, reject in
+                assertionFailure("User has to be set while getting client configuration")
+                reject(AppErr.user("currentUser == nil"))
             }
         }
         return getClientConfiguration(for: email)

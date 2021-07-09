@@ -12,6 +12,8 @@ import Promises
 protocol OrganisationalRulesServiceType {
     func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules>
     func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules>
+
+    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules
 }
 
 final class OrganisationalRulesService {
@@ -41,26 +43,36 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
     }
 
     func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules> {
-        Promise<OrganisationalRules> { [weak self] resolve, reject in
+        Promise<OrganisationalRules> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
 
-            guard let clientConfigurationResponse = try awaitPromise(
-                    self.enterpriseServerApi.getClientConfiguration(for: email)
-            ) else {
-                reject(OrganisationalRulesServiceError.parse)
-                return
-            }
-            guard let organisationalRules = OrganisationalRules(
-                    clientConfiguration: clientConfigurationResponse,
-                    email: email
-            ) else {
-                reject(OrganisationalRulesServiceError.emailFormat)
-                return
-            }
+            let clientConfigurationResponse = try awaitPromise(
+                self.enterpriseServerApi.getClientConfiguration(for: email)
+            )
+
+            let organisationalRules = OrganisationalRules(
+                clientConfiguration: clientConfigurationResponse
+            )
 
             self.clientConfigurationProvider.save(clientConfiguration: clientConfigurationResponse)
 
             resolve(organisationalRules)
         }
+        .recover { [weak self] error -> OrganisationalRules in
+            guard let self = self else { throw AppErr.nilSelf }
+            guard let clientConfig = self.clientConfigurationProvider.fetch() else {
+                throw error
+            }
+            return OrganisationalRules(clientConfiguration: clientConfig)
+        }
+    }
+
+    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules {
+        guard let configuration = self.clientConfigurationProvider.fetch() else {
+            assertionFailure("There should not be a user without OrganisationalRules")
+            return OrganisationalRules(clientConfiguration: .empty)
+        }
+
+        return OrganisationalRules(clientConfiguration: configuration)
     }
 }

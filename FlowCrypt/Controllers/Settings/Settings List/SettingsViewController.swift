@@ -16,8 +16,8 @@ import FlowCryptUI
  * - Tap on each row will navigate user to appropriate settings controller
  */
 final class SettingsViewController: TableNodeViewController {
-    private enum Settings: Int, CaseIterable {
-        case backups, privacy, contacts, keys, atteseter, notifications, legal, experimental
+    private enum SettingsMenuItem: Int, CaseIterable {
+        case backups, privacy, contacts, keys, attester, notifications, legal, experimental
 
         var title: String {
             switch self {
@@ -25,23 +25,38 @@ final class SettingsViewController: TableNodeViewController {
             case .privacy: return "settings_screen_security".localized
             case .contacts: return "settings_screen_contacts".localized
             case .keys: return "settings_screen_keys".localized
-            case .atteseter: return "settings_screen_attester".localized
+            case .attester: return "settings_screen_attester".localized
             case .notifications: return "settings_screen_notifications".localized
             case .legal: return "settings_screen_legal".localized
             case .experimental: return "settings_screen_experimental".localized
             }
         }
+
+        static func filtered(with rules: OrganisationalRules) -> [SettingsMenuItem] {
+            var cases = SettingsMenuItem.allCases
+
+            if !rules.canBackupKeys {
+                cases.removeAll(where: { $0 == .backups })
+            }
+
+            return cases
+        }
     }
 
     private let decorator: SettingsViewDecoratorType
     private let currentUser: User?
+    private let organisationalRules: OrganisationalRules
+    private let rows: [SettingsMenuItem]
 
     init(
         decorator: SettingsViewDecoratorType = SettingsViewDecorator(),
-        currentUser: User? = DataService.shared.currentUser
+        currentUser: User? = DataService.shared.currentUser,
+        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()
     ) {
         self.decorator = decorator
         self.currentUser = currentUser
+        self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
+        self.rows = SettingsMenuItem.filtered(with: self.organisationalRules)
         super.init(node: TableNode())
     }
 
@@ -71,13 +86,14 @@ final class SettingsViewController: TableNodeViewController {
 
 extension SettingsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        Settings.allCases.count
+        rows.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
-            guard let self = self, let setting = Settings(rawValue: indexPath.row) else { return ASCellNode() }
 
+            guard let self = self else { return ASCellNode() }
+            let setting = self.rows[indexPath.row]
             return SettingsCellNode(
                 title: self.decorator.attributedSetting(setting.title),
                 insets: self.decorator.insets
@@ -86,7 +102,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard let setting = Settings(rawValue: indexPath.row) else { return assertionFailure() }
+        let setting = rows[indexPath.row]
         proceed(to: setting)
     }
 }
@@ -94,7 +110,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
 // MARK: - Actions
 
 extension SettingsViewController {
-    private func proceed(to setting: Settings) {
+    private func proceed(to setting: SettingsMenuItem) {
         let viewController: UIViewController?
 
         switch setting {
@@ -105,7 +121,8 @@ extension SettingsViewController {
         case .contacts:
             viewController = ContactsListViewController()
         case .backups:
-            guard let currentUser = currentUser else {
+            guard let currentUser = currentUser,
+                  !organisationalRules.canBackupKeys else {
                 viewController = nil
                 return
             }

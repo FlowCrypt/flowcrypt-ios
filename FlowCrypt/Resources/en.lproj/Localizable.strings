@@ -199,3 +199,7 @@
 // Backup select keys screen
 "backup_select_key_screen_title" = "Select keys";
 "backup_select_key_screen_no_selection" = "Please select keys to backup";
+
+// Organisational rules error
+"organisational_rules_parse_error_description" = "Couldn't parse data while getting organisational rules";
+"organisational_rules_email_format_error_description" = "Wrong user email format";

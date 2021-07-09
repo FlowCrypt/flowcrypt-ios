@@ -53,6 +53,7 @@ final class SetupInitialViewController: TableNodeViewController {
     private let user: UserId
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
+    private let organisationalRules: OrganisationalRules
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -60,12 +61,14 @@ final class SetupInitialViewController: TableNodeViewController {
         user: UserId,
         backupService: BackupServiceType = BackupService(),
         router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator()
+        decorator: SetupViewDecorator = SetupViewDecorator(),
+        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()
     ) {
         self.user = user
         self.backupService = backupService
         self.router = router
         self.decorator = decorator
+        self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
 
         super.init(node: TableNode())
     }
@@ -103,6 +106,12 @@ extension SetupInitialViewController {
     }
 
     private func searchBackups() {
+        if !organisationalRules.canBackupKeys {
+            logger.logInfo("Skipping backups searching because canBackupKeys == false")
+            proceedToSetupWith(keys: [])
+            return
+        }
+
         logger.logInfo("Searching for backups in inbox")
 
         backupService.fetchBackupsFromInbox(for: user)
