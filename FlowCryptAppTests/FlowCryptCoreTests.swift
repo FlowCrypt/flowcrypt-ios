@@ -10,19 +10,14 @@ import XCTest
 @testable import FlowCrypt
 
 class FlowCryptCoreTests: XCTestCase {
-    var core: Core!
-
+    var core: Core! = .shared
+    
     override func setUp() {
-        super.setUp()
-        // DispatchQueue.promises = .global() // this helps prevent Promise deadlocks - but currently Promises are not in use by tests
-        core = Core.shared
-        core.startInBackgroundIfNotAlreadyRunning() { [weak self] in
-            do {
-                try self?.core.blockUntilReadyOrThrow()
-            } catch {
-                XCTFail("Core did not get ready in time")
-            }
+        let expectation = XCTestExpectation()
+        core.startInBackgroundIfNotAlreadyRunning() {
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 10)
     }
 
     // the tests below
