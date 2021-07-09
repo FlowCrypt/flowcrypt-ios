@@ -17,7 +17,7 @@ import FlowCryptUI
  */
 final class KeySettingsViewController: TableNodeViewController {
     private var keys: [KeyDetails] = []
-    private let decorator: KeySettingsViewDecoratorType
+    private let decorator: KeySettingsViewDecorator
     private let keyService: KeyServiceType
 
     init(
@@ -79,15 +79,15 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self, let key = self.keys[safe: indexPath.row] else {
                 return ASCellNode()
             }
 
             let input = KeySettingCellNode.Input(
-                title: self.decorator.attributedUsers(key: key),
-                subtitle: self.decorator.attributedKeyWords(key: key),
-                date: self.decorator.attributedDateCreated(key: key)
+                title: self.decorator.attributedUsers(with: key),
+                subtitle: self.decorator.attributedFingerprints(with: key),
+                date: self.decorator.attributedDateCreated(with: key)
             )
             return KeySettingCellNode(with: input)
         }

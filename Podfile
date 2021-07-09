@@ -60,6 +60,7 @@ target 'FlowCryptAppTests' do
     pod 'IDZSwiftCommonCrypto'
     pod 'PromisesSwift'
     pod 'GTMAppAuth'
+    pod 'RealmSwift'
 end
 
 ## Set IPHONEOS_DEPLOYMENT_TARGET for all pods

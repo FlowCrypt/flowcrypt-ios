@@ -105,6 +105,7 @@
 		9F79228826696B0200DA3D80 /* PassPhraseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79228726696B0200DA3D80 /* PassPhraseService.swift */; };
 		9F79229426696B9300DA3D80 /* KeyDataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79229326696B9300DA3D80 /* KeyDataStorage.swift */; };
 		9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */; };
+		9F7E8EC6269877E70021C07F /* KeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E8EC5269877E60021C07F /* KeyInfoTests.swift */; };
 		9F8220D526336626004B2009 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
 		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */; };
@@ -150,9 +151,8 @@
 		9FC4117D268118AE004C0A69 /* PassPhraseStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EBCF266EBE1D00F3BF5D /* PassPhraseStorageMock.swift */; };
 		9FC41183268118B1004C0A69 /* EmailProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EBC1266EBE0100F3BF5D /* EmailProviderMock.swift */; };
 		9FC4120926811D00004C0A69 /* PromiseExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411892681191D004C0A69 /* PromiseExtensions.swift */; };
-		9FC413442683C912004C0A69 /* GmailServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC413432683C912004C0A69 /* GmailServiceTest.swift */; };
-		9FC7EAB3266A404D00F3BF5D /* PassPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EAB2266A404D00F3BF5D /* PassPhrase.swift */; };
 		9FC413182683C492004C0A69 /* InMemoryPassPhraseStorageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC413172683C491004C0A69 /* InMemoryPassPhraseStorageTest.swift */; };
+		9FC413442683C912004C0A69 /* GmailServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC413432683C912004C0A69 /* GmailServiceTest.swift */; };
 		9FC7EAB3266A404D00F3BF5D /* PassPhraseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EAB2266A404D00F3BF5D /* PassPhraseObject.swift */; };
 		9FC7EB76266EB67B00F3BF5D /* EncryptedStorageProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EB75266EB67B00F3BF5D /* EncryptedStorageProtocols.swift */; };
 		9FC7EBAA266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EBA9266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift */; };
@@ -507,6 +507,7 @@
 		9F79228726696B0200DA3D80 /* PassPhraseService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassPhraseService.swift; sourceTree = "<group>"; };
 		9F79229326696B9300DA3D80 /* KeyDataStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyDataStorage.swift; sourceTree = "<group>"; };
 		9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsFactory.swift; sourceTree = "<group>"; };
+		9F7E8EC5269877E60021C07F /* KeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyInfoTests.swift; sourceTree = "<group>"; };
 		9F8220D426336626004B2009 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9F8277952373732000E19C07 /* UIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
 		9F82779723737E0900E19C07 /* MessageViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewDecorator.swift; sourceTree = "<group>"; };
@@ -542,9 +543,8 @@
 		9FC411342595EA94001180A8 /* Imap+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Search.swift"; sourceTree = "<group>"; };
 		9FC4114B25961CEA001180A8 /* MailServiceProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailServiceProviderType.swift; sourceTree = "<group>"; };
 		9FC411892681191D004C0A69 /* PromiseExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromiseExtensions.swift; sourceTree = "<group>"; };
-		9FC413432683C912004C0A69 /* GmailServiceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GmailServiceTest.swift; sourceTree = "<group>"; };
-		9FC7EAB2266A404D00F3BF5D /* PassPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhrase.swift; sourceTree = "<group>"; };
 		9FC413172683C491004C0A69 /* InMemoryPassPhraseStorageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryPassPhraseStorageTest.swift; sourceTree = "<group>"; };
+		9FC413432683C912004C0A69 /* GmailServiceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GmailServiceTest.swift; sourceTree = "<group>"; };
 		9FC7EAB2266A404D00F3BF5D /* PassPhraseObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseObject.swift; sourceTree = "<group>"; };
 		9FC7EB75266EB67B00F3BF5D /* EncryptedStorageProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedStorageProtocols.swift; sourceTree = "<group>"; };
 		9FC7EBA2266EB95300F3BF5D /* PassPhraseStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseStorageTests.swift; sourceTree = "<group>"; };
@@ -1055,6 +1055,7 @@
 				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 				D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */,
 				9F2AC5CA267BE99E00F6149B /* Info.plist */,
+				9F7E8EC5269877E60021C07F /* KeyInfoTests.swift */,
 			);
 			path = FlowCryptAppTests;
 			sourceTree = "<group>";
@@ -2379,7 +2380,8 @@
 				9F97653D267E17C90058419D /* LocalStorageTests.swift in Sources */,
 				9F9764F4267E15CC0058419D /* ExtensionTests.swift in Sources */,
 				9FC413442683C912004C0A69 /* GmailServiceTest.swift in Sources */,
-				9F976556267E186D0058419D /* DomainRulesTests.swift in Sources */,
+				9F976556267E186D0058419D /* ClientConfigurationTests.swift in Sources */,
+				9F7E8EC6269877E70021C07F /* KeyInfoTests.swift in Sources */,
 				9F976556267E186D0058419D /* ClientConfigurationTests.swift in Sources */,
 				9FC41171268118A7004C0A69 /* PassPhraseStorageTests.swift in Sources */,
 			);
