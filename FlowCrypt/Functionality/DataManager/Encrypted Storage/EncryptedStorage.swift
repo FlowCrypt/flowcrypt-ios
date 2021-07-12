@@ -120,8 +120,8 @@ extension EncryptedStorage: LogOutHandler {
                 storage.delete(keys)
                 storage.delete(sessions)
                 storage.delete(passPhrases)
-                storage.delete(userToDelete)
                 storage.delete(clientConfigurations)
+                storage.delete(userToDelete)
             }
         }
     }
