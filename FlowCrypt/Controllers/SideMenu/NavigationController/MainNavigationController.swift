@@ -25,12 +25,17 @@ extension MainNavigationController: UINavigationControllerDelegate {
         viewController.navigationItem.hidesBackButton = true
         navigationItem.hidesBackButton = true
 
-        guard viewControllers.firstIndex(of: viewController) != 0 else { return }
+        guard shouldShowBackButton(for: viewController) else {
+            viewController.navigationItem.leftBarButtonItem = nil
+            return
+        }
+
         viewController.navigationItem.leftBarButtonItem = NavigationBarActionButton(UIImage(named: "arrow-left-c"), action: nil)
     }
 
     func navigationController(_: UINavigationController, didShow viewController: UIViewController, animated _: Bool) {
-        guard viewControllers.firstIndex(of: viewController) != 0 else { return }
+        guard shouldShowBackButton(for: viewController) else { return }
+
         let navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
             guard let self = self else { return }
             if let viewController = self.viewControllers.compactMap({ $0 as? NavigationChildController }).last {
@@ -41,6 +46,14 @@ extension MainNavigationController: UINavigationControllerDelegate {
         }
 
         viewController.navigationItem.leftBarButtonItem = navigationButton
+    }
+
+    private func shouldShowBackButton(for viewController: UIViewController) -> Bool {
+        guard viewControllers.firstIndex(of: viewController) != 0 else {
+            return false
+        }
+
+        return (viewController as? NavigationChildController)?.shouldShowBackButton ?? true
     }
 }
 

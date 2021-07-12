@@ -15,7 +15,7 @@ import Promises
  * - In case entered pass phrase matches with backups, user will be redirected to **main flow** (inbox view)
  */
 
-final class SetupBackupsViewController: TableNodeViewController, PassPhraseSaveable {
+final class SetupBackupsViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction
     }
@@ -29,6 +29,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     private let fetchedEncryptedKeys: [KeyDetails]
     private let keyStorage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
+    var shouldShowBackButton: Bool { false }
 
     private var passPhrase: String?
 
