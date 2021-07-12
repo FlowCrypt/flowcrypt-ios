@@ -6,10 +6,6 @@ import ENSwiftSideMenu
 import FlowCryptUI
 import UIKit
 
-protocol NavigationChildController {
-    func handleBackButtonTap()
-}
-
 protocol SideMenuViewController {
     func didOpen()
 }
