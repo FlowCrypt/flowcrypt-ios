@@ -52,7 +52,6 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private var cancellable = Set<AnyCancellable>()
-
     private let messageSender: MessageGateway
     private let notificationCenter: NotificationCenter
     private let dataService: DataServiceType & KeyDataServiceType
@@ -222,65 +221,52 @@ extension ComposeViewController {
 
         showSpinner("sending_title".localized)
 
-        switch prepareMessage() {
-        case .failure(let error):
-            switch error {
-            case .internalError(let message):
-                showAlert(message: message)
-            case .missedSender:
-                showAlert(message: "compose_no_pub_sender".localized)
-            case .noPubKeyForRecipient:
-                // already handled
-                break
-            }
-        case .success(let data):
-            self.messageSender.sendMail(mime: data)
-                .retry(3)
-                .sink{ [weak self] result in
-                    guard case .failure(let error) = result else {
-                        return
-                    }
-                    self?.showAlert(error: error, message: "compose_error".localized)
-                } receiveValue: { [weak self] _ in
-                    self?.handleSuccessfullySentMessage()
-                }
-                .store(in: &cancellable)
-        }
+        encryptAndSendMessage()
     }
 
-    private func prepareMessage() -> Result<Data, SendMessageError> {
-        let recipients = contextToSend.recipients
-
+    private func encryptAndSendMessage() {
+        let recipients = self.contextToSend.recipients
+        
         guard recipients.isNotEmpty else {
-            let message = "Recipients should not be empty. Fail in checking"
-            return .failure(.internalError(message))
+            return
         }
-
-        guard let text = contextToSend.message else {
-            let message = "Text and Email should not be nil at this point. Fail in checking"
-            return .failure(.internalError(message))
+        
+        guard let text = self.contextToSend.message else {
+            return
         }
-
+        
         let subject = self.input.subjectReplyTitle
             ?? self.contextToSend.subject
             ?? "(no subject)"
-
+        
         guard let myPubKey = self.dataService.publicKey else {
-            return .failure(.missedSender)
+            return
         }
-
+        
         guard let allRecipientPubs = getPubKeys(for: recipients) else {
-            return .failure(.noPubKeyForRecipient)
+            return
         }
-
+        
         let encrypted = self.encryptMsg(
             pubkeys: allRecipientPubs + [myPubKey],
             subject: subject,
             message: text,
             to: recipients.map { $0.email }
         )
-
-        return .success(encrypted.mimeEncoded)
+            
+        self.messageSender
+            .sendMail(mime: encrypted.mimeEncoded)
+            .sink(
+                receiveCompletion: { [weak self] result in
+                    guard case .failure(let error) = result else {
+                        return
+                    }
+                    self?.showAlert(error: error, message: "compose_error".localized)
+                },
+                receiveValue: {  [weak self] in
+                    self?.handleSuccessfullySentMessage()
+                })
+            .store(in: &cancellable)
     }
 
     private func getPubKeys(for recepients: [Recipient]) -> [String]? {
