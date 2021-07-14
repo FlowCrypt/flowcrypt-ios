@@ -143,10 +143,11 @@ extension SetupBackupsViewController {
             return
         }
 
+        // TODO: - ANTON - longid
         // save pass phrase
         matchingKeyBackups
             .map {
-                PassPhrase(value: passPhrase, longid: $0.longid)
+                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
             }
             .forEach {
                 passPhraseService.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
