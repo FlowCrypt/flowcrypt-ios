@@ -11,25 +11,29 @@ import UIKit
 // MARK: - Data Object
 struct PassPhrase: Codable, Hashable, Equatable {
     let value: String
-    let longid: String
+    let fingerprints: [String]
     let date: Date?
 
-    init(value: String, longid: String, date: Date? = nil) {
+    var primaryFingerprint: String {
+        fingerprints[0]
+    }
+
+    init(value: String, fingerprints: [String], date: Date? = nil) {
         self.value = value
-        self.longid = longid
+        self.fingerprints = fingerprints
         self.date = date
     }
 
     func withUpdatedDate() -> PassPhrase {
-        PassPhrase(value: self.value, longid: self.longid, date: Date())
+        PassPhrase(value: self.value, fingerprints: self.fingerprints, date: Date())
     }
 
     static func == (lhs: PassPhrase, rhs: PassPhrase) -> Bool {
-        lhs.longid == rhs.longid
+        lhs.primaryFingerprint == rhs.primaryFingerprint
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(longid)
+        hasher.combine(primaryFingerprint)
     }
 }
 
@@ -68,16 +72,16 @@ final class PassPhraseService: PassPhraseServiceType {
 
     func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
         if inStorage {
-            logger.logInfo("Save to storage \(passPhrase.longid)")
+            logger.logInfo("Save to storage \(passPhrase.primaryFingerprint)")
             encryptedStorage.save(passPhrase: passPhrase)
         } else {
-            logger.logInfo("Save in memory \(passPhrase.longid)")
+            logger.logInfo("Save in memory \(passPhrase.primaryFingerprint)")
 
             inMemoryStorage.save(passPhrase: passPhrase)
 
             let alreadySaved = encryptedStorage.getPassPhrases()
 
-            if alreadySaved.contains(where: { $0.longid == passPhrase.longid }) {
+            if alreadySaved.contains(where: { $0.primaryFingerprint == passPhrase.primaryFingerprint }) {
                 encryptedStorage.remove(passPhrase: passPhrase)
             }
         }

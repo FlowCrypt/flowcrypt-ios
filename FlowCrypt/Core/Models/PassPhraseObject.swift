@@ -11,30 +11,34 @@ import RealmSwift
 
 /// PassPhrase object to store in Realm
 final class PassPhraseObject: Object {
-    @objc dynamic var longid: String = ""
     @objc dynamic var value: String = ""
+    let allFingerprints = List<String>()
 
     convenience init(
-        longid: String = "",
-        value: String = ""
+        value: String = "",
+        fingerprints: [String]
     ) {
         self.init()
         self.value = value
-        self.longid = longid
+        self.allFingerprints.append(objectsIn: fingerprints)
     }
 }
 
 // MARK: - Convenience
 extension PassPhraseObject {
+    var primaryFingerprint: String {
+        allFingerprints[0]
+    }
+
     convenience init(_ passPhrase: PassPhrase) {
-        self.init(longid: passPhrase.longid, value: passPhrase.value)
+        self.init(value: passPhrase.value, fingerprints: passPhrase.fingerprints)
     }
 }
 
 extension PassPhrase {
     init(object: PassPhraseObject) {
         self.value = object.value
-        self.longid = object.longid
+        self.fingerprints = Array(object.allFingerprints)
         self.date = nil
     }
 }
