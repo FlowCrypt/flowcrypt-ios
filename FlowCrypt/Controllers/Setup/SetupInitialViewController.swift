@@ -23,12 +23,12 @@ final class SetupInitialViewController: TableNodeViewController {
     }
 
     private enum State {
-        case idle, searching, noKeyBackups, error(Error)
+        case idle, checkingPermissions, searching, noKeyBackups, error(Error)
 
         var numberOfRows: Int {
             switch self {
             // title
-            case .idle:
+            case .idle, .checkingPermissions:
                 return 1
             // title, loading
             case .searching:
@@ -54,6 +54,7 @@ final class SetupInitialViewController: TableNodeViewController {
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
     private let organisationalRules: OrganisationalRules
+    private let organisationalRulesPersmissionsService: OrganisationalRulesPersmissionsServiceType
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -62,13 +63,15 @@ final class SetupInitialViewController: TableNodeViewController {
         backupService: BackupServiceType = BackupService(),
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()
+        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService(),
+        organisationalRulesPermissionsService: OrganisationalRulesPersmissionsServiceType = OrganisationalRulesPersmissionsService()
     ) {
         self.user = user
         self.backupService = backupService
         self.router = router
         self.decorator = decorator
         self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
+        self.organisationalRulesPersmissionsService = organisationalRulesPermissionsService
 
         super.init(node: TableNode())
     }
@@ -86,7 +89,7 @@ final class SetupInitialViewController: TableNodeViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setNeedsStatusBarAppearanceUpdate()
-        state = .searching
+        state = .checkingPermissions
     }
 }
 
@@ -99,7 +102,9 @@ extension SetupInitialViewController {
         switch state {
         case .searching:
             searchBackups()
-        default:
+        case .checkingPermissions:
+            checkForPermessions()
+        case .error, .idle, .noKeyBackups:
             break
         }
         node.reloadData()
@@ -131,6 +136,20 @@ extension SetupInitialViewController {
         handleCommon(error: error)
         state = .error(error)
     }
+
+    private func checkForPermessions() {
+        organisationalRulesPersmissionsService.checkForUsingKeyManager()
+            .then { [weak self] errorMessage in
+                guard let errorMessage = errorMessage else {
+                    self?.state = .searching
+                    return
+                }
+
+                self?.showAlert(message: errorMessage) {
+                    self?.router.signOut()
+                }
+            }
+    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
@@ -144,7 +163,7 @@ extension SetupInitialViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
-            case .idle:
+            case .idle, .checkingPermissions:
                 return ASCellNode()
             case .searching:
                 return self.searchStateNode(for: indexPath)

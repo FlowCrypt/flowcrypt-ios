@@ -121,4 +121,12 @@ class OrganisationalRules {
     var shouldHideArmorMeta: Bool {
         (clientConfiguration.flags ?? []).contains(.hideArmorMeta)
     }
+
+    var forbidStoringPassPhrase: Bool {
+        (clientConfiguration.flags ?? []).contains(.forbidStoringPassphrase)
+    }
+
+    var keyManagerUrlString: String? {
+        clientConfiguration.keyManagerUrl
+    }
 }

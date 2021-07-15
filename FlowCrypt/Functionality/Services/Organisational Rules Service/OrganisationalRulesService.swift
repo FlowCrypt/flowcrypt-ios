@@ -6,6 +6,7 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import Foundation
 import Promises
 
@@ -14,6 +15,8 @@ protocol OrganisationalRulesServiceType {
     func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules>
 
     func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules
+
+    func getEmailKeyManagerPrivateKeys() -> Promise<Void>
 }
 
 final class OrganisationalRulesService {
@@ -64,6 +67,32 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
                 throw error
             }
             return OrganisationalRules(clientConfiguration: clientConfig)
+        }
+    }
+
+    func getEmailKeyManagerPrivateKeys() -> Promise<Void> {
+        Promise<Void> { [weak self] resolve, _ in
+            guard let self = self else { return }
+            let organisationalRules = self.getSavedOrganisationalRulesForCurrentUser()
+            guard let keyManagerUrlString = organisationalRules.keyManagerUrlString else {
+                resolve(())
+                return
+            }
+            let urlString = "\(keyManagerUrlString.addTrailingSlashIfNeeded)v1/keys/private"
+            let headers = [
+                URLHeader(
+                    value: "Bearer \(DataService.shared.token ?? "")",
+                    httpHeaderField: "Authorization"
+                )]
+            let request = URLRequest.urlRequest(
+                with: urlString,
+                method: .get,
+                body: nil,
+                headers: headers
+            )
+
+            let _ = try? awaitPromise(URLSession.shared.call(request))
+            resolve(())
         }
     }
 

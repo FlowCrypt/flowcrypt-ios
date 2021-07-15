@@ -11,6 +11,7 @@
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		211392A5266511E6009202EC /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
+		2133D51626A0571F00CC686F /* OrganisationalRulesPersmissionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51526A0571F00CC686F /* OrganisationalRulesPersmissionsService.swift */; };
 		21489B78267CB42400BDE4AC /* ClientConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */; };
 		21489B7A267CB4DF00BDE4AC /* ClientConfigurationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B79267CB4DF00BDE4AC /* ClientConfigurationObject.swift */; };
 		21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */; };
@@ -365,6 +366,7 @@
 		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
 		11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		211392A4266511E6009202EC /* PubLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubLookup.swift; sourceTree = "<group>"; };
+		2133D51526A0571F00CC686F /* OrganisationalRulesPersmissionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesPersmissionsService.swift; sourceTree = "<group>"; };
 		21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManagerTests.swift; sourceTree = "<group>"; };
 		21489B6D267B7D5000BDE4AC /* FileMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMock.swift; sourceTree = "<group>"; };
 		21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationProvider.swift; sourceTree = "<group>"; };
@@ -791,6 +793,7 @@
 		21489B81267CC3BC00BDE4AC /* Organisational Rules Service */ = {
 			isa = PBXGroup;
 			children = (
+				2133D51526A0571F00CC686F /* OrganisationalRulesPersmissionsService.swift */,
 				21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */,
 				21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */,
 				21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */,
@@ -2461,6 +2464,7 @@
 				D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */,
 				9F9361A52573CE260009912F /* MessageProvider.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
+				2133D51626A0571F00CC686F /* OrganisationalRulesPersmissionsService.swift in Sources */,
 				D274724424FD1932006BA6EF /* FolderObject.swift in Sources */,
 				9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,

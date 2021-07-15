@@ -15,7 +15,14 @@ public extension String {
         }
         return self
     }
-
+    
+    var addTrailingSlashIfNeeded: String {
+        if self.last != "/" {
+            return "\(self)/"
+        }
+        return self
+    }
+    
     func data() -> Data {
         data(using: .utf8)!
     }
