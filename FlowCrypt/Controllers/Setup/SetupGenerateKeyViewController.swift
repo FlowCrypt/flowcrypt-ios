@@ -150,7 +150,6 @@ extension SetupGenerateKeyViewController {
 
             try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
 
-            // TODO: - ANTON - longid
             let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
 
             self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated, for: self.user.email)

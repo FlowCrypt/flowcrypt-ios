@@ -143,7 +143,6 @@ extension SetupBackupsViewController {
             return
         }
 
-        // TODO: - ANTON - longid
         // save pass phrase
         matchingKeyBackups
             .map {

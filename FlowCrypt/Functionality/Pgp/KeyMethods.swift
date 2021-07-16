@@ -39,9 +39,8 @@ final class KeyMethods: KeyMethodsType {
                 return nil
             }
 
-            // TODO: - ANTON - longid
             guard decrypted.decryptedKey != nil else {
-                logger.logInfo("Filtered. decryptedKey = nil for key \(key.longid)")
+                logger.logInfo("Filtered. decryptedKey = nil for key \(key.primaryFingerprint)")
                 return nil
             }
 

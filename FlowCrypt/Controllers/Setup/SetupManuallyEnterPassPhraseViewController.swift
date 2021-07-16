@@ -244,7 +244,6 @@ extension SetupManuallyEnterPassPhraseViewController {
         keysStorage.addKeys(keyDetails: newKeysToAdd, source: .imported, for: email)
         keysStorage.updateKeys(keyDetails: keysToUpdate, source: .imported, for: email)
 
-        // TODO: - ANTON - longid
         keysToUpdate
             .map {
                 PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
