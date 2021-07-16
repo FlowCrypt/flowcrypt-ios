@@ -72,7 +72,6 @@ final class MessageService {
                 return reject(MessageServiceError.emptyKeys)
             }
 
-            // TODO: - Tom - is it possible to get fingerprint of the key which was used for decryption?
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
                 keys: keys,
@@ -90,32 +89,17 @@ final class MessageService {
             if isWrongPassPhraseError != nil {
                 reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
             } else {
-                // TODO: - Tom
-                // would it be possible to return fingerprint for the key which was used to decrypting message?
-                // in this case we will save only pass phrase with this fingerprint
-
-                // Now it's a bit complicated because
-                // PrvKeyInfo has only longid
-//                struct PrvKeyInfo: Encodable {
-//                    let `private`: String
-//                    let longid: String
-//                    let passphrase: String
-//                }
-//                keys
-//                    .map { PassPhrase(value: passPhrase, fingerprints: $0.longid) }
-//                    .forEach { self.passPhraseService.savePassPhrase(with: $0, inStorage: false) }
-
                 self.savePassPhrases(value: passPhrase, with: keys)
-
-//
                 let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
-
                 resolve(processedMessage)
             }
         }
     }
 
-    private func savePassPhrases(value: String, with privateKeys: [PrvKeyInfo]) {
+    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
+        privateKeys
+            .map { PassPhrase(value: passPhrase, fingerprints: $0.fingerprints) }
+            .forEach { self.passPhraseService.savePassPhrase(with: $0, inStorage: false) }
     }
 
     func getMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {

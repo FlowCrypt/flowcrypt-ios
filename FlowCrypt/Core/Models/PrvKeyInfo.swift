@@ -12,4 +12,5 @@ struct PrvKeyInfo: Encodable {
     let `private`: String
     let longid: String
     let passphrase: String
+    let fingerprints: [String]
 }
