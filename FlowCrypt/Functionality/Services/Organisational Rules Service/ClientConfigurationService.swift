@@ -6,8 +6,6 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
-
 protocol ClientConfigurationServiceType {
     func checkForUsingKeyManager() -> String?
 }
