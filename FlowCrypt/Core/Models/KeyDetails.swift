@@ -9,7 +9,7 @@
 import FlowCryptCommon
 import Foundation
 
-struct KeyDetails: Decodable, CustomStringConvertible {
+struct KeyDetails: Decodable {
     let `public`: String
     let `private`: String? // ony if this is prv
     let isFullyDecrypted: Bool? // only if this is prv
@@ -18,28 +18,46 @@ struct KeyDetails: Decodable, CustomStringConvertible {
     let created: Int
     let users: [String]
     let algo: KeyAlgo?
+}
 
-    var longid: String {
-        ids.first?.longid ?? ""
+// MARK: - Convenience
+extension KeyDetails {
+    var fingerprints: [String] {
+        ids.map(\.fingerprint)
     }
 
+    var primaryFingerprint: String {
+        guard let fingerPrint = fingerprints.first else {
+            fatalError("primaryFingerprint for KeyDetail with \(longid) is missing")
+        }
+        return fingerPrint
+    }
+
+    @available(*, deprecated, message: "Use primaryFingerprint instead")
+    var longid: String {
+        guard let longid = ids.first?.longid else {
+            fatalError("longid for KeyDetail is missing")
+        }
+        return longid
+    }
+}
+
+// MARK: - CustomStringConvertible, Hashable, Equatable
+extension KeyDetails: CustomStringConvertible, Hashable, Equatable {
     var description: String {
         "public = \(`public`) ### ids = \(ids) ### users = \(users) ### algo = \(algo.debugDescription)"
     }
-}
 
-extension KeyDetails: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.ids.first)
     }
-}
 
-extension KeyDetails: Equatable {
     static func == (lhs: KeyDetails, rhs: KeyDetails) -> Bool {
         lhs.ids == rhs.ids
     }
 }
 
+// MARK: - Other
 extension Array where Element == KeyDetails {
     // concatenated private keys, joined with a newline
     var joinedPrivateKey: String {

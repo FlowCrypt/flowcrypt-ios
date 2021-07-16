@@ -69,7 +69,7 @@ final class KeyService: KeyServiceType {
         // get all private keys with already saved pass phrases
         var privateKeys = keysInfo
             .compactMap { keyInfo -> PrvKeyInfo? in
-                guard let passPhrase = storedPassPhrases.first(where: { $0.longid == keyInfo.primaryLongid }) else {
+                guard let passPhrase = storedPassPhrases.first(where: { $0.primaryFingerprint == keyInfo.primaryFingerprint }) else {
                     return nil
                 }
 
@@ -82,7 +82,8 @@ final class KeyService: KeyServiceType {
                 return PrvKeyInfo(
                     private: keyInfo.private,
                     longid: keyInfo.primaryLongid,
-                    passphrase: passPhraseValue
+                    passphrase: passPhraseValue,
+                    fingerprints: Array(keyInfo.allFingerprints)
                 )
             }
 
@@ -92,7 +93,8 @@ final class KeyService: KeyServiceType {
                 PrvKeyInfo(
                     private: $0.private,
                     longid: $0.primaryLongid,
-                    passphrase: passPhrase
+                    passphrase: passPhrase,
+                    fingerprints: Array($0.allFingerprints)
                 )
             }
 
