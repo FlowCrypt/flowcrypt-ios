@@ -16,10 +16,12 @@ protocol OrganisationalRulesServiceType {
 
     func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules
 
-    func getEmailKeyManagerPrivateKeys() -> Promise<Void>
+    func getEmailKeyManagerPrivateKeys() -> Promise<OrganisationalRulesService.GetEKMKeysResult>
 }
 
 final class OrganisationalRulesService {
+
+    typealias GetEKMKeysResult = (keys: [DecryptedPrivateKey], urlString: String?)
 
     private let enterpriseServerApi: EnterpriseServerApiType
     private let clientConfigurationProvider: ClientConfigurationProviderType
@@ -70,18 +72,18 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
         }
     }
 
-    func getEmailKeyManagerPrivateKeys() -> Promise<Void> {
-        Promise<Void> { [weak self] resolve, _ in
-            guard let self = self else { return }
+    func getEmailKeyManagerPrivateKeys() -> Promise<GetEKMKeysResult> {
+        Promise<GetEKMKeysResult> { [weak self] resolve, _ in
+            guard let self = self else { throw AppErr.nilSelf }
             let organisationalRules = self.getSavedOrganisationalRulesForCurrentUser()
             guard let keyManagerUrlString = organisationalRules.keyManagerUrlString else {
-                resolve(())
+                resolve(([], nil))
                 return
             }
-            let urlString = "\(keyManagerUrlString.addTrailingSlashIfNeeded)v1/keys/private"
+            let urlString = "\(keyManagerUrlString)v1/keys/private"
             let headers = [
                 URLHeader(
-                    value: "Bearer \(DataService.shared.token ?? "")",
+                    value: "Bearer \(GoogleUserService().idToken ?? "")",
                     httpHeaderField: "Authorization"
                 )]
             let request = URLRequest.urlRequest(
@@ -90,9 +92,9 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
                 body: nil,
                 headers: headers
             )
-
-            let _ = try? awaitPromise(URLSession.shared.call(request))
-            resolve(())
+            let response = try awaitPromise(URLSession.shared.call(request))
+            let container = try JSONDecoder().decode(DecryptedPrivateKeysContainer.self, from: response.data)
+            resolve((container.privateKeys, urlString))
         }
     }
 

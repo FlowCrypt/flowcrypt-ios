@@ -6,6 +6,7 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import Foundation
 
 /// Organisational rules, set domain-wide, and delivered from FlowCrypt Backend
@@ -127,6 +128,6 @@ class OrganisationalRules {
     }
 
     var keyManagerUrlString: String? {
-        clientConfiguration.keyManagerUrl
+        clientConfiguration.keyManagerUrl?.addTrailingSlashIfNeeded
     }
 }

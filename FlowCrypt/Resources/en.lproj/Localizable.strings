@@ -209,4 +209,5 @@
 "organisational_rules_forbid_storing_passphrase_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + missing FORBID_STORING_PASS_PHRASE) is not supported on this platform";
 "organisational_rules_must_submit_attester_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + ENFORCE_ATTESTER_SUBMIT) is not supported on this platform";
 "organisational_rules_can_create_keys_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + missing NO_PRV_CREATE) is not supported on this platform";
+"organisational_rules_ekm_private_keys_message" = "Ignoring %d keys returned by EKM %@ (not implemented)";
 

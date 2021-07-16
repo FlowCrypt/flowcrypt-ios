@@ -23,12 +23,12 @@ final class SetupInitialViewController: TableNodeViewController {
     }
 
     private enum State {
-        case idle, checkingPermissions, searching, noKeyBackups, error(Error)
+        case idle, checkingClientConfigurationIntegrity, checkingEKMKeys, searching, noKeyBackups, error(Error)
 
         var numberOfRows: Int {
             switch self {
             // title
-            case .idle, .checkingPermissions:
+            case .idle, .checkingClientConfigurationIntegrity, .checkingEKMKeys:
                 return 1
             // title, loading
             case .searching:
@@ -54,7 +54,8 @@ final class SetupInitialViewController: TableNodeViewController {
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
     private let organisationalRules: OrganisationalRules
-    private let organisationalRulesPersmissionsService: OrganisationalRulesPersmissionsServiceType
+    private let organisationalRulesService: OrganisationalRulesServiceType
+    private let clientConfigurationService: ClientConfigurationServiceType
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -64,14 +65,15 @@ final class SetupInitialViewController: TableNodeViewController {
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService(),
-        organisationalRulesPermissionsService: OrganisationalRulesPersmissionsServiceType = OrganisationalRulesPersmissionsService()
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.user = user
         self.backupService = backupService
         self.router = router
         self.decorator = decorator
         self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
-        self.organisationalRulesPersmissionsService = organisationalRulesPermissionsService
+        self.organisationalRulesService = organisationalRulesService
+        self.clientConfigurationService = clientConfigurationService
 
         super.init(node: TableNode())
     }
@@ -89,7 +91,7 @@ final class SetupInitialViewController: TableNodeViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setNeedsStatusBarAppearanceUpdate()
-        state = .checkingPermissions
+        state = .checkingClientConfigurationIntegrity
     }
 }
 
@@ -102,8 +104,10 @@ extension SetupInitialViewController {
         switch state {
         case .searching:
             searchBackups()
-        case .checkingPermissions:
-            checkForPermessions()
+        case .checkingClientConfigurationIntegrity:
+            checkClientConfigurationIntegrity()
+        case .checkingEKMKeys:
+            checkEKMKeys()
         case .error, .idle, .noKeyBackups:
             break
         }
@@ -137,17 +141,25 @@ extension SetupInitialViewController {
         state = .error(error)
     }
 
-    private func checkForPermessions() {
-        organisationalRulesPersmissionsService.checkForUsingKeyManager()
-            .then { [weak self] errorMessage in
-                guard let errorMessage = errorMessage else {
-                    self?.state = .searching
-                    return
-                }
+    private func checkClientConfigurationIntegrity() {
+        guard let integrityErrorMessage = clientConfigurationService.checkForUsingKeyManager() else {
+            state = .checkingEKMKeys
+            return
+        }
+        showAlert(message: integrityErrorMessage) { [weak self] in
+            self?.router.signOut()
+        }
+    }
 
-                self?.showAlert(message: errorMessage) {
-                    self?.router.signOut()
+    private func checkEKMKeys() {
+        organisationalRulesService.getEmailKeyManagerPrivateKeys()
+            .then { [weak self] result in
+                if result.keys.isNotEmpty {
+                    self?.showToast(
+                        "organisational_rules_ekm_private_keys_message".localizeWithArguments(result.keys.count, result.urlString ?? "")
+                    )
                 }
+                self?.state = .searching
             }
     }
 }
@@ -163,7 +175,7 @@ extension SetupInitialViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
-            case .idle, .checkingPermissions:
+            case .idle, .checkingClientConfigurationIntegrity, .checkingEKMKeys:
                 return ASCellNode()
             case .searching:
                 return self.searchStateNode(for: indexPath)

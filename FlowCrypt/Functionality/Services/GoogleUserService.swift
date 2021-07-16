@@ -48,6 +48,12 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
             .accessToken
     }
 
+    var idToken: String? {
+        authorization?.authState
+            .lastTokenResponse?
+            .idToken
+    }
+
     var authorization: GTMAppAuthFetcherAuthorization? {
         getAuthorizationForCurrentUser()
     }
