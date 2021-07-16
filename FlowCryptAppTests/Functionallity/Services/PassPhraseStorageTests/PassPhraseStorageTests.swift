@@ -42,11 +42,11 @@ class PassPhraseStorageTests: XCTestCase {
     func testGetValidPassPhraseFromStorage() {
         let passPhrase1 = PassPhrase(
             value: "some",
-            longid: "A123"
+            fingerprints: ["11","12"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
-            longid: "A123"
+            fingerprints: ["21","22"]
         )
         
         encryptedStorage.getPassPhrasesResult = { [passPhrase1] }
@@ -72,7 +72,7 @@ class PassPhraseStorageTests: XCTestCase {
         let savedDate = Date()
         let localPassPhrase = PassPhrase(
             value: "value",
-            longid: "longid",
+            fingerprints: ["f1"],
             date: savedDate
         )
         inMemoryStorage.getPassPhrasesResult = { [localPassPhrase] }
@@ -87,13 +87,12 @@ class PassPhraseStorageTests: XCTestCase {
     func testBothStorageContainsValidPassPhrase() {
         let passPhrase1 = PassPhrase(
             value: "some",
-            longid: "A123"
+            fingerprints: ["A123"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
-            longid: "A123"
+            fingerprints: ["A123"]
         )
-        
         encryptedStorage.getPassPhrasesResult = {
             [passPhrase1, passPhrase2]
         }
@@ -101,7 +100,7 @@ class PassPhraseStorageTests: XCTestCase {
         let savedDate = Date()
         let localPassPhrase = PassPhrase(
             value: "value",
-            longid: "longid",
+            fingerprints: ["123444"],
             date: savedDate
         )
         
@@ -112,7 +111,7 @@ class PassPhraseStorageTests: XCTestCase {
     }
     
     func testSavePassPhraseInStorage() {
-        let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
+        let passPhraseToSave = PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "123333"])
         
         let expectation = XCTestExpectation()
         expectation.expectedFulfillmentCount = 1
@@ -121,14 +120,14 @@ class PassPhraseStorageTests: XCTestCase {
         // encrypted storage contains pass phrase which should be saved locally
         encryptedStorage.getPassPhrasesResult = {
             [
-                PassPhrase(value: "pass", longid: "12345")
+                PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "adfnhjfg"])
             ]
         }
         
         
         // encrypted storage should not contains pass phrase which user decide to save locally
         encryptedStorage.isRemovePassPhraseResult = { passPhraseToRemove in
-            if passPhraseToRemove.longid == "12345" {
+            if passPhraseToRemove.primaryFingerprint == "fingerprint 1" {
                 expectation.fulfill()
             }
         }
@@ -141,7 +140,7 @@ class PassPhraseStorageTests: XCTestCase {
     }
     
     func testSavePassPhraseInStorageWithoutAnyPassPhrases() {
-        let passPhraseToSave = PassPhrase(value: "pass", longid: "12345")
+        let passPhraseToSave = PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "123333"])
         
         let expectation = XCTestExpectation()
         expectation.isInverted = true

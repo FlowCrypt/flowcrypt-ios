@@ -72,7 +72,6 @@ final class MessageService {
                 return reject(MessageServiceError.emptyKeys)
             }
 
-            // TODO: - Tom - is it possible to get longid of the key which was used for decryption?
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
                 keys: keys,
@@ -90,15 +89,17 @@ final class MessageService {
             if isWrongPassPhraseError != nil {
                 reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
             } else {
-                keys
-                    .map { PassPhrase(value: passPhrase, longid: $0.longid) }
-                    .forEach { self.passPhraseService.savePassPhrase(with: $0, inStorage: false) }
-
+                self.savePassPhrases(value: passPhrase, with: keys)
                 let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
-
                 resolve(processedMessage)
             }
         }
+    }
+
+    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
+        privateKeys
+            .map { PassPhrase(value: passPhrase, fingerprints: $0.fingerprints) }
+            .forEach { self.passPhraseService.savePassPhrase(with: $0, inStorage: false) }
     }
 
     func getMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {

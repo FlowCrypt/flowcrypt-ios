@@ -28,8 +28,8 @@ class PassPhraseStorageMock: PassPhraseStorageType {
     
     var getPassPhrasesResult: () -> ([PassPhrase]) = {
         [
-            PassPhrase(value: "a", longid: "1"),
-            PassPhrase(value: "2", longid: "2")
+            PassPhrase(value: "a", fingerprints: ["11","12"]),
+            PassPhrase(value: "2", fingerprints: ["21","22"])
         ]
     }
     func getPassPhrases() -> [PassPhrase] {

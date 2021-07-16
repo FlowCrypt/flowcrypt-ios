@@ -131,7 +131,8 @@ extension SignInViewController {
                 PrvKeyInfo(
                     private: TestData.k3rsa4096.prv,
                     longid: TestData.k3rsa4096.longid,
-                    passphrase: TestData.k3rsa4096.passphrase
+                    passphrase: TestData.k3rsa4096.passphrase,
+                    fingerprints: []
                 )
             ]
 

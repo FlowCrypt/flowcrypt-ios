@@ -116,7 +116,7 @@ class FlowCryptCoreTests: XCTestCase {
         let k = generateKeyRes.key
         let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: email, subject: "e2e subj", replyToMimeMsg: nil, atts: [])
         let mime = try core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [k.public])
-        let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase)]
+        let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase, fingerprints: k.fingerprints)]
         let decrypted = try core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true)
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.encrypted)
@@ -129,7 +129,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testDecryptErrMismatch() throws {
-        let key = PrvKeyInfo(private: TestData.k0.prv, longid: TestData.k0.longid, passphrase: TestData.k0.passphrase)
+        let key = PrvKeyInfo(private: TestData.k0.prv, longid: TestData.k0.longid, passphrase: TestData.k0.passphrase, fingerprints: TestData.k0.fingerprints)
         let r = try core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false)
         let decrypted = r
         XCTAssertEqual(decrypted.text, "")
