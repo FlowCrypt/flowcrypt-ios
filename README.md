@@ -38,6 +38,19 @@ IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
 ### Admin - generating .ipa for penetration tester
 
 1) get uuid of their device and input it into https://developer.apple.com/account/ -> Devices
-2) xCode -> Product -> Archive
+2) Xcode -> Product -> Archive
 3) Distribute app -> Add Hoc -> Next -> Next (automatically manage signing)
 4) This creates a folder at the target where you export it to, and the IPA will be there
+
+### UI Tests
+
+To run UI tests from Xcode: 
+1) Select Tests in Navigators area (cmd+6)
+2) Choose `FlowCryptUITests`
+3) Run all tests, or select particular test to run
+
+To run all UI tests from terminal:
+1) Install dependencies 'bundle install'
+2) Run tests using fastlane `bundle exec fastlane test_ui`
+
+Before running tests, please make sure keyboard is visible in simulator. (cmd+shift+k)
