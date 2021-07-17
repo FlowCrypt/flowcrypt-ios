@@ -18,6 +18,7 @@
 		21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */; };
 		21489B80267CC39E00BDE4AC /* OrganisationalRulesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */; };
 		21489B83267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */; };
+		214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214A023926A3029700C24066 /* EmailKeyManagerApi.swift */; };
 		215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */ = {isa = PBXBuildFile; fileRef = 215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */; };
 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
 		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
@@ -376,6 +377,7 @@
 		21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfiguration.swift; sourceTree = "<group>"; };
 		21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesService.swift; sourceTree = "<group>"; };
 		21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesServiceError.swift; sourceTree = "<group>"; };
+		214A023926A3029700C24066 /* EmailKeyManagerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailKeyManagerApi.swift; sourceTree = "<group>"; };
 		215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_with_unknown_flag.json; sourceTree = "<group>"; };
 		215897E7267A553200423694 /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
 		2196A21F2684B9BE001B9E00 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
@@ -997,6 +999,7 @@
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				21EFF61E265A5C6700AB0B71 /* WKDURLsApi.swift */,
 				21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */,
+				214A023926A3029700C24066 /* EmailKeyManagerApi.swift */,
 				D274724024F97C5C006BA6EF /* CacheService.swift */,
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				9FB22CFD25715DDF0026EE64 /* Key Services */,
@@ -2471,6 +2474,7 @@
 				D274724424FD1932006BA6EF /* FolderObject.swift in Sources */,
 				9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
+				214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */,
 				D2E26F7424F2705B00612AF1 /* ContactDetailDecorator.swift in Sources */,
 				21C7DF0526697DA500C44800 /* PromiseKitExtension.swift in Sources */,
 				9F7E8F19269C538E0021C07F /* NavigationChildController.swift in Sources */,

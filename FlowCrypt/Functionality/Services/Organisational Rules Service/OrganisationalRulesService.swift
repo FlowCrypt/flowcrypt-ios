@@ -15,13 +15,9 @@ protocol OrganisationalRulesServiceType {
     func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules>
 
     func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules
-
-    func getEmailKeyManagerPrivateKeys() -> Promise<OrganisationalRulesService.GetEKMKeysResult>
 }
 
 final class OrganisationalRulesService {
-
-    typealias GetEKMKeysResult = (keys: [DecryptedPrivateKey], urlString: String?)
 
     private let enterpriseServerApi: EnterpriseServerApiType
     private let clientConfigurationProvider: ClientConfigurationProviderType
@@ -69,32 +65,6 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
                 throw error
             }
             return OrganisationalRules(clientConfiguration: clientConfig)
-        }
-    }
-
-    func getEmailKeyManagerPrivateKeys() -> Promise<GetEKMKeysResult> {
-        Promise<GetEKMKeysResult> { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let organisationalRules = self.getSavedOrganisationalRulesForCurrentUser()
-            guard let keyManagerUrlString = organisationalRules.keyManagerUrlString else {
-                resolve(([], nil))
-                return
-            }
-            let urlString = "\(keyManagerUrlString)v1/keys/private"
-            let headers = [
-                URLHeader(
-                    value: "Bearer \(GoogleUserService().idToken ?? "")",
-                    httpHeaderField: "Authorization"
-                )]
-            let request = URLRequest.urlRequest(
-                with: urlString,
-                method: .get,
-                body: nil,
-                headers: headers
-            )
-            let response = try awaitPromise(URLSession.shared.call(request))
-            let container = try JSONDecoder().decode(DecryptedPrivateKeysContainer.self, from: response.data)
-            resolve((container.privateKeys, urlString))
         }
     }
 

@@ -54,7 +54,7 @@ final class SetupInitialViewController: TableNodeViewController {
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
     private let organisationalRules: OrganisationalRules
-    private let organisationalRulesService: OrganisationalRulesServiceType
+    private let emailKeyManagerApi: EmailKeyManagerApiType
     private let clientConfigurationService: ClientConfigurationServiceType
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
@@ -65,6 +65,7 @@ final class SetupInitialViewController: TableNodeViewController {
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService(),
+        emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi(),
         clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.user = user
@@ -72,7 +73,7 @@ final class SetupInitialViewController: TableNodeViewController {
         self.router = router
         self.decorator = decorator
         self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
-        self.organisationalRulesService = organisationalRulesService
+        self.emailKeyManagerApi = emailKeyManagerApi
         self.clientConfigurationService = clientConfigurationService
 
         super.init(node: TableNode())
@@ -152,14 +153,18 @@ extension SetupInitialViewController {
     }
 
     private func checkEKMKeys() {
-        organisationalRulesService.getEmailKeyManagerPrivateKeys()
+        emailKeyManagerApi.getPrivateKeys()
             .then { [weak self] result in
-                if result.keys.isNotEmpty {
-                    self?.showToast(
-                        "organisational_rules_ekm_private_keys_message".localizeWithArguments(result.keys.count, result.urlString ?? "")
-                    )
-                }
+                let urlString = self?.emailKeyManagerApi.getPrivateKeysUrlString() ?? ""
+                self?.showToast(
+                    "organisational_rules_ekm_private_keys_message".localizeWithArguments(result.privateKeys.count, urlString)
+                )
+
                 self?.state = .searching
+            }.catch { [weak self] error in
+                self?.showAlert(message: error.localizedDescription, onOk: {
+                    self?.state = .checkingClientConfigurationIntegrity
+                })
             }
     }
 }

@@ -8,9 +8,11 @@
 
 import Foundation
 
-struct DecryptedPrivateKeysContainer: Decodable {
+struct DecryptedPrivateKeysResponse: Decodable {
 
     let privateKeys: [DecryptedPrivateKey]
+
+    static let empty = DecryptedPrivateKeysResponse(privateKeys: [])
 }
 
 struct DecryptedPrivateKey: Decodable {
