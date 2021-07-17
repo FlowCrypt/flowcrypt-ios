@@ -7,6 +7,7 @@
 //
 
 import CryptoKit
+import FlowCryptCommon
 import Promises
 
 protocol WKDURLsApiType {

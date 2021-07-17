@@ -6,11 +6,12 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
-// swiftlint:disable force_try
+import FlowCryptCommon
 import Foundation
 import Promises
 import RealmSwift
 
+// swiftlint:disable force_try
 protocol EncryptedStorageType: KeyStorageType {
     var storage: Realm { get }
 

@@ -7,6 +7,7 @@
 //
 
 import AppAuth
+import FlowCryptCommon
 import Foundation
 import GTMAppAuth
 import Promises

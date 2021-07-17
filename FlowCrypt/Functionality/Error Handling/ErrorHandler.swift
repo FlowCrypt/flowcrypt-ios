@@ -6,6 +6,7 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import UIKit
 
 extension UIViewController {

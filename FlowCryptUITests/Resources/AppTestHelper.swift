@@ -126,7 +126,7 @@ extension AppTest {
         let otherEmailButton = app.tables.buttons["Other email provider"]
 
         // Check which screen we are now
-        guard !otherEmailButton.exists else {
+        guard otherEmailButton.exists, menuButton.exists else {
             return
         }
 

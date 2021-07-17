@@ -6,6 +6,7 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import UIKit
 
 // MARK: - Data Object

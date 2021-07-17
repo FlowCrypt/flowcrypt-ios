@@ -29,6 +29,8 @@ extension SignInTest {
     // log in -> approve -> no backups -> switch email
     func test_1_login_no_backups() {
         // login with user without key backup
+        wait(10)
+        
         login(UserCredentials.noKeyBackUp)
         wait(1)
 
