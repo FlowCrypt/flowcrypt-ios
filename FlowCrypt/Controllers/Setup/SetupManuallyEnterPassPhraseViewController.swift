@@ -246,7 +246,7 @@ extension SetupManuallyEnterPassPhraseViewController {
 
         keysToUpdate
             .map {
-                PassPhrase(value: passPhrase, longid: $0.longid)
+                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
             }
             .forEach {
                 passPhraseService.updatePassPhrase(with: $0, inStorage: shouldSaveLocally)
@@ -254,7 +254,7 @@ extension SetupManuallyEnterPassPhraseViewController {
 
         newKeysToAdd
             .map {
-                PassPhrase(value: passPhrase, longid: $0.longid)
+                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
             }
             .forEach {
                 passPhraseService.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
