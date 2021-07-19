@@ -211,3 +211,5 @@
 "organisational_rules_can_create_keys_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + missing NO_PRV_CREATE) is not supported on this platform";
 "organisational_rules_ekm_private_keys_message" = "Ignoring %d keys returned by EKM %@ (not implemented)";
 
+// Email key manager api error
+"emai_keymanager_api_no_google_id_token_error_description" = "There is no Google ID token were found while getting client configuration";

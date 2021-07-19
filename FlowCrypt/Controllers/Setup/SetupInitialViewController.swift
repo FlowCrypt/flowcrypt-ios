@@ -155,13 +155,19 @@ extension SetupInitialViewController {
     private func checkEKMKeys() {
         emailKeyManagerApi.getPrivateKeys()
             .then { [weak self] result in
-                let urlString = self?.emailKeyManagerApi.getPrivateKeysUrlString() ?? ""
+                guard let urlString = self?.emailKeyManagerApi.getPrivateKeysUrlString() else {
+                    fatalError("Private keys URL can not be nil at this point")
+                }
                 self?.showToast(
                     "organisational_rules_ekm_private_keys_message".localizeWithArguments(result.privateKeys.count, urlString)
                 )
 
                 self?.state = .searching
-            }.catch { [weak self] error in
+            }
+            .catch { [weak self] error in
+                if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
+                    return
+                }
                 self?.showAlert(message: error.localizedDescription, onOk: {
                     self?.state = .checkingClientConfigurationIntegrity
                 })

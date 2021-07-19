@@ -70,7 +70,7 @@ extension AttesterApi {
 
         if let value = token {
             httpMethod = .post
-            headers = [URLHeader(value: "Authorization", httpHeaderField: "Bearer \(value)")]
+            headers = [URLHeader(value: "Bearer \(value)", httpHeaderField: "Authorization")]
         } else {
             httpMethod = .put
             headers = []
