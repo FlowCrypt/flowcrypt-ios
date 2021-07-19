@@ -6,6 +6,7 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
+import Combine
 import Promises
 import UIKit
 
@@ -13,6 +14,7 @@ final class BackupService {
     let backupProvider: BackupProvider
     let core: Core
     let messageSender: MessageGateway
+    private var cancellable = Set<AnyCancellable>()
 
     init(
         backupProvider: BackupProvider = MailProvider.shared.backupProvider,
@@ -44,7 +46,7 @@ extension BackupService: BackupServiceType {
     }
 
     func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void> {
-        Promise { [weak self] () -> Void in
+        Promise { [weak self] (resolve, reject) -> Void in
             guard let self = self else { throw AppErr.nilSelf }
 
             let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
@@ -72,7 +74,20 @@ extension BackupService: BackupServiceType {
                 atts: attachments
             )
             let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: nil)
-            try awaitPromise(self.messageSender.sendMail(mime: backupEmail.mimeEncoded))
+
+            self.messageSender
+                .sendMail(mime: backupEmail.mimeEncoded)
+                .sink(
+                    receiveCompletion: { result in
+                        guard let error = result.getError() else {
+                            return
+                        }
+                        reject(error)
+                    },
+                    receiveValue: {
+                        resolve(())
+                    })
+                .store(in: &self.cancellable)
         }
     }
 
