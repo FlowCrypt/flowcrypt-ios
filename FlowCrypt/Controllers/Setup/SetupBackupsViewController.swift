@@ -122,7 +122,7 @@ extension SetupBackupsViewController {
 extension SetupBackupsViewController {
     private func handleBackups() {
         guard fetchedEncryptedKeys.isNotEmpty else {
-            return assertionFailure("Should be handled in SetupInitialViewController")
+            fatalError("Should be handled in SetupInitialViewController")
         }
 
         node.reloadData()

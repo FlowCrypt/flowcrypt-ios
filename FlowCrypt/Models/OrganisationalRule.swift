@@ -85,8 +85,7 @@ class OrganisationalRules {
         }
 
         if keyManagerUrlForPrivateKeys == nil {
-            assertionFailure("Wrong org rules config: using PRV_AUTOIMPORT_OR_AUTOGEN without key_manager_url")
-            return false
+            fatalError("Wrong org rules config: using PRV_AUTOIMPORT_OR_AUTOGEN without key_manager_url")
         }
         return true
     }
