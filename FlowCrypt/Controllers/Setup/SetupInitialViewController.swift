@@ -143,12 +143,17 @@ extension SetupInitialViewController {
     }
 
     private func checkClientConfigurationIntegrity() {
-        guard let integrityErrorMessage = clientConfigurationService.checkForUsingKeyManager() else {
+        let checkForUsingKeyManagerResult = clientConfigurationService.checkForUsingKeyManager()
+
+        switch checkForUsingKeyManagerResult {
+        case .useKeyManager:
             state = .checkingEKMKeys
-            return
-        }
-        showAlert(message: integrityErrorMessage) { [weak self] in
-            self?.router.signOut()
+        case .skip:
+            state = .searching
+        case .error(let message):
+            showAlert(message: message) { [weak self] in
+                self?.router.signOut()
+            }
         }
     }
 

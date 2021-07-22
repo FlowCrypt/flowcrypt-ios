@@ -22,6 +22,7 @@
 		215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */ = {isa = PBXBuildFile; fileRef = 215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */; };
 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
 		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
+		21B15C9426AA00A400D8522B /* ClientConfigurationServiceResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */; };
 		21C7DEFC26669A3700C44800 /* CalendarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DEFB26669A3700C44800 /* CalendarExtension.swift */; };
 		21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */; };
 		21C7DF0526697DA500C44800 /* PromiseKitExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */; };
@@ -383,6 +384,7 @@
 		215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_with_unknown_flag.json; sourceTree = "<group>"; };
 		215897E7267A553200423694 /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
 		2196A21F2684B9BE001B9E00 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
+		21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationServiceResults.swift; sourceTree = "<group>"; };
 		21C7DEFB26669A3700C44800 /* CalendarExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExtension.swift; sourceTree = "<group>"; };
 		21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseKitExtension.swift; sourceTree = "<group>"; };
 		21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApi.swift; sourceTree = "<group>"; };
@@ -805,6 +807,7 @@
 				21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */,
 				21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */,
 				21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */,
+				21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */,
 			);
 			path = "Organisational Rules Service";
 			sourceTree = "<group>";
@@ -2496,6 +2499,7 @@
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				2133D51626A0571F00CC686F /* ClientConfigurationService.swift in Sources */,
 				D274724424FD1932006BA6EF /* FolderObject.swift in Sources */,
+				21B15C9426AA00A400D8522B /* ClientConfigurationServiceResults.swift in Sources */,
 				9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
 				214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */,
