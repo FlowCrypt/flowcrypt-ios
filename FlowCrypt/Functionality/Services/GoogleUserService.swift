@@ -106,7 +106,7 @@ extension GoogleUserService: UserServiceType {
                 } else if let error = error {
                     reject(error)
                 } else {
-                    assertionFailure()
+                    fatalError("Shouldn't happe because covered received non nil error and non nil authState")
                 }
             }
 
@@ -155,15 +155,11 @@ extension GoogleUserService {
         completion: @escaping ((Result<GoogleUser, GoogleUserServiceError>) -> Void)
     ) {
         guard let authorization = authorization else {
-            assertionFailure("authorization should not be nil at this point")
-            completion(.failure(.missedAuthorization))
-            return
+            fatalError("authorization should not be nil at this point")
         }
 
         guard let userInfoEndpoint = URL(string: "https://www.googleapis.com/oauth2/v3/userinfo") else {
-            assertionFailure("userInfoEndpoint should not be nil")
-            completion(.failure(.invalidUserEndpoint))
-            return
+            fatalError("userInfoEndpoint could not be nil because it's hardcoded string url")
         }
 
         let fetcherService = GTMSessionFetcherService()
