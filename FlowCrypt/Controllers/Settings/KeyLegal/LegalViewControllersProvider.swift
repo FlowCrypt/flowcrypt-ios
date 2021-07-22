@@ -32,8 +32,7 @@ private enum Items: Int, CaseIterable {
 
     var viewController: UIViewController {
         guard let link = self.url else {
-            assertionFailure()
-            return UIViewController()
+            fatalError("Links are hardcoded so they have not to be nil")
         }
         let vc = WebViewController(url: link)
         return vc
