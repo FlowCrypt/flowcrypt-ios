@@ -482,8 +482,7 @@ extension SetupImapViewController {
         guard let imapSessionToCheck = IMAPSession(userObject: user),
             let smtpSession = SMTPSession(userObject: user)
         else {
-            assertionFailure("Should be able to create session at this momment")
-            return
+            fatalError("Should be able to create session at this momment")
         }
 
         Promise<Void> {
