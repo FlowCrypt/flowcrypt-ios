@@ -119,8 +119,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
         guard let email = DataService.shared.currentUser?.email else {
             return Promise<ClientConfiguration> { _, reject in
-                assertionFailure("User has to be set while getting client configuration")
-                reject(AppErr.user("currentUser == nil"))
+                fatalError("User has to be set while getting client configuration")
             }
         }
         return getClientConfiguration(for: email)
