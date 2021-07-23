@@ -10,8 +10,8 @@ import Foundation
 
 extension ClientConfigurationService {
     enum CheckForUsingEKMResult {
-        case useKeyManager
-        case error(message: String)
-        case skip
+        case usesEKM
+        case inconsistentClientConfiguration(message: String)
+        case doesNotUseEKM
     }
 }

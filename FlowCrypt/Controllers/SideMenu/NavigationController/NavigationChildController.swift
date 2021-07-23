@@ -16,5 +16,5 @@ protocol NavigationChildController {
 
 extension NavigationChildController where Self: UIViewController {
     var shouldShowBackButton: Bool { true }
-    func handleBackButtonTap() { }
+    func handleBackButtonTap() {}
 }

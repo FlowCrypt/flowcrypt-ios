@@ -7,7 +7,7 @@
 //
 
 protocol ClientConfigurationServiceType {
-    func checkForUsingKeyManager() -> ClientConfigurationService.CheckForUsingEKMResult
+    func checkShouldUseEKM() -> ClientConfigurationService.CheckForUsingEKMResult
 }
 
 class ClientConfigurationService: ClientConfigurationServiceType {
@@ -17,28 +17,31 @@ class ClientConfigurationService: ClientConfigurationServiceType {
     init(organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()) {
         self.organisationalRulesService = organisationalRulesService
     }
-    /// There are in fact three states:
-    /// EKM is in use because organisationalRules.isUsingKeyManager == true and other OrgRules are consistent with it (result: no error, use EKM)
-    /// EKM is in use because organisationalRules.isUsingKeyManager == true and other OrgRules are NOT consistent with it (result: error)
-    /// EKM is not in use because organisationalRules.isUsingKeyManager == false (result: normal login flow)
-    /// - Returns: Error message if not using key manager, returns nil if using key manager
-    func checkForUsingKeyManager() -> CheckForUsingEKMResult {
+
+    /**
+     * This method checks if the user is set up for using EKM, and if other client configuration is consistent with it.
+     * There are three possible outcomes:
+     *  1) EKM is in use because organisationalRules.isUsingKeyManager == true and other OrgRules are consistent with it (result: no error, use EKM)
+     *  2) EKM is in use because organisationalRules.isUsingKeyManager == true and other OrgRules are NOT consistent with it (result: error)
+     *  3) EKM is not in use because organisationalRules.isUsingKeyManager == false (result: normal login flow)
+     */
+    func checkShouldUseEKM() -> CheckForUsingEKMResult {
         let organisationalRules = self.organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
         if !organisationalRules.isUsingKeyManager {
-            return .skip
+            return .doesNotUseEKM
         }
         if !organisationalRules.mustAutoImportOrAutogenPrvWithKeyManager {
-            return .error(message: "organisational_rules_autoimport_or_autogen_with_private_key_manager_error".localized)
+            return .inconsistentClientConfiguration(message: "organisational_rules_autoimport_or_autogen_with_private_key_manager_error".localized)
         }
         if organisationalRules.mustAutogenPassPhraseQuietly {
-            return .error(message: "organisational_rules_autogen_passphrase_quitely_error".localized)
+            return .inconsistentClientConfiguration(message: "organisational_rules_autogen_passphrase_quitely_error".localized)
         }
         if !organisationalRules.forbidStoringPassPhrase {
-            return .error(message: "organisational_rules_forbid_storing_passphrase_error".localized)
+            return .inconsistentClientConfiguration(message: "organisational_rules_forbid_storing_passphrase_error".localized)
         }
         if organisationalRules.mustSubmitAttester {
-            return .error(message: "organisational_rules_must_submit_attester_error".localized)
+            return .inconsistentClientConfiguration(message: "organisational_rules_must_submit_attester_error".localized)
         }
-        return .useKeyManager
+        return .usesEKM
     }
 }
