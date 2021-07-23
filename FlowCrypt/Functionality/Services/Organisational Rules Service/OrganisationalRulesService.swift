@@ -70,8 +70,7 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
 
     func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules {
         guard let configuration = self.clientConfigurationProvider.fetch() else {
-            assertionFailure("There should not be a user without OrganisationalRules")
-            return OrganisationalRules(clientConfiguration: .empty)
+            fatalError("There should not be a user without OrganisationalRules")
         }
 
         return OrganisationalRules(clientConfiguration: configuration)
