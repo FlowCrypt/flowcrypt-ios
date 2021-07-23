@@ -144,14 +144,14 @@ extension SetupInitialViewController {
 
     private func decideIfEKMshouldBeUsed() {
         switch clientConfigurationService.checkShouldUseEKM() {
-            case .usesEKM:
-                state = .fetchingKeysFromEKM
-            case .doesNotUseEKM:
-                state = .searchingKeyBackupsInInbox
-            case .inconsistentClientConfiguration(let message):
-                showAlert(message: message) { [weak self] in
-                    self?.router.signOut()
-                }
+        case .usesEKM:
+            state = .fetchingKeysFromEKM
+        case .doesNotUseEKM:
+            state = .searchingKeyBackupsInInbox
+        case .inconsistentClientConfiguration(let message):
+            showAlert(message: message) { [weak self] in
+                self?.router.signOut()
+            }
         }
     }
 
