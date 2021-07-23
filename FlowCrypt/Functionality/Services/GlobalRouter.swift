@@ -11,7 +11,7 @@ import UIKit
 
 protocol GlobalRouterType {
     func proceed()
-    func signIn(with rout: GlobalRoutingType)
+    func signIn(with route: GlobalRoutingType)
     func switchActive(user: User)
     func signOut()
 }
@@ -71,10 +71,10 @@ extension GlobalRouter {
 
 // MARK: -
 extension GlobalRouter {
-    func signIn(with rout: GlobalRoutingType) {
-        logger.logInfo("Sign in with \(rout)")
+    func signIn(with route: GlobalRoutingType) {
+        logger.logInfo("Sign in with \(route)")
 
-        switch rout {
+        switch route {
         case .gmailLogin(let viewController):
             googleService.signIn(in: viewController)
                 .then(on: .main) { [weak self] session in

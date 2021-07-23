@@ -6,6 +6,7 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import Foundation
 
 /// Organisational rules, set domain-wide, and delivered from FlowCrypt Backend
@@ -119,5 +120,13 @@ class OrganisationalRules {
     /// With this option, sent messages won't have any comment/version in armor, imported keys get imported without armor
     var shouldHideArmorMeta: Bool {
         (clientConfiguration.flags ?? []).contains(.hideArmorMeta)
+    }
+
+    var forbidStoringPassPhrase: Bool {
+        (clientConfiguration.flags ?? []).contains(.forbidStoringPassphrase)
+    }
+
+    var keyManagerUrlString: String? {
+        clientConfiguration.keyManagerUrl?.addTrailingSlashIfNeeded
     }
 }

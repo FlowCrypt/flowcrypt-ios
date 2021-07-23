@@ -28,7 +28,8 @@ extension URLSession {
                 let status = res?.statusCode ?? GeneralConstants.Global.generalError
                 let urlMethod = urlRequest.httpMethod ?? "GET"
                 let urlString = urlRequest.url?.absoluteString ?? "??"
-                let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString)"
+                let headers = urlRequest.allHTTPHeaderFields ?? [:]
+                let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString), headers: \(headers)"
                 Logger.nested("URLSession").logInfo(message)
 
                 let validStatusCode = 200 ... 299

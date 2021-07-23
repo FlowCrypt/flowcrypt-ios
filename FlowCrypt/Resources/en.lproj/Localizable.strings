@@ -203,3 +203,13 @@
 // Organisational rules error
 "organisational_rules_parse_error_description" = "Couldn't parse data while getting organisational rules";
 "organisational_rules_email_format_error_description" = "Wrong user email format";
+
+"organisational_rules_autoimport_or_autogen_with_private_key_manager_error" = "Combination of rules (key_manager_url set but PRV_AUTOIMPORT_OR_AUTOGEN is missing) is not supported on this platform";
+"organisational_rules_autogen_passphrase_quitely_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + PASS_PHRASE_QUIET_AUTOGEN) is not supported on this platform";
+"organisational_rules_forbid_storing_passphrase_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + missing FORBID_STORING_PASS_PHRASE) is not supported on this platform";
+"organisational_rules_must_submit_attester_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + ENFORCE_ATTESTER_SUBMIT) is not supported on this platform";
+"organisational_rules_can_create_keys_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + missing NO_PRV_CREATE) is not supported on this platform";
+"organisational_rules_ekm_private_keys_message" = "Ignoring %d keys returned by EKM %@ (not implemented)";
+
+// Email key manager api error
+"emai_keymanager_api_no_google_id_token_error_description" = "There is no Google ID token were found while getting client configuration";

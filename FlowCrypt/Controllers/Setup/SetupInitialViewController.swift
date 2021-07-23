@@ -23,19 +23,19 @@ final class SetupInitialViewController: TableNodeViewController {
     }
 
     private enum State {
-        case idle, searching, noKeyBackups, error(Error)
+        case idle, decidingIfEKMshouldBeUsed, fetchingKeysFromEKM, searchingKeyBackupsInInbox, noKeyBackupsInInbox, error(Error)
 
         var numberOfRows: Int {
             switch self {
             // title
-            case .idle:
+            case .idle, .decidingIfEKMshouldBeUsed, .fetchingKeysFromEKM:
                 return 1
             // title, loading
-            case .searching:
+            case .searchingKeyBackupsInInbox:
                 return 2
             case .error:
                 return 3
-            case .noKeyBackups:
+            case .noKeyBackupsInInbox:
                 return Parts.allCases.count
             }
         }
@@ -54,6 +54,8 @@ final class SetupInitialViewController: TableNodeViewController {
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
     private let organisationalRules: OrganisationalRules
+    private let emailKeyManagerApi: EmailKeyManagerApiType
+    private let clientConfigurationService: ClientConfigurationServiceType
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -62,13 +64,17 @@ final class SetupInitialViewController: TableNodeViewController {
         backupService: BackupServiceType = BackupService(),
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()
+        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService(),
+        emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi(),
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.user = user
         self.backupService = backupService
         self.router = router
         self.decorator = decorator
         self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
+        self.emailKeyManagerApi = emailKeyManagerApi
+        self.clientConfigurationService = clientConfigurationService
 
         super.init(node: TableNode())
     }
@@ -86,7 +92,7 @@ final class SetupInitialViewController: TableNodeViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setNeedsStatusBarAppearanceUpdate()
-        state = .searching
+        state = .decidingIfEKMshouldBeUsed
     }
 }
 
@@ -97,15 +103,19 @@ extension SetupInitialViewController {
         logger.logInfo("Changed to new state \(state)")
 
         switch state {
-        case .searching:
-            searchBackups()
-        default:
+        case .searchingKeyBackupsInInbox:
+            searchKeyBackupsInInbox()
+        case .decidingIfEKMshouldBeUsed:
+            decideIfEKMshouldBeUsed()
+        case .fetchingKeysFromEKM:
+            fetchKeysFromEKM()
+        case .error, .idle, .noKeyBackupsInInbox:
             break
         }
         node.reloadData()
     }
 
-    private func searchBackups() {
+    private func searchKeyBackupsInInbox() {
         if !organisationalRules.canBackupKeys {
             logger.logInfo("Skipping backups searching because canBackupKeys == false")
             proceedToSetupWith(keys: [])
@@ -131,6 +141,42 @@ extension SetupInitialViewController {
         handleCommon(error: error)
         state = .error(error)
     }
+
+    private func decideIfEKMshouldBeUsed() {
+        switch clientConfigurationService.checkShouldUseEKM() {
+        case .usesEKM:
+            state = .fetchingKeysFromEKM
+        case .doesNotUseEKM:
+            state = .searchingKeyBackupsInInbox
+        case .inconsistentClientConfiguration(let message):
+            showAlert(message: message) { [weak self] in
+                self?.router.signOut()
+            }
+        }
+    }
+
+    private func fetchKeysFromEKM() {
+        emailKeyManagerApi.getPrivateKeys()
+            .then { [weak self] result in
+                guard let urlString = self?.emailKeyManagerApi.getPrivateKeysUrlString() else {
+                    fatalError("Private keys URL can not be nil at this point")
+                }
+                self?.showToast(
+                    "organisational_rules_ekm_private_keys_message".localizeWithArguments(result.privateKeys.count, urlString)
+                )
+                // todo - this is temporary, until we finish EKM integration
+                // instead we should use the keys from EKM for setup
+                self?.state = .searchingKeyBackupsInInbox
+            }
+            .catch { [weak self] error in
+                if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
+                    return
+                }
+                self?.showAlert(message: error.localizedDescription, onOk: {
+                    self?.state = .decidingIfEKMshouldBeUsed
+                })
+            }
+    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
@@ -144,13 +190,13 @@ extension SetupInitialViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
-            case .idle:
+            case .idle, .decidingIfEKMshouldBeUsed, .fetchingKeysFromEKM:
                 return ASCellNode()
-            case .searching:
+            case .searchingKeyBackupsInInbox:
                 return self.searchStateNode(for: indexPath)
             case .error(let error):
                 return self.errorStateNode(for: indexPath, error: error)
-            case .noKeyBackups:
+            case .noKeyBackupsInInbox:
                 return self.noKeysStateNode(for: indexPath)
             }
         }
@@ -245,7 +291,7 @@ extension SetupInitialViewController {
             )
         case 2:
             return ButtonCellNode(input: .retry) { [weak self] in
-                self?.state = .searching
+                self?.state = .searchingKeyBackupsInInbox
             }
         default:
             return ASCellNode()
@@ -270,7 +316,7 @@ extension SetupInitialViewController {
 
         if keys.isEmpty {
             logger.logInfo("No key backups found in inbox")
-            state = .noKeyBackups
+            state = .noKeyBackupsInInbox
         } else {
             logger.logInfo("\(keys.count) key backups found in inbox")
             let viewController = SetupBackupsViewController(fetchedEncryptedKeys: keys, user: user)

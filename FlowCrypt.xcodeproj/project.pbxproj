@@ -11,14 +11,18 @@
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		211392A5266511E6009202EC /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
+		2133D51626A0571F00CC686F /* ClientConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51526A0571F00CC686F /* ClientConfigurationService.swift */; };
+		2133D51826A1E45400CC686F /* DecryptedPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */; };
 		21489B78267CB42400BDE4AC /* ClientConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */; };
 		21489B7A267CB4DF00BDE4AC /* ClientConfigurationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B79267CB4DF00BDE4AC /* ClientConfigurationObject.swift */; };
 		21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */; };
 		21489B80267CC39E00BDE4AC /* OrganisationalRulesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */; };
 		21489B83267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */; };
+		214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214A023926A3029700C24066 /* EmailKeyManagerApi.swift */; };
 		215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */ = {isa = PBXBuildFile; fileRef = 215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */; };
 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
 		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
+		21B15C9426AA00A400D8522B /* ClientConfigurationServiceResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */; };
 		21C7DEFC26669A3700C44800 /* CalendarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DEFB26669A3700C44800 /* CalendarExtension.swift */; };
 		21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */; };
 		21C7DF0526697DA500C44800 /* PromiseKitExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */; };
@@ -367,6 +371,8 @@
 		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
 		11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		211392A4266511E6009202EC /* PubLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubLookup.swift; sourceTree = "<group>"; };
+		2133D51526A0571F00CC686F /* ClientConfigurationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationService.swift; sourceTree = "<group>"; };
+		2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedPrivateKey.swift; sourceTree = "<group>"; };
 		21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManagerTests.swift; sourceTree = "<group>"; };
 		21489B6D267B7D5000BDE4AC /* FileMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMock.swift; sourceTree = "<group>"; };
 		21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationProvider.swift; sourceTree = "<group>"; };
@@ -374,9 +380,11 @@
 		21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfiguration.swift; sourceTree = "<group>"; };
 		21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesService.swift; sourceTree = "<group>"; };
 		21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesServiceError.swift; sourceTree = "<group>"; };
+		214A023926A3029700C24066 /* EmailKeyManagerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailKeyManagerApi.swift; sourceTree = "<group>"; };
 		215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_with_unknown_flag.json; sourceTree = "<group>"; };
 		215897E7267A553200423694 /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
 		2196A21F2684B9BE001B9E00 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
+		21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationServiceResults.swift; sourceTree = "<group>"; };
 		21C7DEFB26669A3700C44800 /* CalendarExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExtension.swift; sourceTree = "<group>"; };
 		21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseKitExtension.swift; sourceTree = "<group>"; };
 		21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApi.swift; sourceTree = "<group>"; };
@@ -795,9 +803,11 @@
 		21489B81267CC3BC00BDE4AC /* Organisational Rules Service */ = {
 			isa = PBXGroup;
 			children = (
+				2133D51526A0571F00CC686F /* ClientConfigurationService.swift */,
 				21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */,
 				21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */,
 				21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */,
+				21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */,
 			);
 			path = "Organisational Rules Service";
 			sourceTree = "<group>";
@@ -997,6 +1007,7 @@
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				21EFF61E265A5C6700AB0B71 /* WKDURLsApi.swift */,
 				21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */,
+				214A023926A3029700C24066 /* EmailKeyManagerApi.swift */,
 				D274724024F97C5C006BA6EF /* CacheService.swift */,
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				9FB22CFD25715DDF0026EE64 /* Key Services */,
@@ -1584,6 +1595,7 @@
 				D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */,
 				D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */,
 				9FC7EAB2266A404D00F3BF5D /* PassPhraseObject.swift */,
+				2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2485,9 +2497,12 @@
 				D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */,
 				9F9361A52573CE260009912F /* MessageProvider.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
+				2133D51626A0571F00CC686F /* ClientConfigurationService.swift in Sources */,
 				D274724424FD1932006BA6EF /* FolderObject.swift in Sources */,
+				21B15C9426AA00A400D8522B /* ClientConfigurationServiceResults.swift in Sources */,
 				9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
+				214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */,
 				D2E26F7424F2705B00612AF1 /* ContactDetailDecorator.swift in Sources */,
 				21C7DF0526697DA500C44800 /* PromiseKitExtension.swift in Sources */,
 				9F7E8F19269C538E0021C07F /* NavigationChildController.swift in Sources */,
@@ -2551,6 +2566,7 @@
 				9F9362192573D10E0009912F /* Imap+Message.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */,
+				2133D51826A1E45400CC686F /* DecryptedPrivateKey.swift in Sources */,
 				21489B83267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift in Sources */,
 				D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */,
 				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
