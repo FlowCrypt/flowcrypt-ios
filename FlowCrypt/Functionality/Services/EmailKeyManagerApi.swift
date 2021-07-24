@@ -11,23 +11,30 @@ import Promises
 protocol EmailKeyManagerApiType {
 
     func getPrivateKeysUrlString() -> String?
-    func getPrivateKeys() -> Promise<DecryptedPrivateKeysResponse>
+    func getPrivateKeys() -> Promise<DecryptedPrivateKeysResponse?>
 }
 
 enum EmailKeyManagerApiError: Error {
     case noGoogleIdToken
+    case parse
     case noPrivateKeysUrlString
 }
 extension EmailKeyManagerApiError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case .noGoogleIdToken: return "emai_keymanager_api_no_google_id_token_error_description".localized
+        case .noGoogleIdToken: return "email_keymanager_api_no_google_id_token_error_description".localized
+        case .parse: return "email_keymanager_api_parse_error_description".localized
         case .noPrivateKeysUrlString: return ""
         }
     }
 }
 
 class EmailKeyManagerApi: EmailKeyManagerApiType {
+
+    private enum Constants {
+        /// 404 - Not Found, -1001 - request timed out, 503 - service unavailable
+        static let getPrivateKeysToleratedStatuses = [404, -1001, 503]
+    }
 
     private let organisationalRulesService: OrganisationalRulesServiceType
 
@@ -42,8 +49,8 @@ class EmailKeyManagerApi: EmailKeyManagerApiType {
         return "\(keyManagerUrlString)v1/keys/private"
     }
 
-    func getPrivateKeys() -> Promise<DecryptedPrivateKeysResponse> {
-        Promise<DecryptedPrivateKeysResponse> { [weak self] resolve, reject in
+    func getPrivateKeys() -> Promise<DecryptedPrivateKeysResponse?> {
+        Promise<DecryptedPrivateKeysResponse?> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
             guard let urlString = self.getPrivateKeysUrlString() else {
                 reject(EmailKeyManagerApiError.noPrivateKeysUrlString)
@@ -66,9 +73,21 @@ class EmailKeyManagerApi: EmailKeyManagerApiType {
                 body: nil,
                 headers: headers
             )
-            let response = try awaitPromise(URLSession.shared.call(request))
-            let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
-            resolve(decryptedPrivateKeysResponse)
+            let response = try awaitPromise(
+                URLSession.shared.call(
+                    request,
+                    tolerateStatus: Constants.getPrivateKeysToleratedStatuses
+                )
+            )
+            if Constants.getPrivateKeysToleratedStatuses.contains(response.status) {
+                resolve(nil)
+            }
+            do {
+                let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
+                resolve(decryptedPrivateKeysResponse)
+            } catch {
+                reject(EmailKeyManagerApiError.parse)
+            }
         }
     }
 }

@@ -161,9 +161,11 @@ extension SetupInitialViewController {
                 guard let urlString = self?.emailKeyManagerApi.getPrivateKeysUrlString() else {
                     fatalError("Private keys URL can not be nil at this point")
                 }
-                self?.showToast(
-                    "organisational_rules_ekm_private_keys_message".localizeWithArguments(result.privateKeys.count, urlString)
-                )
+                if let privateKeys = result?.privateKeys {
+                    self?.showToast(
+                        "organisational_rules_ekm_private_keys_message".localizeWithArguments(privateKeys.count, urlString)
+                    )
+                }
                 // todo - this is temporary, until we finish EKM integration
                 // instead we should use the keys from EKM for setup
                 self?.state = .searchingKeyBackupsInInbox
