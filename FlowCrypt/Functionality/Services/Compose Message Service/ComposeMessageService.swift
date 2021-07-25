@@ -21,17 +21,21 @@ struct ComposeMessageRecipient {
     var state: RecipientState
 }
 
+protocol CoreComposeMessageType {
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) throws -> CoreRes.ComposeEmail
+}
+
 final class ComposeMessageService {
     private let messageGateway: MessageGateway
     private let dataService: KeyStorageType
     private let contactsService: ContactsServiceType
-    private let core: Core
+    private let core: CoreComposeMessageType
 
     init(
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
         dataService: KeyStorageType = KeyDataStorage(),
         contactsService: ContactsServiceType = ContactsService(),
-        core: Core = Core.shared
+        core: CoreComposeMessageType = Core.shared
     ) {
         self.messageGateway = messageGateway
         self.dataService = dataService
@@ -99,7 +103,7 @@ final class ComposeMessageService {
         }
     }
 
-    private func getPubKeys(for recepients: [ComposeMessageRecipient]) -> Result<[String], MessageValidationError>  {
+    private func getPubKeys(for recepients: [ComposeMessageRecipient]) -> Result<[String], MessageValidationError> {
         let pubKeys = recepients.map {
             ($0.email, contactsService.retrievePubKey(for: $0.email))
         }
@@ -128,6 +132,3 @@ final class ComposeMessageService {
         }
     }
 }
-
-// TODO: - ANTON
-// add tests for ComposeMessageService

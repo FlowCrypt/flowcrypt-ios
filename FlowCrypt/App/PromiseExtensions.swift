@@ -6,6 +6,7 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
+import Combine
 import Foundation
 import Promises
 
@@ -19,6 +20,16 @@ extension Promise {
                 case .failure(let error):
                     reject(error)
                 }
+            }
+        }
+    }
+}
+
+extension Future {
+    static func resolveAfter<T, E: Error>(timeout: TimeInterval = 5, with result: Result<T, E>) -> Future<T, E> {
+        Future<T, E> { promise in
+            DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
+                promise(result)
             }
         }
     }
