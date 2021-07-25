@@ -12,8 +12,6 @@ import FlowCryptUI
  * - User can be redirected here from *InboxViewController* by tapping on *+*
  * - Or from *MessageViewController* controller by tapping on *reply*
  */
-
-// TODO: - ANTON check services which can be removed
 final class ComposeViewController: TableNodeViewController {
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
@@ -32,31 +30,28 @@ final class ComposeViewController: TableNodeViewController {
         case subject, subjectDivider, text
     }
 
-    private var cancellable = Set<AnyCancellable>()
+    private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
-    private let dataService: KeyStorageType
     private let decorator: ComposeViewDecorator
-    private let core: Core
     private let contactsService: ContactsServiceType
 
     private let searchThrottler = Throttler(seconds: 1)
     private let cloudContactProvider: CloudContactsProvider
     private let userDefaults: UserDefaults
 
+    private let email: String
+
+    private var cancellable = Set<AnyCancellable>()
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
 
     private var state: State = .main
-    private let email: String
 
-    private let composeMessageService: ComposeMessageService
     init(
         email: String,
         notificationCenter: NotificationCenter = .default,
-        dataService: KeyStorageType = KeyDataStorage(),
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
-        core: Core = Core.shared,
         cloudContactProvider: CloudContactsProvider = UserContactsProvider(),
         userDefaults: UserDefaults = .standard,
         contactsService: ContactsServiceType = ContactsService(),
@@ -64,15 +59,13 @@ final class ComposeViewController: TableNodeViewController {
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
-        self.dataService = dataService
         self.input = input
         self.decorator = decorator
-        self.core = core
         self.cloudContactProvider = cloudContactProvider
         self.userDefaults = userDefaults
         self.contactsService = contactsService
         self.composeMessageService = composeMessageService
-        contextToSend.subject = input.subject
+        self.contextToSend.subject = input.subject
         if input.isReply {
             if let email = input.recipientReplyTitle {
                 contextToSend.recipients.append(ComposeMessageRecipient(email: email, state: decorator.recipientIdleState))
@@ -212,34 +205,38 @@ extension ComposeViewController {
 
         switch result {
         case .success(let sendableMessage):
-            showSpinner("sending_title".localized)
-            
-            composeMessageService
-                .encryptAndSend(message: sendableMessage)
-                .sink(
-                    receiveCompletion: { [weak self] result in
-                        guard case .failure(let error) = result else {
-                            return
-                        }
-                        self?.handle(error: error)
-                    },
-                    receiveValue: { [weak self] in
-                        self?.handleSuccessfullySentMessage()
-                    })
-                .store(in: &cancellable)
+            handleValid(message: sendableMessage)
         case .failure(let error):
             handle(error: error)
         }
     }
-    
+
     private func handle(error: ComposeMessageError) {
         hideSpinner()
-        
+
         let message = "compose_error".localized
             + "\n\n"
             + error.description
-        
+
         showAlert(error: error, message: message)
+    }
+
+    private func handleValid(message sendableMessage: SendableMsg) {
+        showSpinner("sending_title".localized)
+
+        composeMessageService
+            .encryptAndSend(message: sendableMessage)
+            .sink(
+                receiveCompletion: { [weak self] result in
+                    guard case .failure(let error) = result else {
+                        return
+                    }
+                    self?.handle(error: error)
+                },
+                receiveValue: { [weak self] in
+                    self?.handleSuccessfullySentMessage()
+                })
+            .store(in: &cancellable)
     }
 
     private func showNoPubKeyAlert(for emails: [String]) {
@@ -394,7 +391,6 @@ extension ComposeViewController {
 }
 
 // MARK: - Recipients Input
-
 extension ComposeViewController {
     private var textField: TextFieldNode? {
         (node.nodeForRow(at: IndexPath(row: RecipientParts.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField

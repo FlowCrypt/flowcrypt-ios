@@ -21,39 +21,6 @@ struct ComposeMessageRecipient {
     var state: RecipientState
 }
 
-enum ComposeMessageError: Error, CustomStringConvertible {
-    case validationError(MessageValidationError)
-    case gatewayError(Error)
-
-    // TODO: - ANTON - add proper description
-    var description: String {
-        switch self {
-        case .validationError(let messageValidationError):
-            return ""
-        case .gatewayError(let error):
-            return ""
-        }
-    }
-}
-
-enum MessageValidationError: Error {
-    // showAlert(message: "compose_enter_recipient".localized)
-    case emptyRecipient
-    // showAlert(message: "compose_enter_subject".localized)
-    case emptySubject
-    // showAlert(message: "compose_enter_secure".localized)
-    case emptyMessage
-
-    // self.showAlert(message: "compose_no_pub_sender".localized)
-    case missedPublicKey
-
-    // showAlert(message: "Public key is missing")
-    case missedRecipientPublicKey
-
-    // showAlert(message: "Recipients should not be empty. Fail in checking")
-    case internalError(String)
-}
-
 final class ComposeMessageService {
     private let messageGateway: MessageGateway
     private let dataService: KeyStorageType
@@ -72,6 +39,7 @@ final class ComposeMessageService {
         self.core = core
     }
 
+    // MARK: - Validation
     func validateMessageInput(
         with recipients: [ComposeMessageRecipient],
         input: ComposeMessageInput,
@@ -108,29 +76,30 @@ final class ComposeMessageService {
             return .failure(.validationError(.missedPublicKey))
         }
 
-        guard let allRecipientPubs = getPubKeys(for: recipients) else {
-            return .failure(.validationError(.missedRecipientPublicKey))
+        switch getPubKeys(for: recipients) {
+        case .success(let allRecipientPubs):
+            let replyToMimeMsg = input.replyToMime
+                .flatMap { String(data: $0, encoding: .utf8) }
+
+            let msg = SendableMsg(
+                text: text,
+                to: recipients.map(\.email),
+                cc: [],
+                bcc: [],
+                from: email,
+                subject: subject,
+                replyToMimeMsg: replyToMimeMsg,
+                atts: atts,
+                pubKeys: allRecipientPubs + [myPubKey]
+            )
+
+            return .success(msg)
+        case .failure(let error):
+            return .failure(.validationError(error))
         }
-
-        let replyToMimeMsg = input.replyToMime
-            .flatMap { String(data: $0, encoding: .utf8) }
-
-        let msg = SendableMsg(
-            text: text,
-            to: recipients.map(\.email),
-            cc: [],
-            bcc: [],
-            from: email,
-            subject: subject,
-            replyToMimeMsg: replyToMimeMsg,
-            atts: atts,
-            pubKeys: allRecipientPubs + [myPubKey]
-        )
-
-        return .success(msg)
     }
 
-    private func getPubKeys(for recepients: [ComposeMessageRecipient]) -> [String]? {
+    private func getPubKeys(for recepients: [ComposeMessageRecipient]) -> Result<[String], MessageValidationError>  {
         let pubKeys = recepients.map {
             ($0.email, contactsService.retrievePubKey(for: $0.email))
         }
@@ -138,14 +107,13 @@ final class ComposeMessageService {
         let emailsWithoutPubKeys = pubKeys.filter { $0.1 == nil }.map(\.0)
 
         guard emailsWithoutPubKeys.isEmpty else {
-            // TODO: - ANTON - return error
-//            showNoPubKeyAlert(for: emailsWithoutPubKeys)
-            return nil
+            return .failure(.noPubRecipients(emailsWithoutPubKeys))
         }
 
-        return pubKeys.compactMap(\.1)
+        return .success(pubKeys.compactMap(\.1))
     }
 
+    // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg) -> AnyPublisher<Void, ComposeMessageError> {
         messageGateway.sendMail(mime: encryptMessage(with: message))
             .mapError { ComposeMessageError.gatewayError($0) }
@@ -159,17 +127,6 @@ final class ComposeMessageService {
             fatalError()
         }
     }
-}
-
-struct ComposedMessage {
-    let email: String
-    let pubkeys: [String]
-    let subject: String
-    let message: String
-    let to: [String]
-    let cc: [String]
-    let bcc: [String]
-    let atts: [SendableMsg.Attachment]
 }
 
 // TODO: - ANTON
