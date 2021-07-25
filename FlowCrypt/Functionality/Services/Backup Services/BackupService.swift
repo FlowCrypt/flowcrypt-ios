@@ -71,18 +71,21 @@ extension BackupService: BackupServiceType {
                 from: userId.toMime,
                 subject: "Your FlowCrypt Backup",
                 replyToMimeMsg: nil,
-                atts: attachments
+                atts: attachments,
+                pubKeys: nil
             )
-            let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: nil)
+            let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
 
             self.messageSender
                 .sendMail(mime: backupEmail.mimeEncoded)
                 .sink(
                     receiveCompletion: { result in
-                        guard let error = result.getError() else {
-                            return
+                        switch result {
+                        case .failure(let error):
+                            reject(error)
+                        case .finished:
+                            break
                         }
-                        reject(error)
                     },
                     receiveValue: {
                         resolve(())

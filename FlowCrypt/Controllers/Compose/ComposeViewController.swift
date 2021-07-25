@@ -12,26 +12,9 @@ import FlowCryptUI
  * - User can be redirected here from *InboxViewController* by tapping on *+*
  * - Or from *MessageViewController* controller by tapping on *reply*
  */
+
+// TODO: - ANTON check services which can be removed
 final class ComposeViewController: TableNodeViewController {
-    struct Recipient {
-        let email: String
-        var state: RecipientState
-
-        init(
-            email: String,
-            state: RecipientState
-        ) {
-            self.email = email
-            self.state = state
-        }
-    }
-
-    private struct Context {
-        var message: String?
-        var recipients: [Recipient] = []
-        var subject: String?
-    }
-
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
         static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
@@ -50,10 +33,9 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private var cancellable = Set<AnyCancellable>()
-    private let messageSender: MessageGateway
     private let notificationCenter: NotificationCenter
     private let dataService: KeyStorageType
-    private let decorator: ComposeViewDecoratorType
+    private let decorator: ComposeViewDecorator
     private let core: Core
     private let contactsService: ContactsServiceType
 
@@ -61,26 +43,26 @@ final class ComposeViewController: TableNodeViewController {
     private let cloudContactProvider: CloudContactsProvider
     private let userDefaults: UserDefaults
 
-    private var input: Input
-    private var contextToSend = Context()
+    private var input: ComposeMessageInput
+    private var contextToSend = ComposeMessageContext()
 
     private var state: State = .main
     private let email: String
 
+    private let composeMessageService: ComposeMessageService
     init(
         email: String,
-        messageSender: MessageGateway = MailProvider.shared.messageSender,
         notificationCenter: NotificationCenter = .default,
         dataService: KeyStorageType = KeyDataStorage(),
-        decorator: ComposeViewDecoratorType = ComposeViewDecorator(),
-        input: ComposeViewController.Input = .empty,
+        decorator: ComposeViewDecorator = ComposeViewDecorator(),
+        input: ComposeMessageInput = .empty,
         core: Core = Core.shared,
         cloudContactProvider: CloudContactsProvider = UserContactsProvider(),
         userDefaults: UserDefaults = .standard,
-        contactsService: ContactsServiceType = ContactsService()
+        contactsService: ContactsServiceType = ContactsService(),
+        composeMessageService: ComposeMessageService = ComposeMessageService()
     ) {
         self.email = email
-        self.messageSender = messageSender
         self.notificationCenter = notificationCenter
         self.dataService = dataService
         self.input = input
@@ -89,10 +71,11 @@ final class ComposeViewController: TableNodeViewController {
         self.cloudContactProvider = cloudContactProvider
         self.userDefaults = userDefaults
         self.contactsService = contactsService
+        self.composeMessageService = composeMessageService
         contextToSend.subject = input.subject
         if input.isReply {
             if let email = input.recipientReplyTitle {
-                contextToSend.recipients.append(Recipient(email: email, state: decorator.recipientIdleState))
+                contextToSend.recipients.append(ComposeMessageRecipient(email: email, state: decorator.recipientIdleState))
             }
         }
         super.init(node: TableNode())
@@ -219,79 +202,44 @@ extension ComposeViewController {
     private func sendMessage() {
         view.endEditing(true)
 
-        guard isInputValid() else { return }
-
-        showSpinner("sending_title".localized)
-
-        encryptAndSendMessage()
-    }
-
-    // TODO: - Refactor send message checks. https://github.com/FlowCrypt/flowcrypt-ios/issues/399
-    private func encryptAndSendMessage() {
-        let recipients = contextToSend.recipients
-
-        guard recipients.isNotEmpty else {
-            showAlert(message: "Recipients should not be empty. Fail in checking")
-            return
-        }
-
-        guard let text = self.contextToSend.message else {
-            showAlert(message: "Text and Email should not be nil at this point. Fail in checking")
-            return
-        }
-
-        let subject = self.input.subjectReplyTitle
-            ?? self.contextToSend.subject
-            ?? "(no subject)"
-
-        guard let myPubKey = self.dataService.publicKey() else {
-            self.showAlert(message: "compose_no_pub_sender".localized)
-            return
-        }
-
-        guard let allRecipientPubs = getPubKeys(for: recipients) else {
-            showAlert(message: "Public key is missin")
-            return
-        }
-
-        showSpinner()
-
-        let encrypted = self.encryptMsg(
-            pubkeys: allRecipientPubs + [myPubKey],
-            subject: subject,
-            message: text,
-            to: recipients.map(\.email)
+        let result = composeMessageService.validateMessageInput(
+            with: recipients,
+            input: input,
+            contextToSend: contextToSend,
+            email: email,
+            atts: []
         )
 
-        messageSender
-            .sendMail(mime: encrypted.mimeEncoded)
-            .sink(
-                receiveCompletion: { [weak self] result in
-                    guard let error = result.getError() else {
-                        return
-                    }
-
-                    self?.showAlert(error: error, message: "compose_error".localized)
-                },
-                receiveValue: { [weak self] in
-                    self?.handleSuccessfullySentMessage()
-                })
-            .store(in: &cancellable)
+        switch result {
+        case .success(let sendableMessage):
+            showSpinner("sending_title".localized)
+            
+            composeMessageService
+                .encryptAndSend(message: sendableMessage)
+                .sink(
+                    receiveCompletion: { [weak self] result in
+                        guard case .failure(let error) = result else {
+                            return
+                        }
+                        self?.handle(error: error)
+                    },
+                    receiveValue: { [weak self] in
+                        self?.handleSuccessfullySentMessage()
+                    })
+                .store(in: &cancellable)
+        case .failure(let error):
+            handle(error: error)
+        }
     }
-
-    private func getPubKeys(for recepients: [Recipient]) -> [String]? {
-        let pubKeys = recipients.map {
-            ($0.email, contactsService.retrievePubKey(for: $0.email))
-        }
-
-        let emailsWithoutPubKeys = pubKeys.filter { $0.1 == nil }.map(\.0)
-
-        guard emailsWithoutPubKeys.isEmpty else {
-            showNoPubKeyAlert(for: emailsWithoutPubKeys)
-            return nil
-        }
-
-        return pubKeys.compactMap(\.1)
+    
+    private func handle(error: ComposeMessageError) {
+        hideSpinner()
+        
+        let message = "compose_error".localized
+            + "\n\n"
+            + error.description
+        
+        showAlert(error: error, message: message)
     }
 
     private func showNoPubKeyAlert(for emails: [String]) {
@@ -305,55 +253,6 @@ extension ComposeViewController {
         hideSpinner()
         showToast(input.successfullySentToast)
         navigationController?.popViewController(animated: true)
-    }
-
-    private func encryptMsg(
-        pubkeys: [String],
-        subject: String,
-        message: String,
-        to: [String],
-        cc: [String] = [],
-        bcc: [String] = [],
-        atts: [SendableMsg.Attachment] = []
-    ) -> CoreRes.ComposeEmail {
-        let replyToMimeMsg = input.replyToMime
-            .flatMap { String(data: $0, encoding: .utf8) }
-        let msg = SendableMsg(
-            text: message,
-            to: to,
-            cc: cc,
-            bcc: bcc,
-            from: email,
-            subject: subject,
-            replyToMimeMsg: replyToMimeMsg,
-            atts: atts
-        )
-
-        do {
-            return try core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: pubkeys)
-        } catch {
-            fatalError()
-        }
-    }
-
-    private func isInputValid() -> Bool {
-        let emails = recipients.map(\.email)
-        let hasContent = emails.filter { $0.hasContent }
-
-        guard emails.count == hasContent.count else {
-            showAlert(message: "compose_enter_recipient".localized)
-            return false
-        }
-        guard input.isReply || contextToSend.subject?.hasContent ?? false else {
-            showAlert(message: "compose_enter_subject".localized)
-            return false
-        }
-
-        guard contextToSend.message?.hasContent ?? false else {
-            showAlert(message: "compose_enter_secure".localized)
-            return false
-        }
-        return true
     }
 }
 
@@ -505,7 +404,7 @@ extension ComposeViewController {
         IndexPath(row: RecipientParts.recipient.rawValue, section: 0)
     }
 
-    private var recipients: [ComposeViewController.Recipient] {
+    private var recipients: [ComposeMessageRecipient] {
         contextToSend.recipients
     }
 
@@ -561,7 +460,7 @@ extension ComposeViewController {
             return recipient
         }
 
-        let newRecipient = Recipient(email: text, state: decorator.recipientIdleState)
+        let newRecipient = ComposeMessageRecipient(email: text, state: decorator.recipientIdleState)
         let indexOfRecipient: Int
 
         if let index = contextToSend.recipients.firstIndex(where: { $0.email == newRecipient.email }) {
@@ -648,7 +547,7 @@ extension ComposeViewController {
             }
     }
 
-    private func evaluate(recipient: Recipient) {
+    private func evaluate(recipient: ComposeMessageRecipient) {
         guard isValid(email: recipient.email) else {
             updateRecipientWithNew(state: self.decorator.recipientErrorState, for: .left(recipient))
             return
@@ -663,14 +562,14 @@ extension ComposeViewController {
             }
     }
 
-    private func handleEvaluation(for recipient: Recipient) {
+    private func handleEvaluation(for recipient: ComposeMessageRecipient) {
         updateRecipientWithNew(
             state: decorator.recipientKeyFoundState,
             for: .left(recipient)
         )
     }
 
-    private func handleEvaluation(error: Error, with recipient: Recipient) {
+    private func handleEvaluation(error: Error, with recipient: ComposeMessageRecipient) {
         let recipientState: RecipientState = {
             switch error {
             case ContactsError.keyMissing:
@@ -686,7 +585,7 @@ extension ComposeViewController {
         )
     }
 
-    private func updateRecipientWithNew(state: RecipientState, for context: Either<Recipient, IndexPath>) {
+    private func updateRecipientWithNew(state: RecipientState, for context: Either<ComposeMessageRecipient, IndexPath>) {
         let index: Int? = {
             switch context {
             case let .left(recipient):

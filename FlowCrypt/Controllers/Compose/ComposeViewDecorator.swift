@@ -9,23 +9,7 @@
 import FlowCryptUI
 import UIKit
 
-protocol ComposeViewDecoratorType {
-    var recipientIdleState: RecipientState { get }
-    var recipientSelectedState: RecipientState { get }
-    var recipientKeyFoundState: RecipientState { get }
-    var recipientKeyNotFoundState: RecipientState { get }
-    var recipientErrorState: RecipientState { get }
-    var recipientErrorStateRetry: RecipientState { get }
-
-    func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input
-    func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input
-    func styledRecipientInfo(with email: String) -> InfoCellNode.Input
-    func styledTitle(with text: String?) -> NSAttributedString?
-    func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString
-}
-
-// MARK: - ComposeViewDecorator
-struct ComposeViewDecorator: ComposeViewDecoratorType {
+struct ComposeViewDecorator {
     let recipientIdleState: RecipientState = .idle(idleStateContext)
     let recipientSelectedState: RecipientState = .selected(selectedStateContext)
     let recipientKeyFoundState: RecipientState = .keyFound(keyFoundStateContext)
@@ -77,7 +61,7 @@ struct ComposeViewDecorator: ComposeViewDecoratorType {
         )
     }
 
-    func styledReplyQuote(with input: ComposeViewController.Input) -> NSAttributedString {
+    func styledReplyQuote(with input: ComposeMessageInput) -> NSAttributedString {
         guard case let .reply(info) = input.type else { return NSAttributedString(string: "") }
 
         let dateFormatter = DateFormatter()
@@ -192,7 +176,7 @@ extension ComposeViewDecorator {
 
 // MARK: - RecipientEmailsCellNode.Input
 extension RecipientEmailsCellNode.Input {
-    init(_ recipient: ComposeViewController.Recipient) {
+    init(_ recipient: ComposeMessageRecipient) {
         self.init(
             email: recipient.email.lowercased().attributed(
                 .regular(17),

@@ -120,6 +120,7 @@ struct SendableMsg {
     let subject: String
     let replyToMimeMsg: String?
     let atts: [Attachment]
+    let pubKeys: [String]?
 }
 
 struct MsgBlock: Decodable {
