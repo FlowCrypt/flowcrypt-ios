@@ -11,7 +11,7 @@ import Promises
 @testable import FlowCrypt
 
 class ContactsServiceMock: ContactsServiceType {
-    var retrievePubKeyResult: ((String) -> (String))!
+    var retrievePubKeyResult: ((String) -> (String?))!
     func retrievePubKey(for email: String) -> String? {
         retrievePubKeyResult(email)
     }

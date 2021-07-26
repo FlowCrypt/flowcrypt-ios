@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum MessageValidationError: Error, CustomStringConvertible {
+enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     case emptyRecipient
     case emptySubject
     case emptyMessage
@@ -41,7 +41,7 @@ enum MessageValidationError: Error, CustomStringConvertible {
     }
 }
 
-enum ComposeMessageError: Error, CustomStringConvertible {
+enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
     case validationError(MessageValidationError)
     case gatewayError(Error)
 
@@ -52,5 +52,9 @@ enum ComposeMessageError: Error, CustomStringConvertible {
         case .gatewayError(let error):
             return error.localizedDescription
         }
+    }
+
+    static func == (lhs: ComposeMessageError, rhs: ComposeMessageError) -> Bool {
+        lhs.description == rhs.description
     }
 }

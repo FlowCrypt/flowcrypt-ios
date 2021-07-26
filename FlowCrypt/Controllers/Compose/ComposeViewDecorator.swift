@@ -9,6 +9,9 @@
 import FlowCryptUI
 import UIKit
 
+typealias RecipientState = RecipientEmailsCellNode.Input.State
+typealias RecipientStateContext = RecipientEmailsCellNode.Input.StateContext
+
 struct ComposeViewDecorator {
     let recipientIdleState: RecipientState = .idle(idleStateContext)
     let recipientSelectedState: RecipientState = .selected(selectedStateContext)
@@ -119,7 +122,7 @@ extension UIColor {
 
 // MARK: - RecipientState
 extension ComposeViewDecorator {
-    private static var idleStateContext: RecipientStateContext {
+    static var idleStateContext: RecipientStateContext {
         RecipientStateContext(
             backgroundColor: .titleNodeBackgroundColor,
             borderColor: .borderColor,

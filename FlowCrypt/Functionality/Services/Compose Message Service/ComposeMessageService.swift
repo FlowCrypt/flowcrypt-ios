@@ -44,15 +44,24 @@ final class ComposeMessageService {
     }
 
     // MARK: - Validation
-    func validateMessageInput(
-        with recipients: [ComposeMessageRecipient],
+    func validateMessage(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
         email: String,
         atts: [SendableMsg.Attachment]
     ) -> Result<SendableMsg, ComposeMessageError> {
+        let recipients = contextToSend.recipients
+
+        guard recipients.isNotEmpty else {
+            return .failure(.validationError(.emptyRecipient))
+        }
+
         let emails = recipients.map(\.email)
         let hasContent = emails.filter { $0.hasContent }
+
+        guard emails.isNotEmpty else {
+            return .failure(.validationError(.emptyRecipient))
+        }
 
         guard emails.count == hasContent.count else {
             return .failure(.validationError(.emptyRecipient))
@@ -64,12 +73,6 @@ final class ComposeMessageService {
 
         guard let text = contextToSend.message, text.hasContent else {
             return .failure(.validationError(.emptyMessage))
-        }
-
-        let recipients = contextToSend.recipients
-
-        guard recipients.isNotEmpty else {
-            return .failure(.validationError(.internalError("Recipients should not be empty. Fail in checking")))
         }
 
         let subject = input.subjectReplyTitle

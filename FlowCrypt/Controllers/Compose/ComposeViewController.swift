@@ -195,8 +195,7 @@ extension ComposeViewController {
     private func sendMessage() {
         view.endEditing(true)
 
-        let result = composeMessageService.validateMessageInput(
-            with: recipients,
+        let result = composeMessageService.validateMessage(
             input: input,
             contextToSend: contextToSend,
             email: email,
@@ -375,8 +374,9 @@ extension ComposeViewController {
         ) { [weak self] action in
             self?.handleTextFieldAction(with: action)
         }
-        .onShouldReturn { [weak self] textField -> Bool in
-            self?.shouldReturn(with: textField) ?? true
+        .onShouldReturn { textField -> Bool in
+            textField.resignFirstResponder()
+            return true
         }
         .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
             self?.shouldChange(with: textField, and: character) ?? true
@@ -402,11 +402,6 @@ extension ComposeViewController {
 
     private var recipients: [ComposeMessageRecipient] {
         contextToSend.recipients
-    }
-
-    private func shouldReturn(with textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
     }
 
     private func shouldChange(with textField: UITextField, and character: String) -> Bool {
