@@ -42,7 +42,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         let clientConfiguration: ClientConfiguration
 
         private enum CodingKeys: String, CodingKey {
-            case clientConfiguration = "clientConfiguration"
+            case clientConfiguration
         }
     }
 
@@ -118,7 +118,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
     func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
         guard let email = DataService.shared.currentUser?.email else {
-            return Promise<ClientConfiguration> { _, reject in
+            return Promise<ClientConfiguration> { _, _ in
                 fatalError("User has to be set while getting client configuration")
             }
         }

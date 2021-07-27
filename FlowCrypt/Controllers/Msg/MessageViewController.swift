@@ -347,7 +347,7 @@ extension MessageViewController {
     private func handleReplyTap() {
         guard let input = input, let email = DataService.shared.email else { return }
 
-        let replyInfo = ComposeViewController.Input.ReplyInfo(
+        let replyInfo = ComposeMessageInput.ReplyInfo(
             recipient: input.objMessage.sender,
             subject: input.objMessage.subject,
             mime: processedMessage.rawMimeData,
@@ -355,7 +355,7 @@ extension MessageViewController {
             message: processedMessage.text
         )
 
-        let composeInput = ComposeViewController.Input(type: .reply(replyInfo))
+        let composeInput = ComposeMessageInput(type: .reply(replyInfo))
         navigationController?.pushViewController(
             ComposeViewController(email: email, input: composeInput),
             animated: true

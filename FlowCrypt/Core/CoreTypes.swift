@@ -105,8 +105,8 @@ struct UserId: Encodable {
     let name: String
 }
 
-struct SendableMsg {
-    struct Attachment {
+struct SendableMsg: Equatable {
+    struct Attachment: Equatable {
         let name: String
         let type: String
         let base64: String
@@ -120,6 +120,7 @@ struct SendableMsg {
     let subject: String
     let replyToMimeMsg: String?
     let atts: [Attachment]
+    let pubKeys: [String]?
 }
 
 struct MsgBlock: Decodable {
