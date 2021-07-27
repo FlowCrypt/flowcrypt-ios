@@ -83,27 +83,24 @@ final class ComposeMessageService {
             return .failure(.validationError(.missedPublicKey))
         }
 
-        switch getPubKeys(for: recipients) {
-        case .success(let allRecipientPubs):
-            let replyToMimeMsg = input.replyToMime
-                .flatMap { String(data: $0, encoding: .utf8) }
+        return getPubKeys(for: recipients)
+            .mapError { ComposeMessageError.validationError($0) }
+            .map { allRecipientPubs in
+                let replyToMimeMsg = input.replyToMime
+                    .flatMap { String(data: $0, encoding: .utf8) }
 
-            let msg = SendableMsg(
-                text: text,
-                to: recipients.map(\.email),
-                cc: [],
-                bcc: [],
-                from: email,
-                subject: subject,
-                replyToMimeMsg: replyToMimeMsg,
-                atts: atts,
-                pubKeys: allRecipientPubs + [myPubKey]
-            )
-
-            return .success(msg)
-        case .failure(let error):
-            return .failure(.validationError(error))
-        }
+                return SendableMsg(
+                    text: text,
+                    to: recipients.map(\.email),
+                    cc: [],
+                    bcc: [],
+                    from: email,
+                    subject: subject,
+                    replyToMimeMsg: replyToMimeMsg,
+                    atts: atts,
+                    pubKeys: allRecipientPubs + [myPubKey]
+                )
+            }
     }
 
     private func getPubKeys(for recepients: [ComposeMessageRecipient]) -> Result<[String], MessageValidationError> {

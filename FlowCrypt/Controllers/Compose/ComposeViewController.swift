@@ -195,19 +195,27 @@ extension ComposeViewController {
     private func sendMessage() {
         view.endEditing(true)
 
-        let result = composeMessageService.validateMessage(
+        showSpinner("sending_title".localized)
+
+        composeMessageService.validateMessage(
             input: input,
             contextToSend: contextToSend,
             email: email,
             atts: []
         )
-
-        switch result {
-        case .success(let sendableMessage):
-            handleValid(message: sendableMessage)
-        case .failure(let error):
-            handle(error: error)
-        }
+        .publisher
+        .flatMap(composeMessageService.encryptAndSend)
+        .sink(
+            receiveCompletion: { [weak self] result in
+                guard case .failure(let error) = result else {
+                    return
+                }
+                self?.handle(error: error)
+            },
+            receiveValue: { [weak self] in
+                self?.handleSuccessfullySentMessage()
+            })
+        .store(in: &cancellable)
     }
 
     private func handle(error: ComposeMessageError) {
@@ -218,24 +226,6 @@ extension ComposeViewController {
             + error.description
 
         showAlert(message: message)
-    }
-
-    private func handleValid(message sendableMessage: SendableMsg) {
-        showSpinner("sending_title".localized)
-
-        composeMessageService
-            .encryptAndSend(message: sendableMessage)
-            .sink(
-                receiveCompletion: { [weak self] result in
-                    guard case .failure(let error) = result else {
-                        return
-                    }
-                    self?.handle(error: error)
-                },
-                receiveValue: { [weak self] in
-                    self?.handleSuccessfullySentMessage()
-                })
-            .store(in: &cancellable)
     }
 
     private func handleSuccessfullySentMessage() {
