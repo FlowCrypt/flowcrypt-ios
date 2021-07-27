@@ -217,7 +217,7 @@ extension ComposeViewController {
             + "\n\n"
             + error.description
 
-        showAlert(error: error, message: message)
+        showAlert(message: message)
     }
 
     private func handleValid(message sendableMessage: SendableMsg) {
@@ -236,13 +236,6 @@ extension ComposeViewController {
                     self?.handleSuccessfullySentMessage()
                 })
             .store(in: &cancellable)
-    }
-
-    private func showNoPubKeyAlert(for emails: [String]) {
-        let message = emails.count == 1
-            ? "compose_no_pub_recipient".localized
-            : "compose_no_pub_multiple".localized + "\n" + emails.joined(separator: ",")
-        showAlert(message: message)
     }
 
     private func handleSuccessfullySentMessage() {
