@@ -35,7 +35,7 @@ final class KeyService: KeyServiceType {
 
     func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
         guard let privateKeys = try? getPrivateKeys().get(), privateKeys.isNotEmpty else {
-            return .failure(.emptyKeys)
+            return .success([])
         }
 
         let keyDetails = privateKeys
@@ -63,7 +63,7 @@ final class KeyService: KeyServiceType {
         let storedPassPhrases = passPhraseService.getPassPhrases()
 
         guard keysInfo.isNotEmpty else {
-            return .failure(.emptyKeys)
+            return .success([])
         }
 
         // get all private keys with already saved pass phrases
