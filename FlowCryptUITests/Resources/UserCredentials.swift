@@ -17,6 +17,12 @@ struct UserCredentials: Codable, Equatable {
 
     static var empty = UserCredentials(email: "", password: "", pass: "", recovery: "", privateKey: "")
 
+    static var gmailDev: UserCredentials = {
+        Credentials.default
+            .users
+            .first(where: { $0.email == "ci.tests.gmail@flowcrypt.dev" })!
+    }()
+    
     static var main: UserCredentials = {
         Credentials.default
             .users

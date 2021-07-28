@@ -9,7 +9,7 @@
 import XCTest
 import FlowCryptCommon
 
-let logger = Logger.nested("UI Tests")
+private let logger = Logger.nested("UI Tests")
 
 // MARK: - Compatibility account
 

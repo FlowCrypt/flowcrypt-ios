@@ -36,10 +36,6 @@ extension AppTest {
         return app.buttons["Go"]
     }
 
-    var gmailAlert: XCUIElement {
-        Springboard.springboard.alerts.element
-    }
-
     var menuButton: XCUIElement {
         app.navigationBars.buttons["menu icn"]
     }
@@ -127,26 +123,28 @@ extension AppTest {
         logger.logInfo("Try to connect")
         wait(10)
     }
-
+    
     func logOutIfNeeded() {
         logger.logInfo("Log out if needed")
-        let otherEmailButton = app.tables.buttons["Other email provider"]
-
+       
         // Check which screen we are now
-        guard otherEmailButton.exists, menuButton.exists else {
+        guard menuButton.exists else {
             logger.logInfo("Already logged out")
             return
         }
-
-        let otherAccountButton = app.tables.buttons["Use Another Account"]
         
-        if otherAccountButton.exists {
-            logger.logInfo("Try to use another account")
-            otherAccountButton.tap()
-        } else {
-            logger.logInfo("Try to log out")
+        if menuButton.exists {
+            logger.logInfo("User is logged in. Try to log out")
             menuButton.tap()
             tapOnMenu(folder: "Log out")
+        } else {
+            let otherAccountButton = app.tables.buttons["Use Another Account"]
+            if otherAccountButton.exists {
+                logger.logInfo("Try to use another account")
+                otherAccountButton.tap()
+            } else {
+                logger.logInfo("User is not logged in")
+            }
         }
     }
 }
