@@ -14,7 +14,7 @@ protocol KeyServiceType {
 }
 
 enum KeyServiceError: Error {
-    case emptyKeys, unexpected, parsingError, retrieve
+    case unexpected, parsingError, retrieve
 }
 
 final class KeyService: KeyServiceType {
@@ -34,8 +34,19 @@ final class KeyService: KeyServiceType {
     }
 
     func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
-        guard let privateKeys = try? getPrivateKeys().get(), privateKeys.isNotEmpty else {
-            return .failure(.emptyKeys)
+
+        let privateKeys: [PrvKeyInfo]
+
+        do {
+            privateKeys = try getPrivateKeys().get()
+        } catch let error as KeyServiceError {
+            return .failure(error)
+        } catch {
+            fatalError("Should only throw KeyServiceError")
+        }
+
+        guard privateKeys.isNotEmpty else {
+            return .success([])
         }
 
         let keyDetails = privateKeys
@@ -63,7 +74,7 @@ final class KeyService: KeyServiceType {
         let storedPassPhrases = passPhraseService.getPassPhrases()
 
         guard keysInfo.isNotEmpty else {
-            return .failure(.emptyKeys)
+            return .success([])
         }
 
         // get all private keys with already saved pass phrases
@@ -99,10 +110,6 @@ final class KeyService: KeyServiceType {
             }
 
             privateKeys.append(contentsOf: keysToEnsure)
-        }
-
-        guard privateKeys.isNotEmpty else {
-            return .failure(.emptyKeys)
         }
 
         return .success(privateKeys)
