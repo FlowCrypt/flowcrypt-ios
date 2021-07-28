@@ -9,6 +9,7 @@
 import XCTest
 import FlowCryptCommon
 
+// TODO: - Tests for "Other email account" are temporary removed from FlowCryptUITests
 private let logger = Logger.nested("UI Tests")
 
 // MARK: - Compatibility account
