@@ -32,6 +32,9 @@ extension EnterpriseServerApiError: LocalizedError {
 class EnterpriseServerApi: EnterpriseServerApiType {
 
     private enum Constants {
+        /// 404 - Not Found, -1001 - request timed out, 503 - service unavailable
+        static let getToleratedStatuses = [404, -1001, 503]
+
         static let getActiveFesTimeout: TimeInterval = 4
 
         static let serviceKey = "service"
@@ -69,9 +72,21 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 body: nil
             )
 
-            let response = try? awaitPromise(URLSession.shared.call(request))
-            guard let safeReponse = response,
-                  let responseDictionary = try? safeReponse.data.toDict(),
+            guard let safeReponse = try? awaitPromise(
+                URLSession.shared.call(
+                    request,
+                    tolerateStatus: Constants.getToleratedStatuses
+                )
+            ) else {
+                resolve(nil)
+                return
+            }
+
+            if Constants.getToleratedStatuses.contains(safeReponse.status) {
+                resolve(nil)
+            }
+
+            guard let responseDictionary = try? safeReponse.data.toDict(),
                   let service = responseDictionary[Constants.serviceKey] as? String,
                   service == Constants.serviceNeededValue else {
                 resolve(nil)
@@ -99,12 +114,24 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 method: .get,
                 body: nil
             )
-            let response = try? awaitPromise(URLSession.shared.call(request))
+            guard let safeReponse = try? awaitPromise(
+                URLSession.shared.call(
+                    request,
+                    tolerateStatus: Constants.getToleratedStatuses
+                )
+            ) else {
+                reject(EnterpriseServerApiError.parse)
+                return
+            }
+
+            if Constants.getToleratedStatuses.contains(safeReponse.status) {
+                resolve(.empty)
+            }
+
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-            guard let safeReponse = response,
-                  let clientConfiguration = (try? decoder.decode(
+            guard let clientConfiguration = (try? decoder.decode(
                     ClientConfigurationContainer.self,
                     from: safeReponse.data
                   ))?.clientConfiguration
