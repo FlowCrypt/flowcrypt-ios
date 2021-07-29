@@ -6,16 +6,16 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
+import Combine
 import Foundation
 import GoogleAPIClientForREST
 import GTMSessionFetcher
-import Promises
 
 extension GmailService: MessageGateway {
-    func sendMail(mime: Data) -> Promise<Void> {
-        Promise { resolve, reject in
+    func sendMail(mime: Data) -> Future<Void, Error> {
+        Future { promise in
             guard let raw = GTLREncodeBase64(mime) else {
-                return reject(GmailServiceError.messageEncode)
+                return promise(.failure(GmailServiceError.messageEncode))
             }
 
             let gtlMessage = GTLRGmail_Message()
@@ -29,10 +29,9 @@ extension GmailService: MessageGateway {
 
             self.gmailService.executeQuery(querySend) { _, _, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
+                    return promise(.failure(GmailServiceError.providerError(error)))
                 }
-                resolve(())
+                promise(.success(()))
             }
         }
     }

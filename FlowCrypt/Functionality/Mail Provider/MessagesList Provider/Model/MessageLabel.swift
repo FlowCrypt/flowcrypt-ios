@@ -83,7 +83,7 @@ extension MessageLabelType {
         case .label("submited"): return MCOMessageFlag.submitted.rawValue
         case .none: return 0
         default:
-            assertionFailure("This label \(self) is not supported byt his provider")
+            assertionFailure("This label \(self) is not supported by this provider")
             return 0
         }
     }

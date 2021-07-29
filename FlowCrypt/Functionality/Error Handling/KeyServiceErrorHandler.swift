@@ -19,8 +19,6 @@ struct KeyServiceErrorHandler: ErrorHandler {
             errorMessage = "keyServiceError_retrieve_parse"
         case .unexpected:
             errorMessage = "keyServiceError_retrieve_unexpected"
-        case .emptyKeys:
-            errorMessage = nil
         default:
             errorMessage = nil
         }

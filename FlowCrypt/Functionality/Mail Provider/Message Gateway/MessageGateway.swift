@@ -6,9 +6,9 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
+import Combine
 import Foundation
-import Promises
 
 protocol MessageGateway {
-    func sendMail(mime: Data) -> Promise<Void>
+    func sendMail(mime: Data) -> Future<Void, Error>
 }

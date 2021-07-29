@@ -123,35 +123,6 @@ extension SignInViewController {
 
     private func signInWithOutlook() {
         showToast("Outlook sign in not implemented yet")
-        // below for debugging
-        do {
-            let trace = Trace(id: "sign in outlook")
-
-            let keys = [
-                PrvKeyInfo(
-                    private: TestData.k3rsa4096.prv,
-                    longid: TestData.k3rsa4096.longid,
-                    passphrase: TestData.k3rsa4096.passphrase,
-                    fingerprints: []
-                )
-            ]
-
-            guard let encrypted = TestData.matchingEncryptedMsg.data(using: .utf8) else {
-                assertionFailure(); return
-            }
-
-            let decrypted = try core.parseDecryptMsg(
-                encrypted: encrypted,
-                keys: keys,
-                msgPwd: nil,
-                isEmail: false
-            )
-            logger.logInfo("\(decrypted) - duration \(trace.finish())")
-        } catch CoreError.exception {
-            logger.logError("catch exception")
-        } catch {
-            logger.logInfo("catch generic \(error)")
-        }
     }
 
     private func proceedToOtherProvider() {
