@@ -46,7 +46,7 @@ struct Credentials: Codable {
     let users: [UserCredentials]
 
     static var `default`: Credentials = {
-        guard let path = Bundle(for: SignInTest.self).path(forResource: "test-ci-secrets", ofType: "json") else {
+        guard let path = Bundle(for: SignInGoogleTest.self).path(forResource: "test-ci-secrets", ofType: "json") else {
             assertionFailure("No credentials found")
             return Credentials(users: [])
         }

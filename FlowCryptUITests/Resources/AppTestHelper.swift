@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import FlowCryptCommon
 
 protocol AppTest {
     var app: XCUIApplication! { get set }
@@ -46,6 +47,8 @@ extension AppTest {
 }
 
 // MARK: - Actions
+private let logger = Logger.nested("UI Tests")
+
 extension AppTest {
     func sendMessage(to recipient: String ) {
         tapOnCompose()

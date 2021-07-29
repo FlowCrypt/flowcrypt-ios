@@ -80,6 +80,7 @@
 		9F2AC5B1267BDED100F6149B /* GmailSearchExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2AC5B0267BDED100F6149B /* GmailSearchExpressionGenerator.swift */; };
 		9F2F206826AEEAA60044E144 /* CombineTestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2F206726AEEAA60044E144 /* CombineTestExtension.swift */; };
 		9F2F207326AEECFB0044E144 /* PromiseTestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411892681191D004C0A69 /* PromiseTestExtension.swift */; };
+		9F2F212B26B305420044E144 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 9F2F212A26B305420044E144 /* test-ci-secrets.json */; };
 		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
 		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
@@ -107,7 +108,6 @@
 		9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */; };
 		9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE1542597399D0059BA51 /* BackupProvider.swift */; };
 		9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
-		9F6F5F6C26A2F66B00C625C7 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
 		9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */; };
 		9F6F3BEF26ADF5DE005BD9C6 /* ComposeMessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BED26ADF5DE005BD9C6 /* ComposeMessageError.swift */; };
 		9F6F3C3526ADFA27005BD9C6 /* ComposeMessageServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C3426ADFA27005BD9C6 /* ComposeMessageServiceTests.swift */; };
@@ -115,6 +115,7 @@
 		9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C6926ADFBEB005BD9C6 /* MessageGatewayMock.swift */; };
 		9F6F3C7626ADFC37005BD9C6 /* KeyStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C7526ADFC37005BD9C6 /* KeyStorageMock.swift */; };
 		9F6F3C7D26ADFC60005BD9C6 /* ContactsServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C7C26ADFC60005BD9C6 /* ContactsServiceMock.swift */; };
+		9F6F5F6C26A2F66B00C625C7 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
 		9F716308234FC73E0031645E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9F71630A234FC73E0031645E /* Localizable.strings */; };
 		9F7920F52667CEF100DA3D80 /* PassPraseSaveable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7920F42667CEF100DA3D80 /* PassPraseSaveable.swift */; };
 		9F79228826696B0200DA3D80 /* PassPhraseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79228726696B0200DA3D80 /* PassPhraseService.swift */; };
@@ -123,7 +124,6 @@
 		9F7E8EC6269877E70021C07F /* KeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E8EC5269877E60021C07F /* KeyInfoTests.swift */; };
 		9F7E8F19269C538E0021C07F /* NavigationChildController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E8F18269C538E0021C07F /* NavigationChildController.swift */; };
 		9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E903826A1AD7A0021C07F /* KeyDetailsTests.swift */; };
-		9F7E903F26A1EE1D0021C07F /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 9FE233D725712E51003D7C7E /* test-ci-secrets.json */; };
 		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */; };
 		9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
@@ -479,6 +479,7 @@
 		9F2AC5C6267BE99E00F6149B /* FlowCryptAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F2AC5CA267BE99E00F6149B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F2F206726AEEAA60044E144 /* CombineTestExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineTestExtension.swift; sourceTree = "<group>"; };
+		9F2F212A26B305420044E144 /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = "<group>"; };
 		9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+retry.swift"; sourceTree = "<group>"; };
 		9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+folders.swift"; sourceTree = "<group>"; };
 		9F31AB90232993F500CF87EA /* Imap+session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+session.swift"; sourceTree = "<group>"; };
@@ -597,7 +598,6 @@
 		9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesListProvider.swift; sourceTree = "<group>"; };
 		9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+MessagesList.swift"; sourceTree = "<group>"; };
 		9FE1B39F2565B0CD00D6D086 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
-		9FE233D725712E51003D7C7E /* test-ci-secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "test-ci-secrets.json"; sourceTree = SOURCE_ROOT; };
 		9FE743062347AA54005E2DBB /* MainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationController.swift; sourceTree = "<group>"; };
 		9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewModel.swift; sourceTree = "<group>"; };
@@ -1276,8 +1276,6 @@
 			children = (
 				9FDF3653235A218E00614596 /* main.swift */,
 				9FDF3655235A22DA00614596 /* AppReset.swift */,
-				9FC411892681191D004C0A69 /* PromiseExtensions.swift */,
-				9F8220D426336626004B2009 /* Logger.swift */,
 				21C7DF0A266C0E3600C44800 /* Configuration.swift */,
 			);
 			path = App;
@@ -1407,7 +1405,7 @@
 				D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */,
 				D216D05D242D32EA0083EDD6 /* TestCredentials.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
-				9FE233D725712E51003D7C7E /* test-ci-secrets.json */,
+				9F2F212A26B305420044E144 /* test-ci-secrets.json */,
 				9F228BA723C673C2005D2CB6 /* Resources */,
 			);
 			path = FlowCryptUITests;
@@ -2132,7 +2130,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F7E903F26A1EE1D0021C07F /* test-ci-secrets.json in Resources */,
+				9F2F212B26B305420044E144 /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
