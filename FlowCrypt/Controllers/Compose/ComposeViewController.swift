@@ -205,15 +205,12 @@ extension ComposeViewController {
         )
         .publisher
         .flatMap(composeMessageService.encryptAndSend)
-        .sink(
-            receiveCompletion: { [weak self] result in
-                guard case .failure(let error) = result else {
-                    return
-                }
-                self?.handle(error: error)
-            },
+        .sinkFuture(
             receiveValue: { [weak self] in
                 self?.handleSuccessfullySentMessage()
+            },
+            receiveError: { [weak self] error in
+                self?.handle(error: error)
             })
         .store(in: &cancellable)
     }
