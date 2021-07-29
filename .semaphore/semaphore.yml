@@ -39,6 +39,9 @@ blocks:
         - name: 'FlowCryptTests'
           commands:
             - bundle exec fastlane do_everything
+        - name: 'FlowCrypt UI Tests'
+          commands:
+            - bundle exec fastlane test_ui
 
         # - name: 'FlowCryptTests(with email server)'
         #   commands: 
