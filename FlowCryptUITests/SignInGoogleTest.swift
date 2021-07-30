@@ -42,7 +42,7 @@ class SignInGoogleTest: XCTestCase, AppTest {
     
     func test_1_successful_login() {
         logOutIfNeeded()
-        wait(1)
+        wait(2)
         startGmailLoginFlow()
         wait(1)
         

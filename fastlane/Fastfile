@@ -1,4 +1,6 @@
 # fastlane/Fastfile
+ENV["FASTLANE_EXPLICIT_OPEN_SIMULATOR"] = "1"
+
 default_platform(:ios)
 
 platform :ios do
@@ -21,12 +23,12 @@ platform :ios do
   lane :test_ui do
     test_ui_prepare
     scan(
+      workspace: "FlowCrypt.xcworkspace",
       scheme: "FlowCryptUITests",
-      clean: true,
       reinstall_app: true,
       skip_build: true,    
       disable_slide_to_type: true,  
-      force_quit_simulator: true,
+      force_quit_simulator: false,
       reset_simulator: true
   )
   end
