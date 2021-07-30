@@ -32,6 +32,7 @@ blocks:
           - cd ~/git/flowcrypt-ios/
           - cache restore
           - gem install bundler -v 1.17.3
+          - brew install ruby
           - bundle install --path vendor/bundle
           - cache store
           # - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
