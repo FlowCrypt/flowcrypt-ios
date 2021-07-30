@@ -37,8 +37,8 @@ blocks:
       jobs:
         - name: 'FlowCryptTests'
           commands:
-            # - bundle exec fastlane do_everything
-            - bundle exec fastlane test_ui
+            - bundle exec fastlane do_everything
+            # - bundle exec fastlane test_ui
 
         # - name: 'FlowCryptTests(with email server)'
         #   commands: 
