@@ -18,9 +18,8 @@ blocks:
     execution_time_limit:
       minutes: 25
     task:
-      # temporary disable this task. 
-      # secrets:
-      #  - name: flowcrypt-ios-ci-secrets
+      secrets:
+        - name: flowcrypt-ios-ci-secrets
       env_vars:
         - name: LANG
           value: en_US.UTF-8
@@ -34,14 +33,15 @@ blocks:
           - gem install bundler -v 1.17.3
           - bundle install --path vendor/bundle
           - cache store
-          # - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
+          - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
       jobs:
         - name: 'FlowCryptTests'
           commands:
             - bundle exec fastlane do_everything
-        #- name: 'FlowCrypt UI Tests'
-        #  commands:
-        #    - bundle exec fastlane test_ui
+        
+        - name: 'FlowCrypt UI Tests'
+          commands:
+            - bundle exec fastlane test_ui
 
         # - name: 'FlowCryptTests(with email server)'
         #   commands: 
