@@ -32,6 +32,10 @@ blocks:
           - cd ~/git/flowcrypt-ios/
           - cache restore
           - gem install bundler -v 1.17.3
+          - curl -L https://get.rvm.io | bash -s stable
+          - source /Users/semaphore/.rvm/scripts/rvm
+          - rvm install ruby-2.6.0
+          - rvm --default use 2.6.0
           - bundle install --path vendor/bundle
           - cache store
           # - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
