@@ -29,7 +29,10 @@ platform :ios do
       skip_build: true,    
       disable_slide_to_type: true,  
       force_quit_simulator: false,
-      reset_simulator: true
+      reset_simulator: true,
+      prelaunch_simulator: true,
+      include_simulator_logs: true,
+      skip_build: true
   )
   end
 
