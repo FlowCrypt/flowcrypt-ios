@@ -196,6 +196,7 @@ extension ComposeViewController {
         view.endEditing(true)
 
         showSpinner("sending_title".localized)
+        navigationItem.rightBarButtonItem?.isEnabled = false
 
         composeMessageService.validateMessage(
             input: input,
@@ -205,21 +206,19 @@ extension ComposeViewController {
         )
         .publisher
         .flatMap(composeMessageService.encryptAndSend)
-        .sink(
-            receiveCompletion: { [weak self] result in
-                guard case .failure(let error) = result else {
-                    return
-                }
-                self?.handle(error: error)
-            },
+        .sinkFuture(
             receiveValue: { [weak self] in
                 self?.handleSuccessfullySentMessage()
+            },
+            receiveError: { [weak self] error in
+                self?.handle(error: error)
             })
         .store(in: &cancellable)
     }
 
     private func handle(error: ComposeMessageError) {
         hideSpinner()
+        navigationItem.rightBarButtonItem?.isEnabled = true
 
         let message = "compose_error".localized
             + "\n\n"
@@ -230,6 +229,7 @@ extension ComposeViewController {
 
     private func handleSuccessfullySentMessage() {
         hideSpinner()
+        navigationItem.rightBarButtonItem?.isEnabled = true
         showToast(input.successfullySentToast)
         navigationController?.popViewController(animated: true)
     }
