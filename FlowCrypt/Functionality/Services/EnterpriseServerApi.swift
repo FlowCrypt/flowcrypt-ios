@@ -32,6 +32,12 @@ extension EnterpriseServerApiError: LocalizedError {
 class EnterpriseServerApi: EnterpriseServerApiType {
 
     private enum Constants {
+        /// 404 - Not Found
+        static let getToleratedHTTPStatuses = [404]
+        /// -1001 - request timed out, -1003 - сannot resolve host, -1004 - can't conenct to hosts,
+        /// -1005 - network connection lost, -1006 - dns lookup failed, -1007 - too many redirects
+        /// -1008 - resource unavailable
+        static let getToleratedNSErrorCodes = [-1001, -1003, -1004, -1005, -1006, -1007, -1008]
         static let getActiveFesTimeout: TimeInterval = 4
 
         static let serviceKey = "service"
@@ -69,9 +75,18 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 body: nil
             )
 
-            let response = try? awaitPromise(URLSession.shared.call(request))
-            guard let safeReponse = response,
-                  let responseDictionary = try? safeReponse.data.toDict(),
+            let response = try awaitPromise(
+                URLSession.shared.call(
+                    request,
+                    tolerateStatus: Constants.getToleratedHTTPStatuses
+                )
+            )
+
+            if Constants.getToleratedHTTPStatuses.contains(response.status) {
+                resolve(nil)
+            }
+
+            guard let responseDictionary = try? response.data.toDict(),
                   let service = responseDictionary[Constants.serviceKey] as? String,
                   service == Constants.serviceNeededValue else {
                 resolve(nil)
@@ -81,6 +96,14 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             resolve(urlString)
         }
         .timeout(Constants.getActiveFesTimeout)
+        .recover { error -> String? in
+            if let httpError = error as? HttpErr,
+               let nsError = httpError.error as NSError?,
+               Constants.getToleratedNSErrorCodes.contains(nsError.code) {
+                return nil
+            }
+            throw error
+        }
         .recoverFromTimeOut(result: nil)
     }
 
@@ -90,6 +113,12 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 reject(EnterpriseServerApiError.emailFormat)
                 return
             }
+
+            guard try awaitPromise(self.getActiveFesUrl(for: email)) != nil else {
+                resolve(.empty)
+                return
+            }
+
             if Configuration.publicEmailProviderDomains.contains(userDomain) {
                 resolve(.empty)
                 return
@@ -99,12 +128,12 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 method: .get,
                 body: nil
             )
-            let response = try? awaitPromise(URLSession.shared.call(request))
+            let safeReponse = try awaitPromise(URLSession.shared.call(request))
+
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-            guard let safeReponse = response,
-                  let clientConfiguration = (try? decoder.decode(
+            guard let clientConfiguration = (try? decoder.decode(
                     ClientConfigurationContainer.self,
                     from: safeReponse.data
                   ))?.clientConfiguration
