@@ -34,8 +34,10 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     private enum Constants {
         /// 404 - Not Found
         static let getToleratedHTTPStatuses = [404]
-        /// -1001 - request timed out, -1003 - сannot resolve host
-        static let getToleratedNSErrorCodes = [-1001, -1003]
+        /// -1001 - request timed out, -1003 - сannot resolve host, -1004 - can't conenct to hosts,
+        /// -1005 - network connection lost, -1006 - dns lookup failed, -1007 - too many redirects
+        /// -1008 - resource unavailable
+        static let getToleratedNSErrorCodes = [-1001, -1003, -1004, -1005, -1006, -1007, -1008]
         static let getActiveFesTimeout: TimeInterval = 4
 
         static let serviceKey = "service"
