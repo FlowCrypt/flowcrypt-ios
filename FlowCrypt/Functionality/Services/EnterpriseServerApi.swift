@@ -36,7 +36,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         static let getToleratedHTTPStatuses = [404]
         /// -1001 - request timed out, -1003 - сannot resolve host
         static let getToleratedNSErrorCodes = [-1001, -1003]
-        static let getActiveFesTimeout: TimeInterval = 100
+        static let getActiveFesTimeout: TimeInterval = 4
 
         static let serviceKey = "service"
         static let serviceNeededValue = "enterprise-server"
