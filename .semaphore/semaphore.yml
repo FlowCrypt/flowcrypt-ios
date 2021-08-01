@@ -43,7 +43,7 @@ blocks:
         - name: 'FlowCryptTests(with email server)'
           commands: 
             # Install Docker (docker-compose should be included)
-            - brew install docker virtualbox telnet
+            - brew install docker docker-compose virtualbox telnet
             # Start virtualbox
             - docker-machine create -d virtualbox --virtualbox-no-vtx-check default || true
             # Start Docker
