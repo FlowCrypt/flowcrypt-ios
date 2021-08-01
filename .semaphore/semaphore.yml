@@ -41,16 +41,8 @@ blocks:
             - bundle exec fastlane do_everything
 
         - name: 'FlowCryptTests(with email server)'
-          commands: 
-            # Install Docker
-            - brew install docker docker-compose docker-machine virtualbox telnet
-            # Start virtualbox
-            - sudo "/Library/Application Support/VirtualBox/LaunchDaemons/VirtualBoxStartup.sh" restart
-            - docker-machine create -d virtualbox --virtualbox-no-vtx-check default
-            # Start Docker
-            - docker-machine start default
-            - docker-compose --version
-            # Run mail server
-            - cd docker-mailserver
-            - ./run_email_server.sh
-            - ./print_debug_info.sh
+          commands:
+            # point domain "mail" to IP of dev IMAP mailserver
+            - echo "217.163.30.119 mail" > /etc/hosts
+            # mailserver runs on ports 10025, 10143, 10456, 10993
+            - ./check_email_server.sh
