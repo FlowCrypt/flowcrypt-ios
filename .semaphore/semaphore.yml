@@ -42,12 +42,14 @@ blocks:
 
         - name: 'FlowCryptTests(with email server)'
           commands: 
-            # Install Docker (docker-compose should be included)
-            - brew install docker docker-compose virtualbox telnet
+            # Install Docker
+            - brew install docker docker-compose docker-machine virtualbox telnet
             # Start virtualbox
-            - docker-machine create -d virtualbox --virtualbox-no-vtx-check default || true
+            - docker-machine create -d virtualbox --virtualbox-no-vtx-check default
             # Start Docker
-            - docker-machine start default || true
+            - docker-machine start default
             - docker-compose --version
             # Run mail server
-            - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd - 
+            - cd docker-mailserver
+            - ./run_email_server.sh
+            - ./print_debug_info.sh
