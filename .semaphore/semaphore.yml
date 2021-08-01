@@ -42,8 +42,8 @@ blocks:
 
         - name: 'FlowCryptTests(with email server)'
           commands: 
-            # Install Docker
-            - brew install docker docker-compose docker-machine docker virtualbox telnet docker-toolbox
+            # Install Docker (docker-compose should be included)
+            - brew install docker docker-machine docker virtualbox telnet docker-toolbox
             # Start virtualbox
             - docker-machine create -d virtualbox --virtualbox-no-vtx-check default || true
             # Start Docker
