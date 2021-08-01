@@ -9,7 +9,7 @@ EMAILPORT=10025
 EMAILHOST=mail
 TMPFILE=/tmp/telnet-output.log
 
-( sleep 3; echo -en "EHLO debug\r\n"; sleep 1; ) | telnet $EMAILHOST $EMAILPORT > $TMPFILE
+( sleep 1; echo -en "EHLO debug\r\n"; sleep 1; ) | telnet $EMAILHOST $EMAILPORT > $TMPFILE
 
 set +x
 
