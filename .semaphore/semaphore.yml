@@ -45,13 +45,10 @@ blocks:
             # point domain "mail" to IP of dev IMAP mailserver
             - sudo bash -c 'echo "217.163.30.119 mail" >> /etc/hosts'
             - cat /etc/hosts
-            # mailserver runs on ports 10025, 10143, 10456, 10993
+            # mailserver runs on ports 10025, 10143
+            # ports 10456, 10993 are not enabled yet
             - nc -zv 217.163.30.119 10025
             - nc -zv 217.163.30.119 10143
-            - nc -zv 217.163.30.119 10456
-            - nc -zv 217.163.30.119 10993
             - nc -zv mail 10025
             - nc -zv mail 10143
-            - nc -zv mail 10456
-            - nc -zv mail 10993
             - cd docker-mailserver/ && ./check_email_server.sh
