@@ -6,10 +6,10 @@ services:
     domainname: ${DOMAINNAME}
     container_name: ${CONTAINER_NAME}
     ports:
-      - "25:25"
-      - "143:143"
-      - "587:587"
-      - "993:993"
+      - "10025:25"
+      - "10143:143"
+      - "10587:587"
+      - "10993:993"
     volumes:
       #uncomment this only to make a backup of mailboxes
       #- ./maildata_volume:/var/mail
