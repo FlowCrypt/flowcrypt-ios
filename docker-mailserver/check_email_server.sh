@@ -13,7 +13,7 @@ TMPFILE=/tmp/telnet-output.log
 
 set +x
 
-if grep -Fxq "220-mail.flowcrypt.test ESMTP" $TMPFILE
+if grep -Fxq "mail.flowcrypt.test" $TMPFILE
 then
     echo "success - SMTP server at '$EMAILHOST' port '$EMAILPORT' is running"
 else
