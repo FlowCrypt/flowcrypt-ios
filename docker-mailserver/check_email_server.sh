@@ -16,5 +16,5 @@ if ! grep -q 'mail.flowcrypt.test' $TMPFILE ; then
     cat $TMPFILE
     exit 1
 else
-    echo "success - SMTP server at '$EMAILHOST' port '$EMAILPORT' is running
+    echo "success - SMTP server at '$EMAILHOST' port '$EMAILPORT' is running"
 fi
