@@ -7,22 +7,18 @@ FlowCrypt iOS App, download from https://flowcrypt.com/download
 ### Installation
 
 You will need to have Xcode *(version 12.4)* installed
-* clone the repo
+
 ```sh
-git clone https://github.com/FlowCrypt/flowcrypt-ios.git
-cd flowcrypt-ios
-```
-* install project dependencies
-```sh
-bundle install --path vendor/bundle
-```
-* install project Pods
-``` sh
+# clone repo
+git clone https://github.com/FlowCrypt/flowcrypt-ios.git && cd flowcrypt-ios
+# set up environment
+sudo xcode-select --install
+curl -sSL https://get.rvm.io | bash -s stable
+rvm install 2.5.1
+rvm --default use 2.5.1
+# install dependencies and pods
+make dependencies
 bundle exec pod install
-```
-* open the project with Xcode
-``` sh
-open FlowCrypt.xcworkspace
 ```
 
 ### Useful links
