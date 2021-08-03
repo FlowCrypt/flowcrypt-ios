@@ -21,6 +21,14 @@ make dependencies
 bundle exec pod install
 ```
 
+### Run UI Tests
+
+Follow steps in installation above, and then:
+ - from terminal: `bundle exec fastlane test_ui`
+ - from Xcode:  1) Select Tests in Navigators area (cmd+6) 2) Choose `FlowCryptUITests` 3) Run all tests, or select particular test to run
+
+Before running tests, please make sure keyboard is visible in simulator. (cmd+shift+k)
+
 ### Useful links
 
 UI - [Texture documentation](https://texturegroup.org/docs/getting-started.html)
@@ -37,16 +45,3 @@ IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
 2) Xcode -> Product -> Archive
 3) Distribute app -> Add Hoc -> Next -> Next (automatically manage signing)
 4) This creates a folder at the target where you export it to, and the IPA will be there
-
-### UI Tests
-
-To run UI tests from Xcode: 
-1) Select Tests in Navigators area (cmd+6)
-2) Choose `FlowCryptUITests`
-3) Run all tests, or select particular test to run
-
-To run all UI tests from terminal:
-1) Install dependencies 'bundle install'
-2) Run tests using fastlane `bundle exec fastlane test_ui`
-
-Before running tests, please make sure keyboard is visible in simulator. (cmd+shift+k)
