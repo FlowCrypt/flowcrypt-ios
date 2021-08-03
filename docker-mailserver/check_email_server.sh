@@ -11,13 +11,10 @@ TMPFILE=/tmp/telnet-output.log
 
 ( sleep 1; echo -en "EHLO debug\r\n"; sleep 1; ) | telnet $EMAILHOST $EMAILPORT > $TMPFILE
 
-set +x
-
-if grep -Fxq "mail.flowcrypt.test" $TMPFILE
-then
-    echo "success - SMTP server at '$EMAILHOST' port '$EMAILPORT' is running"
-else
+if ! grep -q 'mail.flowcrypt.test' $TMPFILE ; then
     echo "failed to confirm that SMTP server is running at '$EMAILHOST' port '$EMAILPORT':"
     cat $TMPFILE
     exit 1
+else
+    echo "success - SMTP server at '$EMAILHOST' port '$EMAILPORT' is running
 fi
