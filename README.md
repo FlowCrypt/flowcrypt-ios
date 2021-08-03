@@ -24,7 +24,7 @@ bundle exec pod install
 ### Run UI Tests
 
 Follow steps in installation above, and then:
- - from terminal: `bundle exec fastlane test_ui`
+ - from terminal: `make ui_tests`
  - from Xcode:  1) Select Tests in Navigators area (cmd+6) 2) Choose `FlowCryptUITests` 3) Run all tests, or select particular test to run
 
 Before running tests, please make sure keyboard is visible in simulator. (cmd+shift+k)
