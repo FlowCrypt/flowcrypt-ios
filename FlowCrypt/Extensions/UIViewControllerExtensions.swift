@@ -102,6 +102,22 @@ extension UIViewController {
         }
     }
 
+    func showRetryAlert(
+        title: String? = "Error",
+        message: String,
+        onRetry: (() -> Void)? = nil,
+        onOk: (() -> Void)? = nil
+    ) {
+        DispatchQueue.main.async {
+            self.view.hideAllToasts()
+            self.hideSpinner()
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
     func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
         DispatchQueue.main.async {
             guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {

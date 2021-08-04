@@ -11,13 +11,20 @@ import Promises
 protocol EmailKeyManagerApiType {
 
     func getPrivateKeysUrlString() -> String?
-    func getPrivateKeys() -> Promise<DecryptedPrivateKeysResponse>
+    func getPrivateKeys() -> Promise<EmailKeyManagerApiResult>
 }
 
 enum EmailKeyManagerApiError: Error {
     case noGoogleIdToken
     case noPrivateKeysUrlString
 }
+
+enum EmailKeyManagerApiResult {
+    case success(decryptedResponse: DecryptedPrivateKeysResponse)
+    case noKeys
+    case keysAreNotDecrypted
+}
+
 extension EmailKeyManagerApiError: LocalizedError {
     var errorDescription: String? {
         switch self {
@@ -30,9 +37,14 @@ extension EmailKeyManagerApiError: LocalizedError {
 class EmailKeyManagerApi: EmailKeyManagerApiType {
 
     private let organisationalRulesService: OrganisationalRulesServiceType
+    private let core: Core
 
-    init(organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()) {
+    init(
+        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService(),
+        core: Core = .shared
+    ) {
         self.organisationalRulesService = organisationalRulesService
+        self.core = core
     }
 
     func getPrivateKeysUrlString() -> String? {
@@ -42,8 +54,8 @@ class EmailKeyManagerApi: EmailKeyManagerApiType {
         return "\(keyManagerUrlString)v1/keys/private"
     }
 
-    func getPrivateKeys() -> Promise<DecryptedPrivateKeysResponse> {
-        Promise<DecryptedPrivateKeysResponse> { [weak self] resolve, reject in
+    func getPrivateKeys() -> Promise<EmailKeyManagerApiResult> {
+        Promise<EmailKeyManagerApiResult> { [weak self] resolve, reject in
             guard let self = self else { throw AppErr.nilSelf }
             guard let urlString = self.getPrivateKeysUrlString() else {
                 reject(EmailKeyManagerApiError.noPrivateKeysUrlString)
@@ -68,7 +80,23 @@ class EmailKeyManagerApi: EmailKeyManagerApiType {
             )
             let response = try awaitPromise(URLSession.shared.call(request))
             let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
-            resolve(decryptedPrivateKeysResponse)
+
+            if decryptedPrivateKeysResponse.privateKeys.isEmpty {
+                resolve(.success(decryptedResponse: .empty))
+            }
+
+            let privateKeys = decryptedPrivateKeysResponse.privateKeys
+                .map { $0.decryptedPrivateKey.data() }
+            let parsedPrivateKeys = privateKeys
+                .map { try? self.core.parseKeys(armoredOrBinary: $0) }
+            let areKeysDecrypted = parsedPrivateKeys
+                .compactMap { $0?.keyDetails.map { $0.isFullyDecrypted } }
+                .flatMap { $0 }
+
+            if areKeysDecrypted.contains(false) {
+                resolve(.keysAreNotDecrypted)
+            }
+            resolve(.success(decryptedResponse: decryptedPrivateKeysResponse))
         }
     }
 }

@@ -46,7 +46,7 @@ extension BackupService: BackupServiceType {
     }
 
     func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void> {
-        Promise { [weak self] (resolve, reject) -> Void in
+        Promise { [weak self] resolve, reject -> Void in
             guard let self = self else { throw AppErr.nilSelf }
 
             let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
