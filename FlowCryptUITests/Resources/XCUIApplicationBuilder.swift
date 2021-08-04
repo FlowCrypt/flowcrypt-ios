@@ -31,8 +31,8 @@ struct XCUIApplicationBuilder {
     }
 
     func setupRegion() -> XCUIApplicationBuilder {
-//        app.launchArguments += ["-AppleLanguages", "(en-US)"]
-//        app.launchArguments += ["-AppleLocale", "en-US"]
+        app.launchArguments += ["-AppleLanguages (en)"]
+        app.launchArguments += ["-AppleLocale en-US"]
         app.launchArguments += ProcessInfo().arguments
 
         return self

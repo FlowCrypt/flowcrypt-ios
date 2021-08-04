@@ -7,9 +7,12 @@
 //
 
 import XCTest
+import FlowCryptCommon
+private let logger = Logger.nested("UI Tests")
 
 class TestCredentials: XCTestCase {
     func test_user_credentials() {
+        releasePrint("Test user credentials")
         XCTAssert(UserCredentials.main != UserCredentials.empty)
         XCTAssert(UserCredentials.noKeyBackUp != UserCredentials.empty)
         XCTAssert(UserCredentials.compatibility != UserCredentials.empty)

@@ -7,6 +7,10 @@
 //
 
 import XCTest
+import FlowCryptCommon
+
+// TODO: - Tests for "Other email account" are temporary removed from FlowCryptUITests
+private let logger = Logger.nested("UI Tests")
 
 // MARK: - Compatibility account
 
@@ -17,11 +21,16 @@ class SignInTest: XCTestCase, AppTest {
     override func setUp() {
         continueAfterFailure = false
 
+        logger.logInfo("Start App")
+        
         app = XCUIApplicationBuilder()
             .setupRegion()
             .build()
             .addSnapshot()
             .launched()
+        
+        logger.logInfo("Wait for launch")
+        wait(10)
     }
 }
 
@@ -29,8 +38,8 @@ extension SignInTest {
     // log in -> approve -> no backups -> switch email
     func test_1_login_no_backups() {
         // login with user without key backup
+        
         login(UserCredentials.noKeyBackUp)
-        wait(1)
 
         // retry
         let buttons = app.alerts.scrollViews.otherElements.buttons

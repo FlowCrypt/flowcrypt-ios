@@ -1,4 +1,6 @@
 # fastlane/Fastfile
+ENV["FASTLANE_EXPLICIT_OPEN_SIMULATOR"] = "1"
+
 default_platform(:ios)
 
 platform :ios do
@@ -6,6 +8,7 @@ platform :ios do
   before_all do
     # installed via the semaphore plugin with `fastlane add_plugin semaphore`
     # setup_semaphore
+    cocoapod_update
   end
 
   desc "Cocoapod update"
@@ -20,14 +23,16 @@ platform :ios do
   lane :test_ui do
     test_ui_prepare
     scan(
+      workspace: "FlowCrypt.xcworkspace",
       scheme: "FlowCryptUITests",
-      clean: false,
       reinstall_app: true,
       skip_build: true,    
       disable_slide_to_type: true,  
-      force_quit_simulator: true,
+      force_quit_simulator: false,
       reset_simulator: true,
-      devices: ["iPhone 11"]
+      prelaunch_simulator: true,
+      include_simulator_logs: true,
+      skip_build: true
   )
   end
 
@@ -67,7 +72,6 @@ platform :ios do
 
   desc "Build app, run tests, run UI test"
   lane :do_everything do 
-    cocoapod_update
     build
     unit_tests
     # test_ui

@@ -21,6 +21,14 @@ make dependencies
 bundle exec pod install
 ```
 
+### Run UI Tests
+
+Follow steps in installation above, and then:
+ - from terminal: `make ui_tests`
+ - from Xcode:  1) Choose `FlowCryptUITests` run target on top and select a simulator 2) select Tests in Navigators area (cmd+6) 3) Scroll down to `FlowCryptUITests` in the navigator and run them all or run a particular one
+
+Before running tests, please make sure keyboard is visible in simulator. (cmd+shift+k)
+
 ### Useful links
 
 UI - [Texture documentation](https://texturegroup.org/docs/getting-started.html)
@@ -34,6 +42,6 @@ IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
 ### Admin - generating .ipa for penetration tester
 
 1) get uuid of their device and input it into https://developer.apple.com/account/ -> Devices
-2) xCode -> Product -> Archive
+2) Xcode -> Product -> Archive
 3) Distribute app -> Add Hoc -> Next -> Next (automatically manage signing)
 4) This creates a folder at the target where you export it to, and the IPA will be there

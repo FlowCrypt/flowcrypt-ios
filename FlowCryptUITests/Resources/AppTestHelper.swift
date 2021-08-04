@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import FlowCryptCommon
 
 protocol AppTest {
     var app: XCUIApplication! { get set }
@@ -36,10 +37,6 @@ extension AppTest {
         return app.buttons["Go"]
     }
 
-    var gmailAlert: XCUIElement {
-        Springboard.springboard.alerts.element
-    }
-
     var menuButton: XCUIElement {
         app.navigationBars.buttons["menu icn"]
     }
@@ -50,6 +47,8 @@ extension AppTest {
 }
 
 // MARK: - Actions
+private let logger = Logger.nested("UI Tests")
+
 extension AppTest {
     func sendMessage(to recipient: String ) {
         tapOnCompose()
@@ -99,13 +98,17 @@ extension AppTest {
     }
 
     func login(_ user: UserCredentials) {
+        logger.logInfo("Login with \(user.email)")
+        
         // other account
         logOutIfNeeded()
         wait(0.3)
 
+        logger.logInfo("Use other email provider")
         let otherEmailButton = app.tables.buttons["Other email provider"]
         otherEmailButton.tap()
 
+        logger.logInfo("Fill all user credentials")
         // email
         let emailTextField = app.tables.textFields["Email"]
         emailTextField.tap()
@@ -119,23 +122,32 @@ extension AppTest {
         // connect
         passwordTextField.swipeUp()
         app.tables.buttons["Connect"].tap()
-        wait(7)
+        
+        logger.logInfo("Try to connect")
+        wait(10)
     }
-
+    
     func logOutIfNeeded() {
-        let otherEmailButton = app.tables.buttons["Other email provider"]
-
+        logger.logInfo("Log out if needed")
+       
         // Check which screen we are now
-        guard !otherEmailButton.exists else {
+        guard menuButton.exists else {
+            logger.logInfo("Already logged out")
             return
         }
-
-        let otherAccountButton = app.tables.buttons["Use Another Account"]
-        if otherAccountButton.exists {
-            otherAccountButton.tap()
-        } else {
+        
+        if menuButton.exists {
+            logger.logInfo("User is logged in. Try to log out")
             menuButton.tap()
             tapOnMenu(folder: "Log out")
+        } else {
+            let otherAccountButton = app.tables.buttons["Use Another Account"]
+            if otherAccountButton.exists {
+                logger.logInfo("Try to use another account")
+                otherAccountButton.tap()
+            } else {
+                logger.logInfo("User is not logged in")
+            }
         }
     }
 }

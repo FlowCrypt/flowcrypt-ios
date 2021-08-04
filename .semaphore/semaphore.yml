@@ -18,9 +18,8 @@ blocks:
     execution_time_limit:
       minutes: 25
     task:
-      # temporary disable this task. 
-      # secrets:
-      #  - name: flowcrypt-ios-ci-secrets
+      secrets:
+        - name: flowcrypt-ios-ci-secrets
       env_vars:
         - name: LANG
           value: en_US.UTF-8
@@ -33,11 +32,12 @@ blocks:
           - cache restore
           - make dependencies
           - cache store
-          # - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
+          - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
       jobs:
         - name: 'FlowCryptTests'
           commands:
             - bundle exec fastlane do_everything
+            # - bundle exec fastlane test_ui
 
         - name: 'FlowCryptTests(with email server)'
           commands:
