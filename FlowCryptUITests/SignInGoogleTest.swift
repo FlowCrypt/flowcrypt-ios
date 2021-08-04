@@ -44,20 +44,20 @@ class SignInGoogleTest: XCTestCase, AppTest {
         logOutIfNeeded()
         wait(2)
         startGmailLoginFlow()
-        wait(1)
+        wait(5)
         
         let user = UserCredentials.gmailDev
         
         enterUserCredentials(for: user)
-        wait(4)
+        wait(5)
         enterUserDevCredentials(for: user)
-        wait(4)
+        wait(5)
     }
     
     private func startGmailLoginFlow() {
         // Tap on Gmail login
         gmailLoginButton.tap()
-        wait(1)
+        wait(5)
         
         // Wait for user alert and continue
         guard gmailAlert.exists else {
