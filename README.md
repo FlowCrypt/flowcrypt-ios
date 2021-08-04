@@ -25,7 +25,7 @@ bundle exec pod install
 
 Follow steps in installation above, and then:
  - from terminal: `make ui_tests`
- - from Xcode:  1) Select Tests in Navigators area (cmd+6) 2) Choose `FlowCryptUITests` 3) Run all tests, or select particular test to run
+ - from Xcode:  1) Choose `FlowCryptUITests` run target on top and select a simulator 2) select Tests in Navigators area (cmd+6) 3) Scroll down to `FlowCryptUITests` in the navigator and run them all or run a particular one
 
 Before running tests, please make sure keyboard is visible in simulator. (cmd+shift+k)
 
