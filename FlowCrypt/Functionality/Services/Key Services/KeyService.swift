@@ -14,7 +14,7 @@ protocol KeyServiceType {
 }
 
 enum KeyServiceError: Error {
-    case unexpected, parsingError, retrieve
+    case unexpected, parsingError, retrieve, missedPassPhrase
 }
 
 final class KeyService: KeyServiceType {
@@ -72,6 +72,10 @@ final class KeyService: KeyServiceType {
             .filter { $0.account == email }
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
+
+        if passPhrase == nil, storedPassPhrases.isEmpty {
+            return .failure(.missedPassPhrase)
+        }
 
         guard keysInfo.isNotEmpty else {
             return .success([])
