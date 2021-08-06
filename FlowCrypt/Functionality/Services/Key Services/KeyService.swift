@@ -34,26 +34,19 @@ final class KeyService: KeyServiceType {
     }
 
     func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
-
-        let privateKeys: [PrvKeyInfo]
-
-        do {
-            privateKeys = try getPrivateKeys().get()
-        } catch let error as KeyServiceError {
-            return .failure(error)
-        } catch {
-            fatalError("Should only throw KeyServiceError")
+        guard let email = currentUserEmail() else {
+            return .failure(.retrieve)
         }
 
-        guard privateKeys.isNotEmpty else {
-            return .success([])
-        }
+        let privateKeys = storage.keysInfo()
+            .filter { $0.account == email }
+            .map(\.private)
 
         let keyDetails = privateKeys
             .compactMap {
-                try? coreService.parseKeys(armoredOrBinary: $0.private.data())
-                    .keyDetails
+                try? coreService.parseKeys(armoredOrBinary: $0.data())
             }
+            .map(\.keyDetails)
             .flatMap { $0 }
 
         guard keyDetails.count == privateKeys.count else {
