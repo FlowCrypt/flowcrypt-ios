@@ -9,8 +9,8 @@
 import Foundation
 
 protocol KeyServiceType {
-    func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError>
-    func getPrivateKeys(with passPhrase: String?) -> Result<[PrvKeyInfo], KeyServiceError>
+    func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError>
+    func getPrvKeyInfo(with passPhrase: String?) -> Result<[PrvKeyInfo], KeyServiceError>
 }
 
 enum KeyServiceError: Error {
@@ -33,7 +33,8 @@ final class KeyService: KeyServiceType {
         self.currentUserEmail = currentUserEmail
     }
 
-    func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
+    /// Use to get list of keys (including missing pass phrases keys)
+    func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
         guard let email = currentUserEmail() else {
             return .failure(.retrieve)
         }
@@ -56,7 +57,8 @@ final class KeyService: KeyServiceType {
         return .success(keyDetails)
     }
 
-    func getPrivateKeys(with passPhrase: String? = nil) -> Result<[PrvKeyInfo], KeyServiceError> {
+    /// Use to get list of PrvKeyInfo with pass phrase
+    func getPrvKeyInfo(with passPhrase: String? = nil) -> Result<[PrvKeyInfo], KeyServiceError> {
         guard let email = currentUserEmail() else {
             return .failure(.retrieve)
         }
@@ -67,6 +69,8 @@ final class KeyService: KeyServiceType {
         let storedPassPhrases = passPhraseService.getPassPhrases()
 
         if passPhrase == nil, storedPassPhrases.isEmpty {
+            // in case there are no pass phrases in storage/memory
+            // and user did not enter a pass phrase yet
             return .failure(.missedPassPhrase)
         }
 

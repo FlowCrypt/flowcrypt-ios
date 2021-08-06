@@ -229,7 +229,7 @@ extension SetupManuallyEnterPassPhraseViewController {
             return
         }
 
-        switch keyService.retrieveKeyDetails() {
+        switch keyService.getPrvKeyDetails() {
         case let .failure(error):
             handleCommon(error: error)
         case let .success(existedKeys):
