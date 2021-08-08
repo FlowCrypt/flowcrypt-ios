@@ -66,11 +66,6 @@ final class ComposeViewController: TableNodeViewController {
         self.contactsService = contactsService
         self.composeMessageService = composeMessageService
         self.contextToSend.subject = input.subject
-        if input.isReply {
-            if let email = input.recipientReplyTitle {
-                contextToSend.recipients.append(ComposeMessageRecipient(email: email, state: decorator.recipientIdleState))
-            }
-        }
         super.init(node: TableNode())
     }
 
@@ -85,6 +80,7 @@ final class ComposeViewController: TableNodeViewController {
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
+        setupReply()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -134,6 +130,14 @@ extension ComposeViewController {
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
         }
+    }
+
+    private func setupReply() {
+        guard input.isReply, let email = input.recipientReplyTitle else { return }
+
+        let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
+        contextToSend.recipients.append(recipient)
+        evaluate(recipient: recipient)
     }
 }
 
