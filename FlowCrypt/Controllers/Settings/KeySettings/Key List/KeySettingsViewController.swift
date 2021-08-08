@@ -57,7 +57,7 @@ final class KeySettingsViewController: TableNodeViewController {
 
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() {
-        switch keyService.retrieveKeyDetails() {
+        switch keyService.getPrvKeyDetails() {
         case let .failure(error):
             handleCommon(error: error)
         case let .success(keys):
