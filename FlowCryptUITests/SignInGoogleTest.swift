@@ -7,6 +7,9 @@
 //
 
 import XCTest
+import FlowCryptCommon
+
+private let logger = Logger.nested("UI Tests. Google")
 
 class SignInGoogleTest: XCTestCase, AppTest {
     var app: XCUIApplication!
@@ -19,179 +22,195 @@ class SignInGoogleTest: XCTestCase, AppTest {
             .setupRegion()
             .build()
             .launched()
+        
+        logger.logInfo("Wait for launch")
+        wait(10)
     }
 
-    func test_1_login_cancel_gmail() {
-        let otherEmailButton = app.tables.buttons["Other email provider"]
-
-        // Check which screen we are now
-        guard otherEmailButton.exists else {
-            let otherAccountButton = app.tables.buttons["Use Another Account"]
-            if otherAccountButton.exists {
-                otherAccountButton.tap()
-            } else {
-                menuButton.tap()
-                tapOnMenu(folder: "Log out")
-                login(user)
-            }
+    private var gmailAlert: XCUIElement {
+        Springboard.springboard.alerts.element
+    }
+    
+    private var gmailLoginButton: XCUIElement {
+        app.tables.buttons["Continue with Gmail"]
+    }
+    
+    private var findTextFieldForGmailWebView: XCUIElement? {
+        logger.logInfo("Try to find text field for gmail web view")
+        return app.webViews.textFields.firstMatch
+    }
+    
+    func test_1_successful_login() {
+        logOutIfNeeded()
+        wait(2)
+        startGmailLoginFlow()
+        wait(5)
+        
+        let user = UserCredentials.gmailDev
+        
+        enterUserCredentials(for: user)
+        wait(5)
+        enterUserDevCredentials(for: user)
+        wait(5)
+    }
+    
+    private func startGmailLoginFlow() {
+        // Tap on Gmail login
+        gmailLoginButton.tap()
+        wait(5)
+        
+        // Wait for user alert and continue
+        guard gmailAlert.exists else {
+            assertionFailure("Gmail alert is missing")
             return
         }
-
-        app.tables.buttons["gmail"].tap()
-        wait(1)
+        
+        logger.logInfo("Gmail alert is on the screen")
+        
+        gmailAlert.buttons["Continue"].tap()
+        wait(3)
     }
-
-    func test_2_cancel_login() {
-        app.tables.buttons["gmail"].tap()
-        wait(1)
-
-        let cancelButton = gmailAlert.buttons["Cancel"]
-        XCTAssert(cancelButton.exists, "Cancel in Alert doesn't exist")
-        cancelButton.tap()
-
-        wait(1)
-        let errorAlert = app.alerts["Error"]
-        XCTAssert(errorAlert.exists)
-    }
-
-    func test_3_gmail_login() {
-        let user = UserCredentials.main
-
-        // tap on gmail button
-        // MARK: - Google Login
-        app.tables.buttons["gmail"].tap()
-        let signInAlert = gmailAlert
-
-        wait(1)
-
-        // continue on alert
-        let continueButton = signInAlert.buttons["Continue"]
-        XCTAssert(continueButton.exists, "ContinueButton in Alert doesn't exist")
-        continueButton.tap()
-
-        wait(5)
-
-        // enter user name
-        let webView = app.webViews
-        let textField = webView.textFields.firstMatch
-        wait(1)
-
-        textField.tap()
-
-        textField.typeText(user.email)
-        let returnButton = goKeyboardButton
-        XCTAssert(returnButton.exists, "User keyboard button")
-        returnButton.tap()
-
-        wait(1)
-
-        // enter password
-        let passwordTextField = webView.secureTextFields.firstMatch
-        passwordTextField.tap()
-        passwordTextField.typeText(user.password)
-        let goButton = goKeyboardButton
-        XCTAssert(goButton.exists, "Password keyboard button")
-        goButton.tap()
-
-        wait(5)
-
-        XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
-
-        // MARK: - Wrong pass phrase
-        // enter wrong pass phrase and tap enter
-        let button = goKeyboardButton
-
-        app.typeText(user.pass + "wrong")
-        button.tap()
-
-        wait(0.2)
-        let errorAlert = app.alerts["Error"]
-        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
-        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
-        wait(0.2)
-        app.tables.secureTextFields.firstMatch.tap()
-
-        // MARK: - Correct pass phrase
-        // enter correct pass phrase and tap enter
-        if button.exists {
-            app.typeText(user.pass)
-            button.tap()
-        } else {
-            _ = app.keys[user.pass + "\n"]
+    
+    private func enterUserCredentials(for user: UserCredentials) {
+        // Try to find first text field in gmail web view
+        logger.logInfo("Try to find text field for gmail web view")
+        let textField = app.webViews.textFields.firstMatch
+        guard textField.exists else {
+            assertionFailure("Can't find text field in Gmail Web view")
+            return
         }
-        wait(1)
-
-        XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
-
-        // MARK: - Send message
-        sendMessage(to: user.email)
-        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
-
-        // MARK: - Check in sent mail box
-        menuButton.tap()
-        tapOnMenu(folder: "Sent Mail")
+        textField.tap()
+        wait(0.2)
+        
+        textField.typeText(user.email)
+        goKeyboardButton.tap()
+    }
+    
+    private func enterUserDevCredentials(for user: UserCredentials) {
+        let mainWebView = app.webViews.otherElements["main"]
+        
+        let userNameTextField = mainWebView.children(matching: .textField).element
+        userNameTextField.tap()
+        userNameTextField.typeText(user.email)
+        
+        app.toolbars.matching(identifier: "Toolbar").buttons["Next"].tap()
+        app.typeText(user.password)
+        
+        wait(2)
+        goKeyboardButton.tap()
         wait(3)
-
-        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
-        wait(5)
-
-        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
-        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
-        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
     }
+}
 
-    func test_4_move_msg_to_trash() {
-        // Move msg to Trash
-        wait(2)
-        tapOnCell()
-
-        app.navigationBars.buttons["Delete"].tap()
-        wait(1)
-
-        // Verify in Trash
-        menuButton.tap()
-        tapOnMenu(folder: "Trash")
-        XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in trash")
-
-        tapOnCell()
-        let buttons = app.navigationBars.buttons
-        let backButton = buttons["arrow left c"]
-
-        // Verify buttons in Trash folder
-        XCTAssert(buttons["Delete"].exists, "Navigation bar should contain delete button")
-        XCTAssert(buttons["help icn"].exists, "Navigation bar should contain help button")
-        XCTAssert(backButton.exists, "Navigation bar should contain back button")
-        XCTAssert(buttons.count == 3, "")
-
-        // Open following first msg
-        backButton.tap()
-        menuButton.tap()
-        tapOnMenu(folder: "Inbox")
-
-        tapOnCell()
-    }
-
-    func test_5_move_msg_to_archive() {
-        wait(2)
-        sendMessage(to: user.email)
-        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
-        app.navigationBars.buttons["archive"].tap()
-        wait(2)
-        XCTAssert(app.navigationBars["Inbox"].exists, "Failed in sending message to archive")
-
-        menuButton.tap()
-        tapOnMenu(folder: "All Mail")
-        wait(1)
-
-        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
-        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
-    }
-
-    func test_6_send_message_no_pub_key() {
-        wait(2)
-        sendMessage(to: "flowcrypt.nopubkey@gmail.com")
-        wait(3)
-        let errorAlert = app.alerts["Error"]
-        XCTAssert(errorAlert.exists)
-    }
+// Temporary disabled. Wait for https://github.com/FlowCrypt/flowcrypt-ios/issues/408
+extension SignInGoogleTest {
+    //        // enter password
+    //        let passwordTextField = webView.secureTextFields.firstMatch
+    //        passwordTextField.tap()
+    //        passwordTextField.typeText(user.password)
+    //        let goButton = goKeyboardButton
+    //        XCTAssert(goButton.exists, "Password keyboard button")
+    //        goButton.tap()
+    //
+    //        wait(5)
+    //
+    //        XCTAssert(app.tables.firstMatch.exists, "Table does not exist")
+    //
+    //        // MARK: - Wrong pass phrase
+    //        // enter wrong pass phrase and tap enter
+    //        let button = goKeyboardButton
+    //
+    //        app.typeText(user.pass + "wrong")
+    //        button.tap()
+    //
+    //        wait(0.2)
+    //        let errorAlert = app.alerts["Error"]
+    //        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
+    //        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
+    //        wait(0.2)
+    //        app.tables.secureTextFields.firstMatch.tap()
+    //
+    //        // MARK: - Correct pass phrase
+    //        // enter correct pass phrase and tap enter
+    //        if button.exists {
+    //            app.typeText(user.pass)
+    //            button.tap()
+    //        } else {
+    //            _ = app.keys[user.pass + "\n"]
+    //        }
+    //        wait(1)
+    //
+    //        XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
+    //
+    //        // MARK: - Send message
+    //        sendMessage(to: user.email)
+    //        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
+    //
+    //        // MARK: - Check in sent mail box
+    //        menuButton.tap()
+    //        tapOnMenu(folder: "Sent Mail")
+    //        wait(3)
+    //
+    //        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
+    //        wait(5)
+    //
+    //        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
+    //        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
+    //        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
+    //    }
+    //
+    //    func test_4_move_msg_to_trash() {
+    //        // Move msg to Trash
+    //        wait(2)
+    //        tapOnCell()
+    //
+    //        app.navigationBars.buttons["Delete"].tap()
+    //        wait(1)
+    //
+    //        // Verify in Trash
+    //        menuButton.tap()
+    //        tapOnMenu(folder: "Trash")
+    //        XCTAssert(app.tables.cells.otherElements.staticTexts[user.email].exists, "There is no message in trash")
+    //
+    //        tapOnCell()
+    //        let buttons = app.navigationBars.buttons
+    //        let backButton = buttons["arrow left c"]
+    //
+    //        // Verify buttons in Trash folder
+    //        XCTAssert(buttons["Delete"].exists, "Navigation bar should contain delete button")
+    //        XCTAssert(buttons["help icn"].exists, "Navigation bar should contain help button")
+    //        XCTAssert(backButton.exists, "Navigation bar should contain back button")
+    //        XCTAssert(buttons.count == 3, "")
+    //
+    //        // Open following first msg
+    //        backButton.tap()
+    //        menuButton.tap()
+    //        tapOnMenu(folder: "Inbox")
+    //
+    //        tapOnCell()
+    //    }
+    //
+    //    func test_5_move_msg_to_archive() {
+    //        wait(2)
+    //        sendMessage(to: user.email)
+    //        app.tables.cells.otherElements.staticTexts[user.email].firstMatch.tap()
+    //        app.navigationBars.buttons["archive"].tap()
+    //        wait(2)
+    //        XCTAssert(app.navigationBars["Inbox"].exists, "Failed in sending message to archive")
+    //
+    //        menuButton.tap()
+    //        tapOnMenu(folder: "All Mail")
+    //        wait(1)
+    //
+    //        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
+    //        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
+    //    }
+    //
+    //    func test_6_send_message_no_pub_key() {
+    //        wait(2)
+    //        sendMessage(to: "flowcrypt.nopubkey@gmail.com")
+    //        wait(3)
+    //        let errorAlert = app.alerts["Error"]
+    //        XCTAssert(errorAlert.exists)
+    //    }
 }

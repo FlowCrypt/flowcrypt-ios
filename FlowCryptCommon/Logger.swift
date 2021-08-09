@@ -40,7 +40,7 @@ import Foundation
 // logger.logWarning("some")
 
 // MARK: - Implementation
-struct Logger {
+public struct Logger {
     private struct Configuration {
         // MARK: - Default logLevel
         static let `default`: Configuration = .init(
@@ -136,7 +136,7 @@ struct Logger {
 }
 
 // MARK: - Nested
-extension Logger {
+public extension Logger {
 
     static func nested(_ label: String) -> Logger {
         Logger(config: .default, label: "[\(label)]")
@@ -154,7 +154,7 @@ extension Logger {
 }
 
 // MARK: - Nested with app label
-extension Logger {
+public extension Logger {
     // MARK: - Log Labels
     enum LogLabels: String {
         /// log all events which is important for app start for a user
@@ -176,7 +176,7 @@ extension Logger {
 }
 
 // MARK: - Instance
-extension Logger {
+public extension Logger {
     /// verbose messages
     func logVerbose(_ message: String) {
         log(.verbose, message)
@@ -204,7 +204,7 @@ extension Logger {
 }
 
 // MARK: - Static
-extension Logger {
+public extension Logger {
     private static let logger = Logger(config: .default)
 
     /// verbose messages
@@ -236,13 +236,13 @@ extension Logger {
 // MARK: - print
 // By default the print() will print to the console for both release and debug builds.
 /// Wrapping Swift.print() inside DEBUG flag
-func print(_ object: Any) {
+public func print(_ object: Any) {
   // Only allowing in DEBUG mode
   #if DEBUG
       Swift.print(object)
   #endif
 }
 
-func releasePrint(_ object: Any) {
+public func releasePrint(_ object: Any) {
     Swift.print(object)
 }

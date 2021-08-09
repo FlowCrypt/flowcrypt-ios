@@ -66,11 +66,6 @@ final class ComposeViewController: TableNodeViewController {
         self.contactsService = contactsService
         self.composeMessageService = composeMessageService
         self.contextToSend.subject = input.subject
-        if input.isReply {
-            if let email = input.recipientReplyTitle {
-                contextToSend.recipients.append(ComposeMessageRecipient(email: email, state: decorator.recipientIdleState))
-            }
-        }
         super.init(node: TableNode())
     }
 
@@ -85,6 +80,7 @@ final class ComposeViewController: TableNodeViewController {
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
+        setupReply()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -134,6 +130,14 @@ extension ComposeViewController {
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
         }
+    }
+
+    private func setupReply() {
+        guard input.isReply, let email = input.recipientReplyTitle else { return }
+
+        let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
+        contextToSend.recipients.append(recipient)
+        evaluate(recipient: recipient)
     }
 }
 
@@ -196,6 +200,7 @@ extension ComposeViewController {
         view.endEditing(true)
 
         showSpinner("sending_title".localized)
+        navigationItem.rightBarButtonItem?.isEnabled = false
 
         composeMessageService.validateMessage(
             input: input,
@@ -205,21 +210,19 @@ extension ComposeViewController {
         )
         .publisher
         .flatMap(composeMessageService.encryptAndSend)
-        .sink(
-            receiveCompletion: { [weak self] result in
-                guard case .failure(let error) = result else {
-                    return
-                }
-                self?.handle(error: error)
-            },
+        .sinkFuture(
             receiveValue: { [weak self] in
                 self?.handleSuccessfullySentMessage()
+            },
+            receiveError: { [weak self] error in
+                self?.handle(error: error)
             })
         .store(in: &cancellable)
     }
 
     private func handle(error: ComposeMessageError) {
         hideSpinner()
+        navigationItem.rightBarButtonItem?.isEnabled = true
 
         let message = "compose_error".localized
             + "\n\n"
@@ -230,6 +233,7 @@ extension ComposeViewController {
 
     private func handleSuccessfullySentMessage() {
         hideSpinner()
+        navigationItem.rightBarButtonItem?.isEnabled = true
         showToast(input.successfullySentToast)
         navigationController?.popViewController(animated: true)
     }

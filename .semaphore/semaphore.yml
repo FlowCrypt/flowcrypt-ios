@@ -18,9 +18,8 @@ blocks:
     execution_time_limit:
       minutes: 25
     task:
-      # temporary disable this task. 
-      # secrets:
-      #  - name: flowcrypt-ios-ci-secrets
+      secrets:
+        - name: flowcrypt-ios-ci-secrets
       env_vars:
         - name: LANG
           value: en_US.UTF-8
@@ -31,36 +30,26 @@ blocks:
           - checkout
           - cd ~/git/flowcrypt-ios/
           - cache restore
-          - gem install bundler -v 1.17.3
-          - bundle install --path vendor/bundle
+          - make dependencies
           - cache store
-          # - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/test-ci-secrets.json
+          - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
       jobs:
         - name: 'FlowCryptTests'
           commands:
             - bundle exec fastlane do_everything
+            # - bundle exec fastlane test_ui
 
-        # - name: 'FlowCryptTests(with email server)'
-        #   commands: 
-        #     # Install Docker
-        #     - brew install --cask docker
-        #     # Install Docker-compose
-        #     - brew install docker-compose
-        #     # Run an email server
-        #     # Docker daemon uses Linux-specific kernel features. 
-        #     # Install docker-machine in order to create VM and attach to it.
-        #     - brew install docker-machine docker
-        #     # docker-machine relies on VirtualBox
-        #     # install Virtualbox
-        #     - brew install --cask virtualbox
-        #     # Install telnet
-        #     - brew install telnet
-        #     # Install docker toolbox
-        #     - brew install --cask docker-toolbox
-        #     # Start virtualbox
-        #     - docker-machine create -d virtualbox --virtualbox-no-vtx-check default || true
-        #     # Start Docker
-        #     - docker-machine start default || true
-        #     - docker-compose --version
-        #     # Run mail server
-        #     - cd docker-mailserver && ./run_email_server.sh && ./print_debug_info.sh && cd - 
+        - name: 'FlowCryptTests(with email server)'
+          commands:
+            # telnet is used by check_email_server.sh
+            - brew install telnet
+            # point domain "mail" to IP of dev IMAP mailserver
+            - sudo bash -c 'echo "217.163.30.119 mail" >> /etc/hosts'
+            - cat /etc/hosts
+            # mailserver runs on ports 10025, 10143
+            # ports 10456, 10993 are not enabled yet
+            - nc -zv 217.163.30.119 10025
+            - nc -zv 217.163.30.119 10143
+            - nc -zv mail 10025
+            - nc -zv mail 10143
+            - cd docker-mailserver/ && ./check_email_server.sh
