@@ -46,6 +46,11 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.DecryptKey.self)
     }
 
+    func encryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.EncryptKey {
+        let r = try call("encryptKey", jsonDict: ["armored": armoredPrv, "passphrase": passphrase], data: nil)
+        return try r.json.decodeJson(as: CoreRes.EncryptKey.self)
+    }
+
     func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) throws -> CoreRes.ParseDecryptMsg {
         let json: [String : Any?]? = [
             "keys": try keys.map { try $0.toJsonEncodedDict() },

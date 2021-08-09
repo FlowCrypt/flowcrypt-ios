@@ -22,6 +22,11 @@ enum CreateKeyError: Error {
     case conformingPassPhraseError
 }
 
+enum CreatePassphraseWithExistingKeyError: Error {
+    // No private key was found
+    case noPrivateKey
+}
+
 /**
  * Controller which is responsible for generating a new key during setup
  * - User is sent here from **SetupInitialViewController** in case there are no backups found
@@ -29,7 +34,7 @@ enum CreateKeyError: Error {
  * - After key is generated, user will be redirected to **main flow** (inbox view)
  */
 
-final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseSaveable {
+final class SetupCreatePassphraseViewController: TableNodeViewController, PassPhraseSaveable {
     enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle
     }
@@ -43,6 +48,7 @@ final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseS
     private let storage: DataServiceType
     private let keyStorage: KeyStorageType
     private let attester: AttesterApiType
+    private let keys: [CoreRes.ParseKeys]
     let passPhraseService: PassPhraseServiceType
 
     var shouldSaveLocally = true {
@@ -62,6 +68,7 @@ final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseS
 
     init(
         user: UserId,
+        keys: [CoreRes.ParseKeys] = [],
         backupService: BackupServiceType = BackupService(),
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
@@ -80,7 +87,7 @@ final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseS
         self.attester = attester
         self.keyStorage = keyStorage
         self.passPhraseService = passPhraseService
-
+        self.keys = keys
         super.init(node: TableNode())
     }
 
@@ -97,7 +104,7 @@ final class SetupGenerateKeyViewController: TableNodeViewController, PassPhraseS
 
 // MARK: - UI
 
-extension SetupGenerateKeyViewController {
+extension SetupCreatePassphraseViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -136,7 +143,7 @@ extension SetupGenerateKeyViewController {
 
 // MARK: - Setup
 
-extension SetupGenerateKeyViewController {
+extension SetupCreatePassphraseViewController {
     private func setupAccountWithGeneratedKey(with passPhrase: String) {
         Promise { [weak self] in
             guard let self = self else { return }
@@ -170,6 +177,48 @@ extension SetupGenerateKeyViewController {
                 testWelcome,
                 fail: "Failed to send you welcome email")
             )
+        }
+        .then(on: .main) { [weak self] in
+            self?.hideSpinner()
+            self?.moveToMainFlow()
+        }
+        .catch(on: .main) { [weak self] error in
+            guard let self = self else { return }
+            self.hideSpinner()
+
+            let isErrorHandled = self.handleCommon(error: error)
+
+            if !isErrorHandled {
+                self.showAlert(error: error, message: "Could not finish setup, please try again")
+            }
+        }
+    }
+
+    private func setupAccountWithExistingKeys(with passPhrase: String) {
+        Promise { [weak self] in
+            guard let self = self else { return }
+            self.showSpinner()
+
+            try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
+
+            try self.keys.forEach { key in
+                try key.keyDetails.forEach { keyDetail in
+                    guard let privateKey = keyDetail.private else {
+                        throw CreatePassphraseWithExistingKeyError.noPrivateKey
+                    }
+                    let encryptedPrv = try self.core.encryptKey(
+                        armoredPrv: privateKey,
+                        passphrase: passPhrase
+                    )
+                    let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
+                    parsedKey.keyDetails.forEach { keyDetails in
+                        let passPhrase = PassPhrase(value: passPhrase, fingerprints: keyDetails.fingerprints)
+                        self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldSaveLocally)
+                    }
+                    try awaitPromise(self.backupService.backupToInbox(keys: parsedKey.keyDetails, for: self.user))
+                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails, source: .generated, for: self.user.email)
+                }
+            }
         }
         .then(on: .main) { [weak self] in
             self?.hideSpinner()
@@ -246,7 +295,7 @@ extension SetupGenerateKeyViewController {
     }
 }
 
-extension SetupGenerateKeyViewController {
+extension SetupCreatePassphraseViewController {
     private func moveToMainFlow() {
         router.proceed()
     }
@@ -262,13 +311,17 @@ extension SetupGenerateKeyViewController {
             return
         }
         logger.logInfo("Setup account with \(passPhrase)")
-        setupAccountWithGeneratedKey(with: passPhrase)
+        if keys.isNotEmpty {
+            self.setupAccountWithExistingKeys(with: passPhrase)
+        } else {
+            setupAccountWithGeneratedKey(with: passPhrase)
+        }
     }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
 
-extension SetupGenerateKeyViewController: ASTableDelegate, ASTableDataSource {
+extension SetupCreatePassphraseViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         parts.count
     }

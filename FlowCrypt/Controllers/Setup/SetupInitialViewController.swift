@@ -157,16 +157,10 @@ extension SetupInitialViewController {
 
     private func fetchKeysFromEKM() {
         emailKeyManagerApi.getPrivateKeys()
-            .then { [weak self] result in
-                guard let urlString = self?.emailKeyManagerApi.getPrivateKeysUrlString() else {
-                    fatalError("Private keys URL can not be nil at this point")
-                }
-
+            .then(on: .main) { [weak self] result in
                 switch result {
-                case .success(decryptedResponse: let response):
-                    self?.showToast(
-                        "organisational_rules_ekm_private_keys_message".localizeWithArguments(response.privateKeys.count, urlString)
-                    )
+                case .success(keys: let keys):
+                    self?.proceedToSetupPassPhrase(keys: keys)
                 case .noKeys:
                     self?.showRetryAlert(
                         message: "organisational_rules_ekm_empty_private_keys_error".localized,
@@ -325,7 +319,11 @@ extension SetupInitialViewController {
     }
 
     private func proceedToCreatingNewKey() {
-        let viewController = SetupGenerateKeyViewController(user: user)
+        let viewController = SetupCreatePassphraseViewController(user: user)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+    private func proceedToSetupPassPhrase(keys: [CoreRes.ParseKeys]) {
+        let viewController = SetupCreatePassphraseViewController(user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
