@@ -14,7 +14,7 @@ private let logger = Logger.nested("UI Tests")
 
 // MARK: - Compatibility account
 
-class SignInTest: XCTestCase, AppTest {
+class SignInImapTest: XCTestCase, AppTest {
     var app: XCUIApplication!
     private let user = UserCredentials.compatibility
 
@@ -34,7 +34,7 @@ class SignInTest: XCTestCase, AppTest {
     }
 }
 
-extension SignInTest {
+extension SignInImapTest {
     // log in -> approve -> no backups -> switch email
     func test_1_login_no_backups() {
         // login with user without key backup

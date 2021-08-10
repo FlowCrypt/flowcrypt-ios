@@ -19,8 +19,15 @@ platform :ios do
   end
 
   # UITests
-  desc "Run UI Tests"
+  desc "Run all UI tests"
   lane :test_ui do
+    test_ui_prepare
+    test_ui_gmail
+    test_ui_imap
+  end
+
+  desc "Run Gmail UI Tests"
+  lane :test_ui_gmail do
     test_ui_prepare
     scan(
       workspace: "FlowCrypt.xcworkspace",
@@ -32,7 +39,26 @@ platform :ios do
       reset_simulator: true,
       prelaunch_simulator: true,
       include_simulator_logs: true,
-      skip_build: true
+      skip_build: true,
+      testplan: "Gmail"
+  )
+  end
+
+  desc "Run Imap UI Tests"
+  lane :test_ui_imap do
+    test_ui_prepare
+    scan(
+      workspace: "FlowCrypt.xcworkspace",
+      scheme: "FlowCryptUITests",
+      reinstall_app: true,
+      skip_build: true,    
+      disable_slide_to_type: true,  
+      force_quit_simulator: false,
+      reset_simulator: true,
+      prelaunch_simulator: true,
+      include_simulator_logs: true,
+      skip_build: true,
+      testplan: "Imap"
   )
   end
 
@@ -74,7 +100,8 @@ platform :ios do
   lane :do_everything do 
     build
     unit_tests
-    # test_ui
+    # test_ui_gmail
+    # test_ui_imap
     # record_tests
   end 
 

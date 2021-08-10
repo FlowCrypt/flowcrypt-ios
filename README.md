@@ -24,8 +24,14 @@ bundle exec pod install
 ### Run UI Tests
 
 Follow steps in installation above, and then:
- - from terminal: `make ui_tests`
- - from Xcode:  1) Choose `FlowCryptUITests` run target on top and select a simulator 2) select Tests in Navigators area (cmd+6) 3) Scroll down to `FlowCryptUITests` in the navigator and run them all or run a particular one
+ - from terminal: 
+    - `make ui_tests` - for all ui tests
+    - `make ui_tests_gmail` - for Gmail ui tests
+    - `make ui_tests_imap` - for Imap ui tests
+ - from Xcode:  
+    1) Choose `FlowCryptUITests` run target on top and select a simulator 
+    2) select Tests in Navigators area (cmd+6) 
+    3) Scroll down to `FlowCryptUITests` in the navigator and run them all or run a particular one
 
 Before running tests, please make sure keyboard is visible in simulator. (cmd+shift+k)
 
