@@ -418,12 +418,22 @@ extension SetupImapViewController {
         user.imap?.port = settings.port
         user.imap?.connectionType = settings.connectionType.rawValue
         user.imap?.hostname = settings.hostName ?? ""
+
+        // Used for ui tests
+        if user.email.contains("default@flowcrypt.test") {
+            user.imap?.connectionType = "none"
+        }
     }
 
     private func updateUser(smtp settings: MailSettingsCredentials) {
         user.smtp?.port = settings.port
         user.smtp?.connectionType = settings.connectionType.rawValue
         user.smtp?.hostname = settings.hostName ?? ""
+
+        // Used for ui tests
+        if user.email.contains("default@flowcrypt.test") {
+            user.smtp?.connectionType = "none"
+        }
     }
 
     @discardableResult
@@ -463,6 +473,8 @@ extension SetupImapViewController {
 // MARK: - Connect
 extension SetupImapViewController {
     private func connect() {
+        view.endEditing(true)
+
         let result = checkCurrentUser()
         switch result {
         case .failure(.empty):

@@ -23,6 +23,12 @@ struct UserCredentials: Codable, Equatable {
             .first(where: { $0.email == "ci.tests.gmail@flowcrypt.dev" })!
     }()
     
+    static var imapDev: UserCredentials = {
+        Credentials.default
+            .users
+            .first(where: { $0.email == "default@flowcrypt.test" })!
+    }()
+    
     static var main: UserCredentials = {
         Credentials.default
             .users

@@ -8,7 +8,8 @@
 
 import XCTest
 import FlowCryptCommon
-private let logger = Logger.nested("UI Tests")
+
+public let logger = Logger.nested("UI Tests")
 
 class TestCredentials: XCTestCase {
     func test_user_credentials() {

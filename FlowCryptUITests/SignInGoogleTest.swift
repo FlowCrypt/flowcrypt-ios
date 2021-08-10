@@ -9,8 +9,6 @@
 import XCTest
 import FlowCryptCommon
 
-private let logger = Logger.nested("UI Tests. Google")
-
 class SignInGoogleTest: XCTestCase, AppTest {
     var app: XCUIApplication!
     let user = UserCredentials.main

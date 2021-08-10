@@ -36,9 +36,10 @@ extension Imap: RemoteFoldersProviderType {
 // MARK: - Convenience
 private extension FolderObject {
     convenience init?(with folder: MCOIMAPFolder, user: UserObject) {
-        guard let name = folder.name else { return nil }
+        // TODO: - ANTON
+//        guard let name = folder.name else { return nil }
         self.init(
-            name: name,
+            name: folder.path,
             path: folder.path,
             image: nil,
             user: user

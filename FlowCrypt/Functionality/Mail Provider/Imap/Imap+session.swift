@@ -29,34 +29,21 @@ extension Imap {
             logger.logInfo("Creating a new IMAP session")
             let newImapSession = MCOIMAPSession(session: imap)
             imapSess = newImapSession
-            logIMAPConnection(for: imapSess!)
+                .log()
         }
 
         if let smtp = smtpSession {
             logger.logInfo("Creating a new SMTP session")
             let newSmtpSession = MCOSMTPSession(session: smtp)
             smtpSess = newSmtpSession
-            logSMTPConnection(for: smtpSess!)
-        }
-    }
-
-    private func logIMAPConnection(for session: MCOIMAPSession) {
-        session.connectionLogger = { [weak self] connectionID, type, data in
-            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
-            self?.logger.logInfo("connection IMAP :\(type):\(string)")
-        }
-    }
-
-    private func logSMTPConnection(for smtpSession: MCOSMTPSession) {
-        smtpSession.connectionLogger = { [weak self] connectionID, type, data in
-            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
-            self?.logger.logInfo("connection SMTP:\(type):\(string)")
+                .log()
         }
     }
 
     func connectSmtp(session: SMTPSession) -> Promise<Void> {
         Promise { resolve, reject in
             MCOSMTPSession(session: session)
+                .log()
                 .loginOperation()?
                 .start { error in
                     guard let error = error else { resolve(()); return }
@@ -68,6 +55,7 @@ extension Imap {
     func connectImap(session: IMAPSession) -> Promise<Void> {
          Promise { resolve, reject in
             MCOIMAPSession(session: session)
+                .log()
                 .connectOperation()?
                 .start { [weak self] error in
                     guard let error = error else { resolve(()); return }
@@ -89,5 +77,25 @@ extension Imap {
         }
         imapSess = nil
         smtpSess = nil // smtp session has no disconnect method
+    }
+}
+
+extension MCOIMAPSession {
+    func log() -> Self {
+        connectionLogger = { connectionID, type, data in
+            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
+            Logger.nested("IMAP").logInfo("\(type):\(string)")
+        }
+        return self
+    }
+}
+
+extension MCOSMTPSession {
+    func log() -> Self {
+        connectionLogger = { connectionID, type, data in
+            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
+            Logger.nested("SMTP").logInfo("\(type):\(string)")
+        }
+        return self
     }
 }

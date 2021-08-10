@@ -709,7 +709,7 @@
 		D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchCellNode.swift; sourceTree = "<group>"; };
 		D2F6D1322433753100DB4065 /* IMAPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMAPSession.swift; sourceTree = "<group>"; };
 		D2F6D1342433753B00DB4065 /* SMTPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMTPSession.swift; sourceTree = "<group>"; };
-		D2F6D13D2434FF1400DB4065 /* providers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = providers.json; sourceTree = "<group>"; };
+		D2F6D13D2434FF1400DB4065 /* providers.json */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text.json; path = providers.json; sourceTree = "<group>"; };
 		D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCredentialsProvider.swift; sourceTree = "<group>"; };
 		D2F6D146243506DA00DB4065 /* MailSettingsCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailSettingsCredentials.swift; sourceTree = "<group>"; };
 		D2FC1C0524D82C9F003B949D /* ContactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsService.swift; sourceTree = "<group>"; };

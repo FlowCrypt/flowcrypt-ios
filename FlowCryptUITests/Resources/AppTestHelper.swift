@@ -47,7 +47,6 @@ extension AppTest {
 }
 
 // MARK: - Actions
-private let logger = Logger.nested("UI Tests")
 
 extension AppTest {
     func sendMessage(to recipient: String ) {
