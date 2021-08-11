@@ -11,7 +11,6 @@ import FlowCryptCommon
 
 class SignInGoogleTest: XCTestCase, AppTest {
     var app: XCUIApplication!
-    let user = UserCredentials.main
 
     override func setUp() {
         continueAfterFailure = false
