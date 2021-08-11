@@ -90,8 +90,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
-
+        return { [weak self] in
             guard let self = self else { return ASCellNode() }
             let setting = self.rows[indexPath.row]
             return SettingsCellNode(

@@ -68,7 +68,7 @@ final class MessageService {
         Promise<ProcessedMessage> { [weak self] resolve, reject in
             guard let self = self else { return }
 
-            guard let keys = try? self.keyService.getPrivateKeys(with: passPhrase).get(), keys.isNotEmpty else {
+            guard let keys = try? self.keyService.getPrvKeyInfo(with: passPhrase).get(), keys.isNotEmpty else {
                 return reject(MessageServiceError.emptyKeys)
             }
 
@@ -110,7 +110,7 @@ final class MessageService {
                 self.messageProvider.fetchMsg(message: input, folder: folder)
             )
 
-            guard let keys = try? self.keyService.getPrivateKeys(with: nil).get() else {
+            guard let keys = try? self.keyService.getPrvKeyInfo(with: nil).get() else {
                 return reject(MessageServiceError.missedPassPhrase(rawMimeData))
             }
 

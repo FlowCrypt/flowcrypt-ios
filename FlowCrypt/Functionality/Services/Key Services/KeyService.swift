@@ -9,12 +9,12 @@
 import Foundation
 
 protocol KeyServiceType {
-    func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError>
-    func getPrivateKeys(with passPhrase: String?) -> Result<[PrvKeyInfo], KeyServiceError>
+    func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError>
+    func getPrvKeyInfo(with passPhrase: String?) -> Result<[PrvKeyInfo], KeyServiceError>
 }
 
 enum KeyServiceError: Error {
-    case unexpected, parsingError, retrieve
+    case unexpected, parsingError, retrieve, missedPassPhrase
 }
 
 final class KeyService: KeyServiceType {
@@ -33,27 +33,21 @@ final class KeyService: KeyServiceType {
         self.currentUserEmail = currentUserEmail
     }
 
-    func retrieveKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
-
-        let privateKeys: [PrvKeyInfo]
-
-        do {
-            privateKeys = try getPrivateKeys().get()
-        } catch let error as KeyServiceError {
-            return .failure(error)
-        } catch {
-            fatalError("Should only throw KeyServiceError")
+    /// Use to get list of keys (including missing pass phrases keys)
+    func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError> {
+        guard let email = currentUserEmail() else {
+            return .failure(.retrieve)
         }
 
-        guard privateKeys.isNotEmpty else {
-            return .success([])
-        }
+        let privateKeys = storage.keysInfo()
+            .filter { $0.account == email }
+            .map(\.private)
 
         let keyDetails = privateKeys
             .compactMap {
-                try? coreService.parseKeys(armoredOrBinary: $0.private.data())
-                    .keyDetails
+                try? coreService.parseKeys(armoredOrBinary: $0.data())
             }
+            .map(\.keyDetails)
             .flatMap { $0 }
 
         guard keyDetails.count == privateKeys.count else {
@@ -63,7 +57,8 @@ final class KeyService: KeyServiceType {
         return .success(keyDetails)
     }
 
-    func getPrivateKeys(with passPhrase: String? = nil) -> Result<[PrvKeyInfo], KeyServiceError> {
+    /// Use to get list of PrvKeyInfo with pass phrase
+    func getPrvKeyInfo(with passPhrase: String? = nil) -> Result<[PrvKeyInfo], KeyServiceError> {
         guard let email = currentUserEmail() else {
             return .failure(.retrieve)
         }
@@ -72,6 +67,12 @@ final class KeyService: KeyServiceType {
             .filter { $0.account == email }
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
+
+        if passPhrase == nil, storedPassPhrases.isEmpty {
+            // in case there are no pass phrases in storage/memory
+            // and user did not enter a pass phrase yet
+            return .failure(.missedPassPhrase)
+        }
 
         guard keysInfo.isNotEmpty else {
             return .success([])
