@@ -68,6 +68,7 @@ struct SetupImapViewDecorator {
         let placeholder: String?
         var isSecure = false
         var keyboardType: UIKeyboardType = .default
+        var accessibilityIdentifier: String?
 
         switch section {
         case let .account(part):
@@ -75,9 +76,11 @@ struct SetupImapViewDecorator {
             case .email:
                 placeholder = "Email"
                 keyboardType = .emailAddress
+                accessibilityIdentifier = "Email"
             case .password:
                 placeholder = "Password"
                 isSecure = true
+                accessibilityIdentifier = "Password"
             case .username:
                 placeholder = "Username"
             case .title:
@@ -88,8 +91,10 @@ struct SetupImapViewDecorator {
             case .port:
                 placeholder = "IMAP port"
                 keyboardType = .numberPad
+                accessibilityIdentifier = "IMAP port"
             case .security:
                 placeholder = "Security type"
+                accessibilityIdentifier = "IMAP type"
             case .server:
                 placeholder = "IMAP server"
             case .title:
@@ -100,8 +105,10 @@ struct SetupImapViewDecorator {
             case .port:
                 placeholder = "SMTP port"
                 keyboardType = .numberPad
+                accessibilityIdentifier = "smtp port"
             case .security:
                 placeholder = "Security type"
+                accessibilityIdentifier = "smtp type"
             case .server:
                 placeholder = "SMTP server"
             case .title:
@@ -131,7 +138,8 @@ struct SetupImapViewDecorator {
                 darkStyle: .darkGray,
                 lightStyle: UIColor(white: 1, alpha: 1)
             ),
-            keyboardType: keyboardType
+            keyboardType: keyboardType,
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 

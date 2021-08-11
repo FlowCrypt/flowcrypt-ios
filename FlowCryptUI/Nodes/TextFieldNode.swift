@@ -121,15 +121,15 @@ public final class TextFieldNode: ASDisplayNode {
     private var textFiledAction: TextFieldAction?
 
     private var onToolbarDoneAction: (() -> Void)?
-
-    public init(preferredHeight: CGFloat?, action: TextFieldAction? = nil) {
+    
+    public init(preferredHeight: CGFloat?, action: TextFieldAction? = nil, accessibilityIdentifier: String?) {
         super.init()
         addSubnode(node)
         textFiledAction = action
-        setupTextField()
+        setupTextField(with: accessibilityIdentifier)
     }
 
-    private func setupTextField() {
+    private func setupTextField(with accessibilityIdentifier: String?) {
         DispatchQueue.main.async {
             self.textField.delegate = self
             self.textField.addTarget(
@@ -141,6 +141,7 @@ public final class TextFieldNode: ASDisplayNode {
                 guard let self = self else { return }
                 self.textFiledAction?(.deleteBackward(self.textField))
             }
+            self.textField.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 
@@ -150,11 +151,8 @@ public final class TextFieldNode: ASDisplayNode {
 
     @discardableResult
     public override func becomeFirstResponder() -> Bool {
-        DispatchQueue.main.async {
-            super.becomeFirstResponder()
-            _ = self.textField.becomeFirstResponder()
-        }
-        return true
+        super.becomeFirstResponder()
+        return self.textField.becomeFirstResponder()
     }
 }
 

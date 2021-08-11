@@ -212,16 +212,22 @@ extension SetupImapViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock { { [weak self] in
-            guard let self = self, let section = Section(indexPath: indexPath) else { return ASCellNode() }
+        guard let self = self, let section = Section(indexPath: indexPath) else { return ASCellNode() }
 
-            switch section {
-            case .account(.title): return self.titleNode(for: indexPath)
-            case .imap(.title): return self.titleNode(for: indexPath)
-            case .smtp(.title): return self.titleNode(for: indexPath)
-            case .other(.title): return self.switchNode()
-            case .connect: return self.buttonNode()
-            default: return self.textFieldNode(for: indexPath)
-            }
+        switch section {
+        case .account(.title):
+            return self.titleNode(for: indexPath)
+        case .imap(.title):
+            return self.titleNode(for: indexPath)
+        case .smtp(.title):
+            return self.titleNode(for: indexPath)
+        case .other(.title):
+            return self.switchNode()
+        case .connect:
+            return self.buttonNode()
+        default:
+            return self.textFieldNode(for: indexPath)
+        }
         }
     }
 }
@@ -418,22 +424,12 @@ extension SetupImapViewController {
         user.imap?.port = settings.port
         user.imap?.connectionType = settings.connectionType.rawValue
         user.imap?.hostname = settings.hostName ?? ""
-
-        // Used for ui tests
-        if user.email.contains("default@flowcrypt.test") {
-            user.imap?.connectionType = "none"
-        }
     }
 
     private func updateUser(smtp settings: MailSettingsCredentials) {
         user.smtp?.port = settings.port
         user.smtp?.connectionType = settings.connectionType.rawValue
         user.smtp?.hostname = settings.hostName ?? ""
-
-        // Used for ui tests
-        if user.email.contains("default@flowcrypt.test") {
-            user.smtp?.connectionType = "none"
-        }
     }
 
     @discardableResult

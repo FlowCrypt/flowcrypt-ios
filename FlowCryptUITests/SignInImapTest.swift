@@ -9,8 +9,7 @@
 import XCTest
 import FlowCryptCommon
 
-// MARK: - Compatibility account
-
+/// make ui_tests_imap
 class SignInImapTest: XCTestCase, AppTest {
     var app: XCUIApplication!
 
@@ -30,19 +29,74 @@ class SignInImapTest: XCTestCase, AppTest {
     }
 }
 
+// MARK: - Tests
 extension SignInImapTest {
     // login -> approve -> backups found -> enter pass phrase -> main flow
     func test_1_successful_login_imap() {
         let user = UserCredentials.imapDev
-        login(user)
+        loginWithImap(user)
+    }
+}
+
+// MARK: - Convenience
+extension SignInImapTest {
+    private func loginWithImap(_ user: UserCredentials) {
+        logger.logInfo("Login with \(user.email)")
         
+        // other account
+        logOutIfNeeded()
+        wait(0.3)
+
+        logger.logInfo("Use other email provider")
+        let otherEmailButton = app.tables.buttons["Other email provider"]
+        otherEmailButton.tap()
+
+        logger.logInfo("Fill all user credentials")
         
-        passPhraseTextField.tap()
-        passPhraseTextField.typeText(user.pass)
+        // email
+        let emailTextField = app.tables.textFields["Email"]
+        emailTextField.tap()
+        emailTextField.typeText(user.email)
+        wait(1)
+        
+        // move focus to username
+        goKeyboardButton.tap()
+        wait(1)
+        
+        // move focus to password
+        goKeyboardButton.tap()
+        app.typeText(user.password)
+
+        // move focus to imap server (filled)
         goKeyboardButton.tap()
         
-        wait(4)
-        XCTAssert(app.buttons["+"].exists)
+        // move focus to imap port
+        goKeyboardButton.tap()
+        
+        // move focus to imap security type. Set none
+        app.toolbars["Toolbar"].buttons["Done"].tap()
+        app.pickerWheels["none"].tap()
+        app.toolbars["Toolbar"].buttons["Done"].tap()
+        
+        
+        // move to imap port. Delete filled port. Enter valid
+        let tf = app.tables.textFields["IMAP port"]
+        tf.tap()
+        for _ in 1...10 {
+            app/*@START_MENU_TOKEN@*/.keys["Delete"]/*[[".keyboards.keys[\"Delete\"]",".keys[\"Delete\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        }
+        app.typeText("10143")
+        tf.swipeUp()
+        
+        
+        // TODO: - ANTON - DO THE SAME FOR SMTP
+        
+        // connect
+//        passwordTextField.swipeUp()
+        app.tables.buttons["Connect"].tap()
+        
+        logger.logInfo("Try to connect")
+        wait(10)
     }
 }
 

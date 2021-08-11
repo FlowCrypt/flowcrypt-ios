@@ -20,6 +20,7 @@ public final class TextFieldCellNode: CellNode {
         public var width: CGFloat?
         public var backgroundColor: UIColor?
         public var keyboardType: UIKeyboardType
+        public let accessibilityIdentifier: String?
 
         public init(
             placeholder: NSAttributedString = NSAttributedString(string: "PLACEHOLDER"),
@@ -31,7 +32,8 @@ public final class TextFieldCellNode: CellNode {
             height: CGFloat = 40,
             width: CGFloat? = nil,
             backgroundColor: UIColor? = nil,
-            keyboardType: UIKeyboardType = .default
+            keyboardType: UIKeyboardType = .default,
+            accessibilityIdentifier: String? = nil
         ) {
             self.placeholder = placeholder
             self.isSecureTextEntry = isSecureTextEntry
@@ -43,6 +45,7 @@ public final class TextFieldCellNode: CellNode {
             self.width = width
             self.backgroundColor = backgroundColor
             self.keyboardType = keyboardType
+            self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 
@@ -65,7 +68,11 @@ public final class TextFieldCellNode: CellNode {
     }
 
     public init(input: Input, action: TextFieldAction? = nil) {
-        textField = TextFieldNode(preferredHeight: input.height, action: action)
+        textField = TextFieldNode(
+            preferredHeight: input.height,
+            action: action,
+            accessibilityIdentifier: input.accessibilityIdentifier
+        )
         self.input = input
         super.init()
         textFiledAction = action
@@ -75,6 +82,7 @@ public final class TextFieldCellNode: CellNode {
         textField.textAlignment = input.textAlignment
         textField.textInsets = input.textInsets
         textField.keyboardType = input.keyboardType
+        textField.accessibilityIdentifier = input.accessibilityIdentifier
         if let color = input.backgroundColor {
             backgroundColor = color
         }
