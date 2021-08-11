@@ -116,6 +116,7 @@ extension AppTest {
         // password
         let passwordTextField = app.tables.secureTextFields["Password"]
         passwordTextField.tap()
+        passwordTextField.tap()
         passwordTextField.typeText(user.password)
 
         // connect

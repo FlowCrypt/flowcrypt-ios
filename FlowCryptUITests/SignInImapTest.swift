@@ -13,7 +13,6 @@ import FlowCryptCommon
 
 class SignInImapTest: XCTestCase, AppTest {
     var app: XCUIApplication!
-    private let user = UserCredentials.compatibility
 
     override func setUp() {
         continueAfterFailure = false
@@ -32,29 +31,18 @@ class SignInImapTest: XCTestCase, AppTest {
 }
 
 extension SignInImapTest {
-    func test_login() {
-        login(.imapDev)
+    // login -> approve -> backups found -> enter pass phrase -> main flow
+    func test_1_successful_login_imap() {
+        let user = UserCredentials.imapDev
+        login(user)
         
-        let app = XCUIApplication()
-        let tablesQuery = app.tables
-        tablesQuery/*@START_MENU_TOKEN@*/.buttons["Other email provider"]/*[[".cells.buttons[\"Other email provider\"]",".buttons[\"Other email provider\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
         
-        let emailTextField = tablesQuery/*@START_MENU_TOKEN@*/.textFields["Email"]/*[[".cells.textFields[\"Email\"]",".textFields[\"Email\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-        emailTextField.tap()
-        emailTextField.tap()
-        app/*@START_MENU_TOKEN@*/.staticTexts["Paste"]/*[[".menus",".menuItems[\"Paste\"].staticTexts[\"Paste\"]",".staticTexts[\"Paste\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
+        passPhraseTextField.tap()
+        passPhraseTextField.typeText(user.pass)
+        goKeyboardButton.tap()
         
-        let passwordSecureTextField = tablesQuery/*@START_MENU_TOKEN@*/.secureTextFields["Password"]/*[[".cells.secureTextFields[\"Password\"]",".secureTextFields[\"Password\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-        passwordSecureTextField.tap()
-        passwordSecureTextField.tap()
-        passwordSecureTextField.tap()
-        app/*@START_MENU_TOKEN@*/.menuItems["Paste"]/*[[".menus.menuItems[\"Paste\"]",".menuItems[\"Paste\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-        
-        let securityTypeTextField = tablesQuery.cells.otherElements.textFields["Security type"]
-        securityTypeTextField.tap()
-        securityTypeTextField.tap()
-        app.toolbars["Toolbar"].buttons["Done"].tap()
-        
+        wait(4)
+        XCTAssert(app.buttons["+"].exists)
     }
 }
 
