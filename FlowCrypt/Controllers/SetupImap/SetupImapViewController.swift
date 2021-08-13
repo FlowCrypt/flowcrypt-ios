@@ -292,6 +292,20 @@ extension SetupImapViewController {
         IndexPath(row: AccountPart.username.rawValue, section: Section.account(.username).section)
     }
 
+    private func reloadImapSection() {
+        node.reloadSections(
+            IndexSet(integer: Section.imap(.port).section),
+            with: .none
+        )
+    }
+
+    private func reloadSmtpSection() {
+        node.reloadSections(
+            IndexSet(integer: Section.smtp(.port).section),
+            with: .none
+        )
+    }
+
     private func reloadSessionCredentials() {
         node.reloadSections(
             IndexSet(integersIn: Section.imap(.port).section...Section.smtp(.port).section),
@@ -331,12 +345,12 @@ extension SetupImapViewController {
             user.imap?.connectionType = connections[0].rawValue
         case (.imap(.security), .didEndEditing):
             updateUserImapCredentials()
-            reloadSessionCredentials()
+            reloadImapSection()
         case (.smtp(.security), .didBeginEditing):
             user.smtp?.connectionType = connections[0].rawValue
         case (.smtp(.security), .didEndEditing):
             updateUserSmtpCredentials()
-            reloadSessionCredentials()
+            reloadSmtpSection()
         case (.other(.name), .didEndEditing(let name)):
             user.smtp?.username = name ?? user.name
         case (.other(.password), .didEndEditing(let password)):
@@ -399,7 +413,7 @@ extension SetupImapViewController {
 
         switch settings {
         case let .failure(.notFound(defaultPort)):
-            user.imap?.port = defaultPort
+            user.imap?.port = user.imap?.port ?? defaultPort
         case let .success(imapSetting):
             updateUser(imap: imapSetting)
         }
@@ -414,7 +428,7 @@ extension SetupImapViewController {
 
         switch settings {
         case let .failure(.notFound(defaultPort)):
-            user.smtp?.port = defaultPort
+            user.smtp?.port = user.smtp?.port ?? defaultPort
         case let .success(imapSetting):
             updateUser(smtp: imapSetting)
         }

@@ -56,8 +56,7 @@ final class GlobalRouter: GlobalRouterType {
 extension GlobalRouter {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        // TODO: - ANTON - WARNING
-//        userAccountService.cleanupSessions()
+        userAccountService.cleanupSessions()
         proceed(with: nil)
     }
 

@@ -12,10 +12,10 @@ import FlowCryptCommon
 /// make ui_tests_imap
 class SignInImapTest: XCTestCase, AppTest {
     var app: XCUIApplication!
-
+    
     override func setUp() {
         continueAfterFailure = false
-
+        
         logger.logInfo("Start App")
         
         app = XCUIApplicationBuilder()
@@ -36,7 +36,12 @@ extension SignInImapTest {
         let user = UserCredentials.imapDev
         loginWithImap(user)
         
+        passPhraseTextField.tap()
+        passPhraseTextField.typeText(user.pass)
+        goKeyboardButton.tap()
         
+        wait(4)
+        XCTAssert(app.buttons["+"].exists)
     }
 }
 
@@ -52,11 +57,11 @@ extension SignInImapTest {
         // other account
         logOutIfNeeded()
         wait(0.3)
-
+        
         logger.logInfo("Use other email provider")
         let otherEmailButton = app.tables.buttons["Other email provider"]
         otherEmailButton.tap()
-
+        
         logger.logInfo("Fill all user credentials")
         
         // email
@@ -72,7 +77,7 @@ extension SignInImapTest {
         // move focus to password
         goKeyboardButton.tap()
         app.typeText(user.password)
-
+        
         // move focus to imap server (filled)
         goKeyboardButton.tap()
         
@@ -84,36 +89,16 @@ extension SignInImapTest {
         app.pickerWheels["none"].tap()
         toolbarDoneButton.tap()
         
-        // move to imap port. Delete filled port. Enter valid
-        let tf = app.tables.textFields["IMAP port"]
-        tf.tap()
-        for _ in 1...10 {
-            app.keys["Delete"].tap()
-        }
-        app.typeText("10143")
-        tf.swipeUp()
-    
         // move to smtp type
         let smtpType = app.tables.textFields["SMTP type"]
         smtpType.tap()
         app.pickerWheels["none"].tap()
         toolbarDoneButton.tap()
         
-        // move to smtp port
-        let smtpPort = app.tables.textFields["SMTP port"]
-        smtpPort.tap()
-        for _ in 1...10 {
-            app.keys["Delete"].tap()
-        }
-        app.typeText("10025")
-        
-        // close keyboard
-        smtpPort.swipeUp()
-        
         app.tables.buttons["Connect"].tap()
         
         logger.logInfo("Try to connect")
-        wait(30)
+        wait(10)
     }
 }
 
