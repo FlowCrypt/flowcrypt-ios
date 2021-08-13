@@ -35,11 +35,17 @@ extension SignInImapTest {
     func test_1_successful_login_imap() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
+        
+        
     }
 }
 
 // MARK: - Convenience
 extension SignInImapTest {
+    private var toolbarDoneButton: XCUIElement {
+        app.toolbars["Toolbar"].buttons["Done"]
+    }
+    
     private func loginWithImap(_ user: UserCredentials) {
         logger.logInfo("Login with \(user.email)")
         
@@ -74,29 +80,40 @@ extension SignInImapTest {
         goKeyboardButton.tap()
         
         // move focus to imap security type. Set none
-        app.toolbars["Toolbar"].buttons["Done"].tap()
+        toolbarDoneButton.tap()
         app.pickerWheels["none"].tap()
-        app.toolbars["Toolbar"].buttons["Done"].tap()
-        
+        toolbarDoneButton.tap()
         
         // move to imap port. Delete filled port. Enter valid
         let tf = app.tables.textFields["IMAP port"]
         tf.tap()
         for _ in 1...10 {
-            app/*@START_MENU_TOKEN@*/.keys["Delete"]/*[[".keyboards.keys[\"Delete\"]",".keys[\"Delete\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+            app.keys["Delete"].tap()
         }
         app.typeText("10143")
         tf.swipeUp()
+    
+        // move to smtp type
+        let smtpType = app.tables.textFields["SMTP type"]
+        smtpType.tap()
+        app.pickerWheels["none"].tap()
+        toolbarDoneButton.tap()
         
+        // move to smtp port
+        let smtpPort = app.tables.textFields["SMTP port"]
+        smtpPort.tap()
+        for _ in 1...10 {
+            app.keys["Delete"].tap()
+        }
+        app.typeText("10025")
         
-        // TODO: - ANTON - DO THE SAME FOR SMTP
+        // close keyboard
+        smtpPort.swipeUp()
         
-        // connect
-//        passwordTextField.swipeUp()
         app.tables.buttons["Connect"].tap()
         
         logger.logInfo("Try to connect")
-        wait(10)
+        wait(30)
     }
 }
 

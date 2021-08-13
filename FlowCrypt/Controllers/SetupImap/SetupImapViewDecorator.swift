@@ -86,6 +86,8 @@ struct SetupImapViewDecorator {
             case .title:
                 placeholder = nil
             }
+
+            // IMAP
         case let .imap(part):
             switch part {
             case .port:
@@ -100,20 +102,24 @@ struct SetupImapViewDecorator {
             case .title:
                 placeholder = nil
             }
+
+            // SMTP
         case let .smtp(part):
             switch part {
             case .port:
                 placeholder = "SMTP port"
                 keyboardType = .numberPad
-                accessibilityIdentifier = "smtp port"
+                accessibilityIdentifier = "SMTP port"
             case .security:
                 placeholder = "Security type"
-                accessibilityIdentifier = "smtp type"
+                accessibilityIdentifier = "SMTP type"
             case .server:
                 placeholder = "SMTP server"
             case .title:
                 placeholder = nil
             }
+
+            // OTHER
         case let .other(part):
             switch part {
             case .name:
