@@ -161,7 +161,7 @@ extension SetupInitialViewController {
             .then(on: .main) { [weak self] result in
                 switch result {
                 case .success(keys: let keys):
-                    self?.proceedToSetupPassPhrase(keys: keys)
+                    self?.proceedToSetupWithEKMKeys(keys: keys)
                 case .noKeys:
                     self?.showRetryAlert(
                         message: "organisational_rules_ekm_empty_private_keys_error".localized,
@@ -177,9 +177,6 @@ extension SetupInitialViewController {
                         self?.router.signOut()
                     })
                 }
-                // todo - this is temporary, until we finish EKM integration
-                // instead we should use the keys from EKM for setup
-                self?.state = .searchingKeyBackupsInInbox
             }
             .catch { [weak self] error in
                 if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
@@ -320,11 +317,11 @@ extension SetupInitialViewController {
     }
 
     private func proceedToCreatingNewKey() {
-        let viewController = SetupCreatePassphraseViewController(user: user)
+        let viewController = SetupGenerateKeyViewController(user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
-    private func proceedToSetupPassPhrase(keys: [CoreRes.ParseKeys]) {
-        let viewController = SetupCreatePassphraseViewController(user: user, keys: keys)
+    private func proceedToSetupWithEKMKeys(keys: [CoreRes.ParseKeys]) {
+        let viewController = SetupEKMKeyViewController(user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }
 

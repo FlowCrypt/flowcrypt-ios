@@ -8,6 +8,7 @@ enum KeySource: String {
     case backup
     case generated
     case imported
+    case ekm
 }
 
 enum KeyInfoError: Error {
