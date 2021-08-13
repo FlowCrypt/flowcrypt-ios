@@ -1,0 +1,27 @@
+{
+  "configurations" : [
+    {
+      "id" : "B820487B-6581-49C7-83FE-216731F04DA6",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "SignInGoogleTest"
+      ],
+      "target" : {
+        "containerPath" : "container:FlowCrypt.xcodeproj",
+        "identifier" : "9FDF3640235A1B0100614596",
+        "name" : "FlowCryptUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
