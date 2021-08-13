@@ -2,3 +2,5 @@
 # For more informations read http://wiki.dovecot.org/BasicConfiguration
 
 mail_max_userip_connections = 100
+ssl = yes
+disable_plaintext_auth=no
