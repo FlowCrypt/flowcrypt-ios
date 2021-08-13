@@ -39,6 +39,12 @@
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:FlowCryptUITests/Gmail.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO">

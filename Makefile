@@ -8,6 +8,10 @@ dependencies:
 
 ui_tests: dependencies
 	bundle exec fastlane test_ui --verbose
+ui_tests_gmail: dependencies
+	bundle exec fastlane test_ui_gmail --verbose
+ui_tests_imap: dependencies
+	bundle exec fastlane test_ui_imap --verbose
 
 format:
 	Scripts/format.sh

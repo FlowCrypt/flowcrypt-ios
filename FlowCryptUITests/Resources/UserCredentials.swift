@@ -17,29 +17,17 @@ struct UserCredentials: Codable, Equatable {
 
     static var empty = UserCredentials(email: "", password: "", pass: "", recovery: "", privateKey: "")
 
-    static var gmailDev: UserCredentials = {
-        Credentials.default
-            .users
-            .first(where: { $0.email == "ci.tests.gmail@flowcrypt.dev" })!
-    }()
+    /// ci.tests.gmail@flowcrypt.dev
+    static var gmailDev: UserCredentials = .user(with: "ci.tests.gmail@flowcrypt.dev")
     
-    static var main: UserCredentials = {
+    /// default@flowcrypt.test
+    static var imapDev: UserCredentials = .user(with: "default@flowcrypt.test")
+    
+    static func user(with email: String) -> UserCredentials {
         Credentials.default
             .users
-            .first(where: { $0.email == "cryptup.tester@gmail.com" })!
-    }()
-
-    static var noKeyBackUp: UserCredentials = {
-        Credentials.default
-            .users
-            .first(where: { $0.email == "flowcrypt.compatibility.ios.nokey@outlook.com" })!
-    }()
-
-    static var compatibility: UserCredentials = {
-        Credentials.default
-            .users
-            .first(where: { $0.email == "flowcrypt_compatibility_ios@outlook.com" })!
-    }()
+            .first(where: { $0.email == email })!
+    }
 }
 
 struct Credentials: Codable {

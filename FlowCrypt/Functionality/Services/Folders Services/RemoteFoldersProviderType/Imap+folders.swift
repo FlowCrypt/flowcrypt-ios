@@ -6,6 +6,7 @@
 //  Copyright © 2019 FlowCrypt Limited. All rights reserved.
 //
 
+import FlowCryptCommon
 import Foundation
 import Promises
 
@@ -27,7 +28,10 @@ extension Imap: RemoteFoldersProviderType {
                     guard let folders = value as? [MCOIMAPFolder] else {
                         return reject(AppErr.cast("[MCOIMAPFolder]"))
                     }
-                    resolve(folders.compactMap(FolderObject.init))
+
+                    // TODO: - Ticket - rework usage of EncryptedStorage().activeUser
+                    let folderObjects = folders.compactMap { FolderObject(with: $0, user: EncryptedStorage().activeUser) }
+                    resolve(folderObjects)
             }
         }
     }
@@ -35,10 +39,13 @@ extension Imap: RemoteFoldersProviderType {
 
 // MARK: - Convenience
 private extension FolderObject {
-    convenience init?(with folder: MCOIMAPFolder, user: UserObject) {
-        guard let name = folder.name else { return nil }
+    convenience init?(with folder: MCOIMAPFolder, user: UserObject?) {
+        guard let user = user else {
+            Logger.logError("Can't initialise FolderObject without user")
+            return nil
+        }
         self.init(
-            name: name,
+            name: folder.name ?? folder.path,
             path: folder.path,
             image: nil,
             user: user

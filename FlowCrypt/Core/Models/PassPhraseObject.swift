@@ -22,7 +22,7 @@ final class PassPhraseObject: Object {
         self.value = value
         self.allFingerprints.append(objectsIn: fingerprints)
     }
-    
+
     override class func primaryKey() -> String? {
         "value"
     }
