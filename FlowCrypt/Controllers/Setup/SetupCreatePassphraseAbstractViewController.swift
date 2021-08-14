@@ -33,7 +33,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     let keyStorage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
 
-    var shouldSaveLocally = true {
+    var shouldStorePassPhrase = true {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -268,9 +268,9 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
         case .description:
             showChoosingOptions()
         case .saveLocally:
-            shouldSaveLocally = true
+            shouldStorePassPhrase = true
         case .saveInMemory:
-            shouldSaveLocally = false
+            shouldStorePassPhrase = false
         default:
             break
         }

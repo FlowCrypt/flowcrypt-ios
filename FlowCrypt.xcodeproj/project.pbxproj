@@ -1045,6 +1045,7 @@
 		9F1B49E02624E19D00420472 /* Realm Models */ = {
 			isa = PBXGroup;
 			children = (
+				9FC7EAB2266A404D00F3BF5D /* PassPhraseObject.swift */,
 				D2F41372243CC7990066AFB5 /* UserObject.swift */,
 				D27B911C24EFE806002DF0A1 /* ContactObject.swift */,
 				D2E26F6924F25AB800612AF1 /* KeyAlgoObject.swift */,
@@ -1634,7 +1635,6 @@
 				D212D36324C1AC4800035991 /* KeyId.swift */,
 				D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */,
 				D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */,
-				9FC7EAB2266A404D00F3BF5D /* PassPhraseObject.swift */,
 				2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */,
 			);
 			path = Models;

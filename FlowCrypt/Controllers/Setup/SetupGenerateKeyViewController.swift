@@ -95,7 +95,7 @@ extension SetupGenerateKeyViewController {
             let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
 
             self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated, for: self.user.email)
-            self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldSaveLocally)
+            self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
 
             let updateKey = self.attester.updateKey(
                 email: userId.email,

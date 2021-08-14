@@ -34,7 +34,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
 
     private var passPhrase: String?
 
-    var shouldSaveLocally = true {
+    var shouldStorePassPhrase = true {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -150,7 +150,7 @@ extension SetupBackupsViewController {
                 PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
             }
             .forEach {
-                passPhraseService.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
+                passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
             }
 
         // save keys
@@ -256,9 +256,9 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
 
         switch part {
         case .saveLocally:
-            shouldSaveLocally = true
+            shouldStorePassPhrase = true
         case .saveInMemory:
-            shouldSaveLocally = false
+            shouldStorePassPhrase = false
         default:
             break
         }

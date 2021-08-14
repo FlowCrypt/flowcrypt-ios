@@ -52,7 +52,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
             keyStorage: keyStorage,
             passPhraseService: passPhraseService
         )
-        self.shouldSaveLocally = true
+        self.shouldStorePassPhrase = true
     }
 
     @available(*, unavailable)
@@ -81,6 +81,7 @@ extension SetupEKMKeyViewController {
 
             try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
 
+            var allFingerprints: [String] = []
             try self.keys.forEach { key in
                 try key.keyDetails.forEach { keyDetail in
                     guard let privateKey = keyDetail.private else {
@@ -91,13 +92,12 @@ extension SetupEKMKeyViewController {
                         passphrase: passPhrase
                     )
                     let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-                    parsedKey.keyDetails.forEach { keyDetails in
-                        let passPhrase = PassPhrase(value: passPhrase, fingerprints: keyDetails.fingerprints)
-                        self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldSaveLocally)
-                    }
                     self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails, source: .ekm, for: self.user.email)
+                    allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
                 }
             }
+            let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
+            self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
         }
         .then(on: .main) { [weak self] in
             self?.hideSpinner()

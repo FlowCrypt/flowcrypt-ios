@@ -34,7 +34,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
 
     private var passPhrase: String?
 
-    var shouldSaveLocally = true {
+    var shouldStorePassPhrase = true {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -197,9 +197,9 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
 
         switch part {
         case .saveLocally:
-            shouldSaveLocally = true
+            shouldStorePassPhrase = true
         case .saveInMemory:
-            shouldSaveLocally = false
+            shouldStorePassPhrase = false
         default:
             break
         }
@@ -249,7 +249,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                 PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
             }
             .forEach {
-                passPhraseService.updatePassPhrase(with: $0, inStorage: shouldSaveLocally)
+                passPhraseService.updatePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
             }
 
         newKeysToAdd
@@ -257,7 +257,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                 PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
             }
             .forEach {
-                passPhraseService.savePassPhrase(with: $0, inStorage: shouldSaveLocally)
+                passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
             }
 
         hideSpinner()
