@@ -52,7 +52,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
             keyStorage: keyStorage,
             passPhraseService: passPhraseService
         )
-        self.shouldStorePassPhrase = true
+        self.shouldStorePassPhrase = false
     }
 
     @available(*, unavailable)
