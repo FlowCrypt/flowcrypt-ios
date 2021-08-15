@@ -20,7 +20,7 @@ enum EmailKeyManagerApiError: Error {
 }
 
 enum EmailKeyManagerApiResult {
-    case success(decryptedResponse: DecryptedPrivateKeysResponse)
+    case success(keys: [CoreRes.ParseKeys])
     case noKeys
     case keysAreNotDecrypted
 }
@@ -82,21 +82,22 @@ class EmailKeyManagerApi: EmailKeyManagerApiType {
             let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
 
             if decryptedPrivateKeysResponse.privateKeys.isEmpty {
-                resolve(.success(decryptedResponse: .empty))
+                resolve(.noKeys)
             }
 
             let privateKeys = decryptedPrivateKeysResponse.privateKeys
                 .map { $0.decryptedPrivateKey.data() }
             let parsedPrivateKeys = privateKeys
-                .map { try? self.core.parseKeys(armoredOrBinary: $0) }
+                .compactMap { try? self.core.parseKeys(armoredOrBinary: $0) }
             let areKeysDecrypted = parsedPrivateKeys
-                .compactMap { $0?.keyDetails.map { $0.isFullyDecrypted } }
+                .compactMap { $0.keyDetails.map { $0.isFullyDecrypted } }
                 .flatMap { $0 }
 
             if areKeysDecrypted.contains(false) {
                 resolve(.keysAreNotDecrypted)
             }
-            resolve(.success(decryptedResponse: decryptedPrivateKeysResponse))
+
+            resolve(.success(keys: parsedPrivateKeys))
         }
     }
 }

@@ -158,16 +158,10 @@ extension SetupInitialViewController {
 
     private func fetchKeysFromEKM() {
         emailKeyManagerApi.getPrivateKeys()
-            .then { [weak self] result in
-                guard let urlString = self?.emailKeyManagerApi.getPrivateKeysUrlString() else {
-                    fatalError("Private keys URL can not be nil at this point")
-                }
-
+            .then(on: .main) { [weak self] result in
                 switch result {
-                case .success(decryptedResponse: let response):
-                    self?.showToast(
-                        "organisational_rules_ekm_private_keys_message".localizeWithArguments(response.privateKeys.count, urlString)
-                    )
+                case .success(keys: let keys):
+                    self?.proceedToSetupWithEKMKeys(keys: keys)
                 case .noKeys:
                     self?.showRetryAlert(
                         message: "organisational_rules_ekm_empty_private_keys_error".localized,
@@ -183,9 +177,6 @@ extension SetupInitialViewController {
                         self?.router.signOut()
                     })
                 }
-                // todo - this is temporary, until we finish EKM integration
-                // instead we should use the keys from EKM for setup
-                self?.state = .searchingKeyBackupsInInbox
             }
             .catch { [weak self] error in
                 if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
@@ -327,6 +318,10 @@ extension SetupInitialViewController {
 
     private func proceedToCreatingNewKey() {
         let viewController = SetupGenerateKeyViewController(user: user)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+    private func proceedToSetupWithEKMKeys(keys: [CoreRes.ParseKeys]) {
+        let viewController = SetupEKMKeyViewController(user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }
 

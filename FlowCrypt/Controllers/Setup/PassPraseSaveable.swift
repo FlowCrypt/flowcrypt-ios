@@ -9,7 +9,7 @@
 import FlowCryptUI
 
 protocol PassPhraseSaveable {
-    var shouldSaveLocally: Bool { get set }
+    var shouldStorePassPhrase: Bool { get set }
     var passPhraseIndexes: [IndexPath] { get }
     var saveLocallyNode: CellNode { get }
     var saveInMemoryNode: CellNode { get }
@@ -26,11 +26,11 @@ extension PassPhraseSaveable where Self: TableNodeViewController {
     }
 
     var saveLocallyNode: CellNode {
-        CheckBoxTextNode(input: .passPhraseLocally(isSelected: self.shouldSaveLocally))
+        CheckBoxTextNode(input: .passPhraseLocally(isSelected: self.shouldStorePassPhrase))
     }
 
     var saveInMemoryNode: CellNode {
-        CheckBoxTextNode(input: .passPhraseMemory(isSelected: !self.shouldSaveLocally))
+        CheckBoxTextNode(input: .passPhraseMemory(isSelected: !self.shouldStorePassPhrase))
     }
 
     func showPassPhraseErrorAlert() {

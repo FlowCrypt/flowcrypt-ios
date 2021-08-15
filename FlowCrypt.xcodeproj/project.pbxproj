@@ -21,6 +21,8 @@
 		214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214A023926A3029700C24066 /* EmailKeyManagerApi.swift */; };
 		215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */ = {isa = PBXBuildFile; fileRef = 215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */; };
 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
+		21750D7D26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */; };
+		21750D7F26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */; };
 		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
 		21B15C9426AA00A400D8522B /* ClientConfigurationServiceResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */; };
 		21C7DEFC26669A3700C44800 /* CalendarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DEFB26669A3700C44800 /* CalendarExtension.swift */; };
@@ -392,6 +394,8 @@
 		214A023926A3029700C24066 /* EmailKeyManagerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailKeyManagerApi.swift; sourceTree = "<group>"; };
 		215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_with_unknown_flag.json; sourceTree = "<group>"; };
 		215897E7267A553200423694 /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
+		21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupEKMKeyViewController.swift; sourceTree = "<group>"; };
+		21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupCreatePassphraseAbstractViewController.swift; sourceTree = "<group>"; };
 		2196A21F2684B9BE001B9E00 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
 		21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationServiceResults.swift; sourceTree = "<group>"; };
 		21C7DEFB26669A3700C44800 /* CalendarExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExtension.swift; sourceTree = "<group>"; };
@@ -1041,6 +1045,7 @@
 		9F1B49E02624E19D00420472 /* Realm Models */ = {
 			isa = PBXGroup;
 			children = (
+				9FC7EAB2266A404D00F3BF5D /* PassPhraseObject.swift */,
 				D2F41372243CC7990066AFB5 /* UserObject.swift */,
 				D27B911C24EFE806002DF0A1 /* ContactObject.swift */,
 				D2E26F6924F25AB800612AF1 /* KeyAlgoObject.swift */,
@@ -1588,7 +1593,9 @@
 			isa = PBXGroup;
 			children = (
 				9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */,
+				21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */,
 				9FA405C6265AEBA40084D133 /* SetupGenerateKeyViewController.swift */,
+				21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */,
 				C192421E1EC48B6900C3D251 /* SetupBackupsViewController.swift */,
 				9F268890237DC55600428A94 /* SetupManuallyImportKeyViewController.swift */,
 				9FD364852381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift */,
@@ -1628,7 +1635,6 @@
 				D212D36324C1AC4800035991 /* KeyId.swift */,
 				D212D35C24C1AACF00035991 /* PrvKeyInfo.swift */,
 				D2E26F6B24F25B1F00612AF1 /* KeyAlgo.swift */,
-				9FC7EAB2266A404D00F3BF5D /* PassPhraseObject.swift */,
 				2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */,
 			);
 			path = Models;
@@ -2565,6 +2571,7 @@
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9FF0673325520DE400FCC9E6 /* GmailService+send.swift in Sources */,
 				D20D3C892520B67C00D4AA9A /* BackupOptionsViewController.swift in Sources */,
+				21750D7D26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift in Sources */,
 				211392A5266511E6009202EC /* PubLookup.swift in Sources */,
 				D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */,
 				D2E26F6324F1698100612AF1 /* ContactsListViewController.swift in Sources */,
@@ -2617,6 +2624,7 @@
 				9F0C3C102316DD5B00299985 /* GoogleUserService.swift in Sources */,
 				D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */,
 				D211CE7623FC36BC00D1CE38 /* UIColorExtension.swift in Sources */,
+				21750D7F26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift in Sources */,
 				9FC7EBAA266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift in Sources */,
 				9FA9C83C264C2D75005A9670 /* MessageService.swift in Sources */,
 				D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */,

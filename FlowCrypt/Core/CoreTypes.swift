@@ -40,6 +40,10 @@ struct CoreRes {
         let decryptedKey: String?
     }
 
+    struct EncryptKey: Decodable {
+        let encryptedKey: String
+    }
+
     struct GenerateKey: Decodable {
         let key: KeyDetails
     }
