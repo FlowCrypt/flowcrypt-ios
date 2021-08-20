@@ -121,7 +121,7 @@ extension SettingsViewController {
             viewController = ContactsListViewController()
         case .backups:
             guard let currentUser = currentUser,
-                  !organisationalRules.canBackupKeys else {
+                  organisationalRules.canBackupKeys else {
                 viewController = nil
                 return
             }
