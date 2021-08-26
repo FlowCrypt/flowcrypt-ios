@@ -1070,7 +1070,6 @@
 			isa = PBXGroup;
 			children = (
 				D2F18469244DB8F6000CC5D1 /* SnapshotHelper.swift */,
-				D2F18467244B0F35000CC5D1 /* AppTestHelper.swift */,
 				9FDF3651235A1EDE00614596 /* XCUIApplicationBuilder.swift */,
 				9FDF364F235A1D3F00614596 /* UITestHelper.swift */,
 				9F228BA523C673AD005D2CB6 /* Springboard.swift */,
@@ -1417,6 +1416,7 @@
 				9FDF364C235A1CCD00614596 /* SignInImapTest.swift */,
 				D2F18463244B0C63000CC5D1 /* SignInGoogleTest.swift */,
 				D216D05D242D32EA0083EDD6 /* TestCredentials.swift */,
+				D2F18467244B0F35000CC5D1 /* AppTestHelper.swift */,
 				9FDF3645235A1B0100614596 /* Info.plist */,
 				9F2F212A26B305420044E144 /* test-ci-secrets.json */,
 				9F228BA723C673C2005D2CB6 /* Resources */,

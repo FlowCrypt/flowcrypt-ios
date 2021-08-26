@@ -27,8 +27,6 @@ class SignInImapTest: XCTestCase, AppTest {
         logger.logInfo("Wait for launch")
         wait(10)
     }
-
-    // MARK: - Tests
     
     // login -> approve -> backups found -> enter pass phrase -> main flow
     func test_1_successful_login_imap() {
@@ -43,30 +41,61 @@ class SignInImapTest: XCTestCase, AppTest {
         XCTAssert(app.buttons["+"].exists)
     }
     
-    // log in -> cancel
+    // login -> cancel
     func test_2_login_cancel() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
         
         passPhraseTextField.swipeUp()
-        let useAnotherAccountButton = app.tables.buttons["Use Another Account"]
-        useAnotherAccountButton.tap()
+        tapUseAnotherAccountAndVerify()
+    }
+    
+    // login with user without key backups and emails
+    // login -> no messages
+    func test_3_login_no_messages() {
+        loginWithImap(.imapDen)
+        
+        let tablesQuery = app.tables
+        
+        let noBackupsLabel = tablesQuery.staticTexts["No backups found on account: \nden@flowcrypt.test"]
+        let importMyKeyButton = tablesQuery.buttons["Import my key"]
+        let createNewKeyButton = tablesQuery.buttons["Create a new key"]
+        
+        XCTAssert(noBackupsLabel.exists)
+        XCTAssert(importMyKeyButton.exists)
+        XCTAssert(createNewKeyButton.exists)
+        XCTAssert(setupUseAnotherAccount.exists)
+        
+        importMyKeyButton.tap()
+        navigationBackButton.tap()
+        
+        createNewKeyButton.tap()
+        navigationBackButton.tap()
+        
+        importMyKeyButton.tap()
+        
+        let loadFromFileButton = tablesQuery.buttons["Load From File"]
+        XCTAssert(loadFromFileButton.exists)
+        
+        let loadFromClipboard = tablesQuery.buttons["Load From Clipboard"]
+        XCTAssert(loadFromClipboard.exists)
+        navigationBackButton.tap()
+        
+        XCTAssert(noBackupsLabel.exists)
+        
+        tapUseAnotherAccountAndVerify()
+    }
+    
+    // has_msgs_no_backups@flowcrypt.test
+    func test_4_has_msgs_no_backups() {
+        
+    }
+    
+    private func tapUseAnotherAccountAndVerify() {
+        setupUseAnotherAccount.tap()
         
         wait(1)
         XCTAssert(app.tables.buttons["Other email provider"].exists)
-    }
-    
-    // log in -> approve -> no backups -> switch email
-    func test_3_login_no_backups() {
-        // login with user without key backup
-        loginWithImap(.imapDen)
-//        // switch to a new account
-//        buttons["Use other account"].tap()
-//        wait(2)
-//
-//        // login
-//        test_6_login_good_pass()
-        
     }
 }
 
@@ -196,7 +225,7 @@ extension SignInImapTest {
 //        }
 //    }
 //
- 
+
 //
 
 //

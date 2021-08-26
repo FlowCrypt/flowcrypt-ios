@@ -44,6 +44,14 @@ extension AppTest {
     var passPhraseTextField: XCUIElement {
         app.tables.secureTextFields["Enter your pass phrase"]
     }
+    
+    var navigationBackButton: XCUIElement {
+        app.navigationBars.buttons["arrow left c"]
+    }
+    
+    var setupUseAnotherAccount: XCUIElement {
+        app.tables.buttons["Use Another Account"]
+    }
 }
 
 // MARK: - Actions
