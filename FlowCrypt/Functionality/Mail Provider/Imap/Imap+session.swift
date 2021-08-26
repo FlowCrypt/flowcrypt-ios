@@ -17,6 +17,7 @@ extension Imap {
             let imapSession = dataService.imapSession(),
             let smtpSession = dataService.smtpSession()
         else { return }
+        logger.logInfo("Create new imap and smtp session")
 
         createNewConnection(
             imapSession: imapSession,

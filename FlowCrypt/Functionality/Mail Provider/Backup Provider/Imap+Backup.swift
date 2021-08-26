@@ -51,8 +51,10 @@ extension Imap: BackupProvider {
                 return msgs.map { msg in MsgContext(path: uidsContext.path, msg: msg) }
             }
 
+            // in case there are no messages return empty data
+            // user will be prompted to create new backup
             guard messageContexts.isNotEmpty else {
-                throw BackupError.missedMessages
+                return Data()
             }
 
             let attContext = messageContexts.flatMap { msgContext -> [AttContext] in
@@ -60,8 +62,9 @@ extension Imap: BackupProvider {
                 return parts.map { part in AttContext(path: msgContext.path, msg: msgContext.msg, part: part) }
             }
 
+            // in case there are no attachments return empty data
             guard attContext.isNotEmpty else {
-                throw BackupError.missedAttributes
+                return Data()
             }
 
             let dataArr = try attContext.map { attContext -> Data in

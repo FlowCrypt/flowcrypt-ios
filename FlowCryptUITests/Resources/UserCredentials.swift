@@ -21,7 +21,9 @@ struct UserCredentials: Codable, Equatable {
     static var gmailDev: UserCredentials = .user(with: "ci.tests.gmail@flowcrypt.dev")
     
     /// default@flowcrypt.test
-    static var imapDev: UserCredentials = .user(with: "default@flowcrypt.test")
+    static let imapDev = UserCredentials.user(with: "default@flowcrypt.test")
+    /// den@flowcrypt.test
+    static let imapDen = UserCredentials.user(with: "den@flowcrypt.test")
     
     static func user(with email: String) -> UserCredentials {
         Credentials.default

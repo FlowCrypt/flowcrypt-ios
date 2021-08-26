@@ -27,10 +27,9 @@ class SignInImapTest: XCTestCase, AppTest {
         logger.logInfo("Wait for launch")
         wait(10)
     }
-}
 
-// MARK: - Tests
-extension SignInImapTest {
+    // MARK: - Tests
+    
     // login -> approve -> backups found -> enter pass phrase -> main flow
     func test_1_successful_login_imap() {
         let user = UserCredentials.imapDev
@@ -42,6 +41,32 @@ extension SignInImapTest {
         
         wait(4)
         XCTAssert(app.buttons["+"].exists)
+    }
+    
+    // log in -> cancel
+    func test_2_login_cancel() {
+        let user = UserCredentials.imapDev
+        loginWithImap(user)
+        
+        passPhraseTextField.swipeUp()
+        let useAnotherAccountButton = app.tables.buttons["Use Another Account"]
+        useAnotherAccountButton.tap()
+        
+        wait(1)
+        XCTAssert(app.tables.buttons["Other email provider"].exists)
+    }
+    
+    // log in -> approve -> no backups -> switch email
+    func test_3_login_no_backups() {
+        // login with user without key backup
+        loginWithImap(.imapDen)
+//        // switch to a new account
+//        buttons["Use other account"].tap()
+//        wait(2)
+//
+//        // login
+//        test_6_login_good_pass()
+        
     }
 }
 
@@ -103,24 +128,7 @@ extension SignInImapTest {
 }
 
 //extension SignInImapTest {
-//    // log in -> approve -> no backups -> switch email
-//    func test_1_login_no_backups() {
-//        // login with user without key backup
-//
-//        login(UserCredentials.noKeyBackUp)
-//
-//        // retry
-//        let buttons = app.alerts.scrollViews.otherElements.buttons
-//        buttons["Retry"].tap()
-//        wait(1)
-//
-//        // switch to a new account
-//        buttons["Use other account"].tap()
-//        wait(2)
-//
-//        // login
-//        test_6_login_good_pass()
-//    }
+
 //
 //    func test_2_login_no_backups_generate() {
 //        // log in -> approve -> no backups -> generate pubkey -> weak pass phrase
@@ -188,27 +196,9 @@ extension SignInImapTest {
 //        }
 //    }
 //
-//    // log in -> cancel for gmail
-//    func test_3_login_cancel_gmail() {
-//        logOutIfNeeded()
-//        snapshot("splash")
+ 
 //
-//        app.tables.buttons["gmail"].tap()
-//        wait(1)
-//
-//        snapshot("auth")
-//    }
-//
-//    // log in -> cancel
-//    func test_4_login_cancel() {
-//        login(user)
-//
-//        let useAnotherAccountButton = app.tables.buttons["Use Another Account"]
-//        useAnotherAccountButton.tap()
-//
-//        wait(1)
-//        XCTAssert(app.tables.buttons["Other email provider"].exists)
-//    }
+
 //
 //    // log in -> approve -> bad pass phrase
 //    func test_5_login_bad_pass() {
