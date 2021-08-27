@@ -160,7 +160,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
         let navigationButton: UIBarButtonItem
         switch viewControllers.firstIndex(of: viewController) {
         case 0:
-            navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn"), action: nil)
+            navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn"), action: nil, accessibilityIdentifier: "menu")
         default:
             navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c"), action: nil)
         }

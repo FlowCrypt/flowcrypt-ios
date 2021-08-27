@@ -41,23 +41,63 @@ class SignInImapTest: XCTestCase, AppTest {
         XCTAssert(app.buttons["+"].exists)
     }
     
+    // restart app -> loads inbox
+    func test_2_restart_app_load_inbox() {
+        let application = XCUIApplication()
+        wait(2)
+        application.buttons["+"].tap()
+        
+        wait(0.3)
+        
+        application.typeText("ElonMusk@gmail.com")
+        application.tables.textFields["Subject"].tap()
+        wait(3)
+        application.tables.textFields["Subject"].tap()
+        
+        application.typeText("SpaceX")
+        
+        snapshot("compose")
+        application.navigationBars.buttons["arrow left c"].tap()
+        wait(1)
+        
+        tapOnCell()
+        snapshot("message")
+        app.navigationBars.buttons["arrow left c"].tap()
+        
+        wait(1)
+        
+        menuButton.tap()
+        snapshot("menu")
+        
+        tapOnMenu(folder: "Settings")
+        snapshot("settings")
+    }
+    
     // login -> cancel
-    func test_2_login_cancel() {
+    func test_4_login_cancel() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
-        
+
         passPhraseTextField.swipeUp()
         tapUseAnotherAccountAndVerify()
     }
     
     // login with user without key backups and emails
     // login -> no messages
-    func test_3_login_no_messages() {
-        loginWithImap(.imapDen)
+    func test_5_login_no_messages() {
+        verifyFlowWithNoBackups(for: .imapDen)
+    }
+
+    func test_6_has_msgs_no_backups() {
+        verifyFlowWithNoBackups(for: .imapHasMessagesNoBackups)
+    }
+    
+    private func verifyFlowWithNoBackups(for user: UserCredentials) {
+        loginWithImap(user)
         
         let tablesQuery = app.tables
         
-        let noBackupsLabel = tablesQuery.staticTexts["No backups found on account: \nden@flowcrypt.test"]
+        let noBackupsLabel = tablesQuery.staticTexts["No backups found on account: \n\(user.email)"]
         let importMyKeyButton = tablesQuery.buttons["Import my key"]
         let createNewKeyButton = tablesQuery.buttons["Create a new key"]
         
@@ -86,10 +126,48 @@ class SignInImapTest: XCTestCase, AppTest {
         tapUseAnotherAccountAndVerify()
     }
     
-    // has_msgs_no_backups@flowcrypt.test
-    func test_4_has_msgs_no_backups() {
-        
-    }
+    
+    //    // log in -> approve -> bad pass phrase
+    //    func test_5_login_bad_pass() {
+    //        login(user)
+    //
+    //        passPhraseTextField.tap()
+    //        passPhraseTextField.typeText(user.pass + "wrong")
+    //        tapOnGoButton()
+    //
+    //        wait(0.2)
+    //        let errorAlert = app.alerts["Error"]
+    //        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
+    //        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
+    //        wait(0.2)
+    //
+    //        app.tables.buttons["Use Another Account"].tap()
+    //    }
+    
+    //    func test_8_send_message() {
+    //        // send message
+    //        sendMessage(to: user.email)
+    //        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
+    //
+    //        // switch to sent
+    //        menuButton.tap()
+    //
+    //        app.tables
+    //            .staticTexts
+    //            .allElementsBoundByIndex
+    //            .first(where: { $0.label.contains("Sent" ) })?
+    //            .tap()
+    //
+    //        wait(3)
+    //
+    //        // open message
+    //        tapOnCell()
+    //        wait(5)
+    //
+    //        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
+    //        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
+    //        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
+    //    }
     
     private func tapUseAnotherAccountAndVerify() {
         setupUseAnotherAccount.tap()
@@ -156,9 +234,9 @@ extension SignInImapTest {
     }
 }
 
-//extension SignInImapTest {
+// Currently disabled tests
+// UI tests which can make changes on remote server are currently disabled
 
-//
 //    func test_2_login_no_backups_generate() {
 //        // log in -> approve -> no backups -> generate pubkey -> weak pass phrase
 //        login(UserCredentials.noKeyBackUp)
@@ -225,72 +303,8 @@ extension SignInImapTest {
 //        }
 //    }
 //
+ 
 
-//
-
-//
-//    // log in -> approve -> bad pass phrase
-//    func test_5_login_bad_pass() {
-//        login(user)
-//
-//        passPhraseTextField.tap()
-//        passPhraseTextField.typeText(user.pass + "wrong")
-//        tapOnGoButton()
-//
-//        wait(0.2)
-//        let errorAlert = app.alerts["Error"]
-//        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
-//        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
-//        wait(0.2)
-//
-//        app.tables.buttons["Use Another Account"].tap()
-//    }
-//
-//    // log in -> approve -> loaded 1 backup -> good pass phrase -> inbox
-//    func test_6_login_good_pass() {
-//        login(user)
-//
-//        passPhraseTextField.tap()
-//        passPhraseTextField.typeText(user.pass)
-//
-//        snapshot("recover")
-//        tapOnGoButton()
-//
-//        wait(1)
-//        XCTAssert(app.navigationBars["Inbox"].exists, "Could not login")
-//    }
-//
-//    // restart app -> loads inbox
-//    func test_7_restart_app_load_inbox() {
-//        wait(1)
-//        XCTAssert(app.navigationBars["Inbox"].exists, "Inbox is not found after restarting the app")
-//        snapshot("inbox")
-//
-//        tapOnCompose()
-//        wait(0.3)
-//
-//        app.typeText("ElonMusk@gmail.com")
-//        app.tables.textFields["Subject"].tap()
-//
-//        app.tables.textFields["Subject"].tap()
-//        app.typeText("SpaceX")
-//
-//        snapshot("compose")
-//        app.navigationBars.buttons["arrow left c"].tap()
-//        wait(1)
-//
-//        tapOnCell()
-//        snapshot("message")
-//        app.navigationBars.buttons["arrow left c"].tap()
-//
-//        wait(1)
-//
-//        menuButton.tap()
-//        snapshot("menu")
-//
-//        tapOnMenu(folder: "Settings")
-//        snapshot("settings")
-//    }
 //
 //    // send new msg -> inbox -> switch to sent -> open sent msg and verify content, recipient, subject
 //    func test_8_send_message() {
@@ -377,7 +391,3 @@ extension SignInImapTest {
 //        XCTAssert(errorAlert.exists)
 //    }
 //}
-
-/*
- log in -> approve -> no backups -> generate pubkey -> switch accounts
- */

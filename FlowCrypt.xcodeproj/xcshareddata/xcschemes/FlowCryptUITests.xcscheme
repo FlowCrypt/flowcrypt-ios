@@ -44,6 +44,9 @@
             reference = "container:FlowCryptUITests/Gmail.xctestplan"
             default = "YES">
          </TestPlanReference>
+         <TestPlanReference
+            reference = "container:FlowCryptUITests/Imap.xctestplan">
+         </TestPlanReference>
       </TestPlans>
       <Testables>
          <TestableReference
