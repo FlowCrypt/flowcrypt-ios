@@ -71,6 +71,28 @@ class SignInImapTest: XCTestCase, AppTest {
         
         tapOnMenu(folder: "Settings")
         snapshot("settings")
+        
+        // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/470
+        /*
+         let app = XCUIApplication()
+         let inboxNavigationBar = app.navigationBars["Inbox"]
+         inboxNavigationBar.buttons["help icn"].tap()
+         inboxNavigationBar.buttons["search icn"].tap()
+         app.otherElements["PopoverDismissRegion"].tap()
+         app.navigationBars["Search"].buttons["arrow left c"].tap()
+         
+         let tablesQuery2 = app.tables
+         let cellsQuery = tablesQuery2.cells
+         cellsQuery.otherElements.containing(.staticText, identifier:"Jun 07").staticTexts["denbond7@flowcrypt.test"].tap()
+         tablesQuery2.children(matching: .cell).element(boundBy: 2).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element.children(matching: .textView)["It's an encrypted text"].tap()
+         inboxNavigationBar.buttons["arrow left c"].tap()
+         
+         let tablesQuery = tablesQuery2
+         tablesQuery.staticTexts["..."].tap()
+         
+         //
+         cellsQuery.otherElements.containing(.staticText, identifier:"encrypted message with missing key error").staticTexts["denbond7@flowcrypt.test"].tap()
+         tablesQuery.textViews.textViews["Could not decrypt:"].tap()*/
     }
     
     // login -> cancel
@@ -90,90 +112,29 @@ class SignInImapTest: XCTestCase, AppTest {
 
     func test_6_has_msgs_no_backups() {
         verifyFlowWithNoBackups(for: .imapHasMessagesNoBackups)
+        
+        
+                
     }
     
-    private func verifyFlowWithNoBackups(for user: UserCredentials) {
+    // login with wrong pass phrase
+    func test_7_login_bad_pass_phrase() {
+        let user = UserCredentials.imapDev
         loginWithImap(user)
         
+        
         let tablesQuery = app.tables
+        XCTAssert(tablesQuery.staticTexts["Remember pass phrase temporarily"].exists)
         
-        let noBackupsLabel = tablesQuery.staticTexts["No backups found on account: \n\(user.email)"]
-        let importMyKeyButton = tablesQuery.buttons["Import my key"]
-        let createNewKeyButton = tablesQuery.buttons["Create a new key"]
+        passPhraseTextField.typeText(user.pass + "wrong")
+        tapOnGoButton()
+        wait(2)
         
-        XCTAssert(noBackupsLabel.exists)
-        XCTAssert(importMyKeyButton.exists)
-        XCTAssert(createNewKeyButton.exists)
-        XCTAssert(setupUseAnotherAccount.exists)
-        
-        importMyKeyButton.tap()
-        navigationBackButton.tap()
-        
-        createNewKeyButton.tap()
-        navigationBackButton.tap()
-        
-        importMyKeyButton.tap()
-        
-        let loadFromFileButton = tablesQuery.buttons["Load From File"]
-        XCTAssert(loadFromFileButton.exists)
-        
-        let loadFromClipboard = tablesQuery.buttons["Load From Clipboard"]
-        XCTAssert(loadFromClipboard.exists)
-        navigationBackButton.tap()
-        
-        XCTAssert(noBackupsLabel.exists)
-        
-        tapUseAnotherAccountAndVerify()
-    }
-    
-    
-    //    // log in -> approve -> bad pass phrase
-    //    func test_5_login_bad_pass() {
-    //        login(user)
-    //
-    //        passPhraseTextField.tap()
-    //        passPhraseTextField.typeText(user.pass + "wrong")
-    //        tapOnGoButton()
-    //
-    //        wait(0.2)
-    //        let errorAlert = app.alerts["Error"]
-    //        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
-    //        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
-    //        wait(0.2)
-    //
-    //        app.tables.buttons["Use Another Account"].tap()
-    //    }
-    
-    //    func test_8_send_message() {
-    //        // send message
-    //        sendMessage(to: user.email)
-    //        XCTAssert(app.navigationBars["Inbox"].exists, "Failed state after Sending message")
-    //
-    //        // switch to sent
-    //        menuButton.tap()
-    //
-    //        app.tables
-    //            .staticTexts
-    //            .allElementsBoundByIndex
-    //            .first(where: { $0.label.contains("Sent" ) })?
-    //            .tap()
-    //
-    //        wait(3)
-    //
-    //        // open message
-    //        tapOnCell()
-    //        wait(5)
-    //
-    //        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
-    //        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
-    //        XCTAssert(app.tables.staticTexts["Some text"].exists, "Wrong text")
-    //    }
-    
-    private func tapUseAnotherAccountAndVerify() {
-        setupUseAnotherAccount.tap()
-        
-        wait(1)
-        XCTAssert(app.tables.buttons["Other email provider"].exists)
+        let errorAlert = app.alerts["Error"]
+        XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
+        errorAlert.scrollViews.otherElements.buttons["OK"].tap()
+        wait(0.2)
+        app.tables.buttons["Use Another Account"].tap()
     }
 }
 
@@ -231,6 +192,47 @@ extension SignInImapTest {
         
         logger.logInfo("Try to connect")
         wait(10)
+    }
+    
+    private func verifyFlowWithNoBackups(for user: UserCredentials) {
+        loginWithImap(user)
+        
+        let tablesQuery = app.tables
+        
+        let noBackupsLabel = tablesQuery.staticTexts["No backups found on account: \n\(user.email)"]
+        let importMyKeyButton = tablesQuery.buttons["Import my key"]
+        let createNewKeyButton = tablesQuery.buttons["Create a new key"]
+        
+        XCTAssert(noBackupsLabel.exists)
+        XCTAssert(importMyKeyButton.exists)
+        XCTAssert(createNewKeyButton.exists)
+        XCTAssert(setupUseAnotherAccount.exists)
+        
+        importMyKeyButton.tap()
+        navigationBackButton.tap()
+        
+        createNewKeyButton.tap()
+        navigationBackButton.tap()
+        
+        importMyKeyButton.tap()
+        
+        let loadFromFileButton = tablesQuery.buttons["Load From File"]
+        XCTAssert(loadFromFileButton.exists)
+        
+        let loadFromClipboard = tablesQuery.buttons["Load From Clipboard"]
+        XCTAssert(loadFromClipboard.exists)
+        navigationBackButton.tap()
+        
+        XCTAssert(noBackupsLabel.exists)
+        
+        tapUseAnotherAccountAndVerify()
+    }
+    
+    private func tapUseAnotherAccountAndVerify() {
+        setupUseAnotherAccount.tap()
+        
+        wait(1)
+        XCTAssert(app.tables.buttons["Other email provider"].exists)
     }
 }
 
