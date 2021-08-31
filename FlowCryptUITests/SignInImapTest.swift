@@ -49,20 +49,20 @@ class SignInImapTest: XCTestCase, AppTest {
         
         wait(0.3)
         
-        application.typeText("ElonMusk@gmail.com")
+        application.typeText("test@test.com")
         application.tables.textFields["Subject"].tap()
         wait(3)
         application.tables.textFields["Subject"].tap()
         
-        application.typeText("SpaceX")
+        application.typeText("ios")
         
         snapshot("compose")
-        application.navigationBars.buttons["arrow left c"].tap()
+        navigationBackButton.tap()
         wait(1)
         
         tapOnCell()
         snapshot("message")
-        app.navigationBars.buttons["arrow left c"].tap()
+        navigationBackButton.tap()
         
         wait(1)
         
@@ -96,7 +96,7 @@ class SignInImapTest: XCTestCase, AppTest {
     }
     
     // login -> cancel
-    func test_4_login_cancel() {
+    func test_3_login_cancel() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
 
@@ -106,22 +106,18 @@ class SignInImapTest: XCTestCase, AppTest {
     
     // login with user without key backups and emails
     // login -> no messages
-    func test_5_login_no_messages() {
+    func test_4_login_no_messages() {
         verifyFlowWithNoBackups(for: .imapDen)
     }
 
-    func test_6_has_msgs_no_backups() {
+    func test_5_has_msgs_no_backups() {
         verifyFlowWithNoBackups(for: .imapHasMessagesNoBackups)
-        
-        
-                
     }
     
     // login with wrong pass phrase
-    func test_7_login_bad_pass_phrase() {
+    func test_6_login_bad_pass_phrase() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
-        
         
         let tablesQuery = app.tables
         XCTAssert(tablesQuery.staticTexts["Remember pass phrase temporarily"].exists)
@@ -132,6 +128,7 @@ class SignInImapTest: XCTestCase, AppTest {
         
         let errorAlert = app.alerts["Error"]
         XCTAssert(errorAlert.exists, "Error alert is missing after entering wrong pass phrase")
+        XCTAssert(errorAlert.scrollViews.otherElements.staticTexts["Wrong pass phrase, please try again"].exists)
         errorAlert.scrollViews.otherElements.buttons["OK"].tap()
         wait(0.2)
         app.tables.buttons["Use Another Account"].tap()
