@@ -57,18 +57,18 @@ extension Imap: BackupProvider {
                 return Data()
             }
 
-            let attContext = messageContexts.flatMap { msgContext -> [AttContext] in
+            let attachmentContext = messageContexts.flatMap { msgContext -> [AttachmentContext] in
                 guard let parts = msgContext.msg.attachments() as? [MCOIMAPPart] else { assertionFailure(); return [] }
-                return parts.map { part in AttContext(path: msgContext.path, msg: msgContext.msg, part: part) }
+                return parts.map { part in AttachmentContext(path: msgContext.path, msg: msgContext.msg, part: part) }
             }
 
             // in case there are no attachments return empty data
-            guard attContext.isNotEmpty else {
+            guard attachmentContext.isNotEmpty else {
                 return Data()
             }
 
-            let dataArr = try attContext.map { attContext -> Data in
-                try awaitPromise(self.fetchMsgAttribute(
+            let dataArr = try attachmentContext.map { attContext -> Data in
+                try awaitPromise(self.fetchMsgAttachment(
                     in: attContext.path,
                     msgUid: attContext.msg.uid,
                     part: attContext.part
@@ -80,7 +80,7 @@ extension Imap: BackupProvider {
         }
     }
 
-    private func fetchMsgAttribute(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
+    private func fetchMsgAttachment(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
         Promise<Data> { [weak self] resolve, reject in
             guard let self = self else { return reject(AppErr.nilSelf) }
             self.imapSess?
@@ -91,7 +91,7 @@ extension Imap: BackupProvider {
                     encoding: part.encoding
                 )
                 .start(self.finalize("fetchMsgAtt", resolve, reject, retry: {
-                    self.fetchMsgAttribute(in: folder, msgUid: msgUid, part: part)
+                    self.fetchMsgAttachment(in: folder, msgUid: msgUid, part: part)
                 }))
         }
     }
@@ -125,7 +125,7 @@ private struct MsgContext {
     let msg: MCOIMAPMessage
 }
 
-private struct AttContext {
+private struct AttachmentContext {
     let path: String
     let msg: MCOIMAPMessage
     let part: MCOIMAPPart
