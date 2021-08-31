@@ -57,7 +57,7 @@ public extension UIViewController {
             width: tableNode.frame.size.width,
             height: max(height, 0)
         )
-        
+
         return size
     }
 }

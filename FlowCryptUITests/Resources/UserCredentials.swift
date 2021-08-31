@@ -20,15 +20,15 @@ struct UserCredentials: Codable, Equatable {
     /// ci.tests.gmail@flowcrypt.dev
     /// default Gmail account
     static var gmailDev: UserCredentials = .user(with: "ci.tests.gmail@flowcrypt.dev")
-    
+
     /// default@flowcrypt.test
     /// default IMAP/SMTP account
     static let imapDev = UserCredentials.user(with: "default@flowcrypt.test")
-    
+
     /// den@flowcrypt.test
     /// user without messages
     static let imapDen = UserCredentials.user(with: "den@flowcrypt.test")
-    
+
     /// has_msgs_no_backups@flowcrypt.test
     /// user with messages but without any backups
     static let imapHasMessagesNoBackups = UserCredentials.user(with: "has_msgs_no_backups@flowcrypt.test")
