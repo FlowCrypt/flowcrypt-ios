@@ -71,32 +71,127 @@ class SignInImapTest: XCTestCase, AppTest {
         
         tapOnMenu(folder: "Settings")
         snapshot("settings")
+    }
+    
+    // restart app -> loads inbox -> verify messages
+    func test_3_restart_app_contains_emails() {
+        let app = XCUIApplication()
         
-        // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/470
-        /*
-         let app = XCUIApplication()
-         let inboxNavigationBar = app.navigationBars["Inbox"]
-         inboxNavigationBar.buttons["help icn"].tap()
-         inboxNavigationBar.buttons["search icn"].tap()
-         app.otherElements["PopoverDismissRegion"].tap()
-         app.navigationBars["Search"].buttons["arrow left c"].tap()
-         
-         let tablesQuery2 = app.tables
-         let cellsQuery = tablesQuery2.cells
-         cellsQuery.otherElements.containing(.staticText, identifier:"Jun 07").staticTexts["denbond7@flowcrypt.test"].tap()
-         tablesQuery2.children(matching: .cell).element(boundBy: 2).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element.children(matching: .textView)["It's an encrypted text"].tap()
-         inboxNavigationBar.buttons["arrow left c"].tap()
-         
-         let tablesQuery = tablesQuery2
-         tablesQuery.staticTexts["..."].tap()
-         
-         //
-         cellsQuery.otherElements.containing(.staticText, identifier:"encrypted message with missing key error").staticTexts["denbond7@flowcrypt.test"].tap()
-         tablesQuery.textViews.textViews["Could not decrypt:"].tap()*/
+        let tablesQuery = app.tables
+        let cellsQuery = tablesQuery.cells
+        
+        // open first message
+        cellsQuery.otherElements.containing(.staticText, identifier:"Jun 07").staticTexts["denbond7@flowcrypt.test"].tap()
+        navigationBackButton.tap()
+        
+        // message > 5mb
+        cellsQuery.otherElements.containing(.staticText, identifier:"...").staticTexts["denbond7@flowcrypt.test"].tap()
+        wait(0.5)
+        
+        
+        cellsQuery.otherElements.containing(.staticText, identifier:"encrypted message with missing key error").staticTexts["denbond7@flowcrypt.test"].tap()
+        tablesQuery.textViews.textViews["Could not decrypt:"].tap()
+        navigationBackButton.tap()
+        
+        // open 3d message
+        cellsQuery.otherElements.containing(.staticText, identifier:"Simple encrypted message").staticTexts["denbond7@flowcrypt.test"].tap()
+        let textView = tablesQuery.children(matching: .cell)
+            .element(boundBy: 2)
+            .children(matching: .other)
+            .element
+            .children(matching: .other)
+            .element
+            .children(matching: .textView)
+            .element
+        textView.children(matching: .textView)["Simple encrypted text"].tap()
+        navigationBackButton.tap()
+        
+        // open 4th message
+        cellsQuery.otherElements.containing(.staticText, identifier:"Simple encrypted message + pub key").staticTexts["denbond7@flowcrypt.test"].tap()
+        textView.children(matching: .textView)["It's an encrypted message with my pub key"].tap()
+        navigationBackButton.tap()
+        
+        // open message with attachment
+        cellsQuery.otherElements.containing(.staticText, identifier:"Simple encrypted message + attachment").staticTexts["denbond7@flowcrypt.test"].tap()
+        tablesQuery.staticTexts["android.png.pgp"].tap()
+        wait(1)
+        cellsQuery.otherElements.containing(.staticText, identifier:"denbond7@flowcrypt.test").children(matching: .button).element.tap()
+        navigationBackButton.tap()
+        
+        tablesQuery.staticTexts["Simple encrypted message + attachment"].tap()
+        textView.children(matching: .textView)["It's an encrypted message with one encrypted attachment."].tap()
+    }
+    
+    // restart app -> search functionality
+    func test_4_restart_search() {
+        // search
+        let inboxNavigationBar = app.navigationBars["Inbox"]
+        let searchButton = inboxNavigationBar.buttons["search icn"]
+        let tablesQuery = app.tables
+        
+        searchButton.tap()
+        
+        let searchNavigationBar = app.navigationBars["Search"]
+        let searchTextField = searchNavigationBar.searchFields["Search"]
+        
+        searchTextField.tap()
+        wait(1)
+        searchTextField.typeText("search")
+        
+        // Verify result with "search"
+        let denBondMessage = tablesQuery.staticTexts["denbond7@flowcrypt.test"]
+        denBondMessage.tap()
+        // Search in subject
+        tablesQuery.staticTexts["Search"].tap()
+        let textView = tablesQuery.children(matching: .cell).element(boundBy: 2).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
+        // body
+        textView.children(matching: .textView)["Search in the body"].tap()
+        // email in recipient
+        denBondMessage.tap()
+        // go back to search controller
+        navigationBackButton.tap()
+        searchTextField.tap()
+        
+        // clear previous result
+        let clearTextButton = searchTextField.buttons["Clear text"]
+        clearTextButton.tap()
+        
+        // ESPRESSO
+        searchTextField.tap()
+        searchTextField.typeText("espresso")
+        
+        let espresso = tablesQuery.staticTexts["'espresso' in a subject"]
+        espresso.tap()
+        espresso.tap()
+        textView.children(matching: .textView)["Some text"].tap()
+        navigationBackButton.tap()
+        
+        let cellsQuery = tablesQuery.cells
+        cellsQuery.otherElements.containing(.staticText, identifier:"Message").staticTexts["denbond7@flowcrypt.test"].tap()
+        tablesQuery.staticTexts["Message"].tap()
+        textView.children(matching: .textView)["The message with 'espresso' in a body"].tap()
+        navigationBackButton.tap()
+        clearTextButton.tap()
+        
+        // ANDROID
+        searchTextField.tap()
+        searchTextField.typeText("android")
+        cellsQuery.otherElements.containing(.staticText, identifier:"Standard message + one attachment").staticTexts["denbond7@flowcrypt.test"].tap()
+        navigationBackButton.tap()
+        cellsQuery.otherElements.containing(.staticText, identifier:"With android in subject").staticTexts["denbond7@flowcrypt.test"].tap()
+        navigationBackButton.tap()
+        cellsQuery.otherElements.containing(.staticText, identifier:"with that text in body").staticTexts["denbond7@flowcrypt.test"].tap()
+        navigationBackButton.tap()
+        cellsQuery.otherElements.containing(.staticText, identifier:"Honor reply-to address").staticTexts["denbond7@flowcrypt.test"].tap()
+        navigationBackButton.tap()
+        cellsQuery.otherElements.containing(.staticText, identifier:"Simple encrypted message + attachment").staticTexts["denbond7@flowcrypt.test"].tap()
+        navigationBackButton.tap()
+        app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 0).children(matching: .other).element.children(matching: .table).element.tap()
+        navigationBackButton.tap()
     }
     
     // login -> cancel
-    func test_3_login_cancel() {
+    func test_5_login_cancel() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
 
@@ -106,16 +201,16 @@ class SignInImapTest: XCTestCase, AppTest {
     
     // login with user without key backups and emails
     // login -> no messages
-    func test_4_login_no_messages() {
+    func test_6_login_no_messages() {
         verifyFlowWithNoBackups(for: .imapDen)
     }
 
-    func test_5_has_msgs_no_backups() {
+    func test_7_has_msgs_no_backups() {
         verifyFlowWithNoBackups(for: .imapHasMessagesNoBackups)
     }
     
     // login with wrong pass phrase
-    func test_6_login_bad_pass_phrase() {
+    func test_8_login_bad_pass_phrase() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
         
@@ -347,7 +442,7 @@ extension SignInImapTest {
 //
 //        tapOnCell()
 //        let buttons = app.navigationBars.buttons
-//        let backButton = buttons["arrow left c"]
+//        let backButton = navigationBackButton
 //
 //        wait(3)
 //        // Verify buttons in Trash folder
