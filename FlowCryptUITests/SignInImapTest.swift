@@ -42,7 +42,7 @@ class SignInImapTest: XCTestCase, AppTest {
     }
 
     // restart app -> loads inbox
-    func test_2_restart_app_load_inbox() {
+    func test_2_restart_load_inbox() {
         let application = XCUIApplication()
         wait(2)
         application.buttons["+"].tap()
@@ -74,7 +74,7 @@ class SignInImapTest: XCTestCase, AppTest {
     }
 
     // restart app -> loads inbox -> verify messages
-    func test_3_restart_app_contains_emails() {
+    func test_3_restart_contains_emails() {
         let app = XCUIApplication()
 
         let tablesQuery = app.tables
@@ -189,8 +189,94 @@ class SignInImapTest: XCTestCase, AppTest {
         navigationBackButton.tap()
     }
 
+    func test_5_restart_folders() {
+        let app = XCUIApplication()
+        let tablesQuery = app.tables
+
+        let menuButton = app.navigationBars["Inbox"].buttons["menu icn"]
+        menuButton.tap()
+        wait(1)
+        tablesQuery.cells.otherElements.containing(.staticText, identifier:"...").staticTexts["denbond7@flowcrypt.test"].tap()
+        menuButton.tap()
+
+        tablesQuery.staticTexts["Junk"].tap()
+        tablesQuery.staticTexts["Junk is empty"].tap()
+        app.navigationBars["Junk"].buttons["menu icn"].tap()
+
+        tablesQuery.staticTexts["Drafts"].tap()
+        tablesQuery.staticTexts["Drafts is empty"].tap()
+        app.navigationBars["Drafts"].buttons["menu icn"].tap()
+
+        tablesQuery.staticTexts["Trash"].tap()
+        tablesQuery.staticTexts["Standard message - plaintext"].tap()
+        navigationBackButton.tap()
+        app.navigationBars["Trash"].buttons["menu icn"].tap()
+
+        tablesQuery.staticTexts["Sent"].tap()
+        tablesQuery.staticTexts["Sent is empty"].tap()
+        app.navigationBars["Sent"].buttons["menu icn"].tap()
+
+        tablesQuery.staticTexts["Inbox"].tap()
+        menuButton.tap()
+    }
+
+    func test_6_restart_settings() {
+        let app = XCUIApplication()
+        let tablesQuery = app.tables
+
+        menuButton.tap()
+        wait(1)
+
+        tablesQuery.staticTexts["Settings"].tap()
+        tablesQuery.staticTexts["Backups"].tap()
+        tablesQuery.staticTexts["Security and Privacy"].tap()
+        tablesQuery.staticTexts["Contacts"].tap()
+
+        app.navigationBars["Contacts"].staticTexts["Contacts"].tap()
+        navigationBackButton.tap()
+
+        tablesQuery.staticTexts["Keys"].tap()
+        wait(1)
+        tablesQuery.cells.firstMatch.tap()
+        tablesQuery.buttons["Show public key"].tap()
+
+        // part of public key
+        let searchText = "nxjMEYIq7phYJKwYBBAHaRw8BAQdAat45rrh"
+        let predicate = NSPredicate(format: "label CONTAINS[c] %@", searchText)
+        tablesQuery.containing(predicate)
+
+        navigationBackButton.tap()
+
+        tablesQuery.buttons["Show key details"].tap()
+        tablesQuery.staticTexts["Longid: 225F8023C20D0957"].tap()
+        tablesQuery.staticTexts["Longid: 4F1458BD22B7BB53"].tap()
+
+        navigationBackButton.tap()
+        tablesQuery.buttons["Copy to clipboard"].tap()
+        tablesQuery.buttons["Share"].tap()
+        app.navigationBars["UIActivityContentView"].buttons["Close"].tap()
+        tablesQuery.buttons["Show private key"].tap()
+
+        navigationBackButton.tap()
+
+        app.navigationBars["Keys"].buttons["Add"].tap()
+        XCTAssert(tablesQuery.buttons["Load From File"].exists)
+        navigationBackButton.tap()
+        navigationBackButton.tap()
+
+        tablesQuery.staticTexts["Notifications"].tap()
+        tablesQuery.staticTexts["Legal"].tap()
+
+        let collectionViewsQuery = app.collectionViews
+        collectionViewsQuery.staticTexts["Terms"].tap()
+        collectionViewsQuery.staticTexts["License"].tap()
+        collectionViewsQuery.staticTexts["Sources"].tap()
+        app.navigationBars["Legal"].buttons["arrow left c"].tap()
+        tablesQuery.staticTexts["Experimental"].tap()
+    }
+
     // login -> cancel
-    func test_5_login_cancel() {
+    func test_7_login_cancel() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
 
@@ -200,16 +286,16 @@ class SignInImapTest: XCTestCase, AppTest {
 
     // login with user without key backups and emails
     // login -> no messages
-    func test_6_login_no_messages() {
+    func test_8_login_no_messages() {
         verifyFlowWithNoBackups(for: .imapDen)
     }
 
-    func test_7_has_msgs_no_backups() {
+    func test_9_has_msgs_no_backups() {
         verifyFlowWithNoBackups(for: .imapHasMessagesNoBackups)
     }
 
     // login with wrong pass phrase
-    func test_8_login_bad_pass_phrase() {
+    func test_10_login_bad_pass_phrase() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
 
