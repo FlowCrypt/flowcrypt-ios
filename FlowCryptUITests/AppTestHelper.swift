@@ -44,6 +44,14 @@ extension AppTest {
     var passPhraseTextField: XCUIElement {
         app.tables.secureTextFields["Enter your pass phrase"]
     }
+    
+    var navigationBackButton: XCUIElement {
+        app.navigationBars.buttons["arrow left c"]
+    }
+    
+    var setupUseAnotherAccount: XCUIElement {
+        app.tables.buttons["Use Another Account"]
+    }
 }
 
 // MARK: - Actions
@@ -64,15 +72,12 @@ extension AppTest {
     }
 
     func tapOnCompose() {
-        let plusButton = app.buttons["tap"]
+        let plusButton = app.buttons["+"]
 
         if plusButton.exists {
             plusButton.tap()
         } else {
-            // for iPhone X
-            XCUIDevice.shared.orientation = .landscapeLeft
-            app.buttons["+"].tap()
-            XCUIDevice.shared.orientation = .portrait
+            logger.logError("+ does not exist")
         }
         wait(0.2)
     }
@@ -98,18 +103,14 @@ extension AppTest {
     
     func logOutIfNeeded() {
         logger.logInfo("Log out if needed")
-       
-        // Check which screen we are now
-        guard menuButton.exists else {
-            logger.logInfo("Already logged out")
-            return
-        }
         
         if menuButton.exists {
             logger.logInfo("User is logged in. Try to log out")
             menuButton.tap()
             tapOnMenu(folder: "Log out")
         } else {
+            logger.logInfo("No menu button")
+            
             let otherAccountButton = app.tables.buttons["Use Another Account"]
             if otherAccountButton.exists {
                 logger.logInfo("Try to use another account")
