@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import XCTest
 import FlowCryptCommon
+import XCTest
 
 class SignInGoogleTest: XCTestCase, AppTest {
     var app: XCUIApplication!
@@ -19,7 +19,7 @@ class SignInGoogleTest: XCTestCase, AppTest {
             .setupRegion()
             .build()
             .launched()
-        
+
         logger.logInfo("Wait for launch")
         wait(10)
     }
@@ -27,47 +27,47 @@ class SignInGoogleTest: XCTestCase, AppTest {
     private var gmailAlert: XCUIElement {
         Springboard.springboard.alerts.element
     }
-    
+
     private var gmailLoginButton: XCUIElement {
         app.tables.buttons["Continue with Gmail"]
     }
-    
+
     private var findTextFieldForGmailWebView: XCUIElement? {
         logger.logInfo("Try to find text field for gmail web view")
         return app.webViews.textFields.firstMatch
     }
-    
+
     func test_1_successful_login() {
         logOutIfNeeded()
         wait(2)
         startGmailLoginFlow()
         wait(5)
-        
+
         let user = UserCredentials.gmailDev
-        
+
         enterUserCredentials(for: user)
         wait(5)
         enterUserDevCredentials(for: user)
         wait(5)
     }
-    
+
     private func startGmailLoginFlow() {
         // Tap on Gmail login
         gmailLoginButton.tap()
         wait(5)
-        
+
         // Wait for user alert and continue
         guard gmailAlert.exists else {
             assertionFailure("Gmail alert is missing")
             return
         }
-        
+
         logger.logInfo("Gmail alert is on the screen")
-        
+
         gmailAlert.buttons["Continue"].tap()
         wait(3)
     }
-    
+
     private func enterUserCredentials(for user: UserCredentials) {
         // Try to find first text field in gmail web view
         logger.logInfo("Try to find text field for gmail web view")
@@ -78,21 +78,21 @@ class SignInGoogleTest: XCTestCase, AppTest {
         }
         textField.tap()
         wait(0.2)
-        
+
         textField.typeText(user.email)
         goKeyboardButton.tap()
     }
-    
+
     private func enterUserDevCredentials(for user: UserCredentials) {
         let mainWebView = app.webViews.otherElements["main"]
-        
+
         let userNameTextField = mainWebView.children(matching: .textField).element
         userNameTextField.tap()
         userNameTextField.typeText(user.email)
-        
+
         app.toolbars.matching(identifier: "Toolbar").buttons["Next"].tap()
         app.typeText(user.password)
-        
+
         wait(2)
         goKeyboardButton.tap()
         wait(3)

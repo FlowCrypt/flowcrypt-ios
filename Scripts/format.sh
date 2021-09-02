@@ -13,7 +13,7 @@ fi
 if which swiftformat >/dev/null; then
   echo "Start formatting"
   # swiftlint autocorrect --path .
-  swiftformat "FlowCrypt" \
+  swiftformat "FlowCrypt", "FlowCryptUITests" \
     --rules trailingSpace \
     --rules blankLinesAtEndOfScope \
     --rules consecutiveBlankLines \

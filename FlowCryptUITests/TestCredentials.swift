@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import XCTest
 import FlowCryptCommon
+import XCTest
 
 public let logger = Logger.nested("UI Tests")
 

@@ -56,7 +56,7 @@ public final class TextCellNode: CellNode {
                 ? [textNode, spinner]
                 : [textNode]
         )
-        
+
         return spec
     }
 }

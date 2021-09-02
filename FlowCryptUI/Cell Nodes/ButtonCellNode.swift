@@ -13,7 +13,7 @@ public final class ButtonCellNode: CellNode {
         let title: NSAttributedString
         let insets: UIEdgeInsets
         let color: UIColor?
-        
+
         public init(
             title: NSAttributedString,
             insets: UIEdgeInsets,
@@ -24,7 +24,7 @@ public final class ButtonCellNode: CellNode {
             self.color = color
         }
     }
-    
+
     private var onTap: (() -> Void)?
     public lazy var button = ButtonNode { [weak self] in
         self?.onTap?()
@@ -41,7 +41,7 @@ public final class ButtonCellNode: CellNode {
                 .withAlphaComponent(alpha)
         }
     }
-    
+
     public init(input: Input, action: (() -> Void)?) {
         onTap = action
         self.insets = input.insets
