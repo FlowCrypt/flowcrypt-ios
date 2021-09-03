@@ -1,3 +1,4 @@
+name: check-for-emails
 on:
   issue_comment:
     types: [created, edited]
