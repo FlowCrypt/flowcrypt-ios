@@ -66,6 +66,8 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private let viewModel: InboxViewModel
     private var messages: [Message] = []
 
+    var path: String { viewModel.path }
+
     init(
         _ viewModel: InboxViewModel,
         messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
@@ -447,3 +449,10 @@ extension InboxViewController {
         }
     }
 }
+
+extension InboxViewController: Refreshable {
+
+     func startRefreshing() {
+         refresh()
+     }
+ }

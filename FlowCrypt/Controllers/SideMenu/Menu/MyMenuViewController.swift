@@ -3,6 +3,7 @@
 //
 
 import AsyncDisplayKit
+import ENSwiftSideMenu
 import FlowCryptUI
 import Promises
 
@@ -291,8 +292,19 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            sideMenuController()?.setContentViewController(InboxViewController(input))
+            let viewController = InboxViewController(input)
+            if let topController = topController(controllerType: InboxViewController.self),
+               topController.path == folder.path {
+                sideMenuController()?.sideMenu?.hideSideMenu()
+                viewController.startRefreshing()
+                return
+            }
+            sideMenuController()?.setContentViewController(viewController)
         case .settings:
+            if topController(controllerType: SettingsViewController.self) != nil {
+                sideMenuController()?.sideMenu?.hideSideMenu()
+                return
+            }
             sideMenuController()?.setContentViewController(SettingsViewController())
         case .logOut:
             router.signOut()
@@ -309,6 +321,16 @@ extension MyMenuViewController {
             case .folders: self.state = .accountAdding
             }
         }
+    }
+
+    private func topController<T: UIViewController>(
+        controllerType: T.Type
+    ) -> T? {
+        if let menuViewController = sideMenuController() as? ENSideMenuNavigationController,
+           let topViewController = menuViewController.viewControllers.first as? T {
+            return topViewController
+        }
+        return nil
     }
 }
 
