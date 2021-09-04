@@ -41,6 +41,45 @@ class SignInImapTest: XCTestCase, AppTest {
         XCTAssert(app.buttons["+"].exists)
     }
 
+    func test_restart_app_contacts() {
+        let application = XCUIApplication()
+        let tablesQuery = application.tables
+        app.buttons["+"].tap()
+        app.typeText(UserCredentials.imapDev.email)
+        goKeyboardButton.tap()
+        wait(2)
+
+        tablesQuery.textFields["Add Recipient"].tap()
+        wait(1)
+        app.typeText(UserCredentials.imapDenBond.email)
+        wait(1)
+        goKeyboardButton.tap()
+        wait(1)
+
+        navigationBackButton.tap()
+
+        application.navigationBars["Inbox"].buttons["menu icn"].tap()
+        tablesQuery.staticTexts["Settings"].tap()
+        tablesQuery.staticTexts["Contacts"].tap()
+
+        // open first contacts
+        let app = XCUIApplication()
+        let contactsQuery = app.tables
+        contactsQuery.staticTexts["default@flowcrypt.test"].tap()
+        XCTAssert(contactsQuery.staticTexts["default@flowcrypt.test"].exists)
+        XCTAssert(contactsQuery.staticTexts["225F8023C20D0957,\n4F1458BD22B7BB53"].exists)
+        XCTAssert(contactsQuery.staticTexts["3DEBE9F677D5B9BB38E5A244225F8023C20D0957,\nF81D1B0FDEE37AA32B8F0CD04F1458BD22B7BB53"].exists)
+        XCTAssert(contactsQuery.staticTexts["eddsa"].exists)
+        application.navigationBars["Public Key"].buttons["arrow left c"].tap()
+
+        // open next contact
+        contactsQuery.staticTexts["denbond7@flowcrypt.test"].tap()
+        XCTAssert(contactsQuery.staticTexts["default@flowcrypt.test"].exists)
+        XCTAssert(contactsQuery.staticTexts["C32089CD6AF8D6CE,\nD7A3DEDB65CB1EFB"].exists)
+        XCTAssert(contactsQuery.staticTexts["Apr 30, 2021 at 8:57:44 AM"].exists)
+        XCTAssert(contactsQuery.staticTexts["eddsa"].exists)
+    }
+
     // restart app -> loads inbox
     func test_2_restart_app_load_inbox() {
         let application = XCUIApplication()
@@ -227,21 +266,21 @@ class SignInImapTest: XCTestCase, AppTest {
         wait(1)
     }
 
-    func test_12_sign_in_with_wrong_credentials() {
-        var user = UserCredentials.imapDev
-        user.password = "123"
-        loginWithImap(user)
-
-        let errorAlert = app.alerts["Error"].scrollViews.otherElements
-
-        // part of public key
-        let searchText = "Connection Error"
-        let predicate = NSPredicate(format: "label CONTAINS[c] %@", searchText)
-        errorAlert.staticTexts.containing(predicate)
-        errorAlert.buttons["OK"].tap()
-
-        XCTAssert(app.tables.buttons["Connect"].exists)
-    }
+//    func test_12_sign_in_with_wrong_credentials() {
+//        var user = UserCredentials.imapDev
+//        user.password = "123"
+//        loginWithImap(user)
+//
+//        let errorAlert = app.alerts["Error"].scrollViews.otherElements
+//
+//        // part of public key
+//        let searchText = "Connection Error"
+//        let predicate = NSPredicate(format: "label CONTAINS[c] %@", searchText)
+//        errorAlert.staticTexts.containing(predicate)
+//        errorAlert.buttons["OK"].tap()
+//
+//        XCTAssert(app.tables.buttons["Connect"].exists)
+//    }
 
     // login -> cancel
     func test_5_login_cancel() {
