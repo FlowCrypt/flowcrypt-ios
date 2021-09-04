@@ -10,7 +10,7 @@ import Foundation
 
 struct UserCredentials: Codable, Equatable {
     let email: String
-    let password: String
+    var password: String
     let pass: String
     let recovery: String
     let privateKey: String

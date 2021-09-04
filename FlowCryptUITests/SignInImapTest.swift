@@ -227,6 +227,22 @@ class SignInImapTest: XCTestCase, AppTest {
         wait(1)
     }
 
+    func test_12_sign_in_with_wrong_credentials() {
+        var user = UserCredentials.imapDev
+        user.password = "123"
+        loginWithImap(user)
+
+        let errorAlert = app.alerts["Error"].scrollViews.otherElements
+
+        // part of public key
+        let searchText = "Connection Error"
+        let predicate = NSPredicate(format: "label CONTAINS[c] %@", searchText)
+        errorAlert.staticTexts.containing(predicate)
+        errorAlert.buttons["OK"].tap()
+
+        XCTAssert(app.tables.buttons["Connect"].exists)
+    }
+
     // login -> cancel
     func test_5_login_cancel() {
         let user = UserCredentials.imapDev
