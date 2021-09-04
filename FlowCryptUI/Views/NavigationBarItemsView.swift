@@ -56,7 +56,7 @@ public final class NavigationBarItemsView: UIBarButtonItem {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     public override var isEnabled: Bool {
         didSet {
             customView?.alpha = isEnabled ? 1 : 0.5

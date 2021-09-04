@@ -6,8 +6,8 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import XCTest
 import FlowCryptCommon
+import XCTest
 
 protocol AppTest {
     var app: XCUIApplication! { get set }
@@ -44,11 +44,11 @@ extension AppTest {
     var passPhraseTextField: XCUIElement {
         app.tables.secureTextFields["Enter your pass phrase"]
     }
-    
+
     var navigationBackButton: XCUIElement {
         app.navigationBars.buttons["arrow left c"]
     }
-    
+
     var setupUseAnotherAccount: XCUIElement {
         app.tables.buttons["Use Another Account"]
     }
@@ -100,17 +100,17 @@ extension AppTest {
             _ = app.keys["\n"]
         }
     }
-    
+
     func logOutIfNeeded() {
         logger.logInfo("Log out if needed")
-        
+
         if menuButton.exists {
             logger.logInfo("User is logged in. Try to log out")
             menuButton.tap()
             tapOnMenu(folder: "Log out")
         } else {
             logger.logInfo("No menu button")
-            
+
             let otherAccountButton = app.tables.buttons["Use Another Account"]
             if otherAccountButton.exists {
                 logger.logInfo("Try to use another account")

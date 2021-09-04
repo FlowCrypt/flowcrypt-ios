@@ -121,7 +121,7 @@ public final class TextFieldNode: ASDisplayNode {
     private var textFiledAction: TextFieldAction?
 
     private var onToolbarDoneAction: (() -> Void)?
-    
+
     public init(preferredHeight: CGFloat?, action: TextFieldAction? = nil, accessibilityIdentifier: String?) {
         super.init()
         addSubnode(node)
