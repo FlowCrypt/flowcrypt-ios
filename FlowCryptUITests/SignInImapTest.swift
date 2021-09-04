@@ -189,6 +189,44 @@ class SignInImapTest: XCTestCase, AppTest {
         navigationBackButton.tap()
     }
 
+    // send new msg -> no pubkey
+    func test_11_send_message_no_pub_key() {
+        // TODO: - ANTON
+        // Fix test number after merging
+        // https://github.com/FlowCrypt/flowcrypt-ios/pull/475
+        // https://github.com/FlowCrypt/flowcrypt-ios/pull/481
+
+        let application = XCUIApplication()
+        application.buttons["+"].tap()
+
+        wait(0.3)
+
+        application.typeText("test@test.com")
+        app.navigationBars["Inbox"].buttons["android send"].tap()
+
+        let errorAlert = app.alerts["Error"].scrollViews.otherElements
+        XCTAssert(errorAlert.staticTexts["Could not compose message\n\nEnter subject"].exists)
+        errorAlert.buttons["OK"].tap()
+
+        application.tables.textFields["Subject"].tap()
+        wait(1)
+        application.tables.textFields["Subject"].tap()
+        app.typeText("Subject")
+        app.navigationBars["Inbox"].buttons["android send"].tap()
+
+        let errorMessage = application.alerts["Error"].scrollViews.otherElements
+        XCTAssert(errorAlert.staticTexts["Could not compose message\n\nEnter secure message"].exists)
+        errorMessage.buttons["OK"].tap()
+
+        let cell = app.tables.children(matching: .cell).element(boundBy: 5)
+        cell.tap()
+        app.typeText("Message")
+        app.navigationBars["Inbox"].buttons["android send"].tap()
+
+        XCTAssert(errorAlert.staticTexts["Could not compose message\n\nRecipient doesn't seem to have encryption set up"].exists)
+        wait(1)
+    }
+
     // login -> cancel
     func test_5_login_cancel() {
         let user = UserCredentials.imapDev
@@ -474,12 +512,3 @@ extension SignInImapTest {
 ////        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
 //    }
 //
-//    // send new msg -> no pubkey
-//    func test_11_send_message_no_pub_key() {
-//        wait(2)
-//        sendMessage(to: "flowcrypt.nopubkey@gmail.com")
-//        wait(3)
-//        let errorAlert = app.alerts["Error"]
-//        XCTAssert(errorAlert.exists)
-//    }
-//}
