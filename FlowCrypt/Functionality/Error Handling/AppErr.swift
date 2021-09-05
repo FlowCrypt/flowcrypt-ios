@@ -55,8 +55,7 @@ extension AppErr {
         case MCOErrorCode.authentication.rawValue:
             self = .authentication
         case MCOErrorCode.connection.rawValue,
-             MCOErrorCode.tlsNotAvailable.rawValue,
-             MCOErrorCode.connection.rawValue:
+             MCOErrorCode.tlsNotAvailable.rawValue:
             self = .connection
         default:
             self = .unexpected(error.localizedDescription)
