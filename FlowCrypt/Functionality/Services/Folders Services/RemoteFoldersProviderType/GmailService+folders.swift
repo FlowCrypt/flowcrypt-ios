@@ -57,7 +57,7 @@ extension GmailService: RemoteFoldersProviderType {
     }
 
     private var allMailFolder: FolderObject {
-        FolderObject(name: "All Mail", path: "all mail", image: nil, user: activeUser)
+        FolderObject(name: "All Mail", path: "", image: nil, user: activeUser)
     }
 }
 
