@@ -216,3 +216,10 @@
 // Email key manager api error
 "emai_keymanager_api_no_google_id_token_error_description" = "There is no Google ID token were found while getting client configuration";
 
+// Gmail Service errors
+"gmail_service_failed_to_parse_data_error_message" = "Failed to parse Gmail data";
+"gmail_service_message_encode_error_message" = "Wrong message encoding provided";
+"gmail_service_missing_message_payload_error_message" = "Missing message payload";
+"gmail_service_missing_message_info_error_message" = "Missing message info: %@";
+"gmail_service_provider_error_error_message" = "Gmail provider error: %@";
+"gmail_service_missing_back_query_error_message" = "Missed backup query: %@";
