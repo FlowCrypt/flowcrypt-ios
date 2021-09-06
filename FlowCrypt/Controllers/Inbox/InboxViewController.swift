@@ -246,10 +246,12 @@ extension InboxViewController {
         switch appError {
         case .connection:
             state = .error(appError.userMessage)
-            tableNode.reloadData()
+        case .general(let errorMessage):
+            state = .error(errorMessage)
         default:
             showAlert(error: error, message: "message_failed_load".localized)
         }
+        tableNode.reloadData()
     }
 }
 
