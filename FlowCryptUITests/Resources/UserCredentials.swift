@@ -10,7 +10,7 @@ import Foundation
 
 struct UserCredentials: Codable, Equatable {
     let email: String
-    let password: String
+    var password: String
     let pass: String
     let recovery: String
     let privateKey: String
@@ -32,6 +32,9 @@ struct UserCredentials: Codable, Equatable {
     /// has_msgs_no_backups@flowcrypt.test
     /// user with messages but without any backups
     static let imapHasMessagesNoBackups = UserCredentials.user(with: "has_msgs_no_backups@flowcrypt.test")
+
+    /// denbond7@flowcrypt
+    static let imapDenBond = UserCredentials.user(with: "denbond7@flowcrypt.test")
 }
 
 extension UserCredentials {
