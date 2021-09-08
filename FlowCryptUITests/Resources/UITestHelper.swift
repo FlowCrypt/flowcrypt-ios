@@ -25,7 +25,7 @@ extension AppTest {
     }
 
     func waitForAny(of elements: [XCUIElement], timeout: TimeInterval) -> Bool {
-        let predicate = NSPredicate { (object, _) -> Bool in
+        let predicate = NSPredicate { object, _ -> Bool in
             guard let elements = object as? [XCUIElement] else { return false }
             return elements.reduce(false) { $0 || $1.exists }
         }

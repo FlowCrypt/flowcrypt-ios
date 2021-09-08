@@ -66,6 +66,8 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private let viewModel: InboxViewModel
     private var messages: [Message] = []
 
+    var path: String { viewModel.path }
+
     init(
         _ viewModel: InboxViewModel,
         messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
@@ -244,10 +246,12 @@ extension InboxViewController {
         switch appError {
         case .connection:
             state = .error(appError.userMessage)
-            tableNode.reloadData()
+        case .general(let errorMessage):
+            state = .error(errorMessage)
         default:
             showAlert(error: error, message: "message_failed_load".localized)
         }
+        tableNode.reloadData()
     }
 }
 
@@ -447,3 +451,10 @@ extension InboxViewController {
         }
     }
 }
+
+extension InboxViewController: Refreshable {
+
+     func startRefreshing() {
+         refresh()
+     }
+ }

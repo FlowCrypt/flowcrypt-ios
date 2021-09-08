@@ -22,3 +22,22 @@ enum GmailServiceError: Error {
     /// Empty or invalid backup search query
     case missedBackupQuery(Error)
 }
+
+extension GmailServiceError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .failedToParseData:
+            return "gmail_service_failed_to_parse_data_error_message".localized
+        case .messageEncode:
+            return "gmail_service_message_encode_error_message".localized
+        case .missedMessagePayload:
+            return "gmail_service_missing_message_payload_error_message".localized
+        case .missedMessageInfo(let info):
+            return "gmail_service_missing_message_info_error_message".localizeWithArguments(info)
+        case .providerError(let error):
+            return "gmail_service_provider_error_error_message".localizeWithArguments(error.localizedDescription)
+        case .missedBackupQuery(let error):
+            return "gmail_service_missing_back_query_error_message".localizeWithArguments(error.localizedDescription)
+        }
+    }
+}
