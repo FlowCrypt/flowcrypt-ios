@@ -50,6 +50,10 @@ extension AppErr {
             self = alreadyAppError
             return
         }
+        if let gmailError = error as? GmailServiceError {
+            self = .general(gmailError.localizedDescription)
+            return
+        }
         let code = (error as NSError).code
         switch code {
         case MCOErrorCode.authentication.rawValue:
