@@ -520,9 +520,7 @@ extension SetupImapViewController {
     }
 
     private func handleConnection(error: Error) {
-        showAlert(error: error, message: "Connection Error") { [weak self] in
-            self?.globalRouter.signOut()
-        }
+        showAlert(error: error, message: "Connection Error")
     }
 
     private func handleSuccessfulConnection() {
