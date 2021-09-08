@@ -189,6 +189,7 @@ class SignInImapTest: XCTestCase, AppTest {
         navigationBackButton.tap()
     }
 
+    // restart app -> verify folders
     func test_5_restart_folders() {
         let app = XCUIApplication()
         let tablesQuery = app.tables
@@ -220,6 +221,7 @@ class SignInImapTest: XCTestCase, AppTest {
         menuButton.tap()
     }
 
+    // restart app -> verify settings
     func test_6_restart_settings() {
         let app = XCUIApplication()
         let tablesQuery = app.tables
@@ -229,6 +231,7 @@ class SignInImapTest: XCTestCase, AppTest {
 
         tablesQuery.staticTexts["Settings"].tap()
         tablesQuery.staticTexts["Backups"].tap()
+        navigationBackButton.tap()
         tablesQuery.staticTexts["Security and Privacy"].tap()
         tablesQuery.staticTexts["Contacts"].tap()
 
@@ -275,8 +278,98 @@ class SignInImapTest: XCTestCase, AppTest {
         tablesQuery.staticTexts["Experimental"].tap()
     }
 
+    // restart app -> Try to send message to user without pub key
+    func test_7_restart_send_message_no_pub_key() {
+        let application = XCUIApplication()
+        application.buttons["+"].tap()
+
+        wait(0.3)
+
+        application.typeText("test@test.com")
+        app.navigationBars["Inbox"].buttons["android send"].tap()
+
+        let errorAlert = app.alerts["Error"].scrollViews.otherElements
+        XCTAssert(errorAlert.staticTexts["Could not compose message\n\nEnter subject"].exists)
+        errorAlert.buttons["OK"].tap()
+
+        application.tables.textFields["Subject"].tap()
+        wait(1)
+        application.tables.textFields["Subject"].tap()
+        app.typeText("Subject")
+        app.navigationBars["Inbox"].buttons["android send"].tap()
+
+        let errorMessage = application.alerts["Error"].scrollViews.otherElements
+        XCTAssert(errorAlert.staticTexts["Could not compose message\n\nEnter secure message"].exists)
+        errorMessage.buttons["OK"].tap()
+
+        let cell = app.tables.children(matching: .cell).element(boundBy: 5)
+        cell.tap()
+        app.typeText("Message")
+        app.navigationBars["Inbox"].buttons["android send"].tap()
+
+        XCTAssert(errorAlert.staticTexts["Could not compose message\n\nRecipient doesn't seem to have encryption set up"].exists)
+        wait(1)
+    }
+
+    // restart app -> verify contacts functionality
+    func test_9_restart_app_contacts() {
+//         let application = XCUIApplication()
+//         let tablesQuery = application.tables
+//         app.buttons["+"].tap()
+//         app.typeText(UserCredentials.imapDev.email)
+//         goKeyboardButton.tap()
+//         wait(2)
+//
+//         tablesQuery.textFields["Add Recipient"].tap()
+//         wait(1)
+//         app.typeText(UserCredentials.imapDenBond.email)
+//         wait(1)
+//         goKeyboardButton.tap()
+//         wait(1)
+//
+//         navigationBackButton.tap()
+//
+//         application.navigationBars["Inbox"].buttons["menu icn"].tap()
+//         tablesQuery.staticTexts["Settings"].tap()
+//         tablesQuery.staticTexts["Contacts"].tap()
+//
+//         // open first contacts
+//         let app = XCUIApplication()
+//         let contactsQuery = app.tables
+//         contactsQuery.staticTexts["default@flowcrypt.test"].tap()
+//         XCTAssert(contactsQuery.staticTexts["default@flowcrypt.test"].exists)
+//         XCTAssert(contactsQuery.staticTexts["225F8023C20D0957,\n4F1458BD22B7BB53"].exists)
+//         XCTAssert(contactsQuery.staticTexts["3DEBE9F677D5B9BB38E5A244225F8023C20D0957,\nF81D1B0FDEE37AA32B8F0CD04F1458BD22B7BB53"].exists)
+//         XCTAssert(contactsQuery.staticTexts["eddsa"].exists)
+//         application.navigationBars["Public Key"].buttons["arrow left c"].tap()
+//
+//         // open next contact
+//         contactsQuery.staticTexts["denbond7@flowcrypt.test"].tap()
+//         XCTAssert(contactsQuery.staticTexts["default@flowcrypt.test"].exists)
+//         XCTAssert(contactsQuery.staticTexts["C32089CD6AF8D6CE,\nD7A3DEDB65CB1EFB"].exists)
+//         XCTAssert(contactsQuery.staticTexts["Apr 30, 2021 at 8:57:44 AM"].exists)
+//         XCTAssert(contactsQuery.staticTexts["eddsa"].exists)
+     }
+
+    // try to sign in with wrong credentials
+    func test_9_sign_in_with_wrong_credentials() {
+        var user = UserCredentials.imapDev
+        user.password = "123"
+        loginWithImap(user)
+
+        let errorAlert = app.alerts["Error"].scrollViews.otherElements
+
+        // part of public key
+        let searchText = "Connection Error"
+        let predicate = NSPredicate(format: "label CONTAINS[c] %@", searchText)
+        errorAlert.staticTexts.containing(predicate)
+        errorAlert.buttons["OK"].tap()
+
+        XCTAssert(app.tables.buttons["Connect"].exists)
+    }
+
     // login -> cancel
-    func test_7_login_cancel() {
+    func test_10_login_cancel() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
 
@@ -285,17 +378,16 @@ class SignInImapTest: XCTestCase, AppTest {
     }
 
     // login with user without key backups and emails
-    // login -> no messages
-    func test_8_login_no_messages() {
+    func test_11_login_no_messages() {
         verifyFlowWithNoBackups(for: .imapDen)
     }
 
-    func test_9_has_msgs_no_backups() {
+    func test_12_has_msgs_no_backups() {
         verifyFlowWithNoBackups(for: .imapHasMessagesNoBackups)
     }
 
     // login with wrong pass phrase
-    func test_10_login_bad_pass_phrase() {
+    func test_13_login_bad_pass_phrase() {
         let user = UserCredentials.imapDev
         loginWithImap(user)
 
@@ -559,13 +651,3 @@ extension SignInImapTest {
 ////        XCTAssert(app.tables.staticTexts[user.email].exists, "Wrong recipient in sent message")
 ////        XCTAssert(app.tables.staticTexts["Some Subject"].exists, "Wrong subject")
 //    }
-//
-//    // send new msg -> no pubkey
-//    func test_11_send_message_no_pub_key() {
-//        wait(2)
-//        sendMessage(to: "flowcrypt.nopubkey@gmail.com")
-//        wait(3)
-//        let errorAlert = app.alerts["Error"]
-//        XCTAssert(errorAlert.exists)
-//    }
-//}
