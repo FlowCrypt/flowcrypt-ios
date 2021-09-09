@@ -66,9 +66,11 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func getAllContacts() -> [Contact] {
-        Array(storage()
-            .objects(ContactObject.self)
-            .map(Contact.init)
+        Array(
+            storage()
+                .objects(ContactObject.self)
+                .map(Contact.init)
+                .sorted(by: { $0.email > $1.email })
         )
     }
 }
