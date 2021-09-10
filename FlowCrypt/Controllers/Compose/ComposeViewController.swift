@@ -629,7 +629,7 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
-        node.reloadSections(IndexSet(integer: 1), with: .fade)
+        node.reloadSections(IndexSet(integer: 0), with: .fade)
     }
 }
 

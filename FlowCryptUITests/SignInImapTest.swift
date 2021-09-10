@@ -313,43 +313,43 @@ class SignInImapTest: XCTestCase, AppTest {
 
     // restart app -> verify contacts functionality
     func test_9_restart_app_contacts() {
-//         let application = XCUIApplication()
-//         let tablesQuery = application.tables
-//         app.buttons["+"].tap()
-//         app.typeText(UserCredentials.imapDev.email)
-//         goKeyboardButton.tap()
-//         wait(2)
-//
-//         tablesQuery.textFields["Add Recipient"].tap()
-//         wait(1)
-//         app.typeText(UserCredentials.imapDenBond.email)
-//         wait(1)
-//         goKeyboardButton.tap()
-//         wait(1)
-//
-//         navigationBackButton.tap()
-//
-//         application.navigationBars["Inbox"].buttons["menu icn"].tap()
-//         tablesQuery.staticTexts["Settings"].tap()
-//         tablesQuery.staticTexts["Contacts"].tap()
-//
-//         // open first contacts
-//         let app = XCUIApplication()
-//         let contactsQuery = app.tables
-//         contactsQuery.staticTexts["default@flowcrypt.test"].tap()
-//         XCTAssert(contactsQuery.staticTexts["default@flowcrypt.test"].exists)
-//         XCTAssert(contactsQuery.staticTexts["225F8023C20D0957,\n4F1458BD22B7BB53"].exists)
-//         XCTAssert(contactsQuery.staticTexts["3DEBE9F677D5B9BB38E5A244225F8023C20D0957,\nF81D1B0FDEE37AA32B8F0CD04F1458BD22B7BB53"].exists)
-//         XCTAssert(contactsQuery.staticTexts["eddsa"].exists)
-//         application.navigationBars["Public Key"].buttons["arrow left c"].tap()
-//
-//         // open next contact
-//         contactsQuery.staticTexts["denbond7@flowcrypt.test"].tap()
-//         XCTAssert(contactsQuery.staticTexts["default@flowcrypt.test"].exists)
-//         XCTAssert(contactsQuery.staticTexts["C32089CD6AF8D6CE,\nD7A3DEDB65CB1EFB"].exists)
-//         XCTAssert(contactsQuery.staticTexts["Apr 30, 2021 at 8:57:44 AM"].exists)
-//         XCTAssert(contactsQuery.staticTexts["eddsa"].exists)
-     }
+        let application = XCUIApplication()
+        let tablesQuery = application.tables
+        app.buttons["+"].tap()
+
+        app.typeText(UserCredentials.imapDev.email)
+        goKeyboardButton.tap()
+        wait(2)
+
+        tablesQuery.textFields["Add Recipient"].tap()
+        wait(1)
+        app.typeText(UserCredentials.imapDenBond.email)
+        wait(1)
+        goKeyboardButton.tap()
+        wait(1)
+
+        navigationBackButton.tap()
+
+        application.navigationBars["Inbox"].buttons["menu icn"].tap()
+        tablesQuery.staticTexts["Settings"].tap()
+        tablesQuery.staticTexts["Contacts"].tap()
+
+        wait(1)
+
+        tablesQuery.otherElements["0"].firstMatch.tap()
+        app.tables.staticTexts["denbond7@flowcrypt.test"].tap()
+        XCTAssert(app.tables.staticTexts["default@flowcrypt.test"].exists)
+        XCTAssert(app.tables.staticTexts["C32089CD6AF8D6CE,\nD7A3DEDB65CB1EFB"].exists)
+        XCTAssert(app.tables.staticTexts["eddsa"].exists)
+        app.navigationBars["Public Key"].buttons["arrow left c"].tap()
+
+        tablesQuery.otherElements["1"].firstMatch.tap()
+        XCTAssert(app.tables.staticTexts["default@flowcrypt.test"].exists)
+        XCTAssert(app.tables.staticTexts["225F8023C20D0957,\n4F1458BD22B7BB53"].exists)
+        XCTAssert(app.tables.staticTexts["3DEBE9F677D5B9BB38E5A244225F8023C20D0957,\nF81D1B0FDEE37AA32B8F0CD04F1458BD22B7BB53"].exists)
+        XCTAssert(app.tables.staticTexts["eddsa"].exists)
+        application.navigationBars["Public Key"].buttons["arrow left c"].tap()
+    }
 
     // try to sign in with wrong credentials
     func test_9_sign_in_with_wrong_credentials() {
