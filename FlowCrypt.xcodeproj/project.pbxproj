@@ -75,6 +75,7 @@
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */; };
 		9F1B4A342624E49300420472 /* KeyAlgoObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6924F25AB800612AF1 /* KeyAlgoObject.swift */; };
+		9F1F6D4F26EBBE2B009BC98A /* ClientConfigurationServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1F6D4E26EBBE2A009BC98A /* ClientConfigurationServiceTest.swift */; };
 		9F228BA623C673AD005D2CB6 /* Springboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA523C673AD005D2CB6 /* Springboard.swift */; };
 		9F228BA923C67587005D2CB6 /* UserCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F228BA823C67587005D2CB6 /* UserCredentials.swift */; };
 		9F228BAA23C67729005D2CB6 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
@@ -478,6 +479,7 @@
 		9F1797692368EE90002BF770 /* ButtonCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonCellNode.swift; sourceTree = "<group>"; };
 		9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupViewDecorator.swift; sourceTree = "<group>"; };
 		9F1797702368EEE8002BF770 /* ButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
+		9F1F6D4E26EBBE2A009BC98A /* ClientConfigurationServiceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationServiceTest.swift; sourceTree = "<group>"; };
 		9F228BA523C673AD005D2CB6 /* Springboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Springboard.swift; sourceTree = "<group>"; };
 		9F228BA823C67587005D2CB6 /* UserCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCredentials.swift; sourceTree = "<group>"; };
 		9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewCellNode.swift; sourceTree = "<group>"; };
@@ -1103,6 +1105,7 @@
 				9F6F3C6326ADFBDB005BD9C6 /* Mocks */,
 				9F2F206726AEEAA60044E144 /* CombineTestExtension.swift */,
 				9FC411892681191D004C0A69 /* PromiseTestExtension.swift */,
+				9F1F6D4E26EBBE2A009BC98A /* ClientConfigurationServiceTest.swift */,
 			);
 			path = FlowCryptAppTests;
 			sourceTree = "<group>";
@@ -2454,6 +2457,7 @@
 				9F6F3C3526ADFA27005BD9C6 /* ComposeMessageServiceTests.swift in Sources */,
 				9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */,
 				9F976584267E194F0058419D /* TestData.swift in Sources */,
+				9F1F6D4F26EBBE2B009BC98A /* ClientConfigurationServiceTest.swift in Sources */,
 				9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */,
 				9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */,
 				9FC41183268118B1004C0A69 /* EmailProviderMock.swift in Sources */,

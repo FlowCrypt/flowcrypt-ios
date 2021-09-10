@@ -40,7 +40,12 @@ class OrganisationalRules {
 
     /// use when finding out if EKM is in use, to change functionality without actually neededing the EKM
     var isUsingKeyManager: Bool {
-        clientConfiguration.keyManagerUrl != nil
+        // check for empty string
+        guard let urlString = clientConfiguration.keyManagerUrl, urlString.isNotEmpty else {
+            return false
+        }
+        // check is url can be configured
+        return URL(string: urlString) != nil
     }
 
     /// Enforce a key algo for keygen, eg rsa2048,rsa4096,curve25519

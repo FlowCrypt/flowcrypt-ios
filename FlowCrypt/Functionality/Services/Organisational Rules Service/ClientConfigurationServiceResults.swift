@@ -9,7 +9,7 @@
 import Foundation
 
 extension ClientConfigurationService {
-    enum CheckForUsingEKMResult {
+    enum CheckForUsingEKMResult: Equatable {
         case usesEKM
         case inconsistentClientConfiguration(message: String)
         case doesNotUseEKM

@@ -6,6 +6,7 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
+// swiftlint:disable line_length
 protocol ClientConfigurationServiceType {
     func checkShouldUseEKM() -> ClientConfigurationService.CheckForUsingEKMResult
 }
@@ -26,7 +27,7 @@ class ClientConfigurationService: ClientConfigurationServiceType {
      *  3) EKM is not in use because organisationalRules.isUsingKeyManager == false (result: normal login flow)
      */
     func checkShouldUseEKM() -> CheckForUsingEKMResult {
-        let organisationalRules = self.organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
+        let organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
         if !organisationalRules.isUsingKeyManager {
             return .doesNotUseEKM
         }
