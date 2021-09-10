@@ -59,14 +59,16 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self else { return ASCellNode() }
             return ContactCellNode(
                 input: self.decorator.contactNodeInput(with: self.contacts[indexPath.row]),
                 action: { [weak self] in
                     self?.handleDeleteButtonTap(with: indexPath)
                 }
-            )
+            ).then {
+                $0.accessibilityLabel = "\(indexPath.row)"
+            }
         }
     }
 
