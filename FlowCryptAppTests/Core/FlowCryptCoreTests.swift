@@ -217,6 +217,7 @@ class FlowCryptCoreTests: XCTestCase {
                 keys: keys,
                 msgPwd: nil
             )
+            XCTFail("Should have thrown above")
         } catch let CoreError.format(message) {
             // Then
             XCTAssertNotNil(message.range(of: "Error: Error during parsing"))
@@ -251,6 +252,7 @@ class FlowCryptCoreTests: XCTestCase {
                 keys: [],
                 msgPwd: nil
             )
+            XCTFail("Should have thrown above")
         } catch let CoreError.keyMismatch(message) {
             // Then
             XCTAssertNotNil(message.range(of: "Missing appropriate key"))
