@@ -22,6 +22,7 @@
 		215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */ = {isa = PBXBuildFile; fileRef = 215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */; };
 		2155E9EF26E3628C008FB033 /* Refreshable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2155E9EE26E3628C008FB033 /* Refreshable.swift */; };
 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
+		21594C9626F1DBA900BE654C /* data.txt in Resources */ = {isa = PBXBuildFile; fileRef = 21594C9526F1DBA900BE654C /* data.txt */; };
 		21750D7D26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */; };
 		21750D7F26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */; };
 		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
@@ -397,6 +398,7 @@
 		215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_with_unknown_flag.json; sourceTree = "<group>"; };
 		2155E9EE26E3628C008FB033 /* Refreshable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Refreshable.swift; sourceTree = "<group>"; };
 		215897E7267A553200423694 /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
+		21594C9526F1DBA900BE654C /* data.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = data.txt; sourceTree = "<group>"; };
 		21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupEKMKeyViewController.swift; sourceTree = "<group>"; };
 		21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupCreatePassphraseAbstractViewController.swift; sourceTree = "<group>"; };
 		2196A21F2684B9BE001B9E00 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
@@ -1281,6 +1283,7 @@
 				9F7E902D26A1AD4C0021C07F /* Models */,
 				D254733324C597CD00DEE698 /* CoreTypesTest.swift */,
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
+				21594C9526F1DBA900BE654C /* data.txt */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2151,6 +2154,7 @@
 				9F976576267E18F90058419D /* client_configuraion_partly_empty.json in Resources */,
 				9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */,
 				215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */,
+				21594C9626F1DBA900BE654C /* data.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
