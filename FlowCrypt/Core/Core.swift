@@ -5,11 +5,24 @@
 import FlowCryptCommon
 import JavaScriptCore
 
-enum CoreError: Error {
+enum CoreError: Error, Equatable {
     case exception(String)
     case notReady(String)
+    case format(String)
+    case keyMismatch(String)
     // wrong value passed into a function
     case value(String)
+    
+    init?(coreError: CoreRes.Error) {
+        guard let errorType = coreError.error.type else {
+            return nil
+        }
+        switch errorType {
+        case "format": self = .format(coreError.error.message)
+        case "key_mismatch": self = .keyMismatch(coreError.error.message)
+        default: return nil
+        }
+    }
 }
 
 protocol KeyDecrypter {
@@ -36,6 +49,7 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.Version.self)
     }
 
+    // MARK: Keys
     func parseKeys(armoredOrBinary: Data) throws -> CoreRes.ParseKeys {
         let r = try call("parseKeys", jsonDict: [String: String](), data: armoredOrBinary)
         return try r.json.decodeJson(as: CoreRes.ParseKeys.self)
@@ -49,6 +63,38 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
     func encryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.EncryptKey {
         let r = try call("encryptKey", jsonDict: ["armored": armoredPrv, "passphrase": passphrase], data: nil)
         return try r.json.decodeJson(as: CoreRes.EncryptKey.self)
+    }
+    
+    func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) throws -> CoreRes.GenerateKey {
+        let request: [String: Any] = ["passphrase": passphrase, "variant": String(variant.rawValue), "userIds": try userIds.map { try $0.toJsonEncodedDict() }]
+        let r = try call("generateKey", jsonDict: request, data: nil)
+        return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
+    }
+    
+    // MARK: Files
+    public func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) throws -> CoreRes.DecryptFile {
+        let json: [String : Any?]? = [
+            "keys": try keys.map { try $0.toJsonEncodedDict() },
+            "msgPwd": msgPwd
+        ]
+        let decrypted = try call("decryptFile", jsonDict: json, data: encrypted)
+        let meta = try decrypted.json.decodeJson(as: CoreRes.DecryptFileMeta.self)
+        
+        return CoreRes.DecryptFile(name: meta.name, content: decrypted.data)
+    }
+    
+    public func encryptFile(pubKeys: [String]?, fileData: Data, name: String) throws -> CoreRes.EncryptFile {
+        let json: [String: Any?]? = [
+            "pubKeys": pubKeys,
+            "name": name
+        ]
+        
+        let encrypted = try call(
+            "encryptFile",
+            jsonDict: json,
+            data: fileData
+        )
+        return CoreRes.EncryptFile(encryptedFile: encrypted.data)
     }
 
     func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) throws -> CoreRes.ParseDecryptMsg {
@@ -99,12 +145,6 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
 
-    func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) throws -> CoreRes.GenerateKey {
-        let request: [String: Any] = ["passphrase": passphrase, "variant": String(variant.rawValue), "userIds": try userIds.map { try $0.toJsonEncodedDict() }]
-        let r = try call("generateKey", jsonDict: request, data: nil)
-        return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
-    }
-
     func zxcvbnStrengthBar(passPhrase: String) throws -> CoreRes.ZxcvbnStrengthBar {
         let r = try call("zxcvbnStrengthBar", jsonDict: ["value": passPhrase, "purpose": "passphrase"], data: nil)
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
@@ -140,26 +180,13 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         }
     }
 
-    func blockUntilReadyOrThrow() throws {
-        // This will block the thread for up to 1000ms if the app was just started and Core method was called before JSContext is ready
-        // It should only affect the user if Core method was called within 500-800ms of starting the app
-        let start = DispatchTime.now()
-        while !ready {
-            if start.millisecondsSince > 1000 { // already waited for 1000 ms, give up
-                throw CoreError.notReady("App Core not ready yet")
-            }
-            usleep(50000) // 50ms
-        }
-    }
-
     func gmailBackupSearch(for email: String) throws -> String {
         let response = try call("gmailBackupSearch", jsonDict: ["acctEmail": email], data: nil)
         let result = try response.json.decodeJson(as: GmailBackupSearchResponse.self)
         return result.query
     }
 
-    // private
-
+    // MARK: Private calls
     private func call(_ endpoint: String, jsonDict: [String: Any?]?, data: Data?) throws -> RawRes {
         try call(endpoint, jsonData: try JSONSerialization.data(withJSONObject: jsonDict ?? [String: String]()), data: data ?? Data())
     }
@@ -177,12 +204,25 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         let separatorIndex = rawResponse.firstIndex(of: 10)!
         let resJsonData = Data(rawResponse[...(separatorIndex - 1)])
         let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
-        if error != nil {
-            let errMsg = "------ js err -------\nCore \(endpoint):\n\(error!.error.message)\n\(error!.error.stack ?? "no stack")\n------- end js err -----"
+        if let error = error {
+            let errMsg = "------ js err -------\nCore \(endpoint):\n\(error.error.message)\n\(error.error.stack ?? "no stack")\n------- end js err -----"
             logger.logError(errMsg)
-            throw CoreError.exception(errMsg)
+            
+            throw CoreError.init(coreError: error) ?? CoreError.exception(errMsg)
         }
         return RawRes(json: resJsonData, data: Data(rawResponse[(separatorIndex + 1)...]))
+    }
+    
+    private func blockUntilReadyOrThrow() throws {
+        // This will block the thread for up to 1000ms if the app was just started and Core method was called before JSContext is ready
+        // It should only affect the user if Core method was called within 500-800ms of starting the app
+        let start = DispatchTime.now()
+        while !ready {
+            if start.millisecondsSince > 1000 { // already waited for 1000 ms, give up
+                throw CoreError.notReady("App Core not ready yet")
+            }
+            usleep(50000) // 50ms
+        }
     }
 
     private struct RawRes {
