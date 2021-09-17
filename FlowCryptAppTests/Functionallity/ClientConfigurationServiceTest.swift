@@ -34,7 +34,7 @@ class ClientConfigurationServiceTest: XCTestCase {
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
             ],
-            keyManagerUrl: "https://test.ekm.flowcrypt.com"
+            keyManagerUrl: "https://ekm.example.com"
         )
 
         XCTAssert(sut.checkShouldUseEKM() == .usesEKM)

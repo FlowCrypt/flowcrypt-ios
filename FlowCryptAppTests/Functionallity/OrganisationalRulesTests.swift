@@ -17,7 +17,7 @@ class OrganisationalRulesTests: XCTestCase {
     var clientConfiguration: ClientConfiguration!
 
     func testIsUsingKeyManagerURL() {
-        clientConfiguration = ClientConfiguration(keyManagerUrl: "https://test.ekm.flowcrypt.com")
+        clientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
         XCTAssertTrue(sut.isUsingKeyManager)
 
         clientConfiguration = ClientConfiguration(keyManagerUrl: nil)
@@ -36,25 +36,25 @@ class OrganisationalRulesTests: XCTestCase {
     func testMustAutoImportOrAutogenPrvWithKeyManager() {
         clientConfiguration = ClientConfiguration(
             flags: [.privateKeyAutoimportOrAutogen],
-            keyManagerUrl: "https://test.ekm.flowcrypt.com"
+            keyManagerUrl: "https://ekm.example.com"
         )
         XCTAssertTrue(sut.mustAutoImportOrAutogenPrvWithKeyManager)
 
         clientConfiguration = ClientConfiguration(
             flags: [],
-            keyManagerUrl: "https://test.ekm.flowcrypt.com"
+            keyManagerUrl: "https://ekm.example.com"
         )
         XCTAssertFalse(sut.mustAutoImportOrAutogenPrvWithKeyManager)
 
         clientConfiguration = ClientConfiguration(
             flags: nil,
-            keyManagerUrl: "https://test.ekm.flowcrypt.com"
+            keyManagerUrl: "https://ekm.example.com"
         )
         XCTAssertFalse(sut.mustAutoImportOrAutogenPrvWithKeyManager)
 
         clientConfiguration = ClientConfiguration(
             flags: [.defaultRememberPassphrase, .hideArmorMeta, .enforceAttesterSubmit],
-            keyManagerUrl: "https://test.ekm.flowcrypt.com"
+            keyManagerUrl: "https://ekm.example.com"
         )
         XCTAssertFalse(sut.mustAutoImportOrAutogenPrvWithKeyManager)
     }
