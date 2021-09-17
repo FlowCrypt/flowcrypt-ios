@@ -27,7 +27,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private enum ComposeParts: Int, CaseIterable {
-        case subject, subjectDivider, text
+        case subject, subjectDivider, text, attachment
     }
 
     private let composeMessageService: ComposeMessageService
@@ -283,6 +283,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 switch composePart {
                 case .subject: return self.subjectNode()
                 case .text: return self.textNode(with: nodeHeight)
+                case .attachment: return self.attachmentNode(for: indexPath.row)
                 case .subjectDivider: return DividerCellNode()
                 }
             case let (.searchEmails(emails), 1):
@@ -328,21 +329,22 @@ extension ComposeViewController {
     }
 
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
-        let textFieldHeight = decorator.styledTextFieldInput(with: "").height
-        let dividerHeight: CGFloat = 1
-        let preferredHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
-
         return TextViewCellNode(
-            decorator.styledTextViewInput(with: preferredHeight)
-        ) { [weak self] event in
-            guard case let .didEndEditing(text) = event else { return }
-            self?.contextToSend.message = text?.string
-        }
-        .then {
-            guard self.input.isReply else { return }
-            $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
-            $0.becomeFirstResponder()
-        }
+            decorator.styledTextViewInput(with: 40),
+            textViewSizeUpdated: { [weak self] textViewNode, height  in
+                self?.node.performBatch(animated: false) {
+                    textViewNode.setHeight(height)
+                }
+            },
+            action: { [weak self] event in
+                guard case let .didEndEditing(text) = event else { return }
+                self?.contextToSend.message = text?.string
+            })
+            .then {
+                guard self.input.isReply else { return }
+                $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
+                $0.becomeFirstResponder()
+            }
     }
 
     private func recipientsNode() -> RecipientEmailsCellNode {
@@ -374,6 +376,19 @@ extension ComposeViewController {
                 $0.becomeFirstResponder()
             }
         }
+    }
+
+    private func attachmentNode(for index: Int) -> ASCellNode {
+        AttachmentNode(
+            input: .init(
+                name: "Name"
+                    .attributed(.regular(18), color: .textColor, alignment: .left),
+                size: "123 kb"
+                    .attributed(.medium(12), color: .textColor, alignment: .left)
+            ),
+            onDownloadTap: {
+            }
+        )
     }
 }
 
