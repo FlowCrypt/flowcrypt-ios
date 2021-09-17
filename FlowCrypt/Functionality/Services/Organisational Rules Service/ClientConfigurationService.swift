@@ -28,8 +28,12 @@ class ClientConfigurationService: ClientConfigurationServiceType {
      */
     func checkShouldUseEKM() -> CheckForUsingEKMResult {
         let organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
-        if !organisationalRules.isUsingKeyManager {
+
+        guard organisationalRules.isUsingKeyManager else {
             return .doesNotUseEKM
+        }
+        guard organisationalRules.isKeyManagerUrlValid else {
+            return .inconsistentClientConfiguration(message: "organisational_rules_url_not_valid".localized)
         }
         if !organisationalRules.mustAutoImportOrAutogenPrvWithKeyManager {
             return .inconsistentClientConfiguration(message: "organisational_rules_autoimport_or_autogen_with_private_key_manager_error".localized)
