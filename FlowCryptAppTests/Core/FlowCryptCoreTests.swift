@@ -144,6 +144,120 @@ class FlowCryptCoreTests: XCTestCase {
         let e = decryptErrBlock.decryptErr!
         XCTAssertEqual(e.error.type, MsgBlock.DecryptErr.ErrorType.keyMismatch)
     }
+    
+    func testEncryptFile() throws {
+        // Given
+        let initialFileName = "data.txt"
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
+            .path(forResource: "data", ofType: "txt")!)
+        let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
+        
+        let passphrase = "some pass phrase test"
+        let email = "e2e@domain.com"
+        let generateKeyRes = try core.generateKey(
+            passphrase: passphrase,
+            variant: KeyVariant.curve25519,
+            userIds: [UserId(email: email, name: "End to end")]
+        )
+        let k = generateKeyRes.key
+        let keys = [
+            PrvKeyInfo(
+                private: k.private!,
+                longid: k.ids[0].longid,
+                passphrase: passphrase,
+                fingerprints: k.fingerprints
+            )
+        ]
+        
+        // When
+        let encrypted = try core.encryptFile(
+            pubKeys: [k.public],
+            fileData: fileData,
+            name: initialFileName
+        )
+        let decrypted = try core.decryptFile(
+            encrypted: encrypted.encryptedFile,
+            keys: keys,
+            msgPwd: nil
+        )
+        
+        // Then
+        XCTAssertTrue(decrypted.content == fileData)
+        XCTAssertTrue(decrypted.content.toStr() == fileData.toStr())
+        XCTAssertTrue(decrypted.name == initialFileName)
+    }
+    
+    func testDecryptNotEncryptedFile() throws {
+        // Given
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
+            .path(forResource: "data", ofType: "txt")!)
+        let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
+        
+        let passphrase = "some pass phrase test"
+        let email = "e2e@domain.com"
+        let generateKeyRes = try core.generateKey(
+            passphrase: passphrase,
+            variant: KeyVariant.curve25519,
+            userIds: [UserId(email: email, name: "End to end")]
+        )
+        let k = generateKeyRes.key
+        let keys = [
+            PrvKeyInfo(
+                private: k.private!,
+                longid: k.ids[0].longid,
+                passphrase: passphrase,
+                fingerprints: k.fingerprints
+            )
+        ]
+        
+        // When
+        do {
+            _ = try self.core.decryptFile(
+                encrypted: fileData,
+                keys: keys,
+                msgPwd: nil
+            )
+            XCTFail("Should have thrown above")
+        } catch let CoreError.format(message) {
+            // Then
+            XCTAssertNotNil(message.range(of: "Error: Error during parsing"))
+        }
+    }
+    
+    func testDecryptWithNoKeys() throws {
+        // Given
+        let initialFileName = "data.txt"
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
+            .path(forResource: "data", ofType: "txt")!)
+        let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
+        
+        let passphrase = "some pass phrase test"
+        let email = "e2e@domain.com"
+        let generateKeyRes = try core.generateKey(
+            passphrase: passphrase,
+            variant: KeyVariant.curve25519,
+            userIds: [UserId(email: email, name: "End to end")]
+        )
+        let k = generateKeyRes.key
+        
+        // When
+        do {
+            let encrypted = try core.encryptFile(
+                pubKeys: [k.public],
+                fileData: fileData,
+                name: initialFileName
+            )
+            _ = try self.core.decryptFile(
+                encrypted: encrypted.encryptedFile,
+                keys: [],
+                msgPwd: nil
+            )
+            XCTFail("Should have thrown above")
+        } catch let CoreError.keyMismatch(message) {
+            // Then
+            XCTAssertNotNil(message.range(of: "Missing appropriate key"))
+        }
+    }
 
     func testException() throws {
         do {

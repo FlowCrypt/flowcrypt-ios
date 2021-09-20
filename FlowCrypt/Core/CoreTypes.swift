@@ -47,10 +47,24 @@ struct CoreRes {
     struct GenerateKey: Decodable {
         let key: KeyDetails
     }
+    
+    struct DecryptFile: Decodable {
+        let name: String
+        let content: Data
+    }
+    
+    struct EncryptFile: Decodable {
+        let encryptedFile: Data
+    }
+    
+    struct DecryptFileMeta: Decodable {
+        let name: String
+    }
 
     struct Error: Decodable {
         struct ErrorWithOptionalStack: Decodable {
             let message: String
+            let type: String?
             let stack: String?
         }
 
