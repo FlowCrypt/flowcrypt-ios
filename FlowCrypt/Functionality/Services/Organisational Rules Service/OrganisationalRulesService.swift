@@ -12,8 +12,6 @@ import Promises
 
 protocol OrganisationalRulesServiceType {
     func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules>
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules>
-
     func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules
 }
 
@@ -46,7 +44,7 @@ extension OrganisationalRulesService: OrganisationalRulesServiceType {
         return fetchOrganisationalRules(for: currentUserEmail)
     }
 
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules> {
+    private func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules> {
         Promise<OrganisationalRules> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
 

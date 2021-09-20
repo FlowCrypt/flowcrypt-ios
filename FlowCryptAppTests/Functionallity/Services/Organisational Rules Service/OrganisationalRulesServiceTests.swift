@@ -41,6 +41,103 @@ class OrganisationalRulesServiceTests: XCTestCase {
         XCTAssert(clientConfigurationProvider.fetchInvoked == true)
         XCTAssert(organisationalRules.clientConfiguration == expectedConfiguration)
     }
+
+    func testFetchOrganisationalRulesForCurrentUserNil() {
+        let expectation = XCTestExpectation(description: "Promise should resolve with error if current user = nil")
+        isCurrentUserExistMock.currentUserEmailCall = {
+            nil
+        }
+        sut.fetchOrganisationalRulesForCurrentUser()
+            .then(on: .main) { _ -> Promise<OrganisationalRules> in
+                XCTFail()
+                let result: Result<OrganisationalRules, MockError> = .failure(.some)
+                return Promise<OrganisationalRules>.resolveAfter(with: result)
+            }
+            .catch(on: .main) { error in
+                expectation.fulfill()
+            }
+
+        wait(for: [expectation], timeout: 1)
+    }
+
+    func testFetchOrganisationalRulesForCurrentUser() {
+        let expectation = XCTestExpectation(
+            description: "fetchOrganisationalRules for test email should be called"
+        )
+        let getClientConfigurationInvokedExpectation = XCTestExpectation(
+            description: "getClientConfiguration should be called"
+        )
+        let getClientConfigurationCountExpectation = XCTestExpectation(
+            description: "getClientConfiguration should be called"
+        )
+        let getClientConfigurationCallExpectation = XCTestExpectation(
+            description: "getClientConfiguration should be called for test email"
+        )
+        let clientConfigurationProviderSaveCall = XCTestExpectation(
+            description: "clientConfigurationProvider save method should be called for config"
+        )
+
+        let expectations: [XCTestExpectation] = [
+            expectation,
+            getClientConfigurationInvokedExpectation,
+            getClientConfigurationCountExpectation,
+            getClientConfigurationCallExpectation,
+            clientConfigurationProviderSaveCall
+        ]
+
+        let expectedClientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+
+        // (String) -> (Result<ClientConfiguration, Error>)
+        self.enterpriseServerApi.getClientConfigurationCall = { email in
+            if email == "example@flowcrypt.test" {
+                getClientConfigurationCallExpectation.fulfill()
+            }
+            // TODO: - ANTON - test for error
+            return Result<ClientConfiguration, Error>.success(expectedClientConfiguration)
+        }
+
+        // (ClientConfiguration) -> (Void)
+        self.clientConfigurationProvider.saveCall = { clientConfiguration in
+            // TODO: - ANTON - test in case wrong config fetched
+            if clientConfiguration.keyManagerUrl == expectedClientConfiguration.keyManagerUrl {
+                clientConfigurationProviderSaveCall.fulfill()
+            }
+        }
+
+        isCurrentUserExistMock.currentUserEmailCall = {
+            "example@flowcrypt.test"
+        }
+        sut.fetchOrganisationalRulesForCurrentUser()
+            .then(on: .main) { _ -> Promise<OrganisationalRules> in
+                expectation.fulfill()
+
+                // test calls for enterpriseServerApi
+                if self.enterpriseServerApi.getClientConfigurationInvoked {
+                    getClientConfigurationInvokedExpectation.fulfill()
+                }
+                if self.enterpriseServerApi.getClientConfigurationCount == 1 {
+                    getClientConfigurationCountExpectation.fulfill()
+                }
+
+
+                // test calls for clientConfigurationProvider
+                if self.clientConfigurationProvider.saveInvoked {
+
+                }
+                if self.clientConfigurationProvider.saveCount == 1 {
+
+                }
+
+
+                let result: Result<OrganisationalRules, MockError> = .failure(.some)
+                return Promise<OrganisationalRules>.resolveAfter(with: result)
+            }
+            .catch(on: .main) { error in
+                XCTFail()
+            }
+
+        wait(for: expectations, timeout: 1)
+    }
 }
 
 class CurrentUserEmailMock {
