@@ -111,6 +111,7 @@
 		9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */; };
 		9F5C2A92257E94DF00DE9B4B /* Imap+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A91257E94DF00DE9B4B /* Imap+MessageOperations.swift */; };
 		9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */; };
+		9F5F501D26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F501C26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift */; };
 		9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE1542597399D0059BA51 /* BackupProvider.swift */; };
 		9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
 		9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */; };
@@ -528,6 +529,7 @@
 		9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapError.swift; sourceTree = "<group>"; };
 		9F5C2A91257E94DF00DE9B4B /* Imap+MessageOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+MessageOperations.swift"; sourceTree = "<group>"; };
 		9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+MessageOperations.swift"; sourceTree = "<group>"; };
+		9F5F501C26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesServiceMock.swift; sourceTree = "<group>"; };
 		9F696292236091DD003712E1 /* SignInImageNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInImageNode.swift; sourceTree = "<group>"; };
 		9F696294236091F4003712E1 /* SignInDescriptionNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInDescriptionNode.swift; sourceTree = "<group>"; };
 		9F6EE1542597399D0059BA51 /* BackupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupProvider.swift; sourceTree = "<group>"; };
@@ -877,8 +879,6 @@
 				9F4164162665757700106194 /* PGP */,
 				21F836A72652A1CD00B2448C /* WKDURLs */,
 				9F4163F3266574CF00106194 /* Services */,
-				9F9500AE26F4BAE300E8C78B /* OrganisationalRulesTests.swift */,
-				9F1F6D4E26EBBE2A009BC98A /* ClientConfigurationServiceTest.swift */,
 			);
 			path = Functionallity;
 			sourceTree = "<group>";
@@ -1141,6 +1141,7 @@
 		9F4163F3266574CF00106194 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				9F5F500C26F90AC800294FA2 /* Organisational Rules Service */,
 				9FC7EBB6266EBDF000F3BF5D /* PassPhraseStorageTests */,
 				9F6F3C3426ADFA27005BD9C6 /* ComposeMessageServiceTests.swift */,
 			);
@@ -1237,6 +1238,16 @@
 				9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */,
 			);
 			path = "MessageOperations Provider";
+			sourceTree = "<group>";
+		};
+		9F5F500C26F90AC800294FA2 /* Organisational Rules Service */ = {
+			isa = PBXGroup;
+			children = (
+				9F9500AE26F4BAE300E8C78B /* OrganisationalRulesTests.swift */,
+				9F1F6D4E26EBBE2A009BC98A /* ClientConfigurationServiceTest.swift */,
+				9F5F501C26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift */,
+			);
+			path = "Organisational Rules Service";
 			sourceTree = "<group>";
 		};
 		9F6EE156259739A40059BA51 /* Backup Provider */ = {
@@ -2465,6 +2476,7 @@
 				9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */,
 				9FC41183268118B1004C0A69 /* EmailProviderMock.swift in Sources */,
 				9F976490267E11880058419D /* ImapHelperTest.swift in Sources */,
+				9F5F501D26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift in Sources */,
 				9FC4116526811861004C0A69 /* BackupServiceMock.swift in Sources */,
 				9FC413182683C492004C0A69 /* InMemoryPassPhraseStorageTest.swift in Sources */,
 				9F9764C5267E14AB0058419D /* GeneralConstantsTest.swift in Sources */,

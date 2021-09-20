@@ -33,19 +33,19 @@ class ClientConfigurationService: ClientConfigurationServiceType {
             return .doesNotUseEKM
         }
         guard organisationalRules.isKeyManagerUrlValid else {
-            return .inconsistentClientConfiguration(message: "organisational_rules_url_not_valid".localized)
+            return .inconsistentClientConfiguration(checkError: .urlNotValid)
         }
         if !organisationalRules.mustAutoImportOrAutogenPrvWithKeyManager {
-            return .inconsistentClientConfiguration(message: "organisational_rules_autoimport_or_autogen_with_private_key_manager_error".localized)
+            return .inconsistentClientConfiguration(checkError: .autoImportOrAutogenPrvWithKeyManager)
         }
         if organisationalRules.mustAutogenPassPhraseQuietly {
-            return .inconsistentClientConfiguration(message: "organisational_rules_autogen_passphrase_quitely_error".localized)
+            return .inconsistentClientConfiguration(checkError: .autogenPassPhraseQuietly)
         }
         if !organisationalRules.forbidStoringPassPhrase {
-            return .inconsistentClientConfiguration(message: "organisational_rules_forbid_storing_passphrase_error".localized)
+            return .inconsistentClientConfiguration(checkError: .forbidStoringPassPhrase)
         }
         if organisationalRules.mustSubmitAttester {
-            return .inconsistentClientConfiguration(message: "organisational_rules_must_submit_attester_error".localized)
+            return .inconsistentClientConfiguration(checkError: .mustSubmitAttester)
         }
         return .usesEKM
     }
