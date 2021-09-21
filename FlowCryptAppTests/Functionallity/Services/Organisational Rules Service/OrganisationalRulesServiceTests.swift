@@ -63,7 +63,7 @@ class OrganisationalRulesServiceTests: XCTestCase {
     }
 
     func testFetchOrganisationalRulesForCurrentUser() {
-        let expectation = XCTestExpectation(
+        let fetchOrganisationalRulesExpectation = XCTestExpectation(
             description: "fetchOrganisationalRules for test email should be called"
         )
         let getClientConfigurationInvokedExpectation = XCTestExpectation(
@@ -78,13 +78,17 @@ class OrganisationalRulesServiceTests: XCTestCase {
         let clientConfigurationProviderSaveCall = XCTestExpectation(
             description: "clientConfigurationProvider save method should be called for config"
         )
+        let clientConfigurationProviderSaveCountCall = XCTestExpectation(
+            description: "clientConfigurationProvider save method should be called for config"
+        )
 
         let expectations: [XCTestExpectation] = [
-            expectation,
+            fetchOrganisationalRulesExpectation,
             getClientConfigurationInvokedExpectation,
             getClientConfigurationCountExpectation,
             getClientConfigurationCallExpectation,
-            clientConfigurationProviderSaveCall
+            clientConfigurationProviderSaveCall,
+            clientConfigurationProviderSaveCountCall
         ]
 
         let expectedClientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
@@ -94,13 +98,11 @@ class OrganisationalRulesServiceTests: XCTestCase {
             if email == "example@flowcrypt.test" {
                 getClientConfigurationCallExpectation.fulfill()
             }
-            // TODO: - ANTON - test for error
             return Result<ClientConfiguration, Error>.success(expectedClientConfiguration)
         }
 
         // (ClientConfiguration) -> (Void)
         self.clientConfigurationProvider.saveCall = { clientConfiguration in
-            // TODO: - ANTON - test in case wrong config fetched
             if clientConfiguration.keyManagerUrl == expectedClientConfiguration.keyManagerUrl {
                 clientConfigurationProviderSaveCall.fulfill()
             }
@@ -111,8 +113,8 @@ class OrganisationalRulesServiceTests: XCTestCase {
         }
         
         sut.fetchOrganisationalRulesForCurrentUser()
-            .then(on: .main) { _ -> Promise<OrganisationalRules> in
-                expectation.fulfill()
+            .then(on: .main) { orgRules -> Promise<OrganisationalRules> in
+                fetchOrganisationalRulesExpectation.fulfill()
 
                 // test calls for enterpriseServerApi
                 if self.enterpriseServerApi.getClientConfigurationInvoked {
@@ -121,17 +123,11 @@ class OrganisationalRulesServiceTests: XCTestCase {
                 if self.enterpriseServerApi.getClientConfigurationCount == 1 {
                     getClientConfigurationCountExpectation.fulfill()
                 }
-
-                // test calls for clientConfigurationProvider
-                if self.clientConfigurationProvider.saveInvoked {
-
-                }
                 if self.clientConfigurationProvider.saveCount == 1 {
-
+                    clientConfigurationProviderSaveCountCall.fulfill()
                 }
 
-
-                let result: Result<OrganisationalRules, MockError> = .failure(.some)
+                let result: Result<OrganisationalRules, MockError> = .success(orgRules)
                 return Promise<OrganisationalRules>.resolveAfter(with: result)
             }
             .catch(on: .main) { error in
@@ -140,6 +136,49 @@ class OrganisationalRulesServiceTests: XCTestCase {
 
         wait(for: expectations, timeout: 1)
     }
+
+    func testInCaseGetClientConfigurationReturnsError() {
+        let fetchOrganisationalRulesForCurrentUserExpectation = XCTestExpectation()
+
+        let expectations = [
+            fetchOrganisationalRulesForCurrentUserExpectation
+        ]
+
+        let expectedClientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+
+        self.enterpriseServerApi.getClientConfigurationCall = { email in
+            .failure(MockError.some)
+        } 
+
+        isCurrentUserExistMock.currentUserEmailCall = {
+            "example@flowcrypt.test"
+        }
+
+        clientConfigurationProvider.fetchCall = {
+            expectedClientConfiguration
+        }
+
+        sut.fetchOrganisationalRulesForCurrentUser()
+            .then(on: .main) { organisationalRules -> Promise<OrganisationalRules> in
+                if organisationalRules.clientConfiguration == expectedClientConfiguration {
+                    fetchOrganisationalRulesForCurrentUserExpectation.fulfill()
+                }
+                let result: Result<OrganisationalRules, Error> = .success(organisationalRules)
+                return Promise<OrganisationalRules>.resolveAfter(with: result)
+            }
+            .recover { error -> Promise<OrganisationalRules> in
+                let result: Result<OrganisationalRules, Error> = .success(OrganisationalRules(clientConfiguration: expectedClientConfiguration))
+                return Promise<OrganisationalRules>.resolveAfter(with: result)
+            }
+        wait(for: expectations, timeout: 1)
+    }
+}
+
+enum OrganisationalRulesServiceError: Error {
+    case getActiveFesUrlCall
+    case getActiveFesUrlForCurrentUserCall
+    case getClientConfigurationCall
+    case getClientConfigurationForCurrentUserCall
 }
 
 class CurrentUserEmailMock {
@@ -155,7 +194,7 @@ class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getActiveFesUrlInvoked = false
     var getActiveFesUrlInvokedCount = 0
     var getActiveFesUrlCall: (String) -> (Result<String?, Error>) = { email in
-        .failure(MockError.some)
+        .failure(OrganisationalRulesServiceError.getActiveFesUrlCall)
     }
     func getActiveFesUrl(for email: String) -> Promise<String?> {
         getActiveFesUrlInvoked = true
@@ -166,7 +205,7 @@ class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getActiveFesUrlForCurrentUserInvoked = false
     var getActiveFesUrlForCurrentUserCount = 0
     var getActiveFesUrlForCurrentUserCall: () -> (Result<String?, Error>) = {
-        .failure(MockError.some)
+        .failure(OrganisationalRulesServiceError.getActiveFesUrlForCurrentUserCall)
     }
     func getActiveFesUrlForCurrentUser() -> Promise<String?> {
         getActiveFesUrlForCurrentUserInvoked = true
@@ -177,7 +216,7 @@ class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getClientConfigurationInvoked = false
     var getClientConfigurationCount = 0
     var getClientConfigurationCall: (String) -> (Result<ClientConfiguration, Error>) = { email in
-        .failure(MockError.some)
+        .failure(OrganisationalRulesServiceError.getClientConfigurationCall)
     }
     func getClientConfiguration(for email: String) -> Promise<ClientConfiguration> {
         getClientConfigurationInvoked = true
@@ -188,7 +227,7 @@ class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getClientConfigurationForCurrentUserInvoked = false
     var getClientConfigurationForCurrentUserCount = 0
     var getClientConfigurationForCurrentUserCall: () -> (Result<ClientConfiguration, Error>) = {
-        .failure(MockError.some)
+        .failure(OrganisationalRulesServiceError.getClientConfigurationForCurrentUserCall)
     }
     func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
         getClientConfigurationForCurrentUserInvoked = true
