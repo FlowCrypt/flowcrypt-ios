@@ -148,7 +148,7 @@ class OrganisationalRulesServiceTests: XCTestCase {
 
         self.enterpriseServerApi.getClientConfigurationCall = { email in
             .failure(MockError.some)
-        } 
+        }
 
         isCurrentUserExistMock.currentUserEmailCall = {
             "example@flowcrypt.test"
@@ -179,90 +179,4 @@ enum OrganisationalRulesServiceError: Error {
     case getActiveFesUrlForCurrentUserCall
     case getClientConfigurationCall
     case getClientConfigurationForCurrentUserCall
-}
-
-class CurrentUserEmailMock {
-    var currentUserEmailCall: () -> (String?) = {
-        nil
-    }
-    func currentUserEmail() -> String? {
-        currentUserEmailCall()
-    }
-}
-
-class EnterpriseServerApiMock: EnterpriseServerApiType {
-    var getActiveFesUrlInvoked = false
-    var getActiveFesUrlInvokedCount = 0
-    var getActiveFesUrlCall: (String) -> (Result<String?, Error>) = { email in
-        .failure(OrganisationalRulesServiceError.getActiveFesUrlCall)
-    }
-    func getActiveFesUrl(for email: String) -> Promise<String?> {
-        getActiveFesUrlInvoked = true
-        getActiveFesUrlInvokedCount += 1
-        return Promise<String?>.resolveAfter(with: getActiveFesUrlCall(email))
-    }
-
-    var getActiveFesUrlForCurrentUserInvoked = false
-    var getActiveFesUrlForCurrentUserCount = 0
-    var getActiveFesUrlForCurrentUserCall: () -> (Result<String?, Error>) = {
-        .failure(OrganisationalRulesServiceError.getActiveFesUrlForCurrentUserCall)
-    }
-    func getActiveFesUrlForCurrentUser() -> Promise<String?> {
-        getActiveFesUrlForCurrentUserInvoked = true
-        getActiveFesUrlForCurrentUserCount += 1
-        return Promise<String?>.resolveAfter(with: getActiveFesUrlForCurrentUserCall())
-    }
-
-    var getClientConfigurationInvoked = false
-    var getClientConfigurationCount = 0
-    var getClientConfigurationCall: (String) -> (Result<ClientConfiguration, Error>) = { email in
-        .failure(OrganisationalRulesServiceError.getClientConfigurationCall)
-    }
-    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration> {
-        getClientConfigurationInvoked = true
-        getClientConfigurationCount += 1
-        return Promise<ClientConfiguration>.resolveAfter(with: getClientConfigurationCall(email))
-    }
-
-    var getClientConfigurationForCurrentUserInvoked = false
-    var getClientConfigurationForCurrentUserCount = 0
-    var getClientConfigurationForCurrentUserCall: () -> (Result<ClientConfiguration, Error>) = {
-        .failure(OrganisationalRulesServiceError.getClientConfigurationForCurrentUserCall)
-    }
-    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
-        getClientConfigurationForCurrentUserInvoked = true
-        getClientConfigurationForCurrentUserCount += 1
-        return Promise<ClientConfiguration>.resolveAfter(with: getClientConfigurationForCurrentUserCall())
-    }
-}
-
-class ClientConfigurationProviderMock: ClientConfigurationProviderType {
-    var fetchInvoked = false
-    var fetchCount = 0
-    var fetchCall: () -> (ClientConfiguration?) = {
-        nil
-    }
-    func fetch() -> ClientConfiguration? {
-        fetchInvoked = true
-        fetchCount += 1
-        return fetchCall()
-    }
-
-    var removeClientConfigurationInvoked = false
-    var removeClientConfigurationCount = 0
-    func removeClientConfiguration() {
-        removeClientConfigurationInvoked = true
-        removeClientConfigurationCount += 1
-    }
-
-    var saveInvoked = false
-    var saveCount = 0
-    var saveCall: (ClientConfiguration) -> (Void) = { clientConfiguration in
-
-    }
-    func save(clientConfiguration: ClientConfiguration) {
-        saveInvoked = true
-        saveCount += 1
-        saveCall(clientConfiguration)
-    }
-}
+} 
