@@ -28,6 +28,8 @@ class OrganisationalRulesServiceTests: XCTestCase {
             clientConfigurationProvider: clientConfigurationProvider,
             isCurrentUserExist: self.isCurrentUserExistMock.currentUserEmail()
         )
+
+        DispatchQueue.promises = .global()
     }
 
     func testGetSavedOrganisationalRulesForCurrentUser() {
@@ -107,6 +109,7 @@ class OrganisationalRulesServiceTests: XCTestCase {
         isCurrentUserExistMock.currentUserEmailCall = {
             "example@flowcrypt.test"
         }
+        
         sut.fetchOrganisationalRulesForCurrentUser()
             .then(on: .main) { _ -> Promise<OrganisationalRules> in
                 expectation.fulfill()
@@ -118,7 +121,6 @@ class OrganisationalRulesServiceTests: XCTestCase {
                 if self.enterpriseServerApi.getClientConfigurationCount == 1 {
                     getClientConfigurationCountExpectation.fulfill()
                 }
-
 
                 // test calls for clientConfigurationProvider
                 if self.clientConfigurationProvider.saveInvoked {

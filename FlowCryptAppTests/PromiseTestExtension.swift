@@ -10,7 +10,7 @@ import Foundation
 import Promises
 
 extension Promise {
-    static func resolveAfter<T, E: Error>(timeout: TimeInterval = 5, with result: Result<T, E>) -> Promise<T> {
+    static func resolveAfter<T, E: Error>(timeout: TimeInterval = 0.2, with result: Result<T, E>) -> Promise<T> {
         Promise<T> { resolve, reject in
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
                 switch result {
