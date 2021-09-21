@@ -14,6 +14,19 @@ agent:
     os_image: macos-xcode12
 
 blocks:
+  - name: Mobile Core Tests
+    execution_time_limit:
+      minutes: 5
+    task:
+      jobs:
+        - name: Build and Test
+          commands:
+            - sem-version node 12
+            - checkout
+            - cd ~/git/flowcrypt-ios/Core
+            - npm install
+            - npm test
+
   - name: iOS Tests
     execution_time_limit:
       minutes: 25
