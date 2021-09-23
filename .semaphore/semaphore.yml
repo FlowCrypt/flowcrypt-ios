@@ -23,11 +23,13 @@ blocks:
           commands:
             - sem-version node 12
             - checkout
-            - pwd
-            - ls -la
-            - cd Core
-            - npm install
-            - npm test
+            - mkdir .custom-npm
+            - cd .custom-npm
+            - npm install npm@7.23.0
+            - cd ../Core
+            - ../.custom-npm/node_modules/.bin/npm --version
+            - ../.custom-npm/node_modules/.bin/npm install
+            - ../.custom-npm/node_modules/.bin/npm test
 
   - name: iOS Tests
     execution_time_limit:
