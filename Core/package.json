@@ -1,7 +1,7 @@
 {
   "name": "flowcrypt-mobile-core",
   "version": "0.0.1",
-  "description": "Node.js bundle for FlowCrypt Android internal use.",
+  "description": "TypeScript core for FlowCrypt iOS internal use",
   "dependencies": {
     "sanitize-html": "1.21.1",
     "zxcvbn": "4.4.2"
@@ -35,15 +35,8 @@
     "_updateCoreLib": "mkdir source/lib && cd source/lib && LIBD='../../../flowcrypt-browser/extension/lib' && cp -r $LIBD/emailjs . && cp $LIBD/openpgp.js . && cp $LIBD/iso-*.js . && cp $LIBD/zxcvbn.js .",
     "donateCore": "rm -rf ../flowcrypt-browser/extension/js/common/core && cp -r source/core ../flowcrypt-browser/extension/js/common/core"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/FlowCrypt/flowcrypt-mobile-core.git"
-  },
-  "author": "FlowCrypt Limited",
+  "author": "FlowCrypt a.s.",
   "license": "SEE LICENSE IN <LICENSE>",
   "private": true,
-  "bugs": {
-    "url": "https://github.com/FlowCrypt/flowcrypt-mobile-core/issues"
-  },
   "homepage": "https://flowcrypt.com"
 }

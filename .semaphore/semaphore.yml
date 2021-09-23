@@ -23,7 +23,9 @@ blocks:
           commands:
             - sem-version node 12
             - checkout
-            - cd ~/git/flowcrypt-ios/Core
+            - pwd
+            - ls -la
+            - cd Core
             - npm install
             - npm test
 
