@@ -27,13 +27,15 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private enum ComposeParts: Int, CaseIterable {
-        case subject, subjectDivider, text, attachment
+        case subject, subjectDivider, text
     }
 
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
     private let decorator: ComposeViewDecorator
     private let contactsService: ContactsServiceType
+    private let filesManager: FilesManagerType
+    private let photosManager: PhotosManagerType
 
     private let searchThrottler = Throttler(seconds: 1)
     private let cloudContactProvider: CloudContactsProvider
@@ -55,7 +57,9 @@ final class ComposeViewController: TableNodeViewController {
         cloudContactProvider: CloudContactsProvider = UserContactsProvider(),
         userDefaults: UserDefaults = .standard,
         contactsService: ContactsServiceType = ContactsService(),
-        composeMessageService: ComposeMessageService = ComposeMessageService()
+        composeMessageService: ComposeMessageService = ComposeMessageService(),
+        filesManager: FilesManagerType = FilesManager(),
+        photosManager: PhotosManagerType = PhotosManager()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
@@ -65,6 +69,8 @@ final class ComposeViewController: TableNodeViewController {
         self.userDefaults = userDefaults
         self.contactsService = contactsService
         self.composeMessageService = composeMessageService
+        self.filesManager = filesManager
+        self.photosManager = photosManager
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -184,8 +190,7 @@ extension ComposeViewController {
     }
 
     @objc private func handleAttachTap() {
-        #warning("ToDo")
-        showToast("Attachments not implemented yet")
+        openAttachmentsInputSourcesSheet()
     }
 
     @objc private func handleSendTap() {
@@ -198,15 +203,13 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func sendMessage() {
         view.endEditing(true)
-
         showSpinner("sending_title".localized)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         composeMessageService.validateMessage(
             input: input,
             contextToSend: contextToSend,
-            email: email,
-            atts: []
+            email: email
         )
         .publisher
         .flatMap(composeMessageService.encryptAndSend)
@@ -243,7 +246,7 @@ extension ComposeViewController {
 
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in _: ASTableNode) -> Int {
-        2
+        3
     }
 
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
@@ -252,6 +255,8 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             return RecipientParts.allCases.count
         case (.main, 1):
             return ComposeParts.allCases.count
+        case (.main, 2):
+            return contextToSend.attachments.count
         case (.searchEmails, 0):
             return RecipientParts.allCases.count
         case let (.searchEmails(emails), 1):
@@ -283,9 +288,13 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 switch composePart {
                 case .subject: return self.subjectNode()
                 case .text: return self.textNode(with: nodeHeight)
-                case .attachment: return self.attachmentNode(for: indexPath.row)
                 case .subjectDivider: return DividerCellNode()
                 }
+            case (.main, 2):
+                guard !self.contextToSend.attachments.isEmpty else {
+                    return ASCellNode()
+                }
+                return self.attachmentNode(for: indexPath.row)
             case let (.searchEmails(emails), 1):
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
@@ -331,11 +340,6 @@ extension ComposeViewController {
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
         return TextViewCellNode(
             decorator.styledTextViewInput(with: 40),
-            textViewSizeUpdated: { [weak self] textViewNode, height  in
-                self?.node.performBatch(animated: false) {
-                    textViewNode.setHeight(height)
-                }
-            },
             action: { [weak self] event in
                 guard case let .didEndEditing(text) = event else { return }
                 self?.contextToSend.message = text?.string
@@ -359,7 +363,7 @@ extension ComposeViewController {
 
     private func recipientInput() -> TextFieldCellNode {
         TextFieldCellNode(
-            input: decorator.styledTextFieldInput(with: "compose_recipient".localized)
+            input: decorator.styledTextFieldInput(with: "compose_recipient".localized, keyboardType: .emailAddress)
         ) { [weak self] action in
             self?.handleTextFieldAction(with: action)
         }
@@ -381,13 +385,8 @@ extension ComposeViewController {
     private func attachmentNode(for index: Int) -> ASCellNode {
         AttachmentNode(
             input: .init(
-                name: "Name"
-                    .attributed(.regular(18), color: .textColor, alignment: .left),
-                size: "123 kb"
-                    .attributed(.medium(12), color: .textColor, alignment: .left)
-            ),
-            onDownloadTap: {
-            }
+                composeAttachment: contextToSend.attachments[index]
+            )
         )
     }
 }
@@ -648,6 +647,123 @@ extension ComposeViewController {
     }
 }
 
+// MARK: - UIDocumentPickerDelegate
+extension ComposeViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let fileUrl = urls.first,
+              let attachment = ComposeMessageAttachment(fileURL: fileUrl)
+        else {
+            showAlert(message: "files_picking_files_error_message".localized)
+            return
+        }
+        contextToSend.attachments.append(attachment)
+        node.reloadSections(IndexSet(integer: 2), with: .automatic)
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
+extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+    ) {
+        picker.dismiss(animated: true, completion: nil)
+
+        let attachment: ComposeMessageAttachment?
+        switch picker.sourceType {
+        case .camera:
+            attachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
+        case .photoLibrary:
+            attachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
+        default: fatalError("No other image picker's sources should be used")
+        }
+        guard let attachment = attachment else {
+            showAlert(message: "files_picking_photos_error_message".localized)
+            return
+        }
+        contextToSend.attachments.append(attachment)
+        node.reloadSections(IndexSet(integer: 2), with: .automatic)
+    }
+}
+
+// MARK: - Attachments sheet handling
+extension ComposeViewController {
+    private func openAttachmentsInputSourcesSheet() {
+        let alert = UIAlertController(
+            title: "files_picking_select_input_source_title".localized,
+            message: nil, preferredStyle: .actionSheet
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "files_picking_camera_input_source".localized,
+                style: .default,
+                handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.photosManager.selectPhoto(source: .camera, from: self)
+                        .sinkFuture(
+                            receiveValue: {},
+                            receiveError: { _ in
+                                self.showNoAccessToPhotosAlert()
+                            }
+                        )
+                        .store(in: &self.cancellable)
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "files_picking_photo_library_source".localized,
+                style: .default,
+                handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.photosManager.selectPhoto(source: .photoLibrary, from: self)
+                        .sinkFuture(
+                            receiveValue: {},
+                            receiveError: { _ in
+                                self.showNoAccessToPhotosAlert()
+                            }
+                        )
+                        .store(in: &self.cancellable)
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "files_picking_files_source".localized,
+                style: .default,
+                handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.filesManager.selectFromFilesApp(from: self)
+                }
+            )
+        )
+        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func showNoAccessToPhotosAlert() {
+        let alert = UIAlertController(
+            title: "files_picking_no_library_access_error_title".localized,
+            message: "files_picking_no_library_access_error_message".localized,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(
+            title: "OK",
+            style: .cancel
+        ) { _ in }
+        let settingsAction = UIAlertAction(
+            title: "setttings".localized,
+            style: .default
+        ) { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        }
+        alert.addAction(okAction)
+        alert.addAction(settingsAction)
+
+        present(alert, animated: true, completion: nil)
+    }
+}
+
 // temporary disable search contacts
 // https://github.com/FlowCrypt/flowcrypt-ios/issues/217
 extension ComposeViewController {
@@ -665,7 +781,7 @@ extension ComposeViewController {
                 style: .default
             ) { _ in }
             let cancelAction = UIAlertAction(
-                title: "Cancel",
+                title: "cancel".localized,
                 style: .destructive
             ) { _ in }
             alert.addAction(okAction)

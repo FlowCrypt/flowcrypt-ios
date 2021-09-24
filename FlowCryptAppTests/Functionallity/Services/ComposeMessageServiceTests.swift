@@ -43,8 +43,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: [],
                 subject: nil
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
 
         var thrownError: Error?
@@ -67,8 +66,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: nil
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
 
         var thrownError: Error?
@@ -94,8 +92,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: nil
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
 
         test()
@@ -107,8 +104,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: ""
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
         
         test()
@@ -120,8 +116,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "     "
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
     }
     
@@ -140,8 +135,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
 
         test()
@@ -153,8 +147,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
         
         test()
@@ -166,8 +159,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
         
         test()
@@ -185,8 +177,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
         
         var thrownError: Error?
@@ -213,8 +204,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
         
         var thrownError: Error?
@@ -245,8 +235,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com",
-            atts: []
+            email: "some@gmail.com"
         )
         
         var thrownError: Error?
@@ -278,8 +267,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: subject
             ),
-            email: email,
-            atts: []
+            email: email
         ).get()
         
         let expected = SendableMsg(
@@ -290,7 +278,6 @@ class ComposeMessageServiceTests: XCTestCase {
             from: email,
             subject: subject,
             replyToMimeMsg: nil,
-            atts: [],
             pubKeys: [
                 "pubKey",
                 "pubKey",

@@ -74,10 +74,11 @@ extension BackupService: BackupServiceType {
                 atts: attachments,
                 pubKeys: nil
             )
-            let backupEmail = try self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
 
-            self.messageSender
-                .sendMail(mime: backupEmail.mimeEncoded)
+            self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
+                .map(\.mimeEncoded)
+                
+                .flatMap(self.messageSender.sendMail)
                 .sink(
                     receiveCompletion: { result in
                         switch result {
@@ -89,7 +90,8 @@ extension BackupService: BackupServiceType {
                     },
                     receiveValue: {
                         resolve(())
-                    })
+                    }
+                )
                 .store(in: &self.cancellable)
         }
     }

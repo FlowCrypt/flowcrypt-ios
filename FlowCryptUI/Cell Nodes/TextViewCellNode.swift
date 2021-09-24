@@ -32,21 +32,17 @@ public final class TextViewCellNode: CellNode {
     }
 
     public typealias TextViewAction = (TextViewActionType) -> Void
-    public typealias TextViewUpdatedSize = (TextViewCellNode, CGFloat) -> Void
 
     public let textView = ASEditableTextNode()
     private let action: TextViewAction?
     public var height: CGFloat
-    private let textViewSizeUpdated: TextViewUpdatedSize?
 
     public init(
         _ input: Input,
-        textViewSizeUpdated: TextViewUpdatedSize? = nil,
         action: TextViewAction? = nil
     ) {
         self.action = action
         height = input.preferredHeight
-        self.textViewSizeUpdated = textViewSizeUpdated
         super.init()
         textView.delegate = self
         textView.attributedPlaceholderText = input.placeholder
@@ -56,7 +52,7 @@ public final class TextViewCellNode: CellNode {
         ]
     }
     
-    public func setHeight(_ height: CGFloat) {
+    private func setHeight(_ height: CGFloat) {
         self.height = height
         setNeedsLayout()
     }
@@ -86,6 +82,6 @@ extension TextViewCellNode: ASEditableTextNodeDelegate {
     
     public func editableTextNodeDidUpdateText(_ editableTextNode: ASEditableTextNode) {
         let calculatedHeight = editableTextNode.textView.sizeThatFits(textView.frame.size).height
-        textViewSizeUpdated?(self, calculatedHeight)
+        setHeight(calculatedHeight)
     }
 }

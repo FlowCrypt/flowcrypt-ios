@@ -14,6 +14,7 @@ struct ComposeMessageContext {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []
     var subject: String?
+    var attachments: [ComposeMessageAttachment] = []
 }
 
 struct ComposeMessageRecipient {
@@ -22,7 +23,7 @@ struct ComposeMessageRecipient {
 }
 
 protocol CoreComposeMessageType {
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) throws -> CoreRes.ComposeEmail
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) -> Future<CoreRes.ComposeEmail, Error>
 }
 
 final class ComposeMessageService {
@@ -47,11 +48,9 @@ final class ComposeMessageService {
     func validateMessage(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        email: String,
-        atts: [SendableMsg.Attachment]
+        email: String
     ) -> Result<SendableMsg, ComposeMessageError> {
         let recipients = contextToSend.recipients
-
         guard recipients.isNotEmpty else {
             return .failure(.validationError(.emptyRecipient))
         }
@@ -83,6 +82,15 @@ final class ComposeMessageService {
             return .failure(.validationError(.missedPublicKey))
         }
 
+        let sendableAttachments: [SendableMsg.Attachment] = contextToSend.attachments
+            .map { composeAttachment in
+                return SendableMsg.Attachment(
+                    name: composeAttachment.name,
+                    type: composeAttachment.type,
+                    base64: composeAttachment.data.base64EncodedString()
+                )
+            }
+
         return getPubKeys(for: recipients)
             .mapError { ComposeMessageError.validationError($0) }
             .map { allRecipientPubs in
@@ -97,7 +105,7 @@ final class ComposeMessageService {
                     from: email,
                     subject: subject,
                     replyToMimeMsg: replyToMimeMsg,
-                    atts: atts,
+                    atts: sendableAttachments,
                     pubKeys: allRecipientPubs + [myPubKey]
                 )
             }
@@ -119,16 +127,19 @@ final class ComposeMessageService {
 
     // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg) -> AnyPublisher<Void, ComposeMessageError> {
-        messageGateway.sendMail(mime: encryptMessage(with: message))
+        return encryptMessage(with: message)
+            .flatMap(messageGateway.sendMail)
             .mapError { ComposeMessageError.gatewayError($0) }
             .eraseToAnyPublisher()
     }
 
-    private func encryptMessage(with msg: SendableMsg) -> Data {
-        do {
-            return try core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: msg.pubKeys).mimeEncoded
-        } catch {
-            fatalError()
-        }
+    private func encryptMessage(with msg: SendableMsg) -> AnyPublisher<Data, Error> {
+        return core.composeEmail(
+            msg: msg,
+            fmt: MsgFmt.encryptInline,
+            pubKeys: msg.pubKeys
+        )
+        .map(\.mimeEncoded)
+        .eraseToAnyPublisher()
     }
 }
