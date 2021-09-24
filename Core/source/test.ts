@@ -557,4 +557,4 @@ ava.default.only('can process dirty html without throwing', async t => {
   expect(clean).to.not.contain('src=http');
   expect(clean).to.not.contain('src="http');
   t.pass();
-})
+});
