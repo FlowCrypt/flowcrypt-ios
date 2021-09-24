@@ -55,7 +55,7 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
   });
 }
 
-ava.default.only('composeEmail format:plain -> parseDecryptMsg', async t => {
+ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { keys } = getKeypairs('rsa1');
   const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj' };
@@ -289,7 +289,7 @@ ava.default('isEmailValid - false', async t => {
   t.pass();
 });
 
-ava.default('parseKeys', async t => {
+ava.default.only('parseKeys', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   expect(json).to.deep.equal({
