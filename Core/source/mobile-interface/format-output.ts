@@ -139,7 +139,7 @@ ava.test.only('replaying', async t => {
   const reqData = Buf.fromBase64Str('${Buf.fromUint8(data).toBase64Str()}');
   console.log('replay ${endpoint}: ', ${JSON.stringify(request)}, '-------- begin req data ---------', reqData.toString(), '--------- end req data ---------');
   const { data, json } = parseResponse(await endpoints.${endpoint}(${JSON.stringify(request)},
-    [Buffer.from(reqData)]);
+    [Buffer.from(reqData)]));
   console.log('response: ', json, '\n\n\n-------- begin res data ---------', Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
   t.pass();
 });
