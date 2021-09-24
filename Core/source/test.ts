@@ -12,7 +12,7 @@ import { openpgp } from './core/pgp';
 import { Endpoints } from './mobile-interface/endpoints';
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_html_sanitize = require("sanitize-html");
-(global as any)["emailjs-mime-builder"] = require(__dirname + "/lib/emailjs/emailjs-mime-builder.js");
+(global as any)["emailjs-mime-builder"] = require("emailjs-mime-builder");
 
 const text = 'some\n汉\ntxt';
 const htmlContent = text.replace(/\n/g, '<br />');
