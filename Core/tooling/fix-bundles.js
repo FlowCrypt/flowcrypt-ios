@@ -26,7 +26,6 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
 }
 
 // copy raw to flowcrypt-bundle
-fs.copyFileSync(`${bundleRawDir}/entrypoint-node.js`, `${bundleDir}/entrypoint-node-bundle.js`);
 fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-bare-bundle.js`);
 
 const sanitizeHtmlDist = './node_modules/sanitize-html/dist/sanitize-html.js';
@@ -47,13 +46,13 @@ fs.writeFileSync(
 // todo - could add `\nconst zxcvbn = window.zxcvbn;` at the end, then could call it directly from endpoint.ts
 fs.copyFileSync('./node_modules/zxcvbn/dist/zxcvbn.js', `${bundleDir}/bare-zxcvbn-bundle.js`);
 
-// // concat emailjs bundle/wip to become emailjs-bundle 
+// // concat emailjs bundle/wip to become emailjs-bundle
 // fs.writeFileSync(`${bundleDir}/emailjs-bundle.js`, [ // this would work when using modules directly from Node - we don't do that yet
 //   `${bundleWipDir}/emailjs-mime-parser.js`,
 //   `${bundleWipDir}/emailjs-mime-builder.js`,
 // ].map(path => fs.readFileSync(path).toString()).join('\n'));
 
-// concat emailjs libs/* to become emailjs-bundle 
+// concat emailjs libs/* to become emailjs-bundle
 const emailjsRawDep = [
   `${libsDir}/iso-8859-2.js`,
   `${libsDir}/emailjs/punycode.js`,
