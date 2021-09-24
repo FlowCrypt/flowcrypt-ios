@@ -204,6 +204,7 @@
 "organisational_rules_parse_error_description" = "Couldn't parse data while getting organisational rules";
 "organisational_rules_email_format_error_description" = "Wrong user email format";
 
+"organisational_rules_url_not_valid" = "Please check if key manager url set correctly";
 "organisational_rules_autoimport_or_autogen_with_private_key_manager_error" = "Combination of rules (key_manager_url set but PRV_AUTOIMPORT_OR_AUTOGEN is missing) is not supported on this platform";
 "organisational_rules_autogen_passphrase_quitely_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + PASS_PHRASE_QUIET_AUTOGEN) is not supported on this platform";
 "organisational_rules_forbid_storing_passphrase_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + missing FORBID_STORING_PASS_PHRASE) is not supported on this platform";

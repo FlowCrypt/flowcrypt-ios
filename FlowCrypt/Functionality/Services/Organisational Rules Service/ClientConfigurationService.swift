@@ -6,6 +6,7 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
+// swiftlint:disable line_length
 protocol ClientConfigurationServiceType {
     func checkShouldUseEKM() -> ClientConfigurationService.CheckForUsingEKMResult
 }
@@ -26,21 +27,25 @@ class ClientConfigurationService: ClientConfigurationServiceType {
      *  3) EKM is not in use because organisationalRules.isUsingKeyManager == false (result: normal login flow)
      */
     func checkShouldUseEKM() -> CheckForUsingEKMResult {
-        let organisationalRules = self.organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
-        if !organisationalRules.isUsingKeyManager {
+        let organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
+
+        guard organisationalRules.isUsingKeyManager else {
             return .doesNotUseEKM
         }
+        guard organisationalRules.isKeyManagerUrlValid else {
+            return .inconsistentClientConfiguration(checkError: .urlNotValid)
+        }
         if !organisationalRules.mustAutoImportOrAutogenPrvWithKeyManager {
-            return .inconsistentClientConfiguration(message: "organisational_rules_autoimport_or_autogen_with_private_key_manager_error".localized)
+            return .inconsistentClientConfiguration(checkError: .autoImportOrAutogenPrvWithKeyManager)
         }
         if organisationalRules.mustAutogenPassPhraseQuietly {
-            return .inconsistentClientConfiguration(message: "organisational_rules_autogen_passphrase_quitely_error".localized)
+            return .inconsistentClientConfiguration(checkError: .autogenPassPhraseQuietly)
         }
         if !organisationalRules.forbidStoringPassPhrase {
-            return .inconsistentClientConfiguration(message: "organisational_rules_forbid_storing_passphrase_error".localized)
+            return .inconsistentClientConfiguration(checkError: .forbidStoringPassPhrase)
         }
         if organisationalRules.mustSubmitAttester {
-            return .inconsistentClientConfiguration(message: "organisational_rules_must_submit_attester_error".localized)
+            return .inconsistentClientConfiguration(checkError: .mustSubmitAttester)
         }
         return .usesEKM
     }
