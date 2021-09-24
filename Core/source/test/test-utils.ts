@@ -7,7 +7,6 @@ import * as https from 'https';
 import * as fs from 'fs';
 import { config, expect } from 'chai';
 import { Subprocess } from './subprocess'
-import { readFileSync } from 'fs';
 import { Buf } from '../core/buf';
 config.truncateThreshold = 0
 
@@ -35,10 +34,6 @@ export const startNodeCoreInstance = async (t: AvaContext) => {
   Subprocess.onStdout = ({ stdout }) => stdLog('stdout', stdout);
   return r;
 };
-
-const getSslInfo = new Function(`${readFileSync('source/assets/flowcrypt-android-dev-begin.js').toString()}\nreturn {NODE_SSL_CA,NODE_SSL_CRT,NODE_SSL_KEY,NODE_AUTH_HEADER};`);
-const { NODE_SSL_CA, NODE_SSL_CRT, NODE_SSL_KEY, NODE_AUTH_HEADER } = getSslInfo();
-const requestOpts = { hostname: 'localhost', port: 3000, method: 'POST', ca: NODE_SSL_CA, cert: NODE_SSL_CRT, key: NODE_SSL_KEY, headers: { Authorization: NODE_AUTH_HEADER } };
 
 export const parseResponse = (buffers: Buffer[]) => {
   const everything = Buffer.concat(buffers);
