@@ -445,7 +445,7 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-pgpmime', async 
 });
 
 ava.default('zxcvbnStrengthBar', async t => {
-  const { data, json } = parseResponse(await endpoints.zxcvbnStrengthBar', { guesses: 88946283684265, purpose: 'passphrase' }, []);
+  const { data, json } = parseResponse(await endpoints.zxcvbnStrengthBar({ guesses: 88946283684265, purpose: 'passphrase' }));
   expectNoData(data);
   expect(json).to.deep.equal({
     word: {
@@ -471,7 +471,7 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-Text
 
 ava.default('parseDecryptMsg - decryptErr', async t => {
   const { keys } = getKeypairs('rsa2'); // intentional key mismatch
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')], false));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')]));
   expectData(blocks, 'msgBlocks', [{
     "type": "decryptErr",
     "content": "-----BEGIN PGP MESSAGE-----\nVersion: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\nComment: Seamlessly send and receive encrypted email\n\nwcBMAwurnAGLJl0iAQf+I2exIah3XL/zfPozDmVFSLJk4tBFIlIyFfGYcw5W\n+ebOL3Gu/+/oCIIlXrdP0FxIVEYnSEaevmB9p0FfXGpcw4Wr8PBnSubCkn2s\n+V//k6W1Uu915GmiwCgDkLTCP7vEHvwUglNvgAatDtNdJ3xrf2gjOOFiYQnn\n4JSI1msMfL5tmdFCyXm1g4mUe9MdVXfphrXIyvGu1Sufhv+T5FgteDW0c6lM\ng7G6jgX4q5xiT8r2LTxKlxHVlQSqvGlnx/yRXwqBs3PAMiS4u5JlKJX4aKVy\nFyN+gq++tWZC1XCSFzXfAf0rXcoDZ7nEkxdkKQqXgA6LCsFD79FMCtuenvzU\nU9JEAdvmmpGlextZcfCUmGgclQXgowDnjaXy5Uc6Bzmi8AlY/4MFo0Q3bOU4\nkNhLCiXTGNJlFDd0HLz8Cy7YXzLWZ94IuGk=\n=Bvit\n-----END PGP MESSAGE-----\n",
