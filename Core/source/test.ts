@@ -21,7 +21,7 @@ const endpoints = new Endpoints();
 
 ava.default('version', async t => {
   const { json, data } = parseResponse(await endpoints.version());
-  expect(json).to.have.property('node');
+  expect(json).to.have.property('app_version');
   expectNoData(data);
   t.pass();
 });
