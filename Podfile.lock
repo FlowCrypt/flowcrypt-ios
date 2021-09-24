@@ -1,59 +1,59 @@
 PODS:
-  - AppAuth (1.2.0):
-    - AppAuth/Core (= 1.2.0)
-    - AppAuth/ExternalUserAgent (= 1.2.0)
-  - AppAuth/Core (1.2.0)
-  - AppAuth/ExternalUserAgent (1.2.0)
+  - AppAuth (1.4.0):
+    - AppAuth/Core (= 1.4.0)
+    - AppAuth/ExternalUserAgent (= 1.4.0)
+  - AppAuth/Core (1.4.0)
+  - AppAuth/ExternalUserAgent (1.4.0)
   - BigInt (5.2.0)
   - ENSwiftSideMenu (0.1.4)
-  - GoogleAPIClientForREST/Core (1.5.1):
-    - GTMSessionFetcher (>= 1.1.7)
-  - GoogleAPIClientForREST/Gmail (1.5.1):
+  - GoogleAPIClientForREST/Core (1.6.0):
+    - GTMSessionFetcher (>= 1.6.1)
+  - GoogleAPIClientForREST/Gmail (1.6.0):
     - GoogleAPIClientForREST/Core
-    - GTMSessionFetcher (>= 1.1.7)
-  - GoogleSignIn (5.0.1):
-    - AppAuth (~> 1.2)
+    - GTMSessionFetcher (>= 1.6.1)
+  - GoogleSignIn (6.0.2):
+    - AppAuth (~> 1.4)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - GTMAppAuth (1.0.0):
-    - AppAuth/Core (~> 1.0)
-    - GTMSessionFetcher (~> 1.1)
-  - GTMSessionFetcher (1.3.0):
-    - GTMSessionFetcher/Full (= 1.3.0)
-  - GTMSessionFetcher/Core (1.3.0)
-  - GTMSessionFetcher/Full (1.3.0):
-    - GTMSessionFetcher/Core (= 1.3.0)
+  - GTMAppAuth (1.2.2):
+    - AppAuth/Core (~> 1.4)
+    - GTMSessionFetcher/Core (~> 1.5)
+  - GTMSessionFetcher (1.7.0):
+    - GTMSessionFetcher/Full (= 1.7.0)
+  - GTMSessionFetcher/Core (1.7.0)
+  - GTMSessionFetcher/Full (1.7.0):
+    - GTMSessionFetcher/Core (= 1.7.0)
   - IDZSwiftCommonCrypto (0.13.0)
   - mailcore2-ios (0.6.4)
-  - MBProgressHUD (1.1.0)
-  - PINCache (3.0.2):
-    - PINCache/Arc-exception-safe (= 3.0.2)
-    - PINCache/Core (= 3.0.2)
-  - PINCache/Arc-exception-safe (3.0.2):
+  - MBProgressHUD (1.2.0)
+  - PINCache (3.0.3):
+    - PINCache/Arc-exception-safe (= 3.0.3)
+    - PINCache/Core (= 3.0.3)
+  - PINCache/Arc-exception-safe (3.0.3):
     - PINCache/Core
-  - PINCache/Core (3.0.2):
-    - PINOperation (~> 1.2.0)
-  - PINOperation (1.2)
-  - PINRemoteImage/Core (3.0.1):
+  - PINCache/Core (3.0.3):
+    - PINOperation (~> 1.2.1)
+  - PINOperation (1.2.1)
+  - PINRemoteImage/Core (3.0.3):
     - PINOperation
-  - PINRemoteImage/iOS (3.0.1):
+  - PINRemoteImage/iOS (3.0.3):
     - PINRemoteImage/Core
-  - PINRemoteImage/PINCache (3.0.1):
-    - PINCache (~> 3.0.1)
+  - PINRemoteImage/PINCache (3.0.3):
+    - PINCache (~> 3.0.3)
     - PINRemoteImage/Core
   - PromisesObjC (2.0.0)
   - PromisesSwift (2.0.0):
     - PromisesObjC (= 2.0.0)
-  - Realm (10.7.4):
-    - Realm/Headers (= 10.7.4)
-  - Realm/Headers (10.7.4)
-  - RealmSwift (10.7.4):
-    - Realm (= 10.7.4)
-  - SwiftFormat/CLI (0.44.10)
-  - SwiftLint (0.36.0)
-  - SwiftyRSA (1.5.0):
-    - SwiftyRSA/ObjC (= 1.5.0)
-  - SwiftyRSA/ObjC (1.5.0)
+  - Realm (10.15.1):
+    - Realm/Headers (= 10.15.1)
+  - Realm/Headers (10.15.1)
+  - RealmSwift (10.15.1):
+    - Realm (= 10.15.1)
+  - SwiftFormat/CLI (0.48.11)
+  - SwiftLint (0.44.0)
+  - SwiftyRSA (1.7.0):
+    - SwiftyRSA/ObjC (= 1.7.0)
+  - SwiftyRSA/ObjC (1.7.0)
   - Texture (3.0.0):
     - Texture/AssetsLibrary (= 3.0.0)
     - Texture/Core (= 3.0.0)
@@ -119,29 +119,29 @@ SPEC REPOS:
     - Toast
 
 SPEC CHECKSUMS:
-  AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
+  AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   ENSwiftSideMenu: 21e755dae28f09bbf453aa83b3d05f2e5f92ca39
-  GoogleAPIClientForREST: 4bb409633efcc2e1b3f945afe7e35039b5a61db2
-  GoogleSignIn: 3a51b9bb8e48b635fd7f4272cee06ca260345b86
-  GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
-  GTMSessionFetcher: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
+  GoogleAPIClientForREST: 5183df28e7bcb7b7b41ebd558e16083cfed60d99
+  GoogleSignIn: fd381840dbe7c1137aa6dc30849a5c3e070c034a
+  GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
+  GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   IDZSwiftCommonCrypto: 00dd37cdfbd149312a7e5a582cf9909f8b129f44
   mailcore2-ios: 3ff0be2fa553d4da9c11d39c11d51863c768f24f
-  MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
-  PINCache: bea7c404c360f6fe0f6ee783c5cd14e778fa2aab
-  PINOperation: 3a967a927e7867e61976c6cc23e5770416449fbc
-  PINRemoteImage: 3b7cedb118c2d357f87e9eabc7c81ba0202cb236
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
+  PINCache: 7a8fc1a691173d21dbddbf86cd515de6efa55086
+  PINOperation: 00c935935f1e8cf0d1e2d6b542e75b88fc3e5e20
+  PINRemoteImage: f1295b29f8c5e640e25335a1b2bd9d805171bd01
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   PromisesSwift: e0b2a6433469efb0b83a2b84c62a2abab8e5e5d4
-  Realm: f08ce1a85649a41303ecfe1cbd914c62e9e6d710
-  RealmSwift: 60ec49d165f23d040ab48811d8dd177e09baf4d3
-  SwiftFormat: b72e592ea0979aeee53f6052abff291181364933
-  SwiftLint: fc9859e4e1752340664851f667bb1898b9c90114
-  SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
+  Realm: fbcbde2620d51623cc5b18e28f5b165c39abef52
+  RealmSwift: e4bea8e42efad3d543aea23b56504069c6faaea2
+  SwiftFormat: 938e5865a118c49d63c7a290ddad86335f9e585f
+  SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
+  SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
   Texture: 2f109e937850d94d1d07232041c9c7313ccddb81
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
 PODFILE CHECKSUM: 245efbb7c5808e9bebf508cb968810eb55eac62c
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2

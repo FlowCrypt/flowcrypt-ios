@@ -1993,7 +1993,6 @@
 				9FDF363E235A1B0100614596 /* Frameworks */,
 				9FDF363F235A1B0100614596 /* Resources */,
 				0CF02BEF6BCBCD8B43A732A5 /* [CP] Embed Pods Frameworks */,
-				2EA601B887F9BA327C9A5438 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2016,7 +2015,6 @@
 				C132B9AD1EC2DBD800763715 /* Frameworks */,
 				C132B9AE1EC2DBD800763715 /* Resources */,
 				527B6FD5C3E83A37AEA8D0A3 /* [CP] Embed Pods Frameworks */,
-				F5FDFD02C616C6B2DEBEEFCA /* [CP] Copy Pods Resources */,
 				D2CDC3E124052D50002B045F /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -2093,7 +2091,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1240;
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = "FlowCrypt Limited";
 				TargetAttributes = {
 					9F2AC5C5267BE99E00F6149B = {
@@ -2267,23 +2265,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2EA601B887F9BA327C9A5438 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		527B6FD5C3E83A37AEA8D0A3 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2442,23 +2423,6 @@
 			shellPath = /bin/sh;
 			shellScript = "make format\n";
 		};
-		F5FDFD02C616C6B2DEBEEFCA /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -2490,7 +2454,6 @@
 				9FC413442683C912004C0A69 /* GmailServiceTest.swift in Sources */,
 				9F976556267E186D0058419D /* ClientConfigurationTests.swift in Sources */,
 				9F7E8EC6269877E70021C07F /* KeyInfoTests.swift in Sources */,
-				9F976556267E186D0058419D /* ClientConfigurationTests.swift in Sources */,
 				9FC41171268118A7004C0A69 /* PassPhraseStorageTests.swift in Sources */,
 				9F6F3C7626ADFC37005BD9C6 /* KeyStorageMock.swift in Sources */,
 			);
