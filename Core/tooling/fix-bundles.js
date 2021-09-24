@@ -28,11 +28,6 @@ fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-b
 
 const sanitizeHtmlDist = './node_modules/sanitize-html/dist/sanitize-html.js';
 
-// * -- REMOVE THIS AND UPDATE sanitize-html WHEN PR LANDS: https://github.com/apostrophecms/sanitize-html/pull/326
-// this patches the source directly in node_modules, because we also use it directly during tests
-fs.writeFileSync(sanitizeHtmlDist, fs.readFileSync(sanitizeHtmlDist).toString().replace(/if\(value\.length\)/g, 'if(value&&value.length)'));
-// -- *
-
 // copy wip to html-sanitize-bundle
 fs.writeFileSync(
   `${bundleDir}/bare-html-sanitize-bundle.js`,
