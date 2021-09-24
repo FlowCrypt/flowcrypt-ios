@@ -50,10 +50,10 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
   ava.default(`encryptMsg -> parseDecryptMsg (${keypairName})`, async t => {
     const content = 'hello\nwrld';
     const { pubKeys, keys } = getKeypairs(keypairName);
-    const { data: encryptedMsg, json: encryptJson } = await request('encryptMsg', { pubKeys }, content);
+    const { data: encryptedMsg, json: encryptJson } = parseResponse(await endpoints.encryptMsg({ pubKeys }, [Buffer.from(content, 'utf8')]));
     expectEmptyJson(encryptJson);
     expectData(encryptedMsg, 'armoredMsg');
-    const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys }, encryptedMsg);
+    const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [encryptedMsg]));
     expect(decryptJson).to.deep.equal({ text: content, replyType: 'encrypted' });
     expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
     t.pass();
