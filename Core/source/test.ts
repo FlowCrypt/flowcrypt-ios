@@ -324,7 +324,7 @@ ava.default('parseKeys', async t => {
 
 ava.default('parseKeys - expiration and date last updated', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('expired');
-  const { data, json } = parseResponse(await endpoints.parseKeys', {}, Buffer.from(pubkey));
+  const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   expect(json).to.deep.equal({
     "format": "armored",
     "keyDetails": [
@@ -364,7 +364,7 @@ ava.default('parseKeys - expiration and date last updated', async t => {
 
 ava.default('decryptKey', async t => {
   const { keys: [key] } = getKeypairs('rsa1');
-  const { data, json } = parseResponse(await endpoints.decryptKey', { armored: key.private, passphrases: [key.passphrase] }, Buffer.from([]));
+  const { data, json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
   const { keys: [decryptedKey] } = await openpgp.key.readArmored(json.decryptedKey);
   expect(decryptedKey.isFullyDecrypted()).to.be.true;
   expect(decryptedKey.isFullyEncrypted()).to.be.false;
@@ -375,7 +375,7 @@ ava.default('decryptKey', async t => {
 ava.default('encryptKey', async t => {
   const passphrase = 'this is some pass phrase';
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
-  const { data, json } = parseResponse(await endpoints.encryptKey', { armored: decryptedKey, passphrase }, Buffer.from([]));
+  const { data, json } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey, passphrase }));
   const { keys: [encryptedKey] } = await openpgp.key.readArmored(json.encryptedKey);
   expect(encryptedKey.isFullyEncrypted()).to.be.true;
   expect(encryptedKey.isFullyDecrypted()).to.be.false;
@@ -389,15 +389,15 @@ ava.default('decryptKey gpg-dummy', async t => {
   const { keys: [encryptedKey] } = await openpgp.key.readArmored(key.private);
   expect(encryptedKey.isFullyEncrypted()).to.be.true;
   expect(encryptedKey.isFullyDecrypted()).to.be.false;
-  const { json } = parseResponse(await endpoints.decryptKey', { armored: key.private, passphrases: [key.passphrase] }, Buffer.from([]));
+  const { json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
   const { keys: [decryptedKey] } = await openpgp.key.readArmored(json.decryptedKey);
   expect(decryptedKey.isFullyEncrypted()).to.be.false;
   expect(decryptedKey.isFullyDecrypted()).to.be.true;
-  const { json: json2 } = parseResponse(await endpoints.encryptKey', { armored: decryptedKey.armor(), passphrase: 'another pass phrase' }, Buffer.from([]));
+  const { json: json2 } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey.armor(), passphrase: 'another pass phrase' }));
   const { keys: [reEncryptedKey] } = await openpgp.key.readArmored(json2.encryptedKey);
   expect(reEncryptedKey.isFullyEncrypted()).to.be.true;
   expect(reEncryptedKey.isFullyDecrypted()).to.be.false;
-  const { json: json3 } = parseResponse(await endpoints.decryptKey', { armored: reEncryptedKey.armor(), passphrases: ['another pass phrase'] }, Buffer.from([]));
+  const { json: json3 } = parseResponse(await endpoints.decryptKey({ armored: reEncryptedKey.armor(), passphrases: ['another pass phrase'] }));
   const { keys: [reDecryptedKey] } = await openpgp.key.readArmored(json3.decryptedKey);
   expect(reDecryptedKey.isFullyEncrypted()).to.be.false;
   expect(reDecryptedKey.isFullyDecrypted()).to.be.true;
