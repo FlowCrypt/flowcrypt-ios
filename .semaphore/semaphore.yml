@@ -14,22 +14,6 @@ agent:
     os_image: macos-xcode12
 
 blocks:
-  - name: Mobile Core Tests
-    execution_time_limit:
-      minutes: 5
-    task:
-      jobs:
-        - name: Build and Test
-          commands:
-            - sem-version node 12
-            - checkout
-            - mkdir .custom-npm
-            - cd .custom-npm
-            - npm install npm@7.23.0
-            - cd ../Core
-            - ../.custom-npm/node_modules/.bin/npm --version
-            - ../.custom-npm/node_modules/.bin/npm install
-            - ../.custom-npm/node_modules/.bin/npm test
 
   - name: iOS Tests
     execution_time_limit:
@@ -51,12 +35,25 @@ blocks:
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
       jobs:
-        - name: 'FlowCryptTests'
+
+        - name: TypeScript - Core standalone tests
+          commands:
+            - sem-version node 12
+            - checkout
+            - mkdir .custom-npm
+            - cd .custom-npm
+            - npm install npm@7.23.0
+            - cd ../Core
+            - ../.custom-npm/node_modules/.bin/npm --version
+            - ../.custom-npm/node_modules/.bin/npm install
+            - ../.custom-npm/node_modules/.bin/npm test
+      
+        - name: 'Swift - FlowCryptTests'
           commands:
             - bundle exec fastlane do_everything
             # - bundle exec fastlane test_ui
 
-        - name: 'FlowCryptTests(with email server)'
+        - name: 'Swift - FlowCryptTests(with email server)'
           commands:
             # telnet is used by check_email_server.sh
             - brew install telnet
