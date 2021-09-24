@@ -31,6 +31,7 @@ class ClientConfigurationServiceTest: XCTestCase {
             flags: [],
             keyManagerUrl: nil
         )
+        XCTAssert(sut.checkShouldUseEKM() == .doesNotUseEKM)
 
         organisationalRulesService.clientConfiguration = ClientConfiguration(
             flags: [.forbidStoringPassphrase],
