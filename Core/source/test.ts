@@ -26,7 +26,7 @@ ava.default('version', async t => {
   t.pass();
 });
 
-ava.default.only('generateKey', async t => {
+ava.default('generateKey', async t => {
   const { json, data } = parseResponse(await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] }));
   expect(json.key.private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
   expect(json.key.public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
@@ -51,7 +51,7 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
   });
 }
 
-ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
+ava.default.only('composeEmail format:plain -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { keys } = getKeypairs('rsa1');
   const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj' };
