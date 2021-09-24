@@ -40,39 +40,20 @@ const getSslInfo = new Function(`${readFileSync('source/assets/flowcrypt-android
 const { NODE_SSL_CA, NODE_SSL_CRT, NODE_SSL_KEY, NODE_AUTH_HEADER } = getSslInfo();
 const requestOpts = { hostname: 'localhost', port: 3000, method: 'POST', ca: NODE_SSL_CA, cert: NODE_SSL_CRT, key: NODE_SSL_KEY, headers: { Authorization: NODE_AUTH_HEADER } };
 
-export const request = (endpoint: string, json: JsonDict, data: Buffer | string | (never | undefined)[], expectSuccess = true): Promise<{ json: JsonDict, data: Buffer, err?: string, status: number }> => new Promise((resolve, reject) => {
-  const req = https.request(requestOpts, r => {
-    const buffers: Buffer[] = [];
-    r.on('data', buffer => buffers.push(buffer));
-    r.on('end', () => {
-      const everything = Buffer.concat(buffers);
-      const newlineIndex = everything.indexOf('\n');
-      if (newlineIndex === -1) {
-        console.log('everything', everything);
-        console.log('everything', everything.toString());
-        reject(`could not find newline in response data`);
-      } else {
-        const jsonLine = everything.slice(0, newlineIndex).toString();
-        const json = JSON.parse(jsonLine);
-        const data = everything.slice(newlineIndex + 1);
-        const err = json.error ? json.error.message : undefined;
-        const status = r.statusCode || -1;
-        if (expectSuccess && (status !== 200 || typeof err !== 'undefined')) {
-          reject(`Status unexpectedly ${status} with err: ${err}`);
-        } else {
-          resolve({ json, data, err, status });
-        }
-      }
-    });
-  });
-  req.on('error', reject);
-  req.write(endpoint)
-  req.write('\n');
-  req.write(JSON.stringify(json));
-  req.write('\n');
-  req.write(data instanceof Buffer ? data : Buffer.from(data as string));
-  req.end();
-});
+export const parseResponse = (buffers: Buffer[]) => {
+  const everything = Buffer.concat(buffers);
+  const newlineIndex = everything.indexOf('\n');
+  if (newlineIndex === -1) {
+    console.log('everything', everything);
+    console.log('everything', everything.toString());
+    throw new Error(`could not find newline in response data`);
+  }
+  const jsonLine = everything.slice(0, newlineIndex).toString();
+  const json = JSON.parse(jsonLine);
+  const data = everything.slice(newlineIndex + 1);
+  const err = json.error ? json.error.message : undefined;
+  return { json, data, err };
+}
 
 export const httpGet = async (url: string): Promise<Buf> => {
   return await new Promise((resolve, reject) => {

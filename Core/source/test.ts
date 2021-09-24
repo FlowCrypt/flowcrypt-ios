@@ -4,7 +4,7 @@
 
 import * as ava from 'ava';
 
-import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getKeypairs, request, startNodeCoreInstance, httpGet } from './test/test-utils';
+import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getKeypairs, parseResponse, startNodeCoreInstance, httpGet } from './test/test-utils';
 
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
@@ -26,7 +26,8 @@ ava.before(async t => {
 });
 
 ava.default('version', async t => {
-  const { json, data } = await request('version', {}, []);
+  //const { json, data } = await request('version', {}, []);
+  const { json, data } = parseResponse(await Endpoints.version());
   expect(json).to.have.property('node');
   expectNoData(data);
   t.pass();
@@ -539,7 +540,7 @@ ava.default('parseDecryptMsg plainAtt', async t => {
   const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, await getCompatAsset('mime-email-plain-with-attachment'));
   expectData(blocks, 'msgBlocks', [
     { rendered: true, frameColor: 'plain', htmlContent },
-    { 
+    {
       type: 'plainAtt',
       content: '',
       complete: true,
@@ -550,8 +551,8 @@ ava.default('parseDecryptMsg plainAtt', async t => {
         data: 'ZmlsZSBjb250ZW50IGhlcmUK',
         inline: false,
         cid: '<f_kpu3dty00>'
-      } 
-    } 
+      }
+    }
   ]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'plain', subject: 'plain message with attachment' });
   t.pass();
