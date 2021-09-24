@@ -2,6 +2,10 @@
 
 'use strict';
 
+// @ts-ignore - this way we can test the Xss class directly as well
+global.dereq_html_sanitize = require("sanitize-html");
+(global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder');
+
 import * as ava from 'ava';
 
 import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getKeypairs, parseResponse, httpGet } from './test/test-utils';
@@ -10,9 +14,6 @@ import { Xss } from './platform/xss';
 import { expect } from 'chai';
 import { openpgp } from './core/pgp';
 import { Endpoints } from './mobile-interface/endpoints';
-// @ts-ignore - this way we can test the Xss class directly as well
-global.dereq_html_sanitize = require("sanitize-html");
-(global as any)["emailjs-mime-builder"] = require("emailjs-mime-builder");
 
 const text = 'some\n汉\ntxt';
 const htmlContent = text.replace(/\n/g, '<br />');
