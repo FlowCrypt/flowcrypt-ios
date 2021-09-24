@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "errorLens.enabledDiagnosticLevels": [
+      "error"
+    ],
+    "errorLens.errorColor": "#FF00000A",
+    "errorLens.errorTextColor": "#FF000066",
+    "typescript.surveys.enabled": false
+  }
+}
