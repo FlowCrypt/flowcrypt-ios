@@ -10,10 +10,10 @@ else
 fi
 
 # Do not run format if swiftlint isn't installed
-if which swiftformat >/dev/null; then
+if [ -f "./Pods/SwiftFormat/CommandLineTool/swiftformat" ]; then
   echo "Start formatting"
   # swiftlint autocorrect --path .
-  swiftformat "FlowCrypt", "FlowCryptUITests" \
+  ./Pods/SwiftFormat/CommandLineTool/swiftformat "FlowCrypt", "FlowCryptUITests" \
     --rules trailingSpace \
     --rules blankLinesAtEndOfScope \
     --rules consecutiveBlankLines \
@@ -41,10 +41,8 @@ if which swiftformat >/dev/null; then
     --rules strongifiedSelf \
     --rules trailingClosures \
     --rules void
-
 else
   echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"
-  brew install swiftformat
   exit 0
 fi
 

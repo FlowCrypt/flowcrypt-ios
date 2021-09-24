@@ -1,0 +1,35 @@
+MIME-Version: 1.0
+Date: Sun, 13 Jun 2021 02:28:32 +0800
+Message-ID: <CABpKr=3yBPBNXwqh3okMHmsgvintKFMSL9Rw+2ja72QVdc2exQ@mail.gmail.com>
+Subject: plain message with attachment
+From: Tom <tom@flowcrypt.com>
+To: "Tom J. H." <tom@flowcrypt.com>
+Content-Type: multipart/mixed; boundary="000000000000b5c6c605c495ca81"
+
+--000000000000b5c6c605c495ca81
+Content-Type: multipart/alternative; boundary="000000000000b5c6c305c495ca7f"
+
+--000000000000b5c6c305c495ca7f
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+some
+=E6=B1=89
+txt
+
+--000000000000b5c6c305c495ca7f
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+some<br />=E6=B1=89<br />txt
+
+--000000000000b5c6c305c495ca7f--
+--000000000000b5c6c605c495ca81
+Content-Type: text/plain; charset="US-ASCII"; name="name.txt"
+Content-Disposition: attachment; filename="name.txt"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_kpu3dty00
+Content-ID: <f_kpu3dty00>
+
+ZmlsZSBjb250ZW50IGhlcmUK
+--000000000000b5c6c605c495ca81--

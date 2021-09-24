@@ -1,0 +1,42 @@
+{
+  "name": "flowcrypt-mobile-core",
+  "version": "0.0.1",
+  "description": "TypeScript core for FlowCrypt iOS internal use",
+  "dependencies": {
+    "sanitize-html": "1.21.1",
+    "zxcvbn": "4.4.2"
+  },
+  "devDependencies": {
+    "@types/chai": "4.2.22",
+    "@types/node": "13.1.6",
+    "@types/node-cleanup": "2.1.1",
+    "ava": "1.4.1",
+    "babel-loader": "8.2.2",
+    "babel-preset-env": "1.7.0",
+    "chai": "4.3.4",
+    "node-cleanup": "2.1.2",
+    "request": "2.88.2",
+    "webpack-cli": "4.8.0",
+    "typescript": "4.4.3",
+    "webpack": "4.46.0",
+    "webpack-node-externals": "3.0.0"
+  },
+  "scripts": {
+    "build": "./tooling/build.sh",
+    "predeploy": "npm run-script build",
+    "deploy": "cp build/final/flowcrypt-ios-prod.js ../FlowCrypt/Resources/flowcrypt-ios-prod.js.txt",
+    "pretest": "npm run-script build",
+    "test": "./node_modules/.bin/ava build/ts/test.js --verbose",
+    "pregenCompatAssets": "npm run-script build",
+    "genCompatAssets": "./node_modules/.bin/ava build/ts/gen-compat-assets.js --verbose",
+    "preupdateCore": "rm -rf source/core source/lib",
+    "updateCore": "npm run-script _updateCoreLib && npm run-script _updateCoreSrc",
+    "_updateCoreSrc": "cp -r ../flowcrypt-browser/extension/js/common/core source/core",
+    "_updateCoreLib": "mkdir source/lib && cd source/lib && LIBD='../../../flowcrypt-browser/extension/lib' && cp -r $LIBD/emailjs . && cp $LIBD/openpgp.js . && cp $LIBD/iso-*.js . && cp $LIBD/zxcvbn.js .",
+    "donateCore": "rm -rf ../flowcrypt-browser/extension/js/common/core && cp -r source/core ../flowcrypt-browser/extension/js/common/core"
+  },
+  "author": "FlowCrypt a.s.",
+  "license": "SEE LICENSE IN <LICENSE>",
+  "private": true,
+  "homepage": "https://flowcrypt.com"
+}
