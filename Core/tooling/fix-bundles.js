@@ -36,7 +36,6 @@ fs.writeFileSync(sanitizeHtmlDist, fs.readFileSync(sanitizeHtmlDist).toString().
 // -- *
 
 // copy wip to html-sanitize-bundle
-fs.copyFileSync(`${bundleWipDir}/node-html-sanitize.js`, `${bundleDir}/node-html-sanitize-bundle.js`);
 fs.writeFileSync(
   `${bundleDir}/bare-html-sanitize-bundle.js`,
   `${fs.readFileSync(sanitizeHtmlDist).toString()}\nconst dereq_html_sanitize = window.sanitizeHtml;\n`
