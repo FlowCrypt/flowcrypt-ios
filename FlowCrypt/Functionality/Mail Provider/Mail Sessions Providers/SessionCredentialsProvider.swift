@@ -24,9 +24,9 @@ struct SessionCredentialsService: SessionCredentialsProvider {
     let manager = MCOMailProvidersManager.shared()
 
     func getImapCredentials(for email: String) -> MailSettingsCredentials? {
-        let providers = manager?.provider(forEmail: email)
+        let providers = manager.provider(forEmail: email)
 
-        guard let services = providers?.imapServices() as? [MCONetService] else { return nil }
+        guard let services = providers?.imapServices() else { return nil }
 
         // TODO: - check all possible services to establish the connection
         guard let service = services.first else { return nil }
@@ -35,9 +35,9 @@ struct SessionCredentialsService: SessionCredentialsProvider {
     }
 
     func getSmtpCredentials(for email: String) -> MailSettingsCredentials? {
-        let providers = manager?.provider(forEmail: email)
+        let providers = manager.provider(forEmail: email)
 
-        guard let services = providers?.smtpServices() as? [MCONetService] else { return nil }
+        guard let services = providers?.smtpServices() else { return nil }
 
         // TODO: - check all possible services to establish the connection
         guard let service = services.first else { return nil }
@@ -57,7 +57,7 @@ struct SessionCredentialsService: SessionCredentialsProvider {
 
         guard
             let email = email,
-            let services = manager?.provider(forEmail: email)?.imapServices() as? [MCONetService],
+            let services = manager.provider(forEmail: email)?.imapServices(),
             let credentials = services.first(where: { $0.connectionType == MCOConnectionType(connection) })
         else {
             return error(for: connection)
@@ -78,7 +78,7 @@ struct SessionCredentialsService: SessionCredentialsProvider {
 
         guard
             let email = email,
-            let services = manager?.provider(forEmail: email)?.smtpServices() as? [MCONetService],
+            let services = manager.provider(forEmail: email)?.smtpServices(),
             let credentials = services.first(where: { $0.connectionType == MCOConnectionType(connection) })
         else {
             return error(for: connection)

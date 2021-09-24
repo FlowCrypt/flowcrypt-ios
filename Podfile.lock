@@ -24,7 +24,6 @@ PODS:
   - GTMSessionFetcher/Full (1.7.0):
     - GTMSessionFetcher/Core (= 1.7.0)
   - IDZSwiftCommonCrypto (0.13.0)
-  - mailcore2-ios (0.6.4)
   - MBProgressHUD (1.2.0)
   - PINCache (3.0.3):
     - PINCache/Arc-exception-safe (= 3.0.3)
@@ -83,7 +82,6 @@ DEPENDENCIES:
   - GoogleSignIn
   - GTMAppAuth
   - IDZSwiftCommonCrypto
-  - mailcore2-ios
   - MBProgressHUD
   - PromisesSwift
   - RealmSwift
@@ -103,7 +101,6 @@ SPEC REPOS:
     - GTMAppAuth
     - GTMSessionFetcher
     - IDZSwiftCommonCrypto
-    - mailcore2-ios
     - MBProgressHUD
     - PINCache
     - PINOperation
@@ -127,7 +124,6 @@ SPEC CHECKSUMS:
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   IDZSwiftCommonCrypto: 00dd37cdfbd149312a7e5a582cf9909f8b129f44
-  mailcore2-ios: 3ff0be2fa553d4da9c11d39c11d51863c768f24f
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   PINCache: 7a8fc1a691173d21dbddbf86cd515de6efa55086
   PINOperation: 00c935935f1e8cf0d1e2d6b542e75b88fc3e5e20
@@ -142,6 +138,6 @@ SPEC CHECKSUMS:
   Texture: 2f109e937850d94d1d07232041c9c7313ccddb81
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: 245efbb7c5808e9bebf508cb968810eb55eac62c
+PODFILE CHECKSUM: 84e391640f5496cfa2b94c1252aeab49534fea99
 
 COCOAPODS: 1.11.2
