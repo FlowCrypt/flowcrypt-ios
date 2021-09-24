@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "commonjs",
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "strictPropertyInitialization": false,
+    "strictFunctionTypes": false,
+    "sourceMap": false,
+    "checkJs": false,
+    "outDir": "./build/ts",
+    "baseUrl": "..",
+    "typeRoots": [
+      "./source/core/types/*.d.ts"
+    ]
+  },
+  "include": [
+    "./source/entrypoint-node.ts",
+    "./source/entrypoint-bare.ts",
+    "./source/test.ts",
+    "./source/gen-compat-assets.ts"
+  ],
+  "exclude": [
+    "**/build/**",
+    "**/node_modules/**"
+  ]
+}
