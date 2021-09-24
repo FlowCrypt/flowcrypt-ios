@@ -28,7 +28,7 @@ ava.before(async t => {
 });
 
 ava.default('version', async t => {
-  //const { json, data } = await request('version', {}, []);
+  //const { json, data } = parseResponse(await endpoints.version', {}, []);
   const { json, data } = parseResponse(await endpoints.version());
   expect(json).to.have.property('node');
   expectNoData(data);
@@ -193,7 +193,7 @@ OkR+L4ShPw3bdtdCnMmZfSig2a+gtcD1R0LyA1mh6OdmsJNnmW0Sfwp75LYevQ5AsUI3g0aKI+ll
 Ee3KQbcx28SsnZi9LNO/6/wBmhVJ7HDmOd4AAAAASUVORK5CYII=
 --000000000000ee643b058fc0fe65--`;
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, mime);
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
   expect(decryptJson).deep.equal({ text: 'Below\n[image: image.png]\nAbove', replyType: 'plain', subject: 'tiny inline img plain' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent: '<div><div>Below</div><div><div><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAMFJREFUOE+lU9sRg0AIZDNpym9rSAumJm0hNfidsgic5w1wGJ1kZ3zgwvI4AQtIAHrq4zKY5uJ715sGP7C44BdPnZj1gaRVERBPpYJfUSpoGLeyir2Glg64mxMQg9f6xQbU94zrBDBWgVCBBmecbyGWbcrLgpX+OkR+L4ShPw3bdtdCnMmZfSig2a+gtcD1R0LyA1mh6OdmsJNnmW0Sfwp75LYevQ5AsUI3g0aKI+llEe3KQbcx28SsnZi9LNO/6/wBmhVJ7HDmOd4AAAAASUVORK5CYII=" alt="image.png" /><br /></div></div><div>Above<br /></div></div>' }]);
   t.pass();
@@ -229,7 +229,7 @@ ADjvgywpiGmrwdehioKtS0SrHRvExYx8ory0iLo0cLGERArZ3jycF8F+S2Xp
 =F2om
 -----END PGP SIGNATURE-----`;
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: false }, mime);
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false }, [Buffer.from(mime, 'utf8')]));
   expect(decryptJson).deep.equal({ text: `Standard message\n\nsigned inline\n\nshould easily verify\nThis is email footer`, replyType: 'plain' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'gray', htmlContent: 'Standard message<br /><br />signed inline<br /><br />should easily verify<br />This is email footer' }]);
   t.pass();
@@ -239,13 +239,13 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
   const content = 'hello\nwrld';
   const { pubKeys, keys } = getKeypairs('rsa1');
   const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj' };
-  const { data: encryptedMimeMsg, json: encryptJson } = await request('composeEmail', req, []);
+  const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(encryptJson);
   const encryptedMimeStr = encryptedMimeMsg.toString();
   expect(encryptedMimeStr).contains('To: encrypted@to.com');
   expect(encryptedMimeStr).contains('MIME-Version: 1.0');
   expectData(encryptedMimeMsg, 'armoredMsg'); // armored msg block should be contained in the mime message
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, encryptedMimeMsg);
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [encryptedMimeMsg]));
   expect(decryptJson).deep.equal({ text: content, replyType: 'encrypted', subject: 'encr subj' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
   t.pass();
@@ -256,10 +256,10 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
     const { pubKeys, keys } = getKeypairs(keypairName);
     const name = 'myfile.txt';
     const content = Buffer.from([10, 20, 40, 80, 160, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]);
-    const { data: encryptedFile, json: encryptJson } = await request('encryptFile', { pubKeys, name }, content);
+    const { data: encryptedFile, json: encryptJson } = parseResponse(await endpoints.encryptFile', { pubKeys, name }, content);
     expectEmptyJson(encryptJson);
     expectData(encryptedFile);
-    const { data: decryptedContent, json: decryptJson } = await request('decryptFile', { keys }, encryptedFile);
+    const { data: decryptedContent, json: decryptJson } = parseResponse(await endpoints.decryptFile', { keys }, encryptedFile);
     expect(decryptJson).to.deep.equal({ success: true, name });
     expectData(decryptedContent, 'binary', content);
     t.pass();
@@ -267,28 +267,28 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
 }
 
 ava.default('parseDateStr', async t => {
-  const { data, json } = await request('parseDateStr', { dateStr: 'Sun, 10 Feb 2019 07:08:20 -0800' }, []);
+  const { data, json } = parseResponse(await endpoints.parseDateStr', { dateStr: 'Sun, 10 Feb 2019 07:08:20 -0800' }, []);
   expect(json).to.deep.equal({ timestamp: '1549811300000' });
   expectNoData(data);
   t.pass();
 });
 
 ava.default('gmailBackupSearch', async t => {
-  const { data, json } = await request('gmailBackupSearch', { acctEmail: 'test@acct.com' }, []);
+  const { data, json } = parseResponse(await endpoints.gmailBackupSearch', { acctEmail: 'test@acct.com' }, []);
   expect(json).to.deep.equal({ query: 'from:test@acct.com to:test@acct.com (subject:"Your FlowCrypt Backup" OR subject: "Your CryptUp Backup" OR subject: "All you need to know about CryptUP (contains a backup)" OR subject: "CryptUP Account Backup") -is:spam' });
   expectNoData(data);
   t.pass();
 });
 
 ava.default('isEmailValid - true', async t => {
-  const { data, json } = await request('isEmailValid', { email: 'test@acct.com' }, []);
+  const { data, json } = parseResponse(await endpoints.isEmailValid', { email: 'test@acct.com' }, []);
   expect(json).to.deep.equal({ valid: true });
   expectNoData(data);
   t.pass();
 });
 
 ava.default('isEmailValid - false', async t => {
-  const { data, json } = await request('isEmailValid', { email: 'testacct.com' }, []);
+  const { data, json } = parseResponse(await endpoints.isEmailValid', { email: 'testacct.com' }, []);
   expect(json).to.deep.equal({ valid: false });
   expectNoData(data);
   t.pass();
@@ -296,7 +296,7 @@ ava.default('isEmailValid - false', async t => {
 
 ava.default('parseKeys', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('rsa1');
-  const { data, json } = await request('parseKeys', {}, Buffer.from(pubkey));
+  const { data, json } = parseResponse(await endpoints.parseKeys', {}, Buffer.from(pubkey));
   expect(json).to.deep.equal({
     "format": "armored",
     "keyDetails": [
@@ -325,7 +325,7 @@ ava.default('parseKeys', async t => {
 
 ava.default('parseKeys - expiration and date last updated', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('expired');
-  const { data, json } = await request('parseKeys', {}, Buffer.from(pubkey));
+  const { data, json } = parseResponse(await endpoints.parseKeys', {}, Buffer.from(pubkey));
   expect(json).to.deep.equal({
     "format": "armored",
     "keyDetails": [
@@ -365,7 +365,7 @@ ava.default('parseKeys - expiration and date last updated', async t => {
 
 ava.default('decryptKey', async t => {
   const { keys: [key] } = getKeypairs('rsa1');
-  const { data, json } = await request('decryptKey', { armored: key.private, passphrases: [key.passphrase] }, Buffer.from([]));
+  const { data, json } = parseResponse(await endpoints.decryptKey', { armored: key.private, passphrases: [key.passphrase] }, Buffer.from([]));
   const { keys: [decryptedKey] } = await openpgp.key.readArmored(json.decryptedKey);
   expect(decryptedKey.isFullyDecrypted()).to.be.true;
   expect(decryptedKey.isFullyEncrypted()).to.be.false;
@@ -376,7 +376,7 @@ ava.default('decryptKey', async t => {
 ava.default('encryptKey', async t => {
   const passphrase = 'this is some pass phrase';
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
-  const { data, json } = await request('encryptKey', { armored: decryptedKey, passphrase }, Buffer.from([]));
+  const { data, json } = parseResponse(await endpoints.encryptKey', { armored: decryptedKey, passphrase }, Buffer.from([]));
   const { keys: [encryptedKey] } = await openpgp.key.readArmored(json.encryptedKey);
   expect(encryptedKey.isFullyEncrypted()).to.be.true;
   expect(encryptedKey.isFullyDecrypted()).to.be.false;
@@ -390,15 +390,15 @@ ava.default('decryptKey gpg-dummy', async t => {
   const { keys: [encryptedKey] } = await openpgp.key.readArmored(key.private);
   expect(encryptedKey.isFullyEncrypted()).to.be.true;
   expect(encryptedKey.isFullyDecrypted()).to.be.false;
-  const { json } = await request('decryptKey', { armored: key.private, passphrases: [key.passphrase] }, Buffer.from([]));
+  const { json } = parseResponse(await endpoints.decryptKey', { armored: key.private, passphrases: [key.passphrase] }, Buffer.from([]));
   const { keys: [decryptedKey] } = await openpgp.key.readArmored(json.decryptedKey);
   expect(decryptedKey.isFullyEncrypted()).to.be.false;
   expect(decryptedKey.isFullyDecrypted()).to.be.true;
-  const { json: json2 } = await request('encryptKey', { armored: decryptedKey.armor(), passphrase: 'another pass phrase' }, Buffer.from([]));
+  const { json: json2 } = parseResponse(await endpoints.encryptKey', { armored: decryptedKey.armor(), passphrase: 'another pass phrase' }, Buffer.from([]));
   const { keys: [reEncryptedKey] } = await openpgp.key.readArmored(json2.encryptedKey);
   expect(reEncryptedKey.isFullyEncrypted()).to.be.true;
   expect(reEncryptedKey.isFullyDecrypted()).to.be.false;
-  const { json: json3 } = await request('decryptKey', { armored: reEncryptedKey.armor(), passphrases: ['another pass phrase'] }, Buffer.from([]));
+  const { json: json3 } = parseResponse(await endpoints.decryptKey', { armored: reEncryptedKey.armor(), passphrases: ['another pass phrase'] }, Buffer.from([]));
   const { keys: [reDecryptedKey] } = await openpgp.key.readArmored(json3.decryptedKey);
   expect(reDecryptedKey.isFullyEncrypted()).to.be.false;
   expect(reDecryptedKey.isFullyDecrypted()).to.be.true;
@@ -407,7 +407,7 @@ ava.default('decryptKey gpg-dummy', async t => {
 
 ava.default('parseDecryptMsg compat direct-encrypted-text', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys }, await getCompatAsset('direct-encrypted-text'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted' });
   t.pass();
@@ -415,7 +415,7 @@ ava.default('parseDecryptMsg compat direct-encrypted-text', async t => {
 
 ava.default('parseDecryptMsg compat direct-encrypted-pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys }, await getCompatAsset('direct-encrypted-pgpmime'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-pgpmime')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted', subject: 'direct encrypted pgpmime' });
   t.pass();
@@ -423,7 +423,7 @@ ava.default('parseDecryptMsg compat direct-encrypted-pgpmime', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-plain', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, await getCompatAsset('mime-email-plain'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'plain', subject: 'mime email plain' });
   t.pass();
@@ -431,7 +431,7 @@ ava.default('parseDecryptMsg compat mime-email-plain', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, await getCompatAsset('mime-email-encrypted-inline-text'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-encrypted-inline-text')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted', subject: 'mime email encrypted inline text' });
   t.pass();
@@ -439,14 +439,14 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text', async t =
 
 ava.default('parseDecryptMsg compat mime-email-encrypted-inline-pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, await getCompatAsset('mime-email-encrypted-inline-pgpmime'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-encrypted-inline-pgpmime')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted', subject: 'mime email encrypted inline pgpmime' });
   t.pass();
 });
 
 ava.default('zxcvbnStrengthBar', async t => {
-  const { data, json } = await request('zxcvbnStrengthBar', { guesses: 88946283684265, purpose: 'passphrase' }, []);
+  const { data, json } = parseResponse(await endpoints.zxcvbnStrengthBar', { guesses: 88946283684265, purpose: 'passphrase' }, []);
   expectNoData(data);
   expect(json).to.deep.equal({
     word: {
@@ -464,7 +464,7 @@ ava.default('zxcvbnStrengthBar', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-TextEncoder', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, await getCompatAsset('mime-email-encrypted-inline-text-2'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-encrypted-inline-text-2')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted', subject: 'mime email encrytped inline text 2' });
   t.pass();
@@ -472,7 +472,7 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-Text
 
 ava.default('parseDecryptMsg - decryptErr', async t => {
   const { keys } = getKeypairs('rsa2'); // intentional key mismatch
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys }, await getCompatAsset('direct-encrypted-text'), false);
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')], false));
   expectData(blocks, 'msgBlocks', [{
     "type": "decryptErr",
     "content": "-----BEGIN PGP MESSAGE-----\nVersion: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\nComment: Seamlessly send and receive encrypted email\n\nwcBMAwurnAGLJl0iAQf+I2exIah3XL/zfPozDmVFSLJk4tBFIlIyFfGYcw5W\n+ebOL3Gu/+/oCIIlXrdP0FxIVEYnSEaevmB9p0FfXGpcw4Wr8PBnSubCkn2s\n+V//k6W1Uu915GmiwCgDkLTCP7vEHvwUglNvgAatDtNdJ3xrf2gjOOFiYQnn\n4JSI1msMfL5tmdFCyXm1g4mUe9MdVXfphrXIyvGu1Sufhv+T5FgteDW0c6lM\ng7G6jgX4q5xiT8r2LTxKlxHVlQSqvGlnx/yRXwqBs3PAMiS4u5JlKJX4aKVy\nFyN+gq++tWZC1XCSFzXfAf0rXcoDZ7nEkxdkKQqXgA6LCsFD79FMCtuenvzU\nU9JEAdvmmpGlextZcfCUmGgclQXgowDnjaXy5Uc6Bzmi8AlY/4MFo0Q3bOU4\nkNhLCiXTGNJlFDd0HLz8Cy7YXzLWZ94IuGk=\n=Bvit\n-----END PGP MESSAGE-----\n",
@@ -498,7 +498,7 @@ ava.default('parseDecryptMsg - decryptErr', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, await getCompatAsset('mime-email-plain-html'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-html')]));
   expectData(blocks, 'msgBlocks', [{ frameColor: 'plain', htmlContent: '<p>paragraph 1</p><p>paragraph 2 with <b>bold</b></p><p>paragraph 3 with <em style="color:red">red i</em></p>', rendered: true }]);
   expect(decryptJson).to.deep.equal({ text: `paragraph 1\nparagraph 2 with bold\nparagraph 3 with red i`, replyType: 'plain', subject: 'mime email plain html' });
   t.pass();
@@ -506,7 +506,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, await getCompatAsset('mime-email-plain-with-pubkey'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-pubkey')]));
   expectData(blocks, 'msgBlocks', [
     { rendered: true, frameColor: 'plain', htmlContent },
     {
@@ -532,7 +532,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
 
 ava.default('parseDecryptMsg plainAtt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, await getCompatAsset('mime-email-plain-with-attachment'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-attachment')]));
   expectData(blocks, 'msgBlocks', [
     { rendered: true, frameColor: 'plain', htmlContent },
     {
