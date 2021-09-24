@@ -20,7 +20,7 @@
     "outDir": "./build/ts",
     "baseUrl": "..",
     "typeRoots": [
-      "./source/core/types/*.d.ts",
+      "./source/core/types/",
       "./node_modules/@types/"
     ]
   },
