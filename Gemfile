@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
-ruby "3.0.2"
+ruby "2.5.1"
 gem "fastlane", ">= 2.134.0"
 gem "xcode-install", ">= 2.6.1"
-gem "cocoapods", ">= 1.9.3"
+gem "cocoapods", "1.10.2"
 gem "rest-client"
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
