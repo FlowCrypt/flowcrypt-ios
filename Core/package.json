@@ -24,7 +24,7 @@
   "scripts": {
     "build": "./tooling/build.sh",
     "predeploy": "npm run-script build",
-    "deploy": "cp build/final/flowcrypt-android-prod.js ../flowcrypt-android/FlowCrypt/src/main/assets/js/flowcrypt-android.js && cp build/final/flowcrypt-ios-prod.js ../flowcrypt-ios/FlowCrypt/Resources/flowcrypt-ios-prod.js.txt",
+    "deploy": "cp build/final/flowcrypt-ios-prod.js ../FlowCrypt/Resources/flowcrypt-ios-prod.js.txt",
     "pretest": "npm run-script build",
     "test": "./node_modules/.bin/ava build/ts/test.js --verbose",
     "pregenCompatAssets": "npm run-script build",

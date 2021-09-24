@@ -12,8 +12,6 @@ import Promises
 
 protocol OrganisationalRulesServiceType {
     func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules>
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules>
-
     func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules
 }
 
@@ -21,13 +19,16 @@ final class OrganisationalRulesService {
 
     private let enterpriseServerApi: EnterpriseServerApiType
     private let clientConfigurationProvider: ClientConfigurationProviderType
+    private let isCurrentUserExist: () -> (String?)
 
     init(
-        storage: @escaping @autoclosure CacheStorage = DataService.shared.storage,
-        enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi()
+        enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi(),
+        clientConfigurationProvider: ClientConfigurationProviderType = ClientConfigurationProvider(),
+        isCurrentUserExist: @autoclosure @escaping () -> (String?) =  DataService.shared.currentUser?.email
     ) {
         self.enterpriseServerApi = enterpriseServerApi
-        self.clientConfigurationProvider = ClientConfigurationProvider(storage: storage())
+        self.clientConfigurationProvider = clientConfigurationProvider
+        self.isCurrentUserExist = isCurrentUserExist
     }
 }
 
@@ -35,15 +36,15 @@ final class OrganisationalRulesService {
 extension OrganisationalRulesService: OrganisationalRulesServiceType {
 
     func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules> {
-        guard let currentUser = DataService.shared.currentUser else {
+        guard let currentUserEmail = isCurrentUserExist() else {
             return Promise<OrganisationalRules> { _, reject in
                 reject(OrganisationalRulesServiceError.noCurrentUser)
             }
         }
-        return fetchOrganisationalRules(for: currentUser.email)
+        return fetchOrganisationalRules(for: currentUserEmail)
     }
 
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules> {
+    private func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules> {
         Promise<OrganisationalRules> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
 
