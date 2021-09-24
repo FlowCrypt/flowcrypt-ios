@@ -76,8 +76,7 @@ extension BackupService: BackupServiceType {
             )
 
             self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
-                .map(\.mimeEncoded)
-                
+                .map(\.mimeEncoded) 
                 .flatMap(self.messageSender.sendMail)
                 .sink(
                     receiveCompletion: { result in

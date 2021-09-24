@@ -51,6 +51,7 @@ extension ComposeMessageAttachment {
         guard let data = try? Data(contentsOf: fileURL) else {
             return nil
         }
+        
         self.name = "\(fileURL.lastPathComponent).pgp"
         self.data = data
         self.size = data.count
