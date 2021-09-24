@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import { config, expect } from 'chai';
 import { Subprocess } from './subprocess'
 import { Buf } from '../core/buf';
+import { Buffers } from '../mobile-interface/format-output';
 config.truncateThreshold = 0
 
 export type AvaContext = ava.ExecutionContext<any>;
@@ -35,7 +36,7 @@ export const startNodeCoreInstance = async (t: AvaContext) => {
   return r;
 };
 
-export const parseResponse = (buffers: Buffer[]) => {
+export const parseResponse = (buffers: Buffers) => {
   const everything = Buffer.concat(buffers);
   const newlineIndex = everything.indexOf('\n');
   if (newlineIndex === -1) {

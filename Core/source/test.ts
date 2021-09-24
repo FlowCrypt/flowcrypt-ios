@@ -10,6 +10,7 @@ import { Xss } from './platform/xss';
 import { expect } from 'chai';
 import { openpgp } from './core/pgp';
 import { ChildProcess } from 'child_process';
+import { Endpoints } from './mobile-interface/endpoints';
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_html_sanitize = require("sanitize-html");
 
@@ -17,6 +18,7 @@ const text = 'some\n汉\ntxt';
 const htmlContent = text.replace(/\n/g, '<br />');
 const textSpecialChars = '> special <tag> & other\n> second line';
 const htmlSpecialChars = Xss.escape(textSpecialChars).replace('\n', '<br />');
+const endpoints = new Endpoints();
 
 let nodeProcess: ChildProcess;
 
@@ -27,15 +29,8 @@ ava.before(async t => {
 
 ava.default('version', async t => {
   //const { json, data } = await request('version', {}, []);
-  const { json, data } = parseResponse(await Endpoints.version());
+  const { json, data } = parseResponse(await endpoints.version());
   expect(json).to.have.property('node');
-  expectNoData(data);
-  t.pass();
-});
-
-ava.default('doesnotexist', async t => {
-  const { data, err } = await request('doesnotexist', {}, [], false);
-  expect(err).to.equal('Error: unknown endpoint: doesnotexist');
   expectNoData(data);
   t.pass();
 });
