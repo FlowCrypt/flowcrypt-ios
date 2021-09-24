@@ -93,7 +93,6 @@ openpgpLib = replace( // rsa verify on host
   const EM = computed ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength()) : await _public_key2.default.rsa.verify(m, n, e);`
 );
 
-let openpgpLibNode = openpgpLib; // no more modifications for node code
 let openpgpLibBare = openpgpLib; // further modify bare code below
 
 openpgpLibBare = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
@@ -110,13 +109,6 @@ openpgpLibBare = replace( // bare - aes decrypt on host
 
 const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
 
-const asn1libNode = fs.readFileSync(`${bundleWipDir}/node-asn1.js`).toString()
-  .replace(/require\("safer-buffer"\)/g, 'require("buffer")'); // we don't use old node versions
-
-const minimalisticAssertLibNode = fs.readFileSync(`${bundleWipDir}/minimalistic-assert.js`).toString();
-
-const bnLibNode = fs.readFileSync(`${bundleWipDir}/bn.js`).toString();
-
 fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
   ${fs.readFileSync('source/lib/web-streams-polyfill.js').toString()}
   const ReadableStream = self.ReadableStream;
@@ -129,25 +121,9 @@ fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
   const openpgp = window.openpgp;
 `);
 
-fs.writeFileSync(`${bundleDir}/node-openpgp-bundle.js`, `
-  (function(){
-    console.debug = console.log;
-    ${minimalisticAssertLibNode}
-    ${bnLibNode}
-    ${asn1libNode}
-    ${openpgpLibNode}
-    const openpgp = module.exports;
-    module.exports = {};
-    global['openpgp'] = openpgp;
-  })();
-`);
-
 fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
   (function(){
     console.debug = console.log;
-    ${minimalisticAssertLibNode}
-    ${bnLibNode}
-    ${asn1libNode}
     ${openpgpLibNodeDev}
     const openpgp = module.exports;
     module.exports = {};
