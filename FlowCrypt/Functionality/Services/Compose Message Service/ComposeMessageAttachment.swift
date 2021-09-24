@@ -32,7 +32,7 @@ extension ComposeMessageAttachment {
         self.name = "\(fileName).pgp"
         self.data = data
         self.size = data.count
-        self.type = "text/plain"
+        self.type = "image/jpg"
     }
 
     init?(cameraSourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
@@ -44,7 +44,7 @@ extension ComposeMessageAttachment {
         self.name = "\(UUID().uuidString).png.pgp"
         self.data = data
         self.size = data.count
-        self.type = "text/plain"
+        self.type = "image/png"
     }
 
     init?(fileURL: URL) {
