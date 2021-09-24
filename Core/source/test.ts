@@ -64,7 +64,7 @@ ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { keys } = getKeypairs('rsa1');
   const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj' };
-  const { data: plainMimeMsg, json: composeEmailJson } = await request('composeEmail', req, []);
+  const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(composeEmailJson);
   const plainMimeStr = plainMimeMsg.toString();
   expect(plainMimeStr).contains('To: some@to.com');
@@ -73,7 +73,7 @@ ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
   expect(plainMimeStr).contains('Cc: some@cc.com');
   expect(plainMimeStr).contains('Date: ');
   expect(plainMimeStr).contains('MIME-Version: 1.0');
-  const { data: blocks, json: parseJson } = await request('parseDecryptMsg', { keys, isEmail: true }, plainMimeMsg);
+  const { data: blocks, json: parseJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [plainMimeMsg]));
   expect(parseJson).to.deep.equal({ text: content, replyType: 'plain', subject: 'a subj' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent: content.replace(/\n/g, '<br />') }]);
   t.pass();
@@ -96,7 +96,7 @@ Content-Transfer-Encoding: quoted-printable
 orig message
 ------sinikael-?=_1-15535259519270.930031460416217--`
   const req = { format: 'plain', text: 'replying', to: ['some@to.com'], cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original', replyToMimeMsg };
-  const { data: mimeMsgReply, json } = await request('composeEmail', req, []);
+  const { data: mimeMsgReply, json } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(json);
   const mimeMsgReplyStr = mimeMsgReply.toString();
   expect(mimeMsgReplyStr).contains('In-Reply-To: <originalmsg@from.com>');
@@ -115,7 +115,7 @@ Content-Type: text/plain; charset="UTF-8"
 
 ${textSpecialChars}`;
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, mime);
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
   expect(decryptJson).deep.equal({ text: textSpecialChars, replyType: 'plain', subject: 'plain text with special chars' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent: htmlSpecialChars }]);
   t.pass();
@@ -132,7 +132,7 @@ Content-Type: text/html; charset="UTF-8"
 
 ${htmlSpecialChars}`;
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: true }, mime);
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
   expect(decryptJson).deep.equal({ text: textSpecialChars, replyType: 'plain', subject: 'plain text with special chars' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent: htmlSpecialChars }]);
   t.pass();
@@ -140,7 +140,7 @@ ${htmlSpecialChars}`;
 
 ava.default('parseDecryptMsg unescaped special characters in encrypted pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: false }, await getCompatAsset('direct-encrypted-pgpmime-special-chars'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false }, [await getCompatAsset('direct-encrypted-pgpmime-special-chars')]));
   expect(decryptJson).deep.equal({ text: textSpecialChars, replyType: 'encrypted', subject: 'direct encrypted pgpmime special chars' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: htmlSpecialChars }]);
   t.pass();
@@ -148,7 +148,7 @@ ava.default('parseDecryptMsg unescaped special characters in encrypted pgpmime',
 
 ava.default('parseDecryptMsg unescaped special characters in encrypted text', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = await request('parseDecryptMsg', { keys, isEmail: false }, await getCompatAsset('direct-encrypted-text-special-chars'));
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false }, [await getCompatAsset('direct-encrypted-text-special-chars')]));
   expect(decryptJson).deep.equal({ text: textSpecialChars, replyType: 'encrypted' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: htmlSpecialChars }]);
   t.pass();
