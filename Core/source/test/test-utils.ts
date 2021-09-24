@@ -6,7 +6,6 @@ import * as ava from 'ava';
 import * as https from 'https';
 import * as fs from 'fs';
 import { config, expect } from 'chai';
-import { Subprocess } from './subprocess'
 import { Buf } from '../core/buf';
 import { Buffers } from '../mobile-interface/format-output';
 config.truncateThreshold = 0
