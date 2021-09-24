@@ -499,7 +499,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
   t.pass();
 });
 
-ava.default.only('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
+ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-pubkey')]));
   expectData(blocks, 'msgBlocks', [
