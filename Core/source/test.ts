@@ -28,7 +28,6 @@ ava.before(async t => {
 });
 
 ava.default('version', async t => {
-  //const { json, data } = parseResponse(await endpoints.version', {}, []);
   const { json, data } = parseResponse(await endpoints.version());
   expect(json).to.have.property('node');
   expectNoData(data);
@@ -256,10 +255,10 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
     const { pubKeys, keys } = getKeypairs(keypairName);
     const name = 'myfile.txt';
     const content = Buffer.from([10, 20, 40, 80, 160, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]);
-    const { data: encryptedFile, json: encryptJson } = parseResponse(await endpoints.encryptFile', { pubKeys, name }, content);
+    const { data: encryptedFile, json: encryptJson } = parseResponse(await endpoints.encryptFile({ pubKeys, name }, [content]));
     expectEmptyJson(encryptJson);
     expectData(encryptedFile);
-    const { data: decryptedContent, json: decryptJson } = parseResponse(await endpoints.decryptFile', { keys }, encryptedFile);
+    const { data: decryptedContent, json: decryptJson } = parseResponse(await endpoints.decryptFile({ keys }, [encryptedFile]));
     expect(decryptJson).to.deep.equal({ success: true, name });
     expectData(decryptedContent, 'binary', content);
     t.pass();
@@ -267,28 +266,28 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
 }
 
 ava.default('parseDateStr', async t => {
-  const { data, json } = parseResponse(await endpoints.parseDateStr', { dateStr: 'Sun, 10 Feb 2019 07:08:20 -0800' }, []);
+  const { data, json } = parseResponse(await endpoints.parseDateStr({ dateStr: 'Sun, 10 Feb 2019 07:08:20 -0800' }));
   expect(json).to.deep.equal({ timestamp: '1549811300000' });
   expectNoData(data);
   t.pass();
 });
 
 ava.default('gmailBackupSearch', async t => {
-  const { data, json } = parseResponse(await endpoints.gmailBackupSearch', { acctEmail: 'test@acct.com' }, []);
+  const { data, json } = parseResponse(await endpoints.gmailBackupSearch({ acctEmail: 'test@acct.com' }));
   expect(json).to.deep.equal({ query: 'from:test@acct.com to:test@acct.com (subject:"Your FlowCrypt Backup" OR subject: "Your CryptUp Backup" OR subject: "All you need to know about CryptUP (contains a backup)" OR subject: "CryptUP Account Backup") -is:spam' });
   expectNoData(data);
   t.pass();
 });
 
 ava.default('isEmailValid - true', async t => {
-  const { data, json } = parseResponse(await endpoints.isEmailValid', { email: 'test@acct.com' }, []);
+  const { data, json } = parseResponse(await endpoints.isEmailValid({ email: 'test@acct.com' }));
   expect(json).to.deep.equal({ valid: true });
   expectNoData(data);
   t.pass();
 });
 
 ava.default('isEmailValid - false', async t => {
-  const { data, json } = parseResponse(await endpoints.isEmailValid', { email: 'testacct.com' }, []);
+  const { data, json } = parseResponse(await endpoints.isEmailValid({ email: 'testacct.com' }));
   expect(json).to.deep.equal({ valid: false });
   expectNoData(data);
   t.pass();
@@ -296,7 +295,7 @@ ava.default('isEmailValid - false', async t => {
 
 ava.default('parseKeys', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('rsa1');
-  const { data, json } = parseResponse(await endpoints.parseKeys', {}, Buffer.from(pubkey));
+  const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   expect(json).to.deep.equal({
     "format": "armored",
     "keyDetails": [
