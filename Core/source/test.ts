@@ -548,8 +548,9 @@ ava.default('parseDecryptMsg plainAtt', async t => {
   t.pass();
 });
 
-ava.default('can process dirty html without throwing', async t => {
+ava.default.only('can process dirty html without throwing', async t => {
   const dirtyBuf = await httpGet('https://raw.githubusercontent.com/cure53/HTTPLeaks/main/leak.html');
+  console.log(!!dirtyBuf);
   const clean = Xss.htmlSanitizeKeepBasicTags(dirtyBuf.toUtfStr());
   expect(clean).to.not.contain('background');
   expect(clean).to.not.contain('script');
