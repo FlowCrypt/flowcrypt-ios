@@ -4,9 +4,9 @@
 
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_html_sanitize = require("sanitize-html");
-(global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder')(global);
-
-console.log((global as any)["emailjs-mime-builder"]);
+(global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder');
+(global as any)["emailjs-mime-parser"] = require('../../source/lib/emailjs/emailjs-mime-parser');
+(global as any)["iso88592"] = require('../../source/lib/iso-8859-2');
 
 import * as ava from 'ava';
 
