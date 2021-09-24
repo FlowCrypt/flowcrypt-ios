@@ -4,12 +4,11 @@
 
 import * as ava from 'ava';
 
-import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getKeypairs, parseResponse, startNodeCoreInstance, httpGet } from './test/test-utils';
+import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getKeypairs, parseResponse, httpGet } from './test/test-utils';
 
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
 import { openpgp } from './core/pgp';
-import { ChildProcess } from 'child_process';
 import { Endpoints } from './mobile-interface/endpoints';
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_html_sanitize = require("sanitize-html");
@@ -19,13 +18,6 @@ const htmlContent = text.replace(/\n/g, '<br />');
 const textSpecialChars = '> special <tag> & other\n> second line';
 const htmlSpecialChars = Xss.escape(textSpecialChars).replace('\n', '<br />');
 const endpoints = new Endpoints();
-
-let nodeProcess: ChildProcess;
-
-ava.before(async t => {
-  nodeProcess = await startNodeCoreInstance(t);
-  t.pass();
-});
 
 ava.default('version', async t => {
   const { json, data } = parseResponse(await endpoints.version());
@@ -562,8 +554,3 @@ ava.default('can process dirty html without throwing', async t => {
   expect(clean).to.not.contain('src="http');
   t.pass();
 })
-
-ava.after(async t => {
-  nodeProcess.kill();
-  t.pass();
-});

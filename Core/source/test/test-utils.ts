@@ -15,27 +15,6 @@ export type AvaContext = ava.ExecutionContext<any>;
 type JsonDict = { [k: string]: any };
 type TestKey = { pubKey: string, private: string, decrypted: string, passphrase: string, longid: string };
 
-const stderrs: string[] = [];
-const stdouts: string[] = [];
-
-export const startNodeCoreInstance = async (t: AvaContext) => {
-  const r = await Subprocess.spawn('node', ['build/final/flowcrypt-android-dev.js'], `listening on 3000`);
-  await wait(500); // wait for initial rn-bridge msg to pass
-  const stdLog = (type: 'stderr' | 'stdout', content: Buffer) => {
-    const msg = `node ${type}: ${content.toString().trim()}`;
-    if (type === 'stderr') {
-      stderrs.push(msg);
-      console.error(msg);
-    } else {
-      stdouts.push(msg);
-      console.log(msg);
-    }
-  };
-  Subprocess.onStderr = ({ stderr }) => stdLog('stderr', stderr);
-  Subprocess.onStdout = ({ stdout }) => stdLog('stdout', stdout);
-  return r;
-};
-
 export const parseResponse = (buffers: Buffers) => {
   const everything = Buffer.concat(buffers);
   const newlineIndex = everything.indexOf('\n');
