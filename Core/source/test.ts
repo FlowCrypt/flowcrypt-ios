@@ -10,7 +10,7 @@ global.dereq_html_sanitize = require("sanitize-html");
 
 import * as ava from 'ava';
 
-import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getKeypairs, parseResponse, httpGet } from './test/test-utils';
+import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, parseResponse } from './test/test-utils';
 
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
@@ -549,9 +549,8 @@ ava.default('parseDecryptMsg plainAtt', async t => {
 });
 
 ava.default.only('can process dirty html without throwing', async t => {
-  const dirtyBuf = await httpGet('https://raw.githubusercontent.com/cure53/HTTPLeaks/main/leak.html');
-  console.log(!!dirtyBuf);
-  const clean = Xss.htmlSanitizeKeepBasicTags(dirtyBuf.toUtfStr());
+  const dirtyBuf = await getHtmlAsset('leak');
+  const clean = Xss.htmlSanitizeKeepBasicTags(dirtyBuf.toString());
   expect(clean).to.not.contain('background');
   expect(clean).to.not.contain('script');
   expect(clean).to.not.contain('style');

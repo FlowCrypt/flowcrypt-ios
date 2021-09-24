@@ -161,6 +161,10 @@ export const getCompatAsset = async (name: string) => {
   return await readFile(`source/assets/compat/${name}.txt`);
 }
 
+export const getHtmlAsset = async (name: string) => {
+  return await readFile(`source/assets/html/${name}.html`);
+}
+
 export let readFile = (path: string): Promise<Buffer> => new Promise((resolve, reject) => fs.readFile(path, (e, data) => e ? reject(e) : resolve(data)));
 
 export let writeFile = (path: string, data: Buffer): Promise<void> => new Promise((resolve, reject) => fs.writeFile(path, data, e => e ? reject(e) : resolve()));
