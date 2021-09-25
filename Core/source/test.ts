@@ -31,8 +31,7 @@ ava.default('version', async t => {
 });
 
 ava.default('generateKey', async t => {
-  const { json: _json, data } = await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] });
-  const json = JSON.parse(_json);
+  const { json: json, data } = parseResponse(await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] }));
   expect(json.key.private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
   expect(json.key.public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
   expect(json.key.isFullyEncrypted).to.be.true;
