@@ -6,73 +6,28 @@ import * as ava from 'ava';
 import * as https from 'https';
 import * as fs from 'fs';
 import { config, expect } from 'chai';
-import { Subprocess } from './subprocess'
-import { readFileSync } from 'fs';
 import { Buf } from '../core/buf';
+import { Buffers } from '../mobile-interface/format-output';
 config.truncateThreshold = 0
 
 export type AvaContext = ava.ExecutionContext<any>;
 type JsonDict = { [k: string]: any };
 type TestKey = { pubKey: string, private: string, decrypted: string, passphrase: string, longid: string };
 
-const stderrs: string[] = [];
-const stdouts: string[] = [];
-
-export const startNodeCoreInstance = async (t: AvaContext) => {
-  const r = await Subprocess.spawn('node', ['build/final/flowcrypt-android-dev.js'], `listening on 3000`);
-  await wait(500); // wait for initial rn-bridge msg to pass
-  const stdLog = (type: 'stderr' | 'stdout', content: Buffer) => {
-    const msg = `node ${type}: ${content.toString().trim()}`;
-    if (type === 'stderr') {
-      stderrs.push(msg);
-      console.error(msg);
-    } else {
-      stdouts.push(msg);
-      console.log(msg);
-    }
-  };
-  Subprocess.onStderr = ({ stderr }) => stdLog('stderr', stderr);
-  Subprocess.onStdout = ({ stdout }) => stdLog('stdout', stdout);
-  return r;
-};
-
-const getSslInfo = new Function(`${readFileSync('source/assets/flowcrypt-android-dev-begin.js').toString()}\nreturn {NODE_SSL_CA,NODE_SSL_CRT,NODE_SSL_KEY,NODE_AUTH_HEADER};`);
-const { NODE_SSL_CA, NODE_SSL_CRT, NODE_SSL_KEY, NODE_AUTH_HEADER } = getSslInfo();
-const requestOpts = { hostname: 'localhost', port: 3000, method: 'POST', ca: NODE_SSL_CA, cert: NODE_SSL_CRT, key: NODE_SSL_KEY, headers: { Authorization: NODE_AUTH_HEADER } };
-
-export const request = (endpoint: string, json: JsonDict, data: Buffer | string | (never | undefined)[], expectSuccess = true): Promise<{ json: JsonDict, data: Buffer, err?: string, status: number }> => new Promise((resolve, reject) => {
-  const req = https.request(requestOpts, r => {
-    const buffers: Buffer[] = [];
-    r.on('data', buffer => buffers.push(buffer));
-    r.on('end', () => {
-      const everything = Buffer.concat(buffers);
-      const newlineIndex = everything.indexOf('\n');
-      if (newlineIndex === -1) {
-        console.log('everything', everything);
-        console.log('everything', everything.toString());
-        reject(`could not find newline in response data`);
-      } else {
-        const jsonLine = everything.slice(0, newlineIndex).toString();
-        const json = JSON.parse(jsonLine);
-        const data = everything.slice(newlineIndex + 1);
-        const err = json.error ? json.error.message : undefined;
-        const status = r.statusCode || -1;
-        if (expectSuccess && (status !== 200 || typeof err !== 'undefined')) {
-          reject(`Status unexpectedly ${status} with err: ${err}`);
-        } else {
-          resolve({ json, data, err, status });
-        }
-      }
-    });
-  });
-  req.on('error', reject);
-  req.write(endpoint)
-  req.write('\n');
-  req.write(JSON.stringify(json));
-  req.write('\n');
-  req.write(data instanceof Buffer ? data : Buffer.from(data as string));
-  req.end();
-});
+export const parseResponse = (buffers: Buffers) => {
+  const everything = Buffer.concat(buffers);
+  const newlineIndex = everything.indexOf('\n');
+  if (newlineIndex === -1) {
+    console.log('everything', everything);
+    console.log('everything', everything.toString());
+    throw new Error(`could not find newline in response data`);
+  }
+  const jsonLine = everything.slice(0, newlineIndex).toString();
+  const json = JSON.parse(jsonLine);
+  const data = everything.slice(newlineIndex + 1);
+  const err = json.error ? json.error.message : undefined;
+  return { json, data, err };
+}
 
 export const httpGet = async (url: string): Promise<Buf> => {
   return await new Promise((resolve, reject) => {
@@ -204,6 +159,10 @@ export const getKeypairs = (...names: KeypairName[]) => {
 
 export const getCompatAsset = async (name: string) => {
   return await readFile(`source/assets/compat/${name}.txt`);
+}
+
+export const getHtmlAsset = async (name: string) => {
+  return await readFile(`source/assets/html/${name}.html`);
 }
 
 export let readFile = (path: string): Promise<Buffer> => new Promise((resolve, reject) => fs.readFile(path, (e, data) => e ? reject(e) : resolve(data)));
