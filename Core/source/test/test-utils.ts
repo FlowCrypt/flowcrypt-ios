@@ -58,6 +58,10 @@ export const expectNoData = (data: Buffer) => {
   expect(data).to.have.property('length').that.equals(0);
 }
 
+export const expectEmptyUint8Array = (data: Uint8Array) => {
+  expect(data).to.have.property('length').that.equals(0);
+}
+
 export const expectData = (data: Buffer, type?: 'armoredMsg' | 'msgBlocks' | 'binary', details?: any[] | Buffer) => {
   expect(data).to.be.instanceof(Buffer);
   expect(data).to.have.property('length').that.does.not.equal(0);

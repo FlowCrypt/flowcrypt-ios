@@ -10,7 +10,7 @@ global.dereq_html_sanitize = require("sanitize-html");
 
 import * as ava from 'ava';
 
-import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, parseResponse } from './test/test-utils';
+import { allKeypairNames, expectData, expectEmptyJson, expectEmptyUint8Array, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, parseResponse } from './test/test-utils';
 
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
@@ -24,14 +24,15 @@ const htmlSpecialChars = Xss.escape(textSpecialChars).replace('\n', '<br />');
 const endpoints = new Endpoints();
 
 ava.default('version', async t => {
-  const { json, data } = parseResponse(await endpoints.version());
+  const { json, data } = await endpoints.version();
   expect(json).to.have.property('app_version');
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
 ava.default('generateKey', async t => {
-  const { json, data } = parseResponse(await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] }));
+  const { _json, data } = await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] });
+  const json = JSON.parse(_json);
   expect(json.key.private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
   expect(json.key.public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
   expect(json.key.isFullyEncrypted).to.be.true;
