@@ -1,5 +1,3 @@
-
-
 const fs = require('fs');
 
 const libsDir = 'source/lib';
@@ -26,7 +24,6 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
 }
 
 // copy raw to flowcrypt-bundle
-fs.copyFileSync(`${bundleRawDir}/entrypoint-node.js`, `${bundleDir}/entrypoint-node-bundle.js`);
 fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-bare-bundle.js`);
 
 const sanitizeHtmlDist = './node_modules/sanitize-html/dist/sanitize-html.js';
@@ -37,7 +34,6 @@ fs.writeFileSync(sanitizeHtmlDist, fs.readFileSync(sanitizeHtmlDist).toString().
 // -- *
 
 // copy wip to html-sanitize-bundle
-fs.copyFileSync(`${bundleWipDir}/node-html-sanitize.js`, `${bundleDir}/node-html-sanitize-bundle.js`);
 fs.writeFileSync(
   `${bundleDir}/bare-html-sanitize-bundle.js`,
   `${fs.readFileSync(sanitizeHtmlDist).toString()}\nconst dereq_html_sanitize = window.sanitizeHtml;\n`
@@ -47,13 +43,13 @@ fs.writeFileSync(
 // todo - could add `\nconst zxcvbn = window.zxcvbn;` at the end, then could call it directly from endpoint.ts
 fs.copyFileSync('./node_modules/zxcvbn/dist/zxcvbn.js', `${bundleDir}/bare-zxcvbn-bundle.js`);
 
-// // concat emailjs bundle/wip to become emailjs-bundle 
+// // concat emailjs bundle/wip to become emailjs-bundle
 // fs.writeFileSync(`${bundleDir}/emailjs-bundle.js`, [ // this would work when using modules directly from Node - we don't do that yet
 //   `${bundleWipDir}/emailjs-mime-parser.js`,
 //   `${bundleWipDir}/emailjs-mime-builder.js`,
 // ].map(path => fs.readFileSync(path).toString()).join('\n'));
 
-// concat emailjs libs/* to become emailjs-bundle 
+// concat emailjs libs/* to become emailjs-bundle
 const emailjsRawDep = [
   `${libsDir}/iso-8859-2.js`,
   `${libsDir}/emailjs/punycode.js`,
@@ -95,7 +91,6 @@ openpgpLib = replace( // rsa verify on host
   const EM = computed ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength()) : await _public_key2.default.rsa.verify(m, n, e);`
 );
 
-let openpgpLibNode = openpgpLib; // no more modifications for node code
 let openpgpLibBare = openpgpLib; // further modify bare code below
 
 openpgpLibBare = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
@@ -112,13 +107,6 @@ openpgpLibBare = replace( // bare - aes decrypt on host
 
 const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
 
-const asn1libNode = fs.readFileSync(`${bundleWipDir}/node-asn1.js`).toString()
-  .replace(/require\("safer-buffer"\)/g, 'require("buffer")'); // we don't use old node versions
-
-const minimalisticAssertLibNode = fs.readFileSync(`${bundleWipDir}/minimalistic-assert.js`).toString();
-
-const bnLibNode = fs.readFileSync(`${bundleWipDir}/bn.js`).toString();
-
 fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
   ${fs.readFileSync('source/lib/web-streams-polyfill.js').toString()}
   const ReadableStream = self.ReadableStream;
@@ -131,25 +119,9 @@ fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
   const openpgp = window.openpgp;
 `);
 
-fs.writeFileSync(`${bundleDir}/node-openpgp-bundle.js`, `
-  (function(){
-    console.debug = console.log;
-    ${minimalisticAssertLibNode}
-    ${bnLibNode}
-    ${asn1libNode}
-    ${openpgpLibNode}
-    const openpgp = module.exports;
-    module.exports = {};
-    global['openpgp'] = openpgp;
-  })();
-`);
-
 fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
   (function(){
     console.debug = console.log;
-    ${minimalisticAssertLibNode}
-    ${bnLibNode}
-    ${asn1libNode}
     ${openpgpLibNodeDev}
     const openpgp = module.exports;
     module.exports = {};

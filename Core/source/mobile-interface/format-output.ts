@@ -47,7 +47,7 @@ const fillInlineHtmlImgs = (htmlContent: string, inlineImgsByCid: { [cid: string
       // in current usage, as used by `endpoints.ts`: `block.attMeta!.data` actually contains base64 encoded data, not Uint8Array as the type claims
       let alteredSrcAttr = `src="data:${img.attMeta!.type};base64,${img.attMeta!.data}"`;
       // delete to find out if any imgs were unused
-      // later we can add the unused ones at the bottom 
+      // later we can add the unused ones at the bottom
       // (though as implemented will cause issues if the same cid is reused in several places in html - which is theoretically valid - only first will get replaced)
       delete inlineImgsByCid[cid];
       return alteredSrcAttr;
@@ -138,7 +138,8 @@ export const printReplayTestDefinition = (endpoint: string, request: {}, data: B
 ava.test.only('replaying', async t => {
   const reqData = Buf.fromBase64Str('${Buf.fromUint8(data).toBase64Str()}');
   console.log('replay ${endpoint}: ', ${JSON.stringify(request)}, '-------- begin req data ---------', reqData.toString(), '--------- end req data ---------');
-  const { data, json } = await request('${endpoint}', ${JSON.stringify(request)}, Buffer.from(reqData));
+  const { data, json } = parseResponse(await endpoints.${endpoint}(${JSON.stringify(request)},
+    [Buffer.from(reqData)]));
   console.log('response: ', json, '\n\n\n-------- begin res data ---------', Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
   t.pass();
 });

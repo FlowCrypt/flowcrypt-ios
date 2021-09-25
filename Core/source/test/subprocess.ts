@@ -3,11 +3,8 @@
 import * as child_process from 'child_process';
 import * as setNodeCleanupCb from 'node-cleanup';
 
-export interface ChildProcess extends child_process.ChildProcess {
-  exitCode?: number | null; // ts is missing this in def
-}
 
-const PROCESSES: ChildProcess[] = [];
+const PROCESSES: child_process.ChildProcess[] = [];
 const SPAWN_READINESS_TIMEOUT = 10 * 1000;
 
 export class SubprocessError extends Error {
@@ -32,10 +29,10 @@ export class Subprocess {
    */
   public static onStderr = (r: { stderr: Buffer, cmd: string, args: string[] }): void => undefined;
 
-  public static spawn = (cmd: string, rawArgs: (string | number)[], readiness_indicator?: string, env?: { [k: string]: string }): Promise<ChildProcess> => new Promise((resolve, reject) => {
+  public static spawn = (cmd: string, rawArgs: (string | number)[], readiness_indicator?: string, env?: { [k: string]: string }): Promise<child_process.ChildProcess> => new Promise((resolve, reject) => {
     let ready = false;
     const args = rawArgs.map(String);
-    const p: ChildProcess = child_process.spawn(cmd, args, { env });
+    const p: child_process.ChildProcess = child_process.spawn(cmd, args, { env });
     PROCESSES.push(p);
     if (p.stdout) {
       p.stdout.on('data', (stdout: Buffer) => {

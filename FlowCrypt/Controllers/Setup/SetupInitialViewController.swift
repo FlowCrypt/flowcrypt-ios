@@ -149,8 +149,8 @@ extension SetupInitialViewController {
             state = .fetchingKeysFromEKM
         case .doesNotUseEKM:
             state = .searchingKeyBackupsInInbox
-        case .inconsistentClientConfiguration(let message):
-            showAlert(message: message) { [weak self] in
+        case .inconsistentClientConfiguration(let error):
+            showAlert(message: error.description) { [weak self] in
                 self?.router.signOut()
             }
         }
