@@ -195,7 +195,7 @@ export class Endpoints {
     return fmtRes({ success: true, name: decryptedMeta.filename || '' }, decryptedMeta.content);
   }
 
-  public parseDateStr = async (uncheckedReq: any) => {
+  public parseDateStr = async (uncheckedReq: any): Promise<EndpointRes> => {
     const { dateStr } = ValidateInput.parseDateStr(uncheckedReq);
     return fmtRes({ timestamp: String(Date.parse(dateStr) || -1) });
   }
