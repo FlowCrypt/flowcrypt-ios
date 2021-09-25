@@ -10,7 +10,7 @@ global.dereq_html_sanitize = require("sanitize-html");
 
 import * as ava from 'ava';
 
-import { allKeypairNames, expectData, expectEmptyJson, expectEmptyUint8Array, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, parseResponse } from './test/test-utils';
+import { allKeypairNames, expectData, expectEmptyJson, expectEmptyUint8Array, expectEmptyUint8Array, getCompatAsset, getHtmlAsset, getKeypairs, parseResponse } from './test/test-utils';
 
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
@@ -31,14 +31,14 @@ ava.default('version', async t => {
 });
 
 ava.default('generateKey', async t => {
-  const { _json, data } = await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] });
+  const { json: _json, data } = await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] });
   const json = JSON.parse(_json);
   expect(json.key.private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
   expect(json.key.public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
   expect(json.key.isFullyEncrypted).to.be.true;
   expect(json.key.isFullyDecrypted).to.be.false;
   expect(json.key.algo).to.deep.equal({ algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 });
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
@@ -265,28 +265,28 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
 ava.default('parseDateStr', async t => {
   const { data, json } = parseResponse(await endpoints.parseDateStr({ dateStr: 'Sun, 10 Feb 2019 07:08:20 -0800' }));
   expect(json).to.deep.equal({ timestamp: '1549811300000' });
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
 ava.default('gmailBackupSearch', async t => {
   const { data, json } = parseResponse(await endpoints.gmailBackupSearch({ acctEmail: 'test@acct.com' }));
   expect(json).to.deep.equal({ query: 'from:test@acct.com to:test@acct.com (subject:"Your FlowCrypt Backup" OR subject: "Your CryptUp Backup" OR subject: "All you need to know about CryptUP (contains a backup)" OR subject: "CryptUP Account Backup") -is:spam' });
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
 ava.default('isEmailValid - true', async t => {
   const { data, json } = parseResponse(await endpoints.isEmailValid({ email: 'test@acct.com' }));
   expect(json).to.deep.equal({ valid: true });
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
 ava.default('isEmailValid - false', async t => {
   const { data, json } = parseResponse(await endpoints.isEmailValid({ email: 'testacct.com' }));
   expect(json).to.deep.equal({ valid: false });
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
@@ -315,7 +315,7 @@ ava.default('parseKeys', async t => {
       }
     ]
   });
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
@@ -355,7 +355,7 @@ ava.default('parseKeys - expiration and date last updated', async t => {
       }
     ]
   });
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
@@ -365,7 +365,7 @@ ava.default('decryptKey', async t => {
   const { keys: [decryptedKey] } = await openpgp.key.readArmored(json.decryptedKey);
   expect(decryptedKey.isFullyDecrypted()).to.be.true;
   expect(decryptedKey.isFullyEncrypted()).to.be.false;
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
@@ -377,7 +377,7 @@ ava.default('encryptKey', async t => {
   expect(encryptedKey.isFullyEncrypted()).to.be.true;
   expect(encryptedKey.isFullyDecrypted()).to.be.false;
   expect(await encryptedKey.decrypt(passphrase)).to.be.true;
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   t.pass();
 });
 
@@ -443,7 +443,7 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-pgpmime', async 
 
 ava.default('zxcvbnStrengthBar', async t => {
   const { data, json } = parseResponse(await endpoints.zxcvbnStrengthBar({ guesses: 88946283684265, purpose: 'passphrase' }));
-  expectNoData(data);
+  expectEmptyUint8Array(data);
   expect(json).to.deep.equal({
     word: {
       match: 'week',
