@@ -20,7 +20,7 @@ struct ClientConfigurationProvider: CacheServiceType {
     let storage: CacheStorage
     let clientConfigurationCache: CacheService<ClientConfigurationObject>
 
-    init(storage: @escaping @autoclosure CacheStorage) {
+    init(storage: @escaping @autoclosure CacheStorage = DataService.shared.storage) {
         self.storage = storage
         self.clientConfigurationCache = CacheService(storage: storage())
     }

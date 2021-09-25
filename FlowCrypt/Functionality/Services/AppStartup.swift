@@ -114,10 +114,10 @@ struct AppStartup {
         switch session {
         case let .google(email, name, _):
             guard currentUser.email != email else {
-                Logger.logInfo("UserId = current user id")
+                logger.logInfo("UserId = current user id")
                 return userId
             }
-            Logger.logInfo("UserId = google user id")
+            logger.logInfo("UserId = google user id")
             userId = UserId(email: email, name: name)
         case let .session(userObject):
             guard userObject.email != currentUser.email else {

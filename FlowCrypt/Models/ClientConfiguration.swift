@@ -37,6 +37,22 @@ struct ClientConfiguration: Codable, Equatable {
     let disallowAttesterSearchForDomains: [String]?
     let enforceKeygenAlgo: String?
     let enforceKeygenExpireMonths: Int?
+
+    init(
+        flags: [ClientConfigurationFlag]? = nil,
+        customKeyserverUrl: String? = nil,
+        keyManagerUrl: String? = nil,
+        disallowAttesterSearchForDomains: [String]? = nil,
+        enforceKeygenAlgo: String? = nil,
+        enforceKeygenExpireMonths: Int? = nil
+    ) {
+        self.flags = flags
+        self.customKeyserverUrl = customKeyserverUrl
+        self.keyManagerUrl = keyManagerUrl
+        self.disallowAttesterSearchForDomains = disallowAttesterSearchForDomains
+        self.enforceKeygenAlgo = enforceKeygenAlgo
+        self.enforceKeygenExpireMonths = enforceKeygenExpireMonths
+    }
 }
 
 // MARK: - Empty model
