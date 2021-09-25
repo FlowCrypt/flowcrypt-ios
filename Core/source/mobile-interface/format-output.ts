@@ -125,13 +125,13 @@ export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
 }
 
 export const fmtErr = (e: any): Buf => {
-  const r = fmtRes({
+  const res = fmtRes({
     error: {
       message: String(e),
       stack: e && typeof e === 'object' ? e.stack || '' : ''
     }
   });
-  return Buf.fromUtfStr(r.json);
+  return Buf.fromUtfStr(res.json);
 }
 
 export const printReplayTestDefinition = (endpoint: string, request: {}, data: Buf) => {

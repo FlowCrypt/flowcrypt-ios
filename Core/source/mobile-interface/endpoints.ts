@@ -4,7 +4,7 @@
 
 'use strict';
 
-import { Buffers, fmtContentBlock, fmtRes, isContentBlock } from './format-output';
+import { Buffers, EndpointRes, fmtContentBlock, fmtRes, isContentBlock } from './format-output';
 import { DecryptErrTypes, PgpMsg } from '../core/pgp-msg';
 import { KeyDetails, PgpKey } from '../core/pgp-key';
 import { Mime, RichHeaders } from '../core/mime';
@@ -24,19 +24,19 @@ import { openpgp } from '../core/pgp';
 
 export class Endpoints {
 
-  [endpoint: string]: ((uncheckedReq: any, data: Buffers) => Promise<Buffers>) | undefined;
+  [endpoint: string]: ((uncheckedReq: any, data: Buffers) => Promise<EndpointRes>) | undefined;
 
-  public version = async (): Promise<Buffers> => {
+  public version = async (): Promise<EndpointRes> => {
     return fmtRes({ app_version: VERSION });
   }
 
-  public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<Buffers> => {
+  public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptMsg(uncheckedReq);
     const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.concat(data), armor: true }) as OpenPGP.EncryptArmorResult;
     return fmtRes({}, Buf.fromUtfStr(encrypted.data));
   }
 
-  public generateKey = async (uncheckedReq: any): Promise<Buffers> => {
+  public generateKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // generateKey may be used when changing major settings, wipe cache to prevent dated results
     const { passphrase, userIds, variant } = ValidateInput.generateKey(uncheckedReq);
     if (passphrase.length < 12) {
@@ -46,7 +46,7 @@ export class Endpoints {
     return fmtRes({ key: await PgpKey.details(await PgpKey.read(k.private)) });
   }
 
-  public composeEmail = async (uncheckedReq: any): Promise<Buffers> => {
+  public composeEmail = async (uncheckedReq: any): Promise<EndpointRes> => {
     const req = ValidateInput.composeEmail(uncheckedReq);
     const mimeHeaders: RichHeaders = { to: req.to, from: req.from, subject: req.subject, cc: req.cc, bcc: req.bcc };
     if (req.replyToMimeMsg) {
@@ -71,13 +71,13 @@ export class Endpoints {
     }
   }
 
-  public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<Buffers> => {
+  public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptFile(uncheckedReq);
     const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.concat(data), filename: req.name, armor: false }) as OpenPGP.EncryptBinaryResult;
     return fmtRes({}, encrypted.message.packets.write());
   }
 
-  public parseDecryptMsg = async (uncheckedReq: any, data: Buffers): Promise<Buffers> => {
+  public parseDecryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd, isEmail } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data
     let rawSigned: string | undefined = undefined;
@@ -185,7 +185,7 @@ export class Endpoints {
     return fmtRes({ text, replyType, subject }, Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
   }
 
-  public decryptFile = async (uncheckedReq: any, data: Buffers): Promise<Buffers> => {
+  public decryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
     const decryptedMeta = await PgpMsg.decrypt({ kisWithPp, encryptedData: Buf.concat(data), msgPwd });
     if (!decryptedMeta.success) {
@@ -200,7 +200,7 @@ export class Endpoints {
     return fmtRes({ timestamp: String(Date.parse(dateStr) || -1) });
   }
 
-  public zxcvbnStrengthBar = async (uncheckedReq: any) => {
+  public zxcvbnStrengthBar = async (uncheckedReq: any) : Promise<EndpointRes> => {
     const r = ValidateInput.zxcvbnStrengthBar(uncheckedReq);
     if (r.purpose === 'passphrase') {
       if (typeof r.guesses === 'number') { // the host has a port of zxcvbn and already knows amount of guesses per password
@@ -220,12 +220,12 @@ export class Endpoints {
     }
   }
 
-  public gmailBackupSearch = async (uncheckedReq: any) => {
+  public gmailBackupSearch = async (uncheckedReq: any) : Promise<EndpointRes> => {
     const { acctEmail } = ValidateInput.gmailBackupSearch(uncheckedReq);
     return fmtRes({ query: gmailBackupSearchQuery(acctEmail) });
   }
 
-  public parseKeys = async (_uncheckedReq: any, data: Buffers) => {
+  public parseKeys = async (_uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const keyDetails: KeyDetails[] = [];
     const allData = Buf.concat(data);
     const pgpType = await PgpMsg.type({ data: allData });
@@ -249,12 +249,12 @@ export class Endpoints {
     return fmtRes({ format: 'binary', keyDetails: keyDetails });
   }
 
-  public isEmailValid = async (uncheckedReq: any) => {
+  public isEmailValid = async (uncheckedReq: any): Promise<EndpointRes> => {
     const { email } = ValidateInput.isEmailValid(uncheckedReq);
     return fmtRes({ valid: Str.isEmailValid(email) });
   }
 
-  public decryptKey = async (uncheckedReq: any) => {
+  public decryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // decryptKey may be used when changing major settings, wipe cache to prevent dated results
     const { armored, passphrases } = ValidateInput.decryptKey(uncheckedReq);
     if (passphrases.length !== 1) { // todo - refactor endpoint decryptKey api to accept a single pp
@@ -267,7 +267,7 @@ export class Endpoints {
     return fmtRes({ decryptedKey: null });
   }
 
-  public encryptKey = async (uncheckedReq: any) => {
+  public encryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // encryptKey may be used when changing major settings, wipe cache to prevent dated results
     const { armored, passphrase } = ValidateInput.encryptKey(uncheckedReq);
     const key = await readArmoredKeyOrThrow(armored);
@@ -278,9 +278,8 @@ export class Endpoints {
     return fmtRes({ encryptedKey: key.armor() });
   }
 
-  public keyCacheWipe = async (): Promise<Buffers> => {
+  public keyCacheWipe = async (): Promise<EndpointRes> => {
     Store.keyCacheWipe();
     return fmtRes({});
   }
-
 }
