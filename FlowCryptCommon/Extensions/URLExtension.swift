@@ -24,13 +24,20 @@ public extension URL {
 
 public extension URL {
     var mimeType: String {
-        return mimeTypes[pathExtension] ?? "text/plain"
+        return Self.mimeTypes[pathExtension] ?? "text/plain"
     }
 }
 
+public extension String {
+    var mimeType: String {
+        let parts = self.split(separator: ".")
+        guard let ext = parts.last else { return "text/plain" }
+        return URL.mimeTypes[String(ext)] ?? "text/plain"
+    }
+}
 
 private extension URL {
-    var mimeTypes: [String: String] {
+    static var mimeTypes: [String: String] {
         [
             "html": "text/html",
             "htm": "text/html",

@@ -656,7 +656,7 @@ extension ComposeViewController: UIDocumentPickerDelegate {
             showAlert(message: "files_picking_files_error_message".localized)
             return
         }
-        contextToSend.attachments.append(attachment)
+        appendAttachmentIfAllowed(attachment)
         node.reloadSections(IndexSet(integer: 2), with: .automatic)
     }
 }
@@ -681,8 +681,17 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
             showAlert(message: "files_picking_photos_error_message".localized)
             return
         }
-        contextToSend.attachments.append(attachment)
+        appendAttachmentIfAllowed(attachment)
         node.reloadSections(IndexSet(integer: 2), with: .automatic)
+    }
+
+    private func appendAttachmentIfAllowed(_ attachment: ComposeMessageAttachment) {
+        let totalSize = contextToSend.attachments.reduce(0, { $0 + $1.size })
+        if totalSize > GeneralConstants.Global.attachmentSizeLimit {
+            showToast("files_picking_size_error_message".localized)
+        } else {
+            contextToSend.attachments.append(attachment)
+        }
     }
 }
 

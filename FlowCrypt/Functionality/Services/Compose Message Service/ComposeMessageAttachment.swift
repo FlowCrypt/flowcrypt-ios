@@ -19,7 +19,7 @@ struct ComposeMessageAttachment {
 extension ComposeMessageAttachment {
     init?(librarySourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
         guard let image = librarySourceMediaInfo[.originalImage] as? UIImage,
-              let data = image.pngData(),
+              let data = image.jpegData(compressionQuality: 1),
               let asset = librarySourceMediaInfo[.phAsset] as? PHAsset else {
             return nil
         }
@@ -32,26 +32,26 @@ extension ComposeMessageAttachment {
         self.name = "\(fileName).pgp"
         self.data = data
         self.size = data.count
-        self.type = "image/jpg"
+        self.type = fileName.mimeType
     }
 
     init?(cameraSourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
         guard let image = cameraSourceMediaInfo[.originalImage] as? UIImage,
-              let data = image.pngData() else {
+              let data = image.jpegData(compressionQuality: 1) else {
             return nil
         }
 
-        self.name = "\(UUID().uuidString).png.pgp"
+        self.name = "\(UUID().uuidString).jpg.pgp"
         self.data = data
         self.size = data.count
-        self.type = "image/png"
+        self.type = "image/jpg"
     }
 
     init?(fileURL: URL) {
         guard let data = try? Data(contentsOf: fileURL) else {
             return nil
         }
-        
+
         self.name = "\(fileURL.lastPathComponent).pgp"
         self.data = data
         self.size = data.count

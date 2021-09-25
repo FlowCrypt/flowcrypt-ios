@@ -278,6 +278,7 @@ class ComposeMessageServiceTests: XCTestCase {
             from: email,
             subject: subject,
             replyToMimeMsg: nil,
+            atts: [],
             pubKeys: [
                 "pubKey",
                 "pubKey",
