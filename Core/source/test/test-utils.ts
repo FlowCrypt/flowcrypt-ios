@@ -7,26 +7,15 @@ import * as https from 'https';
 import * as fs from 'fs';
 import { config, expect } from 'chai';
 import { Buf } from '../core/buf';
-import { Buffers } from '../mobile-interface/format-output';
+import { EndpointRes } from '../mobile-interface/format-output';
 config.truncateThreshold = 0
 
 export type AvaContext = ava.ExecutionContext<any>;
 type JsonDict = { [k: string]: any };
 type TestKey = { pubKey: string, private: string, decrypted: string, passphrase: string, longid: string };
 
-export const parseResponse = (buffers: Buffers) => {
-  const everything = Buffer.concat(buffers);
-  const newlineIndex = everything.indexOf('\n');
-  if (newlineIndex === -1) {
-    console.log('everything', everything);
-    console.log('everything', everything.toString());
-    throw new Error(`could not find newline in response data`);
-  }
-  const jsonLine = everything.slice(0, newlineIndex).toString();
-  const json = JSON.parse(jsonLine);
-  const data = everything.slice(newlineIndex + 1);
-  const err = json.error ? json.error.message : undefined;
-  return { json, data, err };
+export const parseResponse = (response: EndpointRes) => {
+  return { json: JSON.parse(response.json), data: response.data };
 }
 
 export const httpGet = async (url: string): Promise<Buf> => {
@@ -53,17 +42,14 @@ export const expectEmptyJson = (json: JsonDict) => {
   expect(Object.keys(json)).to.have.property('length').that.equals(0);
 }
 
-export const expectNoData = (data: Buffer) => {
-  expect(data).to.be.instanceof(Buffer);
+export const expectNoData = (data: Uint8Array) => {
+  expect(data).to.be.instanceof(Uint8Array);
   expect(data).to.have.property('length').that.equals(0);
 }
 
-export const expectEmptyUint8Array = (data: Uint8Array) => {
-  expect(data).to.have.property('length').that.equals(0);
-}
-
-export const expectData = (data: Buffer, type?: 'armoredMsg' | 'msgBlocks' | 'binary', details?: any[] | Buffer) => {
-  expect(data).to.be.instanceof(Buffer);
+export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' | 'binary', details?: any[] | Buffer) => {
+  expect(_data).to.be.instanceof(Uint8Array);
+  const data = Buffer.from(_data);
   expect(data).to.have.property('length').that.does.not.equal(0);
   const dataStr = data.toString();
   if (type === 'armoredMsg') {
