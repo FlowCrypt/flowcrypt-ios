@@ -21,7 +21,7 @@ global.handleRequestFromHost = (endpointName: string, request: string, data: str
       cb(formatBareOutput(fmtErr(new Error(`Unknown endpoint: ${endpointName}`))));
     } else {
       handler(JSON.parse(request), [Buf.fromBase64Str(data)])
-        .then(res => cb(formatBareOutput(Buf.concat(res))))
+        .then(res => cb(formatBareOutput(Buf.fromUtfStr(JSON.stringify(res)))))
         .catch(err => cb(formatBareOutput(fmtErr(err))));
     }
   } catch (err) {
