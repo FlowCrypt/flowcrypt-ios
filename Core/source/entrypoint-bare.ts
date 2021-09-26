@@ -6,25 +6,23 @@
 
 import { Buf } from './core/buf';
 import { Endpoints } from './mobile-interface/endpoints';
-import { fmtErr } from './mobile-interface/format-output';
+import { EndpointRes, fmtErr } from './mobile-interface/format-output';
 
 declare const global: any;
 
 const endpoints = new Endpoints();
 
-const formatBareOutput = (res: Buf) => res.toBase64Str();
-
-global.handleRequestFromHost = (endpointName: string, request: string, data: string, cb: (b64response: string) => void): void => {
+global.handleRequestFromHost = (endpointName: string, request: string, data: string, cb: (response: EndpointRes) => void): void => {
   try {
     const handler = endpoints[endpointName];
     if (!handler) {
-      cb(formatBareOutput(fmtErr(new Error(`Unknown endpoint: ${endpointName}`))));
+      cb(fmtErr(new Error(`Unknown endpoint: ${endpointName}`)));
     } else {
       handler(JSON.parse(request), [Buf.fromBase64Str(data)])
-        .then(res => cb(formatBareOutput(Buf.fromUtfStr(JSON.stringify(res)))))
-        .catch(err => cb(formatBareOutput(fmtErr(err))));
+        .then(res => cb(res))
+        .catch(err => cb(fmtErr(err)));
     }
   } catch (err) {
-    cb(formatBareOutput(fmtErr(err)));
+    cb(fmtErr(err));
   }
 };
