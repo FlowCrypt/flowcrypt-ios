@@ -10,6 +10,7 @@ import { Str } from '../core/common';
 import { Xss } from '../platform/xss';
 
 export type Buffers = (Buf | Uint8Array)[];
+export type EndpointRes = {json: string, data: Buf | Uint8Array};
 
 export const isContentBlock = (t: MsgBlockType) => t === 'plainText' || t === 'decryptedText' || t === 'plainHtml' || t === 'decryptedHtml' || t === 'signedMsg' || t === 'verifiedMsg';
 
@@ -116,22 +117,21 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
   return { contentBlock: MsgBlock.fromContent('plainHtml', msgContentAsHtml), text: msgContentAsText.trim() };
 }
 
-export const fmtRes = (response: {}, data?: Buf | Uint8Array): Buffers => {
-  const buffers: Buffers = [];
-  buffers.push(Buf.fromUtfStr(JSON.stringify(response)));
-  buffers.push(Buf.fromUtfStr('\n'));
-  if (data) {
-    buffers.push(data);
-  }
-  return buffers;
+export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
+  return {
+    json: JSON.stringify(response),
+    data: data || new Uint8Array(0)
+  };
 }
 
-export const fmtErr = (e: any): Buf => Buf.concat(fmtRes({
-  error: {
-    message: String(e),
-    stack: e && typeof e === 'object' ? e.stack || '' : ''
-  }
-}));
+export const fmtErr = (e: any): EndpointRes => {
+  return fmtRes({
+    error: {
+      message: String(e),
+      stack: e && typeof e === 'object' ? e.stack || '' : ''
+    }
+  });
+}
 
 export const printReplayTestDefinition = (endpoint: string, request: {}, data: Buf) => {
   console.log(`
