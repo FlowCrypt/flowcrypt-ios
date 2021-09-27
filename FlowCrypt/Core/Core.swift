@@ -35,7 +35,7 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
 
     private var jsEndpointListener: JSValue?
     private var cb_catcher: JSValue?
-    private var cb_last_value: [Any]?
+    private var cb_last_value: (String, [UInt8])?
     private var vm = JSVirtualMachine()!
     private var context: JSContext?
     private dynamic var started = false
@@ -82,7 +82,7 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         ]
         let decrypted = try call("decryptFile", jsonDict: json, data: encrypted)
         let meta = try decrypted.json.decodeJson(as: CoreRes.DecryptFileMeta.self)
-        
+
         return CoreRes.DecryptFile(name: meta.name, content: decrypted.data)
     }
     
@@ -183,8 +183,6 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
                 self.context!.evaluateScript(jsFileSrc)
                 self.jsEndpointListener = self.context!.objectForKeyedSubscript("handleRequestFromHost")
                 self.cb_catcher = self.context!.objectForKeyedSubscript("engine_host_cb_value_formatter")
-                let cb_last_value_filler: @convention(block) ([NSObject]) -> Void = { values in self.cb_last_value = values }
-                self.context!.setObject(unsafeBitCast(cb_last_value_filler, to: AnyObject.self), forKeyedSubscript: "engine_host_cb_catcher" as (NSCopying & NSObjectProtocol)?)
                 self.ready = true
                 self.logger.logInfo("JsContext took \(trace.finish()) to start")
                 completion()
@@ -196,6 +194,10 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         let response = try call("gmailBackupSearch", jsonDict: ["acctEmail": email], data: nil)
         let result = try response.json.decodeJson(as: GmailBackupSearchResponse.self)
         return result.query
+    }
+
+    func handleCallbackResult(json: String, data: [UInt8]) {
+        cb_last_value = (json, data)
     }
 
     // MARK: Private calls
@@ -211,18 +213,22 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         try blockUntilReadyOrThrow()
         cb_last_value = nil
         jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, data.base64EncodedString(), cb_catcher!])
-        let b64response = cb_last_value![0] as! String
-        let rawResponse = Data(base64Encoded: b64response)!
-        let separatorIndex = rawResponse.firstIndex(of: 10)!
-        let resJsonData = Data(rawResponse[...(separatorIndex - 1)])
+        guard
+            let resJsonData = cb_last_value?.0.data(using: .utf8),
+            let rawResponse = cb_last_value?.1
+        else {
+            throw CoreError.format("JavaScript callback response not available")
+        }
+
         let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
         if let error = error {
             let errMsg = "------ js err -------\nCore \(endpoint):\n\(error.error.message)\n\(error.error.stack ?? "no stack")\n------- end js err -----"
             logger.logError(errMsg)
-            
+
             throw CoreError.init(coreError: error) ?? CoreError.exception(errMsg)
         }
-        return RawRes(json: resJsonData, data: Data(rawResponse[(separatorIndex + 1)...]))
+
+        return RawRes(json: resJsonData, data: Data(rawResponse))
     }
     
     private func blockUntilReadyOrThrow() throws {

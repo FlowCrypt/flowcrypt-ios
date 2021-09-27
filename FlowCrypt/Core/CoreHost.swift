@@ -21,6 +21,8 @@ import SwiftyRSA // for rsa
 
     func setTimeout(_ callback: JSValue, _ ms: Double) -> String
     func clearTimeout(_ identifier: String)
+
+    func handleCallback(_ string: String, _ data: [UInt8])
 }
 
 var timers = [String: Timer]()
@@ -113,6 +115,10 @@ final class CoreHost: NSObject, CoreHostExports {
             timers[uuid] = timer
         }
         return uuid
+    }
+
+    func handleCallback(_ string: String, _ data: [UInt8]) {
+        Core.shared.handleCallbackResult(json: string, data: data)
     }
 
     @objc func callJsCb(_ timer: Timer) {
