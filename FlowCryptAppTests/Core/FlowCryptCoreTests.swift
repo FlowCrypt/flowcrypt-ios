@@ -7,10 +7,12 @@
 //
 
 import XCTest
+import Combine
 @testable import FlowCrypt
 
 class FlowCryptCoreTests: XCTestCase {
     var core: Core! = .shared
+    private var cancellable = Set<AnyCancellable>()
     
     override func setUp() {
         let expectation = XCTestExpectation()
@@ -89,8 +91,18 @@ class FlowCryptCoreTests: XCTestCase {
 
     func testComposeEmailPlain() throws {
         let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
-        let composeEmailRes = try core.composeEmail(msg: msg, fmt: MsgFmt.plain, pubKeys: nil)
-        let mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
+        let expectation = XCTestExpectation()
+        
+        var mime: String = ""
+        core.composeEmail(msg: msg, fmt: .plain, pubKeys: nil)
+            .sinkFuture(
+                receiveValue: { composeEmailRes in
+                    mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
+                    expectation.fulfill()
+                }, receiveError: {_ in }
+            )
+            .store(in: &cancellable)
+        wait(for: [expectation], timeout: 3)
         XCTAssertNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // not encrypted
         XCTAssertNotNil(mime.range(of: msg.text)) // plain text visible
         XCTAssertNotNil(mime.range(of: "Subject: \(msg.subject)")) // has mime Subject header
@@ -99,8 +111,18 @@ class FlowCryptCoreTests: XCTestCase {
 
     func testComposeEmailEncryptInline() throws {
         let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
-        let composeEmailRes = try core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
-        let mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
+        let expectation = XCTestExpectation()
+        
+        var mime: String = ""
+        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
+            .sinkFuture(
+                receiveValue: { composeEmailRes in
+                    mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
+                    expectation.fulfill()
+                }, receiveError: {_ in }
+            )
+            .store(in: &cancellable)
+        wait(for: [expectation], timeout: 3)
         XCTAssertNotNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // encrypted
         XCTAssertNil(mime.range(of: msg.text)) // plain text not visible
         XCTAssertNotNil(mime.range(of: "Subject: \(msg.subject)")) // has mime Subject header
@@ -114,9 +136,20 @@ class FlowCryptCoreTests: XCTestCase {
         let generateKeyRes = try core.generateKey(passphrase: passphrase, variant: KeyVariant.curve25519, userIds: [UserId(email: email, name: "End to end")])
         let k = generateKeyRes.key
         let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: email, subject: "e2e subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
-        let mime = try core.composeEmail(msg: msg, fmt: MsgFmt.encryptInline, pubKeys: [k.public])
+        let expectation = XCTestExpectation()
+        
+        var mime: CoreRes.ComposeEmail?
+        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [k.public])
+            .sinkFuture(
+                receiveValue: { composeEmailRes in
+                    mime = composeEmailRes
+                    expectation.fulfill()
+                }, receiveError: {_ in }
+            )
+            .store(in: &cancellable)
+        wait(for: [expectation], timeout: 3)
         let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase, fingerprints: k.fingerprints)]
-        let decrypted = try core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true)
+        let decrypted = try core.parseDecryptMsg(encrypted: mime?.mimeEncoded ?? Data(), keys: keys, msgPwd: nil, isEmail: true)
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.encrypted)
         XCTAssertEqual(decrypted.blocks.count, 1)

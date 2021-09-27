@@ -6,7 +6,7 @@
 //  Copyright © 2021 FlowCrypt Limited. All rights reserved.
 //
 
-import Promises
+import Combine
 import UIKit
 
 protocol FileType {
@@ -16,8 +16,11 @@ protocol FileType {
 }
 
 protocol FilesManagerType {
-    func save(file: FileType) -> Promise<URL>
-    func saveToFilesApp(file: FileType, from viewController: UIViewController & UIDocumentPickerDelegate) -> Promise<Void>
+    func save(file: FileType) -> Future<URL, Error>
+    func saveToFilesApp(file: FileType, from viewController: UIViewController & UIDocumentPickerDelegate) -> AnyPublisher<Void, Error>
+
+    @discardableResult
+    func selectFromFilesApp(from viewController: UIViewController & UIDocumentPickerDelegate) -> Future<Void, Error>
 }
 
 class FilesManager: FilesManagerType {
@@ -25,13 +28,15 @@ class FilesManager: FilesManagerType {
     private let documentsDirectoryURL: URL = {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }()
+    private var cancellable = Set<AnyCancellable>()
 
     private let queue: DispatchQueue = DispatchQueue.global(qos: .background)
 
-    func save(file: FileType) -> Promise<URL> {
-        Promise<URL> { [weak self] resolve, reject in
+    func save(file: FileType) -> Future<URL, Error> {
+        Future<URL, Error> { [weak self] promise in
             guard let self = self else {
-                throw AppErr.nilSelf
+                promise(.failure(AppErr.nilSelf))
+                return
             }
 
             let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
@@ -39,9 +44,9 @@ class FilesManager: FilesManagerType {
 
                 do {
                     try file.data.write(to: url)
-                    resolve(url)
+                    promise(.success(url))
                 } catch {
-                    reject(error)
+                    promise(.failure(error))
                 }
             }
         }
@@ -50,17 +55,33 @@ class FilesManager: FilesManagerType {
     func saveToFilesApp(
         file: FileType,
         from viewController: UIViewController & UIDocumentPickerDelegate
-    ) -> Promise<Void> {
-        Promise<Void> { [weak self] resolve, _ in
-            guard let self = self else {
-                throw AppErr.nilSelf
+    ) -> AnyPublisher<Void, Error> {
+        return self.save(file: file)
+            .flatMap { url in
+                Future<Void, Error> { promise in
+                    DispatchQueue.main.async {
+                        let documentController = UIDocumentPickerViewController(url: url, in: .exportToService)
+                        documentController.delegate = viewController
+                        viewController.present(documentController, animated: true)
+                        promise(.success(()))
+                    }
+                }
             }
-            let url = try? awaitPromise(self.save(file: file))
+            .eraseToAnyPublisher()
+    }
+
+    @discardableResult
+    func selectFromFilesApp(
+        from viewController: UIViewController & UIDocumentPickerDelegate
+    ) -> Future<Void, Error> {
+        Future<Void, Error> { promise in
             DispatchQueue.main.async {
-                let documentController = UIDocumentPickerViewController(url: url!, in: .exportToService)
+                let documentController = UIDocumentPickerViewController(
+                    documentTypes: ["public.data"], in: .import
+                )
                 documentController.delegate = viewController
                 viewController.present(documentController, animated: true)
-                resolve(())
+                promise(.success(()))
             }
         }
     }
