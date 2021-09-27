@@ -29,6 +29,7 @@ public final class TextViewCellNode: CellNode {
     public enum TextViewActionType {
         case didEndEditing(NSAttributedString?)
         case didBeginEditing(NSAttributedString?)
+        case editingChanged(NSAttributedString?)
     }
 
     public typealias TextViewAction = (TextViewActionType) -> Void
@@ -66,6 +67,10 @@ public final class TextViewCellNode: CellNode {
 extension TextViewCellNode: ASEditableTextNodeDelegate {
     public func editableTextNodeDidBeginEditing(_ editableTextNode: ASEditableTextNode) {
         action?(.didBeginEditing(editableTextNode.attributedText))
+    }
+    
+    public func editableTextNodeDidUpdateText(_ editableTextNode: ASEditableTextNode) {
+        action?(.editingChanged(editableTextNode.attributedText))
     }
 
     public func editableTextNodeDidFinishEditing(_ editableTextNode: ASEditableTextNode) {

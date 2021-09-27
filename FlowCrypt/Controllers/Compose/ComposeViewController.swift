@@ -340,13 +340,20 @@ extension ComposeViewController {
         return TextViewCellNode(
             decorator.styledTextViewInput(with: preferredHeight)
         ) { [weak self] event in
-            guard case let .didEndEditing(text) = event else { return }
-            self?.contextToSend.message = text?.string
+            switch event {
+            case .editingChanged(let text), .didEndEditing(let text):
+                self?.contextToSend.message = text?.string
+            case .didBeginEditing:
+                break
+            }
         }
         .then {
-            guard self.input.isReply else { return }
-            $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
-            $0.becomeFirstResponder()
+            if self.input.isReply {
+                $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
+                $0.becomeFirstResponder()
+            } else {
+                $0.textView.attributedText = self.decorator.styledMessage(with: contextToSend.message ?? "")
+            }
         }
     }
 

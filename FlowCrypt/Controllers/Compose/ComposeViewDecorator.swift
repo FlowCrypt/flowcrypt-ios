@@ -63,6 +63,10 @@ struct ComposeViewDecorator {
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         )
     }
+    
+    func styledMessage(with text: String) -> NSAttributedString {
+        text.attributed(.regular(17))
+    }
 
     func styledReplyQuote(with input: ComposeMessageInput) -> NSAttributedString {
         guard case let .reply(info) = input.type else { return NSAttributedString(string: "") }
