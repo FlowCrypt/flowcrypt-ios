@@ -49,7 +49,7 @@ public final class TextFieldCellNode: CellNode {
         }
     }
 
-    private var textFiledAction: TextFieldAction?
+    private var textFieldAction: TextFieldAction?
 
     private let input: Input
 
@@ -75,7 +75,7 @@ public final class TextFieldCellNode: CellNode {
         )
         self.input = input
         super.init()
-        textFiledAction = action
+        textFieldAction = action
 
         textField.attributedPlaceholderText = input.placeholder
         textField.isSecureTextEntry = input.isSecureTextEntry

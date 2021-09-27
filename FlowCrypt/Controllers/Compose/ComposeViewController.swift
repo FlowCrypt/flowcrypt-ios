@@ -310,8 +310,12 @@ extension ComposeViewController {
         TextFieldCellNode(
             input: decorator.styledTextFieldInput(with: "compose_subject".localized)
         ) { [weak self] event in
-            guard case let .didEndEditing(text) = event else { return }
-            self?.contextToSend.subject = text
+            switch event {
+            case .editingChanged(let text), .didEndEditing(let text):
+                self?.contextToSend.subject = text
+            case .didBeginEditing, .deleteBackward:
+                return
+            }
         }
         .onShouldReturn { [weak self] _ in
             guard let self = self else { return true }
@@ -323,7 +327,8 @@ extension ComposeViewController {
             return true
         }
         .then {
-            $0.attributedText = decorator.styledTitle(with: input.subjectReplyTitle)
+            let subject = input.isReply ? input.subjectReplyTitle : contextToSend.subject
+            $0.attributedText = decorator.styledTitle(with: subject)
         }
     }
 
