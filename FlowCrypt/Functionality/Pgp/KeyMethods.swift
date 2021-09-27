@@ -35,17 +35,13 @@ final class KeyMethods: KeyMethodsType {
                 return nil
             }
 
-            guard let decrypted = try? self.decrypter.decryptKey(armoredPrv: privateKey, passphrase: passPhrase) else {
+            do {
+                _ = try self.decrypter.decryptKey(armoredPrv: privateKey, passphrase: passPhrase)
+                return key
+            } catch {
                 logger.logInfo("Filtered not decrypted key")
                 return nil
             }
-
-            guard decrypted.decryptedKey != nil else {
-                logger.logInfo("Filtered. decryptedKey = nil for key \(key.primaryFingerprint)")
-                return nil
-            }
-
-            return key
         }
     }
 }

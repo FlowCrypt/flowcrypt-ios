@@ -37,7 +37,7 @@ struct CoreRes {
     }
 
     struct DecryptKey: Decodable {
-        let decryptedKey: String?
+        let decryptedKey: String
     }
 
     struct EncryptKey: Decodable {
