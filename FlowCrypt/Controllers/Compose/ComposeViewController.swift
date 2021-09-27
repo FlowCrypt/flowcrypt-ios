@@ -343,8 +343,12 @@ extension ComposeViewController {
     }
 
     private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
+        let textFieldHeight = decorator.styledTextFieldInput(with: "").height
+        let dividerHeight: CGFloat = 1
+        let preferredHeight = nodeHeight - 2 * (textFieldHeight + dividerHeight)
+        
         return TextViewCellNode(
-            decorator.styledTextViewInput(with: 40)
+            decorator.styledTextViewInput(with: preferredHeight)
         ) { [weak self] event in
             switch event {
             case .editingChanged(let text), .didEndEditing(let text):
@@ -354,11 +358,16 @@ extension ComposeViewController {
             }
         }
         .then {
-            if self.input.isReply {
-                $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
+            let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
+            let replyQuote = decorator.styledReplyQuote(with: input)
+            
+            if input.isReply && !messageText.string.contains(replyQuote.string) {
+                let mutableString = NSMutableAttributedString(attributedString: messageText)
+                mutableString.append(replyQuote)
+                $0.textView.attributedText = mutableString
                 $0.becomeFirstResponder()
             } else {
-                $0.textView.attributedText = self.decorator.styledMessage(with: contextToSend.message ?? "")
+                $0.textView.attributedText = messageText
             }
         }
     }
