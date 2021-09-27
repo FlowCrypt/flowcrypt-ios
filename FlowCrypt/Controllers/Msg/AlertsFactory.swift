@@ -25,7 +25,7 @@ enum AlertsFactory {
             tf.isSecureTextEntry = true
         }
 
-        let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+        let saveAction = UIAlertAction(title: "Ok", style: .default) { _ in
             guard let textField = alert.textFields?.first,
                   let passPhrase = textField.text,
                   passPhrase.isNotEmpty
