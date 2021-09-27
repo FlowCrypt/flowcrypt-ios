@@ -78,14 +78,13 @@ class FlowCryptCoreTests: XCTestCase {
         let decryptKeyRes = try core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: TestData.k0.passphrase)
         XCTAssertNotNil(decryptKeyRes.decryptedKey)
         // make sure indeed decrypted
-        let parseKeyRes = try core.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey!.data(using: .utf8)!)
+        let parseKeyRes = try core.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey.data(using: .utf8)!)
         XCTAssertEqual(parseKeyRes.keyDetails[0].isFullyDecrypted, true)
         XCTAssertEqual(parseKeyRes.keyDetails[0].isFullyEncrypted, false)
     }
 
-    func testDecryptKeyWithWrongPassPhrase() throws {
-        let k = try core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong")
-        XCTAssertNil(k.decryptedKey)
+    func testDecryptKeyWithWrongPassPhrase() {
+        XCTAssertThrowsError(try core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong"))
     }
 
     func testComposeEmailPlain() throws {
