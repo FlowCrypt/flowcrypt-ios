@@ -23,6 +23,7 @@
 		2155E9EF26E3628C008FB033 /* Refreshable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2155E9EE26E3628C008FB033 /* Refreshable.swift */; };
 		215897E8267A553300423694 /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215897E7267A553200423694 /* FilesManager.swift */; };
 		21594C9626F1DBA900BE654C /* data.txt in Resources */ = {isa = PBXBuildFile; fileRef = 21594C9526F1DBA900BE654C /* data.txt */; };
+		21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21623D1726FA860600A11B9A /* PhotosManager.swift */; };
 		21750D7D26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */; };
 		21750D7F26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */; };
 		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
@@ -36,6 +37,7 @@
 		21EA3B592656611D00691848 /* OrganisationalRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* OrganisationalRule.swift */; };
 		21EFF61F265A5C6700AB0B71 /* WKDURLsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EFF61E265A5C6700AB0B71 /* WKDURLsApi.swift */; };
 		21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */; };
+		21FEE26626FDD91A00E3783F /* ComposeMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */; };
 		32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4B11D4531B3B04D01D1 /* AppErr.swift */; };
 		32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		32DCA1414EEA727B86C337D5 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
@@ -407,6 +409,7 @@
 		2155E9EE26E3628C008FB033 /* Refreshable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Refreshable.swift; sourceTree = "<group>"; };
 		215897E7267A553200423694 /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
 		21594C9526F1DBA900BE654C /* data.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = data.txt; sourceTree = "<group>"; };
+		21623D1726FA860600A11B9A /* PhotosManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosManager.swift; sourceTree = "<group>"; };
 		21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupEKMKeyViewController.swift; sourceTree = "<group>"; };
 		21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupCreatePassphraseAbstractViewController.swift; sourceTree = "<group>"; };
 		2196A21F2684B9BE001B9E00 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
@@ -425,6 +428,7 @@
 		21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataExntensions+ZBase32Encoding.swift"; sourceTree = "<group>"; };
 		21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZBase32EncodingTests.swift; sourceTree = "<group>"; };
 		21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructorTests.swift; sourceTree = "<group>"; };
+		21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageAttachment.swift; sourceTree = "<group>"; };
 		27D857C43583281B45F427F8 /* Pods-FlowCryptUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.release.xcconfig"; sourceTree = "<group>"; };
 		2B4C2647A021692455F9DFAD /* Pods-FlowCryptAppTests.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptAppTests.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests.enterprise.xcconfig"; sourceTree = "<group>"; };
 		32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
@@ -868,6 +872,14 @@
 			path = FilesManager;
 			sourceTree = "<group>";
 		};
+		21623D1926FA860E00A11B9A /* PhotosManager */ = {
+			isa = PBXGroup;
+			children = (
+				21623D1726FA860600A11B9A /* PhotosManager.swift */,
+			);
+			path = PhotosManager;
+			sourceTree = "<group>";
+		};
 		21CE25D32650034500ADFF4B /* WKDURLs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1300,6 +1312,7 @@
 			children = (
 				9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */,
 				9F6F3BED26ADF5DE005BD9C6 /* ComposeMessageError.swift */,
+				21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */,
 			);
 			path = "Compose Message Service";
 			sourceTree = "<group>";
@@ -1624,6 +1637,7 @@
 		C132B9C61EC2DCC000763715 /* Functionality */ = {
 			isa = PBXGroup;
 			children = (
+				21623D1926FA860E00A11B9A /* PhotosManager */,
 				215897E6267A551300423694 /* FilesManager */,
 				21CE25D32650034500ADFF4B /* WKDURLs */,
 				A370EAB6238697E000685215 /* Pgp */,
@@ -2540,6 +2554,7 @@
 				9FB22CE425715D3E0026EE64 /* GmailServiceErrorHandler.swift in Sources */,
 				9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
+				21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */,
 				9F976592267E19880058419D /* TestData.swift in Sources */,
@@ -2681,6 +2696,7 @@
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
 				21489B78267CB42400BDE4AC /* ClientConfigurationProvider.swift in Sources */,
 				9FF0671C25520D9D00FCC9E6 /* MailProvider.swift in Sources */,
+				21FEE26626FDD91A00E3783F /* ComposeMessageAttachment.swift in Sources */,
 				9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */,
 				9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */,
 				32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */,
