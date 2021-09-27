@@ -101,6 +101,10 @@ extension AppTest {
         }
     }
 
+    func tapOnHomeButton() {
+        XCUIDevice.shared.press(.home)
+    }
+
     func logOutIfNeeded() {
         logger.logInfo("Log out if needed")
 

@@ -295,7 +295,7 @@ class SignInImapTest: XCTestCase, AppTest {
         application.tables.textFields["Subject"].tap()
         wait(1)
         application.tables.textFields["Subject"].tap()
-        app.typeText("Subject")
+        app.typeText("Some Subject")
         app.navigationBars["Inbox"].buttons["android send"].tap()
 
         let errorMessage = application.alerts["Error"].scrollViews.otherElements
@@ -305,6 +305,14 @@ class SignInImapTest: XCTestCase, AppTest {
         let cell = app.tables.children(matching: .cell).element(boundBy: 5)
         cell.tap()
         app.typeText("Message")
+
+        tapOnHomeButton()
+        wait(0.3)
+        application.activate()
+        
+        XCTAssertEqual(application.tables.textFields["Subject"].value as? String, "Some Subject")
+        XCTAssertEqual(cell.textViews.firstMatch.value as? String, "Message")
+
         app.navigationBars["Inbox"].buttons["android send"].tap()
 
         XCTAssert(errorAlert.staticTexts["Could not compose message\n\nRecipient doesn't seem to have encryption set up"].exists)
