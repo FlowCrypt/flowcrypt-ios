@@ -76,10 +76,6 @@ extension TextViewCellNode: ASEditableTextNodeDelegate {
     public func editableTextNodeDidBeginEditing(_ editableTextNode: ASEditableTextNode) {
         action?(.didBeginEditing(editableTextNode.attributedText))
     }
-    
-    public func editableTextNodeDidUpdateText(_ editableTextNode: ASEditableTextNode) {
-        action?(.editingChanged(editableTextNode.attributedText))
-    }
 
     public func editableTextNodeDidFinishEditing(_ editableTextNode: ASEditableTextNode) {
         action?(.didEndEditing(editableTextNode.attributedText))
@@ -88,5 +84,6 @@ extension TextViewCellNode: ASEditableTextNodeDelegate {
     public func editableTextNodeDidUpdateText(_ editableTextNode: ASEditableTextNode) {
         let calculatedHeight = editableTextNode.textView.sizeThatFits(textView.frame.size).height
         setHeight(calculatedHeight)
+        action?(.editingChanged(editableTextNode.attributedText))
     }
 }
