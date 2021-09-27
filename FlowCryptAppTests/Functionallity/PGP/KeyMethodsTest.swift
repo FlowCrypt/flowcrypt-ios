@@ -66,12 +66,6 @@ class KeyMethodsTest: XCTestCase {
         XCTAssertTrue(result.isEmpty)
     }
     
-    func testNoDecryptedKey() {
-        decrypter.result = .success(CoreRes.DecryptKey(decryptedKey: nil))
-        let result = sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
-        XCTAssertTrue(result.isEmpty)
-    }
-    
     func testSuccessDecryption() {
         decrypter.result = .success(CoreRes.DecryptKey(decryptedKey: "some key"))
         let result = sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)

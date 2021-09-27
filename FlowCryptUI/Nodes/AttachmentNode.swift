@@ -26,7 +26,7 @@ public final class AttachmentNode: CellNode {
 
     public init(
         input: Input,
-        onDownloadTap: (() -> Void)?
+        onDownloadTap: (() -> Void)? = nil
     ) {
         self.onDownloadTap = onDownloadTap
         super.init()
@@ -45,6 +45,7 @@ public final class AttachmentNode: CellNode {
         subtitleNode.attributedText = input.size
 
         buttonNode.addTarget(self, action: #selector(onDownloadButtonTap), forControlEvents: .touchUpInside)
+        buttonNode.isHidden = onDownloadTap == nil
     }
 
     @objc private func onDownloadButtonTap() {

@@ -32,7 +32,7 @@ struct ComposeViewDecorator {
         )
     }
 
-    func styledTextFieldInput(with text: String) -> TextFieldCellNode.Input {
+    func styledTextFieldInput(with text: String, keyboardType: UIKeyboardType = .default) -> TextFieldCellNode.Input {
         TextFieldCellNode.Input(
             placeholder: text.localized.attributed(
                 .regular(17),
@@ -43,7 +43,8 @@ struct ComposeViewDecorator {
             textInsets: -8,
             textAlignment: .left,
             height: 40,
-            width: UIScreen.main.bounds.width
+            width: UIScreen.main.bounds.width,
+            keyboardType: keyboardType
         )
     }
 
@@ -191,6 +192,18 @@ extension RecipientEmailsCellNode.Input {
                 alignment: .left
             ),
             state: recipient.state
+        )
+    }
+}
+
+// MARK: - AttachmentNode.Input
+extension AttachmentNode.Input {
+    init(composeAttachment: ComposeMessageAttachment) {
+        self.init(
+            name: composeAttachment.name
+                .attributed(.regular(18), color: .textColor, alignment: .left),
+            size: "\(composeAttachment.size)"
+                .attributed(.medium(12), color: .textColor, alignment: .left)
         )
     }
 }

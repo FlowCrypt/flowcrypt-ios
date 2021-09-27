@@ -7,11 +7,16 @@
 //
 
 import Foundation
+import Combine
 @testable import FlowCrypt
 
 class CoreComposeMessageMock: CoreComposeMessageType {
+    
     var composeEmailResult: ((SendableMsg, MsgFmt, [String]?) -> (CoreRes.ComposeEmail))!
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) throws -> CoreRes.ComposeEmail {
-        composeEmailResult(msg, fmt, pubKeys)
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) -> Future<CoreRes.ComposeEmail, Error> {
+        Future<CoreRes.ComposeEmail, Error> { [weak self] promise in
+            guard let self = self else { return }
+            promise(.success(self.composeEmailResult(msg, fmt, pubKeys)))
+        }
     }
 }

@@ -6,6 +6,7 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 import Promises
+import Combine
 
 /**
  * View controller to render an email message (sender, subject, message body, attachments)
@@ -54,6 +55,8 @@ final class MessageViewController: TableNodeViewController {
 
     typealias MsgViewControllerCompletion = (MessageAction, Message) -> Void
     private let onCompletion: MsgViewControllerCompletion?
+
+    private var cancellable = Set<AnyCancellable>()
 
     private var input: MessageViewController.Input?
     private let decorator: MessageViewDecorator
@@ -439,11 +442,15 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
             onDownloadTap: { [weak self] in
                 guard let self = self else { return }
                 self.filesManager.saveToFilesApp(file: self.processedMessage.attachments[index], from: self)
-                    .catch { error in
-                        self.showToast(
-                            "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
-                        )
-                    }
+                    .sinkFuture(
+                        receiveValue: {},
+                        receiveError: { error in
+                            self.showToast(
+                                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
+                            )
+                        }
+                    )
+                    .store(in: &self.cancellable)
             }
         )
     }
