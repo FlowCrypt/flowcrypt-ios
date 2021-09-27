@@ -58,7 +58,9 @@ struct CoreRes {
     }
     
     struct DecryptFileMeta: Decodable {
-        let name: String
+        let success: Bool
+        let name: String?
+        let error: MsgBlock.DecryptErr.Error?
     }
 
     struct Error: Decodable {

@@ -57,6 +57,11 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
 
     func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey {
         let r = try call("decryptKey", jsonDict: ["armored": armoredPrv, "passphrases": [passphrase]], data: nil)
+
+        if let error = try? r.json.decodeJson(as: CoreRes.Error.self) {
+            throw CoreError.exception(error.error.message)
+        }
+
         return try r.json.decodeJson(as: CoreRes.DecryptKey.self)
     }
 
@@ -79,8 +84,23 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         ]
         let decrypted = try call("decryptFile", jsonDict: json, data: encrypted)
         let meta = try decrypted.json.decodeJson(as: CoreRes.DecryptFileMeta.self)
-        
-        return CoreRes.DecryptFile(name: meta.name, content: decrypted.data)
+
+        guard meta.success, let name = meta.name else {
+            guard let error = meta.error else {
+                throw CoreError.format("Error property not found")
+            }
+
+            switch error.type {
+            case .keyMismatch:
+                throw CoreError.keyMismatch(error.message)
+            case .format:
+                throw CoreError.format(error.message)
+            default:
+                throw CoreError.format("Unknown error type: \(error.type.rawValue)")
+            }
+        }
+
+        return CoreRes.DecryptFile(name: name, content: decrypted.data)
     }
     
     public func encryptFile(pubKeys: [String]?, fileData: Data, name: String) throws -> CoreRes.EncryptFile {
@@ -185,6 +205,7 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
     }
 
     func handleCallbackResult(json: String, data: [UInt8]) {
+        print("handleCallbackResult json=\(json), data=\(data)")
         cb_last_value = (json, data)
     }
 
@@ -201,6 +222,7 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         try blockUntilReadyOrThrow()
         cb_last_value = nil
         jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, data.base64EncodedString(), cb_catcher!])
+        print("call json=\(cb_last_value?.0 ?? "empty")")
         guard
             let resJsonData = cb_last_value?.0.data(using: .utf8),
             let rawResponse = cb_last_value?.1
