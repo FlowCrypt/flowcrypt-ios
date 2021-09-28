@@ -20,6 +20,7 @@ public final class MessageSenderNode: CellNode {
         onTap = action
         super.init()
         textNode.attributedText = text
+        buttonNode.accessibilityLabel = "reply-all"
         buttonNode.setImage(UIImage(named: "reply-all")?.tinted(.main), for: .normal)
         buttonNode.addTarget(self, action: #selector(tapHandler), forControlEvents: .touchUpInside)
     }
