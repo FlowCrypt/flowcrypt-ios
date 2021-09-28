@@ -92,6 +92,15 @@ struct ComposeViewDecorator {
 
         return (text + message).attributed(.regular(17))
     }
+
+    func frame(for string: NSAttributedString,
+               insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)) -> CGRect {
+        let width = UIScreen.main.bounds.width - insets.left - insets.right
+        let maxSize = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
+        return string.boundingRect(with: maxSize,
+                                   options: [.usesLineFragmentOrigin, .usesFontLeading],
+                                   context: nil)
+    }
 }
 
 // MARK: - Color
