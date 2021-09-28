@@ -3,7 +3,7 @@
 //  FlowCryptUITests
 //
 //  Created by luke on 21/7/2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import XCTest
