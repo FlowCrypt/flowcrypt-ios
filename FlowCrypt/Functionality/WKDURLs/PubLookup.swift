@@ -67,9 +67,9 @@ class PubLookup: PubLookupType {
             email: email,
             name: keyDetail.users.first ?? email,
             pubKey: keyDetail.public,
-            pubKeyLastSig: nil, // TODO: - will be provided later
+            pubKeyLastSig: keyDetail.lastModified.map { Date(timeIntervalSince1970: Double($0)) },
             pubkeyLastChecked: Date(),
-            pubkeyExpiresOn: nil, // TODO: - will be provided later
+            pubkeyExpiresOn: keyDetail.expiration.map { Date(timeIntervalSince1970: Double($0)) },
             longids: longids,
             lastUsed: nil,
             fingerprints: fingerprints,

@@ -178,6 +178,8 @@ extension KeyInfo {
                     KeyId(longid: "longid", fingerprint: "fingerprint")
                 ],
                 created: 1234,
+                lastModified: nil,
+                expiration: nil,
                 users: [],
                 algo: nil
             ),

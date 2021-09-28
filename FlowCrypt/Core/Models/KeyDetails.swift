@@ -16,6 +16,8 @@ struct KeyDetails: Decodable {
     let isFullyEncrypted: Bool? // only if this is prv
     let ids: [KeyId]
     let created: Int
+    let lastModified: Int?
+    let expiration: Int?
     let users: [String]
     let algo: KeyAlgo?
 }
