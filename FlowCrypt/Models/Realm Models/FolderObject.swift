@@ -14,13 +14,13 @@ final class FolderObject: Object {
     @objc dynamic var path: String = ""
     @objc dynamic var image: Data?
     @objc dynamic var itemType: String = FolderViewModel.ItemType.folder.rawValue
-    @objc dynamic var user: UserObject?
+    @objc dynamic var user: UserObject!
 
     convenience init(
         name: String,
         path: String,
         image: Data?,
-        user: UserObject?
+        user: UserObject
     ) {
         self.init()
         self.name = name

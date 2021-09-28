@@ -37,7 +37,7 @@ final class InboxViewContainerController: TableNodeViewController {
     }
 
     init(
-        folderService: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
+        folderService: FoldersServiceType = FoldersService(),
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
         self.folderService = folderService

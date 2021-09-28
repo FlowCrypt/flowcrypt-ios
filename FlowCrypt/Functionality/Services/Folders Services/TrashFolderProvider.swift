@@ -13,7 +13,7 @@ struct TrashFolderProvider {
     private let folderProvider: FoldersServiceType
 
     init(
-        folderProvider: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
+        folderProvider: FoldersServiceType = FoldersService(),
         localStorage: LocalStorageType = LocalStorage()
     ) {
         self.folderProvider = folderProvider
