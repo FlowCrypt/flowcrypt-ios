@@ -55,15 +55,8 @@ extension Contact {
 }
 
 extension Contact {
-    init(email: String, keyDetails: [KeyDetails]) throws {
-        // TODO: - we are blindly choosing .first public key, in the future we should return [Contact]
-        // and have some intelligent code in the consumers to choose the right public key
-        // for whatever purpose it's used for.
-        guard let keyDetail = keyDetails.first else {
-            throw ContactsError.keyMissing
-        }
-
-        let keyIds = keyDetails.flatMap(\.ids)
+    init(email: String, keyDetail: KeyDetails) {
+        let keyIds = keyDetail.ids
         let longids = keyIds.map(\.longid)
         let fingerprints = keyIds.map(\.fingerprint)
 

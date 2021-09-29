@@ -27,8 +27,14 @@ class PubLookup: PubLookupType {
     func lookup(with email: String) -> Promise<Contact> {
         Promise<Contact> { resolve, _ in
             let keyDetails = try awaitPromise(self.getKeyDetails(email))
-            let contact = try awaitPromise(self.parseKey(keyDetails: keyDetails, for: email))
-            resolve(contact)
+            // TODO: - we are blindly choosing .first public key, in the future we should return [Contact]
+            // then eg encrypt for all returned Contacts
+            // also stop throwing below - no point. Return
+            //  empty array then handle downstream
+            guard let keyDetail = keyDetails.first else {
+                throw ContactsError.keyMissing
+            }
+            resolve(Contact(email: email, keyDetail: keyDetail))
         }
     }
 
@@ -50,13 +56,4 @@ class PubLookup: PubLookupType {
         }
     }
 
-    private func parseKey(keyDetails: [KeyDetails], for email: String) -> Promise<Contact> {
-
-        do {
-            let contact = try Contact(email: email, keyDetails: keyDetails)
-            return Promise(contact)
-        } catch {
-            return Promise(error)
-        }
-    }
 }
