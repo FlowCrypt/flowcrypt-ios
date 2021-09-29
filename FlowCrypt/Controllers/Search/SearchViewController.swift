@@ -275,7 +275,6 @@ extension SearchViewController: UISearchResultsUpdating {
         searchProvider.searchExpression(
             using: MessageSearchContext(
                 expression: searchText,
-                folderPath: folderPath,
                 count: Constants.messageCount
             )
         )

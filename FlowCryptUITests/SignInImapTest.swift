@@ -132,14 +132,16 @@ class SignInImapTest: XCTestCase, AppTest {
     // restart app -> search functionality
     func test_4_restart_search() {
         // search
-        let inboxNavigationBar = app.navigationBars["Inbox"]
-        let searchButton = inboxNavigationBar.buttons["search icn"]
         let tablesQuery = app.tables
 
+        app.navigationBars["Inbox"].buttons["menu icn"].tap()
+        tablesQuery.staticTexts["Sent"].tap()
+
+        let searchButton = app.navigationBars["Sent"].buttons["search icn"]
         searchButton.tap()
 
         let searchNavigationBar = app.navigationBars["Search"]
-        let searchTextField = searchNavigationBar.searchFields["Search"]
+        let searchTextField = searchNavigationBar.searchFields["Search All Mail"]
 
         searchTextField.tap()
         wait(1)
