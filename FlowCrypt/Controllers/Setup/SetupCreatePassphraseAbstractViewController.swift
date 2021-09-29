@@ -189,7 +189,7 @@ extension SetupCreatePassphraseAbstractViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        logger.logInfo("Setup account with \(passPhrase)")
+        logger.logInfo("Setup account with passphrase")
         setupAccount(with: passPhrase)
     }
 }

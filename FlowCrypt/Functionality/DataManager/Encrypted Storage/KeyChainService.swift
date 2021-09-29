@@ -36,7 +36,7 @@ struct KeyChainService: KeyChainServiceType {
             .base64EncodedString()
             .replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
 
-        logger.logInfo("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+        logger.logInfo("LocalStorage.secureKeychainPrefix generating new prefix")
         UserDefaults.standard.set(prefix, forKey: prefixStorageIndex)
         return prefix + storageEncryptionKeyIndexSuffix
     }()
