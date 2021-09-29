@@ -54,6 +54,33 @@ extension Contact {
     }
 }
 
+extension Contact {
+    init(email: String, keyDetails: [KeyDetails]) throws {
+        // TODO: - we are blindly choosing .first public key, in the future we should return [Contact]
+        // and have some intelligent code in the consumers to choose the right public key
+        // for whatever purpose it's used for.
+        guard let keyDetail = keyDetails.first else {
+            throw ContactsError.keyMissing
+        }
+
+        let keyIds = keyDetails.flatMap(\.ids)
+        let longids = keyIds.map(\.longid)
+        let fingerprints = keyIds.map(\.fingerprint)
+
+        self.email = email
+        self.name = keyDetail.users.first ?? email
+        self.pubKey = keyDetail.public
+        self.pubKeyLastSig = nil // TODO: - will be provided later
+        self.pubkeyLastChecked = Date()
+        self.pubkeyExpiresOn = nil // TODO: - will be provided later
+        self.longids = longids
+        self.lastUsed = nil
+        self.fingerprints = fingerprints
+        self.pubkeyCreated = Date(timeIntervalSince1970: Double(keyDetail.created))
+        self.algo = keyDetail.algo
+    }
+}
+
 extension Contact: Equatable {
     static func == (lhs: Contact, rhs: Contact) -> Bool {
         lhs.email == rhs.email

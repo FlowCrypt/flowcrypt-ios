@@ -52,30 +52,11 @@ class PubLookup: PubLookupType {
 
     private func parseKey(keyDetails: [KeyDetails], for email: String) -> Promise<Contact> {
 
-        // TODO: - we are blindly choosing .first public key, in the future we should return [Contact]
-        // and have some intelligent code in the consumers to choose the right public key
-        // for whatever purpose it's used for.
-        guard let keyDetail = keyDetails.first else {
-            return Promise(ContactsError.keyMissing)
+        do {
+            let contact = try Contact(email: email, keyDetails: keyDetails)
+            return Promise(contact)
+        } catch {
+            return Promise(error)
         }
-
-        let keyIds = keyDetails.flatMap(\.ids)
-        let longids = keyIds.map(\.longid)
-        let fingerprints = keyIds.map(\.fingerprint)
-
-        let contact = Contact(
-            email: email,
-            name: keyDetail.users.first ?? email,
-            pubKey: keyDetail.public,
-            pubKeyLastSig: nil, // TODO: - will be provided later
-            pubkeyLastChecked: Date(),
-            pubkeyExpiresOn: nil, // TODO: - will be provided later
-            longids: longids,
-            lastUsed: nil,
-            fingerprints: fingerprints,
-            pubkeyCreated: Date(timeIntervalSince1970: Double(keyDetail.created)),
-            algo: keyDetail.algo
-        )
-        return Promise(contact)
     }
 }
