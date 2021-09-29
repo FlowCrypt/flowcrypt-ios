@@ -63,6 +63,14 @@ extension ExtensionTests {
 
         XCTAssertNotNil(collection?[safe: 0])
     }
+
+    func test_unique() {
+        let collection = [1, 2, 2, 3, 4, 4]
+        let uniqueCollection = collection.unique()
+
+        XCTAssertEqual(uniqueCollection, [1, 2, 3, 4])
+        XCTAssertEqual(uniqueCollection.unique(), uniqueCollection)
+    }
 }
 
 // MARK: - Calendar
