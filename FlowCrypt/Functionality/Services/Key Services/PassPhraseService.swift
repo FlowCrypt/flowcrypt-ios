@@ -73,10 +73,10 @@ final class PassPhraseService: PassPhraseServiceType {
 
     func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
         if inStorage {
-            logger.logInfo("Save to storage \(passPhrase.primaryFingerprint)")
+            logger.logInfo("Save passphrase to storage")
             encryptedStorage.save(passPhrase: passPhrase)
         } else {
-            logger.logInfo("Save in memory \(passPhrase.primaryFingerprint)")
+            logger.logInfo("Save passphrase in memory")
 
             inMemoryStorage.save(passPhrase: passPhrase)
 
