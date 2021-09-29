@@ -212,7 +212,7 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
     private func call(_ endpoint: String, jsonData: Data, data: Data) throws -> RawRes {
         try blockUntilReadyOrThrow()
         cb_last_value = nil
-        jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, data.base64EncodedString(), cb_catcher!])
+        jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, Array<UInt8>(data), cb_catcher!])
         guard
             let resJsonData = cb_last_value?.0.data(using: .utf8),
             let rawResponse = cb_last_value?.1
