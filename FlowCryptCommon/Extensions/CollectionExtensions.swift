@@ -53,6 +53,7 @@ public extension Array where Element == String {
 
 public extension Collection where Element: Hashable {
     func unique() -> [Element] {
-        return Array(Set(self))
+        var seen: Set<Element> = []
+        return filter { seen.insert($0).inserted }
     }
 }
