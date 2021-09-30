@@ -87,7 +87,7 @@ extension SetupEKMKeyViewController {
                         passphrase: passPhrase
                     )
                     let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails, source: .ekm, for: self.user.email)
+                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails, passPhrase: passPhrase, source: .ekm, for: self.user.email)
                     allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
                 }
             }

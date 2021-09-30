@@ -66,9 +66,11 @@ final class KeyService: KeyServiceType {
         let keysInfo = storage.keysInfo()
             .filter { $0.account == email }
 
+        let keysWithPassPhrases = keysInfo.filter { $0.passphrase != nil }
+
         let storedPassPhrases = passPhraseService.getPassPhrases()
 
-        if passPhrase == nil, storedPassPhrases.isEmpty {
+        if passPhrase == nil, storedPassPhrases.isEmpty, keysWithPassPhrases.isEmpty {
             // in case there are no pass phrases in storage/memory
             // and user did not enter a pass phrase yet
             return .failure(.missedPassPhrase)
@@ -100,18 +102,20 @@ final class KeyService: KeyServiceType {
             }
 
         // append keys to ensure with a pass phrase
-        if let passPhrase = passPhrase {
-            let keysToEnsure = keysInfo.map {
-                PrvKeyInfo(
-                    private: $0.private,
-                    longid: $0.primaryLongid,
-                    passphrase: passPhrase,
-                    fingerprints: Array($0.allFingerprints)
-                )
+        let keysToEnsure: [PrvKeyInfo] = keysInfo.compactMap {
+            guard let passPhraseValue = $0.passphrase ?? passPhrase else {
+                return nil
             }
 
-            privateKeys.append(contentsOf: keysToEnsure)
+            return PrvKeyInfo(
+                private: $0.private,
+                longid: $0.primaryLongid,
+                passphrase: passPhraseValue,
+                fingerprints: Array($0.allFingerprints)
+            )
         }
+
+        privateKeys.append(contentsOf: keysToEnsure)
 
         return .success(privateKeys)
     }

@@ -58,45 +58,31 @@ final class PassPhraseService: PassPhraseServiceType {
     private lazy var logger = Logger.nested(Self.self)
 
     let currentUserEmail: String?
-    let encryptedStorage: PassPhraseStorageType
     let inMemoryStorage: PassPhraseStorageType
 
     init(
-        encryptedStorage: PassPhraseStorageType = EncryptedStorage(),
         localStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
         emailProvider: EmailProviderType = DataService.shared
     ) {
-        self.encryptedStorage = encryptedStorage
         self.inMemoryStorage = localStorage
         self.currentUserEmail = emailProvider.email
     }
 
     func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
-        if inStorage {
-            logger.logInfo("Save passphrase to storage")
-            encryptedStorage.save(passPhrase: passPhrase)
-        } else {
+        if !inStorage {
             logger.logInfo("Save passphrase in memory")
 
             inMemoryStorage.save(passPhrase: passPhrase)
-
-            let alreadySaved = encryptedStorage.getPassPhrases()
-
-            if alreadySaved.contains(where: { $0.primaryFingerprint == passPhrase.primaryFingerprint }) {
-                encryptedStorage.remove(passPhrase: passPhrase)
-            }
         }
     }
 
     func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
-        if inStorage {
-            encryptedStorage.update(passPhrase: passPhrase)
-        } else {
+        if !inStorage {
             inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
     func getPassPhrases() -> [PassPhrase] {
-        encryptedStorage.getPassPhrases() + inMemoryStorage.getPassPhrases()
+        inMemoryStorage.getPassPhrases()
     }
 }
