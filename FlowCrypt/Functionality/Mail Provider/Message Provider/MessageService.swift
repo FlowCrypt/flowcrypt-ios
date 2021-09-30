@@ -102,7 +102,7 @@ final class MessageService {
             .forEach { self.passPhraseService.savePassPhrase(with: $0, inStorage: false) }
     }
 
-    func getMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
+    func getAndProcessMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
 
