@@ -901,7 +901,7 @@
 			path = "Models Parsing";
 			sourceTree = "<group>";
 		};
-		21F836A62652A1B700B2448C /* Functionallity */ = {
+		21F836A62652A1B700B2448C /* Functionality */ = {
 			isa = PBXGroup;
 			children = (
 				9FC4136B2683CBBD004C0A69 /* Mail Provider */,
@@ -910,7 +910,7 @@
 				21F836A72652A1CD00B2448C /* WKDURLs */,
 				9F4163F3266574CF00106194 /* Services */,
 			);
-			path = Functionallity;
+			path = Functionality;
 			sourceTree = "<group>";
 		};
 		21F836A72652A1CD00B2448C /* WKDURLs */ = {
@@ -1132,7 +1132,7 @@
 		9F2AC5C7267BE99E00F6149B /* FlowCryptAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				21F836A62652A1B700B2448C /* Functionallity */,
+				21F836A62652A1B700B2448C /* Functionality */,
 				21EA3B2126565B4100691848 /* Models Parsing */,
 				9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */,
 				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
