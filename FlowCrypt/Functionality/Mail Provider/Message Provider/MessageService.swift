@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 12.05.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import Foundation
@@ -102,7 +102,7 @@ final class MessageService {
             .forEach { self.passPhraseService.savePassPhrase(with: $0, inStorage: false) }
     }
 
-    func getMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
+    func getAndProcessMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
 

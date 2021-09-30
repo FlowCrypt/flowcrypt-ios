@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23/12/2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import AsyncDisplayKit
@@ -275,7 +275,6 @@ extension SearchViewController: UISearchResultsUpdating {
         searchProvider.searchExpression(
             using: MessageSearchContext(
                 expression: searchText,
-                folderPath: folderPath,
                 count: Constants.messageCount
             )
         )

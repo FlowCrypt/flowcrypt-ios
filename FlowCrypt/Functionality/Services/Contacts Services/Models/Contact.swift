@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 21/08/2020.
-//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import Foundation
@@ -51,6 +51,26 @@ extension Contact {
         self.fingerprints = contactObject.fingerprints.split(separator: ",").map(String.init)
         self.algo = contactObject.keyAlgo.flatMap(KeyAlgo.init)
         self.pubkeyCreated = contactObject.pubkeyCreated
+    }
+}
+
+extension Contact {
+    init(email: String, keyDetail: KeyDetails) {
+        let keyIds = keyDetail.ids
+        let longids = keyIds.map(\.longid)
+        let fingerprints = keyIds.map(\.fingerprint)
+
+        self.email = email
+        self.name = keyDetail.users.first ?? email
+        self.pubKey = keyDetail.public
+        self.pubKeyLastSig = nil // TODO: - will be provided later
+        self.pubkeyLastChecked = Date()
+        self.pubkeyExpiresOn = nil // TODO: - will be provided later
+        self.longids = longids
+        self.lastUsed = nil
+        self.fingerprints = fingerprints
+        self.pubkeyCreated = Date(timeIntervalSince1970: Double(keyDetail.created))
+        self.algo = keyDetail.algo
     }
 }
 
