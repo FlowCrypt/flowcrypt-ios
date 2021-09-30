@@ -45,6 +45,20 @@ public extension String {
             }
         }
     }
+    
+    var fileExtension: String? {
+        guard let fileExtension = self.split(separator: ".").last else {
+            return nil
+        }
+        return String(fileExtension)
+    }
+    
+    func dropExtension() -> String {
+        guard let fileExtension = self.fileExtension else {
+            return self
+        }
+        return self.replacingOccurrences(of: ".\(fileExtension)", with: "")
+    }
 }
 
 public extension NSAttributedString {

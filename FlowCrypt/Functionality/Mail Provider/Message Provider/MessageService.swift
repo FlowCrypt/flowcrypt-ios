@@ -8,6 +8,7 @@
 
 import Foundation
 import Promises
+import FlowCryptCommon
 
 // MARK: - MessageAttachment
 struct MessageAttachment: FileType {
@@ -38,6 +39,11 @@ extension ProcessedMessage {
     )
 }
 
+protocol CoreMessageType {
+    func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) throws -> CoreRes.ParseDecryptMsg
+    func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) throws -> CoreRes.DecryptFile
+}
+
 // MARK: - MessageService
 enum MessageServiceError: Error {
     case missedPassPhrase(_ rawMimeData: Data)
@@ -47,15 +53,19 @@ enum MessageServiceError: Error {
 }
 
 final class MessageService {
+    private enum Constants {
+        static let encryptedAttachmentExtension = "pgp"
+    }
+
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
     private let passPhraseService: PassPhraseServiceType
-    private let core: Core
+    private let core: CoreMessageType
 
     init(
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         keyService: KeyServiceType = KeyService(),
-        core: Core = Core.shared,
+        core: CoreMessageType = Core.shared,
         passPhraseService: PassPhraseServiceType = PassPhraseService()
     ) {
         self.messageProvider = messageProvider
@@ -90,7 +100,7 @@ final class MessageService {
                 reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
             } else {
                 self.savePassPhrases(value: passPhrase, with: keys)
-                let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
+                let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
                 resolve(processedMessage)
             }
         }
@@ -125,18 +135,29 @@ final class MessageService {
                 isEmail: true
             )
 
-            let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
+            let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
             resolve(processedMessage)
         }
     }
 
-    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg) -> ProcessedMessage {
+    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg, keys: [PrvKeyInfo]) throws -> ProcessedMessage {
         let decryptErrBlocks = decrypted.blocks
             .filter { $0.decryptErr != nil }
 
-        let attachments = decrypted.blocks
+        let attachments = try decrypted.blocks
             .filter(\.isAttachmentBlock)
-            .map(MessageAttachment.init)
+            .map { block -> MessageAttachment in
+                var name = block.attMeta?.name ?? "Attachment"
+                let size = block.attMeta?.length ?? 0
+                var data = block.attMeta?.data ?? Data()
+
+                if name.fileExtension == Constants.encryptedAttachmentExtension {
+                    data = (try core.decryptFile(encrypted: data, keys: keys, msgPwd: nil).content)
+                    name = name.dropExtension()
+                }
+
+                return MessageAttachment(name: name, size: size, data: data)
+            }
 
         let messageType: ProcessedMessage.MessageType
         let text: String

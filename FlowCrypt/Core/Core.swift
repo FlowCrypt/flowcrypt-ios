@@ -11,6 +11,8 @@ enum CoreError: Error, Equatable {
     case notReady(String)
     case format(String)
     case keyMismatch(String)
+    case noMDC(String)
+    case badMDC(String)
     // wrong value passed into a function
     case value(String)
     
@@ -21,6 +23,8 @@ enum CoreError: Error, Equatable {
         switch errorType {
         case "format": self = .format(coreError.error.message)
         case "key_mismatch": self = .keyMismatch(coreError.error.message)
+        case "no_mdc": self = .noMDC(coreError.error.message)
+        case "bad_mdc": self = .badMDC(coreError.error.message)
         default: return nil
         }
     }
@@ -30,7 +34,7 @@ protocol KeyDecrypter {
     func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey
 }
 
-final class Core: KeyDecrypter, CoreComposeMessageType {
+final class Core: KeyDecrypter, CoreComposeMessageType, CoreMessageType {
     static let shared = Core()
 
     private var jsEndpointListener: JSValue?
