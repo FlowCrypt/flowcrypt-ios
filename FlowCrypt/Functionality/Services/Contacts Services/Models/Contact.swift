@@ -54,6 +54,26 @@ extension Contact {
     }
 }
 
+extension Contact {
+    init(email: String, keyDetail: KeyDetails) {
+        let keyIds = keyDetail.ids
+        let longids = keyIds.map(\.longid)
+        let fingerprints = keyIds.map(\.fingerprint)
+
+        self.email = email
+        self.name = keyDetail.users.first ?? email
+        self.pubKey = keyDetail.public
+        self.pubKeyLastSig = nil // TODO: - will be provided later
+        self.pubkeyLastChecked = Date()
+        self.pubkeyExpiresOn = nil // TODO: - will be provided later
+        self.longids = longids
+        self.lastUsed = nil
+        self.fingerprints = fingerprints
+        self.pubkeyCreated = Date(timeIntervalSince1970: Double(keyDetail.created))
+        self.algo = keyDetail.algo
+    }
+}
+
 extension Contact: Equatable {
     static func == (lhs: Contact, rhs: Contact) -> Bool {
         lhs.email == rhs.email
