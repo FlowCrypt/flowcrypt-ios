@@ -93,12 +93,13 @@ class KeyInfoTests: XCTestCase {
             algo: nil
         )
 
-        let key = try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)
+        let key = try KeyInfo(keyDetail, passphrase: "123", source: .backup, user: user)
         
         XCTAssertTrue(key.private == "private")
         XCTAssertTrue(key.public == "public")
         XCTAssertTrue(Array(key.allFingerprints) == ["f1", "f2", "f3"])
         XCTAssertTrue(Array(key.allLongids) == ["l1", "l2", "l3"])
+        XCTAssertTrue(key.passphrase == "123")
         XCTAssertTrue(key.source == "backup")
         XCTAssertTrue(key.user == user)
         XCTAssertTrue(key.primaryFingerprint == "f1")
