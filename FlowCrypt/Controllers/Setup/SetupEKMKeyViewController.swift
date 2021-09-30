@@ -87,12 +87,18 @@ extension SetupEKMKeyViewController {
                         passphrase: passPhrase
                     )
                     let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails, passPhrase: passPhrase, source: .ekm, for: self.user.email)
+                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails,
+                                            passPhrase: self.shouldStorePassPhrase ? passPhrase : nil,
+                                            source: .ekm,
+                                            for: self.user.email)
                     allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
                 }
             }
-            let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
-            self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
+
+            if !self.shouldStorePassPhrase {
+                let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
+                self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
+            }
         }
         .then(on: .main) { [weak self] in
             self?.hideSpinner()

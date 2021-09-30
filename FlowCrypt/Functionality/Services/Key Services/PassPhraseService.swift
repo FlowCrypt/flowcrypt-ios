@@ -41,8 +41,6 @@ struct PassPhrase: Codable, Hashable, Equatable {
 // MARK: - Pass Phrase Storage
 protocol PassPhraseStorageType {
     func save(passPhrase: PassPhrase)
-    func update(passPhrase: PassPhrase)
-    func remove(passPhrase: PassPhrase)
 
     func getPassPhrases() -> [PassPhrase]
 }
@@ -51,7 +49,6 @@ protocol PassPhraseStorageType {
 protocol PassPhraseServiceType {
     func getPassPhrases() -> [PassPhrase]
     func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool)
-    func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool)
 }
 
 final class PassPhraseService: PassPhraseServiceType {
@@ -72,12 +69,6 @@ final class PassPhraseService: PassPhraseServiceType {
         if !inStorage {
             logger.logInfo("Save passphrase in memory")
 
-            inMemoryStorage.save(passPhrase: passPhrase)
-        }
-    }
-
-    func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
-        if !inStorage {
             inMemoryStorage.save(passPhrase: passPhrase)
         }
     }

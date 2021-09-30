@@ -29,15 +29,6 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
         passPhraseProvider.save(passPhrase: passPhraseToSave)
     }
 
-    func update(passPhrase: PassPhrase) {
-        let passPhraseToSave = passPhrase.withUpdatedDate()
-        passPhraseProvider.save(passPhrase: passPhraseToSave)
-    }
-
-    func remove(passPhrase: PassPhrase) {
-        passPhraseProvider.removePassPhrases(with: passPhrase)
-    }
-
     func getPassPhrases() -> [PassPhrase] {
         passPhraseProvider.passPhrases
             .compactMap { passPhrase -> PassPhrase? in
@@ -70,7 +61,6 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
 protocol InMemoryPassPhraseProviderType {
     var passPhrases: Set<PassPhrase> { get }
     func save(passPhrase: PassPhrase)
-    func removePassPhrases(with objects: PassPhrase)
 }
 
 /// - Warning: - should be shared instance
@@ -84,11 +74,5 @@ final class InMemoryPassPhraseProvider: InMemoryPassPhraseProviderType {
 
     func save(passPhrase: PassPhrase) {
         passPhrases.insert(passPhrase)
-    }
-
-    func removePassPhrases(with objects: PassPhrase) {
-        if passPhrases.contains(objects) {
-            passPhrases.remove(objects)
-        }
     }
 }

@@ -28,7 +28,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -50,7 +50,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -70,7 +70,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -93,7 +93,7 @@ class KeyInfoTests: XCTestCase {
             algo: nil
         )
 
-        let key = try KeyInfo(keyDetail, source: .backup, user: user)
+        let key = try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)
         
         XCTAssertTrue(key.private == "private")
         XCTAssertTrue(key.public == "public")
