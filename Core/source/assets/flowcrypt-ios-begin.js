@@ -36,7 +36,7 @@ const self = { window, navigator, crypto };
 global.window = window;
 
 var engine_host_cb_value_formatter = function(val) {
-    engine_host_cb_catcher([val]);
+    coreHost.handleCallback(val.json, val.data);
 };
 
 (function() {

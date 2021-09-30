@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 03.11.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import AsyncDisplayKit
@@ -49,7 +49,7 @@ public final class TextFieldCellNode: CellNode {
         }
     }
 
-    private var textFiledAction: TextFieldAction?
+    private var textFieldAction: TextFieldAction?
 
     private let input: Input
 
@@ -75,7 +75,7 @@ public final class TextFieldCellNode: CellNode {
         )
         self.input = input
         super.init()
-        textFiledAction = action
+        textFieldAction = action
 
         textField.attributedPlaceholderText = input.placeholder
         textField.isSecureTextEntry = input.isSecureTextEntry

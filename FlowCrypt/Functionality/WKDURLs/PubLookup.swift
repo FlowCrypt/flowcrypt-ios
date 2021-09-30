@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 31.05.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import Promises
@@ -27,8 +27,14 @@ class PubLookup: PubLookupType {
     func lookup(with email: String) -> Promise<Contact> {
         Promise<Contact> { resolve, _ in
             let keyDetails = try awaitPromise(self.getKeyDetails(email))
-            let contact = try awaitPromise(self.parseKey(keyDetails: keyDetails, for: email))
-            resolve(contact)
+            // TODO: - we are blindly choosing .first public key, in the future we should return [Contact]
+            // then eg encrypt for all returned Contacts
+            // also stop throwing below - no point. Return
+            //  empty array then handle downstream
+            guard let keyDetail = keyDetails.first else {
+                throw ContactsError.keyMissing
+            }
+            resolve(Contact(email: email, keyDetail: keyDetail))
         }
     }
 
@@ -50,32 +56,4 @@ class PubLookup: PubLookupType {
         }
     }
 
-    private func parseKey(keyDetails: [KeyDetails], for email: String) -> Promise<Contact> {
-
-        // TODO: - we are blindly choosing .first public key, in the future we should return [Contact]
-        // and have some intelligent code in the consumers to choose the right public key
-        // for whatever purpose it's used for.
-        guard let keyDetail = keyDetails.first else {
-            return Promise(ContactsError.keyMissing)
-        }
-
-        let keyIds = keyDetails.flatMap(\.ids)
-        let longids = keyIds.map(\.longid)
-        let fingerprints = keyIds.map(\.fingerprint)
-
-        let contact = Contact(
-            email: email,
-            name: keyDetail.users.first ?? email,
-            pubKey: keyDetail.public,
-            pubKeyLastSig: nil, // TODO: - will be provided later
-            pubkeyLastChecked: Date(),
-            pubkeyExpiresOn: nil, // TODO: - will be provided later
-            longids: longids,
-            lastUsed: nil,
-            fingerprints: fingerprints,
-            pubkeyCreated: Date(timeIntervalSince1970: Double(keyDetail.created)),
-            algo: keyDetail.algo
-        )
-        return Promise(contact)
-    }
 }

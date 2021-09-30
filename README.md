@@ -14,8 +14,8 @@ git clone https://github.com/FlowCrypt/flowcrypt-ios.git && cd flowcrypt-ios
 # set up environment
 sudo xcode-select --install
 curl -sSL https://get.rvm.io | bash -s stable
-rvm install 2.5.1
-rvm --default use 2.5.1
+rvm install 3.0.2
+rvm --default use 3.0.2
 # install dependencies and pods
 make dependencies
 bundle exec pod install

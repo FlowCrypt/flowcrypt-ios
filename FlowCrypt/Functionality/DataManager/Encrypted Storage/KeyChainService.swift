@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 25.11.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptCommon
@@ -36,7 +36,7 @@ struct KeyChainService: KeyChainServiceType {
             .base64EncodedString()
             .replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
 
-        logger.logInfo("LocalStorage.secureKeychainPrefix generating new: \(prefix)")
+        logger.logInfo("LocalStorage.secureKeychainPrefix generating new prefix")
         UserDefaults.standard.set(prefix, forKey: prefixStorageIndex)
         return prefix + storageEncryptionKeyIndexSuffix
     }()

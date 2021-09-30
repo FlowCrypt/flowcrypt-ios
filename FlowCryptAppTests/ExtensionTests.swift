@@ -3,7 +3,7 @@
 //  FlowCryptTests
 //
 //  Created by Anton Kharchevskyi on 12/9/19.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptCommon
@@ -62,6 +62,14 @@ extension ExtensionTests {
         collection = ["zero"]
 
         XCTAssertNotNil(collection?[safe: 0])
+    }
+
+    func test_unique() {
+        let collection = [1, 2, 2, 3, 4, 4]
+        let uniqueCollection = collection.unique()
+
+        XCTAssertEqual(uniqueCollection, [1, 2, 3, 4])
+        XCTAssertEqual(uniqueCollection.unique(), uniqueCollection)
     }
 }
 
