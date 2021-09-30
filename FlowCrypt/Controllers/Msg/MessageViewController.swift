@@ -148,7 +148,7 @@ extension MessageViewController {
 
         Promise { [weak self] in
             guard let self = self else { return }
-            let promise = self.messageService.getMessage(with: input.objMessage, folder: input.path)
+            let promise = self.messageService.getAndProcessMessage(with: input.objMessage, folder: input.path)
             let message = try awaitPromise(promise)
             self.processedMessage = message
         }
