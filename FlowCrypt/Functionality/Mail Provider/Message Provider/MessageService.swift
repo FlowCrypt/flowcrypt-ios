@@ -39,11 +39,6 @@ extension ProcessedMessage {
     )
 }
 
-protocol CoreMessageType {
-    func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) throws -> CoreRes.ParseDecryptMsg
-    func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) throws -> CoreRes.DecryptFile
-}
-
 // MARK: - MessageService
 enum MessageServiceError: Error {
     case missedPassPhrase(_ rawMimeData: Data)
@@ -60,12 +55,12 @@ final class MessageService {
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
     private let passPhraseService: PassPhraseServiceType
-    private let core: CoreMessageType
+    private let core: Core
 
     init(
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         keyService: KeyServiceType = KeyService(),
-        core: CoreMessageType = Core.shared,
+        core: Core = Core.shared,
         passPhraseService: PassPhraseServiceType = PassPhraseService()
     ) {
         self.messageProvider = messageProvider
