@@ -213,6 +213,7 @@ extension ComposeViewController {
         )
         .publisher
         .flatMap(composeMessageService.encryptAndSend)
+        .receive(on: DispatchQueue.main)
         .sinkFuture(
             receiveValue: { [weak self] in
                 self?.handleSuccessfullySentMessage()
