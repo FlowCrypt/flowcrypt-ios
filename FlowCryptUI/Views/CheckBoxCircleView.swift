@@ -3,7 +3,7 @@
 //  FlowCryptUI
 //
 //  Created by Anton Kharchevskyi on 27/09/2020.
-//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import UIKit

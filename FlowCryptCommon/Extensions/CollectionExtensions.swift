@@ -3,7 +3,7 @@
 //  FlowCryptCommon
 //
 //  Created by Anton Kharchevskyi on 23/02/2020.
-//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import Foundation
@@ -53,6 +53,7 @@ public extension Array where Element == String {
 
 public extension Collection where Element: Hashable {
     func unique() -> [Element] {
-        return Array(Set(self))
+        var seen: Set<Element> = []
+        return filter { seen.insert($0).inserted }
     }
 }
