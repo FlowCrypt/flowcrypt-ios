@@ -30,6 +30,21 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
             XCTAssertNotNil($0.date)
         }
     }
+
+    func testUpdatePassPhraseUpdatesDate() {
+        let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
+        sut.update(passPhrase: pass)
+        passPhraseProvider.passPhrases.forEach {
+            XCTAssertNotNil($0.date)
+        }
+    }
+
+    func testRemovePassPhrase() {
+        let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
+        sut.save(passPhrase: pass)
+        sut.remove(passPhrase: pass)
+        XCTAssertTrue(passPhraseProvider.passPhrases.isEmpty)
+    }
     
     func testGetPassPhrases() {
         XCTAssertTrue(sut.getPassPhrases().isEmpty)
@@ -57,5 +72,11 @@ class InMemoryPassPhraseProviderMock: InMemoryPassPhraseProviderType {
     
     func save(passPhrase: PassPhrase) {
         passPhrases.insert(passPhrase)
+    }
+
+    func removePassPhrases(with objects: PassPhrase) {
+        if passPhrases.contains(objects) {
+            passPhrases.remove(objects)
+        }
     }
 }

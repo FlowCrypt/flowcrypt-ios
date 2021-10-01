@@ -38,9 +38,20 @@ struct PassPhrase: Codable, Hashable, Equatable {
     }
 }
 
+extension PassPhrase {
+    init?(keyInfo: KeyInfo) {
+        guard let passphrase = keyInfo.passphrase else { return nil }
+
+        self.init(value: passphrase,
+                  fingerprints: Array(keyInfo.allFingerprints))
+    }
+}
+
 // MARK: - Pass Phrase Storage
 protocol PassPhraseStorageType {
     func save(passPhrase: PassPhrase)
+    func update(passPhrase: PassPhrase)
+    func remove(passPhrase: PassPhrase)
 
     func getPassPhrases() -> [PassPhrase]
 }
@@ -49,31 +60,52 @@ protocol PassPhraseStorageType {
 protocol PassPhraseServiceType {
     func getPassPhrases() -> [PassPhrase]
     func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool)
+    func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool)
 }
 
 final class PassPhraseService: PassPhraseServiceType {
     private lazy var logger = Logger.nested(Self.self)
 
     let currentUserEmail: String?
+    let encryptedStorage: PassPhraseStorageType
     let inMemoryStorage: PassPhraseStorageType
 
     init(
+        encryptedStorage: PassPhraseStorageType = EncryptedStorage(),
         localStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
         emailProvider: EmailProviderType = DataService.shared
     ) {
+        self.encryptedStorage = encryptedStorage
         self.inMemoryStorage = localStorage
         self.currentUserEmail = emailProvider.email
     }
 
     func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
-        if !inStorage {
+        if inStorage {
+            logger.logInfo("Save passphrase to storage")
+            encryptedStorage.save(passPhrase: passPhrase)
+        } else {
             logger.logInfo("Save passphrase in memory")
 
+            inMemoryStorage.save(passPhrase: passPhrase)
+
+            let alreadySaved = encryptedStorage.getPassPhrases()
+
+            if alreadySaved.contains(where: { $0.primaryFingerprint == passPhrase.primaryFingerprint }) {
+                encryptedStorage.remove(passPhrase: passPhrase)
+            }
+        }
+    }
+
+    func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
+        if inStorage {
+            encryptedStorage.update(passPhrase: passPhrase)
+        } else {
             inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
     func getPassPhrases() -> [PassPhrase] {
-        inMemoryStorage.getPassPhrases()
+        encryptedStorage.getPassPhrases() + inMemoryStorage.getPassPhrases()
     }
 }

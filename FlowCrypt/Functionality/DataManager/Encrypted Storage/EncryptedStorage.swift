@@ -180,6 +180,15 @@ extension EncryptedStorage {
         }
     }
 
+    func updateKeys(with primaryFingerprint: String, passphrase: String?) {
+        let keys = keysInfo()
+            .filter { $0.primaryFingerprint == primaryFingerprint }
+
+        try! storage.write {
+            keys.map { $0.passphrase = passphrase }
+        }
+    }
+
     func keysInfo() -> [KeyInfo] {
         let result = storage.objects(KeyInfo.self)
         return Array(result)
@@ -200,6 +209,25 @@ extension EncryptedStorage {
 
     private func getUserObject(for email: String) -> UserObject? {
         storage.objects(UserObject.self).first(where: { $0.email == email })
+    }
+}
+
+// MARK: - PassPhrase
+extension EncryptedStorage: PassPhraseStorageType {
+    func save(passPhrase: PassPhrase) {
+        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
+    }
+
+    func update(passPhrase: PassPhrase) {
+        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
+    }
+
+    func remove(passPhrase: PassPhrase) {
+        updateKeys(with: passPhrase.primaryFingerprint, passphrase: nil)
+    }
+
+    func getPassPhrases() -> [PassPhrase] {
+        keysInfo().compactMap(PassPhrase.init)
     }
 }
 

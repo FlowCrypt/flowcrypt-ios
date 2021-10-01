@@ -244,6 +244,25 @@ extension SetupManuallyEnterPassPhraseViewController {
         keysStorage.addKeys(keyDetails: newKeysToAdd, passPhrase: passPhrase, source: .imported, for: email)
         keysStorage.updateKeys(keyDetails: keysToUpdate, passPhrase: passPhrase, source: .imported, for: email)
 
+        if !shouldStorePassPhrase {
+            keysToUpdate
+                .map {
+                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                }
+                .forEach {
+                    passPhraseService.updatePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
+                }
+
+            newKeysToAdd
+                .map {
+                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                }
+                .forEach {
+                    passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
+                }
+        }
+
+
         hideSpinner()
 
         let updated = keysToUpdate.count
