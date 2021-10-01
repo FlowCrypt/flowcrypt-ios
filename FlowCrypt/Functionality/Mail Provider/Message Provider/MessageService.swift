@@ -141,14 +141,15 @@ final class MessageService {
 
         let attachments = try decrypted.blocks
             .filter(\.isAttachmentBlock)
-            .map { block -> MessageAttachment in
-                var name = block.attMeta?.name ?? "Attachment"
-                let size = block.attMeta?.length ?? 0
-                var data = block.attMeta?.data ?? Data()
+            .compactMap { block -> MessageAttachment? in
+                guard let attMeta = block.attMeta else { return nil }
+                var name = attMeta.name
+                let size = attMeta.length
+                var data = attMeta.data
 
-                if name.fileExtension == Constants.encryptedAttachmentExtension {
+                if block.type == .encryptedAtt {
                     data = (try core.decryptFile(encrypted: data, keys: keys, msgPwd: nil).content)
-                    name = name.dropExtension()
+                    name = name.deletingPathExtension
                 }
 
                 return MessageAttachment(name: name, size: size, data: data)
