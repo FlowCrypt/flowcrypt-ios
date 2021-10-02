@@ -80,8 +80,9 @@ extension SetupGenerateKeyViewController {
         showSpinner()
 
         cancellable = Just(passPhrase)
+            .setFailureType(to: Error.self)
             .subscribe(on: DispatchQueue.global())
-            .myFlatMap(validateAndConfirm)
+            .flatMap(validateAndConfirm)
             .flatMap(generateKey)
             .flatMap(backupKey)
             .flatMap(processKey)

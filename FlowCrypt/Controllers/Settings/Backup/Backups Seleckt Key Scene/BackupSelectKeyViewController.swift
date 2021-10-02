@@ -89,8 +89,9 @@ extension BackupSelectKeyViewController {
             .map(\.0)
 
         cancellable = Just(backupsToSave)
+            .setFailureType(to: Error.self)
             .subscribe(on: DispatchQueue.global())
-            .myFlatMap(backupToInbox)
+            .flatMap(backupToInbox)
             .receive(on: DispatchQueue.main)
             .sinkFuture(receiveValue: { [weak self] _ in
                 self?.hideSpinner()

@@ -107,8 +107,9 @@ extension BackupOptionsViewController {
     private func backupToInbox() {
         showSpinner()
         cancellable = Just(backups)
+            .setFailureType(to: Error.self)
             .subscribe(on: DispatchQueue.global())
-            .myFlatMap(backupToInbox)
+            .flatMap(backupToInbox)
             .receive(on: DispatchQueue.main)
             .sinkFuture(receiveValue: { [weak self] _ in
                 self?.hideSpinner()
