@@ -79,8 +79,9 @@ extension SetupGenerateKeyViewController {
     private func setupAccountWithGeneratedKey(with passPhrase: String) {
         showSpinner()
 
-        cancellable = validateAndConfirm(passPhrase)
+        cancellable = Just(passPhrase)
             .subscribe(on: DispatchQueue.global())
+            .myFlatMap(validateAndConfirm)
             .flatMap(generateKey)
             .flatMap(backupKey)
             .flatMap(processKey)

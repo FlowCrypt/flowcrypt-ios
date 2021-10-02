@@ -25,3 +25,14 @@ extension Publisher {
             })
     }
 }
+
+extension Publishers.SubscribeOn {
+    // swiftlint:disable line_length
+    func myFlatMap<P>(_ transform: @escaping (Self.Output) -> P) -> Publishers.FlatMap<P, Publishers.SetFailureType<Self, P.Failure>> where P: Publisher {
+        Publishers.FlatMap<P, Publishers.SetFailureType<Self, P.Failure>>(
+            upstream: Publishers.SetFailureType<Self, P.Failure>(upstream: self),
+            maxPublishers: .unlimited,
+            transform: transform
+        )
+    }
+}

@@ -106,8 +106,9 @@ extension BackupOptionsViewController {
 
     private func backupToInbox() {
         showSpinner()
-        cancellable = backupService.backupToInbox(keys: backups, for: userId)
+        cancellable = Just(backups)
             .subscribe(on: DispatchQueue.global())
+            .myFlatMap(backupToInbox)
             .receive(on: DispatchQueue.main)
             .sinkFuture(receiveValue: { [weak self] _ in
                 self?.hideSpinner()
@@ -119,6 +120,10 @@ extension BackupOptionsViewController {
 
     private func backupAsFile() {
         backupService.backupAsFile(keys: backups, for: self)
+    }
+
+    private func backupToInbox(_ input: [KeyDetails]) -> AnyPublisher<Void, Error> {
+        backupService.backupToInbox(keys: input, for: userId)
     }
 }
 
