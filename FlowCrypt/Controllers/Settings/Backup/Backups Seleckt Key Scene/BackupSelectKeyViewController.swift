@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import Combine
 import FlowCryptUI
 import Foundation
 
@@ -16,6 +17,8 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
     private var backupsContext: [(KeyDetails, Bool)]
     private let selectedOption: BackupOption
     private let userId: UserId
+
+    private var cancellable: AnyCancellable?
 
     init(
         decorator: BackupSelectKeyDecoratorType = BackupSelectKeyDecorator(),
@@ -85,14 +88,15 @@ extension BackupSelectKeyViewController {
             .filter { $0.1 == true }
             .map(\.0)
 
-        backupService.backupToInbox(keys: backupsToSave, for: userId)
-            .then(on: .main) { [weak self] in
+        cancellable = backupService.backupToInbox(keys: backupsToSave, for: userId)
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .sinkFuture(receiveValue: { [weak self] _ in
                 self?.hideSpinner()
                 self?.navigationController?.popToRootViewController(animated: true)
-            }
-            .catch(on: .main) { [weak self] error in
+            }, receiveError: { [weak self] error in
                 self?.handleCommon(error: error)
-            }
+            })
     }
 
     private func backupAsFile() {

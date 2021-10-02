@@ -6,6 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import Combine
 import Foundation
 import Promises
 
@@ -13,7 +14,7 @@ protocol BackupServiceType {
     /// get all existed backups
     func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]>
     /// backup keys to user inbox
-    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void>
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> AnyPublisher<Void, Error>
     /// show activity sheet to save keys as file
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController)
 }

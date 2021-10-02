@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import Combine
 import FlowCryptUI
 
 enum BackupOption: Int, CaseIterable, Equatable {
@@ -33,6 +34,8 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     private let attester = AttesterApi()
     private let backupService: BackupServiceType
     private let userId: UserId
+
+    private var cancellable: AnyCancellable?
 
     init(
         decorator: BackupOptionsViewDecoratorType = BackupOptionsViewDecorator(),
@@ -103,14 +106,15 @@ extension BackupOptionsViewController {
 
     private func backupToInbox() {
         showSpinner()
-        backupService.backupToInbox(keys: backups, for: userId)
-            .then(on: .main) { [weak self] in
+        cancellable = backupService.backupToInbox(keys: backups, for: userId)
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .sinkFuture(receiveValue: { [weak self] _ in
                 self?.hideSpinner()
                 self?.navigationController?.popToRootViewController(animated: true)
-            }
-            .catch(on: .main) { [weak self] error in
+            }, receiveError: { [weak self] error in
                 self?.handleCommon(error: error)
-            }
+            })
     }
 
     private func backupAsFile() {

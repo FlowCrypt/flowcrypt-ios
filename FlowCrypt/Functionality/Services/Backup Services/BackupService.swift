@@ -45,24 +45,42 @@ extension BackupService: BackupServiceType {
         }
     }
 
-    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void> {
-        Promise { [weak self] resolve, reject -> Void in
-            guard let self = self else { throw AppErr.nilSelf }
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> AnyPublisher<Void, Error> {
+        return createMessage(keys: keys, for: userId)
+            .flatMap(composeEmail)
+            .map(\.mimeEncoded)
+            .flatMap(messageSender.sendMail)
+            .eraseToAnyPublisher()
+    }
 
-            let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
+    func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {
+        let file = keys.joinedPrivateKey
+        let activityViewController = UIActivityViewController(
+            activityItems: [file],
+            applicationActivities: nil
+        )
+        viewController.present(activityViewController, animated: true)
+    }
 
-            guard isFullyEncryptedKeys else {
-                throw BackupServiceError.keyIsNotFullyEncrypted
+    private func createMessage(keys: [KeyDetails], for userId: UserId) -> Future<SendableMsg, Error> {
+        Future { promise in
+            guard keys.map(\.isFullyDecrypted).contains(false) else {
+                promise(.failure(BackupServiceError.keyIsNotFullyEncrypted))
+                return
             }
 
+            let filename = "flowcrypt-backup-\(userId.email.withoutSpecialCharacters).key"
             let privateKeyContext = keys
                 .compactMap { $0 }
                 .joinedPrivateKey
-
             let privateKeyData = privateKeyContext.data().base64EncodedString()
-
-            let filename = "flowcrypt-backup-\(userId.email.withoutSpecialCharacters).key"
-            let attachments = [SendableMsg.Attachment(name: filename, type: "text/plain", base64: privateKeyData)]
+            let attachments = [
+                SendableMsg.Attachment(
+                    name: filename,
+                    type: "text/plain",
+                    base64: privateKeyData
+                )
+            ]
             let message = SendableMsg(
                 text: "setup_backup_email".localized,
                 to: [userId.toMime],
@@ -75,33 +93,12 @@ extension BackupService: BackupServiceType {
                 pubKeys: nil
             )
 
-            self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
-                .map(\.mimeEncoded) 
-                .flatMap(self.messageSender.sendMail)
-                .sink(
-                    receiveCompletion: { result in
-                        switch result {
-                        case .failure(let error):
-                            reject(error)
-                        case .finished:
-                            break
-                        }
-                    },
-                    receiveValue: {
-                        resolve(())
-                    }
-                )
-                .store(in: &self.cancellable)
+            promise(.success(message))
         }
     }
 
-    func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {
-        let file = keys.joinedPrivateKey
-        let activityViewController = UIActivityViewController(
-            activityItems: [file],
-            applicationActivities: nil
-        )
-        viewController.present(activityViewController, animated: true)
+    private func composeEmail(_ message: SendableMsg) -> Future<CoreRes.ComposeEmail, Error> {
+        core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
     }
 }
 
