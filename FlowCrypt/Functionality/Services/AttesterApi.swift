@@ -28,9 +28,14 @@ final class AttesterApi: AttesterApiType {
     }
 
     private let core: Core
+    private let organisationalRules: OrganisationalRules
 
-    init(core: Core = .shared) {
+    init(
+        core: Core = .shared,
+        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()
+    ) {
         self.core = core
+        self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
     }
 
     private func urlPub(emailOrLongid: String) -> String {
@@ -45,6 +50,10 @@ extension AttesterApi {
     func lookupEmail(email: String) -> Promise<[KeyDetails]> {
         Promise { [weak self] () -> [KeyDetails] in
             guard let self = self else { throw AppErr.nilSelf }
+
+            if !(try self.organisationalRules.canLookupThisRecipientOnAttester(recipient: email)) {
+                return []
+            }
 
             let res = try awaitPromise(URLSession.shared.call(self.urlPub(emailOrLongid: email), tolerateStatus: [404]))
 

@@ -10,11 +10,11 @@ import Foundation
 @testable import FlowCrypt
 
 class KeyStorageMock: KeyStorageType {
-    func addKeys(keyDetails: [KeyDetails], source: KeySource, for email: String) {
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
         
     }
     
-    func updateKeys(keyDetails: [KeyDetails], source: KeySource, for email: String) {
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
         
     }
     

@@ -28,7 +28,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -50,7 +50,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -70,7 +70,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -93,18 +93,19 @@ class KeyInfoTests: XCTestCase {
             algo: nil
         )
 
-        let key = try KeyInfo(keyDetail, source: .backup, user: user)
+        let key = try KeyInfo(keyDetail, passphrase: "123", source: .backup, user: user)
         
         XCTAssertTrue(key.private == "private")
         XCTAssertTrue(key.public == "public")
         XCTAssertTrue(Array(key.allFingerprints) == ["f1", "f2", "f3"])
         XCTAssertTrue(Array(key.allLongids) == ["l1", "l2", "l3"])
+        XCTAssertTrue(key.passphrase == "123")
         XCTAssertTrue(key.source == "backup")
         XCTAssertTrue(key.user == user)
         XCTAssertTrue(key.primaryFingerprint == "f1")
         XCTAssertTrue(key.primaryLongid == "l1")
         
-        XCTAssertTrue(KeyInfo.primaryKey() == "private")
+        XCTAssertTrue(KeyInfo.primaryKey() == "primaryFingerprint")
         XCTAssertTrue(key.account == "email")
     }
 }

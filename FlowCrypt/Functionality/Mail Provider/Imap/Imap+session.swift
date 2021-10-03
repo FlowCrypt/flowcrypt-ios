@@ -83,7 +83,7 @@ extension Imap {
 
 extension MCOIMAPSession {
     func log() -> Self {
-        connectionLogger = { connectionID, type, data in
+        connectionLogger = { _, type, data in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
             Logger.nested("IMAP").logInfo("\(type):\(string)")
         }
@@ -93,7 +93,7 @@ extension MCOIMAPSession {
 
 extension MCOSMTPSession {
     func log() -> Self {
-        connectionLogger = { connectionID, type, data in
+        connectionLogger = { _, type, data in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
             Logger.nested("SMTP").logInfo("\(type):\(string)")
         }
