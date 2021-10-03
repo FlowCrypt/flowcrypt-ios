@@ -11,6 +11,10 @@ enum CoreError: Error, Equatable {
     case notReady(String)
     case format(String)
     case keyMismatch(String)
+    case noMDC(String)
+    case badMDC(String)
+    case needPassphrase(String)
+    case wrongPassphrase(String)
     // wrong value passed into a function
     case value(String)
     
@@ -21,6 +25,10 @@ enum CoreError: Error, Equatable {
         switch errorType {
         case "format": self = .format(coreError.error.message)
         case "key_mismatch": self = .keyMismatch(coreError.error.message)
+        case "no_mdc": self = .noMDC(coreError.error.message)
+        case "bad_mdc": self = .badMDC(coreError.error.message)
+        case "need_passphrase": self = .needPassphrase(coreError.error.message)
+        case "wrong_passphrase": self = .wrongPassphrase(coreError.error.message)
         default: return nil
         }
     }

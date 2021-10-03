@@ -100,18 +100,18 @@ final class KeyService: KeyServiceType {
             }
 
         // append keys to ensure with a pass phrase
-        if let passPhrase = passPhrase {
-            let keysToEnsure = keysInfo.map {
-                PrvKeyInfo(
-                    private: $0.private,
-                    longid: $0.primaryLongid,
-                    passphrase: passPhrase,
-                    fingerprints: Array($0.allFingerprints)
-                )
-            }
+        let keysToEnsure: [PrvKeyInfo] = keysInfo.compactMap {
+            guard let passPhraseValue = $0.passphrase ?? passPhrase else { return nil }
 
-            privateKeys.append(contentsOf: keysToEnsure)
+            return PrvKeyInfo(
+                private: $0.private,
+                longid: $0.primaryLongid,
+                passphrase: passPhraseValue,
+                fingerprints: Array($0.allFingerprints)
+            )
         }
+
+        privateKeys.append(contentsOf: keysToEnsure)
 
         return .success(privateKeys)
     }

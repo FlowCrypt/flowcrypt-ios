@@ -144,17 +144,22 @@ extension SetupBackupsViewController {
             return
         }
 
-        // save pass phrase
-        matchingKeyBackups
-            .map {
-                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
-            }
-            .forEach {
-                passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
-            }
+        if !shouldStorePassPhrase {
+            // save pass phrase
+            matchingKeyBackups
+                .map {
+                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                }
+                .forEach {
+                    passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
+                }
+        }
 
         // save keys
-        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups), source: .backup, for: user.email)
+        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups),
+                           passPhrase: shouldStorePassPhrase ? passPhrase : nil,
+                           source: .backup,
+                           for: user.email)
 
         moveToMainFlow()
     }
