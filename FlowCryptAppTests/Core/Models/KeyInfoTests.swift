@@ -105,7 +105,7 @@ class KeyInfoTests: XCTestCase {
         XCTAssertTrue(key.primaryFingerprint == "f1")
         XCTAssertTrue(key.primaryLongid == "l1")
         
-        XCTAssertTrue(KeyInfo.primaryKey() == "private")
+        XCTAssertTrue(KeyInfo.primaryKey() == "primaryFingerprint")
         XCTAssertTrue(key.account == "email")
     }
 }
