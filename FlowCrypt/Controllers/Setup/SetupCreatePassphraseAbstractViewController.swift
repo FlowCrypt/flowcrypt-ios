@@ -16,9 +16,9 @@ import Promises
  * - Has not to have an instance!
  */
 
-class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable {
+class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
     enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction, subtitle
     }
 
     var parts: [Parts] {
@@ -32,6 +32,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     let storage: DataServiceType
     let keyStorage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
+    var shouldShowBackButton: Bool { false }
 
     var shouldStorePassPhrase = true {
         didSet {
@@ -75,6 +76,11 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationItem.leftBarButtonItem = nil
     }
 
     func setupAccount(with passphrase: String) {
@@ -192,6 +198,10 @@ extension SetupCreatePassphraseAbstractViewController {
         logger.logInfo("Setup account with passphrase")
         setupAccount(with: passPhrase)
     }
+
+    private func handleOtherAccount() {
+        router.signOut()
+    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
@@ -251,6 +261,10 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                         backgroundColor: .backgroundColor
                     )
                 )
+            case .optionalAction:
+                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
+                    self?.handleOtherAccount()
+                }
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
             case .saveLocally:
