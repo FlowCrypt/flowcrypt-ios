@@ -23,6 +23,8 @@ class KeyInfoTests: XCTestCase {
                 KeyId(longid: "longId", fingerprint: "fingerprint")
             ],
             created: 1231244,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )
@@ -45,6 +47,8 @@ class KeyInfoTests: XCTestCase {
                 KeyId(longid: "longId", fingerprint: "fingerprint")
             ],
             created: 1231244,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )
@@ -65,6 +69,8 @@ class KeyInfoTests: XCTestCase {
             isFullyEncrypted: true,
             ids: [ ],
             created: 1231244,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )
@@ -89,6 +95,8 @@ class KeyInfoTests: XCTestCase {
                 KeyId(longid: "l3", fingerprint: "f3")
             ],
             created: 1231244,
+            lastModified: nil,
+            expiration: nil,
             users: [ ],
             algo: nil
         )

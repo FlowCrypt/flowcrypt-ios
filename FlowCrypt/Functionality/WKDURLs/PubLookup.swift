@@ -55,5 +55,4 @@ class PubLookup: PubLookupType {
             resolve(attesterResult)
         }
     }
-
 }

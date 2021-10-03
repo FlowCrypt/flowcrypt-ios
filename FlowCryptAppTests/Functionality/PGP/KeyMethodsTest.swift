@@ -39,6 +39,8 @@ class KeyMethodsTest: XCTestCase {
                     KeyId(longid: "longid", fingerprint: "fingerprint")
                 ],
                 created: 1,
+                lastModified: nil,
+                expiration: nil,
                 users: [],
                 algo: nil
             ),
@@ -51,6 +53,8 @@ class KeyMethodsTest: XCTestCase {
                     KeyId(longid: "longid 2", fingerprint: "fingerprint 2")
                 ],
                 created: 1,
+                lastModified: nil,
+                expiration: nil,
                 users: [],
                 algo: nil
             )
@@ -84,6 +88,8 @@ extension KeyMethodsTest {
                 KeyId(longid: "longid", fingerprint: "fingerprint")
             ],
             created: 1,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         ),
@@ -96,6 +102,8 @@ extension KeyMethodsTest {
                 KeyId(longid: "longid2", fingerprint: "fingerprint2")
             ],
             created: 1,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )

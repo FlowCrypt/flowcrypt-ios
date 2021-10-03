@@ -914,8 +914,8 @@
 		21F836A72652A1CD00B2448C /* WKDURLs */ = {
 			isa = PBXGroup;
 			children = (
-				21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */,
 				21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */,
+				21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */,
 			);
 			path = WKDURLs;
 			sourceTree = "<group>";
