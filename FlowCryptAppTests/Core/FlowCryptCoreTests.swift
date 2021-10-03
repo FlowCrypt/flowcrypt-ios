@@ -67,12 +67,16 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertNil(k0.isFullyDecrypted)
         XCTAssertNil(k0.isFullyEncrypted)
         XCTAssertEqual(k0.longid, TestData.k0.longid)
+        XCTAssertEqual(k0.lastModified, 1543925225)
+        XCTAssertNil(k0.expiration)
         // k1 is private
         let k1 = r.keyDetails[1]
         XCTAssertNotNil(k1.private)
         XCTAssertEqual(k1.isFullyDecrypted, false)
         XCTAssertEqual(k1.isFullyEncrypted, true)
         XCTAssertEqual(k1.longid, TestData.k1.longid)
+        XCTAssertEqual(k1.lastModified, 1563630809)
+        XCTAssertNil(k1.expiration)
         // todo - could test user ids
     }
 
@@ -127,6 +131,43 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertNil(mime.range(of: msg.text)) // plain text not visible
         XCTAssertNotNil(mime.range(of: "Subject: \(msg.subject)")) // has mime Subject header
         XCTAssertNil(mime.range(of: "In-Reply-To")) // Not a reply
+    }
+    
+    func testComposeEmailInlineWithAttachment() throws {
+        
+        let initialFileName = "data.txt"
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
+            .path(forResource: "data", ofType: "txt")!)
+        let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
+        
+        let attachment = SendableMsg.Attachment(
+            name: initialFileName, type: "text/plain",
+            base64: fileData.base64EncodedString()
+        )
+        
+        let msg = SendableMsg(
+            text: "this is the message",
+            to: ["email@hello.com"], cc: [], bcc: [],
+            from: "sender@hello.com",
+            subject: "subj", replyToMimeMsg: nil,
+            atts: [attachment], pubKeys: nil
+        )
+        let expectation = XCTestExpectation()
+        
+        var mime: String = ""
+        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
+            .sinkFuture(
+                receiveValue: { composeEmailRes in
+                    mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
+                    expectation.fulfill()
+                }, receiveError: {_ in }
+            )
+            .store(in: &cancellable)
+        wait(for: [expectation], timeout: 3)
+        XCTAssertNil(mime.range(of: msg.text)) // text encrypted
+        XCTAssertNotNil(mime.range(of: "Content-Type: application/pgp-encrypted")) // encrypted
+        XCTAssertNotNil(mime.range(of: "name=\(attachment.name)")) // attachment
+        XCTAssertNotNil(mime.range(of: "Subject: \(msg.subject)")) // has mime Subject header
     }
 
     func testEndToEnd() throws {
@@ -290,7 +331,51 @@ class FlowCryptCoreTests: XCTestCase {
             XCTAssertNotNil(message.range(of: "Missing appropriate key"))
         }
     }
-
+    
+    func testDecryptEncryptedFile() throws {
+        // Given
+        let initialFileName = "data.txt"
+        let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
+            .path(forResource: "data", ofType: "txt")!)
+        let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
+        
+        let passphrase = "some pass phrase test"
+        let email = "e2e@domain.com"
+        let generateKeyRes = try core.generateKey(
+            passphrase: passphrase,
+            variant: KeyVariant.curve25519,
+            userIds: [UserId(email: email, name: "End to end")]
+        )
+        let k = generateKeyRes.key
+        let keys = [
+            PrvKeyInfo(
+                private: k.private!,
+                longid: k.ids[0].longid,
+                passphrase: passphrase,
+                fingerprints: k.fingerprints
+            )
+        ]
+        
+        // When
+        do {
+            let encrypted = try core.encryptFile(
+                pubKeys: [k.public],
+                fileData: fileData,
+                name: initialFileName
+            )
+            let decrypted = try self.core.decryptFile(
+                encrypted: encrypted.encryptedFile,
+                keys: keys,
+                msgPwd: nil
+            )
+            // Then
+            XCTAssertEqual(decrypted.name, initialFileName)
+            XCTAssertEqual(decrypted.content.count, fileData.count)
+        } catch {
+            XCTFail("Core file decryption should not fail")
+        }
+    }
+    
     func testException() throws {
         do {
             _ = try core.decryptKey(armoredPrv: "not really a key", passphrase: "whatnot")

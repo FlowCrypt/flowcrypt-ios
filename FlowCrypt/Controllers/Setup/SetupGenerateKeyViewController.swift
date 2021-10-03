@@ -148,20 +148,19 @@ extension SetupGenerateKeyViewController {
         Future { [weak self] promise in
             guard let self = self else { return }
             do {
-                let passPhrase = PassPhrase(
-                    value: input.passPhrase,
-                    fingerprints: input.key.fingerprints
-                )
-
                 self.keyStorage.addKeys(
                     keyDetails: [input.key],
+                    passPhrase: self.shouldStorePassPhrase ? input.passPhrase: nil,
                     source: .generated,
                     for: self.user.email
                 )
-                self.passPhraseService.savePassPhrase(
-                    with: passPhrase,
-                    inStorage: self.shouldStorePassPhrase
-                )
+                if !self.shouldStorePassPhrase {
+                    let passPhrase = PassPhrase(
+                        value: input.passPhrase,
+                        fingerprints: input.key.fingerprints
+                    )
+                    self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: false)
+                }
 
                 let updateKey: Promise<String> = self.attester.updateKey(
                     email: input.userId.email,

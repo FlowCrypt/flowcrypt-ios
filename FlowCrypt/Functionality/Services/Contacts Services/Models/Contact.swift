@@ -63,9 +63,9 @@ extension Contact {
         self.email = email
         self.name = keyDetail.users.first ?? email
         self.pubKey = keyDetail.public
-        self.pubKeyLastSig = nil // TODO: - will be provided later
+        self.pubKeyLastSig = keyDetail.lastModified.map { Date(timeIntervalSince1970: TimeInterval($0)) }
         self.pubkeyLastChecked = Date()
-        self.pubkeyExpiresOn = nil // TODO: - will be provided later
+        self.pubkeyExpiresOn = keyDetail.expiration.map { Date(timeIntervalSince1970: TimeInterval($0)) }
         self.longids = longids
         self.lastUsed = nil
         self.fingerprints = fingerprints

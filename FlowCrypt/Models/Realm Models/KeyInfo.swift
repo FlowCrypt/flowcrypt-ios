@@ -15,12 +15,10 @@ enum KeyInfoError: Error {
     case missingPrivateKey(String)
     case notEncrypted(String)
     case missingKeyIds
+    case missingPrimaryFingerprint
 }
 
 final class KeyInfo: Object {
-    var primaryFingerprint: String {
-        allFingerprints[0]
-    }
     var primaryLongid: String {
         allLongids[0]
     }
@@ -31,10 +29,12 @@ final class KeyInfo: Object {
     let allFingerprints = List<String>()
     let allLongids = List<String>()
 
+    @objc dynamic var primaryFingerprint = ""
+    @objc dynamic var passphrase: String?
     @objc dynamic var source: String = ""
     @objc dynamic var user: UserObject!
 
-    convenience init(_ keyDetails: KeyDetails, source: KeySource, user: UserObject) throws {
+    convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserObject) throws {
         self.init()
 
         guard let privateKey = keyDetails.private else {
@@ -51,12 +51,19 @@ final class KeyInfo: Object {
         self.`public` = keyDetails.public
         self.allFingerprints.append(objectsIn: keyDetails.ids.map(\.fingerprint))
         self.allLongids.append(objectsIn: keyDetails.ids.map(\.longid))
+
+        guard let primaryFingerprint = self.allFingerprints.first else {
+            throw KeyInfoError.missingPrimaryFingerprint
+        }
+        
+        self.primaryFingerprint = primaryFingerprint
+        self.passphrase = passphrase
         self.source = source.rawValue
         self.user = user
     }
 
     override class func primaryKey() -> String? {
-        "private"
+        "primaryFingerprint"
     }
 
     override var description: String {

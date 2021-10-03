@@ -45,6 +45,10 @@ public extension String {
             }
         }
     }
+    
+    var deletingPathExtension: String {
+        return NSString(string: self).deletingPathExtension as String
+    }
 }
 
 public extension NSAttributedString {
