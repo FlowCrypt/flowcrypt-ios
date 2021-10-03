@@ -22,8 +22,8 @@ final class KeyDataStorage {
 }
 
 extension KeyDataStorage: KeyStorageType {
-    func updateKeys(keyDetails: [KeyDetails], source: KeySource, for email: String) {
-        encryptedStorage.updateKeys(keyDetails: keyDetails, source: source, for: email)
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
+        encryptedStorage.updateKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source, for: email)
     }
 
     func publicKey() -> String? {
@@ -34,7 +34,7 @@ extension KeyDataStorage: KeyStorageType {
         encryptedStorage.keysInfo()
     }
 
-    func addKeys(keyDetails: [KeyDetails], source: KeySource, for email: String) {
-        encryptedStorage.addKeys(keyDetails: keyDetails, source: source, for: email)
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
+        encryptedStorage.addKeys(keyDetails: keyDetails, passPhrase: passPhrase, source: source, for: email)
     }
 }

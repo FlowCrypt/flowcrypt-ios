@@ -30,10 +30,11 @@ final class KeyInfo: Object {
     let allLongids = List<String>()
 
     @objc dynamic var primaryFingerprint = ""
-    @objc dynamic var source = ""
+    @objc dynamic var passphrase: String?
+    @objc dynamic var source: String = ""
     @objc dynamic var user: UserObject!
 
-    convenience init(_ keyDetails: KeyDetails, source: KeySource, user: UserObject) throws {
+    convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserObject) throws {
         self.init()
 
         guard let privateKey = keyDetails.private else {
@@ -56,6 +57,7 @@ final class KeyInfo: Object {
         }
         
         self.primaryFingerprint = primaryFingerprint
+        self.passphrase = passphrase
         self.source = source.rawValue
         self.user = user
     }
