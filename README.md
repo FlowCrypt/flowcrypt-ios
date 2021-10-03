@@ -23,6 +23,8 @@ bundle exec pod install
 
 ### Run UI Tests
 
+To run UI tests, you will need a FlowCryptUITests/test-ci-secrets.json file. For this, please reach out to tom@flowcrypt.com to get an NDA signed, and the file will be shared with you. On SemaphoreCI the file is loaded as a secret. If you need to update this file on CI, communicate with Tom to get help. After the update, please email it encrypted to other iOS team members.
+
 Follow steps in installation above, and then:
  - from terminal: 
     - `make ui_tests` - for all ui tests
