@@ -8,6 +8,7 @@
 
 import Foundation
 import Promises
+import FlowCryptCommon
 
 // MARK: - MessageAttachment
 struct MessageAttachment: FileType {
@@ -47,6 +48,10 @@ enum MessageServiceError: Error {
 }
 
 final class MessageService {
+    private enum Constants {
+        static let encryptedAttachmentExtension = "pgp"
+    }
+
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
     private let passPhraseService: PassPhraseServiceType
@@ -90,7 +95,7 @@ final class MessageService {
                 reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
             } else {
                 self.savePassPhrases(value: passPhrase, with: keys)
-                let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
+                let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
                 resolve(processedMessage)
             }
         }
@@ -125,18 +130,30 @@ final class MessageService {
                 isEmail: true
             )
 
-            let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
+            let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
             resolve(processedMessage)
         }
     }
 
-    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg) -> ProcessedMessage {
+    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg, keys: [PrvKeyInfo]) throws -> ProcessedMessage {
         let decryptErrBlocks = decrypted.blocks
             .filter { $0.decryptErr != nil }
 
-        let attachments = decrypted.blocks
+        let attachments = try decrypted.blocks
             .filter(\.isAttachmentBlock)
-            .map(MessageAttachment.init)
+            .compactMap { block -> MessageAttachment? in
+                guard let attMeta = block.attMeta else { return nil }
+                var name = attMeta.name
+                let size = attMeta.length
+                var data = attMeta.data
+
+                if block.type == .encryptedAtt {
+                    data = (try core.decryptFile(encrypted: data, keys: keys, msgPwd: nil).content)
+                    name = name.deletingPathExtension
+                }
+
+                return MessageAttachment(name: name, size: size, data: data)
+            }
 
         let messageType: ProcessedMessage.MessageType
         let text: String

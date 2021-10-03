@@ -1318,8 +1318,8 @@
 			isa = PBXGroup;
 			children = (
 				9F4163EC266574CB00106194 /* BackupServiceMock.swift */,
-				9F6F3C3B26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift */,
 				9F6F3C6926ADFBEB005BD9C6 /* MessageGatewayMock.swift */,
+				9F6F3C3B26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift */,
 				9F6F3C7526ADFC37005BD9C6 /* KeyStorageMock.swift */,
 				9F6F3C7C26ADFC60005BD9C6 /* ContactsServiceMock.swift */,
 			);
