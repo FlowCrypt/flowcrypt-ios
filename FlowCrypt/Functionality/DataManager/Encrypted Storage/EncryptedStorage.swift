@@ -110,8 +110,6 @@ extension EncryptedStorage: LogOutHandler {
                 .filter { $0.email == email }
             let keys = storage.objects(KeyInfo.self)
                 .filter { $0.account == email }
-            let passPhrases = storage.objects(PassPhraseObject.self)
-                .filter { keys.map(\.primaryFingerprint).contains($0.primaryFingerprint) }
             let sessions = storage.objects(SessionObject.self)
                 .filter { $0.email == email }
             let clientConfigurations = storage.objects(ClientConfigurationObject.self)
@@ -120,7 +118,6 @@ extension EncryptedStorage: LogOutHandler {
             try storage.write {
                 storage.delete(keys)
                 storage.delete(sessions)
-                storage.delete(passPhrases)
                 storage.delete(clientConfigurations)
                 storage.delete(userToDelete)
             }
@@ -159,27 +156,36 @@ extension EncryptedStorage {
 
 // MARK: - Keys
 extension EncryptedStorage {
-    func addKeys(keyDetails: [KeyDetails], source: KeySource, for email: String) {
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
         guard let user = storage.objects(UserObject.self).first(where: { $0.email == email }) else {
             logger.logError("Can't find user with given email to add keys. User should be already saved")
             return
         }
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, source: source, user: user))
+                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source, user: user))
             }
         }
     }
 
-    func updateKeys(keyDetails: [KeyDetails], source: KeySource, for email: String) {
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
         guard let user = getUserObject(for: email) else {
             logger.logError("Can't find user with given email to update keys. User should be already saved")
             return
         }
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, source: source, user: user), update: .all)
+                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source, user: user), update: .all)
             }
+        }
+    }
+
+    func updateKeys(with primaryFingerprint: String, passphrase: String?) {
+        let keys = keysInfo()
+            .filter { $0.primaryFingerprint == primaryFingerprint }
+
+        try! storage.write {
+            keys.map { $0.passphrase = passphrase }
         }
     }
 
@@ -209,25 +215,19 @@ extension EncryptedStorage {
 // MARK: - PassPhrase
 extension EncryptedStorage: PassPhraseStorageType {
     func save(passPhrase: PassPhrase) {
-        try! storage.write {
-            storage.add(PassPhraseObject(passPhrase))
-        }
+        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
     }
 
     func update(passPhrase: PassPhrase) {
-        try! storage.write {
-            storage.add(PassPhraseObject(passPhrase), update: .all)
-        }
+        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
     }
 
     func remove(passPhrase: PassPhrase) {
-        try! storage.write {
-            storage.delete(PassPhraseObject(passPhrase))
-        }
+        updateKeys(with: passPhrase.primaryFingerprint, passphrase: nil)
     }
 
     func getPassPhrases() -> [PassPhrase] {
-        Array(storage.objects(PassPhraseObject.self)).map(PassPhrase.init)
+        keysInfo().compactMap(PassPhrase.init)
     }
 }
 
