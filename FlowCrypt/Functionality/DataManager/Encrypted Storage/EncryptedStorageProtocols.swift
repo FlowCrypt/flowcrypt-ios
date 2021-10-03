@@ -9,8 +9,8 @@
 import Foundation
 
 protocol KeyStorageType {
-    func addKeys(keyDetails: [KeyDetails], source: KeySource, for email: String)
-    func updateKeys(keyDetails: [KeyDetails], source: KeySource, for email: String)
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
     func publicKey() -> String?
     func keysInfo() -> [KeyInfo]
 }

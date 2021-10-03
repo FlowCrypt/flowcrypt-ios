@@ -46,7 +46,7 @@ extension Imap {
                         self.fetchMessage(in: folder, kind: kind, uids: uids)
                     }) else { return }
 
-                    guard let messages = msgs as? [MCOIMAPMessage] else {
+                    guard let messages = msgs else {
                         return reject(AppErr.cast("[MCOIMAPMessage]"))
                     }
                     return resolve(messages)
