@@ -29,7 +29,7 @@ enum ClientConfigurationFlag: String, Codable {
     }
 }
 
-struct ClientConfiguration: Codable, Equatable {
+struct ClientConfigurationWrapper: Codable, Equatable {
 
     let flags: [ClientConfigurationFlag]?
     let customKeyserverUrl: String?
@@ -56,9 +56,9 @@ struct ClientConfiguration: Codable, Equatable {
 }
 
 // MARK: - Empty model
-extension ClientConfiguration {
-    static var empty: ClientConfiguration {
-        return ClientConfiguration(
+extension ClientConfigurationWrapper {
+    static var empty: ClientConfigurationWrapper {
+        return ClientConfigurationWrapper(
             flags: [],
             customKeyserverUrl: nil,
             keyManagerUrl: nil,
@@ -70,7 +70,7 @@ extension ClientConfiguration {
 }
 
 // MARK: - Map from realm model
-extension ClientConfiguration {
+extension ClientConfigurationWrapper {
     init?(_ object: ClientConfigurationObject?) {
         guard let unwrappedObject = object else {
             return nil

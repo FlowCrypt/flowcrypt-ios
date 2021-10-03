@@ -33,7 +33,7 @@ class OrganisationalRulesServiceTests: XCTestCase {
     }
 
     func testGetSavedOrganisationalRulesForCurrentUser() {
-        let expectedConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+        let expectedConfiguration = ClientConfigurationWrapper(keyManagerUrl: "https://ekm.example.com")
         clientConfigurationProvider.fetchCall = {
             expectedConfiguration
         }
@@ -91,14 +91,14 @@ class OrganisationalRulesServiceTests: XCTestCase {
             clientConfigurationProviderSaveCountCall
         ]
 
-        let expectedClientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+        let expectedClientConfiguration = ClientConfigurationWrapper(keyManagerUrl: "https://ekm.example.com")
 
         // (String) -> (Result<ClientConfiguration, Error>)
         self.enterpriseServerApi.getClientConfigurationCall = { email in
             if email == "example@flowcrypt.test" {
                 getClientConfigurationCallExpectation.fulfill()
             }
-            return Result<ClientConfiguration, Error>.success(expectedClientConfiguration)
+            return Result<ClientConfigurationWrapper, Error>.success(expectedClientConfiguration)
         }
 
         // (ClientConfiguration) -> (Void)
@@ -144,7 +144,7 @@ class OrganisationalRulesServiceTests: XCTestCase {
             fetchOrganisationalRulesForCurrentUserExpectation
         ]
 
-        let expectedClientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+        let expectedClientConfiguration = ClientConfigurationWrapper(keyManagerUrl: "https://ekm.example.com")
 
         self.enterpriseServerApi.getClientConfigurationCall = { email in
             .failure(MockError.some)

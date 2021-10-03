@@ -11,9 +11,9 @@ import Promises
 import RealmSwift
 
 protocol ClientConfigurationProviderType {
-    func fetch() -> ClientConfiguration?
+    func fetch() -> ClientConfigurationWrapper?
     func removeClientConfiguration()
-    func save(clientConfiguration: ClientConfiguration)
+    func save(clientConfiguration: ClientConfigurationWrapper)
 }
 
 struct ClientConfigurationProvider: CacheServiceType {
@@ -27,15 +27,15 @@ struct ClientConfigurationProvider: CacheServiceType {
 }
 
 extension ClientConfigurationProvider: ClientConfigurationProviderType {
-    func fetch() -> ClientConfiguration? {
-        ClientConfiguration(clientConfigurationCache.getAllForActiveUser()?.first)
+    func fetch() -> ClientConfigurationWrapper? {
+        ClientConfigurationWrapper(clientConfigurationCache.getAllForActiveUser()?.first)
     }
 
     func removeClientConfiguration() {
         clientConfigurationCache.removeAllForActiveUser()
     }
 
-    func save(clientConfiguration: ClientConfiguration) {
+    func save(clientConfiguration: ClientConfigurationWrapper) {
         clientConfigurationCache.save(ClientConfigurationObject(clientConfiguration, user: EncryptedStorage().activeUser))
     }
 }

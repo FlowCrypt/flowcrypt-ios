@@ -12,8 +12,8 @@ protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) -> Promise<String?>
     func getActiveFesUrlForCurrentUser() -> Promise<String?>
 
-    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration>
-    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration>
+    func getClientConfiguration(for email: String) -> Promise<ClientConfigurationWrapper>
+    func getClientConfigurationForCurrentUser() -> Promise<ClientConfigurationWrapper>
 }
 
 enum EnterpriseServerApiError: Error {
@@ -45,7 +45,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     }
 
     private struct ClientConfigurationContainer: Codable {
-        let clientConfiguration: ClientConfiguration
+        let clientConfiguration: ClientConfigurationWrapper
 
         private enum CodingKeys: String, CodingKey {
             case clientConfiguration
@@ -107,8 +107,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         .recoverFromTimeOut(result: nil)
     }
 
-    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration> {
-        Promise<ClientConfiguration> { resolve, reject in
+    func getClientConfiguration(for email: String) -> Promise<ClientConfigurationWrapper> {
+        Promise<ClientConfigurationWrapper> { resolve, reject in
             guard let userDomain = email.recipientDomain else {
                 reject(EnterpriseServerApiError.emailFormat)
                 return
@@ -145,9 +145,9 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         }
     }
 
-    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
+    func getClientConfigurationForCurrentUser() -> Promise<ClientConfigurationWrapper> {
         guard let email = DataService.shared.currentUser?.email else {
-            return Promise<ClientConfiguration> { _, _ in
+            return Promise<ClientConfigurationWrapper> { _, _ in
                 fatalError("User has to be set while getting client configuration")
             }
         }

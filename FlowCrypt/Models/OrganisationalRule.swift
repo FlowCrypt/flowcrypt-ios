@@ -13,9 +13,9 @@ import Foundation
 /// These either enforce, alter or forbid various behavior to fit customer needs
 class OrganisationalRules {
 
-    let clientConfiguration: ClientConfiguration
+    let clientConfiguration: ClientConfigurationWrapper
 
-    init(clientConfiguration: ClientConfiguration) {
+    init(clientConfiguration: ClientConfigurationWrapper) {
         self.clientConfiguration = clientConfiguration
     }
 

@@ -35,23 +35,23 @@ class EnterpriseServerApiMock: EnterpriseServerApiType {
 
     var getClientConfigurationInvoked = false
     var getClientConfigurationCount = 0
-    var getClientConfigurationCall: (String) -> (Result<ClientConfiguration, Error>) = { email in
+    var getClientConfigurationCall: (String) -> (Result<ClientConfigurationWrapper, Error>) = { email in
         .failure(OrganisationalRulesServiceError.getClientConfigurationCall)
     }
-    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration> {
+    func getClientConfiguration(for email: String) -> Promise<ClientConfigurationWrapper> {
         getClientConfigurationInvoked = true
         getClientConfigurationCount += 1
-        return Promise<ClientConfiguration>.resolveAfter(with: getClientConfigurationCall(email))
+        return Promise<ClientConfigurationWrapper>.resolveAfter(with: getClientConfigurationCall(email))
     }
 
     var getClientConfigurationForCurrentUserInvoked = false
     var getClientConfigurationForCurrentUserCount = 0
-    var getClientConfigurationForCurrentUserCall: () -> (Result<ClientConfiguration, Error>) = {
+    var getClientConfigurationForCurrentUserCall: () -> (Result<ClientConfigurationWrapper, Error>) = {
         .failure(OrganisationalRulesServiceError.getClientConfigurationForCurrentUserCall)
     }
-    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
+    func getClientConfigurationForCurrentUser() -> Promise<ClientConfigurationWrapper> {
         getClientConfigurationForCurrentUserInvoked = true
         getClientConfigurationForCurrentUserCount += 1
-        return Promise<ClientConfiguration>.resolveAfter(with: getClientConfigurationForCurrentUserCall())
+        return Promise<ClientConfigurationWrapper>.resolveAfter(with: getClientConfigurationForCurrentUserCall())
     }
 }

@@ -14,45 +14,45 @@ class OrganisationalRulesTests: XCTestCase {
     var sut: OrganisationalRules! {
         .init(clientConfiguration: clientConfiguration)
     }
-    var clientConfiguration: ClientConfiguration!
+    var clientConfiguration: ClientConfigurationWrapper!
 
     func testIsUsingKeyManagerURL() {
-        clientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+        clientConfiguration = ClientConfigurationWrapper(keyManagerUrl: "https://ekm.example.com")
         XCTAssertTrue(sut.isUsingKeyManager)
 
-        clientConfiguration = ClientConfiguration(keyManagerUrl: nil)
+        clientConfiguration = ClientConfigurationWrapper(keyManagerUrl: nil)
         XCTAssertFalse(sut.isKeyManagerUrlValid)
     }
 
     func testIsUsingValidKeyManagerURL() {
         // valid url check in
-        clientConfiguration = ClientConfiguration(keyManagerUrl: "")
+        clientConfiguration = ClientConfigurationWrapper(keyManagerUrl: "")
         XCTAssertFalse(sut.isKeyManagerUrlValid)
 
-        clientConfiguration = ClientConfiguration(keyManagerUrl: "not a url string")
+        clientConfiguration = ClientConfigurationWrapper(keyManagerUrl: "not a url string")
         XCTAssertFalse(sut.isKeyManagerUrlValid)
     }
 
     func testMustAutoImportOrAutogenPrvWithKeyManager() {
-        clientConfiguration = ClientConfiguration(
+        clientConfiguration = ClientConfigurationWrapper(
             flags: [.privateKeyAutoimportOrAutogen],
             keyManagerUrl: "https://ekm.example.com"
         )
         XCTAssertTrue(sut.mustAutoImportOrAutogenPrvWithKeyManager)
 
-        clientConfiguration = ClientConfiguration(
+        clientConfiguration = ClientConfigurationWrapper(
             flags: [],
             keyManagerUrl: "https://ekm.example.com"
         )
         XCTAssertFalse(sut.mustAutoImportOrAutogenPrvWithKeyManager)
 
-        clientConfiguration = ClientConfiguration(
+        clientConfiguration = ClientConfigurationWrapper(
             flags: nil,
             keyManagerUrl: "https://ekm.example.com"
         )
         XCTAssertFalse(sut.mustAutoImportOrAutogenPrvWithKeyManager)
 
-        clientConfiguration = ClientConfiguration(
+        clientConfiguration = ClientConfigurationWrapper(
             flags: [.defaultRememberPassphrase, .hideArmorMeta, .enforceAttesterSubmit],
             keyManagerUrl: "https://ekm.example.com"
         )
@@ -60,50 +60,50 @@ class OrganisationalRulesTests: XCTestCase {
     }
 
     func testMustAutogenPassPhraseQuietly() {
-        clientConfiguration = ClientConfiguration(
+        clientConfiguration = ClientConfigurationWrapper(
             flags: [.passphraseQuietAutogen]
         )
         XCTAssertTrue(sut.mustAutogenPassPhraseQuietly)
 
-        clientConfiguration = ClientConfiguration(flags: [])
+        clientConfiguration = ClientConfigurationWrapper(flags: [])
         XCTAssertFalse(sut.mustAutogenPassPhraseQuietly)
 
-        clientConfiguration = ClientConfiguration(flags: [.privateKeyAutoimportOrAutogen])
+        clientConfiguration = ClientConfigurationWrapper(flags: [.privateKeyAutoimportOrAutogen])
         XCTAssertFalse(sut.mustAutogenPassPhraseQuietly)
 
-        clientConfiguration = ClientConfiguration(flags: nil)
+        clientConfiguration = ClientConfigurationWrapper(flags: nil)
         XCTAssertFalse(sut.mustAutogenPassPhraseQuietly)
     }
 
     func testForbidStoringPassPhrase() {
-        clientConfiguration = ClientConfiguration(
+        clientConfiguration = ClientConfigurationWrapper(
             flags: [.forbidStoringPassphrase]
         )
         XCTAssertTrue(sut.forbidStoringPassPhrase)
 
-        clientConfiguration = ClientConfiguration(flags: [])
+        clientConfiguration = ClientConfigurationWrapper(flags: [])
         XCTAssertFalse(sut.forbidStoringPassPhrase)
 
-        clientConfiguration = ClientConfiguration(flags: [.hideArmorMeta])
+        clientConfiguration = ClientConfigurationWrapper(flags: [.hideArmorMeta])
         XCTAssertFalse(sut.forbidStoringPassPhrase)
 
-        clientConfiguration = ClientConfiguration(flags: nil)
+        clientConfiguration = ClientConfigurationWrapper(flags: nil)
         XCTAssertFalse(sut.forbidStoringPassPhrase)
     }
 
     func testMustSubmitAttester() {
-        clientConfiguration = ClientConfiguration(
+        clientConfiguration = ClientConfigurationWrapper(
             flags: [.enforceAttesterSubmit]
         )
         XCTAssertTrue(sut.mustSubmitAttester)
 
-        clientConfiguration = ClientConfiguration(flags: [])
+        clientConfiguration = ClientConfigurationWrapper(flags: [])
         XCTAssertFalse(sut.mustSubmitAttester)
 
-        clientConfiguration = ClientConfiguration(flags: [.hideArmorMeta])
+        clientConfiguration = ClientConfigurationWrapper(flags: [.hideArmorMeta])
         XCTAssertFalse(sut.mustSubmitAttester)
 
-        clientConfiguration = ClientConfiguration(flags: nil)
+        clientConfiguration = ClientConfigurationWrapper(flags: nil)
         XCTAssertFalse(sut.mustSubmitAttester)
     }
 }

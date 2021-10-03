@@ -12,10 +12,10 @@ import Foundation
 class ClientConfigurationProviderMock: ClientConfigurationProviderType {
     var fetchInvoked = false
     var fetchCount = 0
-    var fetchCall: () -> (ClientConfiguration?) = {
+    var fetchCall: () -> (ClientConfigurationWrapper?) = {
         nil
     }
-    func fetch() -> ClientConfiguration? {
+    func fetch() -> ClientConfigurationWrapper? {
         fetchInvoked = true
         fetchCount += 1
         return fetchCall()
@@ -30,10 +30,10 @@ class ClientConfigurationProviderMock: ClientConfigurationProviderType {
 
     var saveInvoked = false
     var saveCount = 0
-    var saveCall: (ClientConfiguration) -> (Void) = { clientConfiguration in
+    var saveCall: (ClientConfigurationWrapper) -> (Void) = { clientConfiguration in
 
     }
-    func save(clientConfiguration: ClientConfiguration) {
+    func save(clientConfiguration: ClientConfigurationWrapper) {
         saveInvoked = true
         saveCount += 1
         saveCall(clientConfiguration)

@@ -23,17 +23,17 @@ class ClientConfigurationServiceTest: XCTestCase {
 
     func testCheckDoesNotUseEKM() {
         // EKM should not be used if keyManagerUrl is nil
-        organisationalRulesService.clientConfiguration = ClientConfiguration(keyManagerUrl: nil)
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(keyManagerUrl: nil)
         XCTAssert(sut.checkShouldUseEKM() == .doesNotUseEKM)
 
         // EKM should not be used if keyManagerUrl is nil
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [],
             keyManagerUrl: nil
         )
         XCTAssert(sut.checkShouldUseEKM() == .doesNotUseEKM)
 
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [.forbidStoringPassphrase],
             keyManagerUrl: nil
         )
@@ -41,7 +41,7 @@ class ClientConfigurationServiceTest: XCTestCase {
     }
 
     func testShouldUseEKM() {
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
@@ -53,7 +53,7 @@ class ClientConfigurationServiceTest: XCTestCase {
     }
 
     func testCheckShouldUseEKMShouldFailWithoutValidURL() {
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
@@ -71,7 +71,7 @@ class ClientConfigurationServiceTest: XCTestCase {
 
     func testCheckShouldUseEKMFailForAutogen() {
         // No flags
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: nil,
             keyManagerUrl: "https://ekm.example.com"
         )
@@ -84,7 +84,7 @@ class ClientConfigurationServiceTest: XCTestCase {
         XCTAssert(error == .autoImportOrAutogenPrvWithKeyManager)
 
         // Empty flags
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [],
             keyManagerUrl: "https://ekm.example.com"
         )
@@ -99,7 +99,7 @@ class ClientConfigurationServiceTest: XCTestCase {
 
     func testCheckShouldUseEKMFailForAutoImportOrAutogen() {
         // Wrong flags (without privateKeyAutoimportOrAutogen flag)
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [
                 .noAttesterSubmit
             ],
@@ -116,7 +116,7 @@ class ClientConfigurationServiceTest: XCTestCase {
 
     func testCheckShouldUseEKMFailForAutogenPassPhraseQuietly() {
         // sut pass mustAutoImportOrAutogenPrvWithKeyManager check
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .passphraseQuietAutogen
@@ -133,7 +133,7 @@ class ClientConfigurationServiceTest: XCTestCase {
     }
 
     func testCheckShouldUseEKMFailForForbidStoringPassPhrase() {
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [
                 .privateKeyAutoimportOrAutogen
             ],
@@ -149,7 +149,7 @@ class ClientConfigurationServiceTest: XCTestCase {
     }
 
     func testCheckShouldUseEKMFailForMustSubmitAttester() {
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        organisationalRulesService.clientConfiguration = ClientConfigurationWrapper(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase,

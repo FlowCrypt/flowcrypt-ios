@@ -24,7 +24,7 @@ class OrganisationalRulesServiceMock: OrganisationalRulesServiceType {
         .resolveAfter(timeout: 1, with: fetchOrganisationalRulesForEmail(email))
     }
 
-    var clientConfiguration: ClientConfiguration!
+    var clientConfiguration: ClientConfigurationWrapper!
 
     var getSavedOrganisationalRulesForCurrentUserResult: OrganisationalRules {
         OrganisationalRules(clientConfiguration: clientConfiguration)

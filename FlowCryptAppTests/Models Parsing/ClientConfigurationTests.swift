@@ -26,7 +26,7 @@ class ClientConfigurationTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        let model = try? decoder.decode(ClientConfigurationWrapper.self, from: data)
         
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.customKeyserverUrl != nil)
@@ -43,7 +43,7 @@ class ClientConfigurationTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        let model = try? decoder.decode(ClientConfigurationWrapper.self, from: data)
         
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.enforceKeygenAlgo != nil)
@@ -61,7 +61,7 @@ class ClientConfigurationTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        let model = try? decoder.decode(ClientConfigurationWrapper.self, from: data)
         
         XCTAssert(model != nil)
         
@@ -80,7 +80,7 @@ class ClientConfigurationTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        let model = try? decoder.decode(ClientConfigurationWrapper.self, from: data)
         
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.customKeyserverUrl != nil)
