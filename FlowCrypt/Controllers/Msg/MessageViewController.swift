@@ -32,14 +32,14 @@ final class MessageViewController: TableNodeViewController {
     }
 
     enum MessageAction {
-        case moveToTrash, archive, markAsRead, permanentlyDelete
+        case moveToTrash, archive, markAsRead, markAsUnread, permanentlyDelete
 
         var text: String? {
             switch self {
             case .moveToTrash: return "email_removed".localized
             case .archive: return "email_archived".localized
             case .permanentlyDelete: return "email_deleted".localized
-            case .markAsRead: return nil
+            case .markAsRead, .markAsUnread: return nil
             }
         }
 
@@ -48,7 +48,7 @@ final class MessageViewController: TableNodeViewController {
             case .moveToTrash: return "error_move_trash".localized
             case .archive: return "error_archive".localized
             case .permanentlyDelete: return "error_permanently_delete".localized
-            case .markAsRead: return nil
+            case .markAsRead, .markAsUnread: return nil
             }
         }
     }
@@ -58,7 +58,7 @@ final class MessageViewController: TableNodeViewController {
 
     private var cancellable = Set<AnyCancellable>()
 
-    private var input: MessageViewController.Input?
+    private var input: MessageViewController.Input
     private let decorator: MessageViewDecorator
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
@@ -120,7 +120,7 @@ final class MessageViewController: TableNodeViewController {
         let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
 
         let items: [NavigationBarItemsView.Input]
-        switch input?.path.lowercased() {
+        switch input.path.lowercased() {
         case trashFolderPath?.lowercased():
             // in case we are in trash folder ([Gmail]/Trash or Deleted for Outlook, etc)
             // we need to have only help and trash buttons
@@ -143,12 +143,14 @@ final class MessageViewController: TableNodeViewController {
 
 extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
-        guard let input = input else { return }
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
 
         Promise { [weak self] in
             guard let self = self else { return }
-            let promise = self.messageService.getAndProcessMessage(with: input.objMessage, folder: input.path)
+            let promise = self.messageService.getAndProcessMessage(
+                with: self.input.objMessage,
+                folder: self.input.path
+            )
             let message = try awaitPromise(promise)
             self.processedMessage = message
         }
@@ -180,13 +182,10 @@ extension MessageViewController {
     }
 
     private func asyncMarkAsReadIfNotAlreadyMarked() {
-        guard let input = input else { return }
         messageOperationsProvider.markAsRead(message: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] in
-                guard let message = self?.input?.objMessage else {
-                    return
-                }
-                self?.input?.objMessage = message.markAsRead(true)
+                guard let self = self else { return }
+                self.input.objMessage = self.input.objMessage.markAsRead(true)
             }
             .catch(on: .main) { [weak self] error in
                 self?.showToast("Could not mark message as read: \(error)")
@@ -194,12 +193,12 @@ extension MessageViewController {
     }
 
     private func handleOpSuccess(operation: MessageAction) {
-        guard let input = input else { return }
         hideSpinner()
         operation.text.flatMap { showToast($0) }
 
         navigationController?.popViewController(animated: true) { [weak self] in
-            self?.onCompletion?(operation, input.objMessage)
+            guard let self = self else { return }
+            self.onCompletion?(operation, self.input.objMessage)
         }
     }
 }
@@ -220,7 +219,7 @@ extension MessageViewController {
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
                 // todo - the missing msg should be removed from the list in inbox view
                 // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
-                showToast("Message not found in folder: \(input?.path ?? "N/A")")
+                showToast("Message not found in folder: \(input.path)")
             } else {
                 // todo - this should be a retry / cancel alert
                 showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
@@ -266,7 +265,16 @@ extension MessageViewController {
     }
 
     @objc private func handleMailTap() {
-        showToast("Marking as unread will be implemented soon")
+        messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
+            .then(on: .main) { [weak self] in
+                guard let self = self else { return }
+                self.input.objMessage = self.input.objMessage.markAsRead(false)
+                self.onCompletion?(MessageAction.markAsUnread, self.input.objMessage)
+                self.navigationController?.popViewController(animated: true)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.showToast("Could not mark message as unread: \(error)")
+            }
     }
 
     @objc private func handleAttachmentTap() {
@@ -278,12 +286,12 @@ extension MessageViewController {
 
         trashFolderProvider.getTrashFolderPath()
             .then { [weak self] trashPath in
-                guard let strongSelf = self, let input = strongSelf.input, let path = trashPath else {
+                guard let strongSelf = self, let path = trashPath else {
                     self?.permanentlyDelete()
                     return
                 }
 
-                input.path == trashPath
+                strongSelf.input.path == trashPath
                     ? strongSelf.permanentlyDelete()
                     : strongSelf.moveToTrash(with: path)
             }
@@ -293,12 +301,10 @@ extension MessageViewController {
     }
 
     private func permanentlyDelete() {
-        guard let input = input else { return hideSpinner() }
-
         Promise<Bool> { [weak self] () -> Bool in
             guard let self = self else { throw AppErr.nilSelf }
             guard try awaitPromise(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-            try awaitPromise(self.messageOperationsProvider.delete(message: input.objMessage, form: input.path))
+            try awaitPromise(self.messageOperationsProvider.delete(message: self.input.objMessage, form: self.input.path))
             return true
         }
         .then(on: .main) { [weak self] didPerformOp in
@@ -320,8 +326,6 @@ extension MessageViewController {
     }
 
     private func moveToTrash(with trashPath: String) {
-        guard let input = input else { return hideSpinner() }
-
         messageOperationsProvider.moveMessageToTrash(
             message: input.objMessage,
             trashPath: trashPath,
@@ -336,7 +340,6 @@ extension MessageViewController {
     }
 
     @objc private func handleArchiveTap() {
-        guard let input = input else { return }
         showSpinner()
         messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
             .then(on: .main) { [weak self] _ in
@@ -348,7 +351,7 @@ extension MessageViewController {
     }
 
     private func handleReplyTap() {
-        guard let input = input, let email = DataService.shared.email else { return }
+        guard let email = DataService.shared.email else { return }
 
         let replyInfo = ComposeMessageInput.ReplyInfo(
             recipient: input.objMessage.sender,
@@ -370,8 +373,7 @@ extension MessageViewController {
 
 extension MessageViewController: NavigationChildController {
     func handleBackButtonTap() {
-        guard let message = input?.objMessage else { return }
-        onCompletion?(MessageAction.markAsRead, message)
+        onCompletion?(MessageAction.markAsRead, input.objMessage)
         navigationController?.popViewController(animated: true)
     }
 }
@@ -412,13 +414,13 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         guard let part = Parts(rawValue: index) else { return ASCellNode() }
 
         let senderTitle = decorator.attributed(
-            title: input?.objMessage.sender ?? "(unknown sender)"
+            title: input.objMessage.sender ?? "(unknown sender)"
         )
         let subject = decorator.attributed(
-            subject: input?.objMessage.subject ?? "(no subject)"
+            subject: input.objMessage.subject ?? "(no subject)"
         )
         let time = decorator.attributed(
-            date: input?.objMessage.date
+            date: input.objMessage.date
         )
 
         switch part {

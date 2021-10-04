@@ -16,6 +16,10 @@ extension GmailService: MessageOperationsProvider {
         update(message: message, labelsToAdd: [], labelsToRemove: [.unread])
     }
 
+    func markAsUnread(message: Message, folder: String) -> Promise<Void> {
+        update(message: message, labelsToAdd: [.unread], labelsToRemove: [])
+    }
+
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void> {
         update(message: message, labelsToAdd: [.trash])
     }
