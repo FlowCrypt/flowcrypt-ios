@@ -19,7 +19,14 @@ extension PrvKeyInfo {
     init(keyInfo: KeyInfo, passphrase: String?) {
         self.private = keyInfo.private
         self.longid = keyInfo.primaryLongid
-        self.passphrase = passphrase // TODO: Add check for keyInfo passphrase
+        self.passphrase = keyInfo.passphrase ?? passphrase
         self.fingerprints = Array(keyInfo.allFingerprints)
+    }
+
+    func copy(with passphrase: String) -> PrvKeyInfo {
+        PrvKeyInfo(private: self.private,
+                   longid: self.longid,
+                   passphrase: self.passphrase ?? passphrase,
+                   fingerprints: self.fingerprints)
     }
 }

@@ -262,7 +262,6 @@ extension SetupManuallyEnterPassPhraseViewController {
                 }
         }
 
-
         hideSpinner()
 
         let updated = keysToUpdate.count

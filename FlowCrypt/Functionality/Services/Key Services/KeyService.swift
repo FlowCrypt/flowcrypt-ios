@@ -10,11 +10,11 @@ import Foundation
 
 protocol KeyServiceType {
     func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError>
-    func getPrvKeyInfo(with passPhrase: String?) -> Result<[PrvKeyInfo], KeyServiceError>
+    func getPrvKeyInfo() -> Result<[PrvKeyInfo], KeyServiceError>
 }
 
 enum KeyServiceError: Error {
-    case unexpected, parsingError, retrieve, missedPassPhrase
+    case unexpected, parsingError, retrieve
 }
 
 final class KeyService: KeyServiceType {
@@ -57,8 +57,8 @@ final class KeyService: KeyServiceType {
         return .success(keyDetails)
     }
 
-    /// Use to get list of PrvKeyInfo with pass phrase
-    func getPrvKeyInfo(with passPhrase: String? = nil) -> Result<[PrvKeyInfo], KeyServiceError> {
+    /// Use to get list of PrvKeyInfo
+    func getPrvKeyInfo() -> Result<[PrvKeyInfo], KeyServiceError> {
         guard let email = currentUserEmail() else {
             return .failure(.retrieve)
         }
@@ -68,15 +68,14 @@ final class KeyService: KeyServiceType {
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
 
-        // TODO: Check if changes needed
         let privateKeys = keysInfo
             .map { keyInfo -> PrvKeyInfo in
-                let storedPassPhrase = storedPassPhrases
-                                        .filter { $0.value.isNotEmpty }
-                                        .first(where: { $0.primaryFingerprint == keyInfo.primaryFingerprint })?.value
+                let passphrase = storedPassPhrases
+                    .filter { $0.value.isNotEmpty }
+                    .first(where: { $0.primaryFingerprint == keyInfo.primaryFingerprint })?
+                    .value
 
-                let passPhraseValue = storedPassPhrase ?? passPhrase
-                return PrvKeyInfo(keyInfo: keyInfo, passphrase: passPhraseValue)
+                return PrvKeyInfo(keyInfo: keyInfo, passphrase: passphrase)
             }
 
         return .success(privateKeys)
