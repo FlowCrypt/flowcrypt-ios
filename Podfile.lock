@@ -43,12 +43,12 @@ PODS:
   - PromisesObjC (2.0.0)
   - PromisesSwift (2.0.0):
     - PromisesObjC (= 2.0.0)
-  - Realm (10.15.1):
-    - Realm/Headers (= 10.15.1)
-  - Realm/Headers (10.15.1)
-  - RealmSwift (10.15.1):
-    - Realm (= 10.15.1)
-  - SwiftFormat/CLI (0.48.11)
+  - Realm (10.16.0):
+    - Realm/Headers (= 10.16.0)
+  - Realm/Headers (10.16.0)
+  - RealmSwift (10.16.0):
+    - Realm (= 10.16.0)
+  - SwiftFormat/CLI (0.48.12)
   - SwiftLint (0.44.0)
   - SwiftyRSA (1.7.0):
     - SwiftyRSA/ObjC (= 1.7.0)
@@ -130,9 +130,9 @@ SPEC CHECKSUMS:
   PINRemoteImage: f1295b29f8c5e640e25335a1b2bd9d805171bd01
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   PromisesSwift: e0b2a6433469efb0b83a2b84c62a2abab8e5e5d4
-  Realm: fbcbde2620d51623cc5b18e28f5b165c39abef52
-  RealmSwift: e4bea8e42efad3d543aea23b56504069c6faaea2
-  SwiftFormat: 938e5865a118c49d63c7a290ddad86335f9e585f
+  Realm: b6027801398f3743fc222f096faa85281b506e6c
+  RealmSwift: b02a3d0e4947955da960b642c98ad3a461fc4e70
+  SwiftFormat: 036d3d8d85a187bf8f6d7808bb917811ce883680
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
   SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
   Texture: 2f109e937850d94d1d07232041c9c7313ccddb81

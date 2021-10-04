@@ -68,6 +68,7 @@ final class KeyService: KeyServiceType {
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
 
+        // TODO: Check if changes needed
         let privateKeys = keysInfo
             .map { keyInfo -> PrvKeyInfo in
                 let storedPassPhrase = storedPassPhrases

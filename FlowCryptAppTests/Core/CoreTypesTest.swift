@@ -24,6 +24,8 @@ class CoreTypesTest: XCTestCase {
                 )
             ],
             created: 0,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )
@@ -39,6 +41,8 @@ class CoreTypesTest: XCTestCase {
                 )
             ],
             created: 0,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )
