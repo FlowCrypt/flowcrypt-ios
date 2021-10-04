@@ -87,8 +87,8 @@ private extension FolderViewModel {
         self.init(
             name: folder.name,
             path: folder.path,
-            image: nil, // no op for noe
-            itemType: ItemType.folder
+            image: nil, // no op for now
+            itemType: .folder
         )
     }
 }

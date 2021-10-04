@@ -30,7 +30,6 @@ struct LocalFoldersProvider: LocalFoldersProviderType {
             ?? []
     }
 
-    // TODO: - ANTON - check!
     func save(folders: [Folder]) {
         guard let currentUser = encryptedStorage.activeUser else {
             return

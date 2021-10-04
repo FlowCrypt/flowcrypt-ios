@@ -13,7 +13,6 @@ import Promises
 
 extension GmailService: RemoteFoldersProviderType {
     enum Constants {
-        // TODO: - ANTON - check all mail folder!
         static let allMailFolder = Folder(name: "All Mail", path: "", image: nil)
     }
 
