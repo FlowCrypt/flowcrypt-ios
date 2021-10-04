@@ -32,7 +32,6 @@ final class ContactObject: Object {
 
     /// all pubkey fingerprints, comma-separated
     @objc dynamic var fingerprints: String = ""
-    @objc dynamic var keyAlgo: KeyAlgoObject?
 
     let longids = List<LongId>()
 
@@ -46,8 +45,7 @@ final class ContactObject: Object {
         lastUsed: Date?,
         pubkeyCreated: Date?,
         longids: [String],
-        fingerprints: [String],
-        algo: KeyAlgo?
+        fingerprints: [String]
     ) {
         self.init()
         self.email = email
@@ -59,10 +57,6 @@ final class ContactObject: Object {
         self.pubkeyCreated = pubkeyCreated
         self.lastUsed = lastUsed
         self.fingerprints = fingerprints.joined(separator: ",")
-
-        if let algorithm = algo {
-            self.keyAlgo = KeyAlgoObject(algo: algorithm)
-        }
 
         longids
             .map(LongId.init)
@@ -88,8 +82,7 @@ extension ContactObject {
             lastUsed: contact.lastUsed,
             pubkeyCreated: contact.pubkeyCreated,
             longids: contact.longids,
-            fingerprints: contact.fingerprints,
-            algo: contact.algo
+            fingerprints: contact.fingerprints
         )
     }
 }

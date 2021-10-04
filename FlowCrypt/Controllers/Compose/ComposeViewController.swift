@@ -269,10 +269,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        let nodeHeight = tableNode.frame.size.height
-            - (navigationController?.navigationBar.frame.size.height ?? 0.0)
-            - safeAreaWindowInsets.top
-            - safeAreaWindowInsets.bottom
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
 
