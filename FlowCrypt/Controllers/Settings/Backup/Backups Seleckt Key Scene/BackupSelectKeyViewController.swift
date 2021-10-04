@@ -88,12 +88,9 @@ extension BackupSelectKeyViewController {
             .filter { $0.1 == true }
             .map(\.0)
 
-        cancellable = Just(backupsToSave)
-            .setFailureType(to: Error.self)
-            .subscribe(on: DispatchQueue.global())
-            .flatMap(backupToInbox)
+        cancellable = backupService.backupToInbox(keys: backupsToSave, for: userId)
             .receive(on: DispatchQueue.main)
-            .sinkFuture(receiveValue: { [weak self] _ in
+            .sinkFuture(receiveValue: { [weak self] in
                 self?.hideSpinner()
                 self?.navigationController?.popToRootViewController(animated: true)
             }, receiveError: { [weak self] error in
@@ -103,10 +100,6 @@ extension BackupSelectKeyViewController {
 
     private func backupAsFile() {
         backupService.backupAsFile(keys: backupsContext.map(\.0), for: self)
-    }
-
-    private func backupToInbox(_ input: [KeyDetails]) -> AnyPublisher<Void, Error> {
-        backupService.backupToInbox(keys: input, for: userId)
     }
 }
 

@@ -14,7 +14,7 @@ protocol BackupServiceType {
     /// get all existed backups
     func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]>
     /// backup keys to user inbox
-    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> AnyPublisher<Void, Error>
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Future<Void, Error>
     /// show activity sheet to save keys as file
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController)
 }

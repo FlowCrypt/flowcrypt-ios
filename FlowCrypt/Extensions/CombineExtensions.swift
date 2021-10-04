@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import RealmSwift
 
 extension Publisher {
     /// Attaches a subscriber with closure-based behaviour which will emit value and error
@@ -23,5 +24,15 @@ extension Publisher {
             receiveValue: { value in
                 receiveValue(value)
             })
+    }
+
+    func wait() {
+        let semaphore = DispatchSemaphore(value: 0)
+        _ = sinkFuture { _ in
+            semaphore.signal()
+        } receiveError: { _ in
+            semaphore.signal()
+        }
+        semaphore.wait()
     }
 }

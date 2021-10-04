@@ -7,8 +7,8 @@
 //
 
 import AsyncDisplayKit
-import Combine
 import FlowCryptUI
+import Combine
 
 enum BackupOption: Int, CaseIterable, Equatable {
     case email, download
@@ -106,12 +106,9 @@ extension BackupOptionsViewController {
 
     private func backupToInbox() {
         showSpinner()
-        cancellable = Just(backups)
-            .setFailureType(to: Error.self)
-            .subscribe(on: DispatchQueue.global())
-            .flatMap(backupToInbox)
+        cancellable = backupService.backupToInbox(keys: backups, for: userId)
             .receive(on: DispatchQueue.main)
-            .sinkFuture(receiveValue: { [weak self] _ in
+            .sinkFuture(receiveValue: { [weak self] in
                 self?.hideSpinner()
                 self?.navigationController?.popToRootViewController(animated: true)
             }, receiveError: { [weak self] error in
@@ -121,10 +118,6 @@ extension BackupOptionsViewController {
 
     private func backupAsFile() {
         backupService.backupAsFile(keys: backups, for: self)
-    }
-
-    private func backupToInbox(_ input: [KeyDetails]) -> AnyPublisher<Void, Error> {
-        backupService.backupToInbox(keys: input, for: userId)
     }
 }
 

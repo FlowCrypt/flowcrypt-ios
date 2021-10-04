@@ -45,12 +45,57 @@ extension BackupService: BackupServiceType {
         }
     }
 
-    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> AnyPublisher<Void, Error> {
-        return createMessage(keys: keys, for: userId)
-            .flatMap(composeEmail)
-            .map(\.mimeEncoded)
-            .flatMap(messageSender.sendMail)
-            .eraseToAnyPublisher()
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Future<Void, Error> {
+        Future { [weak self] promise in
+            DispatchQueue.global().async {
+                guard let self = self else { return }
+
+                let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
+
+                guard isFullyEncryptedKeys else {
+                    promise(.failure(BackupServiceError.keyIsNotFullyEncrypted))
+                    return
+                }
+
+                let privateKeyContext = keys
+                    .compactMap { $0 }
+                    .joinedPrivateKey
+
+                let privateKeyData = privateKeyContext.data().base64EncodedString()
+
+                let filename = "flowcrypt-backup-\(userId.email.withoutSpecialCharacters).key"
+                let attachments = [SendableMsg.Attachment(name: filename, type: "text/plain", base64: privateKeyData)]
+                let message = SendableMsg(
+                    text: "setup_backup_email".localized,
+                    to: [userId.toMime],
+                    cc: [],
+                    bcc: [],
+                    from: userId.toMime,
+                    subject: "Your FlowCrypt Backup",
+                    replyToMimeMsg: nil,
+                    atts: attachments,
+                    pubKeys: nil
+                )
+
+                self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
+                    .map(\.mimeEncoded)
+                    .flatMap(self.messageSender.sendMail)
+                    .sink(
+                        receiveCompletion: { result in
+                            switch result {
+                            case .failure(let error):
+                                promise(.failure(error))
+                            case .finished:
+                                break
+                            }
+                        },
+                        receiveValue: {
+                            promise(.success(()))
+                        }
+                    )
+                    .store(in: &self.cancellable)
+            }
+        }
     }
 
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {
@@ -60,45 +105,6 @@ extension BackupService: BackupServiceType {
             applicationActivities: nil
         )
         viewController.present(activityViewController, animated: true)
-    }
-
-    private func createMessage(keys: [KeyDetails], for userId: UserId) -> Future<SendableMsg, Error> {
-        Future { promise in
-            guard keys.map(\.isFullyDecrypted).contains(false) else {
-                promise(.failure(BackupServiceError.keyIsNotFullyEncrypted))
-                return
-            }
-
-            let filename = "flowcrypt-backup-\(userId.email.withoutSpecialCharacters).key"
-            let privateKeyContext = keys
-                .compactMap { $0 }
-                .joinedPrivateKey
-            let privateKeyData = privateKeyContext.data().base64EncodedString()
-            let attachments = [
-                SendableMsg.Attachment(
-                    name: filename,
-                    type: "text/plain",
-                    base64: privateKeyData
-                )
-            ]
-            let message = SendableMsg(
-                text: "setup_backup_email".localized,
-                to: [userId.toMime],
-                cc: [],
-                bcc: [],
-                from: userId.toMime,
-                subject: "Your FlowCrypt Backup",
-                replyToMimeMsg: nil,
-                atts: attachments,
-                pubKeys: nil
-            )
-
-            promise(.success(message))
-        }
-    }
-
-    private func composeEmail(_ message: SendableMsg) -> Future<CoreRes.ComposeEmail, Error> {
-        core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
     }
 }
 
