@@ -28,7 +28,7 @@ extension URLSession {
                 let status = res?.statusCode ?? GeneralConstants.Global.generalError
                 let urlMethod = urlRequest.httpMethod ?? "GET"
                 let urlString = urlRequest.url?.absoluteString ?? "??"
-                let headers = urlRequest.allHTTPHeaderFields ?? [:]
+                let headers = urlRequest.headersWithFilteredTokens
                 let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString), headers: \(headers)"
                 Logger.nested("URLSession").logInfo(message)
 
@@ -84,5 +84,11 @@ extension URLRequest {
             request.addValue($0.value, forHTTPHeaderField: $0.httpHeaderField)
         }
         return request
+    }
+
+    var headersWithFilteredTokens: [String: String] {
+        let headers = allHTTPHeaderFields ?? [:]
+        let filteredHeaders = headers.map { ($0, $0 == "Authorization" ? "***" : $1) }
+        return Dictionary(uniqueKeysWithValues: filteredHeaders)
     }
 }
