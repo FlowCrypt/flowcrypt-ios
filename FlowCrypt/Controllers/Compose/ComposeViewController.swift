@@ -697,11 +697,11 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
             attachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
-        guard let attachment = attachment else {
+        guard let att = attachment else {
             showAlert(message: "files_picking_photos_error_message".localized)
             return
         }
-        appendAttachmentIfAllowed(attachment)
+        appendAttachmentIfAllowed(att)
         node.reloadSections(IndexSet(integer: 2), with: .automatic)
     }
 
