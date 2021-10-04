@@ -65,7 +65,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private var isFirstLaunch = true
 
     init(
-        foldersProvider: FoldersServiceType = FoldersService(storage: DataService.shared.storage),
+        foldersProvider: FoldersServiceType = FoldersService(),
         dataService: DataServiceType = DataService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
         decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),

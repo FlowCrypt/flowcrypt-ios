@@ -20,19 +20,18 @@ protocol FoldersServiceType {
 
 final class FoldersService: FoldersServiceType {
     // TODO: - Ticket? - consider rework with CacheService for trash path instead
-    private let localStorage: LocalStorageType
-
-    let localFoldersProvider: LocalFoldersProviderType
-    let remoteFoldersProvider: RemoteFoldersProviderType
+    private let trashPathStorage: LocalStorageType
+    private let localFoldersProvider: LocalFoldersProviderType
+    private let remoteFoldersProvider: RemoteFoldersProviderType
 
     init(
-        storage: @escaping @autoclosure CacheStorage,
+        localFoldersProvider: LocalFoldersProviderType = LocalFoldersProvider(),
         remoteFoldersProvider: RemoteFoldersProviderType = MailProvider.shared.remoteFoldersProvider,
-        localStorage: LocalStorageType = LocalStorage()
+        trashPathStorage: LocalStorageType = LocalStorage()
     ) {
-        self.localFoldersProvider = LocalFoldersProvider(storage: storage())
+        self.localFoldersProvider = localFoldersProvider
         self.remoteFoldersProvider = remoteFoldersProvider
-        self.localStorage = localStorage
+        self.trashPathStorage = trashPathStorage
     }
 
     func fetchFolders(isForceReload: Bool) -> Promise<[FolderViewModel]> {
@@ -55,7 +54,7 @@ final class FoldersService: FoldersServiceType {
         Promise<[FolderViewModel]> { [weak self] resolve, _ in
             guard let self = self else { throw AppErr.nilSelf }
             // fetch all folders
-            let remoteFolders = try awaitPromise(self.remoteFoldersProvider.fetchFolders())
+            let fetchedFolders = try awaitPromise(self.remoteFoldersProvider.fetchFolders())
 
             DispatchQueue.main.async {
                 // TODO: - Ticket? - instead of removing all folders remove only
@@ -63,24 +62,33 @@ final class FoldersService: FoldersServiceType {
                 self.localFoldersProvider.removeFolders()
 
                 // save to Realm
-                let folders = remoteFolders.compactMap(FolderObject.init)
-                self.localFoldersProvider.save(folders: folders)
+                self.localFoldersProvider.save(folders: fetchedFolders)
 
                 // save trash folder path
-                self.saveTrashFolderPath(with: folders)
+                self.saveTrashFolderPath(with: fetchedFolders.map(\.path))
 
                 // return folders
-                resolve(folders.map(FolderViewModel.init))
+                resolve(fetchedFolders.map(FolderViewModel.init))
             }
         }
     }
 
-    private func saveTrashFolderPath(with folders: [FolderObject]) {
-        let paths = folders.map(\.path)
+    private func saveTrashFolderPath(with paths: [String]) {
         guard let path = paths.firstCaseInsensitive("trash") ?? paths.firstCaseInsensitive("deleted") else {
             Logger.logWarning("Trash folder not found")
             return
         }
-        localStorage.saveTrashFolder(path: path)
+        trashPathStorage.saveTrashFolder(path: path)
+    }
+}
+
+private extension FolderViewModel {
+    init(folder: Folder) {
+        self.init(
+            name: folder.name,
+            path: folder.path,
+            image: nil, // no op for now
+            itemType: .folder
+        )
     }
 }

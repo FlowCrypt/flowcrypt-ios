@@ -21,10 +21,13 @@ protocol LocalContactsProviderType: PublicKeyProvider {
 struct LocalContactsProvider: CacheServiceType {
     let storage: CacheStorage
     let localCache: CacheService<ContactObject>
+    let core: Core
 
-    init(storage: @escaping @autoclosure CacheStorage) {
+    init(storage: @escaping @autoclosure CacheStorage,
+         core: Core = .shared) {
         self.storage = storage
         self.localCache = CacheService(storage: storage())
+        self.core = core
     }
 }
 
@@ -62,14 +65,17 @@ extension LocalContactsProvider: LocalContactsProviderType {
         storage()
             .objects(ContactObject.self)
             .first(where: { $0.email == email })
-            .map(Contact.init)
+            .map { Contact($0) }
     }
 
     func getAllContacts() -> [Contact] {
         Array(
             storage()
                 .objects(ContactObject.self)
-                .map(Contact.init)
+                .map {
+                    let keyDetail = try? core.parseKeys(armoredOrBinary: $0.pubKey.data()).keyDetails.first
+                    return Contact($0, keyDetail: keyDetail)
+                }
                 .sorted(by: { $0.email > $1.email })
         )
     }
