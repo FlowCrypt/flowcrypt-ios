@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 13.08.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import AsyncDisplayKit
@@ -16,9 +16,9 @@ import Promises
  * - Has not to have an instance!
  */
 
-class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable {
+class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
     enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction, subtitle
     }
 
     var parts: [Parts] {
@@ -32,6 +32,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     let storage: DataServiceType
     let keyStorage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
+    var shouldShowBackButton: Bool { false }
 
     var shouldStorePassPhrase = true {
         didSet {
@@ -75,6 +76,11 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationItem.leftBarButtonItem = nil
     }
 
     func setupAccount(with passphrase: String) {
@@ -189,8 +195,12 @@ extension SetupCreatePassphraseAbstractViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        logger.logInfo("Setup account with \(passPhrase)")
+        logger.logInfo("Setup account with passphrase")
         setupAccount(with: passPhrase)
+    }
+
+    private func handleOtherAccount() {
+        router.signOut()
     }
 }
 
@@ -251,6 +261,10 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                         backgroundColor: .backgroundColor
                     )
                 )
+            case .optionalAction:
+                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
+                    self?.handleOtherAccount()
+                }
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
             case .saveLocally:

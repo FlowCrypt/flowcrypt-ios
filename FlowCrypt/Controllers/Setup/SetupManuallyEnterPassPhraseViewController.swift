@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 17.11.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import AsyncDisplayKit
@@ -241,24 +241,26 @@ extension SetupManuallyEnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        keysStorage.addKeys(keyDetails: newKeysToAdd, source: .imported, for: email)
-        keysStorage.updateKeys(keyDetails: keysToUpdate, source: .imported, for: email)
+        keysStorage.addKeys(keyDetails: newKeysToAdd, passPhrase: passPhrase, source: .imported, for: email)
+        keysStorage.updateKeys(keyDetails: keysToUpdate, passPhrase: passPhrase, source: .imported, for: email)
 
-        keysToUpdate
-            .map {
-                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
-            }
-            .forEach {
-                passPhraseService.updatePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
-            }
+        if !shouldStorePassPhrase {
+            keysToUpdate
+                .map {
+                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                }
+                .forEach {
+                    passPhraseService.updatePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
+                }
 
-        newKeysToAdd
-            .map {
-                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
-            }
-            .forEach {
-                passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
-            }
+            newKeysToAdd
+                .map {
+                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                }
+                .forEach {
+                    passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
+                }
+        }
 
         hideSpinner()
 

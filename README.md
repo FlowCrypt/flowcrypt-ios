@@ -14,14 +14,16 @@ git clone https://github.com/FlowCrypt/flowcrypt-ios.git && cd flowcrypt-ios
 # set up environment
 sudo xcode-select --install
 curl -sSL https://get.rvm.io | bash -s stable
-rvm install 2.5.1
-rvm --default use 2.5.1
+rvm install 3.0.2
+rvm --default use 3.0.2
 # install dependencies and pods
 make dependencies
 bundle exec pod install
 ```
 
 ### Run UI Tests
+
+To run UI tests, you will need a FlowCryptUITests/test-ci-secrets.json file. For this, please reach out to tom@flowcrypt.com to get an NDA signed, and the file will be shared with you. On SemaphoreCI the file is loaded as a secret. If you need to update this file on CI, communicate with Tom to get help. After the update, please email it encrypted to other iOS team members.
 
 Follow steps in installation above, and then:
  - from terminal: 

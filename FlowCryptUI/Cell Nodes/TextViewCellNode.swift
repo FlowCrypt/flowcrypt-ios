@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 05.11.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import AsyncDisplayKit
@@ -29,6 +29,7 @@ public final class TextViewCellNode: CellNode {
     public enum TextViewActionType {
         case didEndEditing(NSAttributedString?)
         case didBeginEditing(NSAttributedString?)
+        case editingChanged(NSAttributedString?)
     }
 
     public typealias TextViewAction = (TextViewActionType) -> Void
@@ -83,5 +84,6 @@ extension TextViewCellNode: ASEditableTextNodeDelegate {
     public func editableTextNodeDidUpdateText(_ editableTextNode: ASEditableTextNode) {
         let calculatedHeight = editableTextNode.textView.sizeThatFits(textView.frame.size).height
         setHeight(calculatedHeight)
+        action?(.editingChanged(editableTextNode.attributedText))
     }
 }

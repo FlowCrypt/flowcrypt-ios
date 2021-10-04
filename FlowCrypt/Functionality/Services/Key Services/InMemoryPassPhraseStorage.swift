@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 07.06.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptCommon
@@ -35,7 +35,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
     }
 
     func remove(passPhrase: PassPhrase) {
-        passPhraseProvider.removePassPhrases(with: passPhrase)
+        passPhraseProvider.remove(passPhrases: [passPhrase])
     }
 
     func getPassPhrases() -> [PassPhrase] {
@@ -65,12 +65,18 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
     }
 }
 
+extension InMemoryPassPhraseStorage: LogOutHandler {
+    func logOutUser(email: String) throws {
+        passPhraseProvider.remove(passPhrases: passPhraseProvider.passPhrases)
+    }
+}
+
 // MARK: - Convenience
 
 protocol InMemoryPassPhraseProviderType {
     var passPhrases: Set<PassPhrase> { get }
     func save(passPhrase: PassPhrase)
-    func removePassPhrases(with objects: PassPhrase)
+    func remove(passPhrases: Set<PassPhrase>)
 }
 
 /// - Warning: - should be shared instance
@@ -86,9 +92,7 @@ final class InMemoryPassPhraseProvider: InMemoryPassPhraseProviderType {
         passPhrases.insert(passPhrase)
     }
 
-    func removePassPhrases(with objects: PassPhrase) {
-        if passPhrases.contains(objects) {
-            passPhrases.remove(objects)
-        }
+    func remove(passPhrases passPhrasesToDelete: Set<PassPhrase>) {
+        passPhrasesToDelete.forEach { passPhrases.remove($0) }
     }
 }

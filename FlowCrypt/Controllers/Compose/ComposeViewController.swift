@@ -213,6 +213,7 @@ extension ComposeViewController {
         )
         .publisher
         .flatMap(composeMessageService.encryptAndSend)
+        .receive(on: DispatchQueue.main)
         .sinkFuture(
             receiveValue: { [weak self] in
                 self?.handleSuccessfullySentMessage()
@@ -287,7 +288,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 guard let composePart = ComposeParts(rawValue: indexPath.row) else { return ASCellNode() }
                 switch composePart {
                 case .subject: return self.subjectNode()
-                case .text: return self.textNode(with: nodeHeight)
+                case .text: return self.textNode()
                 case .subjectDivider: return DividerCellNode()
                 }
             case (.main, 2):
@@ -320,8 +321,12 @@ extension ComposeViewController {
         TextFieldCellNode(
             input: decorator.styledTextFieldInput(with: "compose_subject".localized)
         ) { [weak self] event in
-            guard case let .didEndEditing(text) = event else { return }
-            self?.contextToSend.subject = text
+            switch event {
+            case .editingChanged(let text), .didEndEditing(let text):
+                self?.contextToSend.subject = text
+            case .didBeginEditing, .deleteBackward:
+                return
+            }
         }
         .onShouldReturn { [weak self] _ in
             guard let self = self else { return true }
@@ -333,22 +338,37 @@ extension ComposeViewController {
             return true
         }
         .then {
-            $0.attributedText = decorator.styledTitle(with: input.subjectReplyTitle)
+            let subject = input.isReply ? input.subjectReplyTitle : contextToSend.subject
+            $0.attributedText = decorator.styledTitle(with: subject)
         }
     }
 
-    private func textNode(with nodeHeight: CGFloat) -> ASCellNode {
+    private func textNode() -> ASCellNode {
+        let replyQuote = decorator.styledReplyQuote(with: input)
+        let height = max(decorator.frame(for: replyQuote).height, 40)
+
         return TextViewCellNode(
-            decorator.styledTextViewInput(with: 40),
-            action: { [weak self] event in
-                guard case let .didEndEditing(text) = event else { return }
+            decorator.styledTextViewInput(with: height)
+        ) { [weak self] event in
+            switch event {
+            case .editingChanged(let text), .didEndEditing(let text):
                 self?.contextToSend.message = text?.string
-            })
-            .then {
-                guard self.input.isReply else { return }
-                $0.textView.attributedText = self.decorator.styledReplyQuote(with: self.input)
-                $0.becomeFirstResponder()
+            case .didBeginEditing:
+                break
             }
+        }
+        .then {
+            let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
+
+            if input.isReply && !messageText.string.contains(replyQuote.string) {
+                let mutableString = NSMutableAttributedString(attributedString: messageText)
+                mutableString.append(replyQuote)
+                $0.textView.attributedText = mutableString
+                $0.becomeFirstResponder()
+            } else {
+                $0.textView.attributedText = messageText
+            }
+        }
     }
 
     private func recipientsNode() -> RecipientEmailsCellNode {

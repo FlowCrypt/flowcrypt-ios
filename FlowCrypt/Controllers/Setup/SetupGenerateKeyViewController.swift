@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23.05.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import AsyncDisplayKit
@@ -87,10 +87,15 @@ extension SetupGenerateKeyViewController {
 
             try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
 
-            let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
+            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key],
+                                    passPhrase: self.shouldStorePassPhrase ? passPhrase: nil,
+                                    source: .generated,
+                                    for: self.user.email)
 
-            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated, for: self.user.email)
-            self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
+            if !self.shouldStorePassPhrase {
+                let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
+                self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: false)
+            }
 
             let updateKey = self.attester.updateKey(
                 email: userId.email,

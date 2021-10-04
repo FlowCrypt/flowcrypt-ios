@@ -3,11 +3,12 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 12.05.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import Foundation
 import Promises
+import FlowCryptCommon
 
 // MARK: - MessageAttachment
 struct MessageAttachment: FileType {
@@ -19,7 +20,7 @@ struct MessageAttachment: FileType {
 // MARK: - ProcessedMessage
 struct ProcessedMessage {
     enum MessageType {
-        case error, encrypted, plain
+        case error(MsgBlock.DecryptErr.ErrorType), encrypted, plain
     }
 
     let rawMimeData: Data
@@ -44,9 +45,14 @@ enum MessageServiceError: Error {
     case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
     // Could not fetch keys
     case emptyKeys
+    case unknown
 }
 
 final class MessageService {
+    private enum Constants {
+        static let encryptedAttachmentExtension = "pgp"
+    }
+
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
     private let passPhraseService: PassPhraseServiceType
@@ -68,13 +74,15 @@ final class MessageService {
         Promise<ProcessedMessage> { [weak self] resolve, reject in
             guard let self = self else { return }
 
-            guard let keys = try? self.keyService.getPrvKeyInfo(with: passPhrase).get(), keys.isNotEmpty else {
+            guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
                 return reject(MessageServiceError.emptyKeys)
             }
 
+            let keysWithFilledPassPhrase = keys.map { $0.copy(with: passPhrase) }
+
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
-                keys: keys,
+                keys: keysWithFilledPassPhrase,
                 msgPwd: nil,
                 isEmail: true
             )
@@ -90,7 +98,7 @@ final class MessageService {
                 reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
             } else {
                 self.savePassPhrases(value: passPhrase, with: keys)
-                let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
+                let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
                 resolve(processedMessage)
             }
         }
@@ -102,7 +110,7 @@ final class MessageService {
             .forEach { self.passPhraseService.savePassPhrase(with: $0, inStorage: false) }
     }
 
-    func getMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
+    func getAndProcessMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
 
@@ -110,14 +118,10 @@ final class MessageService {
                 self.messageProvider.fetchMsg(message: input, folder: folder)
             )
 
-            guard let keys = try? self.keyService.getPrvKeyInfo(with: nil).get() else {
-                return reject(MessageServiceError.missedPassPhrase(rawMimeData))
+            guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
+                return reject(CoreError.notReady("Failed to load keys from storage"))
             }
 
-            guard keys.isNotEmpty else {
-                reject(CoreError.notReady("Could not fetch keys"))
-                return
-            }
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
                 keys: keys,
@@ -125,18 +129,40 @@ final class MessageService {
                 isEmail: true
             )
 
-            let processedMessage = self.processMessage(rawMimeData: rawMimeData, with: decrypted)
-            resolve(processedMessage)
+            let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+            switch processedMessage.messageType {
+            case .error(let errorType):
+                switch errorType {
+                case .needPassphrase:
+                    reject(MessageServiceError.missedPassPhrase(rawMimeData))
+                default:
+                    reject(MessageServiceError.unknown)
+                }
+            case .plain, .encrypted:
+                resolve(processedMessage)
+            }
         }
     }
 
-    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg) -> ProcessedMessage {
+    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg, keys: [PrvKeyInfo]) throws -> ProcessedMessage {
         let decryptErrBlocks = decrypted.blocks
             .filter { $0.decryptErr != nil }
 
-        let attachments = decrypted.blocks
+        let attachments = try decrypted.blocks
             .filter(\.isAttachmentBlock)
-            .map(MessageAttachment.init)
+            .compactMap { block -> MessageAttachment? in
+                guard let attMeta = block.attMeta else { return nil }
+                var name = attMeta.name
+                let size = attMeta.length
+                var data = attMeta.data
+
+                if block.type == .encryptedAtt {
+                    data = (try core.decryptFile(encrypted: data, keys: keys, msgPwd: nil).content)
+                    name = name.deletingPathExtension
+                }
+
+                return MessageAttachment(name: name, size: size, data: data)
+            }
 
         let messageType: ProcessedMessage.MessageType
         let text: String
@@ -145,7 +171,7 @@ final class MessageService {
             let rawMsg = decryptErrBlock.content
             let err = decryptErrBlock.decryptErr?.error
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
-            messageType = .error
+            messageType = .error(err?.type ?? .other)
         } else {
             text = decrypted.text
             messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain

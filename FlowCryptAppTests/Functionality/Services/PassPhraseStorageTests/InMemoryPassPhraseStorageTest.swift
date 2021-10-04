@@ -3,7 +3,7 @@
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 23.06.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import XCTest
@@ -30,7 +30,7 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
             XCTAssertNotNil($0.date)
         }
     }
-    
+
     func testUpdatePassPhraseUpdatesDate() {
         let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
         sut.update(passPhrase: pass)
@@ -38,7 +38,7 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
             XCTAssertNotNil($0.date)
         }
     }
-    
+
     func testRemovePassPhrase() {
         let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
         sut.save(passPhrase: pass)
@@ -73,10 +73,8 @@ class InMemoryPassPhraseProviderMock: InMemoryPassPhraseProviderType {
     func save(passPhrase: PassPhrase) {
         passPhrases.insert(passPhrase)
     }
-    
-    func removePassPhrases(with objects: PassPhrase) {
-        if passPhrases.contains(objects) {
-            passPhrases.remove(objects)
-        }
+
+    func remove(passPhrases passPhrasesToDelete: Set<PassPhrase>) {
+        passPhrasesToDelete.forEach { passPhrases.remove($0) }
     }
 }

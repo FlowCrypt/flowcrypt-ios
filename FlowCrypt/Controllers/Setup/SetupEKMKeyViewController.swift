@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 13.08.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import AsyncDisplayKit
@@ -87,12 +87,18 @@ extension SetupEKMKeyViewController {
                         passphrase: passPhrase
                     )
                     let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails, source: .ekm, for: self.user.email)
+                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails,
+                                            passPhrase: self.shouldStorePassPhrase ? passPhrase : nil,
+                                            source: .ekm,
+                                            for: self.user.email)
                     allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
                 }
             }
-            let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
-            self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
+
+            if !self.shouldStorePassPhrase {
+                let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
+                self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
+            }
         }
         .then(on: .main) { [weak self] in
             self?.hideSpinner()
@@ -113,6 +119,6 @@ extension SetupEKMKeyViewController {
 
 extension SetupCreatePassphraseAbstractViewController.Parts {
     static var ekmKeysSetup: [SetupCreatePassphraseAbstractViewController.Parts] {
-        return [.title, .description, .passPhrase, .divider, .action, .subtitle]
+        return [.title, .description, .passPhrase, .divider, .action, .optionalAction, .subtitle]
     }
 }

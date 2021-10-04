@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 01.10.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import Foundation
@@ -27,7 +27,7 @@ extension Imap {
                 .start { error, messages, _ in // original method sig has 3 args, finalize expects 2 args
                     self.finalize("fetchMsgsByNumber", resolve, reject, retry: {
                         self.fetchMsgsByNumber(for: folder, kind: kind, set: set)
-                    })(error, messages as? [MCOIMAPMessage])
+                    })(error, messages)
                 }
         }
     }
@@ -49,7 +49,7 @@ extension Imap {
                 .start { error, messages, _ in // original method sig has 3 args, finalize expects 2 args
                     self.finalize("fetchMessagesByUIDOperation", resolve, reject, retry: {
                         self.fetchMessagesByUIDOperation(for: folder, kind: kind, set: set)
-                    })(error, messages as? [MCOIMAPMessage])
+                    })(error, messages)
                 }
         }
     }

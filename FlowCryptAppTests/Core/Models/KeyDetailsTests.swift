@@ -3,7 +3,7 @@
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 16.07.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import XCTest
@@ -21,6 +21,8 @@ class KeyDetailsTests: XCTestCase {
                 KeyId(longid: "1", fingerprint: "1")
             ],
             created: 123,
+            lastModified: 1,
+            expiration: 2,
             users: [],
             algo: nil
         )
@@ -34,6 +36,8 @@ class KeyDetailsTests: XCTestCase {
                 KeyId(longid: "1", fingerprint: "1")
             ],
             created: 123,
+            lastModified: 1,
+            expiration: 2,
             users: [],
             algo: nil
         )

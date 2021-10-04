@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 17/07/2020.
-//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptCommon
@@ -16,6 +16,8 @@ struct KeyDetails: Decodable {
     let isFullyEncrypted: Bool? // only if this is prv
     let ids: [KeyId]
     let created: Int
+    let lastModified: Int?
+    let expiration: Int?
     let users: [String]
     let algo: KeyAlgo?
 }

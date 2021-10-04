@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 05.11.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptUI
@@ -64,6 +64,10 @@ struct ComposeViewDecorator {
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         )
     }
+    
+    func styledMessage(with text: String) -> NSAttributedString {
+        text.attributed(.regular(17))
+    }
 
     func styledReplyQuote(with input: ComposeMessageInput) -> NSAttributedString {
         guard case let .reply(info) = input.type else { return NSAttributedString(string: "") }
@@ -87,6 +91,15 @@ struct ComposeViewDecorator {
         let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
 
         return (text + message).attributed(.regular(17))
+    }
+
+    func frame(for string: NSAttributedString,
+               insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)) -> CGRect {
+        let width = UIScreen.main.bounds.width - insets.left - insets.right
+        let maxSize = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
+        return string.boundingRect(with: maxSize,
+                                   options: [.usesLineFragmentOrigin, .usesFontLeading],
+                                   context: nil)
     }
 }
 

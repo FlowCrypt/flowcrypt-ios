@@ -3,7 +3,7 @@
 //  FlowCryptUITests
 //
 //  Created by Anton Kharchevskyi on 18.10.2019.
-//  Copyright © 2019 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptCommon
@@ -119,19 +119,29 @@ class SignInImapTest: XCTestCase, AppTest {
 
         tablesQuery.staticTexts["Simple encrypted message + attachment"].tap()
         textView.children(matching: .textView)["It's an encrypted message with one encrypted attachment."].tap()
+
+        // check if reply text is visible on compose screen
+        cellsQuery.buttons["reply-all"].tap()
+        wait(0.3)
+        let replyTextView = app.tables
+                                .children(matching: .cell)
+                                .element(boundBy: 5).textViews.firstMatch
+        XCTAssertGreaterThan(replyTextView.frame.height, 40)
     }
 
     // restart app -> search functionality
     func test_4_restart_search() {
         // search
-        let inboxNavigationBar = app.navigationBars["Inbox"]
-        let searchButton = inboxNavigationBar.buttons["search icn"]
         let tablesQuery = app.tables
 
+        app.navigationBars["Inbox"].buttons["menu icn"].tap()
+        tablesQuery.staticTexts["Sent"].tap()
+
+        let searchButton = app.navigationBars["Sent"].buttons["search icn"]
         searchButton.tap()
 
         let searchNavigationBar = app.navigationBars["Search"]
-        let searchTextField = searchNavigationBar.searchFields["Search"]
+        let searchTextField = searchNavigationBar.searchFields["Search All Mail"]
 
         searchTextField.tap()
         wait(1)
@@ -295,7 +305,7 @@ class SignInImapTest: XCTestCase, AppTest {
         application.tables.textFields["Subject"].tap()
         wait(1)
         application.tables.textFields["Subject"].tap()
-        app.typeText("Subject")
+        app.typeText("Some Subject")
         app.navigationBars["Inbox"].buttons["android send"].tap()
 
         let errorMessage = application.alerts["Error"].scrollViews.otherElements
@@ -305,6 +315,14 @@ class SignInImapTest: XCTestCase, AppTest {
         let cell = app.tables.children(matching: .cell).element(boundBy: 5)
         cell.tap()
         app.typeText("Message")
+
+        tapOnHomeButton()
+        wait(0.3)
+        application.activate()
+
+        XCTAssertEqual(application.tables.textFields["Subject"].value as? String, "Some Subject")
+        XCTAssertEqual(cell.textViews.firstMatch.value as? String, "Message")
+
         app.navigationBars["Inbox"].buttons["android send"].tap()
 
         XCTAssert(errorAlert.staticTexts["Could not compose message\n\nRecipient doesn't seem to have encryption set up"].exists)

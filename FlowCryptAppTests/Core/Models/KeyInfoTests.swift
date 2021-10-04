@@ -3,7 +3,7 @@
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 09.07.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import XCTest
@@ -23,12 +23,14 @@ class KeyInfoTests: XCTestCase {
                 KeyId(longid: "longId", fingerprint: "fingerprint")
             ],
             created: 1231244,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -45,12 +47,14 @@ class KeyInfoTests: XCTestCase {
                 KeyId(longid: "longId", fingerprint: "fingerprint")
             ],
             created: 1231244,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -65,12 +69,14 @@ class KeyInfoTests: XCTestCase {
             isFullyEncrypted: true,
             ids: [ ],
             created: 1231244,
+            lastModified: nil,
+            expiration: nil,
             users: [],
             algo: nil
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
         
@@ -89,22 +95,25 @@ class KeyInfoTests: XCTestCase {
                 KeyId(longid: "l3", fingerprint: "f3")
             ],
             created: 1231244,
+            lastModified: nil,
+            expiration: nil,
             users: [ ],
             algo: nil
         )
 
-        let key = try KeyInfo(keyDetail, source: .backup, user: user)
+        let key = try KeyInfo(keyDetail, passphrase: "123", source: .backup, user: user)
         
         XCTAssertTrue(key.private == "private")
         XCTAssertTrue(key.public == "public")
         XCTAssertTrue(Array(key.allFingerprints) == ["f1", "f2", "f3"])
         XCTAssertTrue(Array(key.allLongids) == ["l1", "l2", "l3"])
+        XCTAssertTrue(key.passphrase == "123")
         XCTAssertTrue(key.source == "backup")
         XCTAssertTrue(key.user == user)
         XCTAssertTrue(key.primaryFingerprint == "f1")
         XCTAssertTrue(key.primaryLongid == "l1")
         
-        XCTAssertTrue(KeyInfo.primaryKey() == "private")
+        XCTAssertTrue(KeyInfo.primaryKey() == "primaryFingerprint")
         XCTAssertTrue(key.account == "email")
     }
 }

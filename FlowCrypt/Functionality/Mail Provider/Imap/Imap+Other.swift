@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 06.11.2020.
-//  Copyright © 2020 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import Foundation
@@ -46,7 +46,7 @@ extension Imap {
                         self.fetchMessage(in: folder, kind: kind, uids: uids)
                     }) else { return }
 
-                    guard let messages = msgs as? [MCOIMAPMessage] else {
+                    guard let messages = msgs else {
                         return reject(AppErr.cast("[MCOIMAPMessage]"))
                     }
                     return resolve(messages)

@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 20.05.2021.
-//  Copyright © 2021 FlowCrypt Limited. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptCommon
@@ -120,8 +120,17 @@ class OrganisationalRules {
 
     /// Some orgs have a list of email domains where they do NOT want such emails to be looked up on public sources (such as Attester)
     /// This is because they already have other means to obtain public keys for these domains, such as from their own internal keyserver
-    func canLookupThisRecipientOnAttester(recipient email: String) -> Bool {
-        !(clientConfiguration.disallowAttesterSearchForDomains ?? []).contains(email.recipientDomain ?? "")
+    func canLookupThisRecipientOnAttester(recipient email: String) throws -> Bool {
+        let disallowedDomains = clientConfiguration.disallowAttesterSearchForDomains ?? []
+
+        if disallowedDomains.contains("*") {
+            return false
+        }
+
+        guard let recipientDomain = email.recipientDomain else {
+            throw AppErr.general("organisational_wrong_email_error".localizeWithArguments(email))
+        }
+        return !disallowedDomains.contains(recipientDomain)
     }
 
     /// Some orgs use flows that are only implemented in POST /initial/legacy_submit and not in POST /pub/email@corp.co:

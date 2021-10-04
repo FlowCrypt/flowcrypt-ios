@@ -11,6 +11,10 @@ enum CoreError: Error, Equatable {
     case notReady(String)
     case format(String)
     case keyMismatch(String)
+    case noMDC(String)
+    case badMDC(String)
+    case needPassphrase(String)
+    case wrongPassphrase(String)
     // wrong value passed into a function
     case value(String)
     
@@ -21,6 +25,10 @@ enum CoreError: Error, Equatable {
         switch errorType {
         case "format": self = .format(coreError.error.message)
         case "key_mismatch": self = .keyMismatch(coreError.error.message)
+        case "no_mdc": self = .noMDC(coreError.error.message)
+        case "bad_mdc": self = .badMDC(coreError.error.message)
+        case "need_passphrase": self = .needPassphrase(coreError.error.message)
+        case "wrong_passphrase": self = .wrongPassphrase(coreError.error.message)
         default: return nil
         }
     }
@@ -212,7 +220,7 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
     private func call(_ endpoint: String, jsonData: Data, data: Data) throws -> RawRes {
         try blockUntilReadyOrThrow()
         cb_last_value = nil
-        jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, data.base64EncodedString(), cb_catcher!])
+        jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, Array<UInt8>(data), cb_catcher!])
         guard
             let resJsonData = cb_last_value?.0.data(using: .utf8),
             let rawResponse = cb_last_value?.1
