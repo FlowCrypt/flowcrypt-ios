@@ -23,9 +23,12 @@ struct LocalStorage: LocalStorageType {
     }
 
     let storage: UserDefaults
+    let passPhraseStorage: PassPhraseStorageType & LogOutHandler
 
-    init(storage: UserDefaults = .standard) {
+    init(storage: UserDefaults = .standard,
+         passPhraseStorage: PassPhraseStorageType & LogOutHandler = InMemoryPassPhraseStorage()) {
         self.storage = storage
+        self.passPhraseStorage = passPhraseStorage
     }
 }
 
@@ -40,6 +43,7 @@ extension LocalStorage {
 
 extension LocalStorage: LogOutHandler {
     func logOutUser(email: String) throws {
+        try passPhraseStorage.logOutUser(email: email)
         // For now we store only trash folder path in user defaults
         // see no reason to add logic for removing data for a concrete user
         cleanup()

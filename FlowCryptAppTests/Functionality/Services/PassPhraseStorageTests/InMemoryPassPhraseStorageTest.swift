@@ -74,9 +74,7 @@ class InMemoryPassPhraseProviderMock: InMemoryPassPhraseProviderType {
         passPhrases.insert(passPhrase)
     }
 
-    func removePassPhrases(with objects: PassPhrase) {
-        if passPhrases.contains(objects) {
-            passPhrases.remove(objects)
-        }
+    func remove(passPhrases passPhrasesToDelete: Set<PassPhrase>) {
+        passPhrasesToDelete.forEach { passPhrases.remove($0) }
     }
 }
