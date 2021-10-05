@@ -78,7 +78,7 @@ export class Endpoints {
   }
 
   public parseDecryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
-    const { keys: kisWithPp, msgPwd, isEmail } = ValidateInput.parseDecryptMsg(uncheckedReq);
+    const { keys: kisWithPp, msgPwd, isEmail, verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data
     let rawSigned: string | undefined = undefined;
     let subject: string | undefined = undefined;
@@ -100,7 +100,7 @@ export class Endpoints {
           sequentialProcessedBlocks.push({ type: 'verifiedMsg', content: Str.asEscapedHtml(rawBlock.content.toString()), verifyRes: verify, complete: true });
         }
       } else if (rawBlock.type === 'encryptedMsg' || rawBlock.type === 'signedMsg') {
-        const decryptRes = await PgpMsg.decrypt({ kisWithPp, msgPwd, encryptedData: Buf.with(rawBlock.content) });
+        const decryptRes = await PgpMsg.decrypt({ kisWithPp, msgPwd, encryptedData: Buf.with(rawBlock.content), verificationPubkeys });
         if (decryptRes.success) {
           if (decryptRes.isEncrypted) {
             const formatted = await MsgBlockParser.fmtDecryptedAsSanitizedHtmlBlocks(decryptRes.content);
@@ -124,7 +124,7 @@ export class Endpoints {
         }
       } else if (rawBlock.type === 'encryptedAtt' && rawBlock.attMeta && /^(0x)?[A-Fa-f0-9]{16,40}\.asc\.pgp$/.test(rawBlock.attMeta.name || '')) {
         // encrypted pubkey attached
-        const decryptRes = await PgpMsg.decrypt({ kisWithPp, msgPwd, encryptedData: Buf.with(rawBlock.attMeta.data || '') });
+        const decryptRes = await PgpMsg.decrypt({ kisWithPp, msgPwd, encryptedData: Buf.with(rawBlock.attMeta.data || ''), verificationPubkeys });
         if (decryptRes.content) {
           sequentialProcessedBlocks.push({ type: 'publicKey', content: decryptRes.content.toString(), complete: true });
         } else {
@@ -185,9 +185,9 @@ export class Endpoints {
     return fmtRes({ text, replyType, subject }, Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
   }
 
-  public decryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
+  public decryptFile = async (uncheckedReq: any, data: Buffers, verificationPubkeys?: string[]): Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
-    const decryptedMeta = await PgpMsg.decrypt({ kisWithPp, encryptedData: Buf.concat(data), msgPwd });
+    const decryptedMeta = await PgpMsg.decrypt({ kisWithPp, encryptedData: Buf.concat(data), msgPwd, verificationPubkeys });
     if (!decryptedMeta.success) {
       decryptedMeta.message = undefined;
       return fmtRes(decryptedMeta);

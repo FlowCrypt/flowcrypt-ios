@@ -19,7 +19,7 @@ export namespace PgpMsgMethod {
   export namespace Arg {
     export type Encrypt = { pubkeys: string[], signingPrv?: OpenPGP.key.Key, pwd?: string, data: Uint8Array, filename?: string, armor: boolean, date?: Date };
     export type Type = { data: Uint8Array };
-    export type Decrypt = { kisWithPp: PrvKeyInfo[], encryptedData: Uint8Array, msgPwd?: string };
+    export type Decrypt = { kisWithPp: PrvKeyInfo[], encryptedData: Uint8Array, msgPwd?: string, verificationPubkeys?: string[] };
     export type DiagnosePubkeys = { privateKis: KeyInfo[], message: Uint8Array };
     export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array };
   }
@@ -159,7 +159,7 @@ export class PgpMsg {
     return await PgpMsg.verify(message, keys.forVerification, keys.verificationContacts[0]);
   }
 
-  public static decrypt: PgpMsgMethod.Decrypt = async ({ kisWithPp, encryptedData, msgPwd }) => {
+  public static decrypt: PgpMsgMethod.Decrypt = async ({ kisWithPp, encryptedData, msgPwd, verificationPubkeys }) => {
     let prepared: PreparedForDecrypt;
     const longids: DecryptError$longids = { message: [], matching: [], chosen: [], needPassphrase: [] };
     try {
@@ -167,7 +167,7 @@ export class PgpMsg {
     } catch (formatErr) {
       return { success: false, error: { type: DecryptErrTypes.format, message: String(formatErr) }, longids };
     }
-    const keys = await PgpMsg.getSortedKeys(kisWithPp, prepared.message);
+    const keys = await PgpMsg.getSortedKeys(kisWithPp, prepared.message, verificationPubkeys);
     longids.message = keys.encryptedFor;
     longids.matching = keys.prvForDecrypt.map(ki => ki.longid);
     longids.chosen = keys.prvForDecryptDecrypted.map(ki => ki.longid);
@@ -311,7 +311,7 @@ export class PgpMsg {
     }
   }
 
-  private static getSortedKeys = async (kiWithPp: PrvKeyInfo[], msg: OpenpgpMsgOrCleartext): Promise<SortedKeysForDecrypt> => {
+  private static getSortedKeys = async (kiWithPp: PrvKeyInfo[], msg: OpenpgpMsgOrCleartext, verificationPubkeys?: string[]): Promise<SortedKeysForDecrypt> => {
     const keys: SortedKeysForDecrypt = {
       verificationContacts: [],
       forVerification: [],
