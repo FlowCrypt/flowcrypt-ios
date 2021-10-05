@@ -96,9 +96,7 @@ final class ComposeViewController: TableNodeViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        // temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
-        // showScopeAlertIfNeeded()
+        showScopeAlertIfNeeded()
         cancellable.forEach { $0.cancel() }
     }
 
@@ -527,15 +525,14 @@ extension ComposeViewController {
     }
 
     private func handleEditingChanged(with text: String?) {
-//        temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
-//        guard let text = text, text.isNotEmpty else {
-//            updateState(with: .main)
-//            return
-//        }
-//
-//        searchThrottler.throttle { [weak self] in
-//            self?.searchEmail(with: text)
-//        }
+        guard let text = text, text.isNotEmpty else {
+            updateState(with: .main)
+            return
+        }
+
+        searchThrottler.throttle { [weak self] in
+            self?.searchEmail(with: text)
+        }
     }
 
     private func handleDidBeginEditing() {
@@ -789,8 +786,6 @@ extension ComposeViewController {
     }
 }
 
-// temporary disable search contacts
-// https://github.com/FlowCrypt/flowcrypt-ios/issues/217
 extension ComposeViewController {
     private func showScopeAlertIfNeeded() {
         if shouldRenewToken(for: [.mail]),
