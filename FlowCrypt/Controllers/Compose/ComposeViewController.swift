@@ -269,10 +269,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        let nodeHeight = tableNode.frame.size.height
-            - (navigationController?.navigationBar.frame.size.height ?? 0.0)
-            - safeAreaWindowInsets.top
-            - safeAreaWindowInsets.bottom
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
 
@@ -697,11 +693,11 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
             attachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
-        guard let attachment = attachment else {
+        guard let att = attachment else {
             showAlert(message: "files_picking_photos_error_message".localized)
             return
         }
-        appendAttachmentIfAllowed(attachment)
+        appendAttachmentIfAllowed(att)
         node.reloadSections(IndexSet(integer: 2), with: .automatic)
     }
 

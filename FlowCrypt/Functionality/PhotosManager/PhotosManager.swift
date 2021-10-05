@@ -20,6 +20,12 @@ enum PhotosManagerError: Error {
 }
 
 class PhotosManager: PhotosManagerType {
+    
+    enum MediaType {
+        static let image = "public.image"
+        static let video = "public.movie"
+    }
+    
     func selectPhoto(
         source: UIImagePickerController.SourceType,
         from viewController: UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
@@ -29,18 +35,9 @@ class PhotosManager: PhotosManagerType {
                 let imagePicker = UIImagePickerController()
                 imagePicker.delegate = viewController
                 imagePicker.sourceType = source
-                PHPhotoLibrary.requestAuthorization { status in
-                    switch status {
-                    case .authorized:
-                        DispatchQueue.main.async {
-                            viewController.present(imagePicker, animated: true, completion: nil)
-                        }
-                        promise(.success(()))
-                    case .denied, .restricted, .notDetermined, .limited:
-                        promise(.failure(PhotosManagerError.noAccessToLibrary))
-                    @unknown default: fatalError()
-                    }
-                }
+                imagePicker.mediaTypes = [MediaType.image, MediaType.video]
+                viewController.present(imagePicker, animated: true, completion: nil)
+                promise(.success(()))
             }
         }
     }
