@@ -137,7 +137,7 @@ final class ComposeMessageService {
         return core.composeEmail(
             msg: msg,
             fmt: MsgFmt.encryptInline,
-            pubKeys: ["Test"]
+            pubKeys: msg.pubKeys
         )
         .map(\.mimeEncoded)
         .eraseToAnyPublisher()
