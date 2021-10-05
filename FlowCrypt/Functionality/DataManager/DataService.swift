@@ -92,7 +92,7 @@ extension DataService: DataServiceType {
 
     // helper to get current user object from DB
     private var currentUserObject: UserObject? {
-        encryptedStorage.getAllUsers().first(where: \.isActive)
+        encryptedStorage.activeUser
     }
 
     var users: [User] {

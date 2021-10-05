@@ -39,7 +39,7 @@ struct Contact {
 }
 
 extension Contact {
-    init(_ contactObject: ContactObject) {
+    init(_ contactObject: ContactObject, keyDetail: KeyDetails? = nil) {
         self.email = contactObject.email
         self.name = contactObject.name.nilIfEmpty
         self.pubKey = contactObject.pubKey
@@ -49,8 +49,8 @@ extension Contact {
         self.lastUsed = contactObject.lastUsed
         self.longids = contactObject.longids.map(\.value)
         self.fingerprints = contactObject.fingerprints.split(separator: ",").map(String.init)
-        self.algo = contactObject.keyAlgo.flatMap(KeyAlgo.init)
         self.pubkeyCreated = contactObject.pubkeyCreated
+        self.algo = keyDetail?.algo
     }
 }
 
