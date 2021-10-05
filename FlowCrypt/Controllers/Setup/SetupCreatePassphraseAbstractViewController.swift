@@ -34,7 +34,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     let passPhraseService: PassPhraseServiceType
     var shouldShowBackButton: Bool { false }
 
-    var shouldStorePassPhrase = true {
+    var storageMethod: StorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -282,9 +282,9 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
         case .description:
             showChoosingOptions()
         case .saveLocally:
-            shouldStorePassPhrase = true
+            storageMethod = .persistent
         case .saveInMemory:
-            shouldStorePassPhrase = false
+            storageMethod = .memory
         default:
             break
         }
