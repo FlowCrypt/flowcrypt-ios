@@ -400,7 +400,11 @@ extension ComposeViewController {
         AttachmentNode(
             input: .init(
                 composeAttachment: contextToSend.attachments[index]
-            )
+            ),
+            onDeleteTap: { [weak self] in
+                self?.contextToSend.attachments.safeRemove(at: index)
+                self?.node.reloadSections(IndexSet(integer: 2), with: .automatic)
+            }
         )
     }
 }
@@ -682,19 +686,19 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
     ) {
         picker.dismiss(animated: true, completion: nil)
 
-        let attachment: ComposeMessageAttachment?
+        let composeMessageAttachment: ComposeMessageAttachment?
         switch picker.sourceType {
         case .camera:
-            attachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
+            composeMessageAttachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
         case .photoLibrary:
-            attachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
+            composeMessageAttachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
-        guard let att = attachment else {
+        guard let attachment = composeMessageAttachment else {
             showAlert(message: "files_picking_photos_error_message".localized)
             return
         }
-        appendAttachmentIfAllowed(att)
+        appendAttachmentIfAllowed(attachment)
         node.reloadSections(IndexSet(integer: 2), with: .automatic)
     }
 

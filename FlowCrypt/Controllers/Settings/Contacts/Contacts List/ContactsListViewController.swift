@@ -22,7 +22,7 @@ final class ContactsListViewController: TableNodeViewController {
 
     init(
         decorator: ContactsListDecoratorType = ContactsListDecorator(),
-        contactsProvider: LocalContactsProviderType = LocalContactsProvider(storage: DataService.shared.storage)
+        contactsProvider: LocalContactsProviderType = LocalContactsProvider()
     ) {
         self.decorator = decorator
         self.contactsProvider = contactsProvider
