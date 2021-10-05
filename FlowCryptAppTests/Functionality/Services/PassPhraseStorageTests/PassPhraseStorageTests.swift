@@ -110,7 +110,7 @@ class PassPhraseStorageTests: XCTestCase {
         XCTAssertTrue(result.count == 3)
     }
 
-    func testSavePassPhraseInStorage() {
+    func testSavePassPhraseInPersistenStorage() {
         let passPhraseToSave = PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "123333"])
 
         let expectation = XCTestExpectation()
@@ -132,14 +132,14 @@ class PassPhraseStorageTests: XCTestCase {
             }
         }
 
-        sut.savePassPhrase(with: passPhraseToSave, inStorage: true)
+        sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
         XCTAssertFalse(inMemoryStorage.saveResult != nil )
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
 
-    func testSavePassPhraseInStorageWithoutAnyPassPhrases() {
+    func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() {
         let passPhraseToSave = PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "123333"])
 
         let expectation = XCTestExpectation()
@@ -152,7 +152,7 @@ class PassPhraseStorageTests: XCTestCase {
             expectation.fulfill()
         }
 
-        sut.savePassPhrase(with: passPhraseToSave, inStorage: true)
+        sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
         XCTAssertFalse(inMemoryStorage.saveResult != nil )
 
