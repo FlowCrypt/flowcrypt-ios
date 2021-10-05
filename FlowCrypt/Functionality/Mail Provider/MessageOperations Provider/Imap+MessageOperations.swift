@@ -50,11 +50,7 @@ extension Imap: MessageOperationsProvider {
             }
 
             var flags: MCOMessageFlag = []
-            let imapFlagValues = message.labels.map(\.type.imapFlagValue)
-            // keep previous flags
-            for value in imapFlagValues {
-                flags.insert(MCOMessageFlag(rawValue: value))
-            }
+            
             // add seen flag
             flags.insert(MCOMessageFlag.seen)
 
