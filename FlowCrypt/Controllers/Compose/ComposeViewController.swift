@@ -402,7 +402,11 @@ extension ComposeViewController {
         AttachmentNode(
             input: .init(
                 composeAttachment: contextToSend.attachments[index]
-            )
+            ),
+            onDeleteTap: { [weak self] in
+                self?.contextToSend.attachments.safeRemove(at: index)
+                self?.node.reloadSections(IndexSet(integer: 2), with: .automatic)
+            }
         )
     }
 }
