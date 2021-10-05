@@ -327,7 +327,7 @@
 		D2F6D12F24324ACC00DB4065 /* SwitchCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */; };
 		D2F6D1332433753100DB4065 /* IMAPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1322433753100DB4065 /* IMAPSession.swift */; };
 		D2F6D1352433753B00DB4065 /* SMTPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1342433753B00DB4065 /* SMTPSession.swift */; };
-		D2F6D13E2434FF1400DB4065 /* providers.json in Resources */ = {isa = PBXBuildFile; fileRef = D2F6D13D2434FF1400DB4065 /* providers.json */; };
+		D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */ = {isa = PBXBuildFile; fileRef = D2F6D13D2434FF1400DB4065 /* providers_custom.json */; };
 		D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */; };
 		D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D146243506DA00DB4065 /* MailSettingsCredentials.swift */; };
 		D2FC1C0624D82C9F003B949D /* ContactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FC1C0524D82C9F003B949D /* ContactsService.swift */; };
@@ -738,7 +738,7 @@
 		D2F6D12E24324ACC00DB4065 /* SwitchCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchCellNode.swift; sourceTree = "<group>"; };
 		D2F6D1322433753100DB4065 /* IMAPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMAPSession.swift; sourceTree = "<group>"; };
 		D2F6D1342433753B00DB4065 /* SMTPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMTPSession.swift; sourceTree = "<group>"; };
-		D2F6D13D2434FF1400DB4065 /* providers.json */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text.json; path = providers.json; sourceTree = "<group>"; };
+		D2F6D13D2434FF1400DB4065 /* providers_custom.json */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text.json; path = providers_custom.json; sourceTree = "<group>"; };
 		D2F6D13F2435008500DB4065 /* SessionCredentialsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCredentialsProvider.swift; sourceTree = "<group>"; };
 		D2F6D146243506DA00DB4065 /* MailSettingsCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailSettingsCredentials.swift; sourceTree = "<group>"; };
 		D2FC1C0524D82C9F003B949D /* ContactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsService.swift; sourceTree = "<group>"; };
@@ -1954,7 +1954,7 @@
 				D2F6D1322433753100DB4065 /* IMAPSession.swift */,
 				D2F6D1342433753B00DB4065 /* SMTPSession.swift */,
 				D2F6D146243506DA00DB4065 /* MailSettingsCredentials.swift */,
-				D2F6D13D2434FF1400DB4065 /* providers.json */,
+				D2F6D13D2434FF1400DB4065 /* providers_custom.json */,
 				D21574B624376852006B094F /* ConnectionType.swift */,
 			);
 			path = "Mail Sessions Providers";
@@ -2229,7 +2229,7 @@
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
-				D2F6D13E2434FF1400DB4065 /* providers.json in Resources */,
+				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
 				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
 				949ED9422303E3B400530579 /* Colors.xcassets in Resources */,
