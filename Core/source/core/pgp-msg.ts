@@ -155,6 +155,7 @@ export class PgpMsg {
   public static verifyDetached: PgpMsgMethod.VerifyDetached = async ({ plaintext, sigText }) => {
     const message = openpgp.message.fromText(Buf.fromUint8(plaintext).toUtfStr());
     await message.appendSignature(Buf.fromUint8(sigText).toUtfStr());
+    // Q: Should we add verificationPubkeys here?????
     const keys = await PgpMsg.getSortedKeys([], message);
     return await PgpMsg.verify(message, keys.forVerification, keys.verificationContacts[0]);
   }
@@ -322,9 +323,19 @@ export class PgpMsg {
       prvForDecryptDecrypted: [],
       prvForDecryptWithoutPassphrases: [],
     };
-    const encryptedForKeyids = msg instanceof openpgp.message.Message ? (msg as OpenPGP.message.Message).getEncryptionKeyIds() : [];
+    const encryptedForKeyids = msg instanceof openpgp.message.Message
+      ? (msg as OpenPGP.message.Message).getEncryptionKeyIds()
+      : [];
     keys.encryptedFor = await PgpKey.longids(encryptedForKeyids);
-    await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
+    if(typeof verificationPubkeys !== 'undefined') {
+      keys.forVerification = [];
+      for (const verificationPubkey of verificationPubkeys) {
+        const { keys: keysForVerification } = await openpgp.key.readArmored(verificationPubkey);
+        keys.forVerification.push(...keysForVerification);
+      }
+    } else {
+      await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
+    }
     if (keys.encryptedFor.length) {
       for (const ki of kiWithPp) {
         ki.parsed = await PgpKey.read(ki.private); // todo
