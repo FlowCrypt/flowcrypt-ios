@@ -52,7 +52,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
             keyStorage: keyStorage,
             passPhraseService: passPhraseService
         )
-        self.shouldStorePassPhrase = false
+        self.storageMethod = .memory
     }
 
     override func viewDidLoad() {
@@ -88,16 +88,16 @@ extension SetupEKMKeyViewController {
                     )
                     let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
                     self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails,
-                                            passPhrase: self.shouldStorePassPhrase ? passPhrase : nil,
+                                            passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
                                             source: .ekm,
                                             for: self.user.email)
                     allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
                 }
             }
 
-            if !self.shouldStorePassPhrase {
+            if self.storageMethod == .memory {
                 let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
-                self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
+                self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
             }
         }
         .then(on: .main) { [weak self] in

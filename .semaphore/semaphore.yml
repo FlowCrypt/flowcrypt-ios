@@ -39,7 +39,6 @@ blocks:
         - name: TypeScript - Core standalone tests
           commands:
             - sem-version node 12
-            - checkout
             - mkdir .custom-npm
             - cd .custom-npm
             - npm install npm@7.23.0
