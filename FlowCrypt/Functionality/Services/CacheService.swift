@@ -9,12 +9,6 @@
 import Foundation
 import RealmSwift
 
-typealias CacheStorage = () -> Realm
-
-protocol CacheServiceType {
-    var storage: CacheStorage { get }
-}
-
 // MARK: - CachedObject
 protocol CachedObject: Object {
     associatedtype Identifier: Equatable
@@ -23,16 +17,15 @@ protocol CachedObject: Object {
 }
 
 // MARK: - Cache
-final class CacheService<T: CachedObject>: CacheServiceType {
-    let storage: CacheStorage
+final class CacheService<T: CachedObject> {
+    let encryptedStorage: EncryptedStorageType
+    var realm: Realm { encryptedStorage.storage }
 
-    init(storage: @escaping @autoclosure CacheStorage) {
-        self.storage = storage
+    init(encryptedStorage: EncryptedStorageType) {
+        self.encryptedStorage = encryptedStorage
     }
 
     func save(_ object: T) {
-        let realm = storage()
-
         try? realm.write {
             realm.add(object, update: .modified)
         }
@@ -43,7 +36,6 @@ final class CacheService<T: CachedObject>: CacheServiceType {
     }
 
     func remove(object: T, with identifier: T.Identifier) {
-        let realm = storage()
         guard let objectToDelete = realm
             .objects(T.self)
             .first(where: { $0.identifier == identifier })
@@ -55,8 +47,6 @@ final class CacheService<T: CachedObject>: CacheServiceType {
     }
 
     func remove(objects: [T]) {
-        let realm = storage()
-
         try? realm.write {
             realm.delete(objects)
         }
@@ -68,15 +58,15 @@ final class CacheService<T: CachedObject>: CacheServiceType {
     }
 
     func getAll() -> [T]? {
-        Array(storage().objects(T.self))
+        Array(realm.objects(T.self))
     }
 
     func getAllForActiveUser() -> [T]? {
-        let currentUser = storage()
+        let currentUser = realm
             .objects(UserObject.self)
             .first(where: \.isActive)
 
-        return Array(storage().objects(T.self))
+        return Array(realm.objects(T.self))
             .filter { $0.activeUser?.email == currentUser?.email }
     }
 }

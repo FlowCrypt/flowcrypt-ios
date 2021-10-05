@@ -17,11 +17,9 @@ protocol LocalFoldersProviderType {
 
 struct LocalFoldersProvider: LocalFoldersProviderType {
     private let folderCache: CacheService<FolderObject>
-    private let encryptedStorage: EncryptedStorageType
 
     init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
-        self.folderCache = CacheService(storage: encryptedStorage.storage)
-        self.encryptedStorage = encryptedStorage
+        self.folderCache = CacheService(encryptedStorage: encryptedStorage)
     }
 
     func fetchFolders() -> [FolderViewModel] {
@@ -31,7 +29,7 @@ struct LocalFoldersProvider: LocalFoldersProviderType {
     }
 
     func save(folders: [Folder]) {
-        guard let currentUser = encryptedStorage.activeUser else {
+        guard let currentUser = folderCache.encryptedStorage.activeUser else {
             return
         }
 
