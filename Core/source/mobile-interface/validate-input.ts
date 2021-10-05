@@ -17,7 +17,7 @@ export namespace NodeRequest {
   export type composeEmail = composeEmailPlain | composeEmailEncrypted;
   export type encryptMsg = { pubKeys: string[] };
   export type encryptFile = { pubKeys: string[], name: string };
-  export type parseDecryptMsg = { keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean };
+  export type parseDecryptMsg = { keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean, verificationPubkeys?: string[] };
   export type decryptFile = { keys: PrvKeyInfo[], msgPwd?: string };
   export type parseDateStr = { dateStr: string };
   export type zxcvbnStrengthBar = { guesses: number, purpose: 'passphrase', value: undefined } | { value: string, purpose: 'passphrase', guesses: undefined };
@@ -60,7 +60,7 @@ export class ValidateInput {
   }
 
   public static parseDecryptMsg = (v: any): NodeRequest.parseDecryptMsg => {
-    if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?') && hasProp(v, 'isEmail', 'boolean?')) {
+    if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?') && hasProp(v, 'isEmail', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')) {
       return v as NodeRequest.parseDecryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.parseDecryptMsg');
@@ -131,7 +131,7 @@ const isObj = (v: any): v is Obj => {
   return v && typeof v === 'object';
 }
 
-const hasProp = (v: Obj, name: string, type: 'string[]' | 'object' | 'string' | 'number' | 'string?' | 'boolean?' | 'PrvKeyInfo[]' | 'Userid[]' | 'Attachment[]?'): boolean => {
+const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object' | 'string' | 'number' | 'string?' | 'boolean?' | 'PrvKeyInfo[]' | 'Userid[]' | 'Attachment[]?' ): boolean => {
   if (!isObj(v)) {
     return false;
   }
@@ -154,6 +154,9 @@ const hasProp = (v: Obj, name: string, type: 'string[]' | 'object' | 'string' | 
   }
   if (type === 'string[]') {
     return Array.isArray(value) && value.filter((x: any) => typeof x === 'string').length === value.length;
+  }
+  if (type === 'string[]?') {
+    return typeof value === 'undefined' || Array.isArray(value) && value.filter((x: any) => typeof x === 'string').length === value.length;
   }
   if (type === 'PrvKeyInfo[]') {
     return Array.isArray(value) && value.filter((ki: any) => hasProp(ki, 'private', 'string') && hasProp(ki, 'longid', 'string') && hasProp(ki, 'passphrase', 'string?')).length === value.length;
