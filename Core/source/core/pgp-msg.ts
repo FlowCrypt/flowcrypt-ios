@@ -325,7 +325,7 @@ export class PgpMsg {
       ? (msg as OpenPGP.message.Message).getEncryptionKeyIds()
       : [];
     keys.encryptedFor = await PgpKey.longids(encryptedForKeyids);
-    if(typeof verificationPubkeys !== 'undefined') {
+    if (typeof verificationPubkeys !== 'undefined') {
       keys.forVerification = [];
       for (const verificationPubkey of verificationPubkeys) {
         const { keys: keysForVerification } = await openpgp.key.readArmored(verificationPubkey);
