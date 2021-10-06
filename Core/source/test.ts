@@ -558,3 +558,33 @@ ava.default('can process dirty html without throwing', async t => {
   expect(clean).to.not.contain('src="http');
   t.pass();
 });
+
+ava.default('verify encrypted+signed message by providing it correct public key', async t => {
+  // TODO: implement the test
+  t.pass();
+});
+
+ava.default('verify encrypted+signed message by providing it one wrong and one correct', async t => {
+  // TODO: implement the test
+  t.pass();
+});
+
+ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)', async t => {
+  // TODO: implement the test
+  t.pass();
+});
+
+ava.default('verify plain-text signed message by providing it correct key', async t => {
+  // TODO: implement the test
+  t.pass();
+});
+
+ava.default('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
+  // TODO: implement the test
+  t.pass();
+});
+
+ava.default('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
+  // TODO: implement the test
+  t.pass();
+});
