@@ -26,6 +26,18 @@ public extension URL {
     var mimeType: String {
         return Self.mimeTypes[pathExtension] ?? "text/plain"
     }
+
+    var stringWithFilteredTokens: String {
+        guard var components = URLComponents(string: absoluteString),
+              let queryItems = components.queryItems
+        else { return absoluteString }
+
+        components.queryItems = queryItems.map {
+            URLQueryItem(name: $0.name, value: $0.name.contains("token") ? "***" : $0.value)
+        }
+
+        return components.url?.absoluteString ?? absoluteString
+    }
 }
 
 public extension String {

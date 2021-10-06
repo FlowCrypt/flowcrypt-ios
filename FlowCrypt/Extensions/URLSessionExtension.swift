@@ -27,7 +27,7 @@ extension URLSession {
                 let res = response as? HTTPURLResponse
                 let status = res?.statusCode ?? GeneralConstants.Global.generalError
                 let urlMethod = urlRequest.httpMethod ?? "GET"
-                let urlString = urlRequest.url?.absoluteString ?? "??"
+                let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
                 let headers = urlRequest.headersWithFilteredTokens
                 let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString), headers: \(headers)"
                 Logger.nested("URLSession").logInfo(message)
