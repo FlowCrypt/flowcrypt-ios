@@ -45,6 +45,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
         self.keys = keys
         super.init(
             user: user,
+            fetchedKeysCount: keys.count,
             core: core,
             router: router,
             decorator: decorator,
@@ -62,6 +63,11 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
 
     override func setupAccount(with passphrase: String) {
         setupAccountWithKeysFetchedFromEkm(with: passphrase)
+    }
+
+    override func setupUI() {
+        super.setupUI()
+        title = decorator.sceneTitle(for: .choosePassPhrase)
     }
 }
 
@@ -119,6 +125,6 @@ extension SetupEKMKeyViewController {
 
 extension SetupCreatePassphraseAbstractViewController.Parts {
     static var ekmKeysSetup: [SetupCreatePassphraseAbstractViewController.Parts] {
-        return [.title, .description, .passPhrase, .divider, .action, .optionalAction, .subtitle]
+        return [.title, .description, .passPhrase, .divider, .action, .optionalAction, .fetchedKeys]
     }
 }
