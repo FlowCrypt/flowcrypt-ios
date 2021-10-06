@@ -31,7 +31,6 @@ export namespace PgpMsgMethod {
 }
 
 type SortedKeysForDecrypt = {
-  verificationContacts: Contact[];
   forVerification: OpenPGP.key.Key[];
   encryptedFor: string[];
   signedBy: string[];
@@ -53,7 +52,7 @@ type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: Open
 
 type OpenpgpMsgOrCleartext = OpenPGP.message.Message | OpenPGP.cleartext.CleartextMessage;
 
-export type VerifyRes = { signer?: string; contact?: Contact; match: boolean | null; error?: string; };
+export type VerifyRes = { signer?: string; match: boolean | null; error?: string; };
 export type PgpMsgTypeResult = { armored: boolean, type: MsgBlockType } | undefined;
 export type DecryptResult = DecryptSuccess | DecryptError;
 export type DiagnoseMsgPubkeysResult = { found_match: boolean, receivers: number, };
@@ -123,8 +122,8 @@ export class PgpMsg {
     return await openpgp.stream.readToEnd((signRes as OpenPGP.SignArmorResult).data);
   }
 
-  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.message.Verification[], pubs: OpenPGP.key.Key[], contact?: Contact): Promise<VerifyRes> => {
-    const sig: VerifyRes = { contact, match: null }; // tslint:disable-line:no-null-keyword
+  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.message.Verification[], pubs: OpenPGP.key.Key[]): Promise<VerifyRes> => {
+    const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
     try {
       // While this looks like bad method API design, it's here to ensure execution order when 1) reading data, 2) verifying, 3) processing signatures
       // Else it will hang trying to read a stream: https://github.com/openpgpjs/openpgpjs/issues/916#issuecomment-510620625
@@ -157,7 +156,7 @@ export class PgpMsg {
     await message.appendSignature(Buf.fromUint8(sigText).toUtfStr());
     // Q: Should we add verificationPubkeys here?????
     const keys = await PgpMsg.getSortedKeys([], message);
-    return await PgpMsg.verify(message, keys.forVerification, keys.verificationContacts[0]);
+    return await PgpMsg.verify(message, keys.forVerification);
   }
 
   public static decrypt: PgpMsgMethod.Decrypt = async ({ kisWithPp, encryptedData, msgPwd, verificationPubkeys }) => {
@@ -175,7 +174,7 @@ export class PgpMsg {
     longids.needPassphrase = keys.prvForDecryptWithoutPassphrases.map(ki => ki.longid);
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
-      const signature = await PgpMsg.verify(prepared.message, keys.forVerification, keys.verificationContacts[0]);
+      const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
       const text = await openpgp.stream.readToEnd(prepared.message.getText()!);
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
@@ -198,7 +197,7 @@ export class PgpMsg {
       await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys); // we can only figure out who signed the msg once it's decrypted
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined; // verify first to prevent stream hang
       const content = new Buf(await openpgp.stream.readToEnd(decrypted.getLiteralData()!)); // read content second to prevent stream hang
-      const signature = verifyResults ? await PgpMsg.verify(verifyResults, [], keys.verificationContacts[0]) : undefined; // evaluate verify results third to prevent stream hang
+      const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined; // evaluate verify results third to prevent stream hang
       if (!prepared.isCleartext && (prepared.message as OpenPGP.message.Message).packets.filterByTag(openpgp.enums.packet.symmetricallyEncrypted).length) {
         const noMdc = 'Security threat!\n\nMessage is missing integrity checks (MDC). The sender should update their outdated software.\n\nDisplay the message at your own risk.';
         return { success: false, content, error: { type: DecryptErrTypes.noMdc, message: noMdc }, message: prepared.message, longids, isEncrypted };
@@ -302,10 +301,10 @@ export class PgpMsg {
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {
     keys.signedBy = Value.arr.unique(await PgpKey.longids(msg.getSigningKeyIds ? msg.getSigningKeyIds() : []));
     if (keys.signedBy.length && typeof Store.dbContactGet === 'function') {
-      const verificationContacts = await Store.dbContactGet(undefined, keys.signedBy);
-      keys.verificationContacts = verificationContacts.filter(contact => contact && contact.pubkey) as Contact[];
+      const signerContacts = (await Store.dbContactGet(undefined, keys.signedBy))
+        .filter(contact => contact && contact.pubkey) as Contact[];
       keys.forVerification = [];
-      for (const contact of keys.verificationContacts) {
+      for (const contact of signerContacts) {
         const { keys: keysForVerification } = await openpgp.key.readArmored(contact.pubkey!);
         keys.forVerification.push(...keysForVerification);
       }
@@ -314,7 +313,6 @@ export class PgpMsg {
 
   private static getSortedKeys = async (kiWithPp: PrvKeyInfo[], msg: OpenpgpMsgOrCleartext, verificationPubkeys?: string[]): Promise<SortedKeysForDecrypt> => {
     const keys: SortedKeysForDecrypt = {
-      verificationContacts: [],
       forVerification: [],
       encryptedFor: [],
       signedBy: [],
