@@ -588,3 +588,8 @@ ava.default('verify plain-text signed message that you edited after signing. Thi
   // TODO: implement the test
   t.pass();
 });
+
+ava.default('verify signed message with detached signature by providing it correct key', async t => {
+  // TODO: implement the test
+  t.pass();
+});
