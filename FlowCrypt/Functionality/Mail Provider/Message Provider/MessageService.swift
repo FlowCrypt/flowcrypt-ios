@@ -79,6 +79,9 @@ final class MessageService {
             }
 
             let keysWithFilledPassPhrase = keys.map { $0.copy(with: passPhrase) }
+            let keysToSave = keys.filter { $0.passphrase == passPhrase }
+
+            self.savePassPhrases(value: passPhrase, with: keysToSave)
 
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
@@ -91,7 +94,6 @@ final class MessageService {
                 return reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
             }
 
-            self.savePassPhrases(value: passPhrase, with: keys)
             let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
             resolve(processedMessage)
         }
