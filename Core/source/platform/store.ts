@@ -12,10 +12,6 @@ const keyLongid = (k: OpenPGP.key.Key) => openpgp.util.str_to_hex(k.getKeyId().b
 
 export class Store {
 
-  static dbContactGet = async (db: void, emailOrLongid: string[]): Promise<(Contact | undefined)[]> => {
-    return [];
-  }
-
   static decryptedKeyCacheSet = (k: OpenPGP.key.Key) => {
     Store.keyCacheRenewExpiry();
     KEY_CACHE[keyLongid(k)] = k;
