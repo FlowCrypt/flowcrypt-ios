@@ -8,7 +8,7 @@
 
 import FlowCryptCommon
 import Foundation
-import GoogleAPIClientForREST
+import GoogleAPIClientForREST_Gmail
 
 struct GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
