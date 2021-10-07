@@ -196,7 +196,7 @@ export class PgpMsg {
       const decrypted = await (prepared.message as OpenPGP.message.Message).decrypt(privateKeys, passwords, undefined, false);
       // we can only figure out who signed the msg once it's decrypted
       await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
-      await PgpMsg.populateKeysForVerification(verificationPubkeys, keys);
+      await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined; // verify first to prevent stream hang
       const content = new Buf(await openpgp.stream.readToEnd(decrypted.getLiteralData()!)); // read content second to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined; // evaluate verify results third to prevent stream hang
@@ -305,7 +305,8 @@ export class PgpMsg {
       msg.getSigningKeyIds ? msg.getSigningKeyIds() : []));
   }
 
-  private static populateKeysForVerification = async (verificationPubkeys?: string[], keys: SortedKeysForDecrypt) => {
+  private static populateKeysForVerification = async (keys: SortedKeysForDecrypt,
+    verificationPubkeys?: string[]) => {
     if (typeof verificationPubkeys !== 'undefined') {
       keys.forVerification = [];
       for (const verificationPubkey of verificationPubkeys) {
@@ -330,7 +331,7 @@ export class PgpMsg {
       : [];
     keys.encryptedFor = await PgpKey.longids(encryptedForKeyids);
     await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
-    await PgpMsg.populateKeysForVerification(verificationPubkeys, keys);
+    await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
     if (keys.encryptedFor.length) {
       for (const ki of kiWithPp) {
         ki.parsed = await PgpKey.read(ki.private); // todo
