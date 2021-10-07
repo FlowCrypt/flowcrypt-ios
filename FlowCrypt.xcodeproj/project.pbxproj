@@ -2972,13 +2972,13 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.enterprise;
 				PRODUCT_NAME = FlowCrypt;
@@ -3380,13 +3380,13 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.testflight;
 				PRODUCT_NAME = FlowCrypt;
@@ -3544,13 +3544,13 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.debug;
 				PRODUCT_NAME = FlowCrypt;
@@ -3590,13 +3590,13 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios;
 				PRODUCT_NAME = FlowCrypt;
