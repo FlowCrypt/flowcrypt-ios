@@ -50,6 +50,7 @@ IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
 ### Admin - generating .ipa for penetration tester
 
 1) get uuid of their device and input it into https://developer.apple.com/account/ -> Devices
-2) Xcode -> Product -> Archive
-3) Distribute app -> Add Hoc -> Next -> Next (automatically manage signing)
-4) This creates a folder at the target where you export it to, and the IPA will be there
+2) choose the right build (eg `FlowCrypt Enterprise`) and choose `Any iOS Device (arm64)`
+3) Xcode -> Product -> Archive
+4) Distribute app -> Add Hoc -> Next -> Next (automatically manage signing)
+5) This creates a folder at the target where you export it to, and the IPA will be there
