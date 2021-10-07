@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { Contact, KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key.js';
+import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key.js';
 import { MsgBlock, MsgBlockType } from './msg-block.js';
 import { Str, Value } from './common.js';
 
