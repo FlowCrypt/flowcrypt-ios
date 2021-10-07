@@ -106,7 +106,8 @@ final class ComposeMessageService {
                     subject: subject,
                     replyToMimeMsg: replyToMimeMsg,
                     atts: sendableAttachments,
-                    pubKeys: allRecipientPubs + [myPubKey]
+                    pubKeys: allRecipientPubs + [myPubKey],
+                    threadId: input.threadId
                 )
             }
     }
@@ -133,13 +134,13 @@ final class ComposeMessageService {
             .eraseToAnyPublisher()
     }
 
-    private func encryptMessage(with msg: SendableMsg) -> AnyPublisher<Data, Error> {
+    private func encryptMessage(with msg: SendableMsg) -> AnyPublisher<MessageGatewayInput, Error> {
         return core.composeEmail(
             msg: msg,
             fmt: MsgFmt.encryptInline,
             pubKeys: msg.pubKeys
         )
-        .map(\.mimeEncoded)
+        .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: msg.threadId) })
         .eraseToAnyPublisher()
     }
 }

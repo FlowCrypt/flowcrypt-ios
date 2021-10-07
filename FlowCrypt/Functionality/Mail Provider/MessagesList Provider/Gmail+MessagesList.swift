@@ -141,7 +141,8 @@ private extension Message {
             subject: subject,
             size: message.sizeEstimate.flatMap(Int.init),
             labels: labels,
-            attachmentIds: attachmentsIds
+            attachmentIds: attachmentsIds,
+            threadId: message.threadId
         )
     }
 }

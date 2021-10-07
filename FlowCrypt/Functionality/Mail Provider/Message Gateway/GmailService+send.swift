@@ -12,14 +12,15 @@ import GoogleAPIClientForREST
 import GTMSessionFetcher
 
 extension GmailService: MessageGateway {
-    func sendMail(mime: Data) -> Future<Void, Error> {
+    func sendMail(input: MessageGatewayInput) -> Future<Void, Error> {
         Future { promise in
-            guard let raw = GTLREncodeBase64(mime) else {
+            guard let raw = GTLREncodeBase64(input.mime) else {
                 return promise(.failure(GmailServiceError.messageEncode))
             }
 
             let gtlMessage = GTLRGmail_Message()
             gtlMessage.raw = raw
+            gtlMessage.threadId = input.threadId
 
             let querySend = GTLRGmailQuery_UsersMessagesSend.query(
                 withObject: gtlMessage,
