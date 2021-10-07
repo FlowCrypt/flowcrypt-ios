@@ -70,8 +70,8 @@ struct URLHeader {
 extension URLRequest {
     static func urlRequest(
         with urlString: String,
-        method: HTTPMetod,
-        body: Data?,
+        method: HTTPMetod = .get,
+        body: Data? = nil,
         headers: [URLHeader] = []
     ) -> URLRequest {
         guard let url = URL(string: urlString) else {

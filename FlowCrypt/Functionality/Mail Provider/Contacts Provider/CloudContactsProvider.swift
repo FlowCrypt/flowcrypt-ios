@@ -16,8 +16,8 @@ protocol CloudContactsProvider {
 final class UserContactsProvider {
     private enum Constants {
         static let scheme = "https"
-        static let host = "www.google.com"
-        static let searchPath = "/m8/feeds/contacts/default/thin"
+        static let host = "people.googleapis.com"
+        static let searchPath = "/v1/people:searchContacts"
     }
 
     private let dataService: DataService
@@ -46,13 +46,11 @@ extension UserContactsProvider: CloudContactsProvider {
             return Promise(AppErr.unexpected("Missing token"))
         }
 
+        // TODO: Add warmup query
         var searchComponents = components(for: Constants.searchPath)
         searchComponents.queryItems = [
-            URLQueryItem(name: "q", value: query),
-            URLQueryItem(name: "v", value: "3.0"),
-            URLQueryItem(name: "alt", value: "json"),
-            URLQueryItem(name: "access_token", value: token),
-            URLQueryItem(name: "start-index", value: "0")
+            URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "readMask", value: "names,emailAddresses")
         ]
 
         guard let url = searchComponents.url else {
@@ -60,8 +58,12 @@ extension UserContactsProvider: CloudContactsProvider {
             return Promise(AppErr.unexpected("Missing url"))
         }
 
+        let headers = [URLHeader(value: "Bearer \(token)", httpHeaderField: "Authorization"),
+                       URLHeader(value: "application/json; charset=UTF-8", httpHeaderField: "Content-type")]
+        let request = URLRequest.urlRequest(with: url.absoluteString, headers: headers)
+
         return Promise<[String]> { () -> [String] in
-            let response = try awaitPromise(URLSession.shared.call(URLRequest(url: url)))
+            let response = try awaitPromise(URLSession.shared.call(request))
             let emails = try JSONDecoder().decode(GoogleContactsResponse.self, from: response.data).emails
             return emails
         }
