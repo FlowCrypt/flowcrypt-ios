@@ -194,7 +194,9 @@ export class PgpMsg {
       const passwords = msgPwd ? [msgPwd] : undefined;
       const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!);
       const decrypted = await (prepared.message as OpenPGP.message.Message).decrypt(privateKeys, passwords, undefined, false);
-      await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys, verificationPubkeys); // we can only figure out who signed the msg once it's decrypted
+      // we can only figure out who signed the msg once it's decrypted
+      await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
+      await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined; // verify first to prevent stream hang
       const content = new Buf(await openpgp.stream.readToEnd(decrypted.getLiteralData()!)); // read content second to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined; // evaluate verify results third to prevent stream hang
@@ -299,13 +301,16 @@ export class PgpMsg {
   }
 
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {
-    keys.signedBy = Value.arr.unique(await PgpKey.longids(msg.getSigningKeyIds ? msg.getSigningKeyIds() : []));
-    if (keys.signedBy.length && typeof Store.dbContactGet === 'function') {
-      const signerContacts = (await Store.dbContactGet(undefined, keys.signedBy))
-        .filter(contact => contact && contact.pubkey) as Contact[];
+    keys.signedBy = Value.arr.unique(await PgpKey.longids(
+      msg.getSigningKeyIds ? msg.getSigningKeyIds() : []));
+  }
+
+  private static populateKeysForVerification = async (keys: SortedKeysForDecrypt,
+    verificationPubkeys?: string[]) => {
+    if (typeof verificationPubkeys !== 'undefined') {
       keys.forVerification = [];
-      for (const contact of signerContacts) {
-        const { keys: keysForVerification } = await openpgp.key.readArmored(contact.pubkey!);
+      for (const verificationPubkey of verificationPubkeys) {
+        const { keys: keysForVerification } = await openpgp.key.readArmored(verificationPubkey);
         keys.forVerification.push(...keysForVerification);
       }
     }
@@ -325,15 +330,8 @@ export class PgpMsg {
       ? (msg as OpenPGP.message.Message).getEncryptionKeyIds()
       : [];
     keys.encryptedFor = await PgpKey.longids(encryptedForKeyids);
-    if (typeof verificationPubkeys !== 'undefined') {
-      keys.forVerification = [];
-      for (const verificationPubkey of verificationPubkeys) {
-        const { keys: keysForVerification } = await openpgp.key.readArmored(verificationPubkey);
-        keys.forVerification.push(...keysForVerification);
-      }
-    } else {
-      await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
-    }
+    await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
+    await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
     if (keys.encryptedFor.length) {
       for (const ki of kiWithPp) {
         ki.parsed = await PgpKey.read(ki.private); // todo
