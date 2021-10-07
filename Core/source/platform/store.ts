@@ -2,7 +2,6 @@
 
 'use strict';
 
-import { Contact } from '../core/pgp-key.js';
 import { openpgp } from '../core/pgp.js';
 
 let KEY_CACHE: { [longidOrArmoredKey: string]: OpenPGP.key.Key } = {};
