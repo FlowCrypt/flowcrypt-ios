@@ -41,3 +41,8 @@ fastlane/test_output
 fastlane/README.md
 
 test-ci-secrets.json
+
+# appium
+appium/node_modules
+appium/package-lock.json
+appium/tmp
