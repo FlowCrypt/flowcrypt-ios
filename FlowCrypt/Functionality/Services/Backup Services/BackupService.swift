@@ -72,12 +72,10 @@ extension BackupService: BackupServiceType {
                 subject: "Your FlowCrypt Backup",
                 replyToMimeMsg: nil,
                 atts: attachments,
-                pubKeys: nil,
-                threadId: nil
-            )
+                pubKeys: nil)
 
             self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
-                .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: message.threadId) })
+                .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: nil) })
                 .flatMap(self.messageSender.sendMail)
                 .sink(
                     receiveCompletion: { result in

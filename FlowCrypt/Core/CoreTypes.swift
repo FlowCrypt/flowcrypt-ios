@@ -139,7 +139,6 @@ struct SendableMsg: Equatable {
     let replyToMimeMsg: String?
     let atts: [Attachment]
     let pubKeys: [String]?
-    let threadId: String?
 }
 
 struct MsgBlock: Decodable {

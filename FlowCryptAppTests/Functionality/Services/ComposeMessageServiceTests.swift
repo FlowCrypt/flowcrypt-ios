@@ -284,9 +284,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 "pubKey",
                 "pubKey",
                 "public key"
-            ],
-            threadId: nil
-        )
+            ])
         
         XCTAssertNotNil(result)
         XCTAssertEqual(result!, expected)

@@ -94,18 +94,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testComposeEmailPlain() throws {
-        let msg = SendableMsg(
-            text: "this is the message",
-            to: ["email@hello.com"],
-            cc: [],
-            bcc: [],
-            from: "sender@hello.com",
-            subject: "subj",
-            replyToMimeMsg: nil,
-            atts: [],
-            pubKeys: nil,
-            threadId: nil
-        )
+        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
         let expectation = XCTestExpectation()
         
         var mime: String = ""
@@ -125,18 +114,7 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testComposeEmailEncryptInline() throws {
-        let msg = SendableMsg(
-            text: "this is the message",
-            to: ["email@hello.com"],
-            cc: [],
-            bcc: [],
-            from: "sender@hello.com",
-            subject: "subj",
-            replyToMimeMsg: nil,
-            atts: [],
-            pubKeys: nil,
-            threadId: nil
-        )
+        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
         let expectation = XCTestExpectation()
         
         var mime: String = ""
@@ -169,15 +147,10 @@ class FlowCryptCoreTests: XCTestCase {
         
         let msg = SendableMsg(
             text: "this is the message",
-            to: ["email@hello.com"],
-            cc: [],
-            bcc: [],
+            to: ["email@hello.com"], cc: [], bcc: [],
             from: "sender@hello.com",
-            subject: "subj",
-            replyToMimeMsg: nil,
-            atts: [attachment],
-            pubKeys: nil,
-            threadId: nil
+            subject: "subj", replyToMimeMsg: nil,
+            atts: [attachment], pubKeys: nil
         )
         let expectation = XCTestExpectation()
         
@@ -203,18 +176,7 @@ class FlowCryptCoreTests: XCTestCase {
         let text = "this is the encrypted e2e content"
         let generateKeyRes = try core.generateKey(passphrase: passphrase, variant: KeyVariant.curve25519, userIds: [UserId(email: email, name: "End to end")])
         let k = generateKeyRes.key
-        let msg = SendableMsg(
-            text: text,
-            to: [email],
-            cc: [],
-            bcc: [],
-            from: email,
-            subject: "e2e subj",
-            replyToMimeMsg: nil,
-            atts: [],
-            pubKeys: nil,
-            threadId: nil
-        )
+        let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: email, subject: "e2e subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
         let expectation = XCTestExpectation()
         
         var mime: CoreRes.ComposeEmail?
