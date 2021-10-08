@@ -17,6 +17,7 @@ struct ComposeMessageInput {
         let mime: Data?
         let sentDate: Date
         let message: String
+        let threadId: String?
     }
 
     enum InputType: Equatable {
@@ -58,5 +59,10 @@ struct ComposeMessageInput {
     var replyToMime: Data? {
         guard case let .reply(info) = type else { return nil }
         return info.mime
+    }
+
+    var threadId: String? {
+        guard case let .reply(info) = type else { return nil }
+        return info.threadId
     }
 }

@@ -6,9 +6,9 @@ import Combine
 import Foundation
 
 extension Imap: MessageGateway {
-    func sendMail(mime: Data) -> Future<Void, Error> {
+    func sendMail(input: MessageGatewayInput) -> Future<Void, Error> {
         Future { [smtpSess] promise in
-            smtpSess?.sendOperation(with: mime)
+            smtpSess?.sendOperation(with: input.mime)
                 .start { error in
                     if let error = error {
                         promise(.failure(error))
