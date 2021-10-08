@@ -53,6 +53,7 @@
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
 		510A260126FDFEBE00163271 /* MailCore2 in Frameworks */ = {isa = PBXBuildFile; productRef = 510A260026FDFEBE00163271 /* MailCore2 */; };
+		512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */ = {isa = PBXBuildFile; productRef = 512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */; };
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
 		51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */; };
@@ -779,6 +780,7 @@
 				51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */,
 				5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
+				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2073,6 +2075,7 @@
 				51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */,
 				51E13F14270F92F200F287CA /* BigInt */,
 				51E13F17270F934C00F287CA /* MBProgressHUD */,
+				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -3379,6 +3382,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -3631,7 +3635,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -4031,6 +4034,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 510A25FF26FDFEBE00163271 /* XCRemoteSwiftPackageReference "mailcore2" */;
 			productName = MailCore2;
+		};
+		512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
+			productName = GoogleAPIClientForREST_PeopleService;
 		};
 		51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -6,66 +6,70 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
+import FlowCryptCommon
 import Promises
+import GoogleAPIClientForREST_PeopleService
 
 protocol CloudContactsProvider {
     func searchContacts(query: String) -> Promise<[String]>
 }
 
+enum CloudContactsProviderError: Error {
+    /// People API response parsing
+    case failedToParseData(Any?)
+    /// Provider Error
+    case providerError(Error)
+}
+
 final class UserContactsProvider {
-    private enum Constants {
-        static let scheme = "https"
-        static let host = "people.googleapis.com"
-        static let searchPath = "/v1/people:searchContacts"
+    private let logger = Logger.nested("UserContactsProvider")
+    private let userService: GoogleUserServiceType
+    private var peopleService: GTLRPeopleServiceService {
+        let service = GTLRPeopleServiceService()
+
+        if userService.authorization == nil {
+            logger.logWarning("authorization for current user is nil")
+        }
+
+        service.authorizer = userService.authorization
+        return service
     }
 
-    private let dataService: DataService
-
-    private var token: String? {
-        dataService.token
-    }
-
-    init(dataService: DataService = .shared) {
-        self.dataService = dataService
-    }
-
-    private func components(for path: String) -> URLComponents {
-        var components = URLComponents()
-        components.scheme = Constants.scheme
-        components.host = Constants.host
-        components.path = path
-        return components
+    init(userService: GoogleUserServiceType = GoogleUserService()) {
+        self.userService = userService
+        
+        // Warmup query for contacts cache
+        _ = self.searchContacts(query: "")
     }
 }
 
 extension UserContactsProvider: CloudContactsProvider {
     func searchContacts(query: String) -> Promise<[String]> {
-        guard let token = token else {
-            assertionFailure("token should not be nil")
-            return Promise(AppErr.unexpected("Missing token"))
-        }
+        let searchQuery = GTLRPeopleServiceQuery_PeopleSearchContacts.query()
+        searchQuery.readMask = "names,emailAddresses"
+        searchQuery.query = query
 
-        // TODO: Add warmup query
-        var searchComponents = components(for: Constants.searchPath)
-        searchComponents.queryItems = [
-            URLQueryItem(name: "query", value: query),
-            URLQueryItem(name: "readMask", value: "names,emailAddresses")
-        ]
+        return Promise<[String]> { resolve, reject in
+            self.peopleService.executeQuery(searchQuery) { _, data, error in
+                if let error = error {
+                    return reject(CloudContactsProviderError.providerError(error))
+                }
 
-        guard let url = searchComponents.url else {
-            assertionFailure("Url should not be nil")
-            return Promise(AppErr.unexpected("Missing url"))
-        }
+                guard let response = data as? GTLRPeopleService_SearchResponse else {
+                    return reject(AppErr.cast("GTLRPeopleService_SearchResponse"))
+                }
 
-        let headers = [URLHeader(value: "Bearer \(token)", httpHeaderField: "Authorization"),
-                       URLHeader(value: "application/json; charset=UTF-8", httpHeaderField: "Content-type")]
-        let request = URLRequest.urlRequest(with: url.absoluteString, headers: headers)
+                guard let contacts = response.results else {
+                    return reject(CloudContactsProviderError.failedToParseData(data))
+                }
 
-        return Promise<[String]> { () -> [String] in
-            let response = try awaitPromise(URLSession.shared.call(request))
-            let emails = try JSONDecoder().decode(GoogleContactsResponse.self, from: response.data).emails
-            return emails
+                let emails = contacts
+                    .compactMap { $0.person?.emailAddresses }
+                    .flatMap { $0 }
+                    .compactMap { $0.value }
+
+                resolve(emails)
+            }
         }
     }
 }
