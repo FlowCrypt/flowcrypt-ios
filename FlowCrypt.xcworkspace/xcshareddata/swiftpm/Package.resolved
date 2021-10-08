@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "BigInt",
+        "repositoryURL": "https://github.com/attaswift/BigInt",
+        "state": {
+          "branch": null,
+          "revision": "0ed110f7555c34ff468e72e1686e59721f2b0da6",
+          "version": "5.3.0"
+        }
+      },
+      {
         "package": "GoogleAPIClientForREST",
         "repositoryURL": "https://github.com/google/google-api-objectivec-client-for-rest",
         "state": {
@@ -47,12 +56,30 @@
         }
       },
       {
+        "package": "IDZSwiftCommonCrypto",
+        "repositoryURL": "https://github.com/iosdevzone/IDZSwiftCommonCrypto",
+        "state": {
+          "branch": null,
+          "revision": "d824371e670bd57eb456bbc41139b4997f7207b8",
+          "version": "0.13.1"
+        }
+      },
+      {
         "package": "MailCore2",
         "repositoryURL": "https://github.com/MailCore/mailcore2",
         "state": {
           "branch": "master",
           "revision": "1434761709b4d9dd5acc5b7185a3b32aa4845ba8",
           "version": null
+        }
+      },
+      {
+        "package": "MBProgressHUD",
+        "repositoryURL": "https://github.com/jdg/MBProgressHUD",
+        "state": {
+          "branch": null,
+          "revision": "bca42b801100b2b3a4eda0ba8dd33d858c780b0d",
+          "version": "1.2.0"
         }
       },
       {

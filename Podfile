@@ -6,7 +6,6 @@ use_frameworks!
 ############################ Pods ############################
 
 def app_pods
-  pod 'MBProgressHUD'
   pod 'Toast', '~> 4.0.0'
   pod 'ENSwiftSideMenu', '~> 0.1.4'
   pod 'Texture'
@@ -16,8 +15,6 @@ end
 
 def shared_pods
   pod 'SwiftyRSA'
-  pod 'IDZSwiftCommonCrypto'
-  pod 'BigInt', '~> 5.2'
 end
 
 def ui_pods
@@ -36,11 +33,6 @@ end
 
 target 'FlowCryptUIApplication' do
   ui_pods
-end
-
-target 'FlowCryptAppTests' do
-    inherit! :search_paths
-    pod 'IDZSwiftCommonCrypto'
 end
 
 ## Set IPHONEOS_DEPLOYMENT_TARGET for all pods
