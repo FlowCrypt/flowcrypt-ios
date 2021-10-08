@@ -2,7 +2,7 @@ version: v1.0
 name: FlowCrypt iOS App
 
 execution_time_limit:
-  minutes: 30
+  minutes: 45
 
 auto_cancel: # cancel running CI for older commits on same branch if new commits are added
   running:
@@ -17,7 +17,7 @@ blocks:
 
   - name: iOS Tests
     execution_time_limit:
-      minutes: 25
+      minutes: 40
     task:
       secrets:
         - name: flowcrypt-ios-ci-secrets
