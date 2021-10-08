@@ -8,8 +8,8 @@ config.suites = {
         './tests/specs/**/*.spec.ts'
     ],
     smoke: [
-        './tests/specs/login/login.spec.ts',
-        './tests/specs/inbox/inbox.spec.ts'
+        './tests/specs/login/UserLogin.spec.ts',
+        './tests/specs/inbox/ReadTextEmail.spec.ts'
     ]
 };
 
