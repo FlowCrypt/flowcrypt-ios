@@ -79,6 +79,9 @@ final class MessageService {
             }
 
             let keysWithFilledPassPhrase = keys.map { $0.copy(with: passPhrase) }
+            let keysToSave = keys.filter { $0.passphrase == passPhrase }
+
+            self.savePassPhrases(value: passPhrase, with: keysToSave)
 
             let decrypted = try self.core.parseDecryptMsg(
                 encrypted: rawMimeData,
@@ -87,20 +90,12 @@ final class MessageService {
                 isEmail: true
             )
 
-            let isWrongPassPhraseError = decrypted.blocks.first(where: { block -> Bool in
-                guard let errorBlock = block.decryptErr, case .needPassphrase = errorBlock.error.type else {
-                    return false
-                }
-                return true
-            })
-
-            if isWrongPassPhraseError != nil {
-                reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
-            } else {
-                self.savePassPhrases(value: passPhrase, with: keys)
-                let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
-                resolve(processedMessage)
+            guard !self.hasWrongPassPhraseError(decrypted) else {
+                return reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
             }
+
+            let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+            resolve(processedMessage)
         }
     }
 
@@ -128,6 +123,10 @@ final class MessageService {
                 msgPwd: nil,
                 isEmail: true
             )
+
+            guard !self.hasWrongPassPhraseError(decrypted) else {
+                return reject(MessageServiceError.missedPassPhrase(rawMimeData))
+            }
 
             let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
             switch processedMessage.messageType {
@@ -183,6 +182,10 @@ final class MessageService {
             attachments: attachments,
             messageType: messageType
         )
+    }
+
+    private func hasWrongPassPhraseError(_ msg: CoreRes.ParseDecryptMsg) -> Bool {
+        msg.blocks.first(where: { $0.decryptErr?.error.type == .needPassphrase }) != nil
     }
 }
 
