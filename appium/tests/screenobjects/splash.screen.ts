@@ -1,4 +1,5 @@
 import BaseScreen from './base.screen';
+import {CommonData} from "../data";
 
 const SELECTORS = {
     PRIVACY_TAB: '~privacy',
@@ -127,7 +128,7 @@ class SplashScreen extends BaseScreen {
         }
     }
 
-    login(email: string, password: string) {
+    login(email: string = CommonData.account.email, password: string = CommonData.account.password) {
         driver.launchApp();
         this.clickContinueWithGmail();
         this.clickContinueBtn();

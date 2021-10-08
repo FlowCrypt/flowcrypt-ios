@@ -1,4 +1,6 @@
 import BaseScreen from './base.screen';
+import {CommonData} from "../data";
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     MENU_ICON: '~menu icn',
@@ -24,10 +26,10 @@ class MenuBarScreen extends BaseScreen {
     }
 
     clickMenuIcon () {
-        this.menuIcon.click()
+        this.menuIcon.click();
     }
 
-    checkUserEmail (email) {
+    checkUserEmail (email: string = CommonData.account.email) {
         const selector = `~${email}`;
         $(selector).waitForDisplayed();
     }

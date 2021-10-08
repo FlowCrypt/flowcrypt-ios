@@ -1,5 +1,5 @@
 import BaseScreen from './base.screen';
-import commonData from '../data/index';
+import {CommonData} from '../data';
 
 const SELECTORS = {
     SET_PASS_PHRASE_BUTTON: '~Set pass phrase',
@@ -43,7 +43,7 @@ class CreateKeyScreen extends BaseScreen {
         this.okButton.click();
     }
 
-    setPassPhrase(text: string = commonData.account.passPhrase) {
+    setPassPhrase(text: string = CommonData.account.passPhrase) {
         this.fillPassPhrase(text);
         this.clickSetPassPhraseBtn();
         this.confirmPassPhrase(text);

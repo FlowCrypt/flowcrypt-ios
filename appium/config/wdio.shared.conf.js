@@ -37,7 +37,7 @@ exports.config = {
     afterTest: function (test, context, { error, result, duration, passed, retries }) {
         if (error) {
             const timestampNow = new Date().getTime().toString();
-            const path = process.env.BITRISE_DEPLOY_DIR || join(process.cwd(), './tmp');
+            const path = join(process.cwd(), './tmp');
             driver.saveScreenshot(`${path}/${timestampNow}.png`);
             console.log("Screenshot of failed test was saved to " + path)
         }

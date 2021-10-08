@@ -1,12 +1,15 @@
 const { join } = require('path');
 const { config } = require('./wdio.shared.conf');
+const pathWdioConfig = require('path');
+require('dotenv').config({ path: pathWdioConfig.resolve(__dirname, '../.env') });
 
 config.suites = {
     all: [
         './tests/specs/**/*.spec.ts'
     ],
     smoke: [
-        './tests/specs/inbox/inbox.spec.ts',
+        './tests/specs/login/login.spec.ts',
+        './tests/specs/inbox/inbox.spec.ts'
     ]
 };
 
@@ -14,7 +17,7 @@ config.capabilities = [
     {
         platformName: 'iOS',
         iosInstallPause: 5000,
-        deviceName: process.env.DEVICE_MODEL || 'iPhone 11 Pro Max',
+        deviceName: 'iPhone 11 Pro Max',
         platformVersion: '14.5',
         automationName: 'XCUITest',
         app: join(process.cwd(), './apps/FlowCrypt.app'),

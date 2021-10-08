@@ -1,4 +1,3 @@
-
 import {
     SplashScreen,
     CreateKeyScreen,
@@ -6,22 +5,18 @@ import {
     EmailScreen
 } from '../../screenobjects/all-screens';
 
-import commonData from '../../data/index';
+import {CommonData} from '../../data';
 
 describe('INBOX: ', () => {
 
-    const email = commonData.account.email;
-    const pass = commonData.account.password;
-    const passPhrase = commonData.account.passPhrase;
-
     it('user is able to view text email', () => {
 
-        const senderEmail = commonData.sender;
+        const senderEmail = CommonData.sender.email;
         const emailSubject = 'Test 1';
         const emailText = 'Test email';
 
-        SplashScreen.login(email, pass);
-        CreateKeyScreen.setPassPhrase(passPhrase);
+        SplashScreen.login();
+        CreateKeyScreen.setPassPhrase();
 
         InboxScreen.clickOnUserEmail(senderEmail);
         EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
