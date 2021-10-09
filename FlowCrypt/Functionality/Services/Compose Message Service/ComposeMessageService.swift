@@ -23,7 +23,7 @@ struct ComposeMessageRecipient {
 }
 
 protocol CoreComposeMessageType {
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) -> Future<CoreRes.ComposeEmail, Error>
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt) -> Future<CoreRes.ComposeEmail, Error>
 }
 
 final class ComposeMessageService {
@@ -136,8 +136,7 @@ final class ComposeMessageService {
     private func encryptMessage(with msg: SendableMsg, threadId: String?) -> AnyPublisher<MessageGatewayInput, Error> {
         return core.composeEmail(
             msg: msg,
-            fmt: MsgFmt.encryptInline,
-            pubKeys: msg.pubKeys
+            fmt: MsgFmt.encryptInline
         )
         .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: threadId) })
         .eraseToAnyPublisher()

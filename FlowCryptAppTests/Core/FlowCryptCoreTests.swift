@@ -98,7 +98,7 @@ class FlowCryptCoreTests: XCTestCase {
         let expectation = XCTestExpectation()
         
         var mime: String = ""
-        core.composeEmail(msg: msg, fmt: .plain, pubKeys: nil)
+        core.composeEmail(msg: msg, fmt: .plain)
             .sinkFuture(
                 receiveValue: { composeEmailRes in
                     mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
@@ -114,11 +114,20 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testComposeEmailEncryptInline() throws {
-        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
+        let msg = SendableMsg(
+            text: "this is the message",
+            to: ["email@hello.com"],
+            cc: [],
+            bcc: [],
+            from: "sender@hello.com",
+            subject: "subj",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: [TestData.k0.pub, TestData.k1.pub])
         let expectation = XCTestExpectation()
         
         var mime: String = ""
-        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
+        core.composeEmail(msg: msg, fmt: .encryptInline)
             .sinkFuture(
                 receiveValue: { composeEmailRes in
                     mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
@@ -150,12 +159,13 @@ class FlowCryptCoreTests: XCTestCase {
             to: ["email@hello.com"], cc: [], bcc: [],
             from: "sender@hello.com",
             subject: "subj", replyToMimeMsg: nil,
-            atts: [attachment], pubKeys: nil
+            atts: [attachment],
+            pubKeys: [TestData.k0.pub, TestData.k1.pub]
         )
         let expectation = XCTestExpectation()
         
         var mime: String = ""
-        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
+        core.composeEmail(msg: msg, fmt: .encryptInline)
             .sinkFuture(
                 receiveValue: { composeEmailRes in
                     mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
@@ -176,11 +186,20 @@ class FlowCryptCoreTests: XCTestCase {
         let text = "this is the encrypted e2e content"
         let generateKeyRes = try core.generateKey(passphrase: passphrase, variant: KeyVariant.curve25519, userIds: [UserId(email: email, name: "End to end")])
         let k = generateKeyRes.key
-        let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: email, subject: "e2e subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
+        let msg = SendableMsg(
+            text: text,
+            to: [email],
+            cc: [],
+            bcc: [],
+            from: email,
+            subject: "e2e subj",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: [k.public])
         let expectation = XCTestExpectation()
         
         var mime: CoreRes.ComposeEmail?
-        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [k.public])
+        core.composeEmail(msg: msg, fmt: .encryptInline)
             .sinkFuture(
                 receiveValue: { composeEmailRes in
                     mime = composeEmailRes

@@ -74,7 +74,7 @@ extension BackupService: BackupServiceType {
                 atts: attachments,
                 pubKeys: nil)
 
-            self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
+            self.core.composeEmail(msg: message, fmt: .plain)
                 .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: nil) })
                 .flatMap(self.messageSender.sendMail)
                 .sink(
