@@ -210,7 +210,7 @@ extension ComposeViewController {
             email: email
         )
         .publisher
-        .flatMap(composeMessageService.encryptAndSend)
+        .flatMap(encryptAndSend)
         .receive(on: DispatchQueue.main)
         .sinkFuture(
             receiveValue: { [weak self] in
@@ -220,6 +220,10 @@ extension ComposeViewController {
                 self?.handle(error: error)
             })
         .store(in: &cancellable)
+    }
+
+    private func encryptAndSend(_ message: SendableMsg) -> AnyPublisher<Void, ComposeMessageError> {
+        composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
     }
 
     private func handle(error: ComposeMessageError) {
