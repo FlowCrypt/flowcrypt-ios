@@ -55,6 +55,17 @@
 		510A260126FDFEBE00163271 /* MailCore2 in Frameworks */ = {isa = PBXBuildFile; productRef = 510A260026FDFEBE00163271 /* MailCore2 */; };
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
+		51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */; };
+		51E13F15270F92F200F287CA /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F14270F92F200F287CA /* BigInt */; };
+		51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F17270F934C00F287CA /* MBProgressHUD */; };
+		51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 51E1673C270DAFF900D27C52 /* Localizable.stringsdict */; };
+		51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */; };
+		51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16748270F303100D27C52 /* GoogleSignIn */; };
+		51E1674F270F341300D27C52 /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1674E270F341300D27C52 /* Promises */; };
+		51E16755270F356500D27C52 /* GTMAppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16754270F356500D27C52 /* GTMAppAuth */; };
+		51E1675D270F36A400D27C52 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675C270F36A400D27C52 /* Realm */; };
+		51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675E270F36A400D27C52 /* RealmSwift */; };
+		5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */; };
 		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
 		5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
 		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
@@ -68,8 +79,7 @@
 		5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */; };
 		5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */; };
 		5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBF23A43B0800EC495E /* KeyDetailInfoViewDecorator.swift */; };
-		5B810312C6D099BC214DB38F /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 567BA6739257FE0D2924D82C /* Pods_FlowCryptUIApplication.framework */; };
-		85F56205E0D5F5F897ACF391 /* Pods_FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D424F068875A727743993E3 /* Pods_FlowCryptUI.framework */; };
+		7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* UserAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* UserAccountService.swift */; };
@@ -206,14 +216,13 @@
 		9FFC7E5A260C946100282FCE /* CloudContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FFC7E59260C946000282FCE /* CloudContactsProvider.swift */; };
 		A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */; };
 		A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B7C31823F576BA0022D628 /* AppStartup.swift */; };
-		A40B9DB9E27967AC623BA60B /* Pods_FlowCrypt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 069059B887A8580765029BF9 /* Pods_FlowCrypt.framework */; };
 		C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9B31EC2DBD800763715 /* AppDelegate.swift */; };
 		C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C132B9BA1EC2DBD800763715 /* Assets.xcassets */; };
 		C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */; };
 		C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
 		C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9D81EC30E1D00763715 /* InboxViewController.swift */; };
 		C192421F1EC48B6900C3D251 /* SetupBackupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupBackupsViewController.swift */; };
-		CB5986DFBB2B4FF4AD555821 /* Pods_FlowCryptUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */; };
+		CDE91E546AF2C64C9306EB69 /* Pods_FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F083C28BC034555B67F7F00 /* Pods_FlowCryptUI.framework */; };
 		D204DBA223FB35700083B9D6 /* FlowCryptUI.h in Headers */ = {isa = PBXBuildFile; fileRef = D204DBA023FB35700083B9D6 /* FlowCryptUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C662520AB1000D4AA9A /* BackupViewController.swift */; };
 		D20D3C6E2520AB3900D4AA9A /* BackupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */; };
@@ -336,7 +345,6 @@
 		D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
 		D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
 		D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */; };
-		E29491346F23FA1463A07459 /* Pods_FlowCryptAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 990E5AB8A4A7F69E1C113365 /* Pods_FlowCryptAppTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -386,14 +394,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		02A9A9F6DCFB9B2E407559A8 /* Pods-FlowCrypt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.release.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.release.xcconfig"; sourceTree = "<group>"; };
+		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyInfo.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuViewController.swift; sourceTree = "<group>"; };
 		04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideMenuNavigationController.swift; sourceTree = "<group>"; };
-		0661BC078F16A307751CA7DA /* Pods-FlowCryptUIApplication.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.enterprise.xcconfig"; sourceTree = "<group>"; };
-		069059B887A8580765029BF9 /* Pods_FlowCrypt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCrypt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.release.xcconfig"; sourceTree = "<group>"; };
-		11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
+		06B7F70EA15D806AA5D94CA9 /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
+		0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.release.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.release.xcconfig"; sourceTree = "<group>"; };
+		1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.enterprise.xcconfig"; sourceTree = "<group>"; };
 		211392A4266511E6009202EC /* PubLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubLookup.swift; sourceTree = "<group>"; };
 		2133D51526A0571F00CC686F /* ClientConfigurationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationService.swift; sourceTree = "<group>"; };
 		2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedPrivateKey.swift; sourceTree = "<group>"; };
@@ -429,8 +436,6 @@
 		21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZBase32EncodingTests.swift; sourceTree = "<group>"; };
 		21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructorTests.swift; sourceTree = "<group>"; };
 		21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageAttachment.swift; sourceTree = "<group>"; };
-		27D857C43583281B45F427F8 /* Pods-FlowCryptUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.release.xcconfig"; sourceTree = "<group>"; };
-		2B4C2647A021692455F9DFAD /* Pods-FlowCryptAppTests.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptAppTests.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests.enterprise.xcconfig"; sourceTree = "<group>"; };
 		32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
@@ -450,14 +455,18 @@
 		32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "flowcrypt-ios-prod.js.txt"; sourceTree = "<group>"; };
 		32DCAEFF16F5D91A35791730 /* DataExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		32DCAF8424D0185FAA9401A7 /* Imap+send.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Imap+send.swift"; sourceTree = "<group>"; };
-		3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		411CEC75050F852F172CD687 /* Pods-FlowCryptTests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.testflight.xcconfig"; sourceTree = "<group>"; };
-		44D0BF0D60EF854CEC17561C /* Pods-FlowCryptUIApplication.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.testflight.xcconfig"; sourceTree = "<group>"; };
-		4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptTests/Pods-FlowCryptTests.debug.xcconfig"; sourceTree = "<group>"; };
+		3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUIApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3675DB672850A781424D0113 /* Pods-FlowCryptUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.debug.xcconfig"; sourceTree = "<group>"; };
+		3B945B2BE6B66D5E6B43AD2E /* Pods-FlowCryptUIApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.debug.xcconfig"; sourceTree = "<group>"; };
+		3F083C28BC034555B67F7F00 /* Pods_FlowCryptUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCrypt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C5032E4FC5685A224F61785 /* Pods-FlowCryptUI.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.testflight.xcconfig"; sourceTree = "<group>"; };
+		4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
 		51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfoTests.swift; sourceTree = "<group>"; };
 		51775C38270C7D2400D7C944 /* StorageMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMethod.swift; sourceTree = "<group>"; };
-		567BA6739257FE0D2924D82C /* Pods_FlowCryptUIApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUIApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		51E1673C270DAFF900D27C52 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
+		55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.enterprise.xcconfig"; sourceTree = "<group>"; };
 		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewDecorator.swift; sourceTree = "<group>"; };
 		5A39F433239EC61C001F4607 /* SettingsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCellNode.swift; sourceTree = "<group>"; };
@@ -475,13 +484,7 @@
 		5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewController.swift; sourceTree = "<group>"; };
 		5ADEDCBF23A43B0800EC495E /* KeyDetailInfoViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewDecorator.swift; sourceTree = "<group>"; };
 		5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTextCellNode.swift; sourceTree = "<group>"; };
-		5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.testflight.xcconfig"; sourceTree = "<group>"; };
-		665165CEB9BB3DA16B5715D4 /* Pods-FlowCryptUIApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.debug.xcconfig"; sourceTree = "<group>"; };
-		6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.testflight.xcconfig"; sourceTree = "<group>"; };
-		727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.release.xcconfig"; sourceTree = "<group>"; };
-		7D424F068875A727743993E3 /* Pods_FlowCryptUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		990E5AB8A4A7F69E1C113365 /* Pods_FlowCryptAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* UserAccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountService.swift; sourceTree = "<group>"; };
 		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
@@ -650,12 +653,7 @@
 		A3B7C31823F576BA0022D628 /* AppStartup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStartup.swift; sourceTree = "<group>"; };
 		A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCryptCoreTests.swift; sourceTree = "<group>"; };
 		A3DAD60722E4588800F2C4CD /* TestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestData.swift; sourceTree = "<group>"; };
-		A8E25B5340E41CA59482FC34 /* Pods-FlowCryptAppTests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptAppTests.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests.testflight.xcconfig"; sourceTree = "<group>"; };
-		B2D5E6D67A7C2E406945F9B9 /* Pods-FlowCryptAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptAppTests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests.debug.xcconfig"; sourceTree = "<group>"; };
-		B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B8A71CC43DE980CB3B798EAE /* Pods-FlowCryptUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.debug.xcconfig"; sourceTree = "<group>"; };
-		BB4F4E0EC72273F1D5C0BECD /* Pods-FlowCryptUI.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.testflight.xcconfig"; sourceTree = "<group>"; };
-		C0FB753BE77A7038836861D7 /* Pods-FlowCrypt.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.debug.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.debug.xcconfig"; sourceTree = "<group>"; };
+		BBFB58E712FFB19AEC513D40 /* Pods-FlowCrypt.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.debug.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.debug.xcconfig"; sourceTree = "<group>"; };
 		C132B9B01EC2DBD800763715 /* FlowCrypt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowCrypt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C132B9B31EC2DBD800763715 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C132B9BA1EC2DBD800763715 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -665,8 +663,6 @@
 		C132B9D81EC30E1D00763715 /* InboxViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxViewController.swift; sourceTree = "<group>"; };
 		C132B9DF1EC333AA00763715 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		C192421E1EC48B6900C3D251 /* SetupBackupsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetupBackupsViewController.swift; sourceTree = "<group>"; };
-		C37B425E87C035322DD0215E /* Pods-FlowCryptAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptAppTests.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests.release.xcconfig"; sourceTree = "<group>"; };
-		D10767C30A339253DB81208D /* Pods-FlowCryptUITests.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.enterprise.xcconfig"; sourceTree = "<group>"; };
 		D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FlowCryptUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D204DBA023FB35700083B9D6 /* FlowCryptUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlowCryptUI.h; sourceTree = "<group>"; };
 		D204DBA123FB35700083B9D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -747,10 +743,9 @@
 		D2FD0F682453245E00259FF0 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* SetupImapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewDecorator.swift; sourceTree = "<group>"; };
+		D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.release.xcconfig"; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
-		DCFF9B8BC7DEED36917C457B /* Pods-FlowCrypt.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.enterprise.xcconfig"; sourceTree = "<group>"; };
-		DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUITests.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		E3FED78D0C98E6C19FEACB5F /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
+		E16585B4D0D6F175370CC6AE /* Pods-FlowCryptUIApplication.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.testflight.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -758,7 +753,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E29491346F23FA1463A07459 /* Pods_FlowCryptAppTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -766,7 +760,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CB5986DFBB2B4FF4AD555821 /* Pods_FlowCryptUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -776,8 +769,17 @@
 			files = (
 				D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */,
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
-				A40B9DB9E27967AC623BA60B /* Pods_FlowCrypt.framework in Frameworks */,
+				51E1674F270F341300D27C52 /* Promises in Frameworks */,
+				51E13F15270F92F200F287CA /* BigInt in Frameworks */,
+				51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */,
 				510A260126FDFEBE00163271 /* MailCore2 in Frameworks */,
+				51E16755270F356500D27C52 /* GTMAppAuth in Frameworks */,
+				51E1675D270F36A400D27C52 /* Realm in Frameworks */,
+				51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */,
+				51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */,
+				5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */,
+				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
+				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -786,7 +788,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D28655982424D1BD0066F52E /* FlowCryptCommon.framework in Frameworks */,
-				85F56205E0D5F5F897ACF391 /* Pods_FlowCryptUI.framework in Frameworks */,
+				CDE91E546AF2C64C9306EB69 /* Pods_FlowCryptUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -803,7 +805,7 @@
 			files = (
 				D28655992424D1EB0066F52E /* FlowCryptCommon.framework in Frameworks */,
 				D286559A2424D1EB0066F52E /* FlowCryptUI.framework in Frameworks */,
-				5B810312C6D099BC214DB38F /* Pods_FlowCryptUIApplication.framework in Frameworks */,
+				7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -934,29 +936,18 @@
 		2DC3601602226D74335E18F4 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				C0FB753BE77A7038836861D7 /* Pods-FlowCrypt.debug.xcconfig */,
-				02A9A9F6DCFB9B2E407559A8 /* Pods-FlowCrypt.release.xcconfig */,
-				DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */,
-				727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */,
-				4A76C3D4559C9F415D392A62 /* Pods-FlowCryptTests.debug.xcconfig */,
-				113F04B20ECC35FC59A81A6C /* Pods-FlowCryptTests.release.xcconfig */,
-				5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */,
-				411CEC75050F852F172CD687 /* Pods-FlowCryptTests.testflight.xcconfig */,
-				6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */,
-				B8A71CC43DE980CB3B798EAE /* Pods-FlowCryptUI.debug.xcconfig */,
-				27D857C43583281B45F427F8 /* Pods-FlowCryptUI.release.xcconfig */,
-				BB4F4E0EC72273F1D5C0BECD /* Pods-FlowCryptUI.testflight.xcconfig */,
-				665165CEB9BB3DA16B5715D4 /* Pods-FlowCryptUIApplication.debug.xcconfig */,
-				11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */,
-				44D0BF0D60EF854CEC17561C /* Pods-FlowCryptUIApplication.testflight.xcconfig */,
-				B2D5E6D67A7C2E406945F9B9 /* Pods-FlowCryptAppTests.debug.xcconfig */,
-				C37B425E87C035322DD0215E /* Pods-FlowCryptAppTests.release.xcconfig */,
-				A8E25B5340E41CA59482FC34 /* Pods-FlowCryptAppTests.testflight.xcconfig */,
-				DCFF9B8BC7DEED36917C457B /* Pods-FlowCrypt.enterprise.xcconfig */,
-				2B4C2647A021692455F9DFAD /* Pods-FlowCryptAppTests.enterprise.xcconfig */,
-				E3FED78D0C98E6C19FEACB5F /* Pods-FlowCryptUI.enterprise.xcconfig */,
-				0661BC078F16A307751CA7DA /* Pods-FlowCryptUIApplication.enterprise.xcconfig */,
-				D10767C30A339253DB81208D /* Pods-FlowCryptUITests.enterprise.xcconfig */,
+				BBFB58E712FFB19AEC513D40 /* Pods-FlowCrypt.debug.xcconfig */,
+				1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */,
+				0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */,
+				06B7F70EA15D806AA5D94CA9 /* Pods-FlowCrypt.testflight.xcconfig */,
+				3675DB672850A781424D0113 /* Pods-FlowCryptUI.debug.xcconfig */,
+				049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */,
+				D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */,
+				4C5032E4FC5685A224F61785 /* Pods-FlowCryptUI.testflight.xcconfig */,
+				3B945B2BE6B66D5E6B43AD2E /* Pods-FlowCryptUIApplication.debug.xcconfig */,
+				55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */,
+				4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */,
+				E16585B4D0D6F175370CC6AE /* Pods-FlowCryptUIApplication.testflight.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -1555,6 +1546,7 @@
 				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
 				32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */,
+				51E1673C270DAFF900D27C52 /* Localizable.stringsdict */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
 				D269E025240EAD9A000495C3 /* Naming Convention.md */,
 			);
@@ -1574,7 +1566,7 @@
 				D2531F2C23FEEF52007E5198 /* FlowCryptCommon */,
 				9F2AC5C7267BE99E00F6149B /* FlowCryptAppTests */,
 				C132B9B11EC2DBD800763715 /* Products */,
-				E48A4865C8E7B2B971F5FC18 /* Frameworks */,
+				CE0C659EE9FC297F6DAC8F59 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1673,6 +1665,16 @@
 				9F7920F42667CEF100DA3D80 /* PassPhraseSaveable.swift */,
 			);
 			path = Setup;
+			sourceTree = "<group>";
+		};
+		CE0C659EE9FC297F6DAC8F59 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */,
+				3F083C28BC034555B67F7F00 /* Pods_FlowCryptUI.framework */,
+				3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		D204DB9F23FB35700083B9D6 /* FlowCryptUI */ = {
@@ -1982,19 +1984,6 @@
 			path = Msg;
 			sourceTree = "<group>";
 		};
-		E48A4865C8E7B2B971F5FC18 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				069059B887A8580765029BF9 /* Pods_FlowCrypt.framework */,
-				B5FD94843B54B71375747E38 /* Pods_FlowCryptTests.framework */,
-				3FA3FBD561C4CAD27852EB0B /* Pods_FlowCryptUITests.framework */,
-				7D424F068875A727743993E3 /* Pods_FlowCryptUI.framework */,
-				567BA6739257FE0D2924D82C /* Pods_FlowCryptUIApplication.framework */,
-				990E5AB8A4A7F69E1C113365 /* Pods_FlowCryptAppTests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2021,11 +2010,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9F2AC5CD267BE99E00F6149B /* Build configuration list for PBXNativeTarget "FlowCryptAppTests" */;
 			buildPhases = (
-				83E0F8502A1A5A43690AC007 /* [CP] Check Pods Manifest.lock */,
 				9F2AC5C2267BE99E00F6149B /* Sources */,
 				9F2AC5C3267BE99E00F6149B /* Frameworks */,
 				9F2AC5C4267BE99E00F6149B /* Resources */,
-				1FC573E8F878314F4EB50EC3 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2041,11 +2028,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9FDF364B235A1B0100614596 /* Build configuration list for PBXNativeTarget "FlowCryptUITests" */;
 			buildPhases = (
-				1D3D5E98C2C4E7F4A36C6237 /* [CP] Check Pods Manifest.lock */,
 				9FDF363D235A1B0100614596 /* Sources */,
 				9FDF363E235A1B0100614596 /* Frameworks */,
 				9FDF363F235A1B0100614596 /* Resources */,
-				0CF02BEF6BCBCD8B43A732A5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2061,14 +2046,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */;
 			buildPhases = (
-				5430C58483A407F52FD23C1B /* [CP] Check Pods Manifest.lock */,
+				85C230714DC341D246864AD0 /* [CP] Check Pods Manifest.lock */,
 				D2324CAA2471D47B00FD1C6F /* Format code */,
 				D2324CA92471CED200FD1C6F /* SwiftLint */,
 				C132B9AC1EC2DBD800763715 /* Sources */,
 				C132B9AD1EC2DBD800763715 /* Frameworks */,
 				C132B9AE1EC2DBD800763715 /* Resources */,
-				527B6FD5C3E83A37AEA8D0A3 /* [CP] Embed Pods Frameworks */,
 				D2CDC3E124052D50002B045F /* Embed Frameworks */,
+				E531C3B50A9C90454C72F878 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2079,6 +2064,15 @@
 			name = FlowCrypt;
 			packageProductDependencies = (
 				510A260026FDFEBE00163271 /* MailCore2 */,
+				51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */,
+				51E16748270F303100D27C52 /* GoogleSignIn */,
+				51E1674E270F341300D27C52 /* Promises */,
+				51E16754270F356500D27C52 /* GTMAppAuth */,
+				51E1675C270F36A400D27C52 /* Realm */,
+				51E1675E270F36A400D27C52 /* RealmSwift */,
+				51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */,
+				51E13F14270F92F200F287CA /* BigInt */,
+				51E13F17270F934C00F287CA /* MBProgressHUD */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -2088,7 +2082,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D204DBA623FB35700083B9D6 /* Build configuration list for PBXNativeTarget "FlowCryptUI" */;
 			buildPhases = (
-				B68D10E7C49E42D8072CA138 /* [CP] Check Pods Manifest.lock */,
+				7448815F0409698014646718 /* [CP] Check Pods Manifest.lock */,
 				D204DB9923FB35700083B9D6 /* Headers */,
 				D204DB9A23FB35700083B9D6 /* Sources */,
 				D204DB9B23FB35700083B9D6 /* Frameworks */,
@@ -2125,11 +2119,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2A1D3C823FD64AD00D626D6 /* Build configuration list for PBXNativeTarget "FlowCryptUIApplication" */;
 			buildPhases = (
-				5F5CFBA7F01EBBFD1F1B1EFA /* [CP] Check Pods Manifest.lock */,
+				BF91BAF1F0E74BA172BDA5C0 /* [CP] Check Pods Manifest.lock */,
 				D2A1D3B323FD64AB00D626D6 /* Sources */,
 				D2A1D3B423FD64AB00D626D6 /* Frameworks */,
 				D2A1D3B523FD64AB00D626D6 /* Resources */,
-				BC310DD2725DD2FDF5F0F86A /* [CP] Embed Pods Frameworks */,
+				05B81508878EB6DE11728435 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2187,6 +2181,14 @@
 			mainGroup = C132B9A71EC2DBD800763715;
 			packageReferences = (
 				510A25FF26FDFEBE00163271 /* XCRemoteSwiftPackageReference "mailcore2" */,
+				51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */,
+				51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				51E1674D270F341200D27C52 /* XCRemoteSwiftPackageReference "promises" */,
+				51E16753270F356500D27C52 /* XCRemoteSwiftPackageReference "GTMAppAuth" */,
+				51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */,
+				51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */,
+				51E13F13270F92F100F287CA /* XCRemoteSwiftPackageReference "BigInt" */,
+				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -2230,6 +2232,7 @@
 				D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */,
 				D2324CAD2471DCF800FD1C6F /* format.sh in Resources */,
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
+				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
@@ -2268,146 +2271,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0CF02BEF6BCBCD8B43A732A5 /* [CP] Embed Pods Frameworks */ = {
+		05B81508878EB6DE11728435 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUITests/Pods-FlowCryptUITests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		1D3D5E98C2C4E7F4A36C6237 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlowCryptUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1FC573E8F878314F4EB50EC3 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptAppTests/Pods-FlowCryptAppTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		527B6FD5C3E83A37AEA8D0A3 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5430C58483A407F52FD23C1B /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlowCrypt-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5F5CFBA7F01EBBFD1F1B1EFA /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlowCryptUIApplication-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		83E0F8502A1A5A43690AC007 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlowCryptAppTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B68D10E7C49E42D8072CA138 /* [CP] Check Pods Manifest.lock */ = {
+		7448815F0409698014646718 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2429,21 +2310,48 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BC310DD2725DD2FDF5F0F86A /* [CP] Embed Pods Frameworks */ = {
+		85C230714DC341D246864AD0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FlowCrypt-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BF91BAF1F0E74BA172BDA5C0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FlowCryptUIApplication-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D2324CA92471CED200FD1C6F /* SwiftLint */ = {
@@ -2481,6 +2389,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "make format\n";
+		};
+		E531C3B50A9C90454C72F878 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2929,9 +2854,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2941,7 +2866,7 @@
 		};
 		9F1C905026F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DCFF9B8BC7DEED36917C457B /* Pods-FlowCrypt.enterprise.xcconfig */;
+			baseConfigurationReference = 1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
@@ -2950,10 +2875,23 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = W57XRJ27NX;
+				DEVELOPMENT_TEAM = 6DZ6CC3YMY;
 				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"$(inherited)",
+					"AS_USE_ASSETS_LIBRARY=1",
+					"$(inherited)",
+					"AS_USE_MAPKIT=1",
+					"$(inherited)",
+					"AS_USE_PHOTOS=1",
+					"$(inherited)",
+					"AS_USE_VIDEO=1",
+					"SWIFT_PACKAGE=1",
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2968,15 +2906,15 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.enterprise;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.as.ios.enterprise;
 				PRODUCT_NAME = FlowCrypt;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -2990,7 +2928,6 @@
 		};
 		9F1C905126F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D10767C30A339253DB81208D /* Pods-FlowCryptUITests.enterprise.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -2999,8 +2936,8 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(FRAMEWORK_SEARCH_PATHS)";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.FlowCryptUITests;
@@ -3013,7 +2950,7 @@
 		};
 		9F1C905226F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E3FED78D0C98E6C19FEACB5F /* Pods-FlowCryptUI.enterprise.xcconfig */;
+			baseConfigurationReference = 049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
@@ -3029,7 +2966,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3051,7 +2988,7 @@
 		};
 		9F1C905326F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0661BC078F16A307751CA7DA /* Pods-FlowCryptUIApplication.enterprise.xcconfig */;
+			baseConfigurationReference = 55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3061,7 +2998,7 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUIApplication/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3091,7 +3028,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3112,7 +3049,6 @@
 		};
 		9F1C905526F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2B4C2647A021692455F9DFAD /* Pods-FlowCryptAppTests.enterprise.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3122,7 +3058,7 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptAppTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3141,7 +3077,6 @@
 		};
 		9F2AC5CE267BE99E00F6149B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B2D5E6D67A7C2E406945F9B9 /* Pods-FlowCryptAppTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3151,8 +3086,13 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"SWIFT_PACKAGE=1",
+				);
 				INFOPLIST_FILE = FlowCryptAppTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3171,7 +3111,6 @@
 		};
 		9F2AC5CF267BE99E00F6149B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C37B425E87C035322DD0215E /* Pods-FlowCryptAppTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3181,7 +3120,7 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptAppTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3199,7 +3138,6 @@
 		};
 		9F2AC5D0267BE99E00F6149B /* TestFlight */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A8E25B5340E41CA59482FC34 /* Pods-FlowCryptAppTests.testflight.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3209,7 +3147,7 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptAppTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3227,7 +3165,6 @@
 		};
 		9FDF3648235A1B0100614596 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DFA70003EC75596718303F14 /* Pods-FlowCryptUITests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -3237,8 +3174,8 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(FRAMEWORK_SEARCH_PATHS)";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.FlowCryptUITests;
@@ -3251,7 +3188,6 @@
 		};
 		9FDF3649235A1B0100614596 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 727E7B2D9A5AC9919E04363A /* Pods-FlowCryptUITests.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -3260,8 +3196,8 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(FRAMEWORK_SEARCH_PATHS)";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.FlowCryptUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3273,7 +3209,6 @@
 		};
 		9FDF364A235A1B0100614596 /* TestFlight */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6D8A8C9A8EA0B31DB5F92E39 /* Pods-FlowCryptUITests.testflight.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -3282,8 +3217,8 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(FRAMEWORK_SEARCH_PATHS)";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.FlowCryptUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3339,7 +3274,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -3351,7 +3286,7 @@
 		};
 		A37A4605233823230085630A /* TestFlight */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5C0F9ED0610EBC4EA2348E1A /* Pods-FlowCrypt.testflight.xcconfig */;
+			baseConfigurationReference = 06B7F70EA15D806AA5D94CA9 /* Pods-FlowCrypt.testflight.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -3362,6 +3297,19 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"$(inherited)",
+					"AS_USE_ASSETS_LIBRARY=1",
+					"$(inherited)",
+					"AS_USE_MAPKIT=1",
+					"$(inherited)",
+					"AS_USE_PHOTOS=1",
+					"$(inherited)",
+					"AS_USE_VIDEO=1",
+					"SWIFT_PACKAGE=1",
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3376,13 +3324,13 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.testflight;
 				PRODUCT_NAME = FlowCrypt;
@@ -3445,7 +3393,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -3501,7 +3449,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -3513,7 +3461,7 @@
 		};
 		C132B9C31EC2DBD800763715 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C0FB753BE77A7038836861D7 /* Pods-FlowCrypt.debug.xcconfig */;
+			baseConfigurationReference = BBFB58E712FFB19AEC513D40 /* Pods-FlowCrypt.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
@@ -3526,6 +3474,20 @@
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"$(inherited)",
+					"AS_USE_ASSETS_LIBRARY=1",
+					"$(inherited)",
+					"AS_USE_MAPKIT=1",
+					"$(inherited)",
+					"AS_USE_PHOTOS=1",
+					"$(inherited)",
+					"AS_USE_VIDEO=1",
+					"DEBUG=1",
+					"SWIFT_PACKAGE=1",
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3540,13 +3502,13 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.debug;
 				PRODUCT_NAME = FlowCrypt;
@@ -3561,7 +3523,7 @@
 		};
 		C132B9C41EC2DBD800763715 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 02A9A9F6DCFB9B2E407559A8 /* Pods-FlowCrypt.release.xcconfig */;
+			baseConfigurationReference = 0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -3572,6 +3534,19 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"$(inherited)",
+					"AS_USE_ASSETS_LIBRARY=1",
+					"$(inherited)",
+					"AS_USE_MAPKIT=1",
+					"$(inherited)",
+					"AS_USE_PHOTOS=1",
+					"$(inherited)",
+					"AS_USE_VIDEO=1",
+					"SWIFT_PACKAGE=1",
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3586,13 +3561,13 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios;
 				PRODUCT_NAME = FlowCrypt;
@@ -3605,7 +3580,7 @@
 		};
 		D204DBA323FB35700083B9D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B8A71CC43DE980CB3B798EAE /* Pods-FlowCryptUI.debug.xcconfig */;
+			baseConfigurationReference = 3675DB672850A781424D0113 /* Pods-FlowCryptUI.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
@@ -3618,11 +3593,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3644,7 +3618,7 @@
 		};
 		D204DBA423FB35700083B9D6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27D857C43583281B45F427F8 /* Pods-FlowCryptUI.release.xcconfig */;
+			baseConfigurationReference = D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
@@ -3657,10 +3631,11 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3680,7 +3655,7 @@
 		};
 		D204DBA523FB35700083B9D6 /* TestFlight */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BB4F4E0EC72273F1D5C0BECD /* Pods-FlowCryptUI.testflight.xcconfig */;
+			baseConfigurationReference = 4C5032E4FC5685A224F61785 /* Pods-FlowCryptUI.testflight.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
@@ -3696,7 +3671,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3731,7 +3706,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3766,7 +3741,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3800,7 +3775,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3820,7 +3795,7 @@
 		};
 		D2A1D3C923FD64AD00D626D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 665165CEB9BB3DA16B5715D4 /* Pods-FlowCryptUIApplication.debug.xcconfig */;
+			baseConfigurationReference = 3B945B2BE6B66D5E6B43AD2E /* Pods-FlowCryptUIApplication.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3830,7 +3805,7 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUIApplication/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3846,7 +3821,7 @@
 		};
 		D2A1D3CA23FD64AD00D626D6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 11C1375F41411882DC4C9431 /* Pods-FlowCryptUIApplication.release.xcconfig */;
+			baseConfigurationReference = 4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3856,7 +3831,7 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUIApplication/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3871,7 +3846,7 @@
 		};
 		D2A1D3CB23FD64AD00D626D6 /* TestFlight */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 44D0BF0D60EF854CEC17561C /* Pods-FlowCryptUIApplication.testflight.xcconfig */;
+			baseConfigurationReference = E16585B4D0D6F175370CC6AE /* Pods-FlowCryptUIApplication.testflight.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3881,7 +3856,7 @@
 				DEVELOPMENT_TEAM = W57XRJ27NX;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUIApplication/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3985,6 +3960,70 @@
 				kind = branch;
 			};
 		};
+		51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/iosdevzone/IDZSwiftCommonCrypto";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.13.0;
+			};
+		};
+		51E13F13270F92F100F287CA /* XCRemoteSwiftPackageReference "BigInt" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/attaswift/BigInt";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.3.0;
+			};
+		};
+		51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jdg/MBProgressHUD";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+		51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/google-api-objectivec-client-for-rest";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
+		51E1674D270F341200D27C52 /* XCRemoteSwiftPackageReference "promises" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/promises";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		51E16753270F356500D27C52 /* XCRemoteSwiftPackageReference "GTMAppAuth" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GTMAppAuth";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-cocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -3992,6 +4031,51 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 510A25FF26FDFEBE00163271 /* XCRemoteSwiftPackageReference "mailcore2" */;
 			productName = MailCore2;
+		};
+		51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */;
+			productName = IDZSwiftCommonCrypto;
+		};
+		51E13F14270F92F200F287CA /* BigInt */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E13F13270F92F100F287CA /* XCRemoteSwiftPackageReference "BigInt" */;
+			productName = BigInt;
+		};
+		51E13F17270F934C00F287CA /* MBProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
+			productName = MBProgressHUD;
+		};
+		51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
+			productName = GoogleAPIClientForREST_Gmail;
+		};
+		51E16748270F303100D27C52 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		51E1674E270F341300D27C52 /* Promises */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E1674D270F341200D27C52 /* XCRemoteSwiftPackageReference "promises" */;
+			productName = Promises;
+		};
+		51E16754270F356500D27C52 /* GTMAppAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E16753270F356500D27C52 /* XCRemoteSwiftPackageReference "GTMAppAuth" */;
+			productName = GTMAppAuth;
+		};
+		51E1675C270F36A400D27C52 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = Realm;
+		};
+		51E1675E270F36A400D27C52 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = RealmSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

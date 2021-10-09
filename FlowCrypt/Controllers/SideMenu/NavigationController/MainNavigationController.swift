@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class MainNavigationController: ASNavigationController {
+final class MainNavigationController: ASDKNavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()

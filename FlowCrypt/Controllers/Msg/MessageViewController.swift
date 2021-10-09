@@ -355,7 +355,8 @@ extension MessageViewController {
             subject: input.objMessage.subject,
             mime: processedMessage.rawMimeData,
             sentDate: input.objMessage.date,
-            message: processedMessage.text
+            message: processedMessage.text,
+            threadId: input.objMessage.threadId
         )
 
         let composeInput = ComposeMessageInput(type: .reply(replyInfo))
