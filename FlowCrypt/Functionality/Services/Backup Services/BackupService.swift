@@ -72,7 +72,8 @@ extension BackupService: BackupServiceType {
                 subject: "Your FlowCrypt Backup",
                 replyToMimeMsg: nil,
                 atts: attachments,
-                pubKeys: nil)
+                pubKeys: nil,
+                signingPrv: nil)
 
             self.core.composeEmail(msg: message, fmt: .plain)
                 .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: nil) })

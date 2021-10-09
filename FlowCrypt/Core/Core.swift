@@ -167,6 +167,7 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
                         "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
                         "format": fmt.rawValue,
                         "pubKeys": msg.pubKeys,
+                        "signingPrv": msg.signingPrv.map { value in ["private": value.`private`, "longid": value.longid, "passphrase": value.passphrase] }
                     ], data: nil)
                     // this call returned no useful json data, only bytes
                     promise(.success(CoreRes.ComposeEmail(mimeEncoded: r.data)))

@@ -48,7 +48,8 @@ final class ComposeMessageService {
     func validateMessage(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        email: String
+        email: String,
+        signingPrv: PrvKeyInfo
     ) -> Result<SendableMsg, ComposeMessageError> {
         let recipients = contextToSend.recipients
         guard recipients.isNotEmpty else {
@@ -106,7 +107,8 @@ final class ComposeMessageService {
                     subject: subject,
                     replyToMimeMsg: replyToMimeMsg,
                     atts: sendableAttachments,
-                    pubKeys: allRecipientPubs + [myPubKey]
+                    pubKeys: allRecipientPubs + [myPubKey],
+                    signingPrv: signingPrv
                 )
             }
     }

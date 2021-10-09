@@ -64,8 +64,13 @@ export class Endpoints {
         const encryptedAtt = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromBase64Str(att.base64), filename: att.name, armor: false }) as OpenPGP.EncryptBinaryResult;
         encryptedAtts.push(new Att({ name: att.name, type: 'application/pgp-encrypted', data: encryptedAtt.message.packets.write() }))
       }
-      const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
-      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted.data }, mimeHeaders, encryptedAtts)));
+      const signingPrv = await readArmoredKeyOrThrow(req.signingPrv.private);
+      if (await PgpKey.decrypt(signingPrv, req.signingPrv.passphrase || '')) {
+        const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv: signingPrv, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
+        return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted.data }, mimeHeaders, encryptedAtts)));
+      } else {
+        throw new Error(`Unknown format: ${req.format}`);
+      }
     } else {
       throw new Error(`Unknown format: ${req.format}`);
     }

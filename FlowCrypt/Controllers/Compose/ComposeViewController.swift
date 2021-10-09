@@ -36,6 +36,7 @@ final class ComposeViewController: TableNodeViewController {
     private let contactsService: ContactsServiceType
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
+    private let keyService: KeyServiceType
 
     private let searchThrottler = Throttler(seconds: 1)
     private let cloudContactProvider: CloudContactsProvider
@@ -59,7 +60,8 @@ final class ComposeViewController: TableNodeViewController {
         contactsService: ContactsServiceType = ContactsService(),
         composeMessageService: ComposeMessageService = ComposeMessageService(),
         filesManager: FilesManagerType = FilesManager(),
-        photosManager: PhotosManagerType = PhotosManager()
+        photosManager: PhotosManagerType = PhotosManager(),
+        keyService: KeyServiceType = KeyService()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
@@ -71,6 +73,7 @@ final class ComposeViewController: TableNodeViewController {
         self.composeMessageService = composeMessageService
         self.filesManager = filesManager
         self.photosManager = photosManager
+        self.keyService = keyService
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -194,14 +197,35 @@ extension ComposeViewController {
     }
 
     @objc private func handleSendTap() {
-        sendMessage()
+        prepareSigningKey()
     }
 }
 
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    private func sendMessage() {
+    private func prepareSigningKey() {
+        guard let key = try? keyService.getPrvKeyInfo().get().first else {
+            showAlert(message: "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key.")
+            return
+        }
+
+        guard key.passphrase != nil else {
+            let alert = AlertsFactory.makePassPhraseAlert(
+                onCancel: { [weak self] in
+                    self?.showAlert(message: "Passphrase is required for message signing")
+                },
+                onCompletion: { [weak self] passPhrase in
+                    self?.sendMessage(key.copy(with: passPhrase))
+                })
+            present(alert, animated: true, completion: nil)
+            return
+        }
+
+        sendMessage(key)
+    }
+
+    private func sendMessage(_ signingKey: PrvKeyInfo) {
         view.endEditing(true)
         showSpinner("sending_title".localized)
         navigationItem.rightBarButtonItem?.isEnabled = false
@@ -209,7 +233,8 @@ extension ComposeViewController {
         composeMessageService.validateMessage(
             input: input,
             contextToSend: contextToSend,
-            email: email
+            email: email,
+            signingPrv: signingKey
         )
         .publisher
         .flatMap(encryptAndSend)
