@@ -37,7 +37,7 @@ final class ComposeViewController: TableNodeViewController {
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
 
-    private let searchThrottler = Throttler(seconds: 1)
+    private let search = PassthroughSubject<String, Never>()
     private let cloudContactProvider: CloudContactsProvider
     private let userDefaults: UserDefaults
 
@@ -98,6 +98,7 @@ final class ComposeViewController: TableNodeViewController {
         super.viewDidAppear(animated)
         showScopeAlertIfNeeded()
         cancellable.forEach { $0.cancel() }
+        setupSearch()
     }
 
     deinit {
@@ -142,6 +143,24 @@ extension ComposeViewController {
         let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
         contextToSend.recipients.append(recipient)
         evaluate(recipient: recipient)
+    }
+}
+
+// MARK: - Search
+extension ComposeViewController {
+    private func setupSearch() {
+        search
+            .debounce(for: .milliseconds(400), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .compactMap { [weak self] in
+                guard $0.isNotEmpty else {
+                    self?.updateState(with: .main)
+                    return nil
+                }
+                return $0
+            }
+            .sink { [weak self] in self?.searchEmail(with: $0) }
+            .store(in: &cancellable)
     }
 }
 
@@ -534,13 +553,12 @@ extension ComposeViewController {
 
     private func handleEditingChanged(with text: String?) {
         guard let text = text, text.isNotEmpty else {
+            search.send("")
             updateState(with: .main)
             return
         }
 
-        searchThrottler.throttle { [weak self] in
-            self?.searchEmail(with: text)
-        }
+        search.send(text)
     }
 
     private func handleDidBeginEditing() {
@@ -664,7 +682,13 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
-        node.reloadSections([0, 1], with: .fade)
+
+        switch state {
+        case .main:
+            node.reloadSections([0, 1], with: .fade)
+        case .searchEmails:
+            node.reloadSections([1], with: .fade)
+        }
     }
 }
 
