@@ -16,13 +16,11 @@ protocol ClientConfigurationProviderType {
     func save(clientConfiguration: ClientConfiguration)
 }
 
-struct ClientConfigurationProvider: CacheServiceType {
-    let storage: CacheStorage
+struct ClientConfigurationProvider {
     let clientConfigurationCache: CacheService<ClientConfigurationObject>
 
-    init(storage: @escaping @autoclosure CacheStorage = DataService.shared.storage) {
-        self.storage = storage
-        self.clientConfigurationCache = CacheService(storage: storage())
+    init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
+        self.clientConfigurationCache = CacheService(encryptedStorage: encryptedStorage)
     }
 }
 
@@ -36,6 +34,10 @@ extension ClientConfigurationProvider: ClientConfigurationProviderType {
     }
 
     func save(clientConfiguration: ClientConfiguration) {
-        clientConfigurationCache.save(ClientConfigurationObject(clientConfiguration, user: EncryptedStorage().activeUser))
+        guard let user = clientConfigurationCache.encryptedStorage.activeUser else {
+            assertionFailure("Internal inconsistency. Missed client configuration")
+            return
+        }
+        clientConfigurationCache.save(ClientConfigurationObject(clientConfiguration, user: user))
     }
 }

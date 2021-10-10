@@ -35,7 +35,7 @@ extension ComposeMessageAttachment {
             guard let url = librarySourceMediaInfo[urlKey] as? URL else { return nil }
             let data = try Data(contentsOf: url)
 
-            self.name = "\(url.lastPathComponent).pgp"
+            self.name = url.lastPathComponent
             self.data = data
             self.size = data.count
             self.type = url.lastPathComponent.mimeType
@@ -50,7 +50,7 @@ extension ComposeMessageAttachment {
             return nil
         }
 
-        self.name = "\(UUID().uuidString).jpg.pgp"
+        self.name = "\(UUID().uuidString).jpg"
         self.data = data
         self.size = data.count
         self.type = "image/jpg"
@@ -61,7 +61,7 @@ extension ComposeMessageAttachment {
             return nil
         }
 
-        self.name = "\(fileURL.lastPathComponent).pgp"
+        self.name = fileURL.lastPathComponent
         self.data = data
         self.size = data.count
         self.type = fileURL.mimeType

@@ -32,7 +32,7 @@ struct ContactsService: ContactsServiceType {
     let pubLookup: PubLookupType
 
     init(
-        localContactsProvider: LocalContactsProviderType = LocalContactsProvider(storage: DataService.shared.storage),
+        localContactsProvider: LocalContactsProviderType = LocalContactsProvider(),
         pubLookup: PubLookupType = PubLookup()
     ) {
         self.localContactsProvider = localContactsProvider

@@ -22,8 +22,13 @@ enum SessionCredentialsError: Error {
 struct SessionCredentialsService: SessionCredentialsProvider {
 
     let manager = MCOMailProvidersManager.shared()
+        .then {
+            let customProviders = Bundle.main.path(forResource: "providers_custom", ofType: "json")!
+            $0.registerProviders(withFilename: customProviders)
+        }
 
     func getImapCredentials(for email: String) -> MailSettingsCredentials? {
+
         let providers = manager.provider(forEmail: email)
 
         guard let services = providers?.imapServices() else { return nil }

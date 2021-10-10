@@ -64,7 +64,7 @@ struct ComposeViewDecorator {
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         )
     }
-    
+
     func styledMessage(with text: String) -> NSAttributedString {
         text.attributed(.regular(17))
     }
@@ -210,9 +210,9 @@ extension AttachmentNode.Input {
     init(composeAttachment: ComposeMessageAttachment) {
         self.init(
             name: composeAttachment.name
-                .attributed(.regular(18), color: .textColor, alignment: .left),
+                .attributed(.regular(18), color: .mainTextColor, alignment: .left),
             size: "\(composeAttachment.size)"
-                .attributed(.medium(12), color: .textColor, alignment: .left)
+                .attributed(.medium(12), color: .mainTextColor, alignment: .left)
         )
     }
 }

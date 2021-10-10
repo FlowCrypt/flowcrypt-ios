@@ -8,7 +8,7 @@
 
 import FlowCryptCommon
 import Foundation
-import GoogleAPIClientForREST
+import GoogleAPIClientForREST_Gmail
 
 struct Message: Hashable {
     let identifier: Identifier
@@ -17,6 +17,7 @@ struct Message: Hashable {
     let subject: String?
     let size: Int?
     let attachmentIds: [String]
+    let threadId: String?
     private(set) var labels: [MessageLabel]
 
     var isMessageRead: Bool {
@@ -39,7 +40,8 @@ struct Message: Hashable {
         subject: String?,
         size: Int?,
         labels: [MessageLabel],
-        attachmentIds: [String]
+        attachmentIds: [String],
+        threadId: String? = nil
     ) {
         self.identifier = identifier
         self.date = date
@@ -48,6 +50,7 @@ struct Message: Hashable {
         self.size = size
         self.labels = labels
         self.attachmentIds = attachmentIds
+        self.threadId = threadId
     }
 }
 

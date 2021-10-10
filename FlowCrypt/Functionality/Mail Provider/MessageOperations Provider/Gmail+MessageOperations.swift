@@ -7,8 +7,7 @@
 //
 
 import Foundation
-import GoogleAPIClientForREST
-import GTMSessionFetcher
+import GoogleAPIClientForREST_Gmail
 import Promises
 
 extension GmailService: MessageOperationsProvider {

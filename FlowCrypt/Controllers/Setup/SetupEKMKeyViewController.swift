@@ -45,6 +45,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
         self.keys = keys
         super.init(
             user: user,
+            fetchedKeysCount: keys.count,
             core: core,
             router: router,
             decorator: decorator,
@@ -52,7 +53,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
             keyStorage: keyStorage,
             passPhraseService: passPhraseService
         )
-        self.shouldStorePassPhrase = false
+        self.storageMethod = .memory
     }
 
     override func viewDidLoad() {
@@ -62,6 +63,11 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
 
     override func setupAccount(with passphrase: String) {
         setupAccountWithKeysFetchedFromEkm(with: passphrase)
+    }
+
+    override func setupUI() {
+        super.setupUI()
+        title = decorator.sceneTitle(for: .choosePassPhrase)
     }
 }
 
@@ -88,16 +94,16 @@ extension SetupEKMKeyViewController {
                     )
                     let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
                     self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails,
-                                            passPhrase: self.shouldStorePassPhrase ? passPhrase : nil,
+                                            passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
                                             source: .ekm,
                                             for: self.user.email)
                     allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
                 }
             }
 
-            if !self.shouldStorePassPhrase {
+            if self.storageMethod == .memory {
                 let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
-                self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
+                self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
             }
         }
         .then(on: .main) { [weak self] in
@@ -119,6 +125,6 @@ extension SetupEKMKeyViewController {
 
 extension SetupCreatePassphraseAbstractViewController.Parts {
     static var ekmKeysSetup: [SetupCreatePassphraseAbstractViewController.Parts] {
-        return [.title, .description, .passPhrase, .divider, .action, .optionalAction, .subtitle]
+        return [.title, .description, .passPhrase, .divider, .action, .optionalAction, .fetchedKeys]
     }
 }
