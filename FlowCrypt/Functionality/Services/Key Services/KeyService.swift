@@ -10,11 +10,11 @@ import Foundation
 
 protocol KeyServiceType {
     func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError>
-    func getPrvKeyInfo(with passPhrase: String?) -> Result<[PrvKeyInfo], KeyServiceError>
+    func getPrvKeyInfo() -> Result<[PrvKeyInfo], KeyServiceError>
 }
 
 enum KeyServiceError: Error {
-    case unexpected, parsingError, retrieve, missedPassPhrase
+    case unexpected, parsingError, retrieve
 }
 
 final class KeyService: KeyServiceType {
@@ -57,8 +57,8 @@ final class KeyService: KeyServiceType {
         return .success(keyDetails)
     }
 
-    /// Use to get list of PrvKeyInfo with pass phrase
-    func getPrvKeyInfo(with passPhrase: String? = nil) -> Result<[PrvKeyInfo], KeyServiceError> {
+    /// Use to get list of PrvKeyInfo
+    func getPrvKeyInfo() -> Result<[PrvKeyInfo], KeyServiceError> {
         guard let email = currentUserEmail() else {
             return .failure(.retrieve)
         }
@@ -68,50 +68,15 @@ final class KeyService: KeyServiceType {
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
 
-        if passPhrase == nil, storedPassPhrases.isEmpty {
-            // in case there are no pass phrases in storage/memory
-            // and user did not enter a pass phrase yet
-            return .failure(.missedPassPhrase)
-        }
+        let privateKeys = keysInfo
+            .map { keyInfo -> PrvKeyInfo in
+                let passphrase = storedPassPhrases
+                    .filter { $0.value.isNotEmpty }
+                    .first(where: { $0.primaryFingerprint == keyInfo.primaryFingerprint })?
+                    .value
 
-        guard keysInfo.isNotEmpty else {
-            return .success([])
-        }
-
-        // get all private keys with already saved pass phrases
-        var privateKeys = keysInfo
-            .compactMap { keyInfo -> PrvKeyInfo? in
-                guard let passPhrase = storedPassPhrases.first(where: { $0.primaryFingerprint == keyInfo.primaryFingerprint }) else {
-                    return nil
-                }
-
-                let passPhraseValue = passPhrase.value
-
-                guard passPhraseValue.isNotEmpty else {
-                    return nil
-                }
-
-                return PrvKeyInfo(
-                    private: keyInfo.private,
-                    longid: keyInfo.primaryLongid,
-                    passphrase: passPhraseValue,
-                    fingerprints: Array(keyInfo.allFingerprints)
-                )
+                return PrvKeyInfo(keyInfo: keyInfo, passphrase: passphrase)
             }
-
-        // append keys to ensure with a pass phrase
-        if let passPhrase = passPhrase {
-            let keysToEnsure = keysInfo.map {
-                PrvKeyInfo(
-                    private: $0.private,
-                    longid: $0.primaryLongid,
-                    passphrase: passPhrase,
-                    fingerprints: Array($0.allFingerprints)
-                )
-            }
-
-            privateKeys.append(contentsOf: keysToEnsure)
-        }
 
         return .success(privateKeys)
     }

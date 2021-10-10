@@ -34,7 +34,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
 
     private var passPhrase: String?
 
-    var shouldStorePassPhrase = true {
+    var storageMethod: StorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -144,17 +144,22 @@ extension SetupBackupsViewController {
             return
         }
 
-        // save pass phrase
-        matchingKeyBackups
-            .map {
-                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
-            }
-            .forEach {
-                passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
-            }
+        if storageMethod == .memory {
+            // save pass phrase
+            matchingKeyBackups
+                .map {
+                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                }
+                .forEach {
+                    passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
+                }
+        }
 
         // save keys
-        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups), source: .backup, for: user.email)
+        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups),
+                           passPhrase: storageMethod == .persistent ? passPhrase : nil,
+                           source: .backup,
+                           for: user.email)
 
         moveToMainFlow()
     }
@@ -256,9 +261,9 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
 
         switch part {
         case .saveLocally:
-            shouldStorePassPhrase = true
+            storageMethod = .persistent
         case .saveInMemory:
-            shouldStorePassPhrase = false
+            storageMethod = .memory
         default:
             break
         }

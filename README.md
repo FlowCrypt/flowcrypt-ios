@@ -23,6 +23,8 @@ bundle exec pod install
 
 ### Run UI Tests
 
+To run UI tests, you will need a FlowCryptUITests/test-ci-secrets.json file. For this, please reach out to tom@flowcrypt.com to get an NDA signed, and the file will be shared with you. On SemaphoreCI the file is loaded as a secret. If you need to update this file on CI, communicate with Tom to get help. After the update, please email it encrypted to other iOS team members.
+
 Follow steps in installation above, and then:
  - from terminal: 
     - `make ui_tests` - for all ui tests
@@ -48,6 +50,7 @@ IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
 ### Admin - generating .ipa for penetration tester
 
 1) get uuid of their device and input it into https://developer.apple.com/account/ -> Devices
-2) Xcode -> Product -> Archive
-3) Distribute app -> Add Hoc -> Next -> Next (automatically manage signing)
-4) This creates a folder at the target where you export it to, and the IPA will be there
+2) choose the right build (eg `FlowCrypt Enterprise`) and choose `Any iOS Device (arm64)`
+3) Xcode -> Product -> Archive
+4) Distribute app -> Add Hoc -> Next -> Next (automatically manage signing)
+5) This creates a folder at the target where you export it to, and the IPA will be there

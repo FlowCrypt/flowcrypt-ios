@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Fetched %@ key(s) on EKM</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@keys@</string>
+        <key>keys</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>zero</key>
+            <string>No EKM keys fetched</string>
+            <key>one</key>
+            <string>Fetched %d key on EKM</string>
+            <key>other</key>
+            <string>Fetched %d keys on EKM</string>
+        </dict>
+    </dict>
+</dict>
+</plist>

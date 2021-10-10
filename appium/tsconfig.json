@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./.tsbuild/",
+    "target": "es2016",
+    "module": "commonjs",
+    "types": ["node", "@wdio/sync", "@wdio/jasmine-framework"],
+    "esModuleInterop": true
+  },
+  "include": [
+    "./tests/**/*.ts"
+  ]
+}

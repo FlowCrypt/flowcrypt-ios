@@ -18,58 +18,63 @@ protocol LocalContactsProviderType: PublicKeyProvider {
     func getAllContacts() -> [Contact]
 }
 
-struct LocalContactsProvider: CacheServiceType {
-    let storage: CacheStorage
-    let localCache: CacheService<ContactObject>
+struct LocalContactsProvider {
+    private let localContactsCache: CacheService<ContactObject>
+    let core: Core
 
-    init(storage: @escaping @autoclosure CacheStorage) {
-        self.storage = storage
-        self.localCache = CacheService(storage: storage())
+    init(
+        encryptedStorage: EncryptedStorageType = EncryptedStorage(),
+        core: Core = .shared
+    ) {
+        self.localContactsCache = CacheService<ContactObject>(encryptedStorage: encryptedStorage)
+        self.core = core
     }
 }
 
 extension LocalContactsProvider: LocalContactsProviderType {
     func updateLastUsedDate(for email: String) {
-        let realm = storage()
-        let contact = realm
+        let contact = localContactsCache.realm
             .objects(ContactObject.self)
             .first(where: { $0.email == email })
 
-        try? realm.write {
+        try? localContactsCache.realm.write {
             contact?.lastUsed = Date()
         }
     }
 
     func retrievePubKey(for email: String) -> String? {
-        storage()
+        localContactsCache.encryptedStorage.storage
             .objects(ContactObject.self)
             .first(where: { $0.email == email })?
             .pubKey
     }
 
     func save(contact: Contact) {
-        localCache.save(ContactObject(contact))
+        localContactsCache.save(ContactObject(contact))
     }
 
     func remove(contact: Contact) {
-        localCache.remove(
+        localContactsCache.remove(
             object: ContactObject(contact),
             with: contact.email
         )
     }
 
     func searchContact(with email: String) -> Contact? {
-        storage()
+        localContactsCache.realm
             .objects(ContactObject.self)
             .first(where: { $0.email == email })
-            .map(Contact.init)
+            .map { Contact($0) }
     }
 
     func getAllContacts() -> [Contact] {
         Array(
-            storage()
+            localContactsCache.realm
                 .objects(ContactObject.self)
-                .map(Contact.init)
+                .map {
+                    let keyDetail = try? core.parseKeys(armoredOrBinary: $0.pubKey.data()).keyDetails.first
+                    return Contact($0, keyDetail: keyDetail)
+                }
                 .sorted(by: { $0.email > $1.email })
         )
     }

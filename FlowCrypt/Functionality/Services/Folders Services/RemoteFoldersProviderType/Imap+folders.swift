@@ -12,7 +12,7 @@ import Promises
 
 // MARK: - RemoteFoldersProviderType
 extension Imap: RemoteFoldersProviderType {
-    func fetchFolders() -> Promise<[FolderObject]> {
+    func fetchFolders() -> Promise<[Folder]> {
         Promise { [weak self] resolve, reject in
             self?.imapSess?
                 .fetchAllFoldersOperation()
@@ -25,30 +25,21 @@ extension Imap: RemoteFoldersProviderType {
                         reject(ImapError.providerError(error))
                         return
                     }
-                    guard let folders = value as? [MCOIMAPFolder] else {
-                        return reject(AppErr.cast("[MCOIMAPFolder]"))
-                    }
 
-                    // TODO: - Ticket - rework usage of EncryptedStorage().activeUser
-                    let folderObjects = folders.compactMap { FolderObject(with: $0, user: EncryptedStorage().activeUser) }
-                    resolve(folderObjects)
+                    let folders = value?.map(Folder.init) ?? []
+                    resolve(folders)
             }
         }
     }
 }
 
 // MARK: - Convenience
-private extension FolderObject {
-    convenience init?(with folder: MCOIMAPFolder, user: UserObject?) {
-        guard let user = user else {
-            Logger.logError("Can't initialise FolderObject without user")
-            return nil
-        }
+private extension Folder {
+    init(with folder: MCOIMAPFolder) {
         self.init(
             name: folder.name ?? folder.path,
             path: folder.path,
-            image: nil,
-            user: user
+            image: nil
         )
     }
 }

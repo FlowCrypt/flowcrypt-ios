@@ -83,7 +83,6 @@
 "setup_description" = "OpenPGP email encryption";
 "setup_enter" = "Enter your pass phrase";
 "setup_load" = "Load Account";
-"setup_create_key" = "Create Key";
 "setup_use_another" = "Use Another Account";
 "setup_no_backups" = "No backups found on account: \n";
 "setup_action_failed" = "Action failed";
@@ -94,10 +93,10 @@
 "setup_enter_pass_phrase" = "Enter pass phrase";
 "setup_wrong_pass_phrase_retry" = "Wrong pass phrase, please try again";
 "setup_backup_email" = "This email contains a key backup. It will help you access your encrypted messages from other computers (along with your pass phrase). You can safely leave it in your inbox or archive it.\n\nThe key below is protected with pass phrase that only you know. You should make sure to note your pass phrase down.\n\nDO NOT DELETE THIS EMAIL. Write us at human@flowcrypt.com so that we can help.";
-"setup_create_key" = "Create";
 "setup_initial_create_key" = "Create a new key";
 "setup_initial_import_key" = "Import my key";
 "setup_create_key_title" = "Create key";
+"setup_choose_pass_title" = "Choose pass phrase";
 "setup_save_pass_locally" = "Save pass phrase";
 "setup_save_pass_temporarily" = "Remember pass phrase temporarily";
 "setup_enter_pass_phrase" = "Please enter pass phrase";
@@ -214,6 +213,7 @@
 "organisational_rules_ekm_private_keys_message" = "Ignoring %d keys returned by EKM %@ (not implemented)";
 "organisational_rules_ekm_empty_private_keys_error" = "There are no private keys configured for you. Please ask yout systems administrator or help desk";
 "organisational_rules_ekm_keys_are_not_decrypted_error" = "Received private keys are not fully decrypted. Please try login flow again";
+"organisational_wrong_email_error" = "Not a valid email %@";
 
 // Email key manager api error
 "emai_keymanager_api_no_google_id_token_error_description" = "There is no Google ID token were found while getting client configuration";

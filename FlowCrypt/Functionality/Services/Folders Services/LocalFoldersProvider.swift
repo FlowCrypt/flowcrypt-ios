@@ -12,14 +12,14 @@ import RealmSwift
 protocol LocalFoldersProviderType {
     func fetchFolders() -> [FolderViewModel]
     func removeFolders()
-    func save(folders: [FolderObject])
+    func save(folders: [Folder])
 }
 
 struct LocalFoldersProvider: LocalFoldersProviderType {
     private let folderCache: CacheService<FolderObject>
 
-    init(storage: @escaping @autoclosure CacheStorage) {
-        self.folderCache = CacheService(storage: storage())
+    init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
+        self.folderCache = CacheService(encryptedStorage: encryptedStorage)
     }
 
     func fetchFolders() -> [FolderViewModel] {
@@ -28,11 +28,27 @@ struct LocalFoldersProvider: LocalFoldersProviderType {
             ?? []
     }
 
-    func save(folders: [FolderObject]) {
-        folders.forEach(folderCache.save)
+    func save(folders: [Folder]) {
+        guard let currentUser = folderCache.encryptedStorage.activeUser else {
+            return
+        }
+
+        folders.map { FolderObject(folder: $0, currentUser: currentUser) }
+            .forEach(folderCache.save)
     }
 
     func removeFolders() {
         folderCache.removeAllForActiveUser()
+    }
+}
+
+private extension FolderObject {
+    convenience init(folder: Folder, currentUser: UserObject) {
+        self.init(
+            name: folder.name,
+            path: folder.path,
+            image: folder.image,
+            user: currentUser
+        )
     }
 }

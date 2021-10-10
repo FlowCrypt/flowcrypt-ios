@@ -34,7 +34,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
 
     private var passPhrase: String?
 
-    var shouldStorePassPhrase = true {
+    var storageMethod: StorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -197,9 +197,9 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
 
         switch part {
         case .saveLocally:
-            shouldStorePassPhrase = true
+            storageMethod = .persistent
         case .saveInMemory:
-            shouldStorePassPhrase = false
+            storageMethod = .memory
         default:
             break
         }
@@ -241,24 +241,26 @@ extension SetupManuallyEnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        keysStorage.addKeys(keyDetails: newKeysToAdd, source: .imported, for: email)
-        keysStorage.updateKeys(keyDetails: keysToUpdate, source: .imported, for: email)
+        keysStorage.addKeys(keyDetails: newKeysToAdd, passPhrase: passPhrase, source: .imported, for: email)
+        keysStorage.updateKeys(keyDetails: keysToUpdate, passPhrase: passPhrase, source: .imported, for: email)
 
-        keysToUpdate
-            .map {
-                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
-            }
-            .forEach {
-                passPhraseService.updatePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
-            }
+        if storageMethod == .memory {
+            keysToUpdate
+                .map {
+                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                }
+                .forEach {
+                    passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
+                }
 
-        newKeysToAdd
-            .map {
-                PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
-            }
-            .forEach {
-                passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
-            }
+            newKeysToAdd
+                .map {
+                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                }
+                .forEach {
+                    passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
+                }
+        }
 
         hideSpinner()
 

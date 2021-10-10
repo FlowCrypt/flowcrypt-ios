@@ -7,8 +7,7 @@
 //
 
 import FlowCryptCommon
-import GoogleAPIClientForREST
-import GTMSessionFetcher
+import GoogleAPIClientForREST_Gmail
 import Promises
 
 extension GmailService: MessagesListProvider {
@@ -141,7 +140,8 @@ private extension Message {
             subject: subject,
             size: message.sizeEstimate.flatMap(Int.init),
             labels: labels,
-            attachmentIds: attachmentsIds
+            attachmentIds: attachmentsIds,
+            threadId: message.threadId
         )
     }
 }

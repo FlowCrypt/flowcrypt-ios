@@ -87,10 +87,15 @@ extension SetupGenerateKeyViewController {
 
             try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
 
-            let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
+            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key],
+                                    passPhrase: self.storageMethod == .persistent ? passPhrase: nil,
+                                    source: .generated,
+                                    for: self.user.email)
 
-            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key], source: .generated, for: self.user.email)
-            self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: self.shouldStorePassPhrase)
+            if self.storageMethod == .memory {
+                let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
+                self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
+            }
 
             let updateKey = self.attester.updateKey(
                 email: userId.email,

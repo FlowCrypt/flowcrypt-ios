@@ -212,7 +212,7 @@ extension ComposeViewController {
             email: email
         )
         .publisher
-        .flatMap(composeMessageService.encryptAndSend)
+        .flatMap(encryptAndSend)
         .receive(on: DispatchQueue.main)
         .sinkFuture(
             receiveValue: { [weak self] in
@@ -222,6 +222,10 @@ extension ComposeViewController {
                 self?.handle(error: error)
             })
         .store(in: &cancellable)
+    }
+
+    private func encryptAndSend(_ message: SendableMsg) -> AnyPublisher<Void, ComposeMessageError> {
+        composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
     }
 
     private func handle(error: ComposeMessageError) {
@@ -269,10 +273,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        let nodeHeight = tableNode.frame.size.height
-            - (navigationController?.navigationBar.frame.size.height ?? 0.0)
-            - safeAreaWindowInsets.top
-            - safeAreaWindowInsets.bottom
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
 
@@ -406,7 +406,11 @@ extension ComposeViewController {
         AttachmentNode(
             input: .init(
                 composeAttachment: contextToSend.attachments[index]
-            )
+            ),
+            onDeleteTap: { [weak self] in
+                self?.contextToSend.attachments.safeRemove(at: index)
+                self?.node.reloadSections(IndexSet(integer: 2), with: .automatic)
+            }
         )
     }
 }
@@ -689,15 +693,15 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
     ) {
         picker.dismiss(animated: true, completion: nil)
 
-        let attachment: ComposeMessageAttachment?
+        let composeMessageAttachment: ComposeMessageAttachment?
         switch picker.sourceType {
         case .camera:
-            attachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
+            composeMessageAttachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
         case .photoLibrary:
-            attachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
+            composeMessageAttachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
-        guard let attachment = attachment else {
+        guard let attachment = composeMessageAttachment else {
             showAlert(message: "files_picking_photos_error_message".localized)
             return
         }

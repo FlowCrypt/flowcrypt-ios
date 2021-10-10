@@ -9,6 +9,11 @@
 import Combine
 import Foundation
 
+struct MessageGatewayInput {
+    let mime: Data
+    let threadId: String?
+}
+
 protocol MessageGateway {
-    func sendMail(mime: Data) -> Future<Void, Error>
+    func sendMail(input: MessageGatewayInput) -> Future<Void, Error>
 }

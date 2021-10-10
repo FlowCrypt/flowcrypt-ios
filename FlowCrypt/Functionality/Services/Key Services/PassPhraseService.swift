@@ -38,6 +38,15 @@ struct PassPhrase: Codable, Hashable, Equatable {
     }
 }
 
+extension PassPhrase {
+    init?(keyInfo: KeyInfo) {
+        guard let passphrase = keyInfo.passphrase else { return nil }
+
+        self.init(value: passphrase,
+                  fingerprints: Array(keyInfo.allFingerprints))
+    }
+}
+
 // MARK: - Pass Phrase Storage
 protocol PassPhraseStorageType {
     func save(passPhrase: PassPhrase)
@@ -50,8 +59,8 @@ protocol PassPhraseStorageType {
 // MARK: - PassPhraseService
 protocol PassPhraseServiceType {
     func getPassPhrases() -> [PassPhrase]
-    func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool)
-    func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool)
+    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod)
+    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod)
 }
 
 final class PassPhraseService: PassPhraseServiceType {
@@ -71,11 +80,12 @@ final class PassPhraseService: PassPhraseServiceType {
         self.currentUserEmail = emailProvider.email
     }
 
-    func savePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
-        if inStorage {
+    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {
+        switch storageMethod {
+        case .persistent:
             logger.logInfo("Save passphrase to storage")
             encryptedStorage.save(passPhrase: passPhrase)
-        } else {
+        case .memory:
             logger.logInfo("Save passphrase in memory")
 
             inMemoryStorage.save(passPhrase: passPhrase)
@@ -88,10 +98,11 @@ final class PassPhraseService: PassPhraseServiceType {
         }
     }
 
-    func updatePassPhrase(with passPhrase: PassPhrase, inStorage: Bool) {
-        if inStorage {
+    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {
+        switch storageMethod {
+        case .persistent:
             encryptedStorage.update(passPhrase: passPhrase)
-        } else {
+        case .memory:
             inMemoryStorage.save(passPhrase: passPhrase)
         }
     }

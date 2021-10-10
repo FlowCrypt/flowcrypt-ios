@@ -18,21 +18,30 @@ struct ComposeMessageAttachment {
 
 extension ComposeMessageAttachment {
     init?(librarySourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
-        guard let image = librarySourceMediaInfo[.originalImage] as? UIImage,
-              let data = image.jpegData(compressionQuality: 1),
-              let asset = librarySourceMediaInfo[.phAsset] as? PHAsset else {
-            return nil
-        }
-        let assetResources = PHAssetResource.assetResources(for: asset)
-
-        guard let fileName = assetResources.first?.originalFilename else {
-            return nil
+        guard let mediaType = librarySourceMediaInfo[.mediaType] as? String else {
+             return nil
         }
 
-        self.name = "\(fileName).pgp"
-        self.data = data
-        self.size = data.count
-        self.type = fileName.mimeType
+        let urlKey: UIImagePickerController.InfoKey
+        switch mediaType {
+        case PhotosManager.MediaType.image:
+            urlKey = .imageURL
+        case PhotosManager.MediaType.video:
+            urlKey = .mediaURL
+        default: return nil
+        }
+
+        do {
+            guard let url = librarySourceMediaInfo[urlKey] as? URL else { return nil }
+            let data = try Data(contentsOf: url)
+
+            self.name = url.lastPathComponent
+            self.data = data
+            self.size = data.count
+            self.type = url.lastPathComponent.mimeType
+        } catch {
+            return nil
+        }
     }
 
     init?(cameraSourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
@@ -41,7 +50,7 @@ extension ComposeMessageAttachment {
             return nil
         }
 
-        self.name = "\(UUID().uuidString).jpg.pgp"
+        self.name = "\(UUID().uuidString).jpg"
         self.data = data
         self.size = data.count
         self.type = "image/jpg"
@@ -52,7 +61,7 @@ extension ComposeMessageAttachment {
             return nil
         }
 
-        self.name = "\(fileURL.lastPathComponent).pgp"
+        self.name = fileURL.lastPathComponent
         self.data = data
         self.size = data.count
         self.type = fileURL.mimeType

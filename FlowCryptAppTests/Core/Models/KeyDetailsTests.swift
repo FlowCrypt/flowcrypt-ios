@@ -21,6 +21,8 @@ class KeyDetailsTests: XCTestCase {
                 KeyId(longid: "1", fingerprint: "1")
             ],
             created: 123,
+            lastModified: 1,
+            expiration: 2,
             users: [],
             algo: nil
         )
@@ -34,6 +36,8 @@ class KeyDetailsTests: XCTestCase {
                 KeyId(longid: "1", fingerprint: "1")
             ],
             created: 123,
+            lastModified: 1,
+            expiration: 2,
             users: [],
             algo: nil
         )

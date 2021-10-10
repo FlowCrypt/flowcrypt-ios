@@ -7,12 +7,15 @@
 //
 
 import Foundation
-import GoogleAPIClientForREST
-import GTMSessionFetcher
+import GoogleAPIClientForREST_Gmail
 import Promises
 
 extension GmailService: RemoteFoldersProviderType {
-    func fetchFolders() -> Promise<[FolderObject]> {
+    enum Constants {
+        static let allMailFolder = Folder(name: "All Mail", path: "", image: nil)
+    }
+
+    func fetchFolders() -> Promise<[Folder]> {
         Promise { resolve, reject in
             let query = GTLRGmailQuery_UsersLabelsList.query(withUserId: .me)
 
@@ -43,42 +46,31 @@ extension GmailService: RemoteFoldersProviderType {
                         }
                         return label
                     }
-                    .compactMap {
-                        FolderObject(with: $0, user: self.activeUser)
-                    }
+                    .compactMap(Folder.init)
 
-                resolve(folders + [self.allMailFolder])
+                resolve(folders + [Constants.allMailFolder])
             }
         }
-    }
-
-    private var activeUser: UserObject? {
-        EncryptedStorage().activeUser
-    }
-
-    private var allMailFolder: FolderObject {
-        FolderObject(name: "All Mail", path: "", image: nil, user: activeUser)
     }
 }
 
 // MARK: - Convenience
-private extension FolderObject {
-    convenience init?(with folder: GTLRGmail_Label, user: UserObject?) {
-        guard let name = folder.name else { return nil }
-        guard let identifier = folder.identifier else {
-            assertionFailure("Gmail folder \(folder) doesn't have identifier")
+private extension Folder {
+    init?(with gmailFolder: GTLRGmail_Label) {
+        guard let name = gmailFolder.name else { return nil }
+        guard let path = gmailFolder.identifier else {
+            assertionFailure("Gmail folder \(gmailFolder) doesn't have identifier")
             return nil
         }
         // folder.identifier is missed for hidden GTLRGmail_Labels
-        if identifier.isEmpty {
+        if path.isEmpty {
             return nil
         }
 
         self.init(
             name: name,
-            path: identifier,
-            image: nil,
-            user: user
+            path: path,
+            image: nil
         )
     }
 }

@@ -7,8 +7,8 @@
 //
 
 import FlowCryptCommon
-import Foundation
 import Promises
+import UIKit
 
 private let logger = Logger.nested("AppStart")
 

@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 import Promises
+import UIKit
 @testable import FlowCrypt
 
 final class BackupServiceMock: BackupServiceType {
