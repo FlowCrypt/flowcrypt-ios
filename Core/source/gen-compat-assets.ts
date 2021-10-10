@@ -87,12 +87,12 @@ Content-Type: text/plain; charset="UTF-8"
 ${text.toString()}
 `.replace(/^\n/, ''));
 
-// TODO: maybe modify "Openpgp"
+// Used to generate encrypted+signed and plaintext signed emails
 const mimeEmail2 = (t: AvaContext, text: Buffer | string) => Buffer.from(`
 Delivered-To: flowcrypt.compatibility@gmail.com
 Return-Path: <flowcrypt.compatibility@gmail.com>
-Openpgp: id=6D24791A5B106262B06217C606CA553EC2455D70
-From: cryptup.tester@gmail.com
+Openpgp: id=E76853E128A0D376CAE47C143A30F4CC0A9A8F10
+From: flowcrypt.compatibility@gmail.com
 MIME-Version: 1.0
 Date: Thu, 2 Nov 2017 17:54:14 -0700
 Message-ID: <CANzaQHU9A@mail.gmail.com>
@@ -202,6 +202,7 @@ ava.default('mime-email-plain-html.txt', async t => {
 ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
   const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
+  console.log("rsa1 key fingerprint:" + signingPrv.getFingerprint().toUpperCase());
   if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
   const { data } = await PgpMsg.encrypt({ data: text, signingPrv: signingPrv,  pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
   await write(t, mimeEmail2(t, data));
