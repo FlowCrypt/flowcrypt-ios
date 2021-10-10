@@ -32,14 +32,14 @@ final class MessageViewController: TableNodeViewController {
     }
 
     enum MessageAction {
-        case moveToTrash, archive, markAsRead, markAsUnread, permanentlyDelete
+        case moveToTrash, archive, changeReadFlag, permanentlyDelete
 
         var text: String? {
             switch self {
             case .moveToTrash: return "email_removed".localized
             case .archive: return "email_archived".localized
             case .permanentlyDelete: return "email_deleted".localized
-            case .markAsRead, .markAsUnread: return nil
+            case .changeReadFlag: return nil
             }
         }
 
@@ -48,7 +48,7 @@ final class MessageViewController: TableNodeViewController {
             case .moveToTrash: return "error_move_trash".localized
             case .archive: return "error_archive".localized
             case .permanentlyDelete: return "error_permanently_delete".localized
-            case .markAsRead, .markAsUnread: return nil
+            case .changeReadFlag: return nil
             }
         }
     }
@@ -117,7 +117,7 @@ final class MessageViewController: TableNodeViewController {
         let helpButton = NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap)))
         let archiveButton = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
         let trashButton = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
-        let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMailTap)))
+        let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMarkUnreadTap)))
 
         let items: [NavigationBarItemsView.Input]
         switch input.path.lowercased() {
@@ -264,12 +264,12 @@ extension MessageViewController {
         showToast("Email us at human@flowcrypt.com")
     }
 
-    @objc private func handleMailTap() {
+    @objc private func handleMarkUnreadTap() {
         messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] in
                 guard let self = self else { return }
                 self.input.objMessage = self.input.objMessage.markAsRead(false)
-                self.onCompletion?(MessageAction.markAsUnread, self.input.objMessage)
+                self.onCompletion?(MessageAction.changeReadFlag, self.input.objMessage)
                 self.navigationController?.popViewController(animated: true)
             }
             .catch(on: .main) { [weak self] error in
@@ -373,7 +373,7 @@ extension MessageViewController {
 
 extension MessageViewController: NavigationChildController {
     func handleBackButtonTap() {
-        onCompletion?(MessageAction.markAsRead, input.objMessage)
+        onCompletion?(MessageAction.changeReadFlag, input.objMessage)
         navigationController?.popViewController(animated: true)
     }
 }

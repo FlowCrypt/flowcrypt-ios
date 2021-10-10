@@ -49,17 +49,17 @@ extension Imap: MessageOperationsProvider {
                 return reject(ImapError.missedMessageInfo("intId"))
             }
 
-            var flags: MCOMessageFlag = []
+            var flagsToRemove: MCOMessageFlag = []
             
             // add seen flag
-            flags.insert(MCOMessageFlag.seen)
+            flagsToRemove.insert(MCOMessageFlag.seen)
 
             self.imapSess?
                 .storeFlagsOperation(
                     withFolder: folder,
                     uids: MCOIndexSet(index: UInt64(identifier)),
                     kind: MCOIMAPStoreFlagsRequestKind.remove,
-                    flags: flags
+                    flags: flagsToRemove
                 )
                 .start(self.finalizeVoid("markAsUnread", resolve, reject, retry: { self.markAsUnread(message: message, folder: folder) }))
         }

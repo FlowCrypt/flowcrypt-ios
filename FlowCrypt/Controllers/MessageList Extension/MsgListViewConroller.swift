@@ -35,7 +35,7 @@ extension MsgListViewConroller where Self: UIViewController {
     private func msgListHandleOperation(message: Message, operation: MessageViewController.MessageAction) {
         guard let index = msgListGetIndex(message: message) else { return }
         switch operation {
-        case .markAsRead, .markAsUnread:
+        case .changeReadFlag:
             msgListUpdateReadFlag(message: message, at: index)
         case .moveToTrash, .archive, .permanentlyDelete:
             msgListRenderAsRemoved(message: message, at: index)
