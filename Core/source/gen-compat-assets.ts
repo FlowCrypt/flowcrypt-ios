@@ -202,7 +202,8 @@ ava.default('mime-email-plain-html.txt', async t => {
 ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
   const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
-  const { data } = await PgpMsg.encrypt({ data: text, signingPrv: signingPrv, pwd: keys[0].passphrase, pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
+  const { data } = await PgpMsg.encrypt({ data: text, signingPrv: signingPrv,  pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
   await write(t, mimeEmail2(t, data));
   t.pass();
 });
