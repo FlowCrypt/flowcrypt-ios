@@ -97,8 +97,8 @@ final class InboxViewContainerController: TableNodeViewController {
                 state = .error(InboxViewControllerContainerError.internalError)
                 return
             }
-
-            let inboxViewController = InboxViewController(InboxViewModel(inbox))
+            let input = InboxViewModel(inbox)
+            let inboxViewController = InboxViewController.make(with: input)
             navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }

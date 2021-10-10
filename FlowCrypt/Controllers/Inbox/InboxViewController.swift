@@ -7,6 +7,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
+// swiftlint:disable file_length
 /**
  * View controller which shows message list of selected folder or inbox
  * - Initial view controller of the *main flow* when user is already signed in
@@ -54,9 +55,8 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     private var state: State = .idle
 
-    private let messageProvider: MessagesListProvider
+    private let provider: MessagesListProvider
     private let decorator: InboxViewDecorator
-    private let enterpriseServerApi: EnterpriseServerApiType
     private let refreshControl = UIRefreshControl()
     private let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
@@ -68,23 +68,17 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     var path: String { viewModel.path }
 
-    init(
+    private init(
         _ viewModel: InboxViewModel,
-        messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
-        decorator: InboxViewDecorator = InboxViewDecorator(),
-        enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi()
+        provider: MessagesListProvider,
+        decorator: InboxViewDecorator
     ) {
         self.viewModel = viewModel
-        self.messageProvider = messageProvider
+        self.provider = provider
         self.decorator = decorator
-        self.enterpriseServerApi = enterpriseServerApi
-        tableNode = TableNode()
+        self.tableNode = TableNode()
 
         super.init(node: ASDisplayNode())
-
-        tableNode.delegate = self
-        tableNode.dataSource = self
-        tableNode.leadingScreensForBatching = 1
     }
 
     @available(*, unavailable)
@@ -130,6 +124,9 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 extension InboxViewController {
     private func setupUI() {
         title = inboxTitle
+        tableNode.delegate = self
+        tableNode.dataSource = self
+        tableNode.leadingScreensForBatching = 1
 
         node.addSubnode(tableNode)
         node.addSubnode(composeButton)
@@ -155,7 +152,7 @@ extension InboxViewController {
 // MARK: - Functionality
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
-        messageProvider.fetchMessages(
+        provider.fetchMessages(
             using: FetchMessageContext(
                 folderPath: viewModel.path,
                 count: Constants.numberOfMessagesToLoad,
@@ -176,7 +173,7 @@ extension InboxViewController {
         let pagination = currentMessagesListPagination(from: messages.count)
         state = .fetching
 
-        messageProvider.fetchMessages(
+        provider.fetchMessages(
             using: FetchMessageContext(
                 folderPath: viewModel.path,
                 count: messagesToLoad(),
@@ -458,3 +455,28 @@ extension InboxViewController: Refreshable {
          refresh()
      }
  }
+
+extension InboxViewController {
+    static func make(with viewModel: InboxViewModel) -> InboxViewController {
+        guard let currentAuthType = DataService.shared.currentAuthType else {
+            fatalError("Internal inconsistency")
+        }
+
+        let provider: MessagesListProvider = MailProvider.shared.messageListProvider
+        let decorator = InboxViewDecorator()
+
+        // TODO: - ANTON - inject provider and decorator
+        switch currentAuthType {
+        case .oAuthGmail:
+            break
+        case .password:
+            break
+        }
+
+        return InboxViewController(
+            viewModel,
+            provider: provider,
+            decorator: decorator
+        )
+    }
+}

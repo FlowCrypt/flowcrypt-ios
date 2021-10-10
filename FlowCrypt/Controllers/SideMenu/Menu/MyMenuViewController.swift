@@ -292,7 +292,7 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let viewController = InboxViewController(input)
+            let viewController = InboxViewController.make(with: input)
             if let topController = topController(controllerType: InboxViewController.self),
                topController.path == folder.path {
                 sideMenuController()?.sideMenu?.hideSideMenu()

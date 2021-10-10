@@ -14,7 +14,7 @@ private let logger = Logger.nested("AppStart")
 
 struct AppStartup {
     private enum EntryPoint {
-        case signIn, setupFlow(UserId), mainFlow(AuthType)
+        case signIn, setupFlow(UserId), mainFlow
     }
 
     func initializeApp(window: UIWindow, session: SessionType?) {
@@ -68,14 +68,8 @@ struct AppStartup {
         let viewController: UIViewController
 
         switch entryPoint {
-        case .mainFlow(let authType):
-            let contentViewController: UIViewController
-            switch authType {
-            case .oAuthGmail:
-                contentViewController = ThreadViewContainerController()
-            case .password:
-                contentViewController = InboxViewContainerController()
-            }
+        case .mainFlow:
+            let contentViewController = InboxViewContainerController()
             viewController = SideMenuNavigationController(contentViewController: contentViewController)
         case .signIn:
             viewController = MainNavigationController(rootViewController: SignInViewController())
@@ -92,9 +86,9 @@ struct AppStartup {
         if !dataService.isLoggedIn {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
-        } else if dataService.isSetupFinished, let authType = dataService.currentAuthType {
+        } else if dataService.isSetupFinished {
             logger.logInfo("Setup finished -> mainFlow")
-            return .mainFlow(authType)
+            return .mainFlow
         } else if let session = session, let userId = makeUserIdForSetup(session: session) {
             logger.logInfo("User with session \(session) -> setupFlow")
             return .setupFlow(userId)
