@@ -15,28 +15,33 @@ public final class TextCellNode: CellNode {
         let title: String
         let withSpinner: Bool
         let size: CGSize
+        let insets: UIEdgeInsets
 
         public init(
             backgroundColor: UIColor,
             title: String,
             withSpinner: Bool,
-            size: CGSize
+            size: CGSize,
+            insets: UIEdgeInsets = .zero
         ) {
             self.backgroundColor = backgroundColor
             self.title = title
             self.withSpinner = withSpinner
             self.size = size
+            self.insets = insets
         }
     }
 
     private let spinner = SpinnerNode()
     private let textNode = ASTextNode2()
     private let size: CGSize
+    private let insets: UIEdgeInsets
     private let withSpinner: Bool
 
     public init(input: Input) {
         withSpinner = input.withSpinner
         size = input.size
+        insets = input.insets
         super.init()
         addSubnode(textNode)
         textNode.attributedText = NSAttributedString.text(from: input.title, style: .medium(16), color: .lightGray)
@@ -56,8 +61,7 @@ public final class TextCellNode: CellNode {
                 ? [textNode, spinner]
                 : [textNode]
         )
-
-        return spec
+        return ASInsetLayoutSpec(insets: insets, child: spec)
     }
 }
 

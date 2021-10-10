@@ -124,6 +124,7 @@ extension UIViewController {
                 // hud is already shown
                 return
             }
+            self.view.isUserInteractionEnabled = isUserInteractionEnabled
 
             let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
             spinner.label.text = message
@@ -136,6 +137,7 @@ extension UIViewController {
             self.view.subviews
                 .compactMap { $0 as? MBProgressHUD }
                 .forEach { $0.hide(animated: true) }
+            self.view.isUserInteractionEnabled = true
         }
     }
 
