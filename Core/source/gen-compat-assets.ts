@@ -222,7 +222,6 @@ ava.default('mime-email-plain-signed-detached.txt', async t => {
   const { keys } = getKeypairs('rsa1');
   const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
   const data = text.toString();
-  const detached = true;
   const signed = await PgpMsg.sign({ signingPrv: signingPrv, data: data, detached: true });
   await write(t, mimeEmail2(t, signed));
   t.pass();
