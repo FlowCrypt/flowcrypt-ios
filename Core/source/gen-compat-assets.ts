@@ -13,6 +13,7 @@ import * as ava from 'ava';
 import { AvaContext, getKeypairs, writeFile } from './test/test-utils';
 import { PgpMsg } from './core/pgp-msg';
 import { Xss } from './platform/xss';
+import { openpgp } from './core/pgp';
 
 const text = Buffer.from('some\n汉\ntxt');
 const textSpecialChars = Buffer.from('> special <tag> & other\n> second line');
@@ -200,7 +201,8 @@ ava.default('mime-email-plain-html.txt', async t => {
 
 ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data } = await PgpMsg.encrypt({ data: text, signingPrv: keys[0].private, pwd: keys[0].passphrase, pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
+  const { data } = await PgpMsg.encrypt({ data: text, signingPrv: signingPrv, pwd: keys[0].passphrase, pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
   await write(t, mimeEmail2(t, data));
   t.pass();
 });
