@@ -2906,7 +2906,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3324,7 +3324,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3502,7 +3502,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3561,7 +3561,7 @@
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
