@@ -212,9 +212,19 @@ ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
 ava.default('mime-email-plain-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
   const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
-  const detached = false;
   const data = text.toString();
-  const signed = await PgpMsg.sign({ data: data, signingPrv: signingPrv, detached: detached });
+  const detached = false;
+  const signed = await PgpMsg.sign({ signingPrv: signingPrv, data: data, detached: detached });
+  await write(t, signedMimeEmail(t, signed));
+  t.pass();
+});
+
+ava.default('mime-email-plain-signed-detached.txt', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
+  const data = text.toString();
+  const detached = true;
+  const signed = await PgpMsg.sign({ signingPrv: signingPrv, data: data, detached: detached });
   await write(t, signedMimeEmail(t, signed));
   t.pass();
 });
