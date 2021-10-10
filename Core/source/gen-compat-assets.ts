@@ -10,7 +10,7 @@
 
 import * as ava from 'ava';
 
-import { AvaContext, writeFile } from './test/test-utils';
+import { AvaContext, getKeypairs, writeFile } from './test/test-utils';
 import { PgpMsg } from './core/pgp-msg';
 import { Xss } from './platform/xss';
 
@@ -74,6 +74,22 @@ agraph 3 with <em style=3D"color:red">red i</em></p></body></html>
 const mimeEmail = (t: AvaContext, text: Buffer | string) => Buffer.from(`
 Delivered-To: flowcrypt.compatibility@gmail.com
 Return-Path: <cryptup.tester@gmail.com>
+Openpgp: id=6D24791A5B106262B06217C606CA553EC2455D70
+From: cryptup.tester@gmail.com
+MIME-Version: 1.0
+Date: Thu, 2 Nov 2017 17:54:14 -0700
+Message-ID: <CANzaQHU9A@mail.gmail.com>
+Subject: ${subject(t)}
+To: flowcrypt.compatibility@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+
+${text.toString()}
+`.replace(/^\n/, ''));
+
+// TODO: maybe modify "Openpgp"
+const mimeEmail2 = (t: AvaContext, text: Buffer | string) => Buffer.from(`
+Delivered-To: flowcrypt.compatibility@gmail.com
+Return-Path: <flowcrypt.compatibility@gmail.com>
 Openpgp: id=6D24791A5B106262B06217C606CA553EC2455D70
 From: cryptup.tester@gmail.com
 MIME-Version: 1.0
@@ -179,5 +195,17 @@ ava.default('mime-email-encrypted-inline-text-2.txt', async t => {
 
 ava.default('mime-email-plain-html.txt', async t => {
   await write(t, plainHtmlMimeEmail(t));
+  t.pass();
+});
+
+ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const { data } = await PgpMsg.encrypt({ data: text, signingPrv: keys[0].private, pwd: keys[0].passphrase, pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  await write(t, mimeEmail2(t, data));
+  t.pass();
+});
+
+ava.default('mime-email-plain-signed.txt', async t => {
+  await write(t, mimeEmail2(t, text));
   t.pass();
 });
