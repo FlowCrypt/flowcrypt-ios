@@ -9,6 +9,7 @@
 import FlowCryptCommon
 import GoogleAPIClientForREST_Gmail
 import Promises
+import UIKit
 
 extension GmailService: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
@@ -143,5 +144,115 @@ private extension Message {
             attachmentIds: attachmentsIds,
             threadId: message.threadId
         )
+    }
+}
+
+// TODO: - ANTON
+protocol MessagesThreadProvider {
+    func fetchThreads()
+}
+
+import GoogleAPIClientForREST_Gmail
+extension GmailService: MessagesThreadProvider {
+
+    func fetchThreads(using context: FetchMessageContext) {
+        let query = GTLRGmailQuery_UsersThreadsList.query(withUserId: .me)
+
+        if let pagination = context.pagination {
+            guard case let .byNextPage(token) = pagination else {
+                fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
+            }
+            query.pageToken = token
+        }
+
+        if let folderPath = context.folderPath, folderPath.isNotEmpty {
+            query.labelIds = [folderPath]
+        }
+        if let count = context.count {
+            query.maxResults = UInt(count)
+        }
+        if let searchQuery = context.searchQuery {
+            query.q = searchQuery
+        }
+    }
+
+    func fetchThreads() {
+        print("^^ a")
+
+        let query = GTLRGmailQuery_UsersThreadsList.query(withUserId: .me)
+        query.labelIds = ["STARRED"]
+//        query.format = kGTLRGmailFormatFull
+//        return Promise { resolve, reject in
+            self.gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+////                    reject(GmailServiceError.providerError(error))
+                    return
+                }
+
+                guard let threads = (data as? GTLRGmail_ListThreadsResponse)?.threads else {
+                    return
+                }
+
+                let query = GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: threads[0].identifier!)
+                self.gmailService.executeQuery(query) { _, data, error in
+                    guard let thread = data as? GTLRGmail_Thread else {
+                        return
+                    }
+
+                    let messages = thread.messages
+                }
+
+                print(threads)
+
+/*
+ ▿ FetchMessageContext
+   ▿ folderPath : Optional<String>
+     - some : "INBOX"
+   ▿ count : Optional<Int>
+     - some : 50
+   - searchQuery : nil
+   ▿ pagination : Optional<MessagesListPagination>
+     ▿ some : MessagesListPagination
+       ▿ byNextPage : 1 element
+         - token : nil
+
+ ▿ FetchMessageContext
+   ▿ folderPath : Optional<String>
+     - some : "STARRED"
+   ▿ count : Optional<Int>
+     - some : 50
+   - searchQuery : nil
+   ▿ pagination : Optional<MessagesListPagination>
+     ▿ some : MessagesListPagination
+       ▿ byNextPage : 1 element
+         - token : nil
+
+ */
+
+//
+//                guard let gmailMessage = data as? GTLRGmail_Message else {
+//                    return reject(AppErr.cast("GTLRGmail_Message"))
+//                }
+//
+//                do {
+//                    let message = try Message(gmailMessage)
+//                    resolve(message)
+//                } catch {
+//                    reject(error)
+//                }
+            }
+
+//        let query2 = GTLRGmailQuery_UsersThreadsGet.q
+
+//        }
+    }
+}
+
+final class ThreadViewContainerController: UIViewController {
+    let provider: MessagesThreadProvider = MailProvider.shared.messagesThreadProvider!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        provider.fetchThreads()
     }
 }
