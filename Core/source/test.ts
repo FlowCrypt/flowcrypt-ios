@@ -559,22 +559,31 @@ ava.default('can process dirty html without throwing', async t => {
   t.pass();
 });
 
-ava.default.only('verify encrypted+signed message by providing it correct public key', async t => {
+ava.default('verify encrypted+signed message by providing it correct public key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
-  console.log(blocks);
-  console.log('==========================');
+  const { json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   console.log(decryptJson);
   // TODO: implement the test
   t.pass();
 });
 
 ava.default('verify encrypted+signed message by providing it one wrong and one correct', async t => {
+  const { keys, pubKeys } = getKeypairs('rsa1');
+  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+  const allPubKeys = [];
+  for (const pubkey of pubKeys2) allPubKeys.push(pubkey);
+  for (const pubkey of pubKeys) allPubKeys.push(pubkey);
+  const { json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  console.log(decryptJson);
   // TODO: implement the test
   t.pass();
 });
 
-ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)', async t => {
+ava.default.only('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+  const { json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  console.log(decryptJson);
   // TODO: implement the test
   t.pass();
 });
