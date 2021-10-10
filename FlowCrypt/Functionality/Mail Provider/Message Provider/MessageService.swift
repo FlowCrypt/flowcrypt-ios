@@ -14,6 +14,9 @@ struct MessageAttachment: FileType {
     let name: String
     let size: Int
     let data: Data
+    var humanReadableSizeString: String {
+        return ByteCountFormatter().string(fromByteCount: Int64(self.size))
+    }
 }
 
 // MARK: - ProcessedMessage
