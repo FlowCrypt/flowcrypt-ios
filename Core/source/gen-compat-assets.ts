@@ -6,7 +6,7 @@
 
 // @ts-ignore - it cannot figure out the types, because we don't want to install them from npm
 // nodejs-mobile expects it as global, but this test runs as standard Nodejs
-global.openpgp = require('openpgp'); // remove it and you'll see what I mean
+//global.openpgp = require('openpgp'); // remove it and you'll see what I mean
 
 import * as ava from 'ava';
 
