@@ -88,7 +88,7 @@ ${text.toString()}
 `.replace(/^\n/, ''));
 
 // Used to generate encrypted+signed and plaintext signed emails
-const signedMimeEmail = (t: AvaContext, text: Buffer | string) => Buffer.from(`
+const mimeEmail2 = (t: AvaContext, text: Buffer | string) => Buffer.from(`
 Delivered-To: flowcrypt.compatibility@gmail.com
 Return-Path: <flowcrypt.compatibility@gmail.com>
 Openpgp: id=E76853E128A0D376CAE47C143A30F4CC0A9A8F10
@@ -205,7 +205,7 @@ ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   // console.log("rsa1 key fingerprint:" + signingPrv.getFingerprint().toUpperCase());
   if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
   const { data } = await PgpMsg.encrypt({ data: text, signingPrv: signingPrv,  pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
-  await write(t, signedMimeEmail(t, data));
+  await write(t, mimeEmail2(t, data));
   t.pass();
 });
 
@@ -215,7 +215,7 @@ ava.default('mime-email-plain-signed.txt', async t => {
   const data = text.toString();
   const detached = false;
   const signed = await PgpMsg.sign({ signingPrv: signingPrv, data: data, detached: detached });
-  await write(t, signedMimeEmail(t, signed));
+  await write(t, mimeEmail2(t, signed));
   t.pass();
 });
 
@@ -225,6 +225,6 @@ ava.default('mime-email-plain-signed-detached.txt', async t => {
   const data = text.toString();
   const detached = true;
   const signed = await PgpMsg.sign({ signingPrv: signingPrv, data: data, detached: detached });
-  await write(t, signedMimeEmail(t, signed));
+  await write(t, mimeEmail2(t, signed));
   t.pass();
 });
