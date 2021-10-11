@@ -18,7 +18,7 @@ import Promises
 
 class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
     enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction, subtitle, fetchedKeys
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle, fetchedKeys
     }
 
     var parts: [Parts] {
@@ -33,7 +33,6 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     let storage: DataServiceType
     let keyStorage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
-    var shouldShowBackButton: Bool { false }
 
     var storageMethod: StorageMethod = .persistent {
         didSet {
@@ -96,6 +95,10 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
 
         title = decorator.sceneTitle(for: .createKey)
         observeKeyboardNotifications()
+    }
+
+    func handleBackButtonTap() {
+        router.signOut()
     }
 }
 
@@ -201,10 +204,6 @@ extension SetupCreatePassphraseAbstractViewController {
         logger.logInfo("Setup account with passphrase")
         setupAccount(with: passPhrase)
     }
-
-    private func handleOtherAccount() {
-        router.signOut()
-    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
@@ -264,10 +263,6 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                         backgroundColor: .backgroundColor
                     )
                 )
-            case .optionalAction:
-                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
-                    self?.handleOtherAccount()
-                }
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
             case .saveLocally:

@@ -125,6 +125,6 @@ extension SetupEKMKeyViewController {
 
 extension SetupCreatePassphraseAbstractViewController.Parts {
     static var ekmKeysSetup: [SetupCreatePassphraseAbstractViewController.Parts] {
-        return [.title, .description, .passPhrase, .divider, .action, .optionalAction, .fetchedKeys]
+        return [.title, .description, .passPhrase, .divider, .action, .fetchedKeys]
     }
 }
