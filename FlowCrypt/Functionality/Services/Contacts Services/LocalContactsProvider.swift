@@ -42,11 +42,12 @@ extension LocalContactsProvider: LocalContactsProviderType {
         }
     }
 
-    func retrievePubKey(for email: String) -> String? {
+    func retrievePubKeys(for email: String) -> [String] {
         localContactsCache.encryptedStorage.storage
             .objects(ContactObject.self)
             .first(where: { $0.email == email })?
-            .pubKey
+            .pubKeys
+            .map { $0.key } ?? []
     }
 
     func save(contact: Contact) {
@@ -68,14 +69,15 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func getAllContacts() -> [Contact] {
-        Array(
-            localContactsCache.realm
-                .objects(ContactObject.self)
-                .map {
-                    let keyDetail = try? core.parseKeys(armoredOrBinary: $0.pubKey.data()).keyDetails.first
-                    return Contact($0, keyDetail: keyDetail)
-                }
-                .sorted(by: { $0.email > $1.email })
-        )
+        localContactsCache.realm
+            .objects(ContactObject.self)
+            .map { object in
+                let keyDetails = object
+                                    .pubKeys
+                                    .compactMap { try? core.parseKeys(armoredOrBinary: $0.key.data()).keyDetails }
+                                    .flatMap { $0 }
+                return Contact(object, keyDetails: Array(keyDetails))
+            }
+            .sorted(by: { $0.email > $1.email })
     }
 }

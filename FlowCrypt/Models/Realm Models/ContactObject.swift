@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 final class LongId: Object {
-    @objc dynamic var value: String = ""
+    @Persisted var value: String = ""
 
     convenience init(value: String) {
         self.init()
@@ -19,54 +19,28 @@ final class LongId: Object {
 }
 
 final class ContactObject: Object {
-    @objc dynamic var email: String = ""
-    @objc dynamic var pubKey: String = ""
+    @Persisted(primaryKey: true) var email: String = ""
 
-    @objc dynamic var name: String?
-
-    @objc dynamic var pubkeyExpiresOn: Date?
-    @objc dynamic var pubKeyLastSig: Date?
-    @objc dynamic var pubkeyLastChecked: Date?
-    @objc dynamic var pubkeyCreated: Date?
-    @objc dynamic var lastUsed: Date?
-
-    /// all pubkey fingerprints, comma-separated
-    @objc dynamic var fingerprints: String = ""
-
-    let longids = List<LongId>()
+    @Persisted var name: String?
+    @Persisted var lastUsed: Date?
+    @Persisted var pubKeys = List<ContactKeyObject>()
 
     convenience init(
         email: String,
         name: String?,
-        pubKey: String,
-        pubKeyLastSig: Date?,
-        pubkeyLastChecked: Date?,
-        pubkeyExpiresOn: Date?,
         lastUsed: Date?,
-        pubkeyCreated: Date?,
-        longids: [String],
-        fingerprints: [String]
+        keys: [ContactKey]
     ) {
         self.init()
         self.email = email
         self.name = name ?? ""
-        self.pubKey = pubKey
-        self.pubkeyExpiresOn = pubkeyExpiresOn
-        self.pubKeyLastSig = pubKeyLastSig
-        self.pubkeyLastChecked = pubkeyLastChecked
-        self.pubkeyCreated = pubkeyCreated
         self.lastUsed = lastUsed
-        self.fingerprints = fingerprints.joined(separator: ",")
 
-        longids
-            .map(LongId.init)
+        keys
+            .map(ContactKeyObject.init)
             .forEach {
-                self.longids.append($0)
+                self.pubKeys.append($0)
             }
-    }
-
-    override class func primaryKey() -> String? {
-        "email"
     }
 }
 
@@ -75,14 +49,8 @@ extension ContactObject {
         self.init(
             email: contact.email,
             name: contact.name,
-            pubKey: contact.pubKey,
-            pubKeyLastSig: contact.pubKeyLastSig,
-            pubkeyLastChecked: contact.pubkeyLastChecked,
-            pubkeyExpiresOn: contact.pubkeyExpiresOn,
             lastUsed: contact.lastUsed,
-            pubkeyCreated: contact.pubkeyCreated,
-            longids: contact.longids,
-            fingerprints: contact.fingerprints
+            keys: contact.pubKeys
         )
     }
 }

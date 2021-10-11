@@ -27,14 +27,7 @@ class PubLookup: PubLookupType {
     func lookup(with email: String) -> Promise<Contact> {
         Promise<Contact> { resolve, _ in
             let keyDetails = try awaitPromise(self.getKeyDetails(email))
-            // TODO: - we are blindly choosing .first public key, in the future we should return [Contact]
-            // then eg encrypt for all returned Contacts
-            // also stop throwing below - no point. Return
-            //  empty array then handle downstream
-            guard let keyDetail = keyDetails.first else {
-                throw ContactsError.keyMissing
-            }
-            resolve(Contact(email: email, keyDetail: keyDetail))
+            resolve(Contact(email: email, keyDetails: keyDetails))
         }
     }
 

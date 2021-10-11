@@ -22,7 +22,7 @@ protocol ContactsProviderType {
 }
 
 protocol PublicKeyProvider {
-    func retrievePubKey(for email: String) -> String?
+    func retrievePubKeys(for email: String) -> [String]
 }
 
 // MARK: - PROVIDER
@@ -58,9 +58,9 @@ extension ContactsService: ContactsProviderType {
 }
 
 extension ContactsService: PublicKeyProvider {
-    func retrievePubKey(for email: String) -> String? {
-        let publicKey = localContactsProvider.retrievePubKey(for: email)
+    func retrievePubKeys(for email: String) -> [String] {
+        let publicKeys = localContactsProvider.retrievePubKeys(for: email)
         localContactsProvider.updateLastUsedDate(for: email)
-        return publicKey
+        return publicKeys
     }
 }

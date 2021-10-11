@@ -55,6 +55,8 @@
 		510A260126FDFEBE00163271 /* MailCore2 in Frameworks */ = {isa = PBXBuildFile; productRef = 510A260026FDFEBE00163271 /* MailCore2 */; };
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
+		51B4AE51271444580001F33B /* ContactKeyObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* ContactKeyObject.swift */; };
+		51B4AE5327144E590001F33B /* ContactKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE5227144E590001F33B /* ContactKey.swift */; };
 		51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */; };
 		51E13F15270F92F200F287CA /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F14270F92F200F287CA /* BigInt */; };
 		51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F17270F934C00F287CA /* MBProgressHUD */; };
@@ -465,6 +467,8 @@
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
 		51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfoTests.swift; sourceTree = "<group>"; };
 		51775C38270C7D2400D7C944 /* StorageMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMethod.swift; sourceTree = "<group>"; };
+		51B4AE50271444580001F33B /* ContactKeyObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyObject.swift; sourceTree = "<group>"; };
+		51B4AE5227144E590001F33B /* ContactKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKey.swift; sourceTree = "<group>"; };
 		51E1673C270DAFF900D27C52 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.enterprise.xcconfig"; sourceTree = "<group>"; };
 		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -1081,6 +1085,7 @@
 			children = (
 				D2F41372243CC7990066AFB5 /* UserObject.swift */,
 				D27B911C24EFE806002DF0A1 /* ContactObject.swift */,
+				51B4AE50271444580001F33B /* ContactKeyObject.swift */,
 				D274724324FD1932006BA6EF /* FolderObject.swift */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				D2F41370243CC76E0066AFB5 /* SessionObject.swift */,
@@ -1793,6 +1798,7 @@
 			isa = PBXGroup;
 			children = (
 				D27B911E24EFE828002DF0A1 /* Contact.swift */,
+				51B4AE5227144E590001F33B /* ContactKey.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2479,6 +2485,7 @@
 				9FB22CE425715D3E0026EE64 /* GmailServiceErrorHandler.swift in Sources */,
 				9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
+				51B4AE5327144E590001F33B /* ContactKey.swift in Sources */,
 				21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */,
@@ -2612,6 +2619,7 @@
 				9FF0671025520D7100FCC9E6 /* MessageGateway.swift in Sources */,
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				9F79229426696B9300DA3D80 /* KeyDataStorage.swift in Sources */,
+				51B4AE51271444580001F33B /* ContactKeyObject.swift in Sources */,
 				9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */,
 				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
 				9FA405C7265AEBA50084D133 /* SetupGenerateKeyViewController.swift in Sources */,

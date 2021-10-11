@@ -12,65 +12,27 @@ struct Contact {
     let email: String
     /// name if known
     let name: String?
-    /// public key
-    let pubKey: String
-    /// will be provided later
-    let pubKeyLastSig: Date?
-    /// the date when pubkey was retrieved from Attester, or nil
-    let pubkeyLastChecked: Date?
-    /// pubkey expiration date
-    let pubkeyExpiresOn: Date?
-    /// all pubkey longids, comma-separated
-    let longids: [String]
-    var longid: String? { longids.first }
-
+    /// public keys
+    let pubKeys: [ContactKey]
     /// last time an email was sent to this contact, update when email is sent
     let lastUsed: Date?
-
-    /// all pubkey fingerprints, comma-separated
-    let fingerprints: [String]
-    /// first pubkey fingerprint
-    var fingerprint: String? { fingerprints.first }
-
-    /// pubkey created date
-    let pubkeyCreated: Date?
-
-    let algo: KeyAlgo?
 }
 
 extension Contact {
-    init(_ contactObject: ContactObject, keyDetail: KeyDetails? = nil) {
+    init(_ contactObject: ContactObject, keyDetails: [KeyDetails] = []) {
         self.email = contactObject.email
         self.name = contactObject.name.nilIfEmpty
-        self.pubKey = contactObject.pubKey
-        self.pubKeyLastSig = contactObject.pubKeyLastSig
-        self.pubkeyLastChecked = contactObject.pubkeyLastChecked
-        self.pubkeyExpiresOn = contactObject.pubkeyExpiresOn
+        self.pubKeys = keyDetails.map(ContactKey.init)
         self.lastUsed = contactObject.lastUsed
-        self.longids = contactObject.longids.map(\.value)
-        self.fingerprints = contactObject.fingerprints.split(separator: ",").map(String.init)
-        self.pubkeyCreated = contactObject.pubkeyCreated
-        self.algo = keyDetail?.algo
     }
 }
 
 extension Contact {
-    init(email: String, keyDetail: KeyDetails) {
-        let keyIds = keyDetail.ids
-        let longids = keyIds.map(\.longid)
-        let fingerprints = keyIds.map(\.fingerprint)
-
+    init(email: String, keyDetails: [KeyDetails]) {
         self.email = email
-        self.name = keyDetail.users.first ?? email
-        self.pubKey = keyDetail.public
-        self.pubKeyLastSig = keyDetail.lastModified.map { Date(timeIntervalSince1970: TimeInterval($0)) }
-        self.pubkeyLastChecked = Date()
-        self.pubkeyExpiresOn = keyDetail.expiration.map { Date(timeIntervalSince1970: TimeInterval($0)) }
-        self.longids = longids
+        self.name = keyDetails.first?.users.first ?? email
         self.lastUsed = nil
-        self.fingerprints = fingerprints
-        self.pubkeyCreated = Date(timeIntervalSince1970: Double(keyDetail.created))
-        self.algo = keyDetail.algo
+        self.pubKeys = keyDetails.map(ContactKey.init)
     }
 }
 
