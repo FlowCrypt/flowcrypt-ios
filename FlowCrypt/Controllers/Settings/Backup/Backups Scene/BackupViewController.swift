@@ -118,10 +118,11 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
                     insets: UIEdgeInsets(top: height, left: 8, bottom: 16, right: 8)
                 )
             case .action:
-                return ButtonCellNode(
+                let input = ButtonCellNode.Input(
                     title: self.decorator.buttonTitle(for: self.state),
                     insets: self.decorator.buttonInsets
-                ) { [weak self] in
+                )
+                return ButtonCellNode(input: input) { [weak self] in
                     self?.proceedToBackupOptionsScreen()
                 }
             }

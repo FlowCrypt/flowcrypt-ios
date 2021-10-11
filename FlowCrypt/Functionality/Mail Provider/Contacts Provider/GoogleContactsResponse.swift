@@ -8,45 +8,28 @@
 
 import Foundation
 
-// swiftlint:disable nesting
 struct GoogleContactsResponse: Decodable {
-    let emails: [String]
+    let results: [PersonResult]?
 
-    private enum CodingKeys: String, CodingKey {
-        case feed
+    struct PersonResult: Decodable {
+        let person: Person
 
-        enum Entry: String, CodingKey {
-            case entry
+        struct Person: Decodable {
+            let emailAddresses: [EmailAddress]
 
-            enum AdressKeys: String, CodingKey {
-                case email = "gd$email"
-
-                enum EmailKeys: String, CodingKey {
-                    case address
-                }
+            struct EmailAddress: Decodable {
+                let value: String
             }
         }
     }
+}
 
-    init(from decoder: Decoder) throws {
-        // top-level container
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        do {
-            let feedContainer = try container.nestedContainer(keyedBy: CodingKeys.Entry.self, forKey: .feed)
-
-            var entryContainer = try feedContainer.nestedUnkeyedContainer(forKey: .entry)
-
-            var names = [String]()
-            while !entryContainer.isAtEnd {
-                let addressContainer = try entryContainer.nestedContainer(keyedBy: CodingKeys.Entry.AdressKeys.self)
-                var emailContainer = try addressContainer.nestedUnkeyedContainer(forKey: .email)
-                let resultContainer = try emailContainer.nestedContainer(keyedBy: CodingKeys.Entry.AdressKeys.EmailKeys.self)
-                names.append(try resultContainer.decode(String.self, forKey: .address))
-            }
-            emails = names
-        } catch {
-            emails = []
-        }
+extension GoogleContactsResponse {
+    var emails: [String] {
+        results?
+            .map(\.person)
+            .flatMap(\.emailAddresses)
+            .map { String($0.value) }
+        ?? []
     }
 }

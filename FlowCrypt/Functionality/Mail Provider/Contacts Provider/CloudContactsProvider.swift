@@ -6,64 +6,70 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
+import FlowCryptCommon
 import Promises
+import GoogleAPIClientForREST_PeopleService
 
 protocol CloudContactsProvider {
     func searchContacts(query: String) -> Promise<[String]>
 }
 
+enum CloudContactsProviderError: Error {
+    /// People API response parsing
+    case failedToParseData(Any?)
+    /// Provider Error
+    case providerError(Error)
+}
+
 final class UserContactsProvider {
-    private enum Constants {
-        static let scheme = "https"
-        static let host = "www.google.com"
-        static let searchPath = "/m8/feeds/contacts/default/thin"
+    private let logger = Logger.nested("UserContactsProvider")
+    private let userService: GoogleUserServiceType
+    private var peopleService: GTLRPeopleServiceService {
+        let service = GTLRPeopleServiceService()
+
+        if userService.authorization == nil {
+            logger.logWarning("authorization for current user is nil")
+        }
+
+        service.authorizer = userService.authorization
+        return service
     }
 
-    private let dataService: DataService
-
-    private var token: String? {
-        dataService.token
-    }
-
-    init(dataService: DataService = .shared) {
-        self.dataService = dataService
-    }
-
-    private func components(for path: String) -> URLComponents {
-        var components = URLComponents()
-        components.scheme = Constants.scheme
-        components.host = Constants.host
-        components.path = path
-        return components
+    init(userService: GoogleUserServiceType = GoogleUserService()) {
+        self.userService = userService
+        
+        // Warmup query for contacts cache
+        _ = self.searchContacts(query: "")
     }
 }
 
 extension UserContactsProvider: CloudContactsProvider {
     func searchContacts(query: String) -> Promise<[String]> {
-        guard let token = token else {
-            assertionFailure("token should not be nil")
-            return Promise(AppErr.unexpected("Missing token"))
-        }
+        let searchQuery = GTLRPeopleServiceQuery_PeopleSearchContacts.query()
+        searchQuery.readMask = "names,emailAddresses"
+        searchQuery.query = query
 
-        var searchComponents = components(for: Constants.searchPath)
-        searchComponents.queryItems = [
-            URLQueryItem(name: "q", value: query),
-            URLQueryItem(name: "v", value: "3.0"),
-            URLQueryItem(name: "alt", value: "json"),
-            URLQueryItem(name: "access_token", value: token),
-            URLQueryItem(name: "start-index", value: "0")
-        ]
+        return Promise<[String]> { resolve, reject in
+            self.peopleService.executeQuery(searchQuery) { _, data, error in
+                if let error = error {
+                    return reject(CloudContactsProviderError.providerError(error))
+                }
 
-        guard let url = searchComponents.url else {
-            assertionFailure("Url should not be nil")
-            return Promise(AppErr.unexpected("Missing url"))
-        }
+                guard let response = data as? GTLRPeopleService_SearchResponse else {
+                    return reject(AppErr.cast("GTLRPeopleService_SearchResponse"))
+                }
 
-        return Promise<[String]> { () -> [String] in
-            let response = try awaitPromise(URLSession.shared.call(URLRequest(url: url)))
-            let emails = try JSONDecoder().decode(GoogleContactsResponse.self, from: response.data).emails
-            return emails
+                guard let contacts = response.results else {
+                    return reject(CloudContactsProviderError.failedToParseData(data))
+                }
+
+                let emails = contacts
+                    .compactMap { $0.person?.emailAddresses }
+                    .flatMap { $0 }
+                    .compactMap { $0.value }
+
+                resolve(emails)
+            }
         }
     }
 }
