@@ -561,8 +561,9 @@ ava.default('can process dirty html without throwing', async t => {
 
 ava.default.only('verify encrypted+signed message by providing it correct public key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
-  const { json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   console.log(decryptJson);
+  console.log(decryptData.toString());
   // TODO: implement the test
   t.pass();
 });
