@@ -562,9 +562,11 @@ ava.default('can process dirty html without throwing', async t => {
 ava.default.only('verify encrypted+signed message by providing it correct public key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
-  console.log(decryptJson);
-  console.log(decryptData.toString());
-  // TODO: implement the test
+  expect(decryptJson.replyType).equals('encrypted');
+  expect(decryptJson.subject).equals('mime email encrypted inline text signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(true);
   t.pass();
 });
 
@@ -574,9 +576,12 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
   const allPubKeys = [];
   for (const pubkey of pubKeys2) allPubKeys.push(pubkey);
   for (const pubkey of pubKeys) allPubKeys.push(pubkey);
-  const { json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
-  console.log(decryptJson);
-  // TODO: implement the test
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  expect(decryptJson.replyType).equals('encrypted');
+  expect(decryptJson.subject).equals('mime email encrypted inline text signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(true);
   t.pass();
 });
 
@@ -585,9 +590,12 @@ ava.default('verify encrypted+signed message by providing it only a wrong public
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
   const msg = await getCompatAsset('mime-email-encrypted-inline-text-signed');
   console.log(msg.toString());
-  const { json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
-  console.log(decryptJson);
-  // TODO: implement the test
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  expect(decryptJson.replyType).equals('encrypted');
+  expect(decryptJson.subject).equals('mime email encrypted inline text signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(null);
   t.pass();
 });
 
