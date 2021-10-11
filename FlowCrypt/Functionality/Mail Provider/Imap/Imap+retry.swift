@@ -76,8 +76,8 @@ extension Imap {
     ) -> Bool {
         if let err = err {
             let error = AppErr(err)
-            let debugId = Int.random(in: 1 ... Int.max)
-            let start = DispatchTime.now()
+            // let debugId = Int.random(in: 1 ... Int.max)
+            // let start = DispatchTime.now()
 
             switch error {
             case .authentication:

@@ -9,6 +9,8 @@
 import AsyncDisplayKit
 import FlowCryptUI
 import MobileCoreServices
+import UIKit
+import UniformTypeIdentifiers
 
 /**
  * Controller which is responsible for importing key from a file or to paste it from pasteBoard
@@ -137,18 +139,18 @@ extension SetupManuallyImportKeyViewController: ASTableDelegate, ASTableDataSour
 
 extension SetupManuallyImportKeyViewController {
     private func proceedToKeyImportFromFile() {
-        let acceptableDocumentTypes = [
-            String(kUTTypeText),
-            String(kUTTypePlainText),
-            String(kUTTypeUTF8PlainText),
-            String(kUTTypeUTF16ExternalPlainText),
-            String(kUTTypeUTF16PlainText),
-            String(kUTTypeItem),
-            String(kUTTypeData)
+        let acceptableDocumentTypes: [UTType] = [
+            .text,
+            .plainText,
+            .utf8PlainText,
+            .utf8TabSeparatedText,
+            .utf16PlainText,
+            .utf16ExternalPlainText,
+            .item,
+            .data
         ]
         let documentInteractionController = UIDocumentPickerViewController(
-            documentTypes: acceptableDocumentTypes,
-            in: .open
+            forOpeningContentTypes: acceptableDocumentTypes
         ).then {
             $0.delegate = self
             $0.allowsMultipleSelection = false
