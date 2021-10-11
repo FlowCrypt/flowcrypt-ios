@@ -106,6 +106,11 @@ export class Endpoints {
         if (decryptRes.success) {
           if (decryptRes.isEncrypted) {
             const formatted = await MsgBlockParser.fmtDecryptedAsSanitizedHtmlBlocks(decryptRes.content);
+            if (decryptRes.signature) {
+              for (var block of formatted.blocks) {
+                block.verifyRes = decryptRes.signature;
+              }
+            }
             sequentialProcessedBlocks.push(...formatted.blocks);
             subject = formatted.subject || subject;
           } else {
