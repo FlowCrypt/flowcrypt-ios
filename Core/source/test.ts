@@ -609,13 +609,13 @@ ava.default('verify plain-text signed message by providing it correct key', asyn
   t.pass();
 });
 
-ava.default.only('verify plain-text signed message by providing it both correct and incorrect keys', async t => {
+ava.default('verify plain-text signed message by providing it both correct and incorrect keys', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
   const allPubKeys = [];
   for (const pubkey of pubKeys2) allPubKeys.push(pubkey);
   for (const pubkey of pubKeys) allPubKeys.push(pubkey);
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -624,8 +624,15 @@ ava.default.only('verify plain-text signed message by providing it both correct 
   t.pass();
 });
 
-ava.default('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
-  // TODO: implement the test
+ava.default.only('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-plain-signed')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('mime email plain signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(null);
   t.pass();
 });
 
