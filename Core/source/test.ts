@@ -582,6 +582,8 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
 ava.default.only('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)', async t => {
   const { keys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+  const msg = await getCompatAsset('mime-email-encrypted-inline-text-signed');
+  console.log(msg.toString());
   const { json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   console.log(decryptJson);
   // TODO: implement the test
