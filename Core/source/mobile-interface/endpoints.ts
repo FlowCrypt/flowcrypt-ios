@@ -136,12 +136,15 @@ export class Endpoints {
         sequentialProcessedBlocks.push(rawBlock);
       }
     }
+    // At this point we have sequentialProcessedBlocks filled
     const msgContentBlocks: MsgBlock[] = [];
     const blocks: MsgBlock[] = [];
     let replyType = 'plain';
     for (const block of sequentialProcessedBlocks) { // fix/adjust/format blocks before returning it over JSON
       if (block.content instanceof Buf) { // cannot JSON-serialize Buf
-        block.content = isContentBlock(block.type) ? block.content.toUtfStr() : block.content.toRawBytesStr();
+        block.content = isContentBlock(block.type)
+          ? block.content.toUtfStr()
+          : block.content.toRawBytesStr();
       } else if (block.attMeta && block.attMeta.data instanceof Uint8Array) {
         // converting to base64-encoded string instead of uint8 for JSON serilization
         // value actually replaced to a string, but type remains Uint8Array type set to satisfy TS
