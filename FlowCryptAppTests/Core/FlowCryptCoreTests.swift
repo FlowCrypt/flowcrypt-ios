@@ -94,7 +94,17 @@ class FlowCryptCoreTests: XCTestCase {
     }
 
     func testComposeEmailPlain() throws {
-        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
+        let msg = SendableMsg(
+            text: "this is the message",
+            to: ["email@hello.com"],
+            cc: [],
+            bcc: [],
+            from: "sender@hello.com",
+            subject: "subj",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: nil,
+            signingPrv: nil)
         let expectation = XCTestExpectation()
         
         var mime: String = ""
@@ -123,7 +133,8 @@ class FlowCryptCoreTests: XCTestCase {
             subject: "subj",
             replyToMimeMsg: nil,
             atts: [],
-            pubKeys: [TestData.k0.pub, TestData.k1.pub])
+            pubKeys: [TestData.k0.pub, TestData.k1.pub],
+            signingPrv: nil)
         let expectation = XCTestExpectation()
         
         var mime: String = ""
@@ -160,7 +171,8 @@ class FlowCryptCoreTests: XCTestCase {
             from: "sender@hello.com",
             subject: "subj", replyToMimeMsg: nil,
             atts: [attachment],
-            pubKeys: [TestData.k0.pub, TestData.k1.pub]
+            pubKeys: [TestData.k0.pub, TestData.k1.pub],
+            signingPrv: nil
         )
         let expectation = XCTestExpectation()
         
@@ -195,7 +207,8 @@ class FlowCryptCoreTests: XCTestCase {
             subject: "e2e subj",
             replyToMimeMsg: nil,
             atts: [],
-            pubKeys: [k.public])
+            pubKeys: [k.public],
+            signingPrv: nil)
         let expectation = XCTestExpectation()
         
         var mime: CoreRes.ComposeEmail?

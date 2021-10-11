@@ -17,7 +17,7 @@ import { PgpPwd } from '../core/pgp-password';
 import { Store } from '../platform/store';
 import { Str } from '../core/common';
 import { VERSION } from '../core/const';
-import { ValidateInput, readArmoredKeyOrThrow } from './validate-input';
+import { ValidateInput, readArmoredKeyOrThrow, NodeRequest } from './validate-input';
 import { Xss } from '../platform/xss';
 import { gmailBackupSearchQuery } from '../core/const';
 import { openpgp } from '../core/pgp';
@@ -64,13 +64,9 @@ export class Endpoints {
         const encryptedAtt = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromBase64Str(att.base64), filename: att.name, armor: false }) as OpenPGP.EncryptBinaryResult;
         encryptedAtts.push(new Att({ name: att.name, type: 'application/pgp-encrypted', data: encryptedAtt.message.packets.write() }))
       }
-      const signingPrv = await readArmoredKeyOrThrow(req.signingPrv.private);
-      if (await PgpKey.decrypt(signingPrv, req.signingPrv.passphrase || '')) {
-        const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv: signingPrv, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
-        return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted.data }, mimeHeaders, encryptedAtts)));
-      } else {
-        throw new Error(`Unknown format: ${req.format}`);
-      }
+      const signingPrv = await getSigningPrv(req);
+      const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
+      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted.data }, mimeHeaders, encryptedAtts)));
     } else {
       throw new Error(`Unknown format: ${req.format}`);
     }
@@ -288,3 +284,17 @@ export class Endpoints {
     return fmtRes({});
   }
 }
+
+export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Promise<OpenPGP.key.Key | undefined> => {
+  if (!req.signingPrv)
+  {
+    return undefined;
+  }
+  const key = await readArmoredKeyOrThrow(req.signingPrv.private);
+  if (await PgpKey.decrypt(key, req.signingPrv.passphrase || '')) {
+    return key;
+  } else {
+    throw new Error(`Fail to decrypt signing key`);
+  }
+}
+

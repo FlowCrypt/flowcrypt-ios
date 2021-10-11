@@ -11,7 +11,7 @@ export namespace NodeRequest {
   type Attachment = { name: string; type: string; base64: string };
   interface composeEmailBase { text: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] };
   export interface composeEmailPlain extends composeEmailBase { format: 'plain' };
-  export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo };
+  export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo | undefined };
 
   export type generateKey = { passphrase: string, variant: 'rsa2048' | 'rsa4096' | 'curve25519', userIds: { name: string, email: string }[] };
   export type composeEmail = composeEmailPlain | composeEmailEncrypted;
@@ -50,7 +50,7 @@ export class ValidateInput {
     if (!hasProp(v, 'atts', 'Attachment[]?')) {
       throw new Error('Wrong atts structure for NodeRequest.composeEmail, need: {name, type, base64}');
     }
-    if (hasProp(v, 'pubKeys', 'string[]') && v.pubKeys.length && hasProp(v, 'signingPrv', 'PrvKeyInfo') && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
+    if (hasProp(v, 'pubKeys', 'string[]') && v.pubKeys.length && hasProp(v, 'signingPrv', 'PrvKeyInfo?') && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
       return v as NodeRequest.composeEmailEncrypted;
     }
     if (!v.pubKeys && v.format === 'plain') {
@@ -131,7 +131,7 @@ const isObj = (v: any): v is Obj => {
   return v && typeof v === 'object';
 }
 
-const hasProp = (v: Obj, name: string, type: 'string[]' | 'object' | 'string' | 'number' | 'string?' | 'boolean?' | 'PrvKeyInfo' | 'PrvKeyInfo[]' | 'Userid[]' | 'Attachment[]?'): boolean => {
+const hasProp = (v: Obj, name: string, type: 'string[]' | 'object' | 'string' | 'number' | 'string?' | 'boolean?' | 'PrvKeyInfo?' | 'PrvKeyInfo[]' | 'Userid[]' | 'Attachment[]?'): boolean => {
   if (!isObj(v)) {
     return false;
   }
@@ -155,8 +155,12 @@ const hasProp = (v: Obj, name: string, type: 'string[]' | 'object' | 'string' | 
   if (type === 'string[]') {
     return Array.isArray(value) && value.filter((x: any) => typeof x === 'string').length === value.length;
   }
-  if (type === 'PrvKeyInfo') {
-    return hasProp(value, 'private', 'string') && hasProp(value, 'longid', 'string') && hasProp(value, 'passphrase', 'string?');
+  if (type === 'PrvKeyInfo?') {
+    if (value === null) {
+      v[name] = undefined;
+      return true;
+    }
+    return typeof value === 'undefined' || hasProp(value, 'private', 'string') && hasProp(value, 'longid', 'string') && hasProp(value, 'passphrase', 'string?');
   }  
   if (type === 'PrvKeyInfo[]') {
     return Array.isArray(value) && value.filter((ki: any) => hasProp(ki, 'private', 'string') && hasProp(ki, 'longid', 'string') && hasProp(ki, 'passphrase', 'string?')).length === value.length;

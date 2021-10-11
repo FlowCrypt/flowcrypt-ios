@@ -49,7 +49,7 @@ final class ComposeMessageService {
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
         email: String,
-        signingPrv: PrvKeyInfo
+        signingPrv: PrvKeyInfo?
     ) -> Result<SendableMsg, ComposeMessageError> {
         let recipients = contextToSend.recipients
         guard recipients.isNotEmpty else {
