@@ -88,7 +88,7 @@ ${text.toString()}
 `.replace(/^\n/, ''));
 
 // Used to generate encrypted+signed and plaintext signed emails
-const mimeEmail2 = (t: AvaContext, text1: Buffer | string, original?: Buffer | string) => {
+const mimeEmail2 = (t: AvaContext, text: Buffer | string, original?: Buffer | string) => {
   const orig = original ? original.toString() + '\n\n' : '';
   return Buffer.from(`
 Delivered-To: flowcrypt.compatibility@gmail.com
@@ -102,7 +102,7 @@ Subject: ${subject(t)}
 To: flowcrypt.compatibility@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 
-${orig}${text1.toString()}
+${orig}${text.toString()}
 `.replace(/^\n/, ''));
 }
 
