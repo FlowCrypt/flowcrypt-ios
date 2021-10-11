@@ -88,7 +88,9 @@ ${text.toString()}
 `.replace(/^\n/, ''));
 
 // Used to generate encrypted+signed and plaintext signed emails
-const mimeEmail2 = (t: AvaContext, text: Buffer | string) => Buffer.from(`
+const mimeEmail2 = (t: AvaContext, text1: Buffer | string, text2?: Buffer | string) => {
+  const t2 = text2 ? '\n' + text2.toString() : '';
+  return Buffer.from(`
 Delivered-To: flowcrypt.compatibility@gmail.com
 Return-Path: <flowcrypt.compatibility@gmail.com>
 Openpgp: id=E76853E128A0D376CAE47C143A30F4CC0A9A8F10
@@ -100,8 +102,9 @@ Subject: ${subject(t)}
 To: flowcrypt.compatibility@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 
-${text.toString()}
+${text1.toString()}${t2}
 `.replace(/^\n/, ''));
+}
 
 const mimePgp = (t: AvaContext, text: string | Buffer) => Buffer.from(`
 Content-Type: multipart/mixed; boundary="PpujspXwR9sayhr0t4sBaTxoXX6dlYhLU";
