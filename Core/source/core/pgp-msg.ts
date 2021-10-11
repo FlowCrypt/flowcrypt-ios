@@ -21,7 +21,7 @@ export namespace PgpMsgMethod {
     export type Type = { data: Uint8Array };
     export type Decrypt = { kisWithPp: PrvKeyInfo[], encryptedData: Uint8Array, msgPwd?: string, verificationPubkeys?: string[] };
     export type DiagnosePubkeys = { privateKis: KeyInfo[], message: Uint8Array };
-    export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array };
+    export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array, verificationPubkeys?: string[] };
   }
   export type DiagnosePubkeys = (arg: Arg.DiagnosePubkeys) => Promise<DiagnoseMsgPubkeysResult>;
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
@@ -151,11 +151,15 @@ export class PgpMsg {
     return sig;
   }
 
-  public static verifyDetached: PgpMsgMethod.VerifyDetached = async ({ plaintext, sigText }) => {
+  public static verifyDetached: PgpMsgMethod.VerifyDetached = async ({ plaintext, sigText, verificationPubkeys }) => {
     const message = openpgp.message.fromText(Buf.fromUint8(plaintext).toUtfStr());
     await message.appendSignature(Buf.fromUint8(sigText).toUtfStr());
-    // Q: Should we add verificationPubkeys here?????
     const keys = await PgpMsg.getSortedKeys([], message);
+    if (verificationPubkeys) {
+      for (const verificationPubkey of verificationPubkeys) {
+        keys.forVerification.push(...(await openpgp.key.readArmored(verificationPubkey)).keys);
+      }
+    }
     return await PgpMsg.verify(message, keys.forVerification);
   }
 

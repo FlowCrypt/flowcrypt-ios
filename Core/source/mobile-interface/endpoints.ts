@@ -93,7 +93,7 @@ export class Endpoints {
     const sequentialProcessedBlocks: MsgBlock[] = []; // contains decrypted or otherwise formatted data
     for (const rawBlock of rawBlocks) {
       if ((rawBlock.type === 'signedMsg' || rawBlock.type === 'signedHtml') && rawBlock.signature) {
-        const verify = await PgpMsg.verifyDetached({ sigText: Buf.fromUtfStr(rawBlock.signature), plaintext: Buf.with(rawSigned || rawBlock.content) });
+        const verify = await PgpMsg.verifyDetached({ sigText: Buf.fromUtfStr(rawBlock.signature), plaintext: Buf.with(rawSigned || rawBlock.content), verificationPubkeys: verificationPubkeys });
         if (rawBlock.type === 'signedHtml') {
           sequentialProcessedBlocks.push({ type: 'verifiedMsg', content: Xss.htmlSanitizeKeepBasicTags(rawBlock.content.toString()), verifyRes: verify, complete: true });
         } else { // text
