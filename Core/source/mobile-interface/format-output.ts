@@ -8,6 +8,7 @@ import { Buf } from '../core/buf';
 import { Mime } from '../core/mime';
 import { Str } from '../core/common';
 import { Xss } from '../platform/xss';
+import { VerifyRes } from '../core/pgp-msg';
 
 export type Buffers = (Buf | Uint8Array)[];
 export type EndpointRes = {json: string, data: Buf | Uint8Array};
@@ -71,7 +72,9 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
       imgsAtTheBottom.push(plainImgBlock);
     }
   }
+  var verifyRes: (VerifyRes | undefined) = undefined;
   for (const block of contentBlocks) {
+    if (!verifyRes && block.verifyRes) verifyRes = block.verifyRes;
     if (block.type === 'decryptedText') {
       msgContentAsHtml += fmtMsgContentBlockAsHtml(Str.asEscapedHtml(block.content.toString()), 'green');
       msgContentAsText += block.content.toString() + '\n';
@@ -114,7 +117,9 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     </head>
     <body>${msgContentAsHtml}</body>
   </html>`;
-  return { contentBlock: MsgBlock.fromContent('plainHtml', msgContentAsHtml), text: msgContentAsText.trim() };
+  const contentBlock = MsgBlock.fromContent('plainHtml', msgContentAsHtml);
+  contentBlock.verifyRes = verifyRes;
+  return { contentBlock: contentBlock, text: msgContentAsText.trim() };
 }
 
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
