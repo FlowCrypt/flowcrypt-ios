@@ -49,9 +49,9 @@ extension AttachmentNode.Input {
     init(msgAttachment: MessageAttachment) {
         self.init(
             name: msgAttachment.name
-                .attributed(.regular(18), color: .textColor, alignment: .left),
+                .attributed(.regular(18), color: .mainTextColor, alignment: .left),
             size: "\(msgAttachment.size)"
-                .attributed(.medium(12), color: .textColor, alignment: .left)
+                .attributed(.medium(12), color: .mainTextColor, alignment: .left)
         )
     }
 }

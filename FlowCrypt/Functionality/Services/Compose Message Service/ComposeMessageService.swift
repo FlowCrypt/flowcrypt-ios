@@ -85,7 +85,7 @@ final class ComposeMessageService {
         let sendableAttachments: [SendableMsg.Attachment] = contextToSend.attachments
             .map { composeAttachment in
                 return SendableMsg.Attachment(
-                    name: composeAttachment.name,
+                    name: "\(composeAttachment.name).pgp",
                     type: composeAttachment.type,
                     base64: composeAttachment.data.base64EncodedString()
                 )
@@ -126,20 +126,20 @@ final class ComposeMessageService {
     }
 
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg) -> AnyPublisher<Void, ComposeMessageError> {
-        return encryptMessage(with: message)
+    func encryptAndSend(message: SendableMsg, threadId: String?) -> AnyPublisher<Void, ComposeMessageError> {
+        return encryptMessage(with: message, threadId: threadId)
             .flatMap(messageGateway.sendMail)
             .mapError { ComposeMessageError.gatewayError($0) }
             .eraseToAnyPublisher()
     }
 
-    private func encryptMessage(with msg: SendableMsg) -> AnyPublisher<Data, Error> {
+    private func encryptMessage(with msg: SendableMsg, threadId: String?) -> AnyPublisher<MessageGatewayInput, Error> {
         return core.composeEmail(
             msg: msg,
             fmt: MsgFmt.encryptInline,
             pubKeys: msg.pubKeys
         )
-        .map(\.mimeEncoded)
+        .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: threadId) })
         .eraseToAnyPublisher()
     }
 }

@@ -18,7 +18,7 @@ import Promises
 
 final class SetupBackupsViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
     private enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, action
     }
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
@@ -30,11 +30,10 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     private let fetchedEncryptedKeys: [KeyDetails]
     private let keyStorage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
-    var shouldShowBackButton: Bool { false }
 
     private var passPhrase: String?
 
-    var shouldStorePassPhrase = true {
+    var storageMethod: StorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -144,20 +143,20 @@ extension SetupBackupsViewController {
             return
         }
 
-        if !shouldStorePassPhrase {
+        if storageMethod == .memory {
             // save pass phrase
             matchingKeyBackups
                 .map {
                     PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
                 }
                 .forEach {
-                    passPhraseService.savePassPhrase(with: $0, inStorage: shouldStorePassPhrase)
+                    passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
                 }
         }
 
         // save keys
         keyStorage.addKeys(keyDetails: Array(matchingKeyBackups),
-                           passPhrase: shouldStorePassPhrase ? passPhrase : nil,
+                           passPhrase: storageMethod == .persistent ? passPhrase : nil,
                            source: .backup,
                            for: user.email)
 
@@ -183,7 +182,7 @@ extension SetupBackupsViewController {
         }
     }
 
-    private func handleOtherAccount() {
+    func handleBackButtonTap() {
         router.signOut()
     }
 
@@ -242,10 +241,6 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                 .then {
                     $0.button.accessibilityIdentifier = "load_account"
                 }
-            case .optionalAction:
-                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
-                    self?.handleOtherAccount()
-                }
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
             case .saveLocally:
@@ -261,9 +256,9 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
 
         switch part {
         case .saveLocally:
-            shouldStorePassPhrase = true
+            storageMethod = .persistent
         case .saveInMemory:
-            shouldStorePassPhrase = false
+            storageMethod = .memory
         default:
             break
         }

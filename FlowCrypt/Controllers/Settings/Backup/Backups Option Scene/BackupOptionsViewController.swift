@@ -147,10 +147,12 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
                     )
                 )
             case .action:
-                return ButtonCellNode(
+                let input = ButtonCellNode.Input(
                     title: self.decorator.buttonText(for: self.selectedOption),
                     insets: self.decorator.insets
-                ) { [weak self] in
+                )
+
+                return ButtonCellNode(input: input) { [weak self] in
                     self?.handleButtonTap()
                 }
             case .info:

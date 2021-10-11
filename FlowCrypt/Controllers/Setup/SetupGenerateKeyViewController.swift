@@ -88,13 +88,13 @@ extension SetupGenerateKeyViewController {
             self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user).wait()
 
             self.keyStorage.addKeys(keyDetails: [encryptedPrv.key],
-                                    passPhrase: self.shouldStorePassPhrase ? passPhrase: nil,
+                                    passPhrase: self.storageMethod == .persistent ? passPhrase: nil,
                                     source: .generated,
                                     for: self.user.email)
 
-            if !self.shouldStorePassPhrase {
+            if self.storageMethod == .memory {
                 let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
-                self.passPhraseService.savePassPhrase(with: passPhrase, inStorage: false)
+                self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
             }
 
             let updateKey = self.attester.updateKey(

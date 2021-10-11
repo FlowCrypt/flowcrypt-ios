@@ -31,14 +31,14 @@ struct SetupViewDecorator {
 
     // MARK: Title
     enum TitleType {
-        case setup, enterPassPhrase, importKey, createKey
+        case setup, enterPassPhrase, choosePassPhrase, importKey, createKey
     }
 
     func title(for titleType: TitleType) -> NSAttributedString {
         let text: String
 
         switch titleType {
-        case .setup, .createKey:
+        case .setup, .createKey, .choosePassPhrase:
             text = "setup_title"
         case .enterPassPhrase, .importKey:
             text = "import_key_description"
@@ -61,12 +61,14 @@ struct SetupViewDecorator {
             return "import_key_title".localized
         case .createKey:
             return "setup_create_key_title".localized
+        case .choosePassPhrase:
+            return "setup_choose_pass_title".localized
         }
     }
 
     // MARK: Subtitle
     enum SubtitleType {
-        case common, fetchedKeys(Int), choosingPassPhrase, noBackups
+        case common, fetchedKeys(Int), fetchedEKMKeys(Int), choosingPassPhrase, noBackups
     }
 
     func subtitle(for subtitleType: SubtitleType) -> NSAttributedString {
@@ -75,10 +77,12 @@ struct SetupViewDecorator {
         switch subtitleType {
         case let .fetchedKeys(count):
             subtitle = "Found \(count) key backup\(count > 1 ? "s" : "")"
+        case let .fetchedEKMKeys(count):
+            subtitle = "Fetched %@ key(s) on EKM".localizeWithArguments(count)
         case .common:
             subtitle = "setup_description".localized
         case .choosingPassPhrase:
-            subtitle = "create_pass_phrase_description".localized
+            subtitle = "" // "create_pass_phrase_description".localized https://github.com/FlowCrypt/flowcrypt-ios/issues/497
         case .noBackups:
             let user = DataService.shared.email ?? "unknown_title".localized
             let msg = "setup_no_backups".localized + user

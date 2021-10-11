@@ -17,8 +17,8 @@ final class ClientConfigurationObject: Object {
     @objc dynamic var disallowAttesterSearchForDomains: Data?
     @objc dynamic var enforceKeygenAlgo: String?
     @objc dynamic var enforceKeygenExpireMonths: Int = -1
-    @objc dynamic var user: UserObject?
-    @objc dynamic var userEmail: String?
+    @objc dynamic var user: UserObject!
+    @objc dynamic var userEmail: String!
 
     convenience init(
         flags: [String]?,
@@ -27,7 +27,7 @@ final class ClientConfigurationObject: Object {
         disallowAttesterSearchForDomains: [String]?,
         enforceKeygenAlgo: String?,
         enforceKeygenExpireMonths: Int?,
-        user: UserObject?
+        user: UserObject
     ) {
         self.init()
         if let flags = flags {
@@ -41,12 +41,12 @@ final class ClientConfigurationObject: Object {
         self.enforceKeygenAlgo = enforceKeygenAlgo
         self.enforceKeygenExpireMonths = enforceKeygenExpireMonths ?? -1
         self.user = user
-        self.userEmail = user?.email
+        self.userEmail = user.email
     }
 
     convenience init(
         _ clientConfiguration: ClientConfiguration,
-        user: UserObject?
+        user: UserObject
     ) {
         self.init(
             flags: clientConfiguration.flags?.map(\.rawValue),

@@ -18,7 +18,7 @@ import Promises
 
 class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
     enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction, subtitle
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle, fetchedKeys
     }
 
     var parts: [Parts] {
@@ -29,12 +29,12 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     let core: Core
     let router: GlobalRouterType
     let user: UserId
+    let fetchedKeysCount: Int
     let storage: DataServiceType
     let keyStorage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
-    var shouldShowBackButton: Bool { false }
 
-    var shouldStorePassPhrase = true {
+    var storageMethod: StorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -51,6 +51,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
 
     init(
         user: UserId,
+        fetchedKeysCount: Int = 0,
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
@@ -59,6 +60,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         passPhraseService: PassPhraseServiceType = PassPhraseService()
     ) {
         self.user = user
+        self.fetchedKeysCount = fetchedKeysCount
         self.core = core
         self.router = router
         self.decorator = decorator
@@ -86,11 +88,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     func setupAccount(with passphrase: String) {
         fatalError("This method has to be overriden")
     }
-}
 
-// MARK: - UI
-
-extension SetupCreatePassphraseAbstractViewController {
     func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -99,6 +97,14 @@ extension SetupCreatePassphraseAbstractViewController {
         observeKeyboardNotifications()
     }
 
+    func handleBackButtonTap() {
+        router.signOut()
+    }
+}
+
+// MARK: - UI
+
+extension SetupCreatePassphraseAbstractViewController {
     // TODO: - Ticket? - Unify this logic for all controllers
     // swiftlint:disable discarded_notification_center_observer
     private func observeKeyboardNotifications() {
@@ -198,10 +204,6 @@ extension SetupCreatePassphraseAbstractViewController {
         logger.logInfo("Setup account with passphrase")
         setupAccount(with: passPhrase)
     }
-
-    private func handleOtherAccount() {
-        router.signOut()
-    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
@@ -261,16 +263,20 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                         backgroundColor: .backgroundColor
                     )
                 )
-            case .optionalAction:
-                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
-                    self?.handleOtherAccount()
-                }
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
             case .saveLocally:
                 return self.saveLocallyNode
             case .saveInMemory:
                 return self.saveInMemoryNode
+            case .fetchedKeys:
+                return SetupTitleNode(
+                    SetupTitleNode.Input(
+                        title: self.decorator.subtitle(for: .fetchedEKMKeys(self.fetchedKeysCount)),
+                        insets: self.decorator.insets.subTitleInset,
+                        backgroundColor: .backgroundColor
+                    )
+                )
             }
         }
     }
@@ -282,9 +288,9 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
         case .description:
             showChoosingOptions()
         case .saveLocally:
-            shouldStorePassPhrase = true
+            storageMethod = .persistent
         case .saveInMemory:
-            shouldStorePassPhrase = false
+            storageMethod = .memory
         default:
             break
         }
