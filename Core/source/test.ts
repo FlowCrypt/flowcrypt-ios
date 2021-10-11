@@ -624,7 +624,7 @@ ava.default('verify plain-text signed message by providing it both correct and i
   t.pass();
 });
 
-ava.default.only('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
+ava.default('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
   const { keys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-plain-signed')]));
@@ -636,8 +636,15 @@ ava.default.only('verify plain-text signed message by providing it wrong key (fa
   t.pass();
 });
 
-ava.default('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
-  // TODO: implement the test
+ava.default.only('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
+  const { keys, pubKeys } = getKeypairs('rsa1');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-edited')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('mime email plain signed');
+  console.log(decryptData.toString());
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(null);
   t.pass();
 });
 
