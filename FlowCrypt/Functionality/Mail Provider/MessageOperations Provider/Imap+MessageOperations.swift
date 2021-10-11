@@ -10,6 +10,7 @@ import Foundation
 import Promises
 
 extension Imap: MessageOperationsProvider {
+
     // MARK: - read
     func markAsRead(message: Message, folder: String) -> Promise<Void> {
         Promise { [weak self] resolve, reject in
@@ -36,6 +37,31 @@ extension Imap: MessageOperationsProvider {
                     flags: flags
                 )
                 .start(self.finalizeVoid("markAsRead", resolve, reject, retry: { self.markAsRead(message: message, folder: folder) }))
+        }
+    }
+
+    // MARK: - unread
+    func markAsUnread(message: Message, folder: String) -> Promise<Void> {
+        Promise { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf) }
+
+            guard let identifier = message.identifier.intId else {
+                return reject(ImapError.missedMessageInfo("intId"))
+            }
+
+            var flagsToRemove: MCOMessageFlag = []
+            
+            // add seen flag
+            flagsToRemove.insert(MCOMessageFlag.seen)
+
+            self.imapSess?
+                .storeFlagsOperation(
+                    withFolder: folder,
+                    uids: MCOIndexSet(index: UInt64(identifier)),
+                    kind: MCOIMAPStoreFlagsRequestKind.remove,
+                    flags: flagsToRemove
+                )
+                .start(self.finalizeVoid("markAsUnread", resolve, reject, retry: { self.markAsUnread(message: message, folder: folder) }))
         }
     }
 
