@@ -104,7 +104,7 @@ extension SearchViewController {
 }
 
 // MARK: - MessageHandlerViewConroller
-extension SearchViewController: MsgListViewConroller {
+extension SearchViewController: MsgListViewController {
     func msgListGetIndex(message: Message) -> Int? {
         state.messages.firstIndex(of: message)
     }
@@ -176,8 +176,10 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
                     )
                 )
             case .fetched:
-                return InboxCellNode(message: InboxCellNode.Input(self.state.messages[indexPath.row]))
-                    .then { $0.backgroundColor = .backgroundColor }
+                return ASCellNode()
+                // TODO: - ANTON - Search
+//                return InboxCellNode(message: InboxCellNode.Input(self.state.messages[indexPath.row]))
+//                    .then { $0.backgroundColor = .backgroundColor }
             case let .error(message):
                 return TextCellNode(
                     input: TextCellNode.Input(

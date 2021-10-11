@@ -10,11 +10,11 @@ import FlowCryptUI
 import UIKit
 
 extension InboxCellNode.Input {
-    init(_ message: Message) {
-        let email = message.sender ?? "message_unknown_sender".localized
-        let date = DateFormatter().formatDate(message.date)
-        let msg = message.subject ?? "message_missed_subject".localized
-        let isMessageRead = message.isMessageRead
+    init(_ element: InboxRenderable) {
+        let email = element.title
+        let date = element.dateString
+        let msg = element.subtitle
+        let isMessageRead = element.isRead
 
         let style: NSAttributedString.Style = isMessageRead
             ? .regular(17)
@@ -33,6 +33,20 @@ extension InboxCellNode.Input {
             dateText: NSAttributedString.text(from: date, style: style, color: dateColor),
             messageText: NSAttributedString.text(from: msg, style: style, color: textColor)
         )
+    }
+}
+
+struct InboxRenderable {
+    let title: String
+    let subtitle: String
+    let dateString: String
+    let isRead: Bool
+
+    init(message: Message) {
+        self.title = message.sender ?? "message_unknown_sender".localized
+        self.subtitle = message.subject ?? "message_missed_subject".localized
+        self.dateString = DateFormatter().formatDate(message.date)
+        self.isRead = message.isMessageRead
     }
 }
 

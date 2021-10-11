@@ -233,7 +233,7 @@ extension SetupInitialViewController {
                 )
             )
         default:
-            return TextCellNode(input: .loading(with: CGSize(width: 40, height: 40)))
+            return TextCellNode.loading
         }
     }
 

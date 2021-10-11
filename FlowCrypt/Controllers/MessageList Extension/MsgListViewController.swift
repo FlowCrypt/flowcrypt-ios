@@ -8,14 +8,14 @@
 
 import UIKit
 
-protocol MsgListViewConroller {
+protocol MsgListViewController {
     func msgListOpenMsgElseShowToast(with message: Message, path: String)
     func msgListGetIndex(message: Message) -> Array<Message>.Index?
     func msgListRenderAsRead(message: Message, at index: Int)
     func msgListRenderAsRemoved(message _: Message, at index: Int)
 }
 
-extension MsgListViewConroller where Self: UIViewController {
+extension MsgListViewController where Self: UIViewController {
     func msgListOpenMsgElseShowToast(with message: Message, path: String) {
         if message.size ?? 0 > GeneralConstants.Global.messageSizeLimit {
             showToast("Messages larger than 5MB are not supported yet")
