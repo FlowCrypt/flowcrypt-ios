@@ -644,7 +644,7 @@ ava.default.only('verify plain-text signed message that you edited after signing
   console.log(decryptData.toString());
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
-  expect(parsedDecryptData.verifyRes.match).equals(null);
+  expect(parsedDecryptData.verifyRes.match).equals(false);
   t.pass();
 });
 
