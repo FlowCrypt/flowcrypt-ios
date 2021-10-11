@@ -559,7 +559,7 @@ ava.default('can process dirty html without throwing', async t => {
   t.pass();
 });
 
-ava.default.only('verify encrypted+signed message by providing it correct public key', async t => {
+ava.default('verify encrypted+signed message by providing it correct public key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   expect(decryptJson.replyType).equals('encrypted');
@@ -570,7 +570,7 @@ ava.default.only('verify encrypted+signed message by providing it correct public
   t.pass();
 });
 
-ava.default('verify encrypted+signed message by providing it one wrong and one correct', async t => {
+ava.default.only('verify encrypted+signed message by providing it one wrong and one correct', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
   const allPubKeys = [];
