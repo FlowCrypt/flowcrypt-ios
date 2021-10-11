@@ -88,8 +88,8 @@ ${text.toString()}
 `.replace(/^\n/, ''));
 
 // Used to generate encrypted+signed and plaintext signed emails
-const mimeEmail2 = (t: AvaContext, text1: Buffer | string, text2?: Buffer | string) => {
-  const t2 = text2 ? '\n' + text2.toString() : '';
+const mimeEmail2 = (t: AvaContext, text1: Buffer | string, original?: Buffer | string) => {
+  const orig = original ? original.toString() + '\n\n' : '';
   return Buffer.from(`
 Delivered-To: flowcrypt.compatibility@gmail.com
 Return-Path: <flowcrypt.compatibility@gmail.com>
@@ -102,7 +102,7 @@ Subject: ${subject(t)}
 To: flowcrypt.compatibility@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 
-${text1.toString()}${t2}
+${orig}${text1.toString()}
 `.replace(/^\n/, ''));
 }
 
@@ -228,6 +228,6 @@ ava.default('mime-email-plain-signed-detached.txt', async t => {
   if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
   const data = text.toString();
   const signed = await PgpMsg.sign(signingPrv, data, true);
-  await write(t, mimeEmail2(t, signed));
+  await write(t, mimeEmail2(t, signed, data));
   t.pass();
 });
