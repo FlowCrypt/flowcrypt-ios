@@ -27,7 +27,7 @@ extension URLSession {
                 let res = response as? HTTPURLResponse
                 let status = res?.statusCode ?? GeneralConstants.Global.generalError
                 let urlMethod = urlRequest.httpMethod ?? "GET"
-                let urlString = urlRequest.url?.absoluteString ?? "??"
+                let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
                 let headers = urlRequest.headersWithFilteredTokens
                 let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString), headers: \(headers)"
                 Logger.nested("URLSession").logInfo(message)
@@ -70,8 +70,8 @@ struct URLHeader {
 extension URLRequest {
     static func urlRequest(
         with urlString: String,
-        method: HTTPMetod,
-        body: Data?,
+        method: HTTPMetod = .get,
+        body: Data? = nil,
         headers: [URLHeader] = []
     ) -> URLRequest {
         guard let url = URL(string: urlString) else {
