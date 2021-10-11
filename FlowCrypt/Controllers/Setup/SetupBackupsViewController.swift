@@ -18,7 +18,7 @@ import Promises
 
 final class SetupBackupsViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
     private enum Parts: Int, CaseIterable {
-        case title, description, passPhrase, divider, saveLocally, saveInMemory, action, optionalAction
+        case title, description, passPhrase, divider, saveLocally, saveInMemory, action
     }
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
@@ -30,7 +30,6 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     private let fetchedEncryptedKeys: [KeyDetails]
     private let keyStorage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
-    var shouldShowBackButton: Bool { false }
 
     private var passPhrase: String?
 
@@ -183,7 +182,7 @@ extension SetupBackupsViewController {
         }
     }
 
-    private func handleOtherAccount() {
+    func handleBackButtonTap() {
         router.signOut()
     }
 
@@ -241,10 +240,6 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                 }
                 .then {
                     $0.button.accessibilityIdentifier = "load_account"
-                }
-            case .optionalAction:
-                return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
-                    self?.handleOtherAccount()
                 }
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)
