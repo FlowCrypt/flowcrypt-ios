@@ -30,7 +30,7 @@ extension KeyDetails {
 
     var primaryFingerprint: String {
         guard let fingerPrint = fingerprints.first else {
-            fatalError("primaryFingerprint for KeyDetail with \(longid) is missing")
+            fatalError("primaryFingerprint for KeyDetail is missing")
         }
         return fingerPrint
     }
