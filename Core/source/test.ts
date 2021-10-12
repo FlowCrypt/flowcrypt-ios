@@ -646,6 +646,9 @@ ava.default('verify plain-text signed message that you edited after signing. Thi
   t.pass();
 });
 
+// Can't get it working right. Thunderbird doesn't allow exporting MIME message when composing
+// and attempt to replace signature in the sent message by signature generated with key used here
+// just didn't work. So meanwhile giving up on it.
 ava.default.only('verify signed message with detached signature by providing it correct key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-detached2')]));
