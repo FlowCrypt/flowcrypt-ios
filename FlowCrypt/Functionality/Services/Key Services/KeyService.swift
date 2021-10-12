@@ -11,7 +11,7 @@ import Foundation
 protocol KeyServiceType {
     func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError>
     func getPrvKeyInfo() -> Result<[PrvKeyInfo], KeyServiceError>
-    func signingKey() throws -> PrvKeyInfo?
+    func getSigningKey() throws -> PrvKeyInfo?
 }
 
 enum KeyServiceError: Error {
@@ -82,7 +82,7 @@ final class KeyService: KeyServiceType {
         return .success(privateKeys)
     }
 
-    func signingKey() throws -> PrvKeyInfo? {
+    func getSigningKey() throws -> PrvKeyInfo? {
         guard let email = currentUserEmail() else {
             return nil
         }
@@ -90,39 +90,39 @@ final class KeyService: KeyServiceType {
         let keysInfo = storage.keysInfo()
             .filter { $0.account == email }
 
-        let p: (KeyInfo) throws -> KeyDetails? = { key in
-            let parsedKeys = try self.coreService.parseKeys(
-                armoredOrBinary: key.`private`.data()
-            )
-
-            var keyDetails: [KeyDetails] = []
-            parsedKeys.keyDetails.forEach { keyDetails.append($0) }
-
-            guard let result = keyDetails.first(where: {
-                let emails = $0.pgpUserEmails
-                return emails.first == email || emails.contains(where: { $0 == email })
-            }) else {
-                return nil
-            }
-
-            return result
-        }
-
-        guard let k: KeyDetails = try keysInfo.compactMap(p).first else {
+        guard let foundKey = try findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
             return nil
         }
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
         let passphrase = storedPassPhrases
             .filter { $0.value.isNotEmpty }
-            .first(where: { $0.primaryFingerprint == k.primaryFingerprint })?
+            .first(where: { $0.primaryFingerprint == foundKey.primaryFingerprint })?
             .value
 
         return PrvKeyInfo(
-            private: k.`private` ?? "",
-            longid: k.primaryFingerprint,
+            private: foundKey.`private` ?? "",
+            longid: foundKey.primaryFingerprint,
             passphrase: passphrase,
-            fingerprints: k.fingerprints
+            fingerprints: foundKey.fingerprints
         )
+    }
+
+    private func findKeyByUserEmail(keysInfo: [KeyInfo], email: String) throws -> KeyDetails? {
+        let f: (KeyInfo) throws -> KeyDetails? = { keyInfo in
+            let parsedKeys = try self.coreService.parseKeys(
+                armoredOrBinary: keyInfo.`private`.data()
+            )
+
+            var keyDetails: [KeyDetails] = []
+            parsedKeys.keyDetails.forEach { keyDetails.append($0) }
+
+            return keyDetails.first {
+                let emails = $0.pgpUserEmails
+                return emails.first == email || emails.contains(where: { $0 == email })
+            }
+        }
+
+        return try keysInfo.compactMap(f).first
     }
 }

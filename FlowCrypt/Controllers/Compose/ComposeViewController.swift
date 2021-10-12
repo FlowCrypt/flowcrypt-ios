@@ -222,24 +222,24 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() {
-        guard let key = try? keyService.signingKey() else {
+        guard let signingKey = try? keyService.getSigningKey() else {
             showAlert(message: "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key.")
             return
         }
 
-        guard key.passphrase != nil else {
+        guard signingKey.passphrase != nil else {
             let alert = AlertsFactory.makePassPhraseAlert(
                 onCancel: { [weak self] in
                     self?.showAlert(message: "Passphrase is required for message signing")
                 },
                 onCompletion: { [weak self] passPhrase in
-                    self?.sendMessage(key.copy(with: passPhrase))
+                    self?.sendMessage(signingKey.copy(with: passPhrase))
                 })
             present(alert, animated: true, completion: nil)
             return
         }
 
-        sendMessage(key)
+        sendMessage(signingKey)
     }
 
     private func sendMessage(_ signingKey: PrvKeyInfo) {
