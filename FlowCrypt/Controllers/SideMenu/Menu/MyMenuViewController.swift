@@ -293,13 +293,13 @@ extension MyMenuViewController {
         case .folder:
             let input = InboxViewModel(folder)
             let viewController = InboxViewControllerFactory.make(with: input)
-            // TODO: - ANTON
-//            if let topController = topController(controllerType: InboxViewController.self),
-//               topController.path == folder.path {
-//                sideMenuController()?.sideMenu?.hideSideMenu()
-//                viewController.startRefreshing()
-//                return
-//            }
+
+            if let topController = topController(controllerType: InboxViewController.self),
+               topController.path == folder.path {
+                sideMenuController()?.sideMenu?.hideSideMenu()
+                viewController.startRefreshing()
+                return
+            }
             sideMenuController()?.setContentViewController(viewController)
         case .settings:
             if topController(controllerType: SettingsViewController.self) != nil {

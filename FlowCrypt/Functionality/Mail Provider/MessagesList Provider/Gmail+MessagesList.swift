@@ -11,7 +11,7 @@ import GoogleAPIClientForREST_Gmail
 import Promises
 import UIKit
 
-struct MessageThread {
+struct MessageThread: Equatable {
     let snippet: String?
     let messages: [Message]
 }
@@ -171,5 +171,77 @@ private extension Message {
             attachmentIds: attachmentsIds,
             threadId: message.threadId
         )
+    }
+}
+
+// TODO: - ANTON - remove 
+extension GmailService: MessagesListProvider {
+     func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
+         Promise { resolve, reject in
+             let list = try awaitPromise(fetchMessagesList(using: context))
+             let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchFullMessage(with:)) ?? []
+
+             all(messageRequests)
+                 .then { messages in
+                    let context = MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
+                    resolve(context)
+                }
+                .catch { error in
+                    reject(error)
+                }
+        }
+    }
+}
+extension GmailService {
+    private func fetchMessagesList(using context: FetchMessageContext) -> Promise<GTLRGmail_ListMessagesResponse> {
+        let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
+        if let pagination = context.pagination {
+            guard case let .byNextPage(token) = pagination else {
+                fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
+            }
+            query.pageToken = token
+        }
+        if let folderPath = context.folderPath, folderPath.isNotEmpty {
+            query.labelIds = [folderPath]
+        }
+        if let count = context.count {
+            query.maxResults = UInt(count)
+        }
+        if let searchQuery = context.searchQuery {
+            query.q = searchQuery
+        }
+        return Promise { resolve, reject in
+            self.gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    reject(GmailServiceError.providerError(error))
+                    return
+                }
+                guard let messageList = data as? GTLRGmail_ListMessagesResponse else {
+                    return reject(AppErr.cast("GTLRGmail_ListMessagesResponse"))
+                }
+                resolve(messageList)
+            }
+        }
+    }
+    private func fetchFullMessage(with identifier: String) -> Promise<Message> {
+        let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
+        query.format = kGTLRGmailFormatFull
+        return Promise { resolve, reject in
+            self.gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    reject(GmailServiceError.providerError(error))
+                    return
+                }
+                guard let gmailMessage = data as? GTLRGmail_Message else {
+                    return reject(AppErr.cast("GTLRGmail_Message"))
+                }
+                do {
+                    let message = try Message(gmailMessage)
+                    resolve(message)
+                } catch {
+                    reject(error)
+                }
+            }
+        }
     }
 }

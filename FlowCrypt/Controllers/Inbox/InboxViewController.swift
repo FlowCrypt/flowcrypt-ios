@@ -7,12 +7,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Promises
 
-class InboxViewController:
-    ASDKViewController<ASDisplayNode>,
-    ASTableDataSource,
-    ASTableDelegate,
-    Refreshable {
-
+final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private let numberOfMessagesToLoad: Int
     private let provider: InboxDataProvider
     private let decorator: InboxViewDecorator
@@ -23,7 +18,7 @@ class InboxViewController:
     }
 
     private let viewModel: InboxViewModel
-    private var inboxData: [InboxRenderable] = []
+    private var inboxInput: [InboxRenderable] = []
     private var state: InboxViewController.State = .idle
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
@@ -83,8 +78,10 @@ class InboxViewController:
         super.traitCollectionDidChange(previousTraitCollection)
         tableNode.reloadData()
     }
+}
 
-    // MARK: - UI
+// MARK: - UI
+extension InboxViewController {
     private func setupUI() {
         title = inboxTitle
 
@@ -108,7 +105,10 @@ class InboxViewController:
             ]
         )
     }
-    // MARK: - Helpers
+}
+
+// MARK: - Helpers
+extension InboxViewController {
     private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
         MailProvider.shared.currentMessagesListPagination(from: number, token: state.token)
     }
@@ -121,14 +121,16 @@ class InboxViewController:
             guard let total = totalNumberOfMessages else {
                 return numberOfMessagesToLoad
             }
-            let from = inboxData.count
+            let from = inboxInput.count
             return min(numberOfMessagesToLoad, total - from)
         default:
             return numberOfMessagesToLoad
         }
     }
+}
 
-    // MARK: - Functionality
+// MARK: - Functionality
+extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
         provider.fetchMessages(
             using: FetchMessageContext(
@@ -148,7 +150,7 @@ class InboxViewController:
     private func loadMore(_ batchContext: ASBatchContext?) {
         guard state.canLoadMore else { return }
 
-        let pagination = currentMessagesListPagination(from: inboxData.count)
+        let pagination = currentMessagesListPagination(from: inboxInput.count)
         state = .fetching
 
         provider.fetchMessages(
@@ -172,7 +174,7 @@ class InboxViewController:
         case .idle:
             return false
         case .fetched(.byNumber(let total)):
-            return inboxData.count < total ?? 0
+            return inboxInput.count < total ?? 0
         case .fetched(.byNextPage(let token)):
             return token != nil
         case .error, .refresh, .fetching, .empty:
@@ -190,7 +192,7 @@ class InboxViewController:
         case .idle:
             break
         case let .fetched(.byNumber(total)):
-            if inboxData.count != total {
+            if inboxInput.count != total {
                 loadMore(context)
             }
         case let .fetched(.byNextPage(token)):
@@ -214,8 +216,11 @@ class InboxViewController:
             break
         }
     }
+}
 
-    // MARK: - Functionality Input
+// MARK: - Functionality Input
+extension InboxViewController {
+
     private func handleEndFetching(with input: InboxContext, context: ASBatchContext?) {
         context?.completeBatchFetching(true)
 
@@ -233,11 +238,7 @@ class InboxViewController:
         if input.data.isEmpty {
             state = .empty
         } else {
-            inboxData = input.data
-                // .sorted()
-
-            // TODO: - ANTON
-            // .sorted(by: { $0.date > $1.date })
+            inboxInput = input.data.sorted()
             state = .fetched(input.pagination)
         }
         refreshControl.endRefreshing()
@@ -245,7 +246,7 @@ class InboxViewController:
     }
 
     private func handleFetched(_ input: InboxContext) {
-        let count = inboxData.count - 1
+        let count = inboxInput.count - 1
 
         // insert new messages
         let indexesToInsert = input.data
@@ -256,7 +257,7 @@ class InboxViewController:
             }
             .map { IndexPath(row: $0, section: 0) }
 
-        inboxData.append(contentsOf: input.data)
+        inboxInput.append(contentsOf: input.data)
         state = .fetched(input.pagination)
 
         DispatchQueue.main.async {
@@ -278,8 +279,10 @@ class InboxViewController:
         }
         tableNode.reloadData()
     }
+}
 
-    // MARK: - Action handlers
+// MARK: - Action handlers
+extension InboxViewController {
     @objc private func handleInfoTap() {
         #warning("ToDo")
         showToast("Email us at human@flowcrypt.com")
@@ -303,19 +306,22 @@ class InboxViewController:
         let composeVc = ComposeViewController(email: email)
         navigationController?.pushViewController(composeVc, animated: true)
     }
+}
 
-    // MARK: - Refreshable
+// MARK: - Refreshable
+extension InboxViewController: Refreshable {
     func startRefreshing() {
         refresh()
     }
+}
 
-    // MARK: - ASTableDataSource, ASTableDelegate
+extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
         case .empty, .idle, .error:
             return 1
         case .fetching, .fetched, .refresh:
-            return inboxData.count
+            return inboxInput.count
         }
     }
 
@@ -325,13 +331,18 @@ class InboxViewController:
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        guard let message = inboxData[safe: indexPath.row] else { return }
+        guard let message = inboxInput[safe: indexPath.row] else { return }
 
-        // TODO: - ANTON
-//        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
+        switch inboxInput[indexPath.row].wrappedType {
+        case .message(let message):
+            msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
+        case .thread(let thread):
+            // TODO: - ANTON - didSelectRowAt
+            print("Open")
+        }
     }
 
-    // MARK: - Cell Nodes
+    // MARK: Cell Nodes
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
@@ -342,13 +353,13 @@ class InboxViewController:
             case .idle:
                 return TextCellNode(input: self.decorator.initialNodeInput(for: size))
             case .fetched, .refresh:
-                return InboxCellNode(message: .init((self.inboxData[indexPath.row])))
+                return InboxCellNode(message: .init((self.inboxInput[indexPath.row])))
                     .then { $0.backgroundColor = .backgroundColor }
             case .fetching:
-                guard let message = self.inboxData[safe: indexPath.row] else {
+                guard let input = self.inboxInput[safe: indexPath.row] else {
                     return TextCellNode.loading
                 }
-                return InboxCellNode(message: .init(message))
+                return InboxCellNode(message: .init(input))
             case let .error(message):
                 return TextCellNode(
                     input: TextCellNode.Input(
@@ -363,42 +374,41 @@ class InboxViewController:
     }
 }
 
-// TODO: - ANTON - rework operations with messages
-// MARK: - MsgListViewConroller
-//extension InboxViewController: MsgListViewConroller {
-//    func msgListGetIndex(message: Message) -> Int? {
-//        messages.firstIndex(of: message)
-//    }
-//
-//    func msgListRenderAsRemoved(message _: Message, at index: Int) {
-//        guard messages[safe: index] != nil else { return }
-//        messages.remove(at: index)
-//
-//        guard messages.isNotEmpty else {
-//            state = .empty
-//            tableNode.reloadData()
-//            return
-//        }
-//        switch state {
-//        case .fetched(.byNumber(let total)):
-//            let newTotalNumber = (total ?? 0) - 1
-//            if newTotalNumber == 0 {
-//                state = .empty
-//                tableNode.reloadData()
-//            } else {
-//                state = .fetched(.byNumber(total: newTotalNumber))
-//                tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-//            }
-//        default:
-//            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-//        }
-//    }
-//
-//    func msgListUpdateReadFlag(message: Message, at index: Int) {
-//        messages[index] = message
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-//            guard let self = self else { return }
-//            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-//        }
-//    }
-//}
+// MARK: - MsgListViewController
+extension InboxViewController: MsgListViewController {
+    func msgListGetIndex(message: Message) -> Int? {
+        inboxInput.compactMap(\.wrappedMessage)
+            .firstIndex(of: message)
+    }
+
+    func msgListUpdateReadFlag(message: Message, at index: Int) {
+        inboxInput[index] = InboxRenderable(message: message)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+        }
+    }
+
+    func msgListRenderAsRemoved(message _: Message, at index: Int) {
+        guard inboxInput[safe: index] != nil else { return }
+        inboxInput.remove(at: index)
+
+        guard inboxInput.isNotEmpty else {
+            state = .empty
+            tableNode.reloadData()
+            return
+        }
+        switch state {
+        case .fetched(.byNumber(let total)):
+            let newTotalNumber = (total ?? 0) - 1
+            if newTotalNumber == 0 {
+                state = .empty
+                tableNode.reloadData()
+            } else {
+                state = .fetched(.byNumber(total: newTotalNumber))
+                tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+            }
+        default:
+            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+        }
+    }
+}

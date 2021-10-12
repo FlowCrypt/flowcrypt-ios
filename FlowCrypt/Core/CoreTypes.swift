@@ -206,7 +206,6 @@ struct MsgBlock: Decodable {
     }
 }
 
-// TODO: - ANTON - tests
 extension MsgBlock {
     var isAttachmentBlock: Bool {
         type == .plainAtt || type == .encryptedAtt || type == .decryptedAtt
