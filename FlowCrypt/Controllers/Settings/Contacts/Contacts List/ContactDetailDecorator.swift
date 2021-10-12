@@ -25,10 +25,26 @@ struct ContactDetailDecorator: ContactDetailDecoratorType {
     }
 
     func keyNodeInput(with key: ContactKey) -> ContactKeyCellNode.Input {
-        ContactKeyCellNode.Input(
-            fingerprint: key.fingerprint?.attributed(.regular(12)),
-            createdAt: "".attributed(.regular(14)),
-            expires: "".attributed(.regular(14))
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        df.timeStyle = .medium
+
+        let fingerpringString = key.fingerprint ?? "-"
+
+        let createdString: String = {
+            guard let created = key.created else { return "-" }
+            return df.string(from: created)
+        }()
+
+        let expiresString: String = {
+            guard let expires = key.expiresOn else { return "never" }
+            return df.string(from: expires)
+        }()
+
+        return ContactKeyCellNode.Input(
+            fingerprint: fingerpringString.attributed(.regular(13)),
+            createdAt: createdString.attributed(.regular(14)),
+            expires: expiresString.attributed(.regular(14))
         )
     }
 }

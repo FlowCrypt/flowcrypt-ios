@@ -44,9 +44,9 @@ struct ContactsListDecorator: ContactsListDecoratorType {
         return ContactCellNode.Input(
             name: name.attributed(.medium(16)),
             email: contact.email.attributed(.medium(14)),
-            keys: "(\(keysCount))".attributed(.medium(14), color: .textColor.withAlphaComponent(0.5)),
+            keys: "(\(keysCount))".attributed(.medium(14), color: .mainTextColor.withAlphaComponent(0.5)),
             insets: UIEdgeInsets(top: 16, left: 16, bottom: 8, right: 16),
-            buttonImage: #imageLiteral(resourceName: "trash").tinted(buttonColor)
+            buttonImage: UIImage(systemName: "trash")?.tinted(buttonColor)
         )
     }
 

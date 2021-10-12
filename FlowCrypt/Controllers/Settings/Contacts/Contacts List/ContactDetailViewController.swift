@@ -91,6 +91,17 @@ extension ContactDetailViewController: ASTableDelegate, ASTableDataSource {
             return self.node(for: section, row: indexPath.row)
         }
     }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard let section = Section(rawValue: indexPath.section) else { return }
+
+        switch section {
+        case .header:
+            return
+        case .keys:
+            return
+        }
+    }
 }
 
 // MARK: - UI
