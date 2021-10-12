@@ -9,21 +9,19 @@ Subject: mime email plain signed detached
 To: flowcrypt.compatibility@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 
-some
-汉
-txt
+some text
 
 -----BEGIN PGP SIGNATURE-----
 Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption
 Comment: Seamlessly send and receive encrypted email
 
-wsBcBAEBCAAGBQJhZKj9AAoJEDow9MwKmo8Q9GAH/0VkC/MbhTkCjpvQ0PVQ
-WVd+/lpDyOzB/6paHdY7aKeSSlXF9W5t3G3R+azv41WLW+J9J/wrh3TNtMWl
-WA7Wz0VSzjp0CbJDNh67IeyooT1rQ98IADXD8zQk5lv2MogzaKqjjhenWRYD
-YXDmfYzrj9pPa/p7qombWtiKxNLS16mTubd/ae2NSIAN6P0q5NipMbyBw+Wc
-jnZroTErhZrVgQRNQRfODI8uIkA6gU2lff5742jAZEWhQDIREPTNqgoC3OiY
-HDTk4LlG1eavKJLCyHFRdO6BOStf5fDwh+04BZtwzfRs48svg69Iza9L+IMX
-GMKMMBmjDsQlzYUf6S+3WZ0=
-=XKCS
+wsBcBAEBCAAGBQJhZddKAAoJEDow9MwKmo8QN04H/AgF1juV59IGlifqcw1b
+pIbL7Wy2RGN3HRf71EKIQxq7Aw915MUS5KwJ71ip/BqBJs9UF7PvYJ3czwiv
+Wp1Q/cihblMfpJaZyp1AC0shu6WAPZv6VE7Pk0eJ9AduYsQEifGQZPBQWnnN
+E0mi1gUk/nTeXbAgf475sKjkZrWa02H8IC5LBKbew0smhjA/2BpkPJDFaWRS
+WrQZr3kq4/ErIBCtFnnWx2k5ONNbsBi8mhWhI3Mr+us6JCYfrUiffpR39pBS
+1OPOx4IAu1pJiZE7QWNJq77ldO0Sbdgq4J97wGmnSbb/0zTUwF6moGxgDJur
+JqSoBWuMilggHft/Taq2HN8=
+=ARBb
 -----END PGP SIGNATURE-----
 

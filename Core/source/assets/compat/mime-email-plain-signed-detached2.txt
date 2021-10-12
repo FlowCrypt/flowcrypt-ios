@@ -7,26 +7,51 @@ Date: Thu, 2 Nov 2017 17:54:14 -0700
 Message-ID: <CANzaQHU9A@mail.gmail.com>
 Subject: mime email plain signed detached
 To: flowcrypt.compatibility@gmail.com
-Content-Type: multipart/signed; micalg=pgp-sha256; protocol="application/pgp-signature"; 
-boundary="UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy"
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy
+Content-Type: multipart/mixed; boundary="2SVjN9BW1ncH06ndPSuxQAA7eogrqtJen";
+ protected-headers="v1"
+From: Perpetuum Moobilee <perpetuum.moobilee@gmail.com>
+To: flowcrypt.compatibility@gmail.com
+Message-ID: <bd01d63e-1184-21c2-c622-2706dc0e2f91@gmail.com>
+Subject: plaintext with detached signature
 
 --2SVjN9BW1ncH06ndPSuxQAA7eogrqtJen
-Content-Type: multipart/mixed; boundary="------------318DB2E1763BE977A4E99886"
+Content-Type: multipart/mixed;
+ boundary="------------318DB2E1763BE977A4E99886"
 Content-Language: en-US
 
+This is a multi-part message in MIME format.
 --------------318DB2E1763BE977A4E99886
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-This is plaintext with detached signature
+some text
 
 
---------------318DB2E1763BE977A4E99886--
 --2SVjN9BW1ncH06ndPSuxQAA7eogrqtJen--
+
 --UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
+-----BEGIN PGP SIGNATURE-----
+Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+wsBcBAEBCAAGBQJhZddKAAoJEDow9MwKmo8QN04H/AgF1juV59IGlifqcw1b
+pIbL7Wy2RGN3HRf71EKIQxq7Aw915MUS5KwJ71ip/BqBJs9UF7PvYJ3czwiv
+Wp1Q/cihblMfpJaZyp1AC0shu6WAPZv6VE7Pk0eJ9AduYsQEifGQZPBQWnnN
+E0mi1gUk/nTeXbAgf475sKjkZrWa02H8IC5LBKbew0smhjA/2BpkPJDFaWRS
+WrQZr3kq4/ErIBCtFnnWx2k5ONNbsBi8mhWhI3Mr+us6JCYfrUiffpR39pBS
+1OPOx4IAu1pJiZE7QWNJq77ldO0Sbdgq4J97wGmnSbb/0zTUwF6moGxgDJur
+JqSoBWuMilggHft/Taq2HN8=
+=ARBb
+-----END PGP SIGNATURE-----
 
 --UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy--
