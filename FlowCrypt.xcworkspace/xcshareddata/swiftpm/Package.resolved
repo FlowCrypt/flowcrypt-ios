@@ -47,6 +47,15 @@
         }
       },
       {
+        "package": "GTMAppAuth",
+        "repositoryURL": "https://github.com/google/GTMAppAuth.git",
+        "state": {
+          "branch": null,
+          "revision": "40f4103fb52109032c05599a0c39ad43edbdf80a",
+          "version": "1.2.2"
+        }
+      },
+      {
         "package": "IDZSwiftCommonCrypto",
         "repositoryURL": "https://github.com/iosdevzone/IDZSwiftCommonCrypto",
         "state": {

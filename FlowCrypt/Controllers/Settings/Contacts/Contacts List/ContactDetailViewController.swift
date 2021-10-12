@@ -20,6 +20,10 @@ final class ContactDetailViewController: TableNodeViewController {
         case delete(_ contact: Contact)
     }
 
+    private enum Section: Int, CaseIterable {
+        case header = 0, keys
+    }
+
     private let decorator: ContactDetailDecoratorType
     private let contact: Contact
     private let action: ContactDetailAction?
@@ -51,28 +55,13 @@ final class ContactDetailViewController: TableNodeViewController {
     private func setupNavigationBarItems() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                .init(image: UIImage(named: "share"), action: (self, #selector(handleSaveAction))),
-                .init(image: UIImage(named: "copy"), action: (self, #selector(handleCopyAction))),
-                .init(image: UIImage(named: "trash"), action: (self, #selector(handleRemoveAction)))
+                .init(image: UIImage(systemName: "trash"), action: (self, #selector(handleRemoveAction)))
             ]
         )
     }
 }
 
 extension ContactDetailViewController {
-    @objc private final func handleSaveAction() {
-        let vc = UIActivityViewController(
-            activityItems: [contact.pubKey],
-            applicationActivities: nil
-        )
-        present(vc, animated: true, completion: nil)
-    }
-
-    @objc private final func handleCopyAction() {
-        UIPasteboard.general.string = contact.pubKey
-        showToast("contact_detail_copy".localized)
-    }
-
     @objc private final func handleRemoveAction() {
         navigationController?.popViewController(animated: true) { [weak self] in
             guard let self = self else { return }
@@ -82,14 +71,38 @@ extension ContactDetailViewController {
 }
 
 extension ContactDetailViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        1
+    func numberOfSections(in tableNode: ASTableNode) -> Int {
+        Section.allCases.count
+    }
+
+    func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        guard let section = Section(rawValue: section) else { return 0 }
+
+        switch section {
+        case .header: return 1
+        case .keys: return contact.pubKeys.count
+        }
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
-            guard let self = self else { return ASCellNode() }
-            return ContactDetailNode(input: self.decorator.nodeInput(with: self.contact))
+            guard let self = self, let section = Section(rawValue: indexPath.section)
+            else { return ASCellNode() }
+            return self.node(for: section, row: indexPath.row)
+        }
+    }
+}
+
+// MARK: - UI
+extension ContactDetailViewController {
+    private func node(for section: Section, row: Int) -> ASCellNode {
+        switch section {
+        case .header:
+            return ContactUserCellNode(input: self.decorator.userNodeInput(with: self.contact))
+        case .keys:
+            return ContactKeyCellNode(
+                input: self.decorator.keyNodeInput(with: self.contact.pubKeys[row])
+            )
         }
     }
 }

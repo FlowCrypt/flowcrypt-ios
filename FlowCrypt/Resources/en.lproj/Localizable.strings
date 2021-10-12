@@ -141,7 +141,7 @@
 
 // Contacts
 "contacts_screen_title" = "Contacts";
-"contact_detail_screen_title" = "Public Key";
+"contact_detail_screen_title" = "Public Keys";
 "contact_detail_copy" = "Public Key copied to clipboard";
 
 // Key Settings

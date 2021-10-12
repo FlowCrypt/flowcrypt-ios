@@ -39,9 +39,12 @@ struct ContactsListDecorator: ContactsListDecoratorType {
             lightStyle: .darkGray
         )
 
+        let keysCount = "%@ public key(s)".localizeWithArguments(contact.pubKeys.count)
+
         return ContactCellNode.Input(
             name: name.attributed(.medium(16)),
             email: contact.email.attributed(.medium(14)),
+            keys: "(\(keysCount))".attributed(.medium(14), color: .textColor.withAlphaComponent(0.5)),
             insets: UIEdgeInsets(top: 16, left: 16, bottom: 8, right: 16),
             buttonImage: #imageLiteral(resourceName: "trash").tinted(buttonColor)
         )

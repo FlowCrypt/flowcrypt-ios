@@ -11,30 +11,24 @@ import Foundation
 
 protocol ContactDetailDecoratorType {
     var title: String { get }
-    func nodeInput(with contact: Contact) -> ContactDetailNode.Input
+    func userNodeInput(with contact: Contact) -> ContactUserCellNode.Input
+    func keyNodeInput(with key: ContactKey) -> ContactKeyCellNode.Input
 }
 
 struct ContactDetailDecorator: ContactDetailDecoratorType {
     let title = "contact_detail_screen_title".localized
 
-    func nodeInput(with contact: Contact) -> ContactDetailNode.Input {
-        let createdString: String = {
-            if let created = contact.pubkeyCreated {
-                let df = DateFormatter()
-                df.dateStyle = .medium
-                df.timeStyle = .medium
-                return df.string(from: created)
-            } else {
-                return "-"
-            }
+    func userNodeInput(with contact: Contact) -> ContactUserCellNode.Input {
+        ContactUserCellNode.Input(
+            user: (contact.name ?? contact.email).attributed(.regular(16))
+        )
+    }
 
-        }()
-        return ContactDetailNode.Input(
-            user: (contact.name ?? contact.email).attributed(.regular(16)),
-            ids: contact.longids.joined(separator: ",\n").attributed(.regular(14)),
-            fingerprints: contact.fingerprints.joined(separator: ",\n").attributed(.regular(14)),
-            algoInfo: contact.algo?.algorithm.attributed(.regular(14)),
-            created: createdString.attributed(.regular(14))
+    func keyNodeInput(with key: ContactKey) -> ContactKeyCellNode.Input {
+        ContactKeyCellNode.Input(
+            fingerprint: key.fingerprint?.attributed(.regular(12)),
+            createdAt: "".attributed(.regular(14)),
+            expires: "".attributed(.regular(14))
         )
     }
 }
