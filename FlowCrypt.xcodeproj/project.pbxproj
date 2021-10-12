@@ -142,6 +142,8 @@
 		9F6F3C7D26ADFC60005BD9C6 /* ContactsServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C7C26ADFC60005BD9C6 /* ContactsServiceMock.swift */; };
 		9F6F5F6C26A2F66B00C625C7 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
 		9F716308234FC73E0031645E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9F71630A234FC73E0031645E /* Localizable.strings */; };
+		9F778E7C27161C06001D4B21 /* ThreadDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F778E7B27161C06001D4B21 /* ThreadDetailsViewController.swift */; };
+		9F778E7E27162038001D4B21 /* MessageThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F778E7D27162038001D4B21 /* MessageThread.swift */; };
 		9F7920F52667CEF100DA3D80 /* PassPhraseSaveable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7920F42667CEF100DA3D80 /* PassPhraseSaveable.swift */; };
 		9F79228826696B0200DA3D80 /* PassPhraseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79228726696B0200DA3D80 /* PassPhraseService.swift */; };
 		9F79229426696B9300DA3D80 /* KeyDataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79229326696B9300DA3D80 /* KeyDataStorage.swift */; };
@@ -177,7 +179,6 @@
 		9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA1988F253C841F008C9CF2 /* TableViewController.swift */; };
 		9FA405C7265AEBA50084D133 /* SetupGenerateKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA405C6265AEBA40084D133 /* SetupGenerateKeyViewController.swift */; };
 		9FA9C83C264C2D75005A9670 /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA9C83B264C2D75005A9670 /* MessageService.swift */; };
-		9FAFD75427136EC200321FA4 /* MessagesThreadProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD75327136EC200321FA4 /* MessagesThreadProvider.swift */; };
 		9FAFD7592713870800321FA4 /* InboxViewController+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD7582713870800321FA4 /* InboxViewController+State.swift */; };
 		9FAFD75B2713880400321FA4 /* InboxViewController+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD75A2713880300321FA4 /* InboxViewController+Factory.swift */; };
 		9FAFD75D2714A06400321FA4 /* InboxProviders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD75C2714A06300321FA4 /* InboxProviders.swift */; };
@@ -574,6 +575,8 @@
 		9F716309234FC73E0031645E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9F71630B234FC7500031645E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9F72E866263ECE2A0039CF81 /* Trace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trace.swift; sourceTree = "<group>"; };
+		9F778E7B27161C06001D4B21 /* ThreadDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsViewController.swift; sourceTree = "<group>"; };
+		9F778E7D27162038001D4B21 /* MessageThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageThread.swift; sourceTree = "<group>"; };
 		9F7920F42667CEF100DA3D80 /* PassPhraseSaveable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseSaveable.swift; sourceTree = "<group>"; };
 		9F79228726696B0200DA3D80 /* PassPhraseService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PassPhraseService.swift; sourceTree = "<group>"; };
 		9F79229326696B9300DA3D80 /* KeyDataStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyDataStorage.swift; sourceTree = "<group>"; };
@@ -607,7 +610,6 @@
 		9FA1988F253C841F008C9CF2 /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
 		9FA405C6265AEBA40084D133 /* SetupGenerateKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupGenerateKeyViewController.swift; sourceTree = "<group>"; };
 		9FA9C83B264C2D75005A9670 /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
-		9FAFD75327136EC200321FA4 /* MessagesThreadProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesThreadProvider.swift; sourceTree = "<group>"; };
 		9FAFD7582713870800321FA4 /* InboxViewController+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InboxViewController+State.swift"; sourceTree = "<group>"; };
 		9FAFD75A2713880300321FA4 /* InboxViewController+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InboxViewController+Factory.swift"; sourceTree = "<group>"; };
 		9FAFD75C2714A06300321FA4 /* InboxProviders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxProviders.swift; sourceTree = "<group>"; };
@@ -1328,6 +1330,15 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
+		9F778E7F271620AF001D4B21 /* Threads */ = {
+			isa = PBXGroup;
+			children = (
+				9F778E7B27161C06001D4B21 /* ThreadDetailsViewController.swift */,
+				9F778E7D27162038001D4B21 /* MessageThread.swift */,
+			);
+			path = Threads;
+			sourceTree = "<group>";
+		};
 		9F7E902726A1AD280021C07F /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -1368,14 +1379,6 @@
 				9FA9C83B264C2D75005A9670 /* MessageService.swift */,
 			);
 			path = "Message Provider";
-			sourceTree = "<group>";
-		};
-		9FAFD75527136ECA00321FA4 /* MessagesThread Provider */ = {
-			isa = PBXGroup;
-			children = (
-				9FAFD75327136EC200321FA4 /* MessagesThreadProvider.swift */,
-			);
-			path = "MessagesThread Provider";
 			sourceTree = "<group>";
 		};
 		9FB22CB425715C860026EE64 /* Error Handling */ = {
@@ -1444,7 +1447,6 @@
 				9F5C2A84257E64E400DE9B4B /* MessageOperations Provider */,
 				9F6EE156259739A40059BA51 /* Backup Provider */,
 				9FC411272595EA28001180A8 /* SearchMessage Provider */,
-				9FAFD75527136ECA00321FA4 /* MessagesThread Provider */,
 			);
 			path = "Mail Provider";
 			sourceTree = "<group>";
@@ -1640,6 +1642,7 @@
 				D29AFFF02409300600C1387D /* Search */,
 				5A39F42E239EC32B001F4607 /* Settings */,
 				D29A0001240C137700C1387D /* MessageList Extension */,
+				9F778E7F271620AF001D4B21 /* Threads */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2511,7 +2514,6 @@
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */,
 				9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageService.swift in Sources */,
-				9FAFD75427136EC200321FA4 /* MessagesThreadProvider.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				D20D3C752520AB9A00D4AA9A /* BackupService.swift in Sources */,
@@ -2519,6 +2521,7 @@
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				21CE25E62650070300ADFF4B /* WKDURLsConstructor.swift in Sources */,
 				9FC411212595EA12001180A8 /* MessageSearchProvider.swift in Sources */,
+				9F778E7E27162038001D4B21 /* MessageThread.swift in Sources */,
 				9F4163B8265ED61C00106194 /* SetupInitialViewController.swift in Sources */,
 				D27B911D24EFE806002DF0A1 /* ContactObject.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
@@ -2570,6 +2573,7 @@
 				D20D3C892520B67C00D4AA9A /* BackupOptionsViewController.swift in Sources */,
 				21750D7D26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift in Sources */,
 				211392A5266511E6009202EC /* PubLookup.swift in Sources */,
+				9F778E7C27161C06001D4B21 /* ThreadDetailsViewController.swift in Sources */,
 				D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */,
 				D2E26F6324F1698100612AF1 /* ContactsListViewController.swift in Sources */,
 				9F53CB7B2555E1E300C0157A /* GmailService+folders.swift in Sources */,

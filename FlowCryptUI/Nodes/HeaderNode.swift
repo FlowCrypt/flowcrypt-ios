@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import UIKit
 
 public final class HeaderNode: CellNode {
     public struct Input {
@@ -14,12 +15,23 @@ public final class HeaderNode: CellNode {
         public let subtitle: NSAttributedString?
         public let image: UIImage?
         public let imageSize: CGSize
+        public let nodeInsets: UIEdgeInsets
+        public let backgroundColor: UIColor
 
-        public init(title: NSAttributedString, subtitle: NSAttributedString?, image: UIImage?, imageSize: CGSize = CGSize(width: 24, height: 24)) {
+        public init(
+            title: NSAttributedString,
+            subtitle: NSAttributedString?,
+            image: UIImage?,
+            imageSize: CGSize = CGSize(width: 24, height: 24),
+            nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16),
+            backgroundColor: UIColor
+        ) {
             self.title = title
             self.subtitle = subtitle
             self.image = image
             self.imageSize = imageSize
+            self.nodeInsets = nodeInsets
+            self.backgroundColor = backgroundColor
         }
     }
 
@@ -39,7 +51,7 @@ public final class HeaderNode: CellNode {
         titleNode.attributedText = input.title
         subTitleNode.attributedText = input.subtitle
         imageNode.image = input.image
-        backgroundColor = .main
+        backgroundColor = input.backgroundColor
 
         imageNode.addTarget(self, action: #selector(onImageTap), forControlEvents: .touchUpInside)
     }
@@ -57,7 +69,7 @@ public final class HeaderNode: CellNode {
             $0.alignItems = .center
         }
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16),
+            insets: input.nodeInsets,
             child: ASStackLayoutSpec.vertical().then {
                 $0.spacing = 8
                 $0.children = [titleNode, subtitleSpec]

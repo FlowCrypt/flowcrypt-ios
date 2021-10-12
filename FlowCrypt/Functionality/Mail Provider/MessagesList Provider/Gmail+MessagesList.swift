@@ -11,16 +11,6 @@ import GoogleAPIClientForREST_Gmail
 import Promises
 import UIKit
 
-struct MessageThread: Equatable {
-    let snippet: String?
-    let messages: [Message]
-}
-
-struct MessageThreadContext {
-    let threads: [MessageThread]
-    let pagination: MessagesListPagination
-}
-
 protocol MessagesThreadProvider {
     func fetchThreads(using context: FetchMessageContext) -> Promise<MessageThreadContext>
 }
@@ -174,7 +164,7 @@ private extension Message {
     }
 }
 
-// TODO: - ANTON - remove 
+// TODO: - ANTON - remove
 extension GmailService: MessagesListProvider {
      func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
          Promise { resolve, reject in

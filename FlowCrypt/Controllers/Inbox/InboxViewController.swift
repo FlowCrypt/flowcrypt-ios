@@ -331,14 +331,13 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        guard let message = inboxInput[safe: indexPath.row] else { return }
 
         switch inboxInput[indexPath.row].wrappedType {
         case .message(let message):
             msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
         case .thread(let thread):
-            // TODO: - ANTON - didSelectRowAt
-            print("Open")
+            let viewController = ThreadDetailsViewController(thread: thread)
+            navigationController?.pushViewController(viewController, animated: true)
         }
     }
 
@@ -353,13 +352,13 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             case .idle:
                 return TextCellNode(input: self.decorator.initialNodeInput(for: size))
             case .fetched, .refresh:
-                return InboxCellNode(message: .init((self.inboxInput[indexPath.row])))
+                return InboxCellNode(input: .init((self.inboxInput[indexPath.row])))
                     .then { $0.backgroundColor = .backgroundColor }
             case .fetching:
                 guard let input = self.inboxInput[safe: indexPath.row] else {
                     return TextCellNode.loading
                 }
-                return InboxCellNode(message: .init(input))
+                return InboxCellNode(input: .init(input))
             case let .error(message):
                 return TextCellNode(
                     input: TextCellNode.Input(

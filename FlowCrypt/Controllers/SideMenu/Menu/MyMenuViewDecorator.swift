@@ -25,7 +25,8 @@ struct MyMenuViewDecorator: MyMenuViewDecoratorType {
         HeaderNode.Input(
             title: nameFor(user: user).attributed(.bold(22), color: .white, alignment: .left),
             subtitle: emailFor(user: user).attributed(.medium(18), color: .white, alignment: .left),
-            image: image
+            image: image,
+            backgroundColor: .main
         )
     }
 
