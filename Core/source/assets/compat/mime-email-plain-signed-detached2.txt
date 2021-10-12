@@ -1,0 +1,32 @@
+Delivered-To: flowcrypt.compatibility@gmail.com
+Return-Path: <flowcrypt.compatibility@gmail.com>
+Openpgp: id=E76853E128A0D376CAE47C143A30F4CC0A9A8F10
+From: flowcrypt.compatibility@gmail.com
+MIME-Version: 1.0
+Date: Thu, 2 Nov 2017 17:54:14 -0700
+Message-ID: <CANzaQHU9A@mail.gmail.com>
+Subject: mime email plain signed detached
+To: flowcrypt.compatibility@gmail.com
+Content-Type: multipart/signed; micalg=pgp-sha256; protocol="application/pgp-signature"; 
+boundary="UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy"
+
+--2SVjN9BW1ncH06ndPSuxQAA7eogrqtJen
+Content-Type: multipart/mixed; boundary="------------318DB2E1763BE977A4E99886"
+Content-Language: en-US
+
+--------------318DB2E1763BE977A4E99886
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
+This is plaintext with detached signature
+
+
+--------------318DB2E1763BE977A4E99886--
+--2SVjN9BW1ncH06ndPSuxQAA7eogrqtJen--
+--UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+
+--UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy--
