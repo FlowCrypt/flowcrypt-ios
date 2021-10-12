@@ -8,7 +8,6 @@
 
 import Combine
 import Foundation
-import RealmSwift
 
 extension Publisher {
     /// Attaches a subscriber with closure-based behaviour which will emit value and error
