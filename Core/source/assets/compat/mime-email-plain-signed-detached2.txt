@@ -1,58 +1,53 @@
-Return-Path: <flowcrypt.compatibility@gmail.com>
-Received: from [192.168.88.243] ([176.100.5.125])
-        by smtp.gmail.com with ESMTPSA id z6sm964274ljc.112.2021.10.12.12.57.41
-        for <flowcrypt.compatibility@gmail.com>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Oct 2021 12:57:41 -0700 (PDT)
-To: flowcrypt.compatibility@gmail.com
-From: Flowcrypt Compatibility <flowcrypt.compatibility@gmail.com>
+Return-Path: <t@est.com>
+X-Original-To: t@est.com
+Delivered-To: t@est.com
+Received: from [192.168.56.1] (unknown [192.168.56.1])
+	by est.com (Postfix) with ESMTPS id E08F2103ED0
+	for <t@est.com>; Tue, 12 Oct 2021 23:06:02 +0000 (UTC)
+To: t@est.com
+From: Test User <t@est.com>
 Subject: mime email plain signed detached
-Message-ID: <1bf47b68-85a3-f6af-460c-d323a774f363@gmail.com>
-Date: Tue, 12 Oct 2021 22:57:40 +0300
+Message-ID: <920dc165-7ba2-3f36-3177-a8e76bae4ddd@est.com>
+Date: Wed, 13 Oct 2021 02:06:02 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="hTjLPt39apiyzP4ygKIkZaDYyHWQcexiZ"
+ boundary="1C2MFssN1e2UeK7Q7Fok4Ko9VNn7xQryG"
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---hTjLPt39apiyzP4ygKIkZaDYyHWQcexiZ
-Content-Type: multipart/mixed; boundary="hoT9LflcSYM3GtoaeoAPEXZodu41YW4bQ";
+--1C2MFssN1e2UeK7Q7Fok4Ko9VNn7xQryG
+Content-Type: multipart/mixed; boundary="zB40xvQ1bEP0WaDoW1b6PiXYa0sf6aLHw";
  protected-headers="v1"
-From: Flowcrypt Compatibility <flowcrypt.compatibility@gmail.com>
-To: flowcrypt.compatibility@gmail.com
-Message-ID: <1bf47b68-85a3-f6af-460c-d323a774f363@gmail.com>
+From: Test User <t@est.com>
+To: t@est.com
+Message-ID: <920dc165-7ba2-3f36-3177-a8e76bae4ddd@est.com>
 Subject: mime email plain signed detached
 
---hoT9LflcSYM3GtoaeoAPEXZodu41YW4bQ
+--zB40xvQ1bEP0WaDoW1b6PiXYa0sf6aLHw
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 Content-Language: en-US
 
-some text
+c29tZQrmsYkKdHh0Cgo=
 
+--zB40xvQ1bEP0WaDoW1b6PiXYa0sf6aLHw--
 
-
---hoT9LflcSYM3GtoaeoAPEXZodu41YW4bQ--
-
---hTjLPt39apiyzP4ygKIkZaDYyHWQcexiZ
+--1C2MFssN1e2UeK7Q7Fok4Ko9VNn7xQryG
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
-Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption
-Comment: Seamlessly send and receive encrypted email
 
-wsBcBAEBCAAGBQJhZes5AAoJEDow9MwKmo8QBQYH/jzSstB9q65KQysOn5yK
-Hjp1pIcqVnXql9qZ2ALz8qVZ+iR8GuqxA+iXFZqx6k+owUa5AbVRSZ14wN65
-gI67J/N72XTs9xDHhAxaq65rEIMnUxvjyaO/83srCT2n/EEY6Cp7IW91/ml1
-Q/BDltqb55tu7iFP5aERvlY/seDkAMc5X37S+RAvgnnZeLR/Dzy9ArLPSEiR
-UL6l5y/kqgWSz+98fLP/GA2X48JCmXQjtcFQ7iuL/amf0CR62tsHeD0fvP01
-ComQm/I1MBIdrLxjeVp3M87qwKNxuoluGFgbVVaKLPy+kwx0jcLtfYisA3Qy
-J0j5S2giARCEzb6lUrYCW40=
-=rOGQ
+wsB5BAABCAAjFiEE52hT4Sig03bK5HwUOjD0zAqajxAFAmFmFNoFAwAAAAAACgkQOjD0zAqajxBM
+dgf7BDgUTDQ4AvhUdyJ8xMtWpzRKCWz1tp2ErqciQCamXJxOkoBMlcY8mrohYgbNtOvabKguknWT
+NUpzgcnU1DbtL/wB43tJNfAmquLhl3dw5TBPieg7lImZSNAyS5H0Uxtuxze0nVrdgCgVoyaPuC/7
+PBoMMUM1LLrnP5LJM9d10Hku6BqsgYgI2GDx7MFiWkUIHWFcSLaZk+Ttc7Dpau40bpuJDxW5Cd1p
+OrBkuuuSSlYVQkZB8ABZ2T/OT+H06kGuvN5SV9UDTuSHi+Uk355bzWJau5hEQHXoT+O4TskJlJAG
++VkotOZYUtGyPWdwKsun1/w8w2xc9GCMjnb2owFXdQ==
+=bMPl
 -----END PGP SIGNATURE-----
 
---hTjLPt39apiyzP4ygKIkZaDYyHWQcexiZ--
+--1C2MFssN1e2UeK7Q7Fok4Ko9VNn7xQryG--
