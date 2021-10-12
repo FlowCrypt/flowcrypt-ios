@@ -29,7 +29,6 @@ enum MailServiceProviderType {
 
 protocol MailServiceProvider: MessageGateway,
     RemoteFoldersProviderType,
-    MessagesListProvider,
     MessageProvider,
     MessageOperationsProvider,
     MessageSearchProvider,

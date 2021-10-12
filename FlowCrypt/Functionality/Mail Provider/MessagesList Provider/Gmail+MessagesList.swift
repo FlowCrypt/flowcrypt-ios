@@ -11,30 +11,66 @@ import GoogleAPIClientForREST_Gmail
 import Promises
 import UIKit
 
-extension GmailService: MessagesListProvider {
-    func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
-        Promise { resolve, reject in
-            let list = try awaitPromise(fetchMessagesList(using: context))
-            let messageRequests: [Promise<Message>] = list.messages?
-                .compactMap(\.identifier)
-                .map(fetchFullMessage(with:))
+struct MessageThread {
+    let snippet: String?
+    let messages: [Message]
+}
+
+struct MessageThreadContext {
+    let threads: [MessageThread]
+    let pagination: MessagesListPagination
+}
+
+protocol MessagesThreadProvider {
+    func fetchThreads(using context: FetchMessageContext) -> Promise<MessageThreadContext>
+}
+
+extension GmailService: MessagesThreadProvider {
+    func fetchThreads(using context: FetchMessageContext) -> Promise<MessageThreadContext> {
+        Promise<MessageThreadContext> { (resolve, _) in
+            let threadsList = try awaitPromise(getThreadsList(using: context))
+            let threadsRequests = threadsList.threads?
+                .compactMap {
+                    if let id = $0.identifier {
+                        return (id, $0.snippet)
+                    }
+                    return nil
+                }
+                .map(getThread)
             ?? []
 
-            all(messageRequests)
-                .then { messages in
-                    let context = MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
-                    resolve(context)
-                }
-                .catch { error in
-                    reject(error)
+            all(threadsRequests)
+                .then { result in
+                    let messageThreadContext = MessageThreadContext(
+                        threads: result,
+                        pagination: .byNextPage(token: threadsList.nextPageToken)
+                    )
+                    resolve(messageThreadContext)
                 }
         }
     }
-}
 
-extension GmailService {
-    private func fetchMessagesList(using context: FetchMessageContext) -> Promise<GTLRGmail_ListMessagesResponse> {
-        let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
+    private func getThreadsList(using context: FetchMessageContext) -> Promise<GTLRGmail_ListThreadsResponse> {
+        Promise<GTLRGmail_ListThreadsResponse> { (resolve, reject) in
+            let query = makeQuery(using: context)
+
+            self.gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    reject(GmailServiceError.providerError(error))
+                    return
+                }
+
+                guard let threadsResponse = data as? GTLRGmail_ListThreadsResponse else {
+                    return reject(AppErr.cast("GTLRGmail_ListThreadsResponse"))
+                }
+
+                resolve(threadsResponse)
+            }
+        }
+    }
+
+    private func makeQuery(using context: FetchMessageContext) -> GTLRGmailQuery_UsersThreadsList {
+        let query = GTLRGmailQuery_UsersThreadsList.query(withUserId: .me)
 
         if let pagination = context.pagination {
             guard case let .byNextPage(token) = pagination else {
@@ -53,39 +89,28 @@ extension GmailService {
             query.q = searchQuery
         }
 
-        return Promise { resolve, reject in
-            self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
-                }
-
-                guard let messageList = data as? GTLRGmail_ListMessagesResponse else {
-                    return reject(AppErr.cast("GTLRGmail_ListMessagesResponse"))
-                }
-
-                resolve(messageList)
-            }
-        }
+        return query
     }
 
-    private func fetchFullMessage(with identifier: String) -> Promise<Message> {
-        let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
-        query.format = kGTLRGmailFormatFull
-        return Promise { resolve, reject in
+    private func getThread(with identifier: String, snippet: String?) -> Promise<MessageThread> {
+        Promise<MessageThread> { (resolve, reject) in
+            let query = GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
+                    return reject(GmailServiceError.providerError(error))
                 }
 
-                guard let gmailMessage = data as? GTLRGmail_Message else {
-                    return reject(AppErr.cast("GTLRGmail_Message"))
+                guard let thread = data as? GTLRGmail_Thread else {
+                    return reject(AppErr.cast("GTLRGmail_Thread"))
                 }
 
                 do {
-                    let message = try Message(gmailMessage)
-                    resolve(message)
+                    let messages = try (thread.messages ?? []).compactMap(Message.init)
+                    let thread = MessageThread(
+                        snippet: snippet,
+                        messages: messages
+                    )
+                    resolve(thread)
                 } catch {
                     reject(error)
                 }
@@ -94,7 +119,6 @@ extension GmailService {
     }
 }
 
-// MARK: - Gmail
 private extension Message {
     init(_ message: GTLRGmail_Message) throws {
         guard let payload = message.payload else {
@@ -147,106 +171,5 @@ private extension Message {
             attachmentIds: attachmentsIds,
             threadId: message.threadId
         )
-    }
-}
-
-struct MessageThread {
-    let messages: [Message]
-}
-
-struct MessageThreadContext {
-    let threads: [MessageThread]
-    let pagination: MessagesListPagination
-}
-
-// TODO: - ANTON
-import GoogleAPIClientForREST_Gmail
-
-protocol MessagesThreadProvider {
-    func fetchThreads(using context: FetchMessageContext) -> Promise<MessageThreadContext>
-}
-
-extension GmailService: MessagesThreadProvider {
-    func fetchThreads(using context: FetchMessageContext) -> Promise<MessageThreadContext> {
-        Promise<MessageThreadContext> { (resolve, reject) in
-            let threadsList = try awaitPromise(getThreadsList(using: context))
-            let threadsRequests = threadsList.threads?
-                .compactMap(\.identifier)
-                .map(getThread)
-            ?? []
-
-            all(threadsRequests)
-                .then { result in
-                    let messageThreadContext = MessageThreadContext(
-                        threads: result.map(MessageThread.init),
-                        pagination: .byNextPage(token: threadsList.nextPageToken)
-                    )
-                    resolve(messageThreadContext)
-                }
-        }
-    }
-
-    private func getThreadsList(using context: FetchMessageContext) -> Promise<GTLRGmail_ListThreadsResponse> {
-        Promise<GTLRGmail_ListThreadsResponse> { (resolve, reject) in
-            let query = makeQuery(using: context)
-
-            self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
-                }
-
-                guard let threadsResponse = data as? GTLRGmail_ListThreadsResponse else {
-                    return reject(AppErr.cast("GTLRGmail_ListThreadsResponse"))
-                }
-
-                resolve(threadsResponse)
-            }
-        }
-    }
-
-    private func makeQuery(using context: FetchMessageContext) -> GTLRGmailQuery_UsersThreadsList {
-        let query = GTLRGmailQuery_UsersThreadsList.query(withUserId: .me)
-
-        if let pagination = context.pagination {
-            guard case let .byNextPage(token) = pagination else {
-                fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
-            }
-            query.pageToken = token
-        }
-
-        if let folderPath = context.folderPath, folderPath.isNotEmpty {
-            query.labelIds = [folderPath]
-        }
-        if let count = context.count {
-            query.maxResults = UInt(count)
-        }
-        if let searchQuery = context.searchQuery {
-            query.q = searchQuery
-        }
-
-        return query
-    }
-
-    private func getThread(with identifier: String) -> Promise<[Message]> {
-        Promise<[Message]> { (resolve, reject) in
-            let query = GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
-            self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    return reject(GmailServiceError.providerError(error))
-                }
-
-                guard let thread = data as? GTLRGmail_Thread else {
-                    return reject(AppErr.cast("GTLRGmail_Thread"))
-                }
-
-                do {
-                    let messages = try (thread.messages ?? []).compactMap(Message.init)
-                    resolve(messages)
-                } catch {
-                    reject(error)
-                }
-            }
-        }
     }
 }

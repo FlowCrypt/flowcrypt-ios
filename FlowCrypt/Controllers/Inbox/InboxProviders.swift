@@ -29,14 +29,14 @@ class InboxMessageThreadsProvider: InboxDataProvider {
     }
 
     override func fetchMessages(using context: FetchMessageContext) -> Promise<InboxContext> {
-        Promise<InboxContext> { (resolve, reject) in
+        Promise<InboxContext> { (resolve, _) in
             let result = try awaitPromise(self.provider.fetchThreads(using: context))
-//            let inboxContext = InboxContext(
-//                data: result.data,
-//                pagination: result.pagination
-//            )
-//            resolve(inboxContext)
-
+            let inboxData = result.threads.map(InboxRenderable.init)
+            let inboxContext = InboxContext(
+                data: inboxData,
+                pagination: result.pagination
+            )
+            resolve(inboxContext)
         }
     }
 }
@@ -49,10 +49,11 @@ class InboxMessageListProvider: InboxDataProvider {
     }
 
     override func fetchMessages(using context: FetchMessageContext) -> Promise<InboxContext> {
-        Promise<InboxContext> { (resolve, reject) in
+        Promise<InboxContext> { (resolve, _) in
             let result = try awaitPromise(self.provider.fetchMessages(using: context))
+            let inboxData = result.messages.map(InboxRenderable.init)
             let inboxContext = InboxContext(
-                data: result.messages.map(InboxRenderable.init),
+                data: inboxData,
                 pagination: result.pagination
             )
             resolve(inboxContext)

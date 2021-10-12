@@ -32,7 +32,7 @@ class InboxViewControllerFactory {
             // Inject message list provide
             let provider = InboxMessageListProvider()
 
-            return InboxViewController( 
+            return InboxViewController(
                 viewModel,
                 numberOfMessagesToLoad: 50,
                 provider: provider

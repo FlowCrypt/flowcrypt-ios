@@ -12,8 +12,10 @@ import Promises
 extension GmailService: MessageSearchProvider {
     func searchExpression(using context: MessageSearchContext) -> Promise<[Message]> {
         Promise { resolve, _ in
-            let context = try awaitPromise(self.fetchMessages(using: FetchMessageContext(searchContext: context)))
-            resolve(context.messages)
+            // TODO: - ANTON
+            fatalError()
+//            let context = try awaitPromise(self.fetchMessages(using: FetchMessageContext(searchContext: context)))
+//            resolve(context.messages)
         }
     }
 }

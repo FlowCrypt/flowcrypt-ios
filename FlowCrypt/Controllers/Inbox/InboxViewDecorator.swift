@@ -36,20 +36,6 @@ extension InboxCellNode.Input {
     }
 }
 
-struct InboxRenderable {
-    let title: String
-    let subtitle: String
-    let dateString: String
-    let isRead: Bool
-
-    init(message: Message) {
-        self.title = message.sender ?? "message_unknown_sender".localized
-        self.subtitle = message.subject ?? "message_missed_subject".localized
-        self.dateString = DateFormatter().formatDate(message.date)
-        self.isRead = message.isMessageRead
-    }
-}
-
 struct InboxViewDecorator {
     func emptyStateNodeInput(for size: CGSize, title: String) -> TextCellNode.Input {
         TextCellNode.Input(
