@@ -42,6 +42,10 @@ extension KeyDetails {
         }
         return longid
     }
+
+    var pgpUserEmails: [String] {
+        users.map { MCOAddress(nonEncodedRFC822String: $0).mailbox }
+    }
 }
 
 // MARK: - CustomStringConvertible, Hashable, Equatable

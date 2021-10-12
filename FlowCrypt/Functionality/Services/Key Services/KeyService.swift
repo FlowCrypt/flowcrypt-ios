@@ -11,6 +11,7 @@ import Foundation
 protocol KeyServiceType {
     func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError>
     func getPrvKeyInfo() -> Result<[PrvKeyInfo], KeyServiceError>
+    func signingKey() throws -> PrvKeyInfo?
 }
 
 enum KeyServiceError: Error {
@@ -79,5 +80,49 @@ final class KeyService: KeyServiceType {
             }
 
         return .success(privateKeys)
+    }
+
+    func signingKey() throws -> PrvKeyInfo? {
+        guard let email = currentUserEmail() else {
+            return nil
+        }
+
+        let keysInfo = storage.keysInfo()
+            .filter { $0.account == email }
+
+        let p: (KeyInfo) throws -> KeyDetails? = { key in
+            let parsedKeys = try self.coreService.parseKeys(
+                armoredOrBinary: key.`private`.data()
+            )
+
+            var keyDetails: [KeyDetails] = []
+            parsedKeys.keyDetails.forEach { keyDetails.append($0) }
+
+            guard let result = keyDetails.first(where: {
+                let emails = $0.pgpUserEmails
+                return emails.first == email || emails.contains(where: { $0 == email })
+            }) else {
+                return nil
+            }
+
+            return result
+        }
+
+        guard let k: KeyDetails = try keysInfo.compactMap(p).first else {
+            return nil
+        }
+
+        let storedPassPhrases = passPhraseService.getPassPhrases()
+        let passphrase = storedPassPhrases
+            .filter { $0.value.isNotEmpty }
+            .first(where: { $0.primaryFingerprint == k.primaryFingerprint })?
+            .value
+
+        return PrvKeyInfo(
+            private: k.`private` ?? "",
+            longid: k.primaryFingerprint,
+            passphrase: passphrase,
+            fingerprints: k.fingerprints
+        )
     }
 }

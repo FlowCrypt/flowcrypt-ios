@@ -222,7 +222,7 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() {
-        guard let key = try? keyService.getPrvKeyInfo().get().first else {
+        guard let key = try? keyService.signingKey() else {
             showAlert(message: "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key.")
             return
         }
