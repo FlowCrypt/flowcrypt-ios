@@ -37,7 +37,7 @@ final class ComposeViewController: TableNodeViewController {
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
 
-    private let searchThrottler = Throttler(seconds: 1)
+    private let search = PassthroughSubject<String, Never>()
     private let cloudContactProvider: CloudContactsProvider
     private let userDefaults: UserDefaults
 
@@ -96,10 +96,9 @@ final class ComposeViewController: TableNodeViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        // temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
-        // showScopeAlertIfNeeded()
+        showScopeAlertIfNeeded()
         cancellable.forEach { $0.cancel() }
+        setupSearch()
     }
 
     deinit {
@@ -144,6 +143,24 @@ extension ComposeViewController {
         let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
         contextToSend.recipients.append(recipient)
         evaluate(recipient: recipient)
+    }
+}
+
+// MARK: - Search
+extension ComposeViewController {
+    private func setupSearch() {
+        search
+            .debounce(for: .milliseconds(400), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .compactMap { [weak self] in
+                guard $0.isNotEmpty else {
+                    self?.updateState(with: .main)
+                    return nil
+                }
+                return $0
+            }
+            .sink { [weak self] in self?.searchEmail(with: $0) }
+            .store(in: &cancellable)
     }
 }
 
@@ -535,15 +552,13 @@ extension ComposeViewController {
     }
 
     private func handleEditingChanged(with text: String?) {
-//        temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
-//        guard let text = text, text.isNotEmpty else {
-//            updateState(with: .main)
-//            return
-//        }
-//
-//        searchThrottler.throttle { [weak self] in
-//            self?.searchEmail(with: text)
-//        }
+        guard let text = text, text.isNotEmpty else {
+            search.send("")
+            updateState(with: .main)
+            return
+        }
+
+        search.send(text)
     }
 
     private func handleDidBeginEditing() {
@@ -667,7 +682,13 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
-        node.reloadSections(IndexSet(integer: 0), with: .fade)
+
+        switch state {
+        case .main:
+            node.reloadSections([0, 1], with: .fade)
+        case .searchEmails:
+            node.reloadSections([1], with: .fade)
+        }
     }
 }
 
@@ -797,8 +818,6 @@ extension ComposeViewController {
     }
 }
 
-// temporary disable search contacts
-// https://github.com/FlowCrypt/flowcrypt-ios/issues/217
 extension ComposeViewController {
     private func showScopeAlertIfNeeded() {
         if shouldRenewToken(for: [.mail]),

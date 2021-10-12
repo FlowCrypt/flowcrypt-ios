@@ -53,18 +53,18 @@
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
 		510A260126FDFEBE00163271 /* MailCore2 in Frameworks */ = {isa = PBXBuildFile; productRef = 510A260026FDFEBE00163271 /* MailCore2 */; };
+		512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */ = {isa = PBXBuildFile; productRef = 512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */; };
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
 		51B4AE51271444580001F33B /* ContactKeyObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* ContactKeyObject.swift */; };
 		51B4AE5327144E590001F33B /* ContactKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE5227144E590001F33B /* ContactKey.swift */; };
+		51B4AE4F27137CB70001F33B /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 51B4AE4E27137CB70001F33B /* Promises */; };
 		51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */; };
 		51E13F15270F92F200F287CA /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F14270F92F200F287CA /* BigInt */; };
 		51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F17270F934C00F287CA /* MBProgressHUD */; };
 		51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 51E1673C270DAFF900D27C52 /* Localizable.stringsdict */; };
 		51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */; };
 		51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16748270F303100D27C52 /* GoogleSignIn */; };
-		51E1674F270F341300D27C52 /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1674E270F341300D27C52 /* Promises */; };
-		51E16755270F356500D27C52 /* GTMAppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16754270F356500D27C52 /* GTMAppAuth */; };
 		51E1675D270F36A400D27C52 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675C270F36A400D27C52 /* Realm */; };
 		51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675E270F36A400D27C52 /* RealmSwift */; };
 		5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */; };
@@ -773,16 +773,16 @@
 			files = (
 				D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */,
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
-				51E1674F270F341300D27C52 /* Promises in Frameworks */,
 				51E13F15270F92F200F287CA /* BigInt in Frameworks */,
 				51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */,
 				510A260126FDFEBE00163271 /* MailCore2 in Frameworks */,
-				51E16755270F356500D27C52 /* GTMAppAuth in Frameworks */,
 				51E1675D270F36A400D27C52 /* Realm in Frameworks */,
 				51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */,
 				51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */,
 				5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
+				51B4AE4F27137CB70001F33B /* Promises in Frameworks */,
+				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2072,13 +2072,13 @@
 				510A260026FDFEBE00163271 /* MailCore2 */,
 				51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */,
 				51E16748270F303100D27C52 /* GoogleSignIn */,
-				51E1674E270F341300D27C52 /* Promises */,
-				51E16754270F356500D27C52 /* GTMAppAuth */,
 				51E1675C270F36A400D27C52 /* Realm */,
 				51E1675E270F36A400D27C52 /* RealmSwift */,
 				51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */,
 				51E13F14270F92F200F287CA /* BigInt */,
 				51E13F17270F934C00F287CA /* MBProgressHUD */,
+				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
+				51B4AE4E27137CB70001F33B /* Promises */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -2189,12 +2189,11 @@
 				510A25FF26FDFEBE00163271 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */,
 				51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
-				51E1674D270F341200D27C52 /* XCRemoteSwiftPackageReference "promises" */,
-				51E16753270F356500D27C52 /* XCRemoteSwiftPackageReference "GTMAppAuth" */,
 				51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */,
 				51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */,
 				51E13F13270F92F100F287CA /* XCRemoteSwiftPackageReference "BigInt" */,
 				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
+				51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -3387,6 +3386,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -3639,7 +3639,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -3968,6 +3967,14 @@
 				kind = branch;
 			};
 		};
+		51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/promises";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/iosdevzone/IDZSwiftCommonCrypto";
@@ -4008,22 +4015,6 @@
 				minimumVersion = 6.0.0;
 			};
 		};
-		51E1674D270F341200D27C52 /* XCRemoteSwiftPackageReference "promises" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/promises";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-		51E16753270F356500D27C52 /* XCRemoteSwiftPackageReference "GTMAppAuth" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/GTMAppAuth";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-cocoa";
@@ -4039,6 +4030,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 510A25FF26FDFEBE00163271 /* XCRemoteSwiftPackageReference "mailcore2" */;
 			productName = MailCore2;
+		};
+		512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
+			productName = GoogleAPIClientForREST_PeopleService;
+		};
+		51B4AE4E27137CB70001F33B /* Promises */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */;
+			productName = Promises;
 		};
 		51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -4064,16 +4065,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
-		};
-		51E1674E270F341300D27C52 /* Promises */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51E1674D270F341200D27C52 /* XCRemoteSwiftPackageReference "promises" */;
-			productName = Promises;
-		};
-		51E16754270F356500D27C52 /* GTMAppAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51E16753270F356500D27C52 /* XCRemoteSwiftPackageReference "GTMAppAuth" */;
-			productName = GTMAppAuth;
 		};
 		51E1675C270F36A400D27C52 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
