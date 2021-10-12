@@ -11,7 +11,7 @@ import UIKit
 protocol MsgListViewController {
     func msgListOpenMsgElseShowToast(with message: Message, path: String)
     func msgListGetIndex(message: Message) -> Array<Message>.Index?
-    func msgListRenderAsRead(message: Message, at index: Int)
+    func msgListUpdateReadFlag(message: Message, at index: Int)
     func msgListRenderAsRemoved(message _: Message, at index: Int)
 }
 
@@ -35,8 +35,8 @@ extension MsgListViewController where Self: UIViewController {
     private func msgListHandleOperation(message: Message, operation: MessageViewController.MessageAction) {
         guard let index = msgListGetIndex(message: message) else { return }
         switch operation {
-        case .markAsRead:
-            msgListRenderAsRead(message: message, at: index)
+        case .changeReadFlag:
+            msgListUpdateReadFlag(message: message, at: index)
         case .moveToTrash, .archive, .permanentlyDelete:
             msgListRenderAsRemoved(message: message, at: index)
         }

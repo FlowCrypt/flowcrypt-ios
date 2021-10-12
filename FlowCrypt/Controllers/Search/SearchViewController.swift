@@ -118,7 +118,7 @@ extension SearchViewController: MsgListViewController {
             : .fetched(updatedMessages, .removed(index))
     }
 
-    func msgListRenderAsRead(message: Message, at index: Int) {
+    func msgListUpdateReadFlag(message: Message, at index: Int) {
         var updatedMessages = state.messages
         updatedMessages[safe: index] = message
         state = .fetched(updatedMessages, .added(index))

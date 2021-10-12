@@ -363,42 +363,42 @@ class InboxViewController:
     }
 }
 
-//
-//// MARK: - MsgListViewController
-//extension InboxViewController: MsgListViewController {
+// TODO: - ANTON - rework operations with messages
+// MARK: - MsgListViewConroller
+//extension InboxViewController: MsgListViewConroller {
 //    func msgListGetIndex(message: Message) -> Int? {
-////        messages.firstIndex(of: message)
+//        messages.firstIndex(of: message)
 //    }
 //
 //    func msgListRenderAsRemoved(message _: Message, at index: Int) {
-////        guard messages[safe: index] != nil else { return }
-////        messages.remove(at: index)
-////
-////        guard messages.isNotEmpty else {
-////            state = .empty
-////            tableNode.reloadData()
-////            return
-////        }
-////        switch state {
-////        case .fetched(.byNumber(let total)):
-////            let newTotalNumber = (total ?? 0) - 1
-////            if newTotalNumber == 0 {
-////                state = .empty
-////                tableNode.reloadData()
-////            } else {
-////                state = .fetched(.byNumber(total: newTotalNumber))
-////                tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-////            }
-////        default:
-////            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-////        }
+//        guard messages[safe: index] != nil else { return }
+//        messages.remove(at: index)
+//
+//        guard messages.isNotEmpty else {
+//            state = .empty
+//            tableNode.reloadData()
+//            return
+//        }
+//        switch state {
+//        case .fetched(.byNumber(let total)):
+//            let newTotalNumber = (total ?? 0) - 1
+//            if newTotalNumber == 0 {
+//                state = .empty
+//                tableNode.reloadData()
+//            } else {
+//                state = .fetched(.byNumber(total: newTotalNumber))
+//                tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+//            }
+//        default:
+//            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+//        }
 //    }
 //
-//    func msgListRenderAsRead(message: Message, at index: Int) {
-////        messages[index] = message
-////        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-////            guard let self = self else { return }
-////            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-////        }
+//    func msgListUpdateReadFlag(message: Message, at index: Int) {
+//        messages[index] = message
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+//            guard let self = self else { return }
+//            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+//        }
 //    }
 //}
