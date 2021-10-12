@@ -42,19 +42,17 @@ Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
+Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
 
-wsF5BAABCAAjFiEEVSDKziy2HqcT5bAFf95oVUiup4gFAmFl6LQFAwAAAAAACgkQf95oVUiup4ig
-KA//R8Hi1ZWVO66+wnXkAdqxrlCOTF6gzq3jZotUmLkFobiwdxltmW43LKjkFtI02WN16J9EhMXP
-xBVg8AeAjZVUKeilD0elclecMIkh4D9qY93AhHa8YDlDYdkB/it14zR5g+W7jTaoUdxmdmkYxCTA
-9+01RWIMGYGb1SkTY3dmh00Vw5jr9NtHoi8zornBT8tOGwjE+EKKkxMbLnMNFHeuiV4Yx6+b6bmy
-1s01NsAvAZo9dZMrzBsqaMB+NK+qCE+n6EEnuHOZ2aNtvo20ZZpcFoe2llkRf0VjuBNjNkp8tkpe
-IXvirvpX0dPEDu5viYgrTzBgD3IKojI9rZt1eot+pM1cgHLqpGHo7QJvyDDZ9B+VKzZcLYjxuIoa
-E/8Vb+ov5RZV4dFJJHGHPGC3dTYiXkBGvvLysPvjZcZEVKPd917LTJHCf4v88DLiHUSvrdt/wOhx
-MDIXnUwDa4X0kCeQoQuDooZlCuT4qCmp9giUwBh2jubP4NDgTQgqoTKkYnP7ee/hvHfdLre5GGbK
-g266FX7AunoEMhKSBsYWAbFmr7PwqSED6urR0fKLI9PSQ5mqU5lb1bSpSd7QHsbYiJt7IO9V0OmW
-MbjQDqG5FY8igJdkt3JMQXQyrOiRCj0ynuWowtSe7LOT+k0qs4OXOOirZodH9EvT/H2KzHICR8E1
-wUU=
-=po6h
+wsBcBAEBCAAGBQJhZeosAAoJEDow9MwKmo8Qev4H/02N6ue1kpZ+VSdPzu4o
+bgvtHEwk6wJEXN1eSh//bSY8owmk+DOHiF7YNI3CwJTZCtLEKh7Tt8RY7oB7
+0oNzVw7LEZd6JwdUZfaU1rnV5zZvo01SuJs/5IS21LU5riQntri6o/9Vn0hI
+rbHlYqVdm12bBP0o1XilISHo8zm3Sy6ANb2JLVWqoRf9MThsj/H8K82zkJuK
+2fGaZEQqcJ/CfDckhsMrU4V6Ymw15cMR4MVMXcZ/xoMJdnrBlNZ/nVGN9KaT
+np03NLc0ofo6uIdt5J7c9uXQuvW1YuHFKyZJHZgo/Z92GV+hE/myV1PSHs06
+tL8L5XR3+yYrMHVSfh2jZjo=
+=0985
 -----END PGP SIGNATURE-----
 
 --hTjLPt39apiyzP4ygKIkZaDYyHWQcexiZ--
