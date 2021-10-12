@@ -70,6 +70,7 @@
 "folder_add_account" = "Add account";
 
 // Sign in
+"sign_in_again" = "Sign In again";
 "sign_in_privacy" = "Privacy";
 "sign_in_terms" = "Terms";
 "sign_in_security" = "Security";
@@ -225,6 +226,7 @@
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
 "gmail_service_provider_error_error_message" = "Gmail provider error: %@";
 "gmail_service_missing_back_query_error_message" = "Missed backup query: %@";
+"gmail_service_no_access_to_account_message" = "There is no access of read, compose, send and delete emails. Please allow FlowCrypt app to make these actions.";
 
 // Files picking
 "files_picking_select_input_source_title" = "Please select input source";

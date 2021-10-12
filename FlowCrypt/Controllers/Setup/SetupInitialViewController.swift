@@ -24,7 +24,7 @@ final class SetupInitialViewController: TableNodeViewController {
     }
 
     private enum State {
-        case idle, decidingIfEKMshouldBeUsed, fetchingKeysFromEKM, searchingKeyBackupsInInbox, noKeyBackupsInInbox, error(Error)
+        case idle, decidingIfEKMshouldBeUsed, fetchingKeysFromEKM, searchingKeyBackupsInInbox, noKeyBackupsInInbox, gmailUnauthorised, error(Error)
 
         var numberOfRows: Int {
             switch self {
@@ -34,12 +34,16 @@ final class SetupInitialViewController: TableNodeViewController {
             // title, loading
             case .searchingKeyBackupsInInbox:
                 return 2
-            case .error:
+            case .error, .gmailUnauthorised:
                 return 3
             case .noKeyBackupsInInbox:
                 return Parts.allCases.count
             }
         }
+    }
+    
+    private struct Constants {
+        static let unauthorizedAPICode = 403
     }
 
     private var state = State.idle {
@@ -110,7 +114,7 @@ extension SetupInitialViewController {
             decideIfEKMshouldBeUsed()
         case .fetchingKeysFromEKM:
             fetchKeysFromEKM()
-        case .error, .idle, .noKeyBackupsInInbox:
+        case .error, .idle, .noKeyBackupsInInbox, .gmailUnauthorised:
             break
         }
         node.reloadData()
@@ -139,6 +143,12 @@ extension SetupInitialViewController {
     }
 
     private func handle(error: Error) {
+        if let gmailServiceError = error as? GmailServiceError,
+           let gmailError = gmailServiceError.underlyingError,
+           (gmailError as NSError).code == Constants.unauthorizedAPICode {
+            state = .gmailUnauthorised
+            return
+        }
         handleCommon(error: error)
         state = .error(error)
     }
@@ -208,6 +218,8 @@ extension SetupInitialViewController: ASTableDelegate, ASTableDataSource {
                 return self.errorStateNode(for: indexPath, error: error)
             case .noKeyBackupsInInbox:
                 return self.noKeysStateNode(for: indexPath)
+            case .gmailUnauthorised:
+                return self.unauthStateNode(for: indexPath)
             }
         }
     }
@@ -307,6 +319,34 @@ extension SetupInitialViewController {
             return ASCellNode()
         }
     }
+
+    private func unauthStateNode(for indexPath: IndexPath) -> ASCellNode {
+        switch indexPath.row {
+        case 0:
+            return SetupTitleNode(
+                SetupTitleNode.Input(
+                    title: self.decorator.title(for: .setup),
+                    insets: self.decorator.insets.titleInset,
+                    backgroundColor: .backgroundColor
+                )
+            )
+        case 1:
+            return TextCellNode(
+                input: .init(
+                    backgroundColor: .backgroundColor,
+                    title: "gmail_service_no_access_to_account_message".localized,
+                    withSpinner: false,
+                    size: CGSize(width: 200, height: 200)
+                )
+            )
+        case 2:
+            return ButtonCellNode(input: .signInAgain) { [weak self] in
+                self?.router.signOut()
+            }
+        default:
+            return ASCellNode()
+        }
+    }
 }
 
 // MARK: - Navigation
@@ -336,5 +376,18 @@ extension SetupInitialViewController {
             let viewController = SetupBackupsViewController(fetchedEncryptedKeys: keys, user: user)
             navigationController?.pushViewController(viewController, animated: true)
         }
+    }
+}
+
+// MARK: - Buttons input
+private extension ButtonCellNode.Input {
+    static var signInAgain: ButtonCellNode.Input {
+        return .init(
+            title: "sign_in_again"
+                .localized
+                .attributed(.bold(16), color: .white, alignment: .center),
+            insets: UIEdgeInsets(top: 16, left: 24, bottom: 8, right: 24),
+            color: .main
+        )
     }
 }
