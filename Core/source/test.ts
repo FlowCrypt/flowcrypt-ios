@@ -646,7 +646,7 @@ ava.default('verify plain-text signed message that you edited after signing. Thi
   t.pass();
 });
 
-ava.default.only('verify signed message with detached signature by providing it correct key', async t => {
+ava.default('verify signed message with detached signature by providing it correct key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-detached')]));
   expect(decryptJson.replyType).equals('plain');
