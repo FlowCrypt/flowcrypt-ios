@@ -6,14 +6,14 @@ import Combine
 import Foundation
 
 extension Imap: MessageGateway {
-    func sendMail(input: MessageGatewayInput) -> Future<Void, Error> {
-        Future { [smtpSess] promise in
+    func sendMail(input: MessageGatewayInput) async throws {
+        try await withCheckedThrowingContinuation { [smtpSess] (continuation: CheckedContinuation<Void, Error>) in
             smtpSess?.sendOperation(with: input.mime)
                 .start { error in
                     if let error = error {
-                        promise(.failure(error))
+                        continuation.resume(throwing: error)
                     } else {
-                        promise(.success(()))
+                        continuation.resume(returning: ())
                     }
                 }
         }

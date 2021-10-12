@@ -35,8 +35,6 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     private let backupService: BackupServiceType
     private let userId: UserId
 
-    private var cancellable: AnyCancellable?
-
     init(
         decorator: BackupOptionsViewDecoratorType = BackupOptionsViewDecorator(),
         backupService: BackupServiceType = BackupService(),
@@ -106,14 +104,16 @@ extension BackupOptionsViewController {
 
     private func backupToInbox() {
         showSpinner()
-        cancellable = backupService.backupToInbox(keys: backups, for: userId)
-            .receive(on: DispatchQueue.main)
-            .sinkFuture(receiveValue: { [weak self] in
-                self?.hideSpinner()
-                self?.navigationController?.popToRootViewController(animated: true)
-            }, receiveError: { [weak self] error in
-                self?.handleCommon(error: error)
-            })
+
+        Task {
+            do {
+                try await backupService.backupToInbox(keys: backups, for: userId)
+                hideSpinner()
+                navigationController?.popToRootViewController(animated: true)
+            } catch {
+                handleCommon(error: error)
+            }
+        }
     }
 
     private func backupAsFile() {

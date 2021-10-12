@@ -85,7 +85,12 @@ extension SetupGenerateKeyViewController {
 
             let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
 
-            self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user).wait()
+            let semaphore = DispatchSemaphore(value: 0)
+            Task {
+                try await self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user)
+                semaphore.signal()
+            }
+            semaphore.wait()
 
             self.keyStorage.addKeys(keyDetails: [encryptedPrv.key],
                                     passPhrase: self.storageMethod == .persistent ? passPhrase: nil,

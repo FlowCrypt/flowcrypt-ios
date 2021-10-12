@@ -18,8 +18,6 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
     private let selectedOption: BackupOption
     private let userId: UserId
 
-    private var cancellable: AnyCancellable?
-
     init(
         decorator: BackupSelectKeyDecoratorType = BackupSelectKeyDecorator(),
         backupService: BackupServiceType = BackupService(),
@@ -88,14 +86,15 @@ extension BackupSelectKeyViewController {
             .filter { $0.1 == true }
             .map(\.0)
 
-        cancellable = backupService.backupToInbox(keys: backupsToSave, for: userId)
-            .receive(on: DispatchQueue.main)
-            .sinkFuture(receiveValue: { [weak self] in
-                self?.hideSpinner()
-                self?.navigationController?.popToRootViewController(animated: true)
-            }, receiveError: { [weak self] error in
-                self?.handleCommon(error: error)
-            })
+        Task {
+            do {
+                try await backupService.backupToInbox(keys: backupsToSave, for: userId)
+                hideSpinner()
+                navigationController?.popToRootViewController(animated: true)
+            } catch {
+                handleCommon(error: error)
+            }
+        }
     }
 
     private func backupAsFile() {

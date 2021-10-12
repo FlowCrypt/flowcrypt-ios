@@ -25,14 +25,4 @@ extension Publisher {
                 receiveValue(value)
             })
     }
-
-    func wait() {
-        let semaphore = DispatchSemaphore(value: 0)
-        _ = sinkFuture { _ in
-            semaphore.signal()
-        } receiveError: { _ in
-            semaphore.signal()
-        }
-        semaphore.wait()
-    }
 }

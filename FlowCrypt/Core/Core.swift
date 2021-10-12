@@ -151,30 +151,20 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         )
     }
 
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) -> Future<CoreRes.ComposeEmail, Error> {
-        Future<CoreRes.ComposeEmail, Error> { [weak self] promise in
-            guard let self = self else { return }
-            self.queue.async {
-                do {
-                    let r = try self.call("composeEmail", jsonDict: [
-                        "text": msg.text,
-                        "to": msg.to,
-                        "cc": msg.cc,
-                        "bcc": msg.bcc,
-                        "from": msg.from,
-                        "subject": msg.subject,
-                        "replyToMimeMsg": msg.replyToMimeMsg,
-                        "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
-                        "format": fmt.rawValue,
-                        "pubKeys": pubKeys,
-                    ], data: nil)
-                    // this call returned no useful json data, only bytes
-                    promise(.success(CoreRes.ComposeEmail(mimeEncoded: r.data)))
-                } catch {
-                    promise(.failure(error))
-                }
-            }
-        }
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) async throws -> CoreRes.ComposeEmail {
+        let r = try call("composeEmail", jsonDict: [
+            "text": msg.text,
+            "to": msg.to,
+            "cc": msg.cc,
+            "bcc": msg.bcc,
+            "from": msg.from,
+            "subject": msg.subject,
+            "replyToMimeMsg": msg.replyToMimeMsg,
+            "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
+            "format": fmt.rawValue,
+            "pubKeys": pubKeys,
+        ], data: nil)
+        return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
 
     func zxcvbnStrengthBar(passPhrase: String) throws -> CoreRes.ZxcvbnStrengthBar {
