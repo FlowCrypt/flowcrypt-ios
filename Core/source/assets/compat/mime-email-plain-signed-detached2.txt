@@ -1,57 +1,58 @@
-Delivered-To: flowcrypt.compatibility@gmail.com
 Return-Path: <flowcrypt.compatibility@gmail.com>
-Openpgp: id=E76853E128A0D376CAE47C143A30F4CC0A9A8F10
-From: flowcrypt.compatibility@gmail.com
-MIME-Version: 1.0
-Date: Thu, 2 Nov 2017 17:54:14 -0700
-Message-ID: <CANzaQHU9A@mail.gmail.com>
-Subject: mime email plain signed detached
+Received: from [192.168.88.243] ([176.100.5.125])
+        by smtp.gmail.com with ESMTPSA id q7sm1107487lfc.159.2021.10.12.12.25.56
+        for <flowcrypt.compatibility@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Oct 2021 12:25:57 -0700 (PDT)
 To: flowcrypt.compatibility@gmail.com
+From: Flowcrypt Compatibility <flowcrypt.compatibility@gmail.com>
+Subject: mime email plain signed detached
+Message-ID: <f489ca7f-ccd7-de11-6a3b-3ebe130d67dd@gmail.com>
+Date: Tue, 12 Oct 2021 22:25:55 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy"
+ boundary="6UiWBWdXbZTmbBsEUMno1KZ2DrsqwwGHN"
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy
-Content-Type: multipart/mixed; boundary="2SVjN9BW1ncH06ndPSuxQAA7eogrqtJen";
+--6UiWBWdXbZTmbBsEUMno1KZ2DrsqwwGHN
+Content-Type: multipart/mixed; boundary="qXbOytosKNHexW94IXHOXTCDf4kehiW4O";
  protected-headers="v1"
-From: Perpetuum Moobilee <perpetuum.moobilee@gmail.com>
+From: Flowcrypt Compatibility <flowcrypt.compatibility@gmail.com>
 To: flowcrypt.compatibility@gmail.com
-Message-ID: <bd01d63e-1184-21c2-c622-2706dc0e2f91@gmail.com>
-Subject: plaintext with detached signature
+Message-ID: <f489ca7f-ccd7-de11-6a3b-3ebe130d67dd@gmail.com>
+Subject: mime email plain signed detached
 
---2SVjN9BW1ncH06ndPSuxQAA7eogrqtJen
-Content-Type: multipart/mixed;
- boundary="------------318DB2E1763BE977A4E99886"
+--qXbOytosKNHexW94IXHOXTCDf4kehiW4O
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: base64
 Content-Language: en-US
 
-This is a multi-part message in MIME format.
---------------318DB2E1763BE977A4E99886
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+c29tZQrmsYkKdHh0Cgo=
 
-some text
+--qXbOytosKNHexW94IXHOXTCDf4kehiW4O--
 
-
---2SVjN9BW1ncH06ndPSuxQAA7eogrqtJen--
-
---UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy
+--6UiWBWdXbZTmbBsEUMno1KZ2DrsqwwGHN
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
-Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption
-Comment: Seamlessly send and receive encrypted email
 
-wsBcBAEBCAAGBQJhZddKAAoJEDow9MwKmo8QN04H/AgF1juV59IGlifqcw1b
-pIbL7Wy2RGN3HRf71EKIQxq7Aw915MUS5KwJ71ip/BqBJs9UF7PvYJ3czwiv
-Wp1Q/cihblMfpJaZyp1AC0shu6WAPZv6VE7Pk0eJ9AduYsQEifGQZPBQWnnN
-E0mi1gUk/nTeXbAgf475sKjkZrWa02H8IC5LBKbew0smhjA/2BpkPJDFaWRS
-WrQZr3kq4/ErIBCtFnnWx2k5ONNbsBi8mhWhI3Mr+us6JCYfrUiffpR39pBS
-1OPOx4IAu1pJiZE7QWNJq77ldO0Sbdgq4J97wGmnSbb/0zTUwF6moGxgDJur
-JqSoBWuMilggHft/Taq2HN8=
-=ARBb
+wsF5BAABCAAjFiEE6PBRe6bX2rYIHJbkrawnnJUJMgcFAmFl4UMFAwAAAAAACgkQrawnnJUJMgc5
+wg/8DGXAdov+xgcdIZ9T4UVs02jdTTCaortoJP1pLs7hZMC17C7Qp51qC1K1IJdbs9L7YAg6N6HP
+MzA0tWwPdIu952JbRPA9VsrBFfYyxGkEeOXkbB+4zTOe+QuJxDFl5yObnmCOf1PeuFhX+vr+0gL6
+bKgQd9MpPo766aTdwcVmKS8zkdmZWzsWcD22Lluaf2EV9qLTL95vqZb1h7B4vc69Bkgl8zzDNwmU
+zr4yl3Bp29L6kz2PKpgK8wvwl5X2DlHotITbVCnyeqQanP5dOKvXkjcKZql+qxa1CEC6tIiH1jlz
+cWqf78ekb8d7CJ6geSTEOYgub/J4bGaF6j5TpWtGczs+zAkcvquwkbSpmjjHvighqpgZETItpHil
+FXED1wARj1t3yyzC7ZMVpUNYVtnw7+WdLk8JjTHyiR3IavMoLpvWQr9dYWwsPWqVSc9/CqAbxYgF
+hrSTNES43hjo99ibKm3IzaxikMcxflaYVXaRoyRteV5/ZPJhsT8KBF3SH+nJoFsawNow5Akotdd1
+AqSnkjQEVICu0MMhpuT4GqbbB9EMQRMC//M2lCxsR6N6mCsIjX9qNbMzfC2fgcaqcRkCDiIm6s5t
+kJlBhMVM9HII66mrd55yv310PzGv+sZvn/l/F5zyeTHTXWL2/ss2O62oe6E5NtWwc8B7BZulWD/L
+9cU=
+=BonZ
 -----END PGP SIGNATURE-----
 
---UxnIDWfEzsSNwl3ATmOiPdVTZfBXOLRjy--
+--6UiWBWdXbZTmbBsEUMno1KZ2DrsqwwGHN--
