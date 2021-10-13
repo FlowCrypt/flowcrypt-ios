@@ -149,6 +149,12 @@
 		9F7E8EC6269877E70021C07F /* KeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E8EC5269877E60021C07F /* KeyInfoTests.swift */; };
 		9F7E8F19269C538E0021C07F /* NavigationChildController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E8F18269C538E0021C07F /* NavigationChildController.swift */; };
 		9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E903826A1AD7A0021C07F /* KeyDetailsTests.swift */; };
+		9F81450E27173D3A0036D7F1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F81450D27173D3A0036D7F1 /* GoogleService-Info.plist */; };
+		9F81450F27173D3A0036D7F1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F81450D27173D3A0036D7F1 /* GoogleService-Info.plist */; };
+		9F81451027173D3A0036D7F1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F81450D27173D3A0036D7F1 /* GoogleService-Info.plist */; };
+		9F81451127173D3A0036D7F1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F81450D27173D3A0036D7F1 /* GoogleService-Info.plist */; };
+		9F81451227173D3A0036D7F1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F81450D27173D3A0036D7F1 /* GoogleService-Info.plist */; };
+		9F81451327173D3A0036D7F1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F81450D27173D3A0036D7F1 /* GoogleService-Info.plist */; };
 		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */; };
 		9F8C160826C1379A000A460F /* SignInImapTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF364C235A1CCD00614596 /* SignInImapTest.swift */; };
@@ -576,6 +582,7 @@
 		9F7E8EC5269877E60021C07F /* KeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyInfoTests.swift; sourceTree = "<group>"; };
 		9F7E8F18269C538E0021C07F /* NavigationChildController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationChildController.swift; sourceTree = "<group>"; };
 		9F7E903826A1AD7A0021C07F /* KeyDetailsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailsTests.swift; sourceTree = "<group>"; };
+		9F81450D27173D3A0036D7F1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9F8220D426336626004B2009 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9F8277952373732000E19C07 /* UIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
 		9F82779723737E0900E19C07 /* MessageViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewDecorator.swift; sourceTree = "<group>"; };
@@ -1603,6 +1610,7 @@
 				C132B9BA1EC2DBD800763715 /* Assets.xcassets */,
 				949ED9412303E3B400530579 /* Colors.xcassets */,
 				C132B9BF1EC2DBD800763715 /* Info.plist */,
+				9F81450D27173D3A0036D7F1 /* GoogleService-Info.plist */,
 			);
 			path = FlowCrypt;
 			sourceTree = "<group>";
@@ -2213,6 +2221,7 @@
 				9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */,
 				215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */,
 				21594C9626F1DBA900BE654C /* data.txt in Resources */,
+				9F81451327173D3A0036D7F1 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2221,6 +2230,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F2F212B26B305420044E144 /* test-ci-secrets.json in Resources */,
+				9F81450F27173D3A0036D7F1 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2236,6 +2246,7 @@
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
 				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,
+				9F81450E27173D3A0036D7F1 /* GoogleService-Info.plist in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
 				949ED9422303E3B400530579 /* Colors.xcassets in Resources */,
 			);
@@ -2246,6 +2257,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */,
+				9F81451027173D3A0036D7F1 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2253,6 +2265,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F81451227173D3A0036D7F1 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2262,6 +2275,7 @@
 			files = (
 				D2F6D12A24311E5300DB4065 /* Colors.xcassets in Resources */,
 				D28325DD24895F5700D311BD /* Colors.xcassets in Resources */,
+				9F81451127173D3A0036D7F1 /* GoogleService-Info.plist in Resources */,
 				D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */,
 				D2A1D3C323FD64AD00D626D6 /* Assets.xcassets in Resources */,
 			);
@@ -2913,7 +2927,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 0.2.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.as.ios.enterprise;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.ios.enterprise;
 				PRODUCT_NAME = FlowCrypt;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
