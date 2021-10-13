@@ -11,7 +11,7 @@ import FlowCryptCommon
 import FlowCryptUI
 
 /**
- * View controller which shows details about a contact and the public key recorded for it
+ * View controller which shows details about a contact and lists public keys recorded for it
  * - User can be redirected here from settings *ContactsListViewController* by tapping on a particular contact
  */
 final class ContactDetailViewController: TableNodeViewController {

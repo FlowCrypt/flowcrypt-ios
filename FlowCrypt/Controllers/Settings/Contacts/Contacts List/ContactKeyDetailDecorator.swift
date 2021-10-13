@@ -11,40 +11,25 @@ import Foundation
 
 protocol ContactKeyDetailDecoratorType {
     var title: String { get }
-    func userNodeInput(with contact: Contact) -> ContactUserCellNode.Input
-    func keyNodeInput(with key: ContactKey) -> ContactKeyCellNode.Input
+    func attributedTitle(for contactKeyPart: ContactKeyDetailViewController.Part) -> NSAttributedString
 }
 
 struct ContactKeyDetailDecorator: ContactKeyDetailDecoratorType {
-    let title = "contact_detail_screen_title".localized
+    let title = "contact_key_detail_screen_title".localized
 
-    func userNodeInput(with contact: Contact) -> ContactUserCellNode.Input {
-        ContactUserCellNode.Input(
-            user: (contact.name ?? contact.email).attributed(.regular(16))
-        )
-    }
+    func attributedTitle(for contactKeyPart: ContactKeyDetailViewController.Part) -> NSAttributedString {
+        let title: String
+        switch contactKeyPart {
+        case .key: title = "contact_key_pub".localized
+        case .signature: title = "contact_key_signature".localized
+        case .created: title = "contact_key_created".localized
+        case .checked: title = "contact_key_fetched".localized
+        case .expire: title = "contact_key_expires".localized
+        case .longids: title = "contact_key_longids".localized
+        case .fingerprints: title = "contact_key_fingerprints".localized
+        case .algo: title = "contact_key_algo".localized
+        }
 
-    func keyNodeInput(with key: ContactKey) -> ContactKeyCellNode.Input {
-        let df = DateFormatter()
-        df.dateStyle = .medium
-        df.timeStyle = .medium
-
-        let fingerpringString = key.fingerprint ?? "-"
-
-        let createdString: String = {
-            guard let created = key.created else { return "-" }
-            return df.string(from: created)
-        }()
-
-        let expiresString: String = {
-            guard let expires = key.expiresOn else { return "never" }
-            return df.string(from: expires)
-        }()
-
-        return ContactKeyCellNode.Input(
-            fingerprint: fingerpringString.attributed(.regular(13)),
-            createdAt: createdString.attributed(.regular(14)),
-            expires: expiresString.attributed(.regular(14))
-        )
+        return title.attributed(.bold(16))
     }
 }

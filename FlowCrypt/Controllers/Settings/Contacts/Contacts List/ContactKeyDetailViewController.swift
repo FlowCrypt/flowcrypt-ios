@@ -11,8 +11,8 @@ import FlowCryptCommon
 import FlowCryptUI
 
 /**
- * View controller which shows details about a contact and the public key recorded for it
- * - User can be redirected here from settings *ContactsListViewController* by tapping on a particular contact
+ * View controller which shows details about contact's public key
+ * - User can be redirected here from *ContactDetailViewController* by tapping on a particular key
  */
 final class ContactKeyDetailViewController: TableNodeViewController {
     typealias ContactKeyDetailAction = (Action) -> Void
@@ -21,8 +21,8 @@ final class ContactKeyDetailViewController: TableNodeViewController {
         case delete(_ key: ContactKey)
     }
 
-    private enum Section: Int, CaseIterable {
-        case key = 0, signature, checked, expire, longids, fingerprints, created, algo
+    enum Part: Int, CaseIterable {
+        case key = 0, signature, created, checked, expire, longids, fingerprints, algo
     }
 
     private let decorator: ContactKeyDetailDecoratorType
@@ -87,69 +87,53 @@ extension ContactKeyDetailViewController {
 }
 
 extension ContactKeyDetailViewController: ASTableDelegate, ASTableDataSource {
-    func numberOfSections(in tableNode: ASTableNode) -> Int {
-        Section.allCases.count
-    }
-
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        1
+        Part.allCases.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
-            guard let self = self, let section = Section(rawValue: indexPath.section)
+            guard let self = self, let part = Part(rawValue: indexPath.row)
             else { return ASCellNode() }
-            return self.node(for: section, row: indexPath.row)
+            return self.node(for: part)
         }
     }
 }
 
 // MARK: - UI
 extension ContactKeyDetailViewController {
-    private func node(for section: Section, row: Int) -> ASCellNode {
-        let df = DateFormatter()
-        df.dateStyle = .medium
-        df.timeStyle = .medium
-        
-        switch section {
+    private func node(for part: Part) -> ASCellNode {
+        LabelCellNode(title: decorator.attributedTitle(for: part),
+                      text: content(for: part).attributed(.regular(14)))
+    }
+
+    private func content(for part: Part) -> String {
+        switch part {
         case .key:
-            return LabelCellNode(title: "Key".attributed(.bold(16)),
-                                 text: key.key.attributed(.regular(14)))
+            return key.key
         case .signature:
-            return LabelCellNode(title: "Signature".attributed(.bold(16)),
-                                 text: "Text".attributed(.regular(14)))
-        case .checked:
-            let checkedString: String = {
-                guard let created = key.lastChecked else { return "-" }
-                return df.string(from: created)
-            }()
-            return LabelCellNode(title: "Last fetched".attributed(.bold(16)),
-                                 text: checkedString.attributed(.regular(14)))
-        case .expire:
-            let expireString: String = {
-                guard let expires = key.expiresOn else { return "-" }
-                return df.string(from: expires)
-            }()
-            return LabelCellNode(title: "Expires".attributed(.bold(16)),
-                                 text: expireString.attributed(.regular(14)))
-        case .longids:
-            return LabelCellNode(title: "Longids".attributed(.bold(16)),
-                                 text: key.longids.joined(separator: ", ").attributed(.regular(14)))
-        case .fingerprints:
-            return LabelCellNode(title: "Fingerprints".attributed(.bold(16)),
-                                 text: key.fingerprints.joined(separator: ", ").attributed(.regular(14)))
+            return string(from: key.lastSig)
         case .created:
-            let createdString: String = {
-                guard let created = key.created else { return "-" }
-                return df.string(from: created)
-            }()
-            return LabelCellNode(title: "Created".attributed(.bold(16)),
-                                 text: createdString.attributed(.regular(14)))
+            return string(from: key.created)
+        case .checked:
+            return string(from: key.lastChecked)
+        case .expire:
+            return string(from: key.expiresOn)
+        case .longids:
+            return key.longids.joined(separator: ", ")
+        case .fingerprints:
+            return key.fingerprints.joined(separator: ", ")
         case .algo:
-            let algoString = key.algo?.algorithm ?? "-"
-            return LabelCellNode(title: "Algo".attributed(.bold(16)),
-                                 text: algoString.attributed(.regular(14)))
+            return key.algo?.algorithm ?? "-"
         }
     }
 
+    private func string(from date: Date?) -> String {
+        guard let date = date else { return "-" }
+
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        df.timeStyle = .medium
+        return df.string(from: date)
+    }
 }

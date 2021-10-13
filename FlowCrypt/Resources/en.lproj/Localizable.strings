@@ -143,6 +143,17 @@
 "contacts_screen_title" = "Contacts";
 "contact_detail_screen_title" = "Public Keys";
 "contact_detail_copy" = "Public Key copied to clipboard";
+"contact_key_detail_screen_title" = "Public Key";
+
+// Contacts keys
+"contact_key_pub" = "Key";
+"contact_key_signature" = "Signature";
+"contact_key_fetched" = "Last fetched";
+"contact_key_expires" = "Expires";
+"contact_key_longids" = "Longids";
+"contact_key_fingerprints" = "Fingerprints";
+"contact_key_created" = "Created";
+"contact_key_algo" = "Algo";
 
 // Key Settings
 "key_settings_title" = "Keys";
