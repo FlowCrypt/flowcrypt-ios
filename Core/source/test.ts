@@ -99,6 +99,21 @@ orig message
   t.pass();
 });
 
+ava.default('composeEmail format:plain with attachment', async t => {
+  const content = 'hello\nwrld';
+  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64')}] };
+  const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
+  expectEmptyJson(composeEmailJson);
+  const plainMimeStr = plainMimeMsg.toString();
+  expect(plainMimeStr).contains('To: some@to.com');
+  expect(plainMimeStr).contains('From: some@from.com');
+  expect(plainMimeStr).contains('Subject: a subj');
+  expect(plainMimeStr).contains('Cc: some@cc.com');
+  expect(plainMimeStr).contains('Date: ');
+  expect(plainMimeStr).contains('MIME-Version: 1.0');
+  expect(plainMimeStr).contains('topsecret.txt.pgp');
+});
+
 ava.default('parseDecryptMsg unescaped special characters in text (originally text/plain)', async t => {
   const mime = `MIME-Version: 1.0
 Date: Fri, 6 Sep 2019 10:48:25 +0000

@@ -56,19 +56,23 @@ export class Endpoints {
       mimeHeaders['references'] = replyHeaders['references'];
     }
     if (req.format === 'plain') {
-      const atts = (req.atts || []).map(({ name, type, base64 }) => new Att({ name, type, data: Buf.fromBase64Str(base64) }));
+      const atts = (req.atts || []).map(({ name, type, base64 }) => new Att({ name: Endpoints.makeAttName(name), type, data: Buf.fromBase64Str(base64) }));
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': req.text }, mimeHeaders, atts)));
     } else if (req.format === 'encrypt-inline') {
       const encryptedAtts: Att[] = [];
       for (const att of req.atts || []) {
         const encryptedAtt = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromBase64Str(att.base64), filename: att.name, armor: false }) as OpenPGP.EncryptBinaryResult;
-        encryptedAtts.push(new Att({ name: `${att.name}.pgp`, type: 'application/pgp-encrypted', data: encryptedAtt.message.packets.write() }))
+        encryptedAtts.push(new Att({ name: Endpoints.makeAttName(att.name), type: 'application/pgp-encrypted', data: encryptedAtt.message.packets.write() }))
       }
       const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted.data }, mimeHeaders, encryptedAtts)));
     } else {
       throw new Error(`Unknown format: ${req.format}`);
     }
+  }
+
+  private static makeAttName = (originalName: string): string => {
+    return `${originalName}.pgp`;
   }
 
   public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
