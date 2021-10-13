@@ -176,10 +176,10 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
                     )
                 )
             case .fetched:
-                return ASCellNode()
-                // TODO: - ANTON - Search
-//                return InboxCellNode(message: InboxCellNode.Input(self.state.messages[indexPath.row]))
-//                    .then { $0.backgroundColor = .backgroundColor }
+                return InboxCellNode(
+                    input: .init((InboxRenderable(message: self.state.messages[indexPath.row])))
+                )
+                    .then { $0.backgroundColor = .backgroundColor }
             case let .error(message):
                 return TextCellNode(
                     input: TextCellNode.Input(

@@ -9,6 +9,7 @@
 import AsyncDisplayKit
 import UIKit
 
+// TODO: - ANTON - rename
 public final class HeaderNode: CellNode {
     public struct Input {
         public let title: NSAttributedString
@@ -17,6 +18,7 @@ public final class HeaderNode: CellNode {
         public let imageSize: CGSize
         public let nodeInsets: UIEdgeInsets
         public let backgroundColor: UIColor
+        public let isTapAnimated: Bool
 
         public init(
             title: NSAttributedString,
@@ -24,7 +26,8 @@ public final class HeaderNode: CellNode {
             image: UIImage?,
             imageSize: CGSize = CGSize(width: 24, height: 24),
             nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16),
-            backgroundColor: UIColor
+            backgroundColor: UIColor,
+            isTapAnimated: Bool = true
         ) {
             self.title = title
             self.subtitle = subtitle
@@ -32,6 +35,7 @@ public final class HeaderNode: CellNode {
             self.imageSize = imageSize
             self.nodeInsets = nodeInsets
             self.backgroundColor = backgroundColor
+            self.isTapAnimated = isTapAnimated
         }
     }
 
@@ -40,9 +44,9 @@ public final class HeaderNode: CellNode {
     public private(set) var imageNode = ASImageNode()
 
     private let input: HeaderNode.Input
-    private var onTap: (() -> Void)?
+    private var onTap: ((HeaderNode) -> Void)?
 
-    public init(input: HeaderNode.Input, onTap: (() -> Void)?) {
+    public init(input: HeaderNode.Input, onTap: ((HeaderNode) -> Void)?) {
         self.input = input
         self.onTap = onTap
         super.init()
@@ -57,7 +61,7 @@ public final class HeaderNode: CellNode {
     }
 
     @objc private func onImageTap() {
-        onTap?()
+        onTap?(self)
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
