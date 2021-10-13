@@ -54,6 +54,9 @@
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
 		510A260126FDFEBE00163271 /* MailCore2 in Frameworks */ = {isa = PBXBuildFile; productRef = 510A260026FDFEBE00163271 /* MailCore2 */; };
 		512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */ = {isa = PBXBuildFile; productRef = 512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */; };
+		5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */; };
+		5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */; };
+		5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6732716E5EA00C95463 /* LabelCellNode.swift */; };
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
 		51B4AE4F27137CB70001F33B /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 51B4AE4E27137CB70001F33B /* Promises */; };
@@ -466,6 +469,9 @@
 		4C5032E4FC5685A224F61785 /* Pods-FlowCryptUI.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.testflight.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.testflight.xcconfig"; sourceTree = "<group>"; };
 		4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
+		5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailViewController.swift; sourceTree = "<group>"; };
+		5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailDecorator.swift; sourceTree = "<group>"; };
+		5133B6732716E5EA00C95463 /* LabelCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCellNode.swift; sourceTree = "<group>"; };
 		51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfoTests.swift; sourceTree = "<group>"; };
 		51775C38270C7D2400D7C944 /* StorageMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMethod.swift; sourceTree = "<group>"; };
 		51B4AE50271444580001F33B /* ContactKeyObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyObject.swift; sourceTree = "<group>"; };
@@ -1917,6 +1923,7 @@
 				51DE2FED2714DA0400916222 /* ContactKeyCellNode.swift */,
 				D20D3C7B2520ABC600D4AA9A /* BackupCellNode.swift */,
 				D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */,
+				5133B6732716E5EA00C95463 /* LabelCellNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -1957,6 +1964,8 @@
 				D2E26F6524F169B400612AF1 /* ContactsListDecorator.swift */,
 				D2E26F6F24F266F300612AF1 /* ContactDetailViewController.swift */,
 				D2E26F7324F2705B00612AF1 /* ContactDetailDecorator.swift */,
+				5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */,
+				5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */,
 			);
 			path = "Contacts List";
 			sourceTree = "<group>";
@@ -2549,6 +2558,7 @@
 				9FB22CDD25715CF50026EE64 /* GmailServiceError.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
 				9F416428266575DC00106194 /* BackupServiceType.swift in Sources */,
+				5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */,
 				9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9FF0673325520DE400FCC9E6 /* GmailService+send.swift in Sources */,
@@ -2585,6 +2595,7 @@
 				51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */,
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
+				5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */,
 				D274724124F97C5C006BA6EF /* CacheService.swift in Sources */,
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
@@ -2681,6 +2692,7 @@
 				D271774A242558DA00BDA9A9 /* MessageSenderNode.swift in Sources */,
 				D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */,
 				D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */,
+				5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
 				9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */,
 				D2CCD1FA247C50DA00D21F9C /* UIColorExtension.swift in Sources */,

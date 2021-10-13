@@ -72,12 +72,25 @@ extension LocalContactsProvider: LocalContactsProviderType {
         localContactsCache.realm
             .objects(ContactObject.self)
             .map { object in
-                let keyDetails = object
-                                    .pubKeys
+                let keyDetails = object.pubKeys
                                     .compactMap { try? core.parseKeys(armoredOrBinary: $0.key.data()).keyDetails }
                                     .flatMap { $0 }
                 return Contact(object, keyDetails: Array(keyDetails))
             }
             .sorted(by: { $0.email > $1.email })
+    }
+
+    func remove(pubKey: ContactKey, for email: String) {
+        guard let contact = searchContact(with: email) else {
+            // TODO: Handle
+            return
+        }
+
+        let updatedContact = Contact(email: contact.email,
+                                     name: contact.name,
+                                     pubKeys: contact.pubKeys.filter { $0 != pubKey },
+                                     lastUsed: contact.lastUsed)
+        
+        save(contact: updatedContact)
     }
 }

@@ -73,7 +73,7 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        proceedToKeyDetail(with: indexPath)
+        proceedToContactDetail(with: indexPath)
     }
 }
 
@@ -82,7 +82,7 @@ extension ContactsListViewController {
         delete(with: .right(indexPath))
     }
 
-    private func proceedToKeyDetail(with indexPath: IndexPath) {
+    private func proceedToContactDetail(with indexPath: IndexPath) {
         let contactDetailViewController = ContactDetailViewController(
             contact: contacts[indexPath.row]
         ) { [weak self] action in

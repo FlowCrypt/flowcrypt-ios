@@ -49,3 +49,9 @@ extension ContactKey {
                   algo: keyDetails.algo)
     }
 }
+
+extension ContactKey: Equatable {
+    static func == (lhs: ContactKey, rhs: ContactKey) -> Bool {
+        lhs.key == rhs.key
+    }
+}

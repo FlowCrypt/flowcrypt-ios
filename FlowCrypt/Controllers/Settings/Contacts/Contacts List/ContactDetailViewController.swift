@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptCommon
 import FlowCryptUI
 
 /**
@@ -68,6 +69,28 @@ extension ContactDetailViewController {
             self.action?(.delete(self.contact))
         }
     }
+
+    private func delete(with context: Either<ContactKey, IndexPath>) {
+        let keyToRemove: ContactKey
+        let indexPathToRemove: IndexPath
+        switch context {
+        case .left(let key):
+            keyToRemove = key
+            guard let index = contact.pubKeys.firstIndex(where: { $0 == key }) else {
+                assertionFailure("Can't find index of the contact")
+                return
+            }
+            indexPathToRemove = IndexPath(row: index, section: 0)
+        case .right(let indexPath):
+            indexPathToRemove = indexPath
+            keyToRemove = contact.pubKeys[indexPath.row]
+        }
+
+        // TODO: Contact provider
+        // contact.pubKeys.remove(at: indexPathToRemove.row)
+
+        node.deleteRows(at: [indexPathToRemove], with: .left)
+    }
 }
 
 extension ContactDetailViewController: ASTableDelegate, ASTableDataSource {
@@ -99,7 +122,16 @@ extension ContactDetailViewController: ASTableDelegate, ASTableDataSource {
         case .header:
             return
         case .keys:
-            return
+            let key = contact.pubKeys[indexPath.row]
+            let contactKeyDetailViewController = ContactKeyDetailViewController(key: key) { [weak self] action in
+                guard case let .delete(key) = action else {
+                    assertionFailure("Action is not implemented")
+                    return
+                }
+                self?.delete(with: .left(key))
+            }
+
+            navigationController?.pushViewController(contactKeyDetailViewController, animated: true)
         }
     }
 }
