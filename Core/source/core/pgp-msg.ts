@@ -52,7 +52,13 @@ type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: Open
 
 type OpenpgpMsgOrCleartext = OpenPGP.message.Message | OpenPGP.cleartext.CleartextMessage;
 
-export type VerifyRes = { signer?: string; match: boolean | null; error?: string; };
+export type VerifyRes = {
+  signer?: string;
+  match: boolean | null;
+  error?: string;
+  mixed?: boolean;
+  partial?: boolean;
+};
 export type PgpMsgTypeResult = { armored: boolean, type: MsgBlockType } | undefined;
 export type DecryptResult = DecryptSuccess | DecryptError;
 export type DiagnoseMsgPubkeysResult = { found_match: boolean, receivers: number, };

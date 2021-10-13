@@ -72,9 +72,23 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
       imgsAtTheBottom.push(plainImgBlock);
     }
   }
+
   var verifyRes: (VerifyRes | undefined) = undefined;
+  var mixedSignatures = false;
+  var signedBlockCount = 0;
   for (const block of contentBlocks) {
-    if (!verifyRes && block.verifyRes) verifyRes = block.verifyRes;
+    if (block.verifyRes) {
+      ++signedBlockCount;
+      if (!verifyRes) {
+        verifyRes = block.verifyRes;
+      } else if (!block.verifyRes.match) {
+        if (verifyRes.match) {
+          verifyRes = block.verifyRes;
+        }
+      } else if (verifyRes.match && block.verifyRes.signer !== verifyRes.signer) {
+        mixedSignatures = true;
+      }
+    }
     if (block.type === 'decryptedText') {
       msgContentAsHtml += fmtMsgContentBlockAsHtml(Str.asEscapedHtml(block.content.toString()), 'green');
       msgContentAsText += block.content.toString() + '\n';
@@ -97,6 +111,16 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
       msgContentAsText += block.content.toString() + '\n';
     }
   }
+
+  if (verifyRes && verifyRes.match) {
+    if (mixedSignatures) {
+      verifyRes.mixed = true;
+    }
+    if (signedBlockCount > 0 && signedBlockCount != contentBlocks.length) {
+      verifyRes.partial = true;
+    }
+  }
+
   for (const inlineImg of imgsAtTheBottom.concat(Object.values(inlineImgsByCid))) { // render any images we did not insert into content, at the bottom
     let alt = `${inlineImg.attMeta!.name || '(unnamed image)'} - ${inlineImg.attMeta!.length! / 1024}kb`;
     // in current usage, as used by `endpoints.ts`: `block.attMeta!.data` actually contains base64 encoded data, not Uint8Array as the type claims
@@ -104,6 +128,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     msgContentAsHtml += fmtMsgContentBlockAsHtml(inlineImgTag, 'plain');
     msgContentAsText += `[image: ${alt}]\n`;
   }
+
   msgContentAsHtml = `
   <!DOCTYPE html><html>
     <head>
