@@ -651,7 +651,6 @@ ava.default('verify signed message with detached signature by providing it corre
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-detached')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed detached');
-  console.log(decryptData.toString());
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).equals(true);
