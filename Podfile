@@ -11,6 +11,7 @@ def app_pods
   pod 'Texture'
   pod 'SwiftLint' # todo - add linting rules
   pod 'SwiftFormat/CLI'
+  pod 'Firebase/AppDistribution'
 end
 
 def shared_pods

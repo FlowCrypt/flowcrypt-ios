@@ -5,6 +5,7 @@
 
 import AppAuth
 import UIKit
+import Firebase
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var googleAuthSession: OIDExternalUserAgentSession?
@@ -16,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return true
         }
         GlobalRouter().proceed()
+        FirebaseApp.configure()
         return true
     }
 
