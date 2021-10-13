@@ -68,11 +68,12 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
                     )
                 )
             } else {
-                return ButtonCellNode(
+                let input = ButtonCellNode.Input(
                     title: self.decorator.attributedTitle(for: part),
                     insets: self.decorator.buttonInsets,
                     color: self.decorator.buttonColor(for: part)
-                ) { [weak self] in
+                )
+                return ButtonCellNode(input: input) { [weak self] in
                     self?.handleTap(on: part)
                 }
             }

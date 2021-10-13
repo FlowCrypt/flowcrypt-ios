@@ -62,6 +62,18 @@ extension UINavigationController {
         navigationItem.backBarButtonItem = UIBarButtonItem()
             .then { $0.title = "" }
         navigationBar.backItem?.title = ""
+
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .main
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+
+        if #available(iOS 15.0, *) {
+            navigationBar.compactScrollEdgeAppearance = appearance
+        }
+
         navigationBar.do {
             $0.barTintColor = .main
             $0.tintColor = .white

@@ -60,7 +60,7 @@ class FilesManager: FilesManagerType {
             .flatMap { url in
                 Future<Void, Error> { promise in
                     DispatchQueue.main.async {
-                        let documentController = UIDocumentPickerViewController(url: url, in: .exportToService)
+                        let documentController = UIDocumentPickerViewController(forExporting: [url])
                         documentController.delegate = viewController
                         viewController.present(documentController, animated: true)
                         promise(.success(()))
