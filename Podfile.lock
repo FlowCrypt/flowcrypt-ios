@@ -15,7 +15,7 @@ PODS:
   - PINRemoteImage/PINCache (3.0.3):
     - PINCache (~> 3.0.3)
     - PINRemoteImage/Core
-  - SwiftFormat/CLI (0.48.14)
+  - SwiftFormat/CLI (0.48.16)
   - SwiftLint (0.44.0)
   - SwiftyRSA (1.7.0):
     - SwiftyRSA/ObjC (= 1.7.0)
@@ -67,12 +67,12 @@ SPEC CHECKSUMS:
   PINCache: 7a8fc1a691173d21dbddbf86cd515de6efa55086
   PINOperation: 00c935935f1e8cf0d1e2d6b542e75b88fc3e5e20
   PINRemoteImage: f1295b29f8c5e640e25335a1b2bd9d805171bd01
-  SwiftFormat: 45eb1675b89bee034a18693dfc550bd5c98d1b2d
+  SwiftFormat: b8a60419c4a8680f67faa80e2da710fd9dc85ca5
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
   SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
   Texture: 2e8ab2519452515f7f5a520f5a8f7e0a413abfa3
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: d55f0a13d854a8ebb36e7be30910fdd3bddad7d2
+PODFILE CHECKSUM: bc7c556828b57b2779df98b734c8d0a4448e861d
 
 COCOAPODS: 1.11.2

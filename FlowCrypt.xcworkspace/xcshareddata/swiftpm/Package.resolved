@@ -65,15 +65,6 @@
         }
       },
       {
-        "package": "MailCore2",
-        "repositoryURL": "https://github.com/MailCore/mailcore2",
-        "state": {
-          "branch": "master",
-          "revision": "1434761709b4d9dd5acc5b7185a3b32aa4845ba8",
-          "version": null
-        }
-      },
-      {
         "package": "MBProgressHUD",
         "repositoryURL": "https://github.com/jdg/MBProgressHUD",
         "state": {
