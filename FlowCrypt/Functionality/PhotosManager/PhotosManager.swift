@@ -11,8 +11,15 @@ import UIKit
 import Photos
 import Combine
 
+typealias PhotoViewController = UIViewController
+& UIImagePickerControllerDelegate
+& UINavigationControllerDelegate
+
 protocol PhotosManagerType {
-    func selectPhoto(source: UIImagePickerController.SourceType, from viewController: UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate) -> Future<Void, Error>
+    func selectPhoto(
+        source: UIImagePickerController.SourceType,
+        from viewController: PhotoViewController
+    ) -> Future<Void, Error>
 }
 
 enum PhotosManagerError: Error {
@@ -20,7 +27,7 @@ enum PhotosManagerError: Error {
 }
 
 class PhotosManager: PhotosManagerType {
-    
+
     enum MediaType {
         static let image = "public.image"
         static let video = "public.movie"

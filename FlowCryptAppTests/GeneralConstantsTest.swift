@@ -28,10 +28,10 @@ class GeneralConstantsTest: XCTestCase {
         let currentScope: Set<String> = Set(GeneralConstants.Gmail.currentScope.map { $0.value })
         let expectedScope = Set([
             "https://www.googleapis.com/auth/userinfo.profile",
-            "https://mail.google.com/"
+            "https://mail.google.com/",
+            "https://www.googleapis.com/auth/contacts.readonly"
         ])
         XCTAssert(currentScope == expectedScope)
-        XCTAssertFalse(currentScope.contains("https://www.googleapis.com/auth/contacts.readonly"))
 
         // Client Id
         let clientId = GeneralConstants.Gmail.clientID

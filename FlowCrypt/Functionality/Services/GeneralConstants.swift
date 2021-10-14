@@ -8,9 +8,7 @@ enum GeneralConstants {
     enum Gmail {
         static let clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
         static let redirectURL = URL(string: "com.googleusercontent.apps.679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc:/oauthredirect")!
-
-        // temporary disable search contacts - https://github.com/FlowCrypt/flowcrypt-ios/issues/217
-        static let currentScope: [GoogleScope] = [.mail, .userInfo]
+        static let currentScope: [GoogleScope] = GoogleScope.allCases
     }
 
     enum Global {

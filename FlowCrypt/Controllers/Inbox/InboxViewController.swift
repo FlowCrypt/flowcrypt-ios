@@ -312,7 +312,7 @@ extension InboxViewController: MsgListViewConroller {
         }
     }
 
-    func msgListRenderAsRead(message: Message, at index: Int) {
+    func msgListUpdateReadFlag(message: Message, at index: Int) {
         messages[index] = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
