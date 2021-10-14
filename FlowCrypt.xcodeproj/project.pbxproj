@@ -2217,7 +2217,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F2F212B26B305420044E144 /* test-ci-secrets.json in Resources */,	
+				9F2F212B26B305420044E144 /* test-ci-secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
