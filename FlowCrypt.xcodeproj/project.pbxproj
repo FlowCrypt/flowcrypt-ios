@@ -99,6 +99,7 @@
 		9F2AC5B1267BDED100F6149B /* GmailSearchExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2AC5B0267BDED100F6149B /* GmailSearchExpressionGenerator.swift */; };
 		9F2F206826AEEAA60044E144 /* CombineTestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2F206726AEEAA60044E144 /* CombineTestExtension.swift */; };
 		9F2F207326AEECFB0044E144 /* PromiseTestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411892681191D004C0A69 /* PromiseTestExtension.swift */; };
+		9F2F212B26B305420044E144 /* test-ci-secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 9F2F212A26B305420044E144 /* test-ci-secrets.json */; };
 		9F2F217326B3269D0044E144 /* CombineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2F217226B3269D0044E144 /* CombineExtensions.swift */; };
 		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
@@ -2217,6 +2218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F2F212B26B305420044E144 /* test-ci-secrets.json in Resources */,	
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
