@@ -15,5 +15,5 @@ struct MessageGatewayInput {
 }
 
 protocol MessageGateway {
-    func sendMail(input: MessageGatewayInput) -> Future<Void, Error>
+    func sendMail(input: MessageGatewayInput) async throws
 }
