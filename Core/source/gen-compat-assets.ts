@@ -6,13 +6,14 @@
 
 // @ts-ignore - it cannot figure out the types, because we don't want to install them from npm
 // nodejs-mobile expects it as global, but this test runs as standard Nodejs
-global.openpgp = require('openpgp'); // remove it and you'll see what I mean
+//global.openpgp = require('openpgp'); // remove it and you'll see what I mean
 
 import * as ava from 'ava';
 
-import { AvaContext, writeFile } from './test/test-utils';
+import { AvaContext, getKeypairs, writeFile } from './test/test-utils';
 import { PgpMsg } from './core/pgp-msg';
 import { Xss } from './platform/xss';
+import { openpgp } from './core/pgp';
 
 const text = Buffer.from('some\n汉\ntxt');
 const textSpecialChars = Buffer.from('> special <tag> & other\n> second line');
@@ -85,6 +86,25 @@ Content-Type: text/plain; charset="UTF-8"
 
 ${text.toString()}
 `.replace(/^\n/, ''));
+
+// Used to generate encrypted+signed and plaintext signed emails
+const mimeEmail2 = (t: AvaContext, text: Buffer | string, original?: Buffer | string) => {
+  const orig = original ? original.toString() + '\n\n' : '';
+  return Buffer.from(`
+Delivered-To: flowcrypt.compatibility@gmail.com
+Return-Path: <flowcrypt.compatibility@gmail.com>
+Openpgp: id=E76853E128A0D376CAE47C143A30F4CC0A9A8F10
+From: flowcrypt.compatibility@gmail.com
+MIME-Version: 1.0
+Date: Thu, 2 Nov 2017 17:54:14 -0700
+Message-ID: <CANzaQHU9A@mail.gmail.com>
+Subject: ${subject(t)}
+To: flowcrypt.compatibility@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+
+${orig}${text.toString()}
+`.replace(/^\n/, ''));
+}
 
 const mimePgp = (t: AvaContext, text: string | Buffer) => Buffer.from(`
 Content-Type: multipart/mixed; boundary="PpujspXwR9sayhr0t4sBaTxoXX6dlYhLU";
@@ -179,5 +199,25 @@ ava.default('mime-email-encrypted-inline-text-2.txt', async t => {
 
 ava.default('mime-email-plain-html.txt', async t => {
   await write(t, plainHtmlMimeEmail(t));
+  t.pass();
+});
+
+ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
+  // console.log("rsa1 key fingerprint:" + signingPrv.getFingerprint().toUpperCase());
+  if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
+  const { data } = await PgpMsg.encrypt({ data: text, signingPrv: signingPrv,  pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  await write(t, mimeEmail2(t, data));
+  t.pass();
+});
+
+ava.default('mime-email-plain-signed.txt', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
+  if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
+  const data = text.toString();
+  const signed = await PgpMsg.sign(signingPrv, data);
+  await write(t, mimeEmail2(t, signed));
   t.pass();
 });

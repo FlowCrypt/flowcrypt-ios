@@ -2,7 +2,6 @@
 
 'use strict';
 
-import { Contact } from '../core/pgp-key.js';
 import { openpgp } from '../core/pgp.js';
 
 let KEY_CACHE: { [longidOrArmoredKey: string]: OpenPGP.key.Key } = {};
@@ -11,10 +10,6 @@ let KEY_CACHE_WIPE_TIMEOUT: NodeJS.Timeout;
 const keyLongid = (k: OpenPGP.key.Key) => openpgp.util.str_to_hex(k.getKeyId().bytes).toUpperCase();
 
 export class Store {
-
-  static dbContactGet = async (db: void, emailOrLongid: string[]): Promise<(Contact | undefined)[]> => {
-    return [];
-  }
 
   static decryptedKeyCacheSet = (k: OpenPGP.key.Key) => {
     Store.keyCacheRenewExpiry();
