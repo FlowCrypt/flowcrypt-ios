@@ -58,7 +58,7 @@ final class ContactKeyDetailViewController: TableNodeViewController {
             with: [
                 .init(image: UIImage(named: "share"), action: (self, #selector(handleSaveAction))),
                 .init(image: UIImage(named: "copy"), action: (self, #selector(handleCopyAction))),
-                .init(image: UIImage(named: "trash"), action: (self, #selector(handleRemoveAction)))
+                .init(image: UIImage(systemName: "trash"), action: (self, #selector(handleRemoveAction)))
             ]
         )
     }

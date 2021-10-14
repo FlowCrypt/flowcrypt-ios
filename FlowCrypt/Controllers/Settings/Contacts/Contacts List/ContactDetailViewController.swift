@@ -26,15 +26,18 @@ final class ContactDetailViewController: TableNodeViewController {
     }
 
     private let decorator: ContactDetailDecoratorType
-    private let contact: Contact
+    private let contactsProvider: LocalContactsProviderType
+    private var contact: Contact
     private let action: ContactDetailAction?
 
     init(
         decorator: ContactDetailDecoratorType = ContactDetailDecorator(),
+        contactsProvider: LocalContactsProviderType = LocalContactsProvider(),
         contact: Contact,
         action: ContactDetailAction?
     ) {
         self.decorator = decorator
+        self.contactsProvider = contactsProvider
         self.contact = contact
         self.action = action
         super.init(node: TableNode())
@@ -80,15 +83,14 @@ extension ContactDetailViewController {
                 assertionFailure("Can't find index of the contact")
                 return
             }
-            indexPathToRemove = IndexPath(row: index, section: 0)
+            indexPathToRemove = IndexPath(row: index, section: 1)
         case .right(let indexPath):
             indexPathToRemove = indexPath
             keyToRemove = contact.pubKeys[indexPath.row]
         }
 
-        // TODO: Contact provider
-        // contact.pubKeys.remove(at: indexPathToRemove.row)
-
+        contact.remove(pubKey: keyToRemove)
+        contactsProvider.remove(pubKey: keyToRemove.key, for: contact.email)
         node.deleteRows(at: [indexPathToRemove], with: .left)
     }
 }

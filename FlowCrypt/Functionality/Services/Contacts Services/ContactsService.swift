@@ -23,7 +23,7 @@ protocol ContactsProviderType {
 
 protocol PublicKeyProvider {
     func retrievePubKeys(for email: String) -> [String]
-    func remove(pubKey: ContactKey, for email: String)
+    func remove(pubKey: String, for email: String)
 }
 
 // MARK: - PROVIDER
@@ -65,7 +65,7 @@ extension ContactsService: PublicKeyProvider {
         return publicKeys
     }
 
-    func remove(pubKey: ContactKey, for email: String) {
-        //let keys = retrievePubKeys(for: email).filter { $0 != pubKey }
+    func remove(pubKey: String, for email: String) {
+        localContactsProvider.remove(pubKey: pubKey, for: email)
     }
 }

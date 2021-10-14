@@ -16,6 +16,7 @@ protocol LocalContactsProviderType: PublicKeyProvider {
     func save(contact: Contact)
     func remove(contact: Contact)
     func getAllContacts() -> [Contact]
+    func remove(pubKey: String, for email: String)
 }
 
 struct LocalContactsProvider {
@@ -33,9 +34,7 @@ struct LocalContactsProvider {
 
 extension LocalContactsProvider: LocalContactsProviderType {
     func updateLastUsedDate(for email: String) {
-        let contact = localContactsCache.realm
-            .objects(ContactObject.self)
-            .first(where: { $0.email == email })
+        let contact = find(with: email)
 
         try? localContactsCache.realm.write {
             contact?.lastUsed = Date()
@@ -43,10 +42,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func retrievePubKeys(for email: String) -> [String] {
-        localContactsCache.encryptedStorage.storage
-            .objects(ContactObject.self)
-            .first(where: { $0.email == email })?
-            .pubKeys
+        find(with: email)?.pubKeys
             .map { $0.key } ?? []
     }
 
@@ -62,10 +58,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func searchContact(with email: String) -> Contact? {
-        localContactsCache.realm
-            .objects(ContactObject.self)
-            .first(where: { $0.email == email })
-            .map { Contact($0) }
+        guard let contactObject = find(with: email) else { return nil }
+        return Contact(contactObject)
     }
 
     func getAllContacts() -> [Contact] {
@@ -80,17 +74,21 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .sorted(by: { $0.email > $1.email })
     }
 
-    func remove(pubKey: ContactKey, for email: String) {
-        guard let contact = searchContact(with: email) else {
-            // TODO: Handle
-            return
-        }
+    func remove(pubKey: String, for email: String) {
+        find(with: email)?
+            .pubKeys
+            .filter { $0.key == pubKey }
+            .forEach { key in
+                try? localContactsCache.realm.write {
+                    localContactsCache.realm.delete(key)
+                }
+            }
+    }
+}
 
-        let updatedContact = Contact(email: contact.email,
-                                     name: contact.name,
-                                     pubKeys: contact.pubKeys.filter { $0 != pubKey },
-                                     lastUsed: contact.lastUsed)
-        
-        save(contact: updatedContact)
+extension LocalContactsProvider {
+    private func find(with email: String) -> ContactObject? {
+        localContactsCache.realm.object(ofType: ContactObject.self,
+                                        forPrimaryKey: email)
     }
 }
