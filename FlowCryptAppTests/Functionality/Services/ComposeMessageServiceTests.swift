@@ -192,8 +192,8 @@ class ComposeMessageServiceTests: XCTestCase {
         }
     
         recipients.forEach { recipient in
-            contactsService.retrievePubKeyResult = { _ in
-                nil
+            contactsService.retrievePubKeysResult = { _ in
+                []
             }
         } 
         
@@ -220,11 +220,11 @@ class ComposeMessageServiceTests: XCTestCase {
     
         let recWithoutPubKey = recipients[0].email
         recipients.forEach { _ in
-            contactsService.retrievePubKeyResult = { recipient in
+            contactsService.retrievePubKeysResult = { recipient in
                 if recipient == recWithoutPubKey {
-                    return nil
+                    return []
                 }
-                return "recipient pub key"
+                return ["recipient pub key"]
             }
         }
         
@@ -250,8 +250,8 @@ class ComposeMessageServiceTests: XCTestCase {
         }
     
         recipients.enumerated().forEach { (element, index) in
-            contactsService.retrievePubKeyResult = { recipient in
-                "pubKey"
+            contactsService.retrievePubKeysResult = { recipient in
+                ["pubKey"]
             }
         }
         

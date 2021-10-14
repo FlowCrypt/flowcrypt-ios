@@ -11,13 +11,15 @@ import Promises
 @testable import FlowCrypt
 
 class ContactsServiceMock: ContactsServiceType {
-    var retrievePubKeyResult: ((String) -> (String?))!
-    func retrievePubKey(for email: String) -> String? {
-        retrievePubKeyResult(email)
+    var retrievePubKeysResult: ((String) -> ([String]))!
+    func retrievePubKeys(for email: String) -> [String] {
+        retrievePubKeysResult(email)
     }
     
     var searchContactResult: Result<Contact, Error>!
     func searchContact(with email: String) -> Promise<Contact> {
         Promise<Contact>.resolveAfter(with: searchContactResult)
     }
+
+    func remove(pubKey: String, for email: String) {}
 }
