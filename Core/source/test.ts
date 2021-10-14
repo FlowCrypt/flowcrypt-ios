@@ -101,7 +101,7 @@ orig message
 
 ava.default('composeEmail format:plain with attachment', async t => {
   const content = 'hello\nwrld';
-  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64')}] };
+  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64')}] };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(composeEmailJson);
   const plainMimeStr = plainMimeMsg.toString();
@@ -111,7 +111,7 @@ ava.default('composeEmail format:plain with attachment', async t => {
   expect(plainMimeStr).contains('Cc: some@cc.com');
   expect(plainMimeStr).contains('Date: ');
   expect(plainMimeStr).contains('MIME-Version: 1.0');
-  expect(plainMimeStr).contains('topsecret.txt.pgp');
+  expect(plainMimeStr).contains('sometext.txt');
   t.pass();
 });
 
