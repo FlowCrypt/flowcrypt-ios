@@ -19,6 +19,7 @@ final class ContactsListViewController: TableNodeViewController {
     private let decorator: ContactsListDecoratorType
     private let contactsProvider: LocalContactsProviderType
     private var contacts: [Contact] = []
+    private var selectedIndexPath: IndexPath?
 
     init(
         decorator: ContactsListDecoratorType = ContactsListDecorator(),
@@ -39,6 +40,11 @@ final class ContactsListViewController: TableNodeViewController {
         setupUI()
         fetchContacts()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reloadContacts()
+    }
 }
 
 extension ContactsListViewController {
@@ -46,6 +52,13 @@ extension ContactsListViewController {
         node.delegate = self
         node.dataSource = self
         title = decorator.title
+    }
+
+    private func reloadContacts() {
+        guard let indexPath = selectedIndexPath else { return }
+        fetchContacts()
+        node.reloadRows(at: [indexPath], with: .automatic)
+        selectedIndexPath = nil
     }
 
     private func fetchContacts() {
@@ -92,7 +105,7 @@ extension ContactsListViewController {
             }
             self?.delete(with: .left(contact))
         }
-
+        selectedIndexPath = indexPath
         navigationController?.pushViewController(contactDetailViewController, animated: true)
     }
 
