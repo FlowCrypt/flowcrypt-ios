@@ -9,7 +9,8 @@ config.suites = {
     ],
     smoke: [
         './tests/specs/login/GmailLogin.spec.ts',
-        './tests/specs/inbox/ReadTextEmail.spec.ts'
+        './tests/specs/inbox/ReadTextEmail.spec.ts',
+        './tests/specs/composeEmail/CheckComposeEmailAfterReopening.spec.ts',
     ]
 };
 
@@ -18,7 +19,7 @@ config.capabilities = [
         platformName: 'iOS',
         iosInstallPause: 5000,
         deviceName: 'iPhone 11 Pro Max',
-        platformVersion: '14.5',
+        platformVersion: '15.0',
         automationName: 'XCUITest',
         app: join(process.cwd(), './apps/FlowCrypt.app'),
         newCommandTimeout: 10000,
