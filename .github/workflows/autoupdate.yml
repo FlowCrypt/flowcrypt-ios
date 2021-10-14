@@ -11,4 +11,4 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           PR_READY_STATE: "ready_for_review"
           EXCLUDED_LABELS: "dependencies,do-not-autoupdate"
-          MERGE_MSG: "The branch was auto-updated."
+          MERGE_MSG: "Branch was auto-updated."
