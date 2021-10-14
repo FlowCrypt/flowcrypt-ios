@@ -57,7 +57,7 @@ struct ComposeViewDecorator {
         InfoCellNode.Input(
             attributedText: email.attributed(
                 .medium(17),
-                color: UIColor.black.withAlphaComponent(0.8),
+                color: UIColor.mainTextColor.withAlphaComponent(0.8),
                 alignment: .left
             ),
             image: nil,
