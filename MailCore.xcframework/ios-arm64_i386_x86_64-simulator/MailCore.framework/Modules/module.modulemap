@@ -1,0 +1,7 @@
+framework module MailCore {
+
+    umbrella header "MCOFramework.h"
+
+    export *
+    
+}
