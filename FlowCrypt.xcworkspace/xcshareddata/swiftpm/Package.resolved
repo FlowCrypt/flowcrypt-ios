@@ -65,6 +65,15 @@
         }
       },
       {
+        "package": "MailCore",
+        "repositoryURL": "https://github.com/FlowCrypt/mailcore2",
+        "state": {
+          "branch": null,
+          "revision": "512e3074f7b80a4425be806e3ce968f1e84b995f",
+          "version": "0.7.5"
+        }
+      },
+      {
         "package": "MBProgressHUD",
         "repositoryURL": "https://github.com/jdg/MBProgressHUD",
         "state": {

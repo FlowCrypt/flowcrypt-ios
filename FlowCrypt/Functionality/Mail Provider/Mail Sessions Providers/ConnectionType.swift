@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MailCore
 
 enum AuthType {
     /// gmail authentication with token

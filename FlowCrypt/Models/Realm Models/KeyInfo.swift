@@ -2,6 +2,7 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
+import Foundation
 import RealmSwift
 
 enum KeySource: String {
