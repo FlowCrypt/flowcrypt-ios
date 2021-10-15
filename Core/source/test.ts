@@ -149,7 +149,7 @@ ava.default('parseDecryptMsg unescaped special characters in encrypted text', as
   t.pass();
 });
 
-ava.default('parseDecryptMsg - plain inline img', async t => {
+ava.default.only('parseDecryptMsg - plain inline img', async t => {
   const mime = `MIME-Version: 1.0
 Date: Sat, 10 Aug 2019 10:45:56 +0000
 Message-ID: <CAOWYkBvzHVVsTckiqmCqcz0HFGh8YEG1R_AcR9+cB7tUuYiZtg@mail.gmail.com>
