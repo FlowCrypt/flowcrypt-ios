@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MailCore
 
 protocol SessionCredentialsProvider {
     func getImapCredentials(for email: String) -> MailSettingsCredentials?
