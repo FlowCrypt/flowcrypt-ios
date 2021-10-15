@@ -90,9 +90,6 @@ export class Endpoints {
     } else {
       rawBlocks.push(MsgBlock.fromContent('encryptedMsg', new Buf(Buf.concat(data))));
     }
-    for (var i = 0; i < rawBlocks.length; ++i) {
-      console.log(`\n>>>> RAW BLOCK #${i}\n${JSON.stringify(rawBlocks[i])}`);
-    }
     const sequentialProcessedBlocks: MsgBlock[] = []; // contains decrypted or otherwise formatted data
     for (const rawBlock of rawBlocks) {
       if ((rawBlock.type === 'signedMsg' || rawBlock.type === 'signedHtml') && rawBlock.signature) {
@@ -138,6 +135,9 @@ export class Endpoints {
       }
     }
     // At this point we have sequentialProcessedBlocks filled
+    for (var i = 0; i < sequentialProcessedBlocks.length; ++i) {
+      console.log(`\n>>>> RAW BLOCK #${i}\n${JSON.stringify(sequentialProcessedBlocks[i])}`);
+    }
     const msgContentBlocks: MsgBlock[] = [];
     const blocks: MsgBlock[] = [];
     let replyType = 'plain';
