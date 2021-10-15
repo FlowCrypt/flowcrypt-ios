@@ -182,9 +182,6 @@ export class Endpoints {
         blocks.push(block);
       }
     }
-    for (var i = 0; i < msgContentBlocks.length; ++i) {
-      console.log(`\n>>>> msgContentBlocks[${i}]:\n${JSON.stringify(msgContentBlocks[i])}`);
-    }
     const { contentBlock, text } = fmtContentBlock(msgContentBlocks);
     console.log(`>>>> contentBlock:\n${JSON.stringify(contentBlock)}\n\ntext:\n${text}`);
     blocks.unshift(contentBlock);
