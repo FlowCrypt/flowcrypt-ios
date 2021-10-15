@@ -186,6 +186,7 @@ export class Endpoints {
       console.log(`\n>>>> msgContentBlocks[${i}]:\n${JSON.stringify(msgContentBlocks[i])}`);
     }
     const { contentBlock, text } = fmtContentBlock(msgContentBlocks);
+    console.log(`>>>> contentBlock:\n${JSON.stringify(contentBlock)}\n\ntext:\n${text}`);
     blocks.unshift(contentBlock);
     // data represent one JSON-stringified block per line. This is so that it can be read as a stream later
     return fmtRes({ text, replyType, subject }, Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
