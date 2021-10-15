@@ -76,7 +76,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     func removePubKey(with fingerprint: String, for email: String) {
         find(with: email)?
             .pubKeys
-            .filter { $0.key == fingerprint }
+            .filter { $0.fingerprint == fingerprint }
             .forEach { key in
                 try? localContactsCache.realm.write {
                     localContactsCache.realm.delete(key)

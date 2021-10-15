@@ -16,10 +16,10 @@ class ContactsServiceMock: ContactsServiceType {
         retrievePubKeysResult(email)
     }
     
-    var searchContactResult: Result<Contact, Error>!
-    func searchContact(with email: String) -> Promise<Contact> {
-        Promise<Contact>.resolveAfter(with: searchContactResult)
+    var searchContactResult: Result<RecipientWithPubKeys, Error>!
+    func searchContact(with email: String) -> Promise<RecipientWithPubKeys> {
+        Promise<RecipientWithPubKeys>.resolveAfter(with: searchContactResult)
     }
 
-    func remove(pubKey: String, for email: String) {}
+    func removePubKey(with fingerprint: String, for email: String) {}
 }
