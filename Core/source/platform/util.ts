@@ -28,6 +28,6 @@ export const iso2022jpToUtf = (content: Buf) => {
 
 export const debugPrintArray = (title: string, arr: any[]) => {
   for(var i = 0; i < arr.length; ++i) {
-    console.log(`>>> title [${i}]:\n${JSON.stringify(arr[i])}\n`);
+    console.log(`>>> ${title} [${i}]:\n${JSON.stringify(arr[i])}\n`);
   }
 }

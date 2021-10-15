@@ -73,7 +73,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
       imgsAtTheBottom.push(plainImgBlock);
     }
   }
-  debugPrintArray('ContentBlocks', contentBlocks);
+  debugPrintArray('contentBlocks', contentBlocks);
 
   var verifyRes: (VerifyRes | undefined) = undefined;
   var mixedSignatures = false;
@@ -91,6 +91,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
         mixedSignatures = true;
       }
     }
+
     if (block.type === 'decryptedText') {
       msgContentAsHtml += fmtMsgContentBlockAsHtml(Str.asEscapedHtml(block.content.toString()), 'green');
       msgContentAsText += block.content.toString() + '\n';
@@ -104,7 +105,9 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     } else if (block.type === 'plainHtml') {
       const dirtyHtmlWithImgs = fillInlineHtmlImgs(stripHtmlRootTags(block.content.toString()), inlineImgsByCid);
       msgContentAsHtml += fmtMsgContentBlockAsHtml(dirtyHtmlWithImgs, 'plain');
-      msgContentAsText += Xss.htmlUnescape(Xss.htmlSanitizeAndStripAllTags(dirtyHtmlWithImgs, '\n') + '\n');
+      const sanitized = Xss.htmlSanitizeAndStripAllTags(dirtyHtmlWithImgs, '\n');
+      console.log(`sanitized:\n${sanitized}\n`);
+      msgContentAsText += Xss.htmlUnescape(sanitized + '\n');
     } else if (block.type === 'verifiedMsg') {
       msgContentAsHtml += fmtMsgContentBlockAsHtml(block.content.toString(), 'gray');
       msgContentAsText += Xss.htmlSanitizeAndStripAllTags(block.content.toString(), '\n') + '\n';
@@ -113,6 +116,8 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
       msgContentAsText += block.content.toString() + '\n';
     }
   }
+
+  console.log(`msgContentAsText:\n${msgContentAsText}\n`);
 
   if (verifyRes && verifyRes.match) {
     if (mixedSignatures) {
