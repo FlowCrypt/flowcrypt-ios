@@ -247,27 +247,31 @@ extension ComposeViewController {
         showSpinner("sending_title".localized)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
-        composeMessageService.validateMessage(
+        let result = composeMessageService.validateMessage(
             input: input,
             contextToSend: contextToSend,
             email: email,
             signingPrv: signingKey
         )
-        .publisher
-        .flatMap(encryptAndSend)
-        .receive(on: DispatchQueue.main)
-        .sinkFuture(
-            receiveValue: { [weak self] in
-                self?.handleSuccessfullySentMessage()
-            },
-            receiveError: { [weak self] error in
-                self?.handle(error: error)
-            })
-        .store(in: &cancellable)
+        switch result {
+        case .success(let message):
+            encryptAndSend(message)
+        case .failure(let error):
+            handle(error: error)
+        }
     }
 
-    private func encryptAndSend(_ message: SendableMsg) -> AnyPublisher<Void, ComposeMessageError> {
-        composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
+    private func encryptAndSend(_ message: SendableMsg) {
+        Task {
+            do {
+                try await composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
+                handleSuccessfullySentMessage()
+            } catch {
+                if let error = error as? ComposeMessageError {
+                    handle(error: error)
+                }
+            }
+        }
     }
 
     private func handle(error: ComposeMessageError) {

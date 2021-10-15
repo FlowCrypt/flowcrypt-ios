@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import MailCore
 @testable import FlowCrypt
 
 class ImapHelperTest: XCTestCase {

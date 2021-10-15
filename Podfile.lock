@@ -40,7 +40,6 @@ PODS:
     - Texture/Core
   - Texture/Video (3.1.0):
     - Texture/Core
-  - Toast (4.0.0)
 
 DEPENDENCIES:
   - ENSwiftSideMenu (~> 0.1.4)
@@ -48,7 +47,6 @@ DEPENDENCIES:
   - SwiftLint
   - SwiftyRSA
   - Texture
-  - Toast (~> 4.0.0)
 
 SPEC REPOS:
   trunk:
@@ -60,7 +58,6 @@ SPEC REPOS:
     - SwiftLint
     - SwiftyRSA
     - Texture
-    - Toast
 
 SPEC CHECKSUMS:
   ENSwiftSideMenu: 21e755dae28f09bbf453aa83b3d05f2e5f92ca39
@@ -71,8 +68,7 @@ SPEC CHECKSUMS:
   SwiftLint: e96c0a8c770c7ebbc4d36c55baf9096bb65c4584
   SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
   Texture: 2e8ab2519452515f7f5a520f5a8f7e0a413abfa3
-  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
-PODFILE CHECKSUM: bc7c556828b57b2779df98b734c8d0a4448e861d
+PODFILE CHECKSUM: ed8e347b158eea7a8cb63c01c07a543757ca8fab
 
 COCOAPODS: 1.11.2

@@ -7,6 +7,7 @@
 //
 
 import FlowCryptUI
+import MailCore
 import UIKit
 
 struct FolderViewModel {
