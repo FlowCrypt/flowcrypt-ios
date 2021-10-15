@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-final class ContactKeyObject: Object {
+final class PubKeyObject: Object {
     @Persisted(primaryKey: true) var key: String = ""
 
     @Persisted var lastSig: Date?
@@ -39,8 +39,8 @@ final class ContactKeyObject: Object {
     }
 }
 
-extension ContactKeyObject {
-    convenience init(_ key: ContactKey) {
+extension PubKeyObject {
+    convenience init(_ key: PubKey) {
         self.init(
             key: key.key,
             lastSig: key.lastSig,
@@ -51,4 +51,8 @@ extension ContactKeyObject {
             created: key.created
         )
     }
+}
+
+extension PubKeyObject {
+    var fingerprint: String? { fingerprints.first }
 }

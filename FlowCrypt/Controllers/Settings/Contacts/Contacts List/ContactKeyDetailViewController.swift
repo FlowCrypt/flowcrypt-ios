@@ -18,7 +18,7 @@ final class ContactKeyDetailViewController: TableNodeViewController {
     typealias ContactKeyDetailAction = (Action) -> Void
 
     enum Action {
-        case delete(_ key: ContactKey)
+        case delete(_ key: PubKey)
     }
 
     enum Part: Int, CaseIterable {
@@ -26,16 +26,16 @@ final class ContactKeyDetailViewController: TableNodeViewController {
     }
 
     private let decorator: ContactKeyDetailDecoratorType
-    private let key: ContactKey
+    private let pubKey: PubKey
     private let action: ContactKeyDetailAction?
 
     init(
         decorator: ContactKeyDetailDecoratorType = ContactKeyDetailDecorator(),
-        key: ContactKey,
+        pubKey: PubKey,
         action: ContactKeyDetailAction?
     ) {
         self.decorator = decorator
-        self.key = key
+        self.pubKey = pubKey
         self.action = action
         super.init(node: TableNode())
     }
@@ -67,21 +67,21 @@ final class ContactKeyDetailViewController: TableNodeViewController {
 extension ContactKeyDetailViewController {
     @objc private final func handleSaveAction() {
         let vc = UIActivityViewController(
-            activityItems: [key.key],
+            activityItems: [pubKey.key],
             applicationActivities: nil
         )
         present(vc, animated: true, completion: nil)
     }
 
     @objc private final func handleCopyAction() {
-        UIPasteboard.general.string = key.key
+        UIPasteboard.general.string = pubKey.key
         showToast("contact_detail_copy".localized)
     }
 
     @objc private final func handleRemoveAction() {
         navigationController?.popViewController(animated: true) { [weak self] in
             guard let self = self else { return }
-            self.action?(.delete(self.key))
+            self.action?(.delete(self.pubKey))
         }
     }
 }
@@ -110,21 +110,21 @@ extension ContactKeyDetailViewController {
     private func content(for part: Part) -> String {
         switch part {
         case .key:
-            return key.key
+            return pubKey.key
         case .signature:
-            return string(from: key.lastSig)
+            return string(from: pubKey.lastSig)
         case .created:
-            return string(from: key.created)
+            return string(from: pubKey.created)
         case .checked:
-            return string(from: key.lastChecked)
+            return string(from: pubKey.lastChecked)
         case .expire:
-            return string(from: key.expiresOn)
+            return string(from: pubKey.expiresOn)
         case .longids:
-            return key.longids.joined(separator: ", ")
+            return pubKey.longids.joined(separator: ", ")
         case .fingerprints:
-            return key.fingerprints.joined(separator: ", ")
+            return pubKey.fingerprints.joined(separator: ", ")
         case .algo:
-            return key.algo?.algorithm ?? "-"
+            return pubKey.algo?.algorithm ?? "-"
         }
     }
 

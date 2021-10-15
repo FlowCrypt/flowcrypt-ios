@@ -113,16 +113,16 @@ final class ComposeMessageService {
 
     private func getPubKeys(for recipients: [ComposeMessageRecipient]) -> Result<[String], MessageValidationError> {
         let pubKeys = recipients.map {
-            ($0.email, contactsService.retrievePubKeys(for: $0.email))
+            (email: $0.email, keys: contactsService.retrievePubKeys(for: $0.email))
         }
 
-        let emailsWithoutPubKeys = pubKeys.filter { $0.1.isEmpty }.map(\.0)
+        let emailsWithoutPubKeys = pubKeys.filter { $0.keys.isEmpty }.map(\.email)
 
         guard emailsWithoutPubKeys.isEmpty else {
             return .failure(.noPubRecipients(emailsWithoutPubKeys))
         }
 
-        return .success(pubKeys.filter({ $0.1.isNotEmpty }).flatMap(\.1))
+        return .success(pubKeys.filter({ $0.keys.isNotEmpty }).flatMap(\.keys))
     }
 
     // MARK: - Encrypt and Send

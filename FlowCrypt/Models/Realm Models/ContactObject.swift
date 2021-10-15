@@ -1,5 +1,5 @@
 //
-//  ContactObject.swift
+//  RecipientObject.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 21/08/2020.
@@ -18,18 +18,18 @@ final class LongId: Object {
     }
 }
 
-final class ContactObject: Object {
+final class RecipientObject: Object {
     @Persisted(primaryKey: true) var email: String = ""
 
     @Persisted var name: String?
     @Persisted var lastUsed: Date?
-    @Persisted var pubKeys = List<ContactKeyObject>()
+    @Persisted var pubKeys = List<PubKeyObject>()
 
     convenience init(
         email: String,
         name: String?,
         lastUsed: Date?,
-        keys: [ContactKey]
+        keys: [PubKey]
     ) {
         self.init()
         self.email = email
@@ -37,25 +37,25 @@ final class ContactObject: Object {
         self.lastUsed = lastUsed
 
         keys
-            .map(ContactKeyObject.init)
+            .map(PubKeyObject.init)
             .forEach {
                 self.pubKeys.append($0)
             }
     }
 }
 
-extension ContactObject {
-    convenience init(_ contact: Contact) {
+extension RecipientObject {
+    convenience init(_ recipient: RecipientWithPubKeys) {
         self.init(
-            email: contact.email,
-            name: contact.name,
-            lastUsed: contact.lastUsed,
-            keys: contact.pubKeys
+            email: recipient.email,
+            name: recipient.name,
+            lastUsed: recipient.lastUsed,
+            keys: recipient.pubKeys
         )
     }
 }
 
-extension ContactObject: CachedObject {
+extension RecipientObject: CachedObject {
     // Contacts can be shared between accounts
     // https://github.com/FlowCrypt/flowcrypt-ios/issues/269
     var activeUser: UserObject? { nil }

@@ -11,20 +11,20 @@ import Foundation
 
 protocol ContactDetailDecoratorType {
     var title: String { get }
-    func userNodeInput(with contact: Contact) -> ContactUserCellNode.Input
-    func keyNodeInput(with key: ContactKey) -> ContactKeyCellNode.Input
+    func userNodeInput(with contact: RecipientWithPubKeys) -> ContactUserCellNode.Input
+    func keyNodeInput(with key: PubKey) -> ContactKeyCellNode.Input
 }
 
 struct ContactDetailDecorator: ContactDetailDecoratorType {
     let title = "contact_detail_screen_title".localized
 
-    func userNodeInput(with contact: Contact) -> ContactUserCellNode.Input {
+    func userNodeInput(with contact: RecipientWithPubKeys) -> ContactUserCellNode.Input {
         ContactUserCellNode.Input(
             user: (contact.name ?? contact.email).attributed(.regular(16))
         )
     }
 
-    func keyNodeInput(with key: ContactKey) -> ContactKeyCellNode.Input {
+    func keyNodeInput(with key: PubKey) -> ContactKeyCellNode.Input {
         let df = DateFormatter()
         df.dateStyle = .medium
         df.timeStyle = .medium

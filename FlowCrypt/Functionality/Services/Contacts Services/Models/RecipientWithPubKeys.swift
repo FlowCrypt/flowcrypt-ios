@@ -8,42 +8,42 @@
 
 import Foundation
 
-struct Contact {
+struct RecipientWithPubKeys {
     let email: String
     /// name if known
     let name: String?
     /// last time an email was sent to this contact, update when email is sent
     let lastUsed: Date?
     /// public keys
-    var pubKeys: [ContactKey]
+    var pubKeys: [PubKey]
 }
 
-extension Contact {
-    init(_ contactObject: ContactObject, keyDetails: [KeyDetails] = []) {
-        self.email = contactObject.email
-        self.name = contactObject.name.nilIfEmpty
-        self.lastUsed = contactObject.lastUsed
-        self.pubKeys = keyDetails.map(ContactKey.init)
+extension RecipientWithPubKeys {
+    init(_ recipientObject: RecipientObject, keyDetails: [KeyDetails] = []) {
+        self.email = recipientObject.email
+        self.name = recipientObject.name.nilIfEmpty
+        self.lastUsed = recipientObject.lastUsed
+        self.pubKeys = keyDetails.map(PubKey.init)
     }
 }
 
-extension Contact {
+extension RecipientWithPubKeys {
     init(email: String, keyDetails: [KeyDetails]) {
         self.email = email
         self.name = keyDetails.first?.users.first ?? email
         self.lastUsed = nil
-        self.pubKeys = keyDetails.map(ContactKey.init)
+        self.pubKeys = keyDetails.map(PubKey.init)
     }
 }
 
-extension Contact {
-    mutating func remove(pubKey: ContactKey) {
+extension RecipientWithPubKeys {
+    mutating func remove(pubKey: PubKey) {
         pubKeys.removeAll(where: { $0 == pubKey })
     }
 }
 
-extension Contact: Equatable {
-    static func == (lhs: Contact, rhs: Contact) -> Bool {
+extension RecipientWithPubKeys: Equatable {
+    static func == (lhs: RecipientWithPubKeys, rhs: RecipientWithPubKeys) -> Bool {
         lhs.email == rhs.email
     }
 }

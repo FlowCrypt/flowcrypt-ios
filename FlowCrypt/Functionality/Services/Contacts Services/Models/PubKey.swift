@@ -8,17 +8,17 @@
     
 import Foundation
 
-struct ContactKey {
+struct PubKey {
     let key: String
     /// will be provided later
     let lastSig: Date?
-    /// the date when key was retrieved from Attester, or nil
+    /// the date when key was retrieved from a public key server, or nil
     let lastChecked: Date?
     /// expiration date
     let expiresOn: Date?
-    /// all key longids, comma-separated
+    /// all key longids
     let longids: [String]
-    /// all key fingerprints, comma-separated
+    /// all key fingerprints
     let fingerprints: [String]
     /// key created date
     let created: Date?
@@ -26,14 +26,14 @@ struct ContactKey {
     let algo: KeyAlgo?
 }
 
-extension ContactKey {
+extension PubKey {
     /// first key longid
     var longid: String? { longids.first }
     /// first key fingerprint
     var fingerprint: String? { fingerprints.first }
 }
 
-extension ContactKey {
+extension PubKey {
     init(keyDetails: KeyDetails) {
         let keyIds = keyDetails.ids
         let longids = keyIds.map(\.longid)
@@ -50,8 +50,8 @@ extension ContactKey {
     }
 }
 
-extension ContactKey: Equatable {
-    static func == (lhs: ContactKey, rhs: ContactKey) -> Bool {
+extension PubKey: Equatable {
+    static func == (lhs: PubKey, rhs: PubKey) -> Bool {
         lhs.key == rhs.key
     }
 }

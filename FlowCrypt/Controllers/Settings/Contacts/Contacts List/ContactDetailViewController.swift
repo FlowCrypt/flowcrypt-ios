@@ -18,7 +18,7 @@ final class ContactDetailViewController: TableNodeViewController {
     typealias ContactDetailAction = (Action) -> Void
 
     enum Action {
-        case delete(_ contact: Contact)
+        case delete(_ recipient: RecipientWithPubKeys)
     }
 
     private enum Section: Int, CaseIterable {
@@ -27,18 +27,18 @@ final class ContactDetailViewController: TableNodeViewController {
 
     private let decorator: ContactDetailDecoratorType
     private let contactsProvider: LocalContactsProviderType
-    private var contact: Contact
+    private var recipient: RecipientWithPubKeys
     private let action: ContactDetailAction?
 
     init(
         decorator: ContactDetailDecoratorType = ContactDetailDecorator(),
         contactsProvider: LocalContactsProviderType = LocalContactsProvider(),
-        contact: Contact,
+        recipient: RecipientWithPubKeys,
         action: ContactDetailAction?
     ) {
         self.decorator = decorator
         self.contactsProvider = contactsProvider
-        self.contact = contact
+        self.recipient = recipient
         self.action = action
         super.init(node: TableNode())
     }
@@ -69,28 +69,30 @@ extension ContactDetailViewController {
     @objc private final func handleRemoveAction() {
         navigationController?.popViewController(animated: true) { [weak self] in
             guard let self = self else { return }
-            self.action?(.delete(self.contact))
+            self.action?(.delete(self.recipient))
         }
     }
 
-    private func delete(with context: Either<ContactKey, IndexPath>) {
-        let keyToRemove: ContactKey
+    private func delete(with context: Either<PubKey, IndexPath>) {
+        let keyToRemove: PubKey
         let indexPathToRemove: IndexPath
         switch context {
         case .left(let key):
             keyToRemove = key
-            guard let index = contact.pubKeys.firstIndex(where: { $0 == key }) else {
+            guard let index = recipient.pubKeys.firstIndex(where: { $0 == key }) else {
                 assertionFailure("Can't find index of the contact")
                 return
             }
             indexPathToRemove = IndexPath(row: index, section: 1)
         case .right(let indexPath):
             indexPathToRemove = indexPath
-            keyToRemove = contact.pubKeys[indexPath.row]
+            keyToRemove = recipient.pubKeys[indexPath.row]
         }
 
-        contact.remove(pubKey: keyToRemove)
-        contactsProvider.remove(pubKey: keyToRemove.key, for: contact.email)
+        recipient.remove(pubKey: keyToRemove)
+        if let fingerprint = keyToRemove.fingerprint, fingerprint.isNotEmpty {
+            contactsProvider.removePubKey(with: fingerprint, for: recipient.email)
+        }
         node.deleteRows(at: [indexPathToRemove], with: .left)
     }
 }
@@ -105,7 +107,7 @@ extension ContactDetailViewController: ASTableDelegate, ASTableDataSource {
 
         switch section {
         case .header: return 1
-        case .keys: return contact.pubKeys.count
+        case .keys: return recipient.pubKeys.count
         }
     }
 
@@ -124,8 +126,8 @@ extension ContactDetailViewController: ASTableDelegate, ASTableDataSource {
         case .header:
             return
         case .keys:
-            let key = contact.pubKeys[indexPath.row]
-            let contactKeyDetailViewController = ContactKeyDetailViewController(key: key) { [weak self] action in
+            let pubKey = recipient.pubKeys[indexPath.row]
+            let contactKeyDetailViewController = ContactKeyDetailViewController(pubKey: pubKey) { [weak self] action in
                 guard case let .delete(key) = action else {
                     assertionFailure("Action is not implemented")
                     return
@@ -143,10 +145,10 @@ extension ContactDetailViewController {
     private func node(for section: Section, row: Int) -> ASCellNode {
         switch section {
         case .header:
-            return ContactUserCellNode(input: self.decorator.userNodeInput(with: self.contact))
+            return ContactUserCellNode(input: self.decorator.userNodeInput(with: self.recipient))
         case .keys:
             return ContactKeyCellNode(
-                input: self.decorator.keyNodeInput(with: self.contact.pubKeys[row])
+                input: self.decorator.keyNodeInput(with: self.recipient.pubKeys[row])
             )
         }
     }
