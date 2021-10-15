@@ -11,18 +11,6 @@ import Promises
 import Toast
 import UIKit
 
-enum ToastPosition: String {
-    case bottom, top, center
-
-    var value: String {
-        switch self {
-        case .bottom: return CSToastPositionBottom
-        case .center: return CSToastPositionCenter
-        case .top: return CSToastPositionTop
-        }
-    }
-}
-
 typealias ShowToastCompletion = (Bool) -> Void
 
 extension UIViewController {
@@ -52,14 +40,12 @@ extension UIViewController {
             view.makeToast(
                 message,
                 duration: duration,
-                position: position.value,
+                position: position,
                 title: title,
-                image: nil,
-                style: CSToastStyle(defaultStyle: ()),
                 completion: completion
             )
 
-            CSToastManager.setTapToDismissEnabled(true)
+            ToastManager.shared.isTapToDismissEnabled = true
         }
     }
 }

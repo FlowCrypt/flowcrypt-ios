@@ -57,6 +57,7 @@
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
 		51B4AE4F27137CB70001F33B /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 51B4AE4E27137CB70001F33B /* Promises */; };
 		51C0C1EF271982A1000C9738 /* MailCore in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1EE271982A1000C9738 /* MailCore */; };
+		51C0C1F2271987DB000C9738 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1F1271987DB000C9738 /* Toast */; };
 		51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */; };
 		51E13F15270F92F200F287CA /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F14270F92F200F287CA /* BigInt */; };
 		51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F17270F934C00F287CA /* MBProgressHUD */; };
@@ -776,6 +777,7 @@
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
 				51B4AE4F27137CB70001F33B /* Promises in Frameworks */,
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
+				51C0C1F2271987DB000C9738 /* Toast in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2068,6 +2070,7 @@
 				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
 				51B4AE4E27137CB70001F33B /* Promises */,
 				51C0C1EE271982A1000C9738 /* MailCore */,
+				51C0C1F1271987DB000C9738 /* Toast */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -2183,6 +2186,7 @@
 				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */,
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
+				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -3971,6 +3975,14 @@
 				minimumVersion = 0.7.5;
 			};
 		};
+		51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scalessec/Toast-Swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 		51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/iosdevzone/IDZSwiftCommonCrypto";
@@ -4036,6 +4048,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */;
 			productName = MailCore;
+		};
+		51C0C1F1271987DB000C9738 /* Toast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */;
+			productName = Toast;
 		};
 		51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */ = {
 			isa = XCSwiftPackageProductDependency;
