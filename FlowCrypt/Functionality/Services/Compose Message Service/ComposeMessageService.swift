@@ -23,7 +23,7 @@ struct ComposeMessageRecipient {
 }
 
 protocol CoreComposeMessageType {
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) -> Future<CoreRes.ComposeEmail, Error>
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) async throws -> CoreRes.ComposeEmail
 }
 
 final class ComposeMessageService {
@@ -126,20 +126,17 @@ final class ComposeMessageService {
     }
 
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg, threadId: String?) -> AnyPublisher<Void, ComposeMessageError> {
-        return encryptMessage(with: message, threadId: threadId)
-            .flatMap(messageGateway.sendMail)
-            .mapError { ComposeMessageError.gatewayError($0) }
-            .eraseToAnyPublisher()
-    }
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+        do {
+            let r = try await core.composeEmail(
+                msg: message,
+                fmt: MsgFmt.encryptInline,
+                pubKeys: message.pubKeys
+            )
 
-    private func encryptMessage(with msg: SendableMsg, threadId: String?) -> AnyPublisher<MessageGatewayInput, Error> {
-        return core.composeEmail(
-            msg: msg,
-            fmt: MsgFmt.encryptInline,
-            pubKeys: msg.pubKeys
-        )
-        .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: threadId) })
-        .eraseToAnyPublisher()
+            try await messageGateway.sendMail(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId))
+        } catch {
+            throw ComposeMessageError.gatewayError(error)
+        }
     }
 }

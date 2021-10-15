@@ -12,9 +12,9 @@ import Combine
 
 class MessageGatewayMock: MessageGateway {
     var sendMailResult: ((Data) -> (Result<Void, Error>))!
-    func sendMail(input: MessageGatewayInput) -> Future<Void, Error> {
-        Future { promise in
-            promise(self.sendMailResult(input.mime))
+    func sendMail(input: MessageGatewayInput) async throws {
+        if case .failure(let error) = sendMailResult(input.mime) {
+            throw error
         }
     }
 }
