@@ -92,7 +92,9 @@ export class Xss {
   }
 
   public static htmlSanitizeAndStripAllTags = (dirtyHtml: string, outputNl: string): string => {
+    console.log(`>>>> htmlSanitizeAndStripAllTags 0:\n${dirtyHtml}\n`);
     let html = Xss.htmlSanitizeKeepBasicTags(dirtyHtml);
+    console.log(`>>>> htmlSanitizeAndStripAllTags 1:\n${html}\n`);
     const random = Str.sloppyRandom(5);
     const br = `CU_BR_${random}`;
     const blockStart = `CU_BS_${random}`;
