@@ -9,6 +9,7 @@ import { Mime } from '../core/mime';
 import { Str } from '../core/common';
 import { Xss } from '../platform/xss';
 import { VerifyRes } from '../core/pgp-msg';
+import { debugPrintArray } from '../platform/util';
 
 export type Buffers = (Buf | Uint8Array)[];
 export type EndpointRes = {json: string, data: Buf | Uint8Array};
@@ -72,6 +73,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
       imgsAtTheBottom.push(plainImgBlock);
     }
   }
+  debugPrintArray('ContentBlocks', contentBlocks);
 
   var verifyRes: (VerifyRes | undefined) = undefined;
   var mixedSignatures = false;
