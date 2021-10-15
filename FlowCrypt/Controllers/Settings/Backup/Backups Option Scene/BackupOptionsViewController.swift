@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
+import Combine
 
 enum BackupOption: Int, CaseIterable, Equatable {
     case email, download
@@ -103,14 +104,16 @@ extension BackupOptionsViewController {
 
     private func backupToInbox() {
         showSpinner()
-        backupService.backupToInbox(keys: backups, for: userId)
-            .then(on: .main) { [weak self] in
-                self?.hideSpinner()
-                self?.navigationController?.popToRootViewController(animated: true)
+
+        Task {
+            do {
+                try await backupService.backupToInbox(keys: backups, for: userId)
+                hideSpinner()
+                navigationController?.popToRootViewController(animated: true)
+            } catch {
+                handleCommon(error: error)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleCommon(error: error)
-            }
+        }
     }
 
     private func backupAsFile() {

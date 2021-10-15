@@ -93,58 +93,55 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertThrowsError(try core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong"))
     }
 
-    func testComposeEmailPlain() throws {
-        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
-        let expectation = XCTestExpectation()
-        
-        var mime: String = ""
-        core.composeEmail(msg: msg, fmt: .plain, pubKeys: nil)
-            .sinkFuture(
-                receiveValue: { composeEmailRes in
-                    mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
-                    expectation.fulfill()
-                }, receiveError: {_ in }
-            )
-            .store(in: &cancellable)
-        wait(for: [expectation], timeout: 3)
+    func testComposeEmailPlain() async throws {
+        let msg = SendableMsg(
+            text: "this is the message",
+            to: ["email@hello.com"],
+            cc: [],
+            bcc: [],
+            from: "sender@hello.com",
+            subject: "subj",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: nil
+        )
+        let r = try await core.composeEmail(msg: msg, fmt: .plain, pubKeys: nil)
+        let mime = String(data: r.mimeEncoded, encoding: .utf8)!
         XCTAssertNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // not encrypted
         XCTAssertNotNil(mime.range(of: msg.text)) // plain text visible
         XCTAssertNotNil(mime.range(of: "Subject: \(msg.subject)")) // has mime Subject header
         XCTAssertNil(mime.range(of: "In-Reply-To")) // Not a reply
     }
 
-    func testComposeEmailEncryptInline() throws {
-        let msg = SendableMsg(text: "this is the message", to: ["email@hello.com"], cc: [], bcc: [], from: "sender@hello.com", subject: "subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
-        let expectation = XCTestExpectation()
-        
-        var mime: String = ""
-        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
-            .sinkFuture(
-                receiveValue: { composeEmailRes in
-                    mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
-                    expectation.fulfill()
-                }, receiveError: {_ in }
-            )
-            .store(in: &cancellable)
-        wait(for: [expectation], timeout: 3)
+    func testComposeEmailEncryptInline() async throws {
+        let msg = SendableMsg(
+            text: "this is the message",
+            to: ["email@hello.com"],
+            cc: [],
+            bcc: [],
+            from: "sender@hello.com",
+            subject: "subj",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: nil
+        )
+        let r = try await self.core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
+        let mime = String(data: r.mimeEncoded, encoding: .utf8)!
         XCTAssertNotNil(mime.range(of: "-----BEGIN PGP MESSAGE-----")) // encrypted
         XCTAssertNil(mime.range(of: msg.text)) // plain text not visible
         XCTAssertNotNil(mime.range(of: "Subject: \(msg.subject)")) // has mime Subject header
         XCTAssertNil(mime.range(of: "In-Reply-To")) // Not a reply
     }
-    
-    func testComposeEmailInlineWithAttachment() throws {
-        
+
+    func testComposeEmailInlineWithAttachment() async throws {
         let initialFileName = "data.txt"
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
             .path(forResource: "data", ofType: "txt")!)
         let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
-        
         let attachment = SendableMsg.Attachment(
             name: initialFileName, type: "text/plain",
             base64: fileData.base64EncodedString()
         )
-        
         let msg = SendableMsg(
             text: "this is the message",
             to: ["email@hello.com"], cc: [], bcc: [],
@@ -152,45 +149,24 @@ class FlowCryptCoreTests: XCTestCase {
             subject: "subj", replyToMimeMsg: nil,
             atts: [attachment], pubKeys: nil
         )
-        let expectation = XCTestExpectation()
-        
-        var mime: String = ""
-        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
-            .sinkFuture(
-                receiveValue: { composeEmailRes in
-                    mime = String(data: composeEmailRes.mimeEncoded, encoding: .utf8)!
-                    expectation.fulfill()
-                }, receiveError: {_ in }
-            )
-            .store(in: &cancellable)
-        wait(for: [expectation], timeout: 3)
+        let r = try await core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [TestData.k0.pub, TestData.k1.pub])
+        let mime = String(data: r.mimeEncoded, encoding: .utf8)!
         XCTAssertNil(mime.range(of: msg.text)) // text encrypted
         XCTAssertNotNil(mime.range(of: "Content-Type: application/pgp-encrypted")) // encrypted
         XCTAssertNotNil(mime.range(of: "name=\(attachment.name)")) // attachment
         XCTAssertNotNil(mime.range(of: "Subject: \(msg.subject)")) // has mime Subject header
     }
 
-    func testEndToEnd() throws {
+    func testEndToEnd() async throws {
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
         let text = "this is the encrypted e2e content"
         let generateKeyRes = try core.generateKey(passphrase: passphrase, variant: KeyVariant.curve25519, userIds: [UserId(email: email, name: "End to end")])
         let k = generateKeyRes.key
         let msg = SendableMsg(text: text, to: [email], cc: [], bcc: [], from: email, subject: "e2e subj", replyToMimeMsg: nil, atts: [], pubKeys: nil)
-        let expectation = XCTestExpectation()
-        
-        var mime: CoreRes.ComposeEmail?
-        core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [k.public])
-            .sinkFuture(
-                receiveValue: { composeEmailRes in
-                    mime = composeEmailRes
-                    expectation.fulfill()
-                }, receiveError: {_ in }
-            )
-            .store(in: &cancellable)
-        wait(for: [expectation], timeout: 3)
+        let mime = try await core.composeEmail(msg: msg, fmt: .encryptInline, pubKeys: [k.public])
         let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase, fingerprints: k.fingerprints)]
-        let decrypted = try core.parseDecryptMsg(encrypted: mime?.mimeEncoded ?? Data(), keys: keys, msgPwd: nil, isEmail: true)
+        let decrypted = try core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true)
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.encrypted)
         XCTAssertEqual(decrypted.blocks.count, 1)

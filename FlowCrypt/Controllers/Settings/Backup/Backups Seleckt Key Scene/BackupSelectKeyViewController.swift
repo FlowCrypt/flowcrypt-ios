@@ -85,14 +85,15 @@ extension BackupSelectKeyViewController {
             .filter { $0.1 == true }
             .map(\.0)
 
-        backupService.backupToInbox(keys: backupsToSave, for: userId)
-            .then(on: .main) { [weak self] in
-                self?.hideSpinner()
-                self?.navigationController?.popToRootViewController(animated: true)
+        Task {
+            do {
+                try await backupService.backupToInbox(keys: backupsToSave, for: userId)
+                hideSpinner()
+                navigationController?.popToRootViewController(animated: true)
+            } catch {
+                handleCommon(error: error)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleCommon(error: error)
-            }
+        }
     }
 
     private func backupAsFile() {

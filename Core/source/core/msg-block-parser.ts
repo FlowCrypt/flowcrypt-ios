@@ -10,7 +10,7 @@ import { Catch } from '../platform/catch.js';
 import { Mime } from './mime.js';
 import { PgpArmor } from './pgp-armor.js';
 import { PgpKey } from './pgp-key.js';
-import { PgpMsg } from './pgp-msg.js';
+import { PgpMsg, VerifyRes } from './pgp-msg.js';
 import { Str } from './common.js';
 
 type SanitizedBlocks = { blocks: MsgBlock[], subject: string | undefined, isRichText: boolean };
@@ -40,7 +40,7 @@ export class MsgBlockParser {
     }
   }
 
-  public static fmtDecryptedAsSanitizedHtmlBlocks = async (decryptedContent: Uint8Array, imgHandling: SanitizeImgHandling = 'IMG-TO-LINK'): Promise<SanitizedBlocks> => {
+  public static fmtDecryptedAsSanitizedHtmlBlocks = async (decryptedContent: Uint8Array, signature?: VerifyRes, imgHandling: SanitizeImgHandling = 'IMG-TO-LINK'): Promise<SanitizedBlocks> => {
     const blocks: MsgBlock[] = [];
     let isRichText = false;
     if (!Mime.resemblesMsg(decryptedContent)) {
@@ -49,24 +49,34 @@ export class MsgBlockParser {
       utf = PgpMsg.stripFcTeplyToken(utf);
       const armoredPubKeys: string[] = [];
       utf = PgpMsg.stripPublicKeys(utf, armoredPubKeys);
-      blocks.push(MsgBlock.fromContent('decryptedHtml', Str.asEscapedHtml(utf))); // escaped text as html
+      const block = MsgBlock.fromContent('decryptedHtml', Str.asEscapedHtml(utf));
+      block.verifyRes = signature;
+      blocks.push(block); // escaped text as html
       await MsgBlockParser.pushArmoredPubkeysToBlocks(armoredPubKeys, blocks);
       return { blocks, subject: undefined, isRichText };
     }
     const decoded = await Mime.decode(decryptedContent);
     if (typeof decoded.html !== 'undefined') {
-      blocks.push(MsgBlock.fromContent('decryptedHtml', Xss.htmlSanitizeKeepBasicTags(decoded.html, imgHandling))); // sanitized html
+      const block = MsgBlock.fromContent('decryptedHtml', Xss.htmlSanitizeKeepBasicTags(decoded.html, imgHandling));
+      block.verifyRes = signature;
+      blocks.push(block); // sanitized html
       isRichText = true;
     } else if (typeof decoded.text !== 'undefined') {
-      blocks.push(MsgBlock.fromContent('decryptedHtml', Str.asEscapedHtml(decoded.text))); // escaped text as html
+      const block = MsgBlock.fromContent('decryptedHtml', Str.asEscapedHtml(decoded.text));
+      block.verifyRes = signature;
+      blocks.push(block); // escaped text as html
     } else {
-      blocks.push(MsgBlock.fromContent('decryptedHtml', Str.asEscapedHtml(Buf.with(decryptedContent).toUtfStr()))); // escaped mime text as html
+      const block = MsgBlock.fromContent('decryptedHtml', Str.asEscapedHtml(Buf.with(decryptedContent).toUtfStr()));
+      block.verifyRes = signature;
+      blocks.push(); // escaped mime text as html
     }
     for (const att of decoded.atts) {
       if (att.treatAs() === 'publicKey') {
         await MsgBlockParser.pushArmoredPubkeysToBlocks([att.getData().toUtfStr()], blocks);
       } else {
-        blocks.push(MsgBlock.fromAtt('decryptedAtt', '', { name: att.name, data: att.getData(), length: att.length, type: att.type }));
+        const block = MsgBlock.fromAtt('decryptedAtt', '', { name: att.name, data: att.getData(), length: att.length, type: att.type });
+        block.verifyRes = signature;
+        blocks.push(block);
       }
     }
     return { blocks, subject: decoded.subject, isRichText };
