@@ -19,16 +19,20 @@ enum KeyServiceError: Error {
 }
 
 final class KeyService: KeyServiceType {
-    let coreService: Core = .shared
+    typealias KeyParser = (Data) throws -> CoreRes.ParseKeys
+
+    let keyParser: KeyParser
     let storage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
     let currentUserEmail: () -> (String?)
 
     init(
+        keyParser: @escaping KeyParser = Core.shared.parseKeys(armoredOrBinary:),
         storage: KeyStorageType = KeyDataStorage(),
         passPhraseService: PassPhraseServiceType = PassPhraseService(),
         currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
     ) {
+        self.keyParser = keyParser
         self.storage = storage
         self.passPhraseService = passPhraseService
         self.currentUserEmail = currentUserEmail
@@ -45,9 +49,7 @@ final class KeyService: KeyServiceType {
             .map(\.private)
 
         let keyDetails = privateKeys
-            .compactMap {
-                try? coreService.parseKeys(armoredOrBinary: $0.data())
-            }
+            .compactMap { try? keyParser($0.data()) }
             .map(\.keyDetails)
             .flatMap { $0 }
 
@@ -110,17 +112,25 @@ final class KeyService: KeyServiceType {
 
     private func findKeyByUserEmail(keysInfo: [KeyInfo], email: String) throws -> KeyDetails? {
         let f: (KeyInfo) throws -> KeyDetails? = { keyInfo in
-            let parsedKeys = try self.coreService.parseKeys(
-                armoredOrBinary: keyInfo.`private`.data()
-            )
+            let parsedKeys = try self.keyParser(keyInfo.`private`.data())
 
             var keyDetails: [KeyDetails] = []
             parsedKeys.keyDetails.forEach { keyDetails.append($0) }
 
-            return keyDetails.first {
-                let emails = $0.pgpUserEmails
-                return emails.first == email || emails.contains(where: { $0 == email })
+            var foundKey: KeyDetails?
+            for key in keyDetails {
+                let emails = key.pgpUserEmails
+
+                if emails.first == email {
+                   return key
+                }
+
+                if foundKey == nil, emails.contains(where: { $0 == email }) {
+                    foundKey = key
+                }
             }
+
+            return foundKey
         }
 
         return try keysInfo.compactMap(f).first

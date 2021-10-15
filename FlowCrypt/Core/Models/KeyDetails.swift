@@ -7,6 +7,7 @@
 //
 
 import FlowCryptCommon
+import MailCore
 import Foundation
 
 struct KeyDetails: Decodable {
