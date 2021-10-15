@@ -135,9 +135,6 @@ export class Endpoints {
       }
     }
     // At this point we have sequentialProcessedBlocks filled
-    for (var i = 0; i < sequentialProcessedBlocks.length; ++i) {
-      console.log(`\n>>>> RAW BLOCK #${i}\n${JSON.stringify(sequentialProcessedBlocks[i])}`);
-    }
     const msgContentBlocks: MsgBlock[] = [];
     const blocks: MsgBlock[] = [];
     let replyType = 'plain';
@@ -184,6 +181,9 @@ export class Endpoints {
       } else {
         blocks.push(block);
       }
+    }
+    for (var i = 0; i < msgContentBlocks.length; ++i) {
+      console.log(`\n>>>> msgContentBlocks[${i}]:\n${JSON.stringify(msgContentBlocks[i])}`);
     }
     const { contentBlock, text } = fmtContentBlock(msgContentBlocks);
     blocks.unshift(contentBlock);
