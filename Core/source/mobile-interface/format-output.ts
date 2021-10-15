@@ -105,9 +105,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     } else if (block.type === 'plainHtml') {
       const dirtyHtmlWithImgs = fillInlineHtmlImgs(stripHtmlRootTags(block.content.toString()), inlineImgsByCid);
       msgContentAsHtml += fmtMsgContentBlockAsHtml(dirtyHtmlWithImgs, 'plain');
-      const sanitized = Xss.htmlSanitizeAndStripAllTags(dirtyHtmlWithImgs, '\n');
-      console.log(`>>>> sanitized:\n${sanitized}\n`);
-      msgContentAsText += Xss.htmlUnescape(sanitized + '\n');
+      msgContentAsText += Xss.htmlUnescape(Xss.htmlSanitizeAndStripAllTags(dirtyHtmlWithImgs, '\n') + '\n');
     } else if (block.type === 'verifiedMsg') {
       msgContentAsHtml += fmtMsgContentBlockAsHtml(block.content.toString(), 'gray');
       msgContentAsText += Xss.htmlSanitizeAndStripAllTags(block.content.toString(), '\n') + '\n';
@@ -116,8 +114,6 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
       msgContentAsText += block.content.toString() + '\n';
     }
   }
-
-  console.log(`>>>> msgContentAsText:\n${msgContentAsText}\n`);
 
   if (verifyRes && verifyRes.match) {
     if (mixedSignatures) {

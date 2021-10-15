@@ -92,9 +92,7 @@ export class Xss {
   }
 
   public static htmlSanitizeAndStripAllTags = (dirtyHtml: string, outputNl: string): string => {
-    console.log(`>>>> htmlSanitizeAndStripAllTags 0:\n${dirtyHtml}\n`);
     let html = Xss.htmlSanitizeKeepBasicTags(dirtyHtml);
-    console.log(`>>>> htmlSanitizeAndStripAllTags 1:\n${html}\n`);
     const random = Str.sloppyRandom(5);
     const br = `CU_BR_${random}`;
     const blockStart = `CU_BS_${random}`;
@@ -108,6 +106,7 @@ export class Xss {
     let text = html.split(br).join('\n').split(blockStart).filter(v => !!v).join('\n').split(blockEnd).filter(v => !!v).join('\n');
     text = text.replace(/\n{2,}/g, '\n\n');
     // not all tags were removed above. Remove all remaining tags
+    console.log(`>>>> htmlSanitizeAndStripAllTags 3:\n${text}\n`);
     text = dereq_html_sanitize(text, {
       allowedTags: ['img', 'span'],
       allowedAttributes: { img: ['src'] },
@@ -118,6 +117,7 @@ export class Xss {
         },
       }
     });
+    console.log(`>>>> htmlSanitizeAndStripAllTags 4:\n${text}\n`);
     text = dereq_html_sanitize(text, { allowedTags: [] }); // clean it one more time to replace leftover spans with their text
     text = text.trim();
     if (outputNl !== '\n') {
