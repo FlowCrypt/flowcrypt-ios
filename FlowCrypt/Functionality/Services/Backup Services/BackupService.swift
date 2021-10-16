@@ -69,9 +69,10 @@ extension BackupService: BackupServiceType {
             subject: "Your FlowCrypt Backup",
             replyToMimeMsg: nil,
             atts: attachments,
-            pubKeys: nil)
+            pubKeys: nil,
+            signingPrv: nil)
 
-        let t = try await core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
+        let t = try await core.composeEmail(msg: message, fmt: .plain)
         try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil))
     }
 

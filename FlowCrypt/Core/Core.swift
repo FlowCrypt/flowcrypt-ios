@@ -151,7 +151,15 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         )
     }
 
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) async throws -> CoreRes.ComposeEmail {
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
+        let signingPrv = msg.signingPrv.map { value in
+            [
+                "private": value.`private`,
+                "longid": value.longid,
+                "passphrase": value.passphrase
+            ]
+        }
+
         let r = try call("composeEmail", jsonDict: [
             "text": msg.text,
             "to": msg.to,
@@ -162,7 +170,8 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
             "replyToMimeMsg": msg.replyToMimeMsg,
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
-            "pubKeys": pubKeys,
+            "pubKeys": msg.pubKeys,
+            "signingPrv": signingPrv
         ], data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
