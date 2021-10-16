@@ -142,7 +142,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
 
         switch (sections, state) {
         case (.header, _):
-            guard let header = tableNode.nodeForRow(at: indexPath) as? HeaderNode else {
+            guard let header = tableNode.nodeForRow(at: indexPath) as? TextImageNode else {
                 return
             }
             handleTapOn(header: header)
@@ -247,7 +247,7 @@ extension MyMenuViewController {
                 for: dataService.currentUser,
                 image: state.arrowImage
             )
-            return HeaderNode(input: headerInput) { [weak self] node in
+            return TextImageNode(input: headerInput) { [weak self] node in
                 self?.handleTapOn(header: node)
             }
         case (.main, .accountAdding):
@@ -299,7 +299,7 @@ extension MyMenuViewController {
         }
     }
 
-    private func handleTapOn(header: HeaderNode) {
+    private func handleTapOn(header: TextImageNode) {
         UIView.animate(
             withDuration: 0.3,
             animations: {

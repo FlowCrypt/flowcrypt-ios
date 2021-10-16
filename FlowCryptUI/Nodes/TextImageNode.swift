@@ -9,8 +9,7 @@
 import AsyncDisplayKit
 import UIKit
 
-// TODO: - ANTON - rename
-public final class HeaderNode: CellNode {
+public final class TextImageNode: CellNode {
     public struct Input {
         public let title: NSAttributedString
         public let subtitle: NSAttributedString?
@@ -43,10 +42,10 @@ public final class HeaderNode: CellNode {
     private let subTitleNode = ASTextNode2()
     public private(set) var imageNode = ASImageNode()
 
-    private let input: HeaderNode.Input
-    private var onTap: ((HeaderNode) -> Void)?
+    private let input: TextImageNode.Input
+    private var onTap: ((TextImageNode) -> Void)?
 
-    public init(input: HeaderNode.Input, onTap: ((HeaderNode) -> Void)?) {
+    public init(input: TextImageNode.Input, onTap: ((TextImageNode) -> Void)?) {
         self.input = input
         self.onTap = onTap
         super.init()
