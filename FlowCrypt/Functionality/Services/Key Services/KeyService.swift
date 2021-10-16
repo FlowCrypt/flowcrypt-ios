@@ -19,20 +19,16 @@ enum KeyServiceError: Error {
 }
 
 final class KeyService: KeyServiceType {
-    typealias KeyParser = (Data) throws -> CoreRes.ParseKeys
-
-    let keyParser: KeyParser
+    let coreService: Core = .shared
     let storage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
     let currentUserEmail: () -> (String?)
 
     init(
-        keyParser: @escaping KeyParser = Core.shared.parseKeys(armoredOrBinary:),
         storage: KeyStorageType = KeyDataStorage(),
         passPhraseService: PassPhraseServiceType = PassPhraseService(),
         currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
     ) {
-        self.keyParser = keyParser
         self.storage = storage
         self.passPhraseService = passPhraseService
         self.currentUserEmail = currentUserEmail
@@ -49,7 +45,9 @@ final class KeyService: KeyServiceType {
             .map(\.private)
 
         let keyDetails = privateKeys
-            .compactMap { try? keyParser($0.data()) }
+            .compactMap {
+                try? coreService.parseKeys(armoredOrBinary: $0.data())
+            }
             .map(\.keyDetails)
             .flatMap { $0 }
 
@@ -102,37 +100,25 @@ final class KeyService: KeyServiceType {
             .first(where: { $0.primaryFingerprint == foundKey.primaryFingerprint })?
             .value
 
-        return PrvKeyInfo(
-            private: foundKey.`private` ?? "",
-            longid: foundKey.primaryFingerprint,
-            passphrase: passphrase,
-            fingerprints: foundKey.fingerprints
-        )
+        return PrvKeyInfo(keyInfo: foundKey, passphrase: passphrase)
     }
 
-    private func findKeyByUserEmail(keysInfo: [KeyInfo], email: String) throws -> KeyDetails? {
-        let f: (KeyInfo) throws -> KeyDetails? = { keyInfo in
-            let parsedKeys = try self.keyParser(keyInfo.`private`.data())
-
-            var keyDetails: [KeyDetails] = []
-            parsedKeys.keyDetails.forEach { keyDetails.append($0) }
-
-            var foundKey: KeyDetails?
-            for key in keyDetails {
-                let emails = key.pgpUserEmails
-
-                if emails.first == email {
-                   return key
-                }
-
-                if foundKey == nil, emails.contains(where: { $0 == email }) {
-                    foundKey = key
-                }
-            }
-
-            return foundKey
+    private func findKeyByUserEmail(keysInfo: [KeyInfo], email: String) throws -> KeyInfo? {
+        let keys: [(KeyInfo, KeyDetails?)] = try keysInfo.map {
+            let parsedKeys = try self.coreService.parseKeys(
+                armoredOrBinary: $0.`private`.data()
+            )
+            return ($0, parsedKeys.keyDetails.first)
         }
 
-        return try keysInfo.compactMap(f).first
+        if let primaryEmailMatch = keys.first(where: { $0.1?.pgpUserEmails.first == email }) {
+            return primaryEmailMatch.0
+        }
+
+        if let anyEmailMatch = keys.first(where: { $0.1?.pgpUserEmails.contains(email) == true }) {
+            return anyEmailMatch.0
+        }
+
+        return nil
     }
 }
