@@ -11,10 +11,10 @@ import XCTest
 
 class WKDURLsTests: XCTestCase {
     
-    var constructor: WKDURLsConstructorType!
+    var constructor: WkdUrlConstructorType!
 
     override func setUp() {
-        constructor = WKDURLsConstructor()
+        constructor = WkdUrlConstructor()
     }
 
     override func tearDown() {

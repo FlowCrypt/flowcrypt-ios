@@ -1,5 +1,5 @@
 //
-//  WKDURLsService.swift
+//  WkdApi.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 23.05.2021.
@@ -10,24 +10,24 @@ import CryptoKit
 import FlowCryptCommon
 import Promises
 
-protocol WKDURLsApiType {
+protocol WkdApiType {
     func lookupEmail(_ email: String) -> Promise<[KeyDetails]>
 }
 
-class WKDURLsApi: WKDURLsApiType {
+class WkdApi: WkdApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 4
     }
 
-    private let wkdURLsConstructor: WKDURLsConstructorType
+    private let urlConstructor: WkdUrlConstructorType
     private let core: Core
 
     init(
-        wkdURLsConstructor: WKDURLsConstructorType = WKDURLsConstructor(),
+        urlConstructor: WkdUrlConstructorType = WkdUrlConstructor(),
         core: Core = Core.shared
     ) {
-        self.wkdURLsConstructor = wkdURLsConstructor
+        self.urlConstructor = urlConstructor
         self.core = core
     }
 
@@ -49,8 +49,8 @@ class WKDURLsApi: WKDURLsApiType {
 
     func rawLookupEmail(_ email: String) -> Promise<CoreRes.ParseKeys?> {
         guard !Configuration.publicEmailProviderDomains.contains(email.recipientDomain ?? ""),
-              let advancedUrlConstructorResult = wkdURLsConstructor.construct(from: email, mode: .advanced),
-              let directUrlConstructorResult = wkdURLsConstructor.construct(from: email, mode: .direct)
+              let advancedUrl = urlConstructor.construct(from: email, method: .advanced),
+              let directUrl = urlConstructor.construct(from: email, method: .direct)
                else {
             return Promise { resolve, _ in
                 resolve(nil)
@@ -60,49 +60,39 @@ class WKDURLsApi: WKDURLsApiType {
         return Promise<CoreRes.ParseKeys?> { [weak self] resolve, _ in
             guard let self = self else { return }
             var response: (hasPolicy: Bool, key: Data?)?
-            response = try awaitPromise(
-                self.urlLookup(
-                    advancedUrlConstructorResult.urlString,
-                    userPart: advancedUrlConstructorResult.userPart
-                )
-            )
+            response = try awaitPromise(self.urlLookup(advancedUrl))
             if response?.hasPolicy == true && response?.key == nil {
                 resolve(nil)
                 return
             }
-
             if response?.key == nil {
-                response = try awaitPromise(
-                    self.urlLookup(
-                        directUrlConstructorResult.urlString,
-                        userPart: directUrlConstructorResult.userPart
-                    )
-                )
+                response = try awaitPromise(self.urlLookup(directUrl))
                 if response?.key == nil {
                     resolve(nil)
                     return
                 }
             }
-            guard let keyData = response?.key else {
+            guard let binaryKeysData = response?.key else {
                 resolve(nil)
                 return
             }
-            resolve(try? self.core.parseKeys(armoredOrBinary: keyData))
+            resolve(try? self.core.parseKeys(armoredOrBinary: binaryKeysData))
         }
     }
 }
-extension WKDURLsApi {
 
-    private func urlLookup(_ baseUrlString: String, userPart: String) -> Promise<(hasPolicy: Bool, key: Data?)> {
+extension WkdApi {
+
+    private func urlLookup(_ wkdUrls: WkdUrls) -> Promise<(hasPolicy: Bool, key: Data?)> {
 
         let policyRequest = URLRequest.urlRequest(
-            with: "\(baseUrlString)/policy",
+            with: wkdUrls.policy,
             method: .get,
             body: nil
         )
 
         let publicKeyRequest = URLRequest.urlRequest(
-            with: "\(baseUrlString)/\(userPart)",
+            with: wkdUrls.pubKeys,
             method: .get,
             body: nil
         )
@@ -111,12 +101,12 @@ extension WKDURLsApi {
             do {
                 _ = try awaitPromise(URLSession.shared.call(policyRequest))
             } catch {
-                Logger.nested("WKDURLsService").logInfo("Failed to load \(baseUrlString)/policy with error \(error)")
+                Logger.nested("WKDURLsService").logInfo("Failed to load \(wkdUrls.policy) with error \(error)")
                 resolve((false, nil))
             }
             let publicKeyResponse = try awaitPromise(URLSession.shared.call(publicKeyRequest, tolerateStatus: [404]))
             if !publicKeyResponse.data.toStr().isEmpty {
-                Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(baseUrlString)/\(userPart) and will try to extract Public Keys")
+                Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(wkdUrls.pubKeys) and will try to extract Public Keys")
             }
             if publicKeyResponse.status == 404 {
                 resolve((true, nil))

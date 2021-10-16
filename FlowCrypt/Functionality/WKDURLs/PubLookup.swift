@@ -13,11 +13,11 @@ protocol PubLookupType {
 }
 
 class PubLookup: PubLookupType {
-    private let wkd: WKDURLsApiType
+    private let wkd: WkdApiType
     private let attesterApi: AttesterApiType
 
     init(
-        wkd: WKDURLsApiType = WKDURLsApi(),
+        wkd: WkdApiType = WkdApi(),
         attesterApi: AttesterApiType = AttesterApi()
     ) {
         self.wkd = wkd
