@@ -8,21 +8,29 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
+import Promises
+import FlowCryptCommon
+import Foundation
 
 final class ThreadDetailsViewController: TableNodeViewController {
+    private lazy var logger = Logger.nested(Self.self)
+
     private enum Parts: Int, CaseIterable {
         case thread, message
     }
 
-    private let threadSubject: String?
-    private let messages: [Input]
+    private let messageService: MessageService
+    private let thread: MessageThread
+    private let messages: [ThreadDetailsViewController.Input]
 
     init(
+        messageService: MessageService = MessageService(),
         thread: MessageThread
     ) {
-        self.threadSubject = thread.subject
+        self.messageService = messageService
+        self.thread = thread
         self.messages = thread.messages
-            .sorted()
+            .sorted(by: { $0 > $1 })
             .map { Input(message: $0, isExpanded: false) }
 
         super.init(node: TableNode())
@@ -37,7 +45,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         super.viewDidLoad()
         node.delegate = self
         node.dataSource = self
-        title = threadSubject
+        title = thread.subject
     }
 
     private func handleTapOn(threadNode: TextImageNode, at indexPath: IndexPath) {
@@ -47,11 +55,104 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 threadNode.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
             },
             completion: { [weak self] _ in
-                guard let self = self else { return }
-                self.messages[indexPath.section].isExpanded = !self.messages[indexPath.section].isExpanded
-                self.node.reloadData()
+                self?.fetchDecryptAndRenderMsg(at: indexPath)
             }
         )
+    }
+}
+
+extension ThreadDetailsViewController {
+    private func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
+        let message = messages[indexPath.section].message
+        logger.logInfo("Start loading message")
+
+        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+
+        Promise<ProcessedMessage> { [weak self] (resolve, _) in
+            guard let self = self else { return }
+            let promise = self.messageService.getAndProcessMessage(
+                with: message,
+                folder: self.thread.path
+            )
+            let processedMessage = try awaitPromise(promise)
+            resolve(processedMessage)
+        }
+        .then(on: .main) { [weak self] message in
+            self?.handleReceived(message: message, at: indexPath)
+        }
+        .catch(on: .main) { [weak self] error in
+            self?.handleError(error, at: indexPath)
+        }
+    }
+
+    private func handleReceived(message processedMessage: ProcessedMessage, at indexPath: IndexPath) {
+        hideSpinner()
+
+        self.messages[indexPath.section].processedMessage = processedMessage
+        self.messages[indexPath.section].isExpanded = !self.messages[indexPath.section].isExpanded
+
+        node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
+
+        // TODO: - ANTON
+        // asyncMarkAsReadIfNotAlreadyMarked()
+    }
+
+    private func handleError(_ error: Error, at indexPath: IndexPath) {
+        logger.logInfo("Error \(error)")
+        hideSpinner()
+
+        switch error as? MessageServiceError {
+        case let .missedPassPhrase(rawMimeData):
+            handleMissedPassPhrase(for: rawMimeData, at: indexPath)
+        case let .wrongPassPhrase(rawMimeData, passPhrase):
+            handleWrongPathPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+        default:
+            // TODO: - Ticket - Improve error handling for MessageViewController
+            if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
+                // todo - the missing msg should be removed from the list in inbox view
+                // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
+                showToast("Message not found in folder: \(thread.path)")
+            } else {
+                // todo - this should be a retry / cancel alert
+                showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
+            }
+            navigationController?.popViewController(animated: true)
+        }
+    }
+
+    private func handleMissedPassPhrase(for rawMimeData: Data, at indexPath: IndexPath) {
+        let alert = AlertsFactory.makePassPhraseAlert(
+            onCancel: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            onCompletion: { [weak self] passPhrase in
+                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
+            })
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func handleWrongPathPhrase(for rawMimeData: Data, with phrase: String, at indexPath: IndexPath) {
+        let alert = AlertsFactory.makeWrongPassPhraseAlert(
+            onCancel: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            onCompletion: { [weak self] passPhrase in
+                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
+            })
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func validateMessage(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
+        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+
+        messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+            .then(on: .main) { [weak self] message in
+                self?.handleReceived(message: message, at: indexPath)
+            }
+            .catch(on: .main) { [weak self] error in
+                self?.handleError(error, at: indexPath)
+            }
     }
 }
 
@@ -61,7 +162,6 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        return 2
         messages[section].isExpanded
             ? Parts.allCases.count
             : [Parts.message].count
@@ -82,7 +182,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                     }
                 )
             case .message:
-                let node = ASCellNode()
+                let processedMessage = self.messages[indexPath.section].processedMessage
+                return MessageTextSubjectNode(processedMessage.attributedMessage)
             }
         }
     }

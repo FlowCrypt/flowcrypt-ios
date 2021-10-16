@@ -432,8 +432,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
         case .subject:
             return MessageSubjectNode(subject, time: time)
         case .text:
-            let messageInput = self.decorator.attributedMessage(from: self.processedMessage)
-            return MessageTextSubjectNode(messageInput)
+            return MessageTextSubjectNode(self.processedMessage.attributedMessage)
         }
     }
 

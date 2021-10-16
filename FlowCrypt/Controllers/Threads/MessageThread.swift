@@ -17,6 +17,7 @@ struct MessageThreadContext {
 
 struct MessageThread: Equatable {
     let snippet: String?
+    let path: String
     let messages: [Message]
 
     var subject: String? {
@@ -30,6 +31,7 @@ extension ThreadDetailsViewController {
     final class Input {
         let message: Message
         var isExpanded: Bool
+        var processedMessage: ProcessedMessage = .empty
 
         init(message: Message, isExpanded: Bool) {
             self.message = message

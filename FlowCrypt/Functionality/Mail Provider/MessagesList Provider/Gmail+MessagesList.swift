@@ -98,6 +98,7 @@ extension GmailService: MessagesThreadProvider {
                     let messages = try (thread.messages ?? []).compactMap(Message.init)
                     let thread = MessageThread(
                         snippet: snippet,
+                        path: identifier,
                         messages: messages
                     )
                     resolve(thread)
