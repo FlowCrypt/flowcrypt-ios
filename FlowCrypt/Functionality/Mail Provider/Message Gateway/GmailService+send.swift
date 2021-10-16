@@ -11,10 +11,11 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: MessageGateway {
-    func sendMail(input: MessageGatewayInput) -> Future<Void, Error> {
-        Future { promise in
+    func sendMail(input: MessageGatewayInput) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let raw = GTLREncodeBase64(input.mime) else {
-                return promise(.failure(GmailServiceError.messageEncode))
+                continuation.resume(throwing: GmailServiceError.messageEncode)
+                return
             }
 
             let gtlMessage = GTLRGmail_Message()
@@ -27,11 +28,12 @@ extension GmailService: MessageGateway {
                 uploadParameters: nil
             )
 
-            self.gmailService.executeQuery(querySend) { _, _, error in
+            gmailService.executeQuery(querySend) { _, _, error in
                 if let error = error {
-                    return promise(.failure(GmailServiceError.providerError(error)))
+                    continuation.resume(throwing: GmailServiceError.providerError(error))
+                } else {
+                    continuation.resume(returning: ())
                 }
-                promise(.success(()))
             }
         }
     }

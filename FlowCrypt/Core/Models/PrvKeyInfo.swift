@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct PrvKeyInfo: Encodable {
+struct PrvKeyInfo: Encodable, Equatable {
     let `private`: String
     let longid: String
     let passphrase: String?

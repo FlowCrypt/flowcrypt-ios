@@ -139,6 +139,7 @@ struct SendableMsg: Equatable {
     let replyToMimeMsg: String?
     let atts: [Attachment]
     let pubKeys: [String]?
+    let signingPrv: PrvKeyInfo?
 }
 
 struct MsgBlock: Decodable {

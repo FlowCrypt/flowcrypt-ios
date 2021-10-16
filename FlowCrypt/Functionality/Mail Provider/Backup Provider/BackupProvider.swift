@@ -6,6 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import Foundation
 import Promises
 
 protocol BackupProvider {

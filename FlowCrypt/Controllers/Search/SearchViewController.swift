@@ -9,6 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
+import UIKit
 
 /**
  * View controller to search messages in folders
@@ -75,7 +76,7 @@ final class SearchViewController: TableNodeViewController {
 
 extension SearchViewController {
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .backgroundColor
         title = "search_title".localized
         node.delegate = self
         node.dataSource = self

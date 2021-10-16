@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MailCore
 
 struct MessageLabel: Equatable, Hashable {
     let type: MessageLabelType

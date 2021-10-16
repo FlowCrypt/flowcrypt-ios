@@ -23,7 +23,7 @@ struct ComposeMessageRecipient {
 }
 
 protocol CoreComposeMessageType {
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) -> Future<CoreRes.ComposeEmail, Error>
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
 }
 
 final class ComposeMessageService {
@@ -48,7 +48,8 @@ final class ComposeMessageService {
     func validateMessage(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        email: String
+        email: String,
+        signingPrv: PrvKeyInfo?
     ) -> Result<SendableMsg, ComposeMessageError> {
         let recipients = contextToSend.recipients
         guard recipients.isNotEmpty else {
@@ -106,7 +107,8 @@ final class ComposeMessageService {
                     subject: subject,
                     replyToMimeMsg: replyToMimeMsg,
                     atts: sendableAttachments,
-                    pubKeys: allRecipientPubs + [myPubKey]
+                    pubKeys: allRecipientPubs + [myPubKey],
+                    signingPrv: signingPrv
                 )
             }
     }
@@ -126,20 +128,16 @@ final class ComposeMessageService {
     }
 
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg, threadId: String?) -> AnyPublisher<Void, ComposeMessageError> {
-        return encryptMessage(with: message, threadId: threadId)
-            .flatMap(messageGateway.sendMail)
-            .mapError { ComposeMessageError.gatewayError($0) }
-            .eraseToAnyPublisher()
-    }
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+        do {
+            let r = try await core.composeEmail(
+                msg: message,
+                fmt: MsgFmt.encryptInline
+            )
 
-    private func encryptMessage(with msg: SendableMsg, threadId: String?) -> AnyPublisher<MessageGatewayInput, Error> {
-        return core.composeEmail(
-            msg: msg,
-            fmt: MsgFmt.encryptInline,
-            pubKeys: msg.pubKeys
-        )
-        .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: threadId) })
-        .eraseToAnyPublisher()
+            try await messageGateway.sendMail(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId))
+        } catch {
+            throw ComposeMessageError.gatewayError(error)
+        }
     }
 }
