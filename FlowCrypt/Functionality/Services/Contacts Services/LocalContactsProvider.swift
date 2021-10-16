@@ -12,70 +12,82 @@ import RealmSwift
 
 protocol LocalContactsProviderType: PublicKeyProvider {
     func updateLastUsedDate(for email: String)
-    func searchContact(with email: String) -> Contact?
-    func save(contact: Contact)
-    func remove(contact: Contact)
-    func getAllContacts() -> [Contact]
+    func searchRecipient(with email: String) -> RecipientWithPubKeys?
+    func save(recipient: RecipientWithPubKeys)
+    func remove(recipient: RecipientWithPubKeys)
+    func getAllRecipients() -> [RecipientWithPubKeys]
 }
 
 struct LocalContactsProvider {
-    private let localContactsCache: CacheService<ContactObject>
+    private let localContactsCache: CacheService<RecipientObject>
     let core: Core
 
     init(
         encryptedStorage: EncryptedStorageType = EncryptedStorage(),
         core: Core = .shared
     ) {
-        self.localContactsCache = CacheService<ContactObject>(encryptedStorage: encryptedStorage)
+        self.localContactsCache = CacheService<RecipientObject>(encryptedStorage: encryptedStorage)
         self.core = core
     }
 }
 
 extension LocalContactsProvider: LocalContactsProviderType {
     func updateLastUsedDate(for email: String) {
-        let contact = localContactsCache.realm
-            .objects(ContactObject.self)
-            .first(where: { $0.email == email })
+        let recipient = find(with: email)
 
         try? localContactsCache.realm.write {
-            contact?.lastUsed = Date()
+            recipient?.lastUsed = Date()
         }
     }
 
-    func retrievePubKey(for email: String) -> String? {
-        localContactsCache.encryptedStorage.storage
-            .objects(ContactObject.self)
-            .first(where: { $0.email == email })?
-            .pubKey
+    func retrievePubKeys(for email: String) -> [String] {
+        find(with: email)?.pubKeys
+            .map { $0.key } ?? []
     }
 
-    func save(contact: Contact) {
-        localContactsCache.save(ContactObject(contact))
+    func save(recipient: RecipientWithPubKeys) {
+        localContactsCache.save(RecipientObject(recipient))
     }
 
-    func remove(contact: Contact) {
+    func remove(recipient: RecipientWithPubKeys) {
         localContactsCache.remove(
-            object: ContactObject(contact),
-            with: contact.email
+            object: RecipientObject(recipient),
+            with: recipient.email
         )
     }
 
-    func searchContact(with email: String) -> Contact? {
+    func searchRecipient(with email: String) -> RecipientWithPubKeys? {
+        guard let recipientObject = find(with: email) else { return nil }
+        return RecipientWithPubKeys(recipientObject)
+    }
+
+    func getAllRecipients() -> [RecipientWithPubKeys] {
         localContactsCache.realm
-            .objects(ContactObject.self)
-            .first(where: { $0.email == email })
-            .map { Contact($0) }
+            .objects(RecipientObject.self)
+            .map { object in
+                let keyDetails = object.pubKeys
+                                    .compactMap { try? core.parseKeys(armoredOrBinary: $0.key.data()).keyDetails }
+                                    .flatMap { $0 }
+                return RecipientWithPubKeys(object, keyDetails: Array(keyDetails))
+            }
+            .sorted(by: { $0.email > $1.email })
     }
 
-    func getAllContacts() -> [Contact] {
-        Array(
-            localContactsCache.realm
-                .objects(ContactObject.self)
-                .map {
-                    let keyDetail = try? core.parseKeys(armoredOrBinary: $0.pubKey.data()).keyDetails.first
-                    return Contact($0, keyDetail: keyDetail)
+    func removePubKey(with fingerprint: String, for email: String) {
+        find(with: email)?
+            .pubKeys
+            .filter { $0.fingerprint == fingerprint }
+            .forEach { key in
+                try? localContactsCache.realm.write {
+                    localContactsCache.realm.delete(key)
                 }
-                .sorted(by: { $0.email > $1.email })
-        )
+            }
+    }
+}
+
+extension LocalContactsProvider {
+    private func find(with email: String) -> RecipientObject? {
+        localContactsCache.realm.object(ofType: RecipientObject.self,
+                                        forPrimaryKey: email)
     }
 }

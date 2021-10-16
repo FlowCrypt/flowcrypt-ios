@@ -18,7 +18,8 @@ import FlowCryptUI
 final class ContactsListViewController: TableNodeViewController {
     private let decorator: ContactsListDecoratorType
     private let contactsProvider: LocalContactsProviderType
-    private var contacts: [Contact] = []
+    private var recipients: [RecipientWithPubKeys] = []
+    private var selectedIndexPath: IndexPath?
 
     init(
         decorator: ContactsListDecoratorType = ContactsListDecorator(),
@@ -39,6 +40,11 @@ final class ContactsListViewController: TableNodeViewController {
         setupUI()
         fetchContacts()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reloadContacts()
+    }
 }
 
 extension ContactsListViewController {
@@ -48,21 +54,28 @@ extension ContactsListViewController {
         title = decorator.title
     }
 
+    private func reloadContacts() {
+        guard let indexPath = selectedIndexPath else { return }
+        fetchContacts()
+        node.reloadRows(at: [indexPath], with: .automatic)
+        selectedIndexPath = nil
+    }
+
     private func fetchContacts() {
-        contacts = contactsProvider.getAllContacts()
+        recipients = contactsProvider.getAllRecipients()
     }
 }
 
 extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        contacts.count
+        recipients.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
             return ContactCellNode(
-                input: self.decorator.contactNodeInput(with: self.contacts[indexPath.row]),
+                input: self.decorator.contactNodeInput(with: self.recipients[indexPath.row]),
                 action: { [weak self] in
                     self?.handleDeleteButtonTap(with: indexPath)
                 }
@@ -73,7 +86,7 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        proceedToKeyDetail(with: indexPath)
+        proceedToContactDetail(with: indexPath)
     }
 }
 
@@ -82,9 +95,9 @@ extension ContactsListViewController {
         delete(with: .right(indexPath))
     }
 
-    private func proceedToKeyDetail(with indexPath: IndexPath) {
+    private func proceedToContactDetail(with indexPath: IndexPath) {
         let contactDetailViewController = ContactDetailViewController(
-            contact: contacts[indexPath.row]
+            recipient: recipients[indexPath.row]
         ) { [weak self] action in
             guard case let .delete(contact) = action else {
                 assertionFailure("Action is not implemented")
@@ -92,28 +105,28 @@ extension ContactsListViewController {
             }
             self?.delete(with: .left(contact))
         }
-
+        selectedIndexPath = indexPath
         navigationController?.pushViewController(contactDetailViewController, animated: true)
     }
 
-    private func delete(with context: Either<Contact, IndexPath>) {
-        let contactToRemove: Contact
+    private func delete(with context: Either<RecipientWithPubKeys, IndexPath>) {
+        let recipientToRemove: RecipientWithPubKeys
         let indexPathToRemove: IndexPath
         switch context {
-        case .left(let contact):
-            contactToRemove = contact
-            guard let index = contacts.firstIndex(where: { $0 == contact }) else {
+        case .left(let recipient):
+            recipientToRemove = recipient
+            guard let index = recipients.firstIndex(where: { $0 == recipient }) else {
                 assertionFailure("Can't find index of the contact")
                 return
             }
             indexPathToRemove = IndexPath(row: index, section: 0)
         case .right(let indexPath):
             indexPathToRemove = indexPath
-            contactToRemove = contacts[indexPath.row]
+            recipientToRemove = recipients[indexPath.row]
         }
 
-        contactsProvider.remove(contact: contactToRemove)
-        contacts.remove(at: indexPathToRemove.row)
+        contactsProvider.remove(recipient: recipientToRemove)
+        recipients.remove(at: indexPathToRemove.row)
         node.deleteRows(at: [indexPathToRemove], with: .left)
     }
 }

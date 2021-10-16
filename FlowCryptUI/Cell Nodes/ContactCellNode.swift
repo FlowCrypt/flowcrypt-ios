@@ -12,17 +12,20 @@ public final class ContactCellNode: CellNode {
     public struct Input {
         let name: NSAttributedString?
         let email: NSAttributedString
+        let keys: NSAttributedString
         let insets: UIEdgeInsets
         let buttonImage: UIImage?
 
         public init(
             name: NSAttributedString?,
             email: NSAttributedString,
+            keys: NSAttributedString,
             insets: UIEdgeInsets,
             buttonImage: UIImage?
         ) {
             self.name = name
             self.email = email
+            self.keys = keys
             self.insets = insets
             self.buttonImage = buttonImage
         }
@@ -30,6 +33,7 @@ public final class ContactCellNode: CellNode {
 
     private let nameNode = ASTextNode2()
     private let emailNode = ASTextNode2()
+    private let keysNode = ASTextNode2()
     private let buttonNode = ASButtonNode()
 
     private let input: Input
@@ -42,6 +46,7 @@ public final class ContactCellNode: CellNode {
 
         nameNode.attributedText = input.name
         emailNode.attributedText = input.email
+        keysNode.attributedText = input.keys
         buttonNode.setImage(input.buttonImage, for: .normal)
         buttonNode.addTarget(self, action: #selector(handleButtonTap), forControlEvents: .touchUpInside)
     }
@@ -56,12 +61,19 @@ public final class ContactCellNode: CellNode {
             emailNode.style.flexGrow = 1
             children = [emailNode, buttonNode]
         } else {
+            let infoStack = ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 4,
+                justifyContent: .start,
+                alignItems: .start,
+                children: [emailNode, keysNode]
+            )
             let nameStack = ASStackLayoutSpec(
                 direction: .vertical,
                 spacing: 8,
                 justifyContent: .start,
                 alignItems: .start,
-                children: [nameNode, emailNode]
+                children: [nameNode, infoStack]
             )
             nameStack.style.flexGrow = 1
             children = [nameStack, buttonNode]

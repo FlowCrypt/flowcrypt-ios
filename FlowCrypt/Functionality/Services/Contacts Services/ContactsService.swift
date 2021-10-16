@@ -18,11 +18,12 @@ protocol ContactsServiceType: PublicKeyProvider, ContactsProviderType {
 }
 
 protocol ContactsProviderType {
-    func searchContact(with email: String) -> Promise<Contact>
+    func searchContact(with email: String) -> Promise<RecipientWithPubKeys>
 }
 
 protocol PublicKeyProvider {
-    func retrievePubKey(for email: String) -> String?
+    func retrievePubKeys(for email: String) -> [String]
+    func removePubKey(with fingerprint: String, for email: String)
 }
 
 // MARK: - PROVIDER
@@ -41,26 +42,30 @@ struct ContactsService: ContactsServiceType {
 }
 
 extension ContactsService: ContactsProviderType {
-    func searchContact(with email: String) -> Promise<Contact> {
-        guard let contact = localContactsProvider.searchContact(with: email) else {
+    func searchContact(with email: String) -> Promise<RecipientWithPubKeys> {
+        guard let contact = localContactsProvider.searchRecipient(with: email) else {
             return searchRemote(for: email)
         }
         return Promise(contact)
     }
 
-    private func searchRemote(for email: String) -> Promise<Contact> {
+    private func searchRemote(for email: String) -> Promise<RecipientWithPubKeys> {
         pubLookup
             .lookup(with: email)
-            .then { contact in
-                self.localContactsProvider.save(contact: contact)
+            .then { recipient in
+                self.localContactsProvider.save(recipient: recipient)
             }
     }
 }
 
 extension ContactsService: PublicKeyProvider {
-    func retrievePubKey(for email: String) -> String? {
-        let publicKey = localContactsProvider.retrievePubKey(for: email)
+    func retrievePubKeys(for email: String) -> [String] {
+        let publicKeys = localContactsProvider.retrievePubKeys(for: email)
         localContactsProvider.updateLastUsedDate(for: email)
-        return publicKey
+        return publicKeys
+    }
+
+    func removePubKey(with fingerprint: String, for email: String) {
+        localContactsProvider.removePubKey(with: fingerprint, for: email)
     }
 }
