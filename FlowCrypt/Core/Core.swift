@@ -87,9 +87,13 @@ final class Core: KeyDecrypter, CoreComposeMessageType {
         let r = try call("encryptKey", jsonDict: ["armored": armoredPrv, "passphrase": passphrase], data: nil)
         return try r.json.decodeJson(as: CoreRes.EncryptKey.self)
     }
-    
-    func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) throws -> CoreRes.GenerateKey {
-        let request: [String: Any] = ["passphrase": passphrase, "variant": String(variant.rawValue), "userIds": try userIds.map { try $0.toJsonEncodedDict() }]
+
+    func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) async throws -> CoreRes.GenerateKey {
+        let request: [String: Any] = [
+            "passphrase": passphrase,
+            "variant": String(variant.rawValue),
+            "userIds": try userIds.map { try $0.toJsonEncodedDict() }
+        ]
         let r = try call("generateKey", jsonDict: request, data: nil)
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
     }
