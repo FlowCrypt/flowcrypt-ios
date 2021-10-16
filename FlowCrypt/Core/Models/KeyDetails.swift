@@ -7,6 +7,7 @@
 //
 
 import FlowCryptCommon
+import MailCore
 import Foundation
 
 struct KeyDetails: Decodable {
@@ -41,6 +42,10 @@ extension KeyDetails {
             fatalError("longid for KeyDetail is missing")
         }
         return longid
+    }
+
+    var pgpUserEmails: [String] {
+        users.map { MCOAddress(nonEncodedRFC822String: $0).mailbox }
     }
 }
 

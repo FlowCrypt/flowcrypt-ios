@@ -43,7 +43,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: [],
                 subject: nil
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
 
         var thrownError: Error?
@@ -66,7 +67,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: nil
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
 
         var thrownError: Error?
@@ -92,7 +94,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: nil
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
 
         test()
@@ -104,7 +107,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: ""
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
         
         test()
@@ -116,7 +120,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "     "
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
     }
     
@@ -135,7 +140,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
 
         test()
@@ -147,7 +153,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
         
         test()
@@ -159,7 +166,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
         
         test()
@@ -177,7 +185,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
         
         var thrownError: Error?
@@ -204,7 +213,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
         
         var thrownError: Error?
@@ -235,7 +245,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: "Some subject"
             ),
-            email: "some@gmail.com"
+            email: "some@gmail.com",
+            signingPrv: nil
         )
         
         var thrownError: Error?
@@ -267,7 +278,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: subject
             ),
-            email: email
+            email: email,
+            signingPrv: nil
         ).get()
         
         let expected = SendableMsg(
@@ -284,7 +296,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 "pubKey",
                 "pubKey",
                 "public key"
-            ])
+            ],
+            signingPrv: nil)
         
         XCTAssertNotNil(result)
         XCTAssertEqual(result!, expected)

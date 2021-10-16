@@ -11,6 +11,7 @@ import Foundation
 protocol KeyServiceType {
     func getPrvKeyDetails() -> Result<[KeyDetails], KeyServiceError>
     func getPrvKeyInfo() -> Result<[PrvKeyInfo], KeyServiceError>
+    func getSigningKey() throws -> PrvKeyInfo?
 }
 
 enum KeyServiceError: Error {
@@ -79,5 +80,45 @@ final class KeyService: KeyServiceType {
             }
 
         return .success(privateKeys)
+    }
+
+    func getSigningKey() throws -> PrvKeyInfo? {
+        guard let email = currentUserEmail() else {
+            return nil
+        }
+
+        let keysInfo = storage.keysInfo()
+            .filter { $0.account == email }
+
+        guard let foundKey = try findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
+            return nil
+        }
+
+        let storedPassPhrases = passPhraseService.getPassPhrases()
+        let passphrase = storedPassPhrases
+            .filter { $0.value.isNotEmpty }
+            .first(where: { $0.primaryFingerprint == foundKey.primaryFingerprint })?
+            .value
+
+        return PrvKeyInfo(keyInfo: foundKey, passphrase: passphrase)
+    }
+
+    private func findKeyByUserEmail(keysInfo: [KeyInfo], email: String) throws -> KeyInfo? {
+        let keys: [(KeyInfo, KeyDetails?)] = try keysInfo.map {
+            let parsedKeys = try self.coreService.parseKeys(
+                armoredOrBinary: $0.`private`.data()
+            )
+            return ($0, parsedKeys.keyDetails.first)
+        }
+
+        if let primaryEmailMatch = keys.first(where: { $0.1?.pgpUserEmails.first == email }) {
+            return primaryEmailMatch.0
+        }
+
+        if let anyEmailMatch = keys.first(where: { $0.1?.pgpUserEmails.contains(email) == true }) {
+            return anyEmailMatch.0
+        }
+
+        return nil
     }
 }

@@ -12,8 +12,8 @@ import Combine
 
 class CoreComposeMessageMock: CoreComposeMessageType {
 
-    var composeEmailResult: ((SendableMsg, MsgFmt, [String]?) -> (CoreRes.ComposeEmail))!
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) async throws -> CoreRes.ComposeEmail {
-        return composeEmailResult(msg, fmt, pubKeys)
+    var composeEmailResult: ((SendableMsg, MsgFmt) -> (CoreRes.ComposeEmail))!
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
+        return composeEmailResult(msg, fmt)
     }
 }

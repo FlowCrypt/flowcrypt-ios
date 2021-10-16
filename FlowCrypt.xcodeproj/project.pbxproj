@@ -38,6 +38,8 @@
 		21EFF61F265A5C6700AB0B71 /* WKDURLsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EFF61E265A5C6700AB0B71 /* WKDURLsApi.swift */; };
 		21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */; };
 		21FEE26626FDD91A00E3783F /* ComposeMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */; };
+		2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */; };
+		2C2A3B4D2719EF7300B7F27B /* PassPhraseServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */; };
 		32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4B11D4531B3B04D01D1 /* AppErr.swift */; };
 		32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		32DCA1414EEA727B86C337D5 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
@@ -442,6 +444,8 @@
 		21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZBase32EncodingTests.swift; sourceTree = "<group>"; };
 		21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructorTests.swift; sourceTree = "<group>"; };
 		21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageAttachment.swift; sourceTree = "<group>"; };
+		2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceTests.swift; sourceTree = "<group>"; };
+		2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseServiceMock.swift; sourceTree = "<group>"; };
 		32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
@@ -944,6 +948,14 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
+		2C2A3B492719EE4D00B7F27B /* Key Services */ = {
+			isa = PBXGroup;
+			children = (
+				2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */,
+			);
+			path = "Key Services";
+			sourceTree = "<group>";
+		};
 		2DC3601602226D74335E18F4 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -1177,9 +1189,10 @@
 		9F4163F3266574CF00106194 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				9F6F3C3426ADFA27005BD9C6 /* ComposeMessageServiceTests.swift */,
+				2C2A3B492719EE4D00B7F27B /* Key Services */,
 				9F5F500C26F90AC800294FA2 /* Organisational Rules Service */,
 				9FC7EBB6266EBDF000F3BF5D /* PassPhraseStorageTests */,
-				9F6F3C3426ADFA27005BD9C6 /* ComposeMessageServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1321,10 +1334,11 @@
 		9F6F3C6326ADFBDB005BD9C6 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
-				9F6F3C6926ADFBEB005BD9C6 /* MessageGatewayMock.swift */,
+				9F6F3C7C26ADFC60005BD9C6 /* ContactsServiceMock.swift */,
 				9F6F3C3B26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift */,
 				9F6F3C7526ADFC37005BD9C6 /* KeyStorageMock.swift */,
-				9F6F3C7C26ADFC60005BD9C6 /* ContactsServiceMock.swift */,
+				9F6F3C6926ADFBEB005BD9C6 /* MessageGatewayMock.swift */,
+				2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -2437,12 +2451,14 @@
 				9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */,
 				9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */,
 				9FC41183268118B1004C0A69 /* EmailProviderMock.swift in Sources */,
+				2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */,
 				9F976490267E11880058419D /* ImapHelperTest.swift in Sources */,
 				9F5F501D26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift in Sources */,
 				9F5F503C26FA6C5E00294FA2 /* CurrentUserEmailMock.swift in Sources */,
 				9FC413182683C492004C0A69 /* InMemoryPassPhraseStorageTest.swift in Sources */,
 				9F9764C5267E14AB0058419D /* GeneralConstantsTest.swift in Sources */,
 				9F976507267E165D0058419D /* ZBase32EncodingTests.swift in Sources */,
+				2C2A3B4D2719EF7300B7F27B /* PassPhraseServiceMock.swift in Sources */,
 				9F5F504A26FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift in Sources */,
 				9F2F207326AEECFB0044E144 /* PromiseTestExtension.swift in Sources */,
 				9FC4117D268118AE004C0A69 /* PassPhraseStorageMock.swift in Sources */,
