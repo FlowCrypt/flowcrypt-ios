@@ -897,15 +897,6 @@
 			path = PhotosManager;
 			sourceTree = "<group>";
 		};
-		21CE25D32650034500ADFF4B /* WKDURLs */ = {
-			isa = PBXGroup;
-			children = (
-				21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */,
-				211392A4266511E6009202EC /* PubLookup.swift */,
-			);
-			path = WKDURLs;
-			sourceTree = "<group>";
-		};
 		21EA3B2126565B4100691848 /* Models Parsing */ = {
 			isa = PBXGroup;
 			children = (
@@ -1082,19 +1073,17 @@
 				A3B7C31823F576BA0022D628 /* AppStartup.swift */,
 				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
-				32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */,
-				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
-				21EFF61E265A5C6700AB0B71 /* WkdApi.swift */,
-				21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */,
-				214A023926A3029700C24066 /* EmailKeyManagerApi.swift */,
 				D274724024F97C5C006BA6EF /* CacheService.swift */,
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
+				A381F250271C1D1A00A3D13C /* Account Server Services */,
 				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */,
-				9FB22CFD25715DDF0026EE64 /* Key Services */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
 				D227C0E4250538190070F805 /* Folders Services */,
-				D27B911724EFE787002DF0A1 /* Contacts Services */,
 				21489B81267CC3BC00BDE4AC /* Organisational Rules Service */,
+				D27B911724EFE787002DF0A1 /* Local Pub Key Services */,
+				9FB22CFD25715DDF0026EE64 /* Local Prv Key Services */,
+				A381F24D271C1C1100A3D13C /* Remote Pub Key Services */,
+				A381F24F271C1CA300A3D13C /* Remote Prv Key Services */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1397,7 +1386,7 @@
 			path = "Error Handling";
 			sourceTree = "<group>";
 		};
-		9FB22CFD25715DDF0026EE64 /* Key Services */ = {
+		9FB22CFD25715DDF0026EE64 /* Local Prv Key Services */ = {
 			isa = PBXGroup;
 			children = (
 				9F79229326696B9300DA3D80 /* KeyDataStorage.swift */,
@@ -1405,7 +1394,7 @@
 				9FC7EBA9266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift */,
 				D2891AC124C59EFA008918E3 /* KeyService.swift */,
 			);
-			path = "Key Services";
+			path = "Local Prv Key Services";
 			sourceTree = "<group>";
 		};
 		9FBEAE5B25D41C22009E98D4 /* UsersMailSession Provider */ = {
@@ -1565,6 +1554,34 @@
 			path = Pgp;
 			sourceTree = "<group>";
 		};
+		A381F24D271C1C1100A3D13C /* Remote Pub Key Services */ = {
+			isa = PBXGroup;
+			children = (
+				211392A4266511E6009202EC /* PubLookup.swift */,
+				21EFF61E265A5C6700AB0B71 /* WkdApi.swift */,
+				21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */,
+				32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */,
+			);
+			path = "Remote Pub Key Services";
+			sourceTree = "<group>";
+		};
+		A381F24F271C1CA300A3D13C /* Remote Prv Key Services */ = {
+			isa = PBXGroup;
+			children = (
+				214A023926A3029700C24066 /* EmailKeyManagerApi.swift */,
+			);
+			path = "Remote Prv Key Services";
+			sourceTree = "<group>";
+		};
+		A381F250271C1D1A00A3D13C /* Account Server Services */ = {
+			isa = PBXGroup;
+			children = (
+				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
+				21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */,
+			);
+			path = "Account Server Services";
+			sourceTree = "<group>";
+		};
 		A3DAD60C22E469E400F2C4CD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1654,7 +1671,6 @@
 			children = (
 				21623D1926FA860E00A11B9A /* PhotosManager */,
 				215897E6267A551300423694 /* FilesManager */,
-				21CE25D32650034500ADFF4B /* WKDURLs */,
 				A370EAB6238697E000685215 /* Pgp */,
 				D29AFFEE24092F4900C1387D /* DataManager */,
 				9FC4114A25961CD6001180A8 /* Mail Provider */,
@@ -1803,14 +1819,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		D27B911724EFE787002DF0A1 /* Contacts Services */ = {
+		D27B911724EFE787002DF0A1 /* Local Pub Key Services */ = {
 			isa = PBXGroup;
 			children = (
 				D2FC1C0524D82C9F003B949D /* ContactsService.swift */,
 				D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */,
 				D27B912024EFE842002DF0A1 /* Models */,
 			);
-			path = "Contacts Services";
+			path = "Local Pub Key Services";
 			sourceTree = "<group>";
 		};
 		D27B912024EFE842002DF0A1 /* Models */ = {
