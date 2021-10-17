@@ -30,6 +30,8 @@ extension EnterpriseServerApiError: LocalizedError {
     }
 }
 
+/// server run by individual enterprise customers, serves client configuration
+/// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
 class EnterpriseServerApi: EnterpriseServerApiType {
 
     private enum Constants {

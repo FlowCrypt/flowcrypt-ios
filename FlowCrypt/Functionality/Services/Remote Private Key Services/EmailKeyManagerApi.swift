@@ -35,6 +35,8 @@ extension EmailKeyManagerApiError: LocalizedError {
     }
 }
 
+/// A customer-specific server that provides private keys
+/// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
 class EmailKeyManagerApi: EmailKeyManagerApiType {
 
     private let organisationalRulesService: OrganisationalRulesServiceType

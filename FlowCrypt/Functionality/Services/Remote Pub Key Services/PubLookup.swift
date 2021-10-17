@@ -13,11 +13,11 @@ protocol PubLookupType {
 }
 
 class PubLookup: PubLookupType {
-    private let wkd: WKDURLsApiType
+    private let wkd: WkdApiType
     private let attesterApi: AttesterApiType
 
     init(
-        wkd: WKDURLsApiType = WKDURLsApi(),
+        wkd: WkdApiType = WkdApi(),
         attesterApi: AttesterApiType = AttesterApi()
     ) {
         self.wkd = wkd
@@ -34,6 +34,7 @@ class PubLookup: PubLookupType {
             let wkdResult = try awaitPromise(self.wkd.lookupEmail(email))
             if !wkdResult.isEmpty {
                 resolve(RecipientWithPubKeys(email: email, keyDetails: wkdResult))
+                return
             }
 
             let attesterResult = try awaitPromise(self.attesterApi.lookupEmail(email: email))
