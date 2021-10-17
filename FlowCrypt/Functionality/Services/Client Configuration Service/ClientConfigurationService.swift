@@ -38,7 +38,7 @@ extension ClientConfigurationService: ClientConfigurationServiceType {
     func fetchClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
         guard let currentUserEmail = getCurrentUserEmail() else {
             return Promise<ClientConfiguration> { _, reject in
-                reject(ClientConfigurationServiceError.noCurrentUser)
+                reject(AppErr.noCurrentUser)
             }
         }
         return Promise<ClientConfiguration> { [weak self] resolve, _ in

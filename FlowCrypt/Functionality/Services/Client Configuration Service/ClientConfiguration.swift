@@ -100,6 +100,7 @@ class ClientConfiguration {
         }
 
         if keyManagerUrlForPrivateKeys == nil {
+            // todo - should not be a fatal error, since the input comes from external sources
             fatalError("Wrong org rules config: using PRV_AUTOIMPORT_OR_AUTOGEN without key_manager_url")
         }
         return true
@@ -153,13 +154,12 @@ class ClientConfiguration {
         raw.keyManagerUrl?.addTrailingSlashIfNeeded
     }
 
-
     /**
      * This method checks if the user is set up for using EKM, and if other client configuration is consistent with it.
      * There are three possible outcomes:
-     *  1) EKM is in use because clientConfiguration.isUsingKeyManager == true and other client configs are consistent with it (result: no error, use EKM)
-     *  2) EKM is in use because clientConfiguration.isUsingKeyManager == true and other client configs are NOT consistent with it (result: error)
-     *  3) EKM is not in use because clientConfiguration.isUsingKeyManager == false (result: normal login flow)
+     *  1) EKM in use because isUsingKeyManager == true and other client configs are consistent with it (result: no error, use EKM)
+     *  2) EKM is in use because isUsingKeyManager == true and other client configs are NOT consistent with it (result: error)
+     *  3) EKM is not in use because isUsingKeyManager == false (result: normal login flow)
      */
     func checkUsesEKM() -> CheckUsesEKMResult {
         guard isUsingKeyManager else {
@@ -168,16 +168,16 @@ class ClientConfiguration {
         guard isKeyManagerUrlValid else {
             return .inconsistentClientConfiguration(checkError: .urlNotValid)
         }
-        if mustAutoImportOrAutogenPrvWithKeyManager {
+        guard mustAutoImportOrAutogenPrvWithKeyManager else {
             return .inconsistentClientConfiguration(checkError: .autoImportOrAutogenPrvWithKeyManager)
         }
-        if mustAutogenPassPhraseQuietly {
+        guard !mustAutogenPassPhraseQuietly else {
             return .inconsistentClientConfiguration(checkError: .autogenPassPhraseQuietly)
         }
-        if forbidStoringPassPhrase {
+        guard forbidStoringPassPhrase else {
             return .inconsistentClientConfiguration(checkError: .forbidStoringPassPhrase)
         }
-        if mustSubmitAttester {
+        guard !mustSubmitAttester else {
             return .inconsistentClientConfiguration(checkError: .mustSubmitAttester)
         }
         return .usesEKM
