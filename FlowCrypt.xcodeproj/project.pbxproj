@@ -170,7 +170,7 @@
 		9F976507267E165D0058419D /* ZBase32EncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */; };
 		9F97650E267E16620058419D /* WKDURLsConstructorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */; };
 		9F97653D267E17C90058419D /* LocalStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */; };
-		9F976556267E186D0058419D /* ClientConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B2226565B5D00691848 /* ClientConfigurationTests.swift */; };
+		9F976556267E186D0058419D /* RawClientConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B2226565B5D00691848 /* RawClientConfigurationTests.swift */; };
 		9F976569267E18F30058419D /* client_configuraion.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B2E26565B7400691848 /* client_configuraion.json */; };
 		9F976576267E18F90058419D /* client_configuraion_partly_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B3C26565B9800691848 /* client_configuraion_partly_empty.json */; };
 		9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B3526565B8100691848 /* client_configuraion_empty.json */; };
@@ -428,7 +428,7 @@
 		21C7DF0A266C0E3600C44800 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WkdUrlConstructor.swift; sourceTree = "<group>"; };
 		21EA3B15265647C400691848 /* ClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfiguration.swift; sourceTree = "<group>"; };
-		21EA3B2226565B5D00691848 /* ClientConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationTests.swift; sourceTree = "<group>"; };
+		21EA3B2226565B5D00691848 /* RawClientConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawClientConfigurationTests.swift; sourceTree = "<group>"; };
 		21EA3B2E26565B7400691848 /* client_configuraion.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion.json; sourceTree = "<group>"; };
 		21EA3B3526565B8100691848 /* client_configuraion_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_empty.json; sourceTree = "<group>"; };
 		21EA3B3C26565B9800691848 /* client_configuraion_partly_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_partly_empty.json; sourceTree = "<group>"; };
@@ -889,7 +889,7 @@
 		21EA3B2126565B4100691848 /* Models Parsing */ = {
 			isa = PBXGroup;
 			children = (
-				21EA3B2226565B5D00691848 /* ClientConfigurationTests.swift */,
+				21EA3B2226565B5D00691848 /* RawClientConfigurationTests.swift */,
 				21EA3B2E26565B7400691848 /* client_configuraion.json */,
 				21EA3B3C26565B9800691848 /* client_configuraion_partly_empty.json */,
 				21EA3B3526565B8100691848 /* client_configuraion_empty.json */,
@@ -2477,7 +2477,7 @@
 				51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */,
 				9F9500AF26F4BAE300E8C78B /* ClientConfigurationTests.swift in Sources */,
 				9FC413442683C912004C0A69 /* GmailServiceTest.swift in Sources */,
-				9F976556267E186D0058419D /* ClientConfigurationTests.swift in Sources */,
+				9F976556267E186D0058419D /* RawClientConfigurationTests.swift in Sources */,
 				9F7E8EC6269877E70021C07F /* KeyInfoTests.swift in Sources */,
 				9F5F504326FA6C7500294FA2 /* EnterpriseServerApiMock.swift in Sources */,
 				9FC41171268118A7004C0A69 /* PassPhraseStorageTests.swift in Sources */,

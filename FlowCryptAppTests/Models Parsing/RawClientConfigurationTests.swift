@@ -1,5 +1,5 @@
 //
-//  ClientConfigurationTests.swift
+//  RawClientConfigurationTests.swift
 //  FlowCryptTests
 //
 //  Created by Yevhen Kyivskyi on 20.05.2021.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import FlowCrypt
 
-class ClientConfigurationTests: XCTestCase {
+class RawClientConfigurationTests: XCTestCase {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
