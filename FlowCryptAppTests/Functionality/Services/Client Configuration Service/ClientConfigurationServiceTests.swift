@@ -1,5 +1,5 @@
 //
-//  OrganisationalRulesServiceTests.swift
+//  ClientConfigurationServiceTests.swift
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 20.09.2021.
@@ -10,7 +10,7 @@ import XCTest
 import Promises
 @testable import FlowCrypt
 
-class OrganisationalRulesServiceTests: XCTestCase {
+class ClientConfigurationServiceTests: XCTestCase {
 
     var sut: ClientConfigurationService!
     var enterpriseServerApi: EnterpriseServerApiMock!

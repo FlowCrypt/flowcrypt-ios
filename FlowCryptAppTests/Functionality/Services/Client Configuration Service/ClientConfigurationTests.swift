@@ -1,16 +1,87 @@
 //
-//  ClientConfigurationEvaluatorTest.swift
+//  OrganisationalRulesTests.swift
 //  FlowCryptAppTests
 //
-//  Created by Anton Kharchevskyi on 10.09.2021.
+//  Created by Anton Kharchevskyi on 17.09.2021.
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import Foundation
 import XCTest
 @testable import FlowCrypt
 
-// check if Email Key Manager should be used test and other client configuration is consistent
-class ClientConfigurationEvaluatorTest: XCTestCase {
+class ClientConfigurationTests: XCTestCase {
+
+    func testIsUsingKeyManagerURL() {
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")).isUsingKeyManager)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: nil) ).isKeyManagerUrlValid)
+    }
+
+    func testIsUsingValidKeyManagerURL() {
+        // valid url check in
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: "") ).isKeyManagerUrlValid)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: "not a url string")).isKeyManagerUrlValid)
+    }
+
+    func testMustAutoImportOrAutogenPrvWithKeyManager() {
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
+            flags: [.privateKeyAutoimportOrAutogen],
+            keyManagerUrl: "https://ekm.example.com"
+        )).mustAutoImportOrAutogenPrvWithKeyManager)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(
+            flags: [],
+            keyManagerUrl: "https://ekm.example.com"
+        )).mustAutoImportOrAutogenPrvWithKeyManager)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(
+            flags: nil,
+            keyManagerUrl: "https://ekm.example.com"
+        )).mustAutoImportOrAutogenPrvWithKeyManager)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(
+            flags: [.defaultRememberPassphrase, .hideArmorMeta, .enforceAttesterSubmit],
+            keyManagerUrl: "https://ekm.example.com"
+        )).mustAutoImportOrAutogenPrvWithKeyManager)
+    }
+
+    func testMustAutogenPassPhraseQuietly() {
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
+            flags: [.passphraseQuietAutogen]
+        )).mustAutogenPassPhraseQuietly)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [])).mustAutogenPassPhraseQuietly)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [.privateKeyAutoimportOrAutogen])).mustAutogenPassPhraseQuietly)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: nil)).mustAutogenPassPhraseQuietly)
+    }
+
+    func testForbidStoringPassPhrase() {
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
+            flags: [.forbidStoringPassphrase]
+        )).forbidStoringPassPhrase)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [])).forbidStoringPassPhrase)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [.hideArmorMeta])).forbidStoringPassPhrase)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: nil)).forbidStoringPassPhrase)
+    }
+
+    func testMustSubmitAttester() {
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
+            flags: [.enforceAttesterSubmit]
+        )).mustSubmitAttester)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [])).mustSubmitAttester)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [.hideArmorMeta])).mustSubmitAttester)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: nil)).mustSubmitAttester)
+    }
 
     func testCheckDoesNotUseEKM() {
         // EKM should not be used if keyManagerUrl is nil
