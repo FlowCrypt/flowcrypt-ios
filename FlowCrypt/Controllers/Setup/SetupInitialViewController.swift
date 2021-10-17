@@ -125,13 +125,14 @@ extension SetupInitialViewController {
 
         logger.logInfo("Searching for backups in inbox")
 
-        backupService.fetchBackupsFromInbox(for: user)
-            .then(on: .main) { [weak self] keys in
-                self?.proceedToSetupWith(keys: keys)
+        Task {
+            do {
+                let keys = try await backupService.fetchBackupsFromInbox(for: user)
+                proceedToSetupWith(keys: keys)
+            } catch {
+                handle(error: error)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+        }
     }
 
     private func handleOtherAccount() {

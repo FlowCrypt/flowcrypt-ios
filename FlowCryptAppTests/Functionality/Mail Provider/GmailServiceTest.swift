@@ -22,26 +22,20 @@ class GmailServiceTest: XCTestCase {
         backupSearchQueryProvider = GmailBackupSearchQueryProviderMock()
         sut = GmailService(userService: userService, backupSearchQueryProvider: backupSearchQueryProvider)
     }
-    
-    func testSearchBackupsWhenErrorInQuery() {
+
+    func testSearchBackupsWhenErrorInQuery() async {
         backupSearchQueryProvider.makeBackupQueryResult = .failure(.some)
-        let expectation = XCTestExpectation()
-        
-        sut.searchBackups(for: "james.bond@gmail.com")
-            .then(on: .main) { data in
-                
+
+        do {
+            _ = try await sut.searchBackups(for: "james.bond@gmail.com")
+        } catch {
+            switch error as? GmailServiceError {
+            case .missedBackupQuery(let underliningError):
+                XCTAssertTrue(underliningError is MockError)
+            default:
+                XCTFail()
             }
-            .catch(on: .main) { error in
-                switch error as? GmailServiceError {
-                case .missedBackupQuery(let underliningError):
-                    if underliningError is MockError {
-                        expectation.fulfill()
-                    }
-                default:
-                    break
-                }
-            }
-        wait(for: [expectation], timeout: 3, enforceOrder: true)
+        }
     }
 }
 
