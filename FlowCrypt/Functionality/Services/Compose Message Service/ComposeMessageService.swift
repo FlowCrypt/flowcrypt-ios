@@ -9,17 +9,22 @@
 import Combine
 import FlowCryptUI
 import Foundation
+import GoogleAPIClientForREST_Gmail
 
-struct ComposeMessageContext {
+struct ComposeMessageContext: Equatable {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []
     var subject: String?
     var attachments: [ComposeMessageAttachment] = []
 }
 
-struct ComposeMessageRecipient {
+struct ComposeMessageRecipient: Equatable {
     let email: String
     var state: RecipientState
+
+    static func == (lhs: ComposeMessageRecipient, rhs: ComposeMessageRecipient) -> Bool {
+        return lhs.email == rhs.email
+    }
 }
 
 protocol CoreComposeMessageType {
@@ -31,14 +36,17 @@ final class ComposeMessageService {
     private let dataService: KeyStorageType
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
+    private let draftGateway: DraftSaveGateway?
 
     init(
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
+        draftGateway: DraftSaveGateway? = MailProvider.shared.draftGateway,
         dataService: KeyStorageType = KeyDataStorage(),
         contactsService: ContactsServiceType = ContactsService(),
         core: CoreComposeMessageType & KeyParser = Core.shared
     ) {
         self.messageGateway = messageGateway
+        self.draftGateway = draftGateway
         self.dataService = dataService
         self.contactsService = contactsService
         self.core = core
@@ -49,6 +57,7 @@ final class ComposeMessageService {
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
         email: String,
+        includeAttachments: Bool = true,
         signingPrv: PrvKeyInfo?
     ) -> Result<SendableMsg, ComposeMessageError> {
         let recipients = contextToSend.recipients
@@ -134,6 +143,19 @@ final class ComposeMessageService {
         guard !contains(keyState: .revoked) else { return .failure(.revokedKeyRecipients) }
 
         return .success(recipients.flatMap(\.activePubKeys).map(\.armored))
+    }
+
+    private var draft: GTLRGmail_Draft?
+    func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
+        do {
+            let r = try await core.composeEmail(
+                msg: message,
+                fmt: MsgFmt.encryptInline
+            )
+            draft = try await draftGateway?.saveDraft(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId), draft: draft)
+        } catch {
+            throw ComposeMessageError.gatewayError(error)
+        }
     }
 
     // MARK: - Encrypt and Send

@@ -12,6 +12,12 @@ import FlowCryptUI
  * - User can be redirected here from *InboxViewController* by tapping on *+*
  * - Or from *MessageViewController* controller by tapping on *reply*
  */
+private struct ComposedDraft: Equatable {
+    let email: String
+    let input: ComposeMessageInput
+    let contextToSend: ComposeMessageContext
+}
+
 final class ComposeViewController: TableNodeViewController {
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
@@ -49,6 +55,9 @@ final class ComposeViewController: TableNodeViewController {
     private var contextToSend = ComposeMessageContext()
 
     private var state: State = .main
+
+    private weak var timer: Timer?
+    private var composedLatestDraft: ComposedDraft?
 
     init(
         email: String,
@@ -93,12 +102,14 @@ final class ComposeViewController: TableNodeViewController {
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
+        observerAppStates()
         setupReply()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         node.view.endEditing(true)
+        stopTimer()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -106,10 +117,66 @@ final class ComposeViewController: TableNodeViewController {
         showScopeAlertIfNeeded()
         cancellable.forEach { $0.cancel() }
         setupSearch()
+        startTimer()
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+}
+
+// MARK: - Drafts
+extension ComposeViewController {
+    @objc private func startTimer() {
+        timer = Timer.scheduledTimer(
+            timeInterval: 1,
+            target: self,
+            selector: #selector(saveDraftIfNeeded),
+            userInfo: nil,
+            repeats: true)
+        timer?.fire()
+    }
+
+    @objc private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+
+        saveDraftIfNeeded()
+    }
+
+    private func shouldSaveDraft() -> Bool {
+        let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
+
+        guard let oldDraft = composedLatestDraft else {
+            composedLatestDraft = newDraft
+            return true
+        }
+
+        let result = newDraft != oldDraft
+        composedLatestDraft = newDraft
+        return result
+    }
+
+    @objc private func saveDraftIfNeeded() {
+        Task {
+            guard shouldSaveDraft() else { return }
+
+            do {
+//                let key = try await prepareSigningKey()
+                let messagevalidationResult = composeMessageService.validateMessage(
+                    input: input,
+                    contextToSend: contextToSend,
+                    email: email,
+                    includeAttachments: false,
+                    signingPrv: nil
+                )
+                guard case let .success(message) = messagevalidationResult else {
+                    return
+                }
+                try await composeMessageService.encryptAndSaveDraft(message: message, threadId: input.threadId)
+            } catch {}
+        }
     }
 }
 
@@ -194,6 +261,20 @@ extension ComposeViewController {
         }
     }
 
+    private func observerAppStates() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(startTimer),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(stopTimer),
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
+    }
+
     private func adjustForKeyboard(height: CGFloat) {
         let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 8, right: 0)
         node.contentInset = insets
@@ -217,33 +298,41 @@ extension ComposeViewController {
         openAttachmentsInputSourcesSheet()
     }
 
-    @objc private func handleSendTap() {
-        prepareSigningKey()
+    @objc private func handleSendTap() async {
+        do {
+            let key = try await prepareSigningKey()
+            sendMessage(key)
+        } catch {}
     }
 }
 
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    private func prepareSigningKey() {
-        guard let signingKey = try? keyService.getSigningKey() else {
-            showAlert(message: "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key.")
-            return
-        }
+    private func prepareSigningKey() async throws -> PrvKeyInfo {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<PrvKeyInfo, Error>) in
+            guard let signingKey = try? keyService.getSigningKey() else {
+                let message = "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key."
+                showAlert(message: message)
+                continuation.resume(throwing: MessageServiceError.unknown)
+                return
+            }
 
-        guard signingKey.passphrase != nil else {
-            let alert = AlertsFactory.makePassPhraseAlert(
-                onCancel: { [weak self] in
-                    self?.showAlert(message: "Passphrase is required for message signing")
-                },
-                onCompletion: { [weak self] passPhrase in
-                    self?.sendMessage(signingKey.copy(with: passPhrase))
-                })
-            present(alert, animated: true, completion: nil)
-            return
-        }
+            guard let passphrase = signingKey.passphrase else {
+                let alert = AlertsFactory.makePassPhraseAlert(
+                    onCancel: { [weak self] in
+                        self?.showAlert(message: "Passphrase is required for message signing")
+                        continuation.resume(throwing: MessageServiceError.unknown)
+                    },
+                    onCompletion: { passPhrase in
+                        continuation.resume(returning: signingKey.copy(with: passPhrase))
+                    })
+                present(alert, animated: true, completion: nil)
+                return
+            }
 
-        sendMessage(signingKey)
+            continuation.resume(returning: signingKey.copy(with: passphrase))
+        }
     }
 
     private func sendMessage(_ signingKey: PrvKeyInfo) {

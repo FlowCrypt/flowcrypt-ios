@@ -65,6 +65,10 @@ final class MailProvider {
         resolveService(of: UsersMailSessionProvider.self)
     }
 
+    var draftGateway: DraftSaveGateway? {
+        resolveOptionalService(of: DraftSaveGateway.self)
+    }
+
     private init(
         currentAuthType: @autoclosure @escaping () -> (AuthType?),
         services: [MailServiceProvider]
@@ -76,6 +80,13 @@ final class MailProvider {
     private func resolveService<T>(of type: T.Type) -> T {
         guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
             fatalError("Email Provider should support this functionality")
+        }
+        return service
+    }
+
+    private func resolveOptionalService<T>(of type: T.Type) -> T? {
+        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
+            return nil
         }
         return service
     }
