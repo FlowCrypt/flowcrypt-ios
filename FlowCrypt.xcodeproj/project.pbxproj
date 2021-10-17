@@ -61,11 +61,11 @@
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
 		51B4AE4F27137CB70001F33B /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 51B4AE4E27137CB70001F33B /* Promises */; };
-		51B4AE51271444580001F33B /* ContactKeyObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* ContactKeyObject.swift */; };
+		51B4AE51271444580001F33B /* PubKeyObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* PubKeyObject.swift */; };
 		51B4AE5327144E590001F33B /* PubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE5227144E590001F33B /* PubKey.swift */; };
-		51DE2FEE2714DA0400916222 /* ContactKeyCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DE2FED2714DA0400916222 /* ContactKeyCellNode.swift */; };
 		51C0C1EF271982A1000C9738 /* MailCore in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1EE271982A1000C9738 /* MailCore */; };
 		51C0C1F2271987DB000C9738 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1F1271987DB000C9738 /* Toast */; };
+		51DE2FEE2714DA0400916222 /* ContactKeyCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DE2FED2714DA0400916222 /* ContactKeyCellNode.swift */; };
 		51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */; };
 		51E13F15270F92F200F287CA /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F14270F92F200F287CA /* BigInt */; };
 		51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F17270F934C00F287CA /* MBProgressHUD */; };
@@ -289,7 +289,7 @@
 		D274724124F97C5C006BA6EF /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724024F97C5C006BA6EF /* CacheService.swift */; };
 		D274724424FD1932006BA6EF /* FolderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724324FD1932006BA6EF /* FolderObject.swift */; };
 		D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */; };
-		D27B911D24EFE806002DF0A1 /* ContactObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911C24EFE806002DF0A1 /* ContactObject.swift */; };
+		D27B911D24EFE806002DF0A1 /* RecipientObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911C24EFE806002DF0A1 /* RecipientObject.swift */; };
 		D27B911F24EFE828002DF0A1 /* RecipientWithPubKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911E24EFE828002DF0A1 /* RecipientWithPubKeys.swift */; };
 		D28325DD24895F5700D311BD /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		D28655912423B4580066F52E /* HeaderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3639235A0B3B00614596 /* HeaderNode.swift */; };
@@ -478,7 +478,7 @@
 		5133B6732716E5EA00C95463 /* LabelCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCellNode.swift; sourceTree = "<group>"; };
 		51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfoTests.swift; sourceTree = "<group>"; };
 		51775C38270C7D2400D7C944 /* StorageMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMethod.swift; sourceTree = "<group>"; };
-		51B4AE50271444580001F33B /* ContactKeyObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyObject.swift; sourceTree = "<group>"; };
+		51B4AE50271444580001F33B /* PubKeyObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubKeyObject.swift; sourceTree = "<group>"; };
 		51B4AE5227144E590001F33B /* PubKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubKey.swift; sourceTree = "<group>"; };
 		51DE2FED2714DA0400916222 /* ContactKeyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyCellNode.swift; sourceTree = "<group>"; };
 		51E1673C270DAFF900D27C52 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
@@ -715,7 +715,7 @@
 		D274724024F97C5C006BA6EF /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
 		D274724324FD1932006BA6EF /* FolderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderObject.swift; sourceTree = "<group>"; };
 		D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProvider.swift; sourceTree = "<group>"; };
-		D27B911C24EFE806002DF0A1 /* ContactObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactObject.swift; sourceTree = "<group>"; };
+		D27B911C24EFE806002DF0A1 /* RecipientObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientObject.swift; sourceTree = "<group>"; };
 		D27B911E24EFE828002DF0A1 /* RecipientWithPubKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientWithPubKeys.swift; sourceTree = "<group>"; };
 		D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMenuViewDecorator.swift; sourceTree = "<group>"; };
 		D28655942423BFF60066F52E /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
@@ -1103,8 +1103,8 @@
 			isa = PBXGroup;
 			children = (
 				D2F41372243CC7990066AFB5 /* UserObject.swift */,
-				D27B911C24EFE806002DF0A1 /* ContactObject.swift */,
-				51B4AE50271444580001F33B /* ContactKeyObject.swift */,
+				D27B911C24EFE806002DF0A1 /* RecipientObject.swift */,
+				51B4AE50271444580001F33B /* PubKeyObject.swift */,
 				D274724324FD1932006BA6EF /* FolderObject.swift */,
 				04B4728B1ECE29D200B8266F /* KeyInfo.swift */,
 				D2F41370243CC76E0066AFB5 /* SessionObject.swift */,
@@ -2529,7 +2529,7 @@
 				21CE25E62650070300ADFF4B /* WKDURLsConstructor.swift in Sources */,
 				9FC411212595EA12001180A8 /* MessageSearchProvider.swift in Sources */,
 				9F4163B8265ED61C00106194 /* SetupInitialViewController.swift in Sources */,
-				D27B911D24EFE806002DF0A1 /* ContactObject.swift in Sources */,
+				D27B911D24EFE806002DF0A1 /* RecipientObject.swift in Sources */,
 				9FDF3654235A218E00614596 /* main.swift in Sources */,
 				D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */,
 				D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */,
@@ -2646,7 +2646,7 @@
 				9FF0671025520D7100FCC9E6 /* MessageGateway.swift in Sources */,
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				9F79229426696B9300DA3D80 /* KeyDataStorage.swift in Sources */,
-				51B4AE51271444580001F33B /* ContactKeyObject.swift in Sources */,
+				51B4AE51271444580001F33B /* PubKeyObject.swift in Sources */,
 				9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */,
 				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
 				9FA405C7265AEBA50084D133 /* SetupGenerateKeyViewController.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  ContactKeyObject.swift
+//  PubKeyObject.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 11/10/21
@@ -9,9 +9,13 @@
 import Foundation
 import RealmSwift
 
-final class PubKeyObject: Object {
-    @Persisted(primaryKey: true) var key: String = ""
+enum PubKeyObjectError: Error {
+    case missingPrimaryFingerprint
+}
 
+final class PubKeyObject: Object {
+    @Persisted(primaryKey: true) var primaryFingerprint: String = ""
+    @Persisted var armored: String = ""
     @Persisted var lastSig: Date?
     @Persisted var lastChecked: Date?
     @Persisted var expiresOn: Date?
@@ -19,30 +23,36 @@ final class PubKeyObject: Object {
     @Persisted var fingerprints: List<String>
     @Persisted var created: Date?
 
-    convenience init(key: String,
+    convenience init(armored: String,
                      lastSig: Date? = nil,
                      lastChecked: Date? = nil,
                      expiresOn: Date? = nil,
                      longids: [String] = [],
                      fingerprints: [String] = [],
-                     created: Date? = nil) {
+                     created: Date? = nil) throws {
         self.init()
         
-        self.key = key
+        self.armored = armored
         self.lastSig = lastSig
         self.lastChecked = lastChecked
         self.expiresOn = expiresOn
         self.created = created
 
-        longids.forEach { self.longids.append($0) }
-        fingerprints.forEach { self.fingerprints.append($0) }
+        self.longids.append(objectsIn: fingerprints)
+        self.fingerprints.append(objectsIn: fingerprints)
+
+        guard let primaryFingerprint = self.fingerprints.first else {
+            throw PubKeyObjectError.missingPrimaryFingerprint
+        }
+
+        self.primaryFingerprint = primaryFingerprint
     }
 }
 
 extension PubKeyObject {
-    convenience init(_ key: PubKey) {
-        self.init(
-            key: key.key,
+    convenience init(_ key: PubKey) throws {
+        try self.init(
+            armored: key.armored,
             lastSig: key.lastSig,
             lastChecked: key.lastChecked,
             expiresOn: key.expiresOn,

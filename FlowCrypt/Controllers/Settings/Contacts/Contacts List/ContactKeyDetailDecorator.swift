@@ -20,7 +20,7 @@ struct ContactKeyDetailDecorator: ContactKeyDetailDecoratorType {
     func attributedTitle(for contactKeyPart: ContactKeyDetailViewController.Part) -> NSAttributedString {
         let title: String
         switch contactKeyPart {
-        case .key: title = "contact_key_pub".localized
+        case .armored: title = "contact_key_pub".localized
         case .signature: title = "contact_key_signature".localized
         case .created: title = "contact_key_created".localized
         case .checked: title = "contact_key_fetched".localized

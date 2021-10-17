@@ -22,7 +22,7 @@ final class ContactKeyDetailViewController: TableNodeViewController {
     }
 
     enum Part: Int, CaseIterable {
-        case key = 0, signature, created, checked, expire, longids, fingerprints, algo
+        case armored = 0, signature, created, checked, expire, longids, fingerprints, algo
     }
 
     private let decorator: ContactKeyDetailDecoratorType
@@ -67,14 +67,14 @@ final class ContactKeyDetailViewController: TableNodeViewController {
 extension ContactKeyDetailViewController {
     @objc private final func handleSaveAction() {
         let vc = UIActivityViewController(
-            activityItems: [pubKey.key],
+            activityItems: [pubKey.armored],
             applicationActivities: nil
         )
         present(vc, animated: true, completion: nil)
     }
 
     @objc private final func handleCopyAction() {
-        UIPasteboard.general.string = pubKey.key
+        UIPasteboard.general.string = pubKey.armored
         showToast("contact_detail_copy".localized)
     }
 
@@ -109,8 +109,8 @@ extension ContactKeyDetailViewController {
 
     private func content(for part: Part) -> String {
         switch part {
-        case .key:
-            return pubKey.key
+        case .armored:
+            return pubKey.armored
         case .signature:
             return string(from: pubKey.lastSig)
         case .created:
