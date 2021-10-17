@@ -19,14 +19,14 @@ protocol LocalContactsProviderType: PublicKeyProvider {
 }
 
 struct LocalContactsProvider {
-    private let localContactsCache: CacheService<RecipientObject>
+    private let localContactsCache: EncryptedCacheService<RecipientObject>
     let core: Core
 
     init(
         encryptedStorage: EncryptedStorageType = EncryptedStorage(),
         core: Core = .shared
     ) {
-        self.localContactsCache = CacheService<RecipientObject>(encryptedStorage: encryptedStorage)
+        self.localContactsCache = EncryptedCacheService<RecipientObject>(encryptedStorage: encryptedStorage)
         self.core = core
     }
 }

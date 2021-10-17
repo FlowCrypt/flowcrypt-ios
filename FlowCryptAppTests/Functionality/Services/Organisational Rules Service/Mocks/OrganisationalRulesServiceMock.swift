@@ -10,26 +10,26 @@ import Foundation
 import Promises
 @testable import FlowCrypt
 
-class OrganisationalRulesServiceMock: OrganisationalRulesServiceType {
+class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
 
-    var fetchOrganisationalRulesForCurrentUserResult: Result<OrganisationalRules, Error> = .failure(MockError.some)
-    func fetchOrganisationalRulesForCurrentUser() -> Promise<OrganisationalRules> {
+    var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError.some)
+    func fetchClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
         .resolveAfter(timeout: 1, with: fetchOrganisationalRulesForCurrentUserResult)
     }
 
-    var fetchOrganisationalRulesForEmail: (String) -> (Result<OrganisationalRules, Error>) = { email in
+    var fetchOrganisationalRulesForEmail: (String) -> (Result<ClientConfiguration, Error>) = { email in
         return .failure(MockError.some)
     }
-    func fetchOrganisationalRules(for email: String) -> Promise<OrganisationalRules> {
+    func fetchOrganisationalRules(for email: String) -> Promise<ClientConfiguration> {
         .resolveAfter(timeout: 1, with: fetchOrganisationalRulesForEmail(email))
     }
 
-    var clientConfiguration: ClientConfiguration!
+    var clientConfiguration: RawClientConfiguration!
 
-    var getSavedOrganisationalRulesForCurrentUserResult: OrganisationalRules {
-        OrganisationalRules(clientConfiguration: clientConfiguration)
+    var getSavedOrganisationalRulesForCurrentUserResult: ClientConfiguration {
+        ClientConfiguration(raw: clientConfiguration)
     }
-    func getSavedOrganisationalRulesForCurrentUser() -> OrganisationalRules {
+    func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration {
         getSavedOrganisationalRulesForCurrentUserResult
     }
 }

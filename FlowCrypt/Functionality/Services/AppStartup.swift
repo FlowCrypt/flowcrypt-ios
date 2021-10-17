@@ -98,8 +98,8 @@ struct AppStartup {
 
     private func getUserOrgRulesIfNeeded() throws {
         if DataService.shared.isLoggedIn {
-            let service = OrganisationalRulesService()
-            _ = try awaitPromise(service.fetchOrganisationalRulesForCurrentUser())
+            let service = ClientConfigurationService()
+            _ = try awaitPromise(service.fetchClientConfigurationForCurrentUser())
         }
     }
 

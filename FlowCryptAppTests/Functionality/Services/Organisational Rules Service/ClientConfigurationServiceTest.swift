@@ -1,5 +1,5 @@
 //
-//  ClientConfigurationServiceTest.swift
+//  ClientConfigurationEvaluatorTest.swift
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 10.09.2021.
@@ -10,30 +10,30 @@ import XCTest
 @testable import FlowCrypt
 
 // check if Email Key Manager should be used test and other client configuration is consistent
-class ClientConfigurationServiceTest: XCTestCase {
+class ClientConfigurationEvaluatorTest: XCTestCase {
 
-    var sut: ClientConfigurationService!
-    var organisationalRulesService = OrganisationalRulesServiceMock()
+    var sut: ClientConfigurationEvaluator!
+    var clientConfigurationService = OrganisationalRulesServiceMock()
 
     override func setUp() {
         super.setUp()
 
-        sut = ClientConfigurationService(organisationalRulesService: organisationalRulesService)
+        sut = ClientConfigurationEvaluator(clientConfigurationService: clientConfigurationService)
     }
 
     func testCheckDoesNotUseEKM() {
         // EKM should not be used if keyManagerUrl is nil
-        organisationalRulesService.clientConfiguration = ClientConfiguration(keyManagerUrl: nil)
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(keyManagerUrl: nil)
         XCTAssert(sut.checkShouldUseEKM() == .doesNotUseEKM)
 
         // EKM should not be used if keyManagerUrl is nil
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [],
             keyManagerUrl: nil
         )
         XCTAssert(sut.checkShouldUseEKM() == .doesNotUseEKM)
 
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [.forbidStoringPassphrase],
             keyManagerUrl: nil
         )
@@ -41,7 +41,7 @@ class ClientConfigurationServiceTest: XCTestCase {
     }
 
     func testShouldUseEKM() {
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
@@ -53,7 +53,7 @@ class ClientConfigurationServiceTest: XCTestCase {
     }
 
     func testCheckShouldUseEKMShouldFailWithoutValidURL() {
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
@@ -71,7 +71,7 @@ class ClientConfigurationServiceTest: XCTestCase {
 
     func testCheckShouldUseEKMFailForAutogen() {
         // No flags
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: nil,
             keyManagerUrl: "https://ekm.example.com"
         )
@@ -84,7 +84,7 @@ class ClientConfigurationServiceTest: XCTestCase {
         XCTAssert(error == .autoImportOrAutogenPrvWithKeyManager)
 
         // Empty flags
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [],
             keyManagerUrl: "https://ekm.example.com"
         )
@@ -99,7 +99,7 @@ class ClientConfigurationServiceTest: XCTestCase {
 
     func testCheckShouldUseEKMFailForAutoImportOrAutogen() {
         // Wrong flags (without privateKeyAutoimportOrAutogen flag)
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [
                 .noAttesterSubmit
             ],
@@ -116,7 +116,7 @@ class ClientConfigurationServiceTest: XCTestCase {
 
     func testCheckShouldUseEKMFailForAutogenPassPhraseQuietly() {
         // sut pass mustAutoImportOrAutogenPrvWithKeyManager check
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .passphraseQuietAutogen
@@ -133,7 +133,7 @@ class ClientConfigurationServiceTest: XCTestCase {
     }
 
     func testCheckShouldUseEKMFailForForbidStoringPassPhrase() {
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen
             ],
@@ -149,7 +149,7 @@ class ClientConfigurationServiceTest: XCTestCase {
     }
 
     func testCheckShouldUseEKMFailForMustSubmitAttester() {
-        organisationalRulesService.clientConfiguration = ClientConfiguration(
+        clientConfigurationService.clientConfiguration = RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase,

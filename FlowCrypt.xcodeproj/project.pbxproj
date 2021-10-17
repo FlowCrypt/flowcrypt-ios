@@ -11,13 +11,12 @@
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
 		211392A5266511E6009202EC /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
-		2133D51626A0571F00CC686F /* ClientConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51526A0571F00CC686F /* ClientConfigurationService.swift */; };
+		2133D51626A0571F00CC686F /* ClientConfigurationEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51526A0571F00CC686F /* ClientConfigurationEvaluator.swift */; };
 		2133D51826A1E45400CC686F /* DecryptedPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */; };
-		21489B78267CB42400BDE4AC /* ClientConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */; };
+		21489B78267CB42400BDE4AC /* LocalClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* LocalClientConfiguration.swift */; };
 		21489B7A267CB4DF00BDE4AC /* ClientConfigurationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B79267CB4DF00BDE4AC /* ClientConfigurationObject.swift */; };
-		21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */; };
-		21489B80267CC39E00BDE4AC /* OrganisationalRulesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */; };
-		21489B83267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */; };
+		21489B7C267CBA0E00BDE4AC /* RawClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7B267CBA0E00BDE4AC /* RawClientConfiguration.swift */; };
+		21489B80267CC39E00BDE4AC /* ClientConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7F267CC39E00BDE4AC /* ClientConfigurationService.swift */; };
 		214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214A023926A3029700C24066 /* EmailKeyManagerApi.swift */; };
 		215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */ = {isa = PBXBuildFile; fileRef = 215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */; };
 		2155E9EF26E3628C008FB033 /* Refreshable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2155E9EE26E3628C008FB033 /* Refreshable.swift */; };
@@ -27,14 +26,13 @@
 		21750D7D26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */; };
 		21750D7F26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */; };
 		2196A2202684B9BE001B9E00 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2196A21F2684B9BE001B9E00 /* URLExtension.swift */; };
-		21B15C9426AA00A400D8522B /* ClientConfigurationServiceResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */; };
 		21C7DEFC26669A3700C44800 /* CalendarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DEFB26669A3700C44800 /* CalendarExtension.swift */; };
 		21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */; };
 		21C7DF0526697DA500C44800 /* PromiseKitExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */; };
 		21C7DF09266C0D8F00C44800 /* EnterpriseServerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */; };
 		21C7DF0B266C0E3600C44800 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF0A266C0E3600C44800 /* Configuration.swift */; };
 		21CE25E62650070300ADFF4B /* WkdUrlConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */; };
-		21EA3B592656611D00691848 /* OrganisationalRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* OrganisationalRule.swift */; };
+		21EA3B592656611D00691848 /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* ClientConfiguration.swift */; };
 		21EFF61F265A5C6700AB0B71 /* WkdApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EFF61E265A5C6700AB0B71 /* WkdApi.swift */; };
 		21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */; };
 		21FEE26626FDD91A00E3783F /* ComposeMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */; };
@@ -286,7 +284,7 @@
 		D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */; };
 		D2717753242568A600BDA9A9 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
 		D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */; };
-		D274724124F97C5C006BA6EF /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724024F97C5C006BA6EF /* CacheService.swift */; };
+		D274724124F97C5C006BA6EF /* EncryptedCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724024F97C5C006BA6EF /* EncryptedCacheService.swift */; };
 		D274724424FD1932006BA6EF /* FolderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724324FD1932006BA6EF /* FolderObject.swift */; };
 		D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */; };
 		D27B911D24EFE806002DF0A1 /* ContactObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911C24EFE806002DF0A1 /* ContactObject.swift */; };
@@ -410,15 +408,14 @@
 		0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.release.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.release.xcconfig"; sourceTree = "<group>"; };
 		1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.enterprise.xcconfig"; sourceTree = "<group>"; };
 		211392A4266511E6009202EC /* PubLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubLookup.swift; sourceTree = "<group>"; };
-		2133D51526A0571F00CC686F /* ClientConfigurationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationService.swift; sourceTree = "<group>"; };
+		2133D51526A0571F00CC686F /* ClientConfigurationEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationEvaluator.swift; sourceTree = "<group>"; };
 		2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedPrivateKey.swift; sourceTree = "<group>"; };
 		21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManagerTests.swift; sourceTree = "<group>"; };
 		21489B6D267B7D5000BDE4AC /* FileMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMock.swift; sourceTree = "<group>"; };
-		21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationProvider.swift; sourceTree = "<group>"; };
+		21489B77267CB42400BDE4AC /* LocalClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalClientConfiguration.swift; sourceTree = "<group>"; };
 		21489B79267CB4DF00BDE4AC /* ClientConfigurationObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationObject.swift; sourceTree = "<group>"; };
-		21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfiguration.swift; sourceTree = "<group>"; };
-		21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesService.swift; sourceTree = "<group>"; };
-		21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesServiceError.swift; sourceTree = "<group>"; };
+		21489B7B267CBA0E00BDE4AC /* RawClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawClientConfiguration.swift; sourceTree = "<group>"; };
+		21489B7F267CC39E00BDE4AC /* ClientConfigurationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationService.swift; sourceTree = "<group>"; };
 		214A023926A3029700C24066 /* EmailKeyManagerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailKeyManagerApi.swift; sourceTree = "<group>"; };
 		215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_with_unknown_flag.json; sourceTree = "<group>"; };
 		2155E9EE26E3628C008FB033 /* Refreshable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Refreshable.swift; sourceTree = "<group>"; };
@@ -428,13 +425,12 @@
 		21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupEKMKeyViewController.swift; sourceTree = "<group>"; };
 		21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupCreatePassphraseAbstractViewController.swift; sourceTree = "<group>"; };
 		2196A21F2684B9BE001B9E00 /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
-		21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationServiceResults.swift; sourceTree = "<group>"; };
 		21C7DEFB26669A3700C44800 /* CalendarExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExtension.swift; sourceTree = "<group>"; };
 		21C7DF0426697DA500C44800 /* PromiseKitExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseKitExtension.swift; sourceTree = "<group>"; };
 		21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApi.swift; sourceTree = "<group>"; };
 		21C7DF0A266C0E3600C44800 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WkdUrlConstructor.swift; sourceTree = "<group>"; };
-		21EA3B15265647C400691848 /* OrganisationalRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRule.swift; sourceTree = "<group>"; };
+		21EA3B15265647C400691848 /* ClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfiguration.swift; sourceTree = "<group>"; };
 		21EA3B2226565B5D00691848 /* ClientConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationTests.swift; sourceTree = "<group>"; };
 		21EA3B2E26565B7400691848 /* client_configuraion.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion.json; sourceTree = "<group>"; };
 		21EA3B3526565B8100691848 /* client_configuraion_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_empty.json; sourceTree = "<group>"; };
@@ -712,7 +708,7 @@
 		D26F132624509EB6009175BA /* RecipientEmailsCellNodeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNodeInput.swift; sourceTree = "<group>"; };
 		D27177482424D73000BDA9A9 /* InboxViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewDecorator.swift; sourceTree = "<group>"; };
 		D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
-		D274724024F97C5C006BA6EF /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
+		D274724024F97C5C006BA6EF /* EncryptedCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedCacheService.swift; sourceTree = "<group>"; };
 		D274724324FD1932006BA6EF /* FolderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderObject.swift; sourceTree = "<group>"; };
 		D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProvider.swift; sourceTree = "<group>"; };
 		D27B911C24EFE806002DF0A1 /* ContactObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactObject.swift; sourceTree = "<group>"; };
@@ -834,8 +830,7 @@
 				9F1B49E02624E19D00420472 /* Realm Models */,
 				9F0C3C132316E69300299985 /* User.swift */,
 				9F9AAFFC2383E216000A00F1 /* Document.swift */,
-				21EA3B15265647C400691848 /* OrganisationalRule.swift */,
-				21489B7B267CBA0E00BDE4AC /* ClientConfiguration.swift */,
+				21489B7B267CBA0E00BDE4AC /* RawClientConfiguration.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -869,16 +864,15 @@
 			path = FilesManager;
 			sourceTree = "<group>";
 		};
-		21489B81267CC3BC00BDE4AC /* Organisational Rules Service */ = {
+		21489B81267CC3BC00BDE4AC /* Client Configuration Service */ = {
 			isa = PBXGroup;
 			children = (
-				2133D51526A0571F00CC686F /* ClientConfigurationService.swift */,
-				21489B77267CB42400BDE4AC /* ClientConfigurationProvider.swift */,
-				21489B7F267CC39E00BDE4AC /* OrganisationalRulesService.swift */,
-				21489B82267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift */,
-				21B15C9326AA00A400D8522B /* ClientConfigurationServiceResults.swift */,
+				21EA3B15265647C400691848 /* ClientConfiguration.swift */,
+				21489B7F267CC39E00BDE4AC /* ClientConfigurationService.swift */,
+				21489B77267CB42400BDE4AC /* LocalClientConfiguration.swift */,
+				2133D51526A0571F00CC686F /* ClientConfigurationEvaluator.swift */,
 			);
-			path = "Organisational Rules Service";
+			path = "Client Configuration Service";
 			sourceTree = "<group>";
 		};
 		215897E6267A551300423694 /* FilesManager */ = {
@@ -1073,13 +1067,13 @@
 				A3B7C31823F576BA0022D628 /* AppStartup.swift */,
 				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
-				D274724024F97C5C006BA6EF /* CacheService.swift */,
+				D274724024F97C5C006BA6EF /* EncryptedCacheService.swift */,
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				A381F250271C1D1A00A3D13C /* Account Server Services */,
 				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
 				D227C0E4250538190070F805 /* Folders Services */,
-				21489B81267CC3BC00BDE4AC /* Organisational Rules Service */,
+				21489B81267CC3BC00BDE4AC /* Client Configuration Service */,
 				D27B911724EFE787002DF0A1 /* Local Pub Key Services */,
 				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
 				A381F24D271C1C1100A3D13C /* Remote Pub Key Services */,
@@ -2529,7 +2523,7 @@
 				51B4AE5327144E590001F33B /* PubKey.swift in Sources */,
 				21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
-				21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */,
+				21489B7C267CBA0E00BDE4AC /* RawClientConfiguration.swift in Sources */,
 				9F976592267E19880058419D /* TestData.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */,
@@ -2561,16 +2555,15 @@
 				D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
 				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
-				21489B80267CC39E00BDE4AC /* OrganisationalRulesService.swift in Sources */,
+				21489B80267CC39E00BDE4AC /* ClientConfigurationService.swift in Sources */,
 				D28655932423B4EE0066F52E /* MyMenuViewDecorator.swift in Sources */,
 				04B4728D1ECE29D200B8266F /* KeyInfo.swift in Sources */,
 				9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */,
 				D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */,
 				9F9361A52573CE260009912F /* MessageProvider.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
-				2133D51626A0571F00CC686F /* ClientConfigurationService.swift in Sources */,
+				2133D51626A0571F00CC686F /* ClientConfigurationEvaluator.swift in Sources */,
 				D274724424FD1932006BA6EF /* FolderObject.swift in Sources */,
-				21B15C9426AA00A400D8522B /* ClientConfigurationServiceResults.swift in Sources */,
 				9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
 				214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */,
@@ -2626,7 +2619,7 @@
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
 				5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */,
-				D274724124F97C5C006BA6EF /* CacheService.swift in Sources */,
+				D274724124F97C5C006BA6EF /* EncryptedCacheService.swift in Sources */,
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				D2891AC224C59EFA008918E3 /* KeyService.swift in Sources */,
@@ -2643,7 +2636,6 @@
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */,
 				2133D51826A1E45400CC686F /* DecryptedPrivateKey.swift in Sources */,
-				21489B83267CC99C00BDE4AC /* OrganisationalRulesServiceError.swift in Sources */,
 				D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */,
 				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* GoogleUserService.swift in Sources */,
@@ -2669,7 +2661,7 @@
 				9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
-				21489B78267CB42400BDE4AC /* ClientConfigurationProvider.swift in Sources */,
+				21489B78267CB42400BDE4AC /* LocalClientConfiguration.swift in Sources */,
 				9FF0671C25520D9D00FCC9E6 /* MailProvider.swift in Sources */,
 				21FEE26626FDD91A00E3783F /* ComposeMessageAttachment.swift in Sources */,
 				9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */,
@@ -2692,7 +2684,7 @@
 				9FC7EB76266EB67B00F3BF5D /* EncryptedStorageProtocols.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
 				32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */,
-				21EA3B592656611D00691848 /* OrganisationalRule.swift in Sources */,
+				21EA3B592656611D00691848 /* ClientConfiguration.swift in Sources */,
 				32DCAD9F3A6B6101B78F0918 /* AttesterApi.swift in Sources */,
 				32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */,
 				5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */,
