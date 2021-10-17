@@ -13,8 +13,8 @@ protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) -> Promise<String?>
     func getActiveFesUrlForCurrentUser() -> Promise<String?>
 
-    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration>
-    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration>
+    func getClientConfiguration(for email: String) -> Promise<RawClientConfiguration>
+    func getClientConfigurationForCurrentUser() -> Promise<RawClientConfiguration>
 }
 
 enum EnterpriseServerApiError: Error {
@@ -47,9 +47,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         static let serviceNeededValue = "enterprise-server"
     }
 
-    private struct ClientConfigurationContainer: Codable {
-        let clientConfiguration: ClientConfiguration
-
+    private struct ClientConfigurationResponse: Codable {
+        let clientConfiguration: RawClientConfiguration
         private enum CodingKeys: String, CodingKey {
             case clientConfiguration
         }
@@ -110,8 +109,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         .recoverFromTimeOut(result: nil)
     }
 
-    func getClientConfiguration(for email: String) -> Promise<ClientConfiguration> {
-        Promise<ClientConfiguration> { resolve, reject in
+    func getClientConfiguration(for email: String) -> Promise<RawClientConfiguration> {
+        Promise<RawClientConfiguration> { resolve, reject in
             guard let userDomain = email.recipientDomain else {
                 reject(EnterpriseServerApiError.emailFormat)
                 return
@@ -137,7 +136,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             decoder.keyDecodingStrategy = .convertFromSnakeCase
 
             guard let clientConfiguration = (try? decoder.decode(
-                    ClientConfigurationContainer.self,
+                    ClientConfigurationResponse.self,
                     from: safeReponse.data
                   ))?.clientConfiguration
             else {
@@ -148,9 +147,9 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         }
     }
 
-    func getClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
+    func getClientConfigurationForCurrentUser() -> Promise<RawClientConfiguration> {
         guard let email = DataService.shared.currentUser?.email else {
-            return Promise<ClientConfiguration> { _, _ in
+            return Promise<RawClientConfiguration> { _, _ in
                 fatalError("User has to be set while getting client configuration")
             }
         }

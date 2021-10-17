@@ -1,5 +1,5 @@
 //
-//  OrganisationalRulesServiceTests.swift
+//  ClientConfigurationServiceTests.swift
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 20.09.2021.
@@ -10,38 +10,38 @@ import XCTest
 import Promises
 @testable import FlowCrypt
 
-class OrganisationalRulesServiceTests: XCTestCase {
+class ClientConfigurationServiceTests: XCTestCase {
 
-    var sut: OrganisationalRulesService!
+    var sut: ClientConfigurationService!
     var enterpriseServerApi: EnterpriseServerApiMock!
-    var clientConfigurationProvider: ClientConfigurationProviderMock!
+    var localClientConfigurationProvider: LocalClientConfigurationMock!
     var isCurrentUserExistMock: CurrentUserEmailMock!
 
     override func setUp() {
         super.setUp()
         enterpriseServerApi = EnterpriseServerApiMock()
-        clientConfigurationProvider = ClientConfigurationProviderMock()
+        localClientConfigurationProvider = LocalClientConfigurationMock()
         isCurrentUserExistMock = CurrentUserEmailMock()
 
-        sut = OrganisationalRulesService(
-            enterpriseServerApi: enterpriseServerApi,
-            clientConfigurationProvider: clientConfigurationProvider,
-            isCurrentUserExist: self.isCurrentUserExistMock.currentUserEmail()
+        sut = ClientConfigurationService(
+            server: enterpriseServerApi,
+            local: localClientConfigurationProvider,
+            getCurrentUserEmail: self.isCurrentUserExistMock.currentUserEmail()
         )
 
         DispatchQueue.promises = .global()
     }
 
     func testGetSavedOrganisationalRulesForCurrentUser() {
-        let expectedConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
-        clientConfigurationProvider.fetchCall = {
+        let expectedConfiguration = RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+        localClientConfigurationProvider.fetchCall = {
             expectedConfiguration
         }
 
-        let organisationalRules = sut.getSavedOrganisationalRulesForCurrentUser()
-        XCTAssert(clientConfigurationProvider.fetchCount == 1)
-        XCTAssert(clientConfigurationProvider.fetchInvoked == true)
-        XCTAssert(organisationalRules.clientConfiguration == expectedConfiguration)
+        let clientConfiguration = sut.getSavedClientConfigurationForCurrentUser()
+        XCTAssert(localClientConfigurationProvider.fetchCount == 1)
+        XCTAssert(localClientConfigurationProvider.fetchInvoked == true)
+        XCTAssert(clientConfiguration.raw == expectedConfiguration)
     }
 
     func testFetchOrganisationalRulesForCurrentUserNil() {
@@ -49,11 +49,11 @@ class OrganisationalRulesServiceTests: XCTestCase {
         isCurrentUserExistMock.currentUserEmailCall = {
             nil
         }
-        sut.fetchOrganisationalRulesForCurrentUser()
-            .then(on: .main) { _ -> Promise<OrganisationalRules> in
+        sut.fetchClientConfigurationForCurrentUser()
+            .then(on: .main) { _ -> Promise<ClientConfiguration> in
                 XCTFail()
-                let result: Result<OrganisationalRules, MockError> = .failure(.some)
-                return Promise<OrganisationalRules>.resolveAfter(with: result)
+                let result: Result<ClientConfiguration, MockError> = .failure(.some)
+                return Promise<ClientConfiguration>.resolveAfter(with: result)
             }
             .catch(on: .main) { error in
                 expectation.fulfill()
@@ -91,18 +91,18 @@ class OrganisationalRulesServiceTests: XCTestCase {
             clientConfigurationProviderSaveCountCall
         ]
 
-        let expectedClientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+        let expectedClientConfiguration = RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")
 
         // (String) -> (Result<ClientConfiguration, Error>)
         self.enterpriseServerApi.getClientConfigurationCall = { email in
             if email == "example@flowcrypt.test" {
                 getClientConfigurationCallExpectation.fulfill()
             }
-            return Result<ClientConfiguration, Error>.success(expectedClientConfiguration)
+            return Result<RawClientConfiguration, Error>.success(expectedClientConfiguration)
         }
 
         // (ClientConfiguration) -> (Void)
-        self.clientConfigurationProvider.saveCall = { clientConfiguration in
+        self.localClientConfigurationProvider.saveCall = { clientConfiguration in
             if clientConfiguration.keyManagerUrl == expectedClientConfiguration.keyManagerUrl {
                 clientConfigurationProviderSaveCall.fulfill()
             }
@@ -112,8 +112,8 @@ class OrganisationalRulesServiceTests: XCTestCase {
             "example@flowcrypt.test"
         }
         
-        sut.fetchOrganisationalRulesForCurrentUser()
-            .then(on: .main) { orgRules -> Promise<OrganisationalRules> in
+        sut.fetchClientConfigurationForCurrentUser()
+            .then(on: .main) { orgRules -> Promise<ClientConfiguration> in
                 fetchOrganisationalRulesExpectation.fulfill()
 
                 // test calls for enterpriseServerApi
@@ -123,12 +123,12 @@ class OrganisationalRulesServiceTests: XCTestCase {
                 if self.enterpriseServerApi.getClientConfigurationCount == 1 {
                     getClientConfigurationCountExpectation.fulfill()
                 }
-                if self.clientConfigurationProvider.saveCount == 1 {
+                if self.localClientConfigurationProvider.saveCount == 1 {
                     clientConfigurationProviderSaveCountCall.fulfill()
                 }
 
-                let result: Result<OrganisationalRules, MockError> = .success(orgRules)
-                return Promise<OrganisationalRules>.resolveAfter(with: result)
+                let result: Result<ClientConfiguration, MockError> = .success(orgRules)
+                return Promise<ClientConfiguration>.resolveAfter(with: result)
             }
             .catch(on: .main) { error in
                 XCTFail()
@@ -144,7 +144,7 @@ class OrganisationalRulesServiceTests: XCTestCase {
             fetchOrganisationalRulesForCurrentUserExpectation
         ]
 
-        let expectedClientConfiguration = ClientConfiguration(keyManagerUrl: "https://ekm.example.com")
+        let expectedClientConfiguration = RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")
 
         self.enterpriseServerApi.getClientConfigurationCall = { email in
             .failure(MockError.some)
@@ -154,21 +154,21 @@ class OrganisationalRulesServiceTests: XCTestCase {
             "example@flowcrypt.test"
         }
 
-        clientConfigurationProvider.fetchCall = {
+        localClientConfigurationProvider.fetchCall = {
             expectedClientConfiguration
         }
 
-        sut.fetchOrganisationalRulesForCurrentUser()
-            .then(on: .main) { organisationalRules -> Promise<OrganisationalRules> in
-                if organisationalRules.clientConfiguration == expectedClientConfiguration {
+        sut.fetchClientConfigurationForCurrentUser()
+            .then(on: .main) { clientConfiguration -> Promise<ClientConfiguration> in
+                if clientConfiguration.raw == expectedClientConfiguration {
                     fetchOrganisationalRulesForCurrentUserExpectation.fulfill()
                 }
-                let result: Result<OrganisationalRules, Error> = .success(organisationalRules)
-                return Promise<OrganisationalRules>.resolveAfter(with: result)
+                let result: Result<ClientConfiguration, Error> = .success(clientConfiguration)
+                return Promise<ClientConfiguration>.resolveAfter(with: result)
             }
-            .recover { error -> Promise<OrganisationalRules> in
-                let result: Result<OrganisationalRules, Error> = .success(OrganisationalRules(clientConfiguration: expectedClientConfiguration))
-                return Promise<OrganisationalRules>.resolveAfter(with: result)
+            .recover { error -> Promise<ClientConfiguration> in
+                let result: Result<ClientConfiguration, Error> = .success(ClientConfiguration(raw: expectedClientConfiguration))
+                return Promise<ClientConfiguration>.resolveAfter(with: result)
             }
         wait(for: expectations, timeout: 1)
     }
