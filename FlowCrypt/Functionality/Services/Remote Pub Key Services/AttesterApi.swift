@@ -17,6 +17,8 @@ protocol AttesterApiType {
     func testWelcome(email: String, pubkey: String) -> Promise<Void>
 }
 
+/// Public key server run by us that is shared across customers
+/// Some enterprise customers may have this functionality disabled
 final class AttesterApi: AttesterApiType {
 
     private enum Constants {

@@ -1081,9 +1081,9 @@
 				D227C0E4250538190070F805 /* Folders Services */,
 				21489B81267CC3BC00BDE4AC /* Organisational Rules Service */,
 				D27B911724EFE787002DF0A1 /* Local Pub Key Services */,
-				9FB22CFD25715DDF0026EE64 /* Local Prv Key Services */,
+				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
 				A381F24D271C1C1100A3D13C /* Remote Pub Key Services */,
-				A381F24F271C1CA300A3D13C /* Remote Prv Key Services */,
+				A381F24F271C1CA300A3D13C /* Remote Private Key Services */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1386,7 +1386,7 @@
 			path = "Error Handling";
 			sourceTree = "<group>";
 		};
-		9FB22CFD25715DDF0026EE64 /* Local Prv Key Services */ = {
+		9FB22CFD25715DDF0026EE64 /* Local Private Key Services */ = {
 			isa = PBXGroup;
 			children = (
 				9F79229326696B9300DA3D80 /* KeyDataStorage.swift */,
@@ -1394,7 +1394,7 @@
 				9FC7EBA9266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift */,
 				D2891AC124C59EFA008918E3 /* KeyService.swift */,
 			);
-			path = "Local Prv Key Services";
+			path = "Local Private Key Services";
 			sourceTree = "<group>";
 		};
 		9FBEAE5B25D41C22009E98D4 /* UsersMailSession Provider */ = {
@@ -1565,12 +1565,12 @@
 			path = "Remote Pub Key Services";
 			sourceTree = "<group>";
 		};
-		A381F24F271C1CA300A3D13C /* Remote Prv Key Services */ = {
+		A381F24F271C1CA300A3D13C /* Remote Private Key Services */ = {
 			isa = PBXGroup;
 			children = (
 				214A023926A3029700C24066 /* EmailKeyManagerApi.swift */,
 			);
-			path = "Remote Prv Key Services";
+			path = "Remote Private Key Services";
 			sourceTree = "<group>";
 		};
 		A381F250271C1D1A00A3D13C /* Account Server Services */ = {

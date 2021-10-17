@@ -14,6 +14,9 @@ protocol WkdApiType {
     func lookupEmail(_ email: String) -> Promise<[KeyDetails]>
 }
 
+/// Public key server - each org can run their own at a predictable url
+/// FlowCrypt customers can run FlowCrypt WKD:
+/// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
 class WkdApi: WkdApiType {
 
     private enum Constants {

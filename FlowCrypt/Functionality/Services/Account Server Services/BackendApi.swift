@@ -5,6 +5,8 @@
 import Foundation
 import Promises
 
+/// Backend API for regular consumers and small businesses
+/// (not implemented on iOS yet)
 final class BackendApi {
     static let shared: BackendApi = BackendApi()
 

@@ -34,6 +34,7 @@ class PubLookup: PubLookupType {
             let wkdResult = try awaitPromise(self.wkd.lookupEmail(email))
             if !wkdResult.isEmpty {
                 resolve(RecipientWithPubKeys(email: email, keyDetails: wkdResult))
+                return
             }
 
             let attesterResult = try awaitPromise(self.attesterApi.lookupEmail(email: email))
