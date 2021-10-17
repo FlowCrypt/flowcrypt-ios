@@ -48,13 +48,12 @@ class WkdApi: WkdApiType {
     }
 
     func rawLookupEmail(_ email: String) -> Promise<CoreRes.ParseKeys?> {
-        guard !Configuration.publicEmailProviderDomains.contains(email.recipientDomain ?? ""),
-              let advancedUrl = urlConstructor.construct(from: email, method: .advanced),
-              let directUrl = urlConstructor.construct(from: email, method: .direct)
-               else {
-            return Promise { resolve, _ in
-                resolve(nil)
-            }
+        guard
+            !Configuration.publicEmailProviderDomains.contains(email.recipientDomain ?? ""),
+            let advancedUrl = urlConstructor.construct(from: email, method: .advanced),
+            let directUrl = urlConstructor.construct(from: email, method: .direct)
+        else {
+            return Promise { resolve, _ in resolve(nil) }
         }
 
         return Promise<CoreRes.ParseKeys?> { [weak self] resolve, _ in
@@ -83,35 +82,27 @@ class WkdApi: WkdApiType {
 
 extension WkdApi {
 
-    private func urlLookup(_ wkdUrls: WkdUrls) -> Promise<(hasPolicy: Bool, key: Data?)> {
-
-        let policyRequest = URLRequest.urlRequest(
-            with: wkdUrls.policy,
-            method: .get,
-            body: nil
-        )
-
-        let publicKeyRequest = URLRequest.urlRequest(
-            with: wkdUrls.pubKeys,
-            method: .get,
-            body: nil
-        )
-
+    private func urlLookup(_ urls: WkdUrls) -> Promise<(hasPolicy: Bool, key: Data?)> {
         return Promise<(hasPolicy: Bool, key: Data?)> { resolve, _ in
             do {
-                _ = try awaitPromise(URLSession.shared.call(policyRequest))
+                _ = try awaitPromise(URLSession.shared.call(URLRequest.urlRequest(with: urls.policy)))
             } catch {
-                Logger.nested("WKDURLsService").logInfo("Failed to load \(wkdUrls.policy) with error \(error)")
-                resolve((false, nil))
+                Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
+                resolve((hasPolicy: false, key: nil))
+                return
             }
-            let publicKeyResponse = try awaitPromise(URLSession.shared.call(publicKeyRequest, tolerateStatus: [404]))
-            if !publicKeyResponse.data.toStr().isEmpty {
-                Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(wkdUrls.pubKeys) and will try to extract Public Keys")
+            let pubKeyResponse = try awaitPromise(URLSession.shared.call(
+                URLRequest.urlRequest(with: urls.pubKeys),
+                tolerateStatus: [404])
+            )
+            if !pubKeyResponse.data.toStr().isEmpty {
+                Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(urls.pubKeys) and will try to extract Public Keys")
             }
-            if publicKeyResponse.status == 404 {
-                resolve((true, nil))
+            if pubKeyResponse.status == 404 {
+                resolve((hasPolicy: true, key: nil))
+                return
             }
-            resolve((true, publicKeyResponse.data))
+            resolve((true, pubKeyResponse.data))
         }
     }
 }
