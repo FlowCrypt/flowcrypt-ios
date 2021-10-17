@@ -152,4 +152,64 @@ class ClientConfiguration {
     var keyManagerUrlString: String? {
         raw.keyManagerUrl?.addTrailingSlashIfNeeded
     }
+
+
+    /**
+     * This method checks if the user is set up for using EKM, and if other client configuration is consistent with it.
+     * There are three possible outcomes:
+     *  1) EKM is in use because clientConfiguration.isUsingKeyManager == true and other client configs are consistent with it (result: no error, use EKM)
+     *  2) EKM is in use because clientConfiguration.isUsingKeyManager == true and other client configs are NOT consistent with it (result: error)
+     *  3) EKM is not in use because clientConfiguration.isUsingKeyManager == false (result: normal login flow)
+     */
+    func checkUsesEKM() -> CheckUsesEKMResult {
+        guard isUsingKeyManager else {
+            return .doesNotUseEKM
+        }
+        guard isKeyManagerUrlValid else {
+            return .inconsistentClientConfiguration(checkError: .urlNotValid)
+        }
+        if mustAutoImportOrAutogenPrvWithKeyManager {
+            return .inconsistentClientConfiguration(checkError: .autoImportOrAutogenPrvWithKeyManager)
+        }
+        if mustAutogenPassPhraseQuietly {
+            return .inconsistentClientConfiguration(checkError: .autogenPassPhraseQuietly)
+        }
+        if forbidStoringPassPhrase {
+            return .inconsistentClientConfiguration(checkError: .forbidStoringPassPhrase)
+        }
+        if mustSubmitAttester {
+            return .inconsistentClientConfiguration(checkError: .mustSubmitAttester)
+        }
+        return .usesEKM
+    }
+
+    enum CheckUsesEKMResult: Equatable {
+        case usesEKM
+        case inconsistentClientConfiguration(checkError: InconsistentClientConfigurationError)
+        case doesNotUseEKM
+    }
+
+    enum InconsistentClientConfigurationError: Error, CustomStringConvertible, Equatable {
+        case urlNotValid
+        case autoImportOrAutogenPrvWithKeyManager
+        case autogenPassPhraseQuietly
+        case forbidStoringPassPhrase
+        case mustSubmitAttester
+
+        var description: String {
+            switch self {
+            case .urlNotValid:
+                return "organisational_rules_url_not_valid".localized
+            case .autoImportOrAutogenPrvWithKeyManager:
+                return "organisational_rules_autoimport_or_autogen_with_private_key_manager_error".localized
+            case .autogenPassPhraseQuietly:
+                return "organisational_rules_autogen_passphrase_quitely_error".localized
+            case .forbidStoringPassPhrase:
+                return "organisational_rules_forbid_storing_passphrase_error".localized
+            case .mustSubmitAttester:
+                return "organisational_rules_must_submit_attester_error".localized
+            }
+        }
+    }
+
 }

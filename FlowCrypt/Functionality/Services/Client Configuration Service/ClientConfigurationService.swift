@@ -58,7 +58,6 @@ extension ClientConfigurationService: ClientConfigurationServiceType {
         }
     }
 
-
     func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration {
         guard let raw = self.local.load() else {
             fatalError("There should not be a user without OrganisationalRules")

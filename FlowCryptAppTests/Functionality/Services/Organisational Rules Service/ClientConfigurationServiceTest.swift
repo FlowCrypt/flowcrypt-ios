@@ -12,71 +12,53 @@ import XCTest
 // check if Email Key Manager should be used test and other client configuration is consistent
 class ClientConfigurationEvaluatorTest: XCTestCase {
 
-    var sut: ClientConfigurationEvaluator!
-    var clientConfigurationService = OrganisationalRulesServiceMock()
-
-    override func setUp() {
-        super.setUp()
-
-        sut = ClientConfigurationEvaluator(clientConfigurationService: clientConfigurationService)
-    }
-
     func testCheckDoesNotUseEKM() {
         // EKM should not be used if keyManagerUrl is nil
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(keyManagerUrl: nil)
-        XCTAssert(sut.checkShouldUseEKM() == .doesNotUseEKM)
+        XCTAssert(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: nil)).checkUsesEKM() == .doesNotUseEKM)
 
         // EKM should not be used if keyManagerUrl is nil
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        XCTAssert(ClientConfiguration(raw: RawClientConfiguration(
             flags: [],
             keyManagerUrl: nil
-        )
-        XCTAssert(sut.checkShouldUseEKM() == .doesNotUseEKM)
+        )).checkUsesEKM() == .doesNotUseEKM)
 
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+
+        XCTAssert(ClientConfiguration(raw: RawClientConfiguration(
             flags: [.forbidStoringPassphrase],
             keyManagerUrl: nil
-        )
-        XCTAssert(sut.checkShouldUseEKM() == .doesNotUseEKM)
+        )).checkUsesEKM() == .doesNotUseEKM)
     }
 
     func testShouldUseEKM() {
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        XCTAssert(ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
             ],
             keyManagerUrl: "https://ekm.example.com"
-        )
-
-        XCTAssert(sut.checkShouldUseEKM() == .usesEKM)
+        )).checkUsesEKM() == .usesEKM)
     }
 
     func testCheckShouldUseEKMShouldFailWithoutValidURL() {
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        let result = ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
             ],
             keyManagerUrl: ""
-        )
-
-        let result = sut.checkShouldUseEKM()
+        )).checkUsesEKM()
         guard case .inconsistentClientConfiguration(let error) = result else {
             return XCTFail()
         }
-
         XCTAssert(error == .urlNotValid)
     }
 
     func testCheckShouldUseEKMFailForAutogen() {
         // No flags
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        var result = ClientConfiguration(raw: RawClientConfiguration(
             flags: nil,
             keyManagerUrl: "https://ekm.example.com"
-        )
-
-        var result = sut.checkShouldUseEKM()
+        )).checkUsesEKM()
         guard case .inconsistentClientConfiguration(let error) = result else {
             return XCTFail()
         }
@@ -84,12 +66,10 @@ class ClientConfigurationEvaluatorTest: XCTestCase {
         XCTAssert(error == .autoImportOrAutogenPrvWithKeyManager)
 
         // Empty flags
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        result = ClientConfiguration(raw: RawClientConfiguration(
             flags: [],
             keyManagerUrl: "https://ekm.example.com"
-        )
-
-        result = sut.checkShouldUseEKM()
+        )).checkUsesEKM()
         guard case .inconsistentClientConfiguration(let emptyFlagsError) = result else {
             return XCTFail()
         }
@@ -99,14 +79,12 @@ class ClientConfigurationEvaluatorTest: XCTestCase {
 
     func testCheckShouldUseEKMFailForAutoImportOrAutogen() {
         // Wrong flags (without privateKeyAutoimportOrAutogen flag)
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        let result = ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .noAttesterSubmit
             ],
             keyManagerUrl: "https://ekm.example.com"
-        )
-
-        let result = sut.checkShouldUseEKM()
+        )).checkUsesEKM()
         guard case .inconsistentClientConfiguration(let wrongFlagError) = result else {
             return XCTFail()
         }
@@ -116,15 +94,13 @@ class ClientConfigurationEvaluatorTest: XCTestCase {
 
     func testCheckShouldUseEKMFailForAutogenPassPhraseQuietly() {
         // sut pass mustAutoImportOrAutogenPrvWithKeyManager check
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        let result = ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .passphraseQuietAutogen
             ],
             keyManagerUrl: "https://ekm.example.com"
-        )
-
-        let result = sut.checkShouldUseEKM()
+        )).checkUsesEKM()
         guard case .inconsistentClientConfiguration(let error) = result else {
             return XCTFail()
         }
@@ -133,14 +109,12 @@ class ClientConfigurationEvaluatorTest: XCTestCase {
     }
 
     func testCheckShouldUseEKMFailForForbidStoringPassPhrase() {
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        let result = ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen
             ],
             keyManagerUrl: "https://ekm.example.com"
-        )
-
-        let result = sut.checkShouldUseEKM()
+        )).checkUsesEKM()
         guard case .inconsistentClientConfiguration(let error) = result else {
             return XCTFail()
         }
@@ -149,16 +123,14 @@ class ClientConfigurationEvaluatorTest: XCTestCase {
     }
 
     func testCheckShouldUseEKMFailForMustSubmitAttester() {
-        clientConfigurationService.clientConfiguration = RawClientConfiguration(
+        let result = ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase,
                 .enforceAttesterSubmit
             ],
             keyManagerUrl: "https://ekm.example.com"
-        )
-
-        let result = sut.checkShouldUseEKM()
+        )).checkUsesEKM()
         guard case .inconsistentClientConfiguration(let error) = result else {
             return XCTFail()
         }

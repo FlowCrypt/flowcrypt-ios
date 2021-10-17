@@ -56,7 +56,6 @@ final class SetupInitialViewController: TableNodeViewController {
     private let decorator: SetupViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let emailKeyManagerApi: EmailKeyManagerApiType
-    private let clientConfigurationEvaluator: ClientConfigurationEvaluatorType
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -66,8 +65,7 @@ final class SetupInitialViewController: TableNodeViewController {
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
-        emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi(),
-        clientConfigurationEvaluator: ClientConfigurationEvaluatorType = ClientConfigurationEvaluator()
+        emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi()
     ) {
         self.user = user
         self.backupService = backupService
@@ -75,7 +73,6 @@ final class SetupInitialViewController: TableNodeViewController {
         self.decorator = decorator
         self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
         self.emailKeyManagerApi = emailKeyManagerApi
-        self.clientConfigurationEvaluator = clientConfigurationEvaluator
 
         super.init(node: TableNode())
     }
@@ -144,7 +141,7 @@ extension SetupInitialViewController {
     }
 
     private func decideIfEKMshouldBeUsed() {
-        switch clientConfigurationEvaluator.checkShouldUseEKM() {
+        switch clientConfiguration.checkUsesEKM() {
         case .usesEKM:
             state = .fetchingKeysFromEKM
         case .doesNotUseEKM:
