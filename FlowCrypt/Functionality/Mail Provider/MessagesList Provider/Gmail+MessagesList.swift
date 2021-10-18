@@ -8,28 +8,23 @@
 
 import FlowCryptCommon
 import GoogleAPIClientForREST_Gmail
-import Promises
 
 extension GmailService: MessagesListProvider {
-    func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
-        Promise { resolve, reject in
-            let list = try awaitPromise(fetchMessagesList(using: context))
-            let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchFullMessage(with:)) ?? []
+    func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
+        let list = try await fetchMessagesList(using: context)
+        let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
 
-            all(messageRequests)
-                .then { messages in
-                    let context = MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
-                    resolve(context)
-                }
-                .catch { error in
-                    reject(error)
-                }
+        var messages: [Message] = []
+        for identifier in messageIdentifiers {
+            messages.append(try await fetchFullMessage(with: identifier))
         }
+
+        return MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
     }
 }
 
 extension GmailService {
-    private func fetchMessagesList(using context: FetchMessageContext) -> Promise<GTLRGmail_ListMessagesResponse> {
+    private func fetchMessagesList(using context: FetchMessageContext) async throws -> GTLRGmail_ListMessagesResponse {
         let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
 
         if let pagination = context.pagination {
@@ -49,41 +44,42 @@ extension GmailService {
             query.q = searchQuery
         }
 
-        return Promise { resolve, reject in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListMessagesResponse, Error>) in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
+                    continuation.resume(throwing: GmailServiceError.providerError(error))
                     return
                 }
 
                 guard let messageList = data as? GTLRGmail_ListMessagesResponse else {
-                    return reject(AppErr.cast("GTLRGmail_ListMessagesResponse"))
+                    continuation.resume(throwing: AppErr.cast("GTLRGmail_ListMessagesResponse"))
+                    return
                 }
 
-                resolve(messageList)
+                continuation.resume(returning: messageList)
             }
         }
     }
 
-    private func fetchFullMessage(with identifier: String) -> Promise<Message> {
+    private func fetchFullMessage(with identifier: String) async throws -> Message {
         let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
         query.format = kGTLRGmailFormatFull
-        return Promise { resolve, reject in
-            self.gmailService.executeQuery(query) { _, data, error in
+        return try await withCheckedThrowingContinuation { [weak gmailService] (continuation: CheckedContinuation<Message, Error>) in
+            gmailService?.executeQuery(query) { _, data, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
+                    continuation.resume(throwing: GmailServiceError.providerError(error))
                     return
                 }
 
                 guard let gmailMessage = data as? GTLRGmail_Message else {
-                    return reject(AppErr.cast("GTLRGmail_Message"))
+                    continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
+                    return
                 }
 
                 do {
-                    let message = try Message(gmailMessage)
-                    resolve(message)
+                    continuation.resume(returning: try Message(gmailMessage))
                 } catch {
-                    reject(error)
+                    continuation.resume(throwing: error)
                 }
             }
         }

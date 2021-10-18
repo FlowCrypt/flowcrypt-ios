@@ -75,15 +75,16 @@ extension BackupViewController {
     }
 
     private func fetchBackups() {
-        backupProvider.fetchBackupsFromInbox(for: userId)
-            .then { [weak self] keys in
-                self?.state = keys.isEmpty
+        Task {
+            do {
+                let keys = try await backupProvider.fetchBackupsFromInbox(for: userId)
+                state = keys.isEmpty
                     ? .noBackups
                     : .backups(keys)
+            } catch {
+                handleCommon(error: error)
             }
-            .catch { error in
-                self.handleCommon(error: error)
-            }
+        }
     }
 
     private func updateState() {
