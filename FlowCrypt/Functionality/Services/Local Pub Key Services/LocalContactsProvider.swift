@@ -42,7 +42,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
     func retrievePubKeys(for email: String) -> [String] {
         find(with: email)?.pubKeys
-            .map { $0.key } ?? []
+            .map { $0.armored } ?? []
     }
 
     func save(recipient: RecipientWithPubKeys) {
@@ -66,7 +66,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .objects(RecipientObject.self)
             .map { object in
                 let keyDetails = object.pubKeys
-                                    .compactMap { try? core.parseKeys(armoredOrBinary: $0.key.data()).keyDetails }
+                                    .compactMap { try? core.parseKeys(armoredOrBinary: $0.armored.data()).keyDetails }
                                     .flatMap { $0 }
                 return RecipientWithPubKeys(object, keyDetails: Array(keyDetails))
             }

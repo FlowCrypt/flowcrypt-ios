@@ -37,10 +37,8 @@ final class RecipientObject: Object {
         self.lastUsed = lastUsed
 
         keys
-            .map(PubKeyObject.init)
-            .forEach {
-                self.pubKeys.append($0)
-            }
+            .compactMap { try? PubKeyObject($0) }
+            .forEach { self.pubKeys.append($0) }
     }
 }
 
