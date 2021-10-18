@@ -9,7 +9,7 @@
 import Foundation
 
 struct PubKey {
-    let key: String
+    let armored: String
     /// will be provided later
     let lastSig: Date?
     /// the date when key was retrieved from a public key server, or nil
@@ -39,7 +39,7 @@ extension PubKey {
         let longids = keyIds.map(\.longid)
         let fingerprints = keyIds.map(\.fingerprint)
 
-        self.init(key: keyDetails.public,
+        self.init(armored: keyDetails.public,
                   lastSig: keyDetails.lastModified.map { Date(timeIntervalSince1970: TimeInterval($0)) },
                   lastChecked: Date(),
                   expiresOn: keyDetails.expiration.map { Date(timeIntervalSince1970: TimeInterval($0)) },
@@ -52,6 +52,6 @@ extension PubKey {
 
 extension PubKey: Equatable {
     static func == (lhs: PubKey, rhs: PubKey) -> Bool {
-        lhs.key == rhs.key
+        lhs.fingerprint == rhs.fingerprint
     }
 }
