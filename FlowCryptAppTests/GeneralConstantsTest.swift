@@ -35,6 +35,6 @@ class GeneralConstantsTest: XCTestCase {
 
         // Client Id
         let clientId = GeneralConstants.Gmail.clientID
-        XCTAssertTrue(clientId == "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com")
+        XCTAssertTrue(clientId == "679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc.apps.googleusercontent.com")
     }
 }
