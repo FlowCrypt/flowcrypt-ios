@@ -835,7 +835,7 @@ extension ComposeViewController {
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(
-            title: "setttings".localized,
+            title: "settings".localized,
             style: .default
         ) { _ in
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
