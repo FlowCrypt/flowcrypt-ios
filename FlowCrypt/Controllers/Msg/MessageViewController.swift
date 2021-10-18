@@ -62,9 +62,13 @@ final class MessageViewController: TableNodeViewController {
     private let decorator: MessageViewDecorator
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
-    private let trashFolderProvider: TrashFolderProviderType
     private let filesManager: FilesManagerType
     private var processedMessage: ProcessedMessage = .empty
+
+    let trashFolderProvider: TrashFolderProviderType
+    var currentFolderPath: String {
+        input.path
+    }
 
     init(
         messageService: MessageService = MessageService(),
@@ -104,38 +108,6 @@ final class MessageViewController: TableNodeViewController {
             $0.dataSource = self
             $0.view.keyboardDismissMode = .interactive
         }
-    }
-
-    private func setupNavigationBar() {
-        trashFolderProvider.getTrashFolderPath()
-            .then(on: .main) { [weak self] path in
-                self?.setupNavigationBarItems(with: path)
-            }
-    }
-
-    private func setupNavigationBarItems(with trashFolderPath: String?) {
-        let helpButton = NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap)))
-        let archiveButton = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
-        let trashButton = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
-        let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMarkUnreadTap)))
-
-        let items: [NavigationBarItemsView.Input]
-        switch input.path.lowercased() {
-        case trashFolderPath?.lowercased():
-            // in case we are in trash folder ([Gmail]/Trash or Deleted for Outlook, etc)
-            // we need to have only help and trash buttons
-            items = [helpButton, trashButton]
-
-        // TODO: - Ticket - Check if this should be fixed
-        case "inbox":
-            // for Gmail inbox we also need to have archive and unread buttons
-            items = [helpButton, archiveButton, trashButton, unreadButton]
-        default:
-            // in any other folders
-            items = [helpButton, trashButton, unreadButton]
-        }
-
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
     }
 }
 
@@ -259,12 +231,9 @@ extension MessageViewController {
 
 // MARK: - Handle Actions
 
-extension MessageViewController {
-    @objc private func handleInfoTap() {
-        showToast("Email us at human@flowcrypt.com")
-    }
+extension MessageViewController: MessageActionsHandler {
 
-    @objc private func handleMarkUnreadTap() {
+    func handleMarkUnreadTap() {
         messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
             .then(on: .main) { [weak self] in
                 guard let self = self else { return }
@@ -277,11 +246,7 @@ extension MessageViewController {
             }
     }
 
-    @objc private func handleAttachmentTap() {
-        showToast("Downloading attachments is not implemented yet")
-    }
-
-    @objc private func handleTrashTap() {
+    func handleTrashTap() {
         showSpinner()
 
         trashFolderProvider.getTrashFolderPath()
@@ -297,6 +262,17 @@ extension MessageViewController {
             }
             .catch(on: .main) { error in
                 self.showToast(error.localizedDescription)
+            }
+    }
+
+    func handleArchiveTap() {
+        showSpinner()
+        messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
+            .then(on: .main) { [weak self] _ in
+                self?.handleOpSuccess(operation: .archive)
+            }
+            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
+                self?.handleOpErr(operation: .archive)
             }
     }
 
@@ -337,17 +313,6 @@ extension MessageViewController {
         .catch(on: .main) { [weak self] _ in
             self?.handleOpErr(operation: .moveToTrash)
         }
-    }
-
-    @objc private func handleArchiveTap() {
-        showSpinner()
-        messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
-            .then(on: .main) { [weak self] _ in
-                self?.handleOpSuccess(operation: .archive)
-            }
-            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
-                self?.handleOpErr(operation: .archive)
-            }
     }
 
     private func handleReplyTap() {

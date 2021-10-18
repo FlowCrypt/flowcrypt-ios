@@ -11,6 +11,7 @@ import FlowCryptUI
 import Promises
 import FlowCryptCommon
 import Foundation
+import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
     private lazy var logger = Logger.nested(Self.self)
@@ -23,11 +24,18 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let thread: MessageThread
     private let messages: [ThreadDetailsViewController.Input]
 
+    let trashFolderProvider: TrashFolderProviderType
+    var currentFolderPath: String {
+        thread.path
+    }
+
     init(
         messageService: MessageService = MessageService(),
+        trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         thread: MessageThread
     ) {
         self.messageService = messageService
+        self.trashFolderProvider = trashFolderProvider
         self.thread = thread
         self.messages = thread.messages
             .sorted(by: { $0 > $1 })
@@ -46,9 +54,18 @@ final class ThreadDetailsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
         title = thread.subject
-    }
 
-    private func handleTapOn(threadNode: TextImageNode, at indexPath: IndexPath) {
+        setupNavigationBar()
+        expandThreadMessage()
+    }
+}
+
+extension ThreadDetailsViewController {
+    private func handleTap(at indexPath: IndexPath) {
+        guard let threadNode = node.nodeForRow(at: indexPath) as? TextImageNode else {
+            logger.logError("Fail to handle tap at \(indexPath)")
+            return
+        }
         UIView.animate(
             withDuration: 0.3,
             animations: {
@@ -58,6 +75,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 self?.fetchDecryptAndRenderMsg(at: indexPath)
             }
         )
+    }
+
+    private func expandThreadMessage() {
+        let indexOfSectionToExpand = thread.messages.firstIndex(where: { $0.isMessageRead == false }) ?? messages.count - 1
+        let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand)
+        handleTap(at: indexPath)
     }
 }
 
@@ -91,8 +114,14 @@ extension ThreadDetailsViewController {
         self.messages[indexPath.section].processedMessage = processedMessage
         self.messages[indexPath.section].isExpanded = !self.messages[indexPath.section].isExpanded
 
-        node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
-
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                self.node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
+            },
+            completion: { _ in
+                self.node.scrollToRow(at: indexPath, at: .middle, animated: true)
+            })
         // TODO: - ANTON
         // asyncMarkAsReadIfNotAlreadyMarked()
     }
@@ -156,6 +185,22 @@ extension ThreadDetailsViewController {
     }
 }
 
+// TODO: - ANTON
+extension ThreadDetailsViewController: MessageActionsHandler {
+
+    func handleTrashTap() {
+
+    }
+
+    func handleArchiveTap() {
+
+    }
+
+    func handleMarkUnreadTap() {
+
+    }
+}
+
 extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
         messages.count
@@ -178,7 +223,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return TextImageNode(
                     input: .init(threadMessage: self.messages[indexPath.row]),
                     onTap: { [weak self] node in
-                        self?.handleTapOn(threadNode: node, at: indexPath)
+                        self?.handleTap(at: indexPath)
                     }
                 )
             case .message:
@@ -192,7 +237,18 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         guard let node = tableNode.nodeForRow(at: indexPath) as? TextImageNode  else {
             return
         }
-
-        handleTapOn(threadNode: node, at: indexPath)
+        handleTap(at: indexPath)
     }
 }
+
+// TODO: - ANTON
+
+/*
+ For actions on the conversation (mark unread) the buttons will remain on the top bar like before.
+
+ mark unread: acts on whichever message is currently expanded in the thread
+ delete: acts on whole thread (there should be api for that?)
+ archive: acts on whole thread
+ move to inbox: acts on whole thread
+
+ */
