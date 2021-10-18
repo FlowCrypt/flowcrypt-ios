@@ -104,10 +104,10 @@ class SplashScreen extends BaseScreen {
         this.loginField.click();
         this.loginField.setValue(email);
         this.doneButton.click();
-        this.nextButton.waitForDisplayed();
     }
 
     clickNextBtn () {
+        this.nextButton.waitForDisplayed();
         this.nextButton.click();
     }
 
@@ -115,7 +115,6 @@ class SplashScreen extends BaseScreen {
         this.passwordField.click();
         this.passwordField.setValue(password);
         this.doneButton.click();
-        this.nextButton.waitForDisplayed();
     }
 
     gmailLogin (email: string, password: string) {
