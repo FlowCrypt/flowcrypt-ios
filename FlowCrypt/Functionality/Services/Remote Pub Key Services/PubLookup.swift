@@ -39,6 +39,7 @@ class PubLookup: PubLookupType {
 
             let attesterResult = try awaitPromise(self.attesterApi.lookupEmail(email: email))
             resolve(RecipientWithPubKeys(email: email, keyDetails: attesterResult))
+            return
         }
     }
 }
