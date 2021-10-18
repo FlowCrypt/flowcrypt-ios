@@ -6,8 +6,8 @@ import UIKit
 
 enum GeneralConstants {
     enum Gmail {
-        static let clientID = "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com"
-        static let redirectURL = URL(string: "com.googleusercontent.apps.679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc:/oauthredirect")!
+        static let clientID = "679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc.apps.googleusercontent.com"
+        static let redirectURL = URL(string: "com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect")!
         static let currentScope: [GoogleScope] = GoogleScope.allCases
     }
 
