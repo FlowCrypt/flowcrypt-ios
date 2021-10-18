@@ -19,6 +19,7 @@ enum AppErr: Error {
     case user(String)
     /// useful in Promises when you want to cancel execution without showing any error (eg after user clicks cancel button)
     case silentAbort
+    case noCurrentUser
     case general(String)
 
     var userMessage: String {
@@ -40,6 +41,7 @@ extension AppErr: Equatable {
         case (.user, .user): return true
         case (.silentAbort, .silentAbort): return true
         case (.general, .general): return true
+        case (.noCurrentUser, .noCurrentUser): return true
         default: return false
         }
     }
