@@ -11,6 +11,7 @@ config.suites = {
         './tests/specs/login/GmailLogin.spec.ts',
         './tests/specs/inbox/ReadTextEmail.spec.ts',
         './tests/specs/composeEmail/CheckComposeEmailAfterReopening.spec.ts',
+        './tests/specs/inbox/ReadEmailAfterRestartApp.spec.ts',
     ]
 };
 
