@@ -8,17 +8,48 @@ auto_cancel: # cancel running CI for older commits on same branch if new commits
   running:
     when: "branch != 'master'"
 
-agent:
-  machine:
-    type: a1-standard-4
-    os_image: macos-xcode13
-
 blocks:
 
-  - name: iOS Tests
+  - name: Ubuntu iOS tests
+    execution_time_limit:
+      minutes: 10
+    task:
+      agent:
+        machine:
+          type: e1-standard-2
+          os_image: ubuntu1804
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+        - name: SEMAPHORE_GIT_DIR
+          value: /Users/semaphore/git/flowcrypt-ios
+      prologue:
+        commands:
+          - checkout
+          - cd ~/git/flowcrypt-ios/
+          - cache restore
+          - make dependencies
+          - cache store
+      jobs:
+        - name: TypeScript - Core standalone tests
+          commands:
+            - sem-version node 12
+            - mkdir .custom-npm
+            - cd .custom-npm
+            - npm install npm@7.23.0
+            - cd ../Core
+            - ../.custom-npm/node_modules/.bin/npm --version
+            - ../.custom-npm/node_modules/.bin/npm install
+            - ../.custom-npm/node_modules/.bin/npm test
+      
+  - name: Mac iOS tests
     execution_time_limit:
       minutes: 40
     task:
+      agent:
+        machine:
+          type: a1-standard-4
+          os_image: macos-xcode13
       secrets:
         - name: flowcrypt-ios-ci-secrets
       env_vars:
@@ -34,19 +65,7 @@ blocks:
           - make dependencies
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
-      jobs:
 
-        - name: TypeScript - Core standalone tests
-          commands:
-            - sem-version node 12
-            - mkdir .custom-npm
-            - cd .custom-npm
-            - npm install npm@7.23.0
-            - cd ../Core
-            - ../.custom-npm/node_modules/.bin/npm --version
-            - ../.custom-npm/node_modules/.bin/npm install
-            - ../.custom-npm/node_modules/.bin/npm test
-      
         - name: 'Swift - FlowCryptTests'
           commands:
             - bundle exec fastlane do_everything
