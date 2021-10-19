@@ -11,10 +11,10 @@ import GoogleAPIClientForREST_Gmail
 
 extension GmailService: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
-        let list = try await fetchMessagesList(using: context)
-        let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
+        return try await withThrowingTaskGroup(of: Message.self) { taskGroup -> MessageContext in
+            let list = try await fetchMessagesList(using: context)
+            let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
 
-        let messages = try await withThrowingTaskGroup(of: Message.self) { taskGroup -> [Message] in
             for identifier in messageIdentifiers {
                 taskGroup.addTask {
                     try await fetchFullMessage(with: identifier)
@@ -26,13 +26,11 @@ extension GmailService: MessagesListProvider {
                 messages.append(result)
             }
 
-            return messages
+            return MessageContext(
+                messages: messages,
+                pagination: .byNextPage(token: list.nextPageToken)
+            )
         }
-
-        return MessageContext(
-            messages: messages,
-            pagination: .byNextPage(token: list.nextPageToken)
-        )
     }
 }
 
@@ -58,7 +56,7 @@ extension GmailService {
         }
 
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListMessagesResponse, Error>) in
-            self.gmailService.executeQuery(query) { _, data, error in
+            gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     continuation.resume(throwing: GmailServiceError.providerError(error))
                     return
@@ -77,8 +75,8 @@ extension GmailService {
     private func fetchFullMessage(with identifier: String) async throws -> Message {
         let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
         query.format = kGTLRGmailFormatFull
-        return try await withCheckedThrowingContinuation { [weak gmailService] (continuation: CheckedContinuation<Message, Error>) in
-            gmailService?.executeQuery(query) { _, data, error in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Message, Error>) in
+            gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     continuation.resume(throwing: GmailServiceError.providerError(error))
                     return
