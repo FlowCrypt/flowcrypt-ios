@@ -10,9 +10,8 @@ import XCTest
 import Combine
 @testable import FlowCrypt
 
-class FlowCryptCoreTests: XCTestCase {
+final class FlowCryptCoreTests: XCTestCase {
     var core: Core! = .shared
-    private var cancellable = Set<AnyCancellable>()
     
     override func setUp() {
         let expectation = XCTestExpectation()
@@ -29,8 +28,12 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(r.app_version, "iOS 0.2")
     }
 
-    func testGenerateKey() throws {
-        let r = try core.generateKey(passphrase: "some pass phrase test", variant: KeyVariant.curve25519, userIds: [UserId(email: "first@domain.com", name: "First")])
+    func testGenerateKey() async throws {
+        let r = try await core.generateKey(
+            passphrase: "some pass phrase test",
+            variant: KeyVariant.curve25519,
+            userIds: [UserId(email: "first@domain.com", name: "First")]
+        )
         XCTAssertNotNil(r.key.private)
         XCTAssertEqual(r.key.isFullyDecrypted, false)
         XCTAssertEqual(r.key.isFullyEncrypted, true)
@@ -165,7 +168,11 @@ class FlowCryptCoreTests: XCTestCase {
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
         let text = "this is the encrypted e2e content"
-        let generateKeyRes = try core.generateKey(passphrase: passphrase, variant: KeyVariant.curve25519, userIds: [UserId(email: email, name: "End to end")])
+        let generateKeyRes = try await core.generateKey(
+            passphrase: passphrase,
+            variant: KeyVariant.curve25519,
+            userIds: [UserId(email: email, name: "End to end")]
+        )
         let k = generateKeyRes.key
         let msg = SendableMsg(
             text: text,
@@ -209,7 +216,7 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(e.error.type, MsgBlock.DecryptErr.ErrorType.keyMismatch)
     }
     
-    func testEncryptFile() throws {
+    func testEncryptFile() async throws {
         // Given
         let initialFileName = "data.txt"
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
@@ -218,7 +225,7 @@ class FlowCryptCoreTests: XCTestCase {
         
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
-        let generateKeyRes = try core.generateKey(
+        let generateKeyRes = try await core.generateKey(
             passphrase: passphrase,
             variant: KeyVariant.curve25519,
             userIds: [UserId(email: email, name: "End to end")]
@@ -251,7 +258,7 @@ class FlowCryptCoreTests: XCTestCase {
         XCTAssertTrue(decrypted.name == initialFileName)
     }
     
-    func testDecryptNotEncryptedFile() throws {
+    func testDecryptNotEncryptedFile() async throws {
         // Given
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
             .path(forResource: "data", ofType: "txt")!)
@@ -259,7 +266,7 @@ class FlowCryptCoreTests: XCTestCase {
         
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
-        let generateKeyRes = try core.generateKey(
+        let generateKeyRes = try await core.generateKey(
             passphrase: passphrase,
             variant: KeyVariant.curve25519,
             userIds: [UserId(email: email, name: "End to end")]
@@ -288,7 +295,7 @@ class FlowCryptCoreTests: XCTestCase {
         }
     }
     
-    func testDecryptWithNoKeys() throws {
+    func testDecryptWithNoKeys() async throws {
         // Given
         let initialFileName = "data.txt"
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
@@ -297,7 +304,7 @@ class FlowCryptCoreTests: XCTestCase {
         
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
-        let generateKeyRes = try core.generateKey(
+        let generateKeyRes = try await core.generateKey(
             passphrase: passphrase,
             variant: KeyVariant.curve25519,
             userIds: [UserId(email: email, name: "End to end")]
@@ -323,7 +330,7 @@ class FlowCryptCoreTests: XCTestCase {
         }
     }
     
-    func testDecryptEncryptedFile() throws {
+    func testDecryptEncryptedFile() async throws {
         // Given
         let initialFileName = "data.txt"
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
@@ -332,7 +339,7 @@ class FlowCryptCoreTests: XCTestCase {
         
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
-        let generateKeyRes = try core.generateKey(
+        let generateKeyRes = try await core.generateKey(
             passphrase: passphrase,
             variant: KeyVariant.curve25519,
             userIds: [UserId(email: email, name: "End to end")]
