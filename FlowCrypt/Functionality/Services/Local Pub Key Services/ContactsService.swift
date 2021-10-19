@@ -44,18 +44,16 @@ struct ContactsService: ContactsServiceType {
 extension ContactsService: ContactsProviderType {
     func searchContact(with email: String) -> Promise<RecipientWithPubKeys> {
         guard let contact = localContactsProvider.searchRecipient(with: email) else {
-            return searchRemote(for: email)
+            return pubLookup.lookup(with: email).then { recipient in
+                localContactsProvider.save(recipient: recipient)
+            }
+        }
+        pubLookup.lookup(with: email).then { recipient in
+            localContactsProvider.updateKeys(for: recipient)
         }
         return Promise(contact)
     }
 
-    private func searchRemote(for email: String) -> Promise<RecipientWithPubKeys> {
-        pubLookup
-            .lookup(with: email)
-            .then { recipient in
-                self.localContactsProvider.save(recipient: recipient)
-            }
-    }
 }
 
 extension ContactsService: PublicKeyProvider {
