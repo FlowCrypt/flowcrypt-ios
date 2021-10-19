@@ -12,31 +12,35 @@ import Promises
 
 // MARK: - MessageSearchProvider
 extension Imap: MessageSearchProvider {
-    func searchExpression(using searchContext: MessageSearchContext) async throws -> [Message] {
-        let possibleExpressions = searchContext.searchDestinations.map {
-            $0.searchExpresion(searchContext.expression)
-        }
-        let searchExpressions = self.helper.createSearchExpressions(
-            from: possibleExpressions
-        )
-        guard let expression = searchExpressions else {
-            return []
-        }
+    func searchExpression(using searchContext: MessageSearchContext) -> Promise<[Message]> {
+        Promise { [weak self] resolve, reject in
+            guard let self = self else { return reject(AppErr.nilSelf) }
 
-        let kind = self.messageKindProvider.imapMessagesRequestKind
-        let path = searchContext.folderPath ?? "INBOX"
-        let indexes = try awaitPromise(self.fetchUids(folder: path, expr: expression))
-
-        let messages = try awaitPromise(
-            self.fetchMessagesByUIDOperation(
-                for: path,
-                kind: kind,
-                set: indexes
+            let possibleExpressions = searchContext.searchDestinations.map {
+                $0.searchExpresion(searchContext.expression)
+            }
+            let searchExpressions = self.helper.createSearchExpressions(
+                from: possibleExpressions
             )
-        )
-        .map(Message.init)
+            guard let expression = searchExpressions else {
+                return resolve([])
+            }
 
-        return messages
+            let kind = self.messageKindProvider.imapMessagesRequestKind
+            let path = searchContext.folderPath ?? "INBOX"
+            let indexes = try awaitPromise(self.fetchUids(folder: path, expr: expression))
+
+            let messages = try awaitPromise(
+                self.fetchMessagesByUIDOperation(
+                    for: path,
+                    kind: kind,
+                    set: indexes
+                )
+            )
+            .map(Message.init)
+
+            resolve(messages)
+        }
     }
 }
 
