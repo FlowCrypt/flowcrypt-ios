@@ -18,7 +18,7 @@ describe('INBOX: ', () => {
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();
 
-        InboxScreen.clickOnUserEmail(senderEmail);
+        InboxScreen.clickOnEmailBySubject(emailSubject);
         EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     });
 });

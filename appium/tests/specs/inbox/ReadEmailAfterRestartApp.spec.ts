@@ -20,14 +20,14 @@ describe('INBOX: ', () => {
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();
 
-        InboxScreen.clickOnUserEmail(senderEmail);
+        InboxScreen.clickOnEmailBySubject(senderEmail);
         EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
         driver.terminateApp(bundleId);
 
         driver.activateApp(bundleId);
 
-        InboxScreen.clickOnUserEmail(senderEmail);
+        InboxScreen.clickOnEmailBySubject(emailSubject);
         EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     });
 });
