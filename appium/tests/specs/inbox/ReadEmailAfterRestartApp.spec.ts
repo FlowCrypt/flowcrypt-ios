@@ -9,7 +9,7 @@ import {CommonData} from '../../data';
 
 describe('INBOX: ', () => {
 
-    it('user is able to see encrypted inbox email without setting pass phrase after restart app', () => {
+    it('user is able to see plain email without setting pass phrase after restart app', () => {
 
         const senderEmail = CommonData.sender.email;
         const emailSubject = 'Test 1';
