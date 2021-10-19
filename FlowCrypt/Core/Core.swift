@@ -4,6 +4,7 @@
 
 import FlowCryptCommon
 import JavaScriptCore
+import Combine
 
 enum CoreError: LocalizedError, Equatable {
     case exception(String)

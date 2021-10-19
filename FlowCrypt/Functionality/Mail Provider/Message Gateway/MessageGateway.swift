@@ -6,6 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import Combine
 import Foundation
 
 struct MessageGatewayInput {

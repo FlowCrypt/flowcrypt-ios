@@ -7,7 +7,8 @@
 //
 
 import Foundation
+import Promises
 
 protocol BackupProvider {
-    func searchBackups(for email: String) async throws -> Data
+    func searchBackups(for email: String) -> Promise<Data>
 }

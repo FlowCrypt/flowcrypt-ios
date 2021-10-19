@@ -29,15 +29,19 @@ final class BackupService {
 
 // MARK: - BackupServiceType
 extension BackupService: BackupServiceType {
-    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
-        let backupData = try await self.backupProvider.searchBackups(for: userId.email)
+    func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]> {
+        Promise<[KeyDetails]> { [weak self] resolve, reject in
+            guard let self = self else { throw AppErr.nilSelf }
 
-        do {
-            let parsed = try core.parseKeys(armoredOrBinary: backupData)
-            let keys = parsed.keyDetails.filter { $0.private != nil }
-            return keys
-        } catch {
-            throw BackupServiceError.parse
+            let backupData = try awaitPromise(self.backupProvider.searchBackups(for: userId.email))
+
+            do {
+                let parsed = try self.core.parseKeys(armoredOrBinary: backupData)
+                let keys = parsed.keyDetails.filter { $0.private != nil }
+                resolve(keys)
+            } catch {
+                reject(BackupServiceError.parse)
+            }
         }
     }
 

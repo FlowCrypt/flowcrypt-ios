@@ -7,11 +7,14 @@
 //
 
 import GoogleAPIClientForREST_Gmail
+import Promises
 
 extension GmailService: MessageSearchProvider {
-    func searchExpression(using context: MessageSearchContext) async throws -> [Message] {
-        let context = try await self.fetchMessages(using: FetchMessageContext(searchContext: context))
-        return context.messages
+    func searchExpression(using context: MessageSearchContext) -> Promise<[Message]> {
+        Promise { resolve, _ in
+            let context = try awaitPromise(self.fetchMessages(using: FetchMessageContext(searchContext: context)))
+            resolve(context.messages)
+        }
     }
 }
 

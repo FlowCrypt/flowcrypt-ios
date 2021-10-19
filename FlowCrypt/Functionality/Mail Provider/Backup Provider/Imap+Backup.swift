@@ -22,60 +22,63 @@ enum BackupError: Error {
 }
 
 extension Imap: BackupProvider {
-    func searchBackups(for email: String) async throws -> Data {
-        var folderPaths = try awaitPromise(fetchFolders())
-            .map(\.path)
+    func searchBackups(for email: String) -> Promise<Data> {
+        Promise { [weak self] () -> Data in
+            guard let self = self else { throw AppErr.nilSelf }
+            var folderPaths = try awaitPromise(self.fetchFolders())
+                .map(\.path)
 
-        guard folderPaths.isNotEmpty else {
-            throw BackupError.missedFolders
+            guard folderPaths.isNotEmpty else {
+                throw BackupError.missedFolders
+            }
+
+            if let inbox = folderPaths.firstCaseInsensitive("inbox") {
+                folderPaths = [inbox]
+            }
+
+            let searchExpr = self.createSearchBackupExpression(for: email)
+
+            let uidsForFolders = try folderPaths.compactMap { folder -> UidsContext in
+                let uids = try awaitPromise(self.fetchUids(folder: folder, expr: searchExpr))
+                return UidsContext(path: folder, uids: uids)
+            }
+
+            guard uidsForFolders.isNotEmpty else {
+                throw BackupError.missedUIDS
+            }
+
+            let messageContexts = try uidsForFolders.flatMap { uidsContext -> [MsgContext] in
+                let msgs = try awaitPromise(self.fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
+                return msgs.map { msg in MsgContext(path: uidsContext.path, msg: msg) }
+            }
+
+            // in case there are no messages return empty data
+            // user will be prompted to create new backup
+            guard messageContexts.isNotEmpty else {
+                return Data()
+            }
+
+            let attachmentContext = messageContexts.flatMap { msgContext -> [AttachmentContext] in
+                guard let parts = msgContext.msg.attachments() as? [MCOIMAPPart] else { assertionFailure(); return [] }
+                return parts.map { part in AttachmentContext(path: msgContext.path, msg: msgContext.msg, part: part) }
+            }
+
+            // in case there are no attachments return empty data
+            guard attachmentContext.isNotEmpty else {
+                return Data()
+            }
+
+            let dataArr = try attachmentContext.map { attContext -> Data in
+                try awaitPromise(self.fetchMsgAttachment(
+                    in: attContext.path,
+                    msgUid: attContext.msg.uid,
+                    part: attContext.part
+                )
+                ) + [10] // newline
+            }
+
+            return dataArr.joined
         }
-
-        if let inbox = folderPaths.firstCaseInsensitive("inbox") {
-            folderPaths = [inbox]
-        }
-
-        let searchExpr = createSearchBackupExpression(for: email)
-
-        let uidsForFolders = try folderPaths.compactMap { folder -> UidsContext in
-            let uids = try awaitPromise(fetchUids(folder: folder, expr: searchExpr))
-            return UidsContext(path: folder, uids: uids)
-        }
-
-        guard uidsForFolders.isNotEmpty else {
-            throw BackupError.missedUIDS
-        }
-
-        let messageContexts = try uidsForFolders.flatMap { uidsContext -> [MsgContext] in
-            let msgs = try awaitPromise(fetchMessagesIn(folder: uidsContext.path, uids: uidsContext.uids))
-            return msgs.map { msg in MsgContext(path: uidsContext.path, msg: msg) }
-        }
-
-        // in case there are no messages return empty data
-        // user will be prompted to create new backup
-        guard messageContexts.isNotEmpty else {
-            return Data()
-        }
-
-        let attachmentContext = messageContexts.flatMap { msgContext -> [AttachmentContext] in
-            guard let parts = msgContext.msg.attachments() as? [MCOIMAPPart] else { assertionFailure(); return [] }
-            return parts.map { part in AttachmentContext(path: msgContext.path, msg: msgContext.msg, part: part) }
-        }
-
-        // in case there are no attachments return empty data
-        guard attachmentContext.isNotEmpty else {
-            return Data()
-        }
-
-        let dataArr = try attachmentContext.map { attContext -> Data in
-            try awaitPromise(fetchMsgAttachment(
-                in: attContext.path,
-                msgUid: attContext.msg.uid,
-                part: attContext.part
-            )
-            ) + [10] // newline
-        }
-
-        return dataArr.joined
     }
 
     private func fetchMsgAttachment(in folder: String, msgUid: UInt32, part: MCOIMAPPart) -> Promise<Data> {
