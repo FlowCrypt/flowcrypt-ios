@@ -40,19 +40,8 @@ blocks:
             - ../.custom-npm/node_modules/.bin/npm --version
             - ../.custom-npm/node_modules/.bin/npm install
             - ../.custom-npm/node_modules/.bin/npm test
-        - name: Swift - FlowCryptTests
-          commands:
-            - bundle exec fastlane do_everything
-        - name: Swift - FlowCryptTests(with email server)
-          commands:
-            - brew install telnet
-            - sudo bash -c 'echo "217.163.30.119 mail" >> /etc/hosts'
-            - cat /etc/hosts
-            - nc -zv 217.163.30.119 10025
-            - nc -zv 217.163.30.119 10143
-            - nc -zv mail 10025
-            - nc -zv mail 10143
-            - cd docker-mailserver/ && ./check_email_server.sh
         - name: Install appium
           commands:
             - npm install -g appium@1.22.0
+            - cd appium
+            - npm i
