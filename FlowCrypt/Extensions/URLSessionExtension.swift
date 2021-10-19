@@ -56,6 +56,35 @@ extension URLSession {
     }
 }
 
+extension URLSession {
+    func asyncCall(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
+        let trace = Trace(id: "call")
+        let (data, response) = try await self.data(for: urlRequest)
+        let res = response as? HTTPURLResponse
+        let status = res?.statusCode ?? GeneralConstants.Global.generalError
+        let urlMethod = urlRequest.httpMethod ?? "GET"
+        let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
+        let headers = urlRequest.headersWithFilteredTokens
+        let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString), headers: \(headers)"
+        Logger.nested("URLSession").logInfo(message)
+
+        let validStatusCode = 200 ... 299
+        let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
+        guard validStatusCode ~= status || isInToleranceStatusCodes else {
+            throw HttpErr(status: status, data: data, error: .none)
+        }
+
+        return HttpRes(status: status, data: data)
+    }
+
+    func asyncCall(_ urlStr: String, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
+        guard let url = URL(string: urlStr) else {
+            throw HttpErr(status: -2, data: Data(), error: AppErr.unexpected("Invalid url: \(urlStr)"))
+        }
+        return try await asyncCall(URLRequest(url: url), tolerateStatus: tolerateStatus)
+    }
+}
+
 enum HTTPMetod: String {
     case put = "PUT"
     case get = "GET"
