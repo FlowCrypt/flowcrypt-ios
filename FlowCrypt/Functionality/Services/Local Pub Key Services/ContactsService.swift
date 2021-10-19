@@ -46,14 +46,26 @@ extension ContactsService: ContactsProviderType {
         guard let contact = localContactsProvider.searchRecipient(with: email) else {
             return searchRemote(for: email)
         }
+        fetchKeys(for: email)
         return Promise(contact)
     }
 
-    private func searchRemote(for email: String) -> Promise<RecipientWithPubKeys> {
+    private func fetchRemoteContact(for email: String) -> Promise<RecipientWithPubKeys> {
         pubLookup
             .lookup(with: email)
+    }
+
+    private func searchRemote(for email: String) -> Promise<RecipientWithPubKeys> {
+        fetchRemoteContact(for: email)
             .then { recipient in
-                self.localContactsProvider.save(recipient: recipient)
+                localContactsProvider.save(recipient: recipient)
+            }
+    }
+
+    private func fetchKeys(for email: String) {
+        fetchRemoteContact(for: email)
+            .then { recipient in
+                localContactsProvider.updateKeys(for: recipient)
             }
     }
 }
