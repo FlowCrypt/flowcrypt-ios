@@ -1,20 +1,15 @@
 version: v1.0
 name: FlowCrypt iOS App
-
-execution_time_limit:
-  minutes: 45
-
-auto_cancel: # cancel running CI for older commits on same branch if new commits are added
-  running:
-    when: "branch != 'master'"
-
 agent:
   machine:
     type: a1-standard-4
     os_image: macos-xcode13
-
+execution_time_limit:
+  minutes: 45
+auto_cancel:
+  running:
+    when: branch != 'master'
 blocks:
-
   - name: iOS Tests
     execution_time_limit:
       minutes: 40
@@ -35,7 +30,6 @@ blocks:
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
       jobs:
-
         - name: TypeScript - Core standalone tests
           commands:
             - sem-version node 12
@@ -46,23 +40,19 @@ blocks:
             - ../.custom-npm/node_modules/.bin/npm --version
             - ../.custom-npm/node_modules/.bin/npm install
             - ../.custom-npm/node_modules/.bin/npm test
-      
-        - name: 'Swift - FlowCryptTests'
+        - name: Swift - FlowCryptTests
           commands:
             - bundle exec fastlane do_everything
-            # - bundle exec fastlane test_ui
-
-        - name: 'Swift - FlowCryptTests(with email server)'
+        - name: Swift - FlowCryptTests(with email server)
           commands:
-            # telnet is used by check_email_server.sh
             - brew install telnet
-            # point domain "mail" to IP of dev IMAP mailserver
             - sudo bash -c 'echo "217.163.30.119 mail" >> /etc/hosts'
             - cat /etc/hosts
-            # mailserver runs on ports 10025, 10143
-            # ports 10456, 10993 are not enabled yet
             - nc -zv 217.163.30.119 10025
             - nc -zv 217.163.30.119 10143
             - nc -zv mail 10025
             - nc -zv mail 10143
             - cd docker-mailserver/ && ./check_email_server.sh
+        - name: Install appium
+          commands:
+            - npm install -g appium@1.22.0
