@@ -14,12 +14,25 @@ extension GmailService: MessagesListProvider {
         let list = try await fetchMessagesList(using: context)
         let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
 
-        var messages: [Message] = []
-        for identifier in messageIdentifiers {
-            messages.append(try await fetchFullMessage(with: identifier))
+        let messages = try await withThrowingTaskGroup(of: Message.self) { taskGroup -> [Message] in
+            for identifier in messageIdentifiers {
+                taskGroup.addTask {
+                    try await fetchFullMessage(with: identifier)
+                }
+            }
+
+            var messages: [Message] = []
+            for try await result in taskGroup {
+                messages.append(result)
+            }
+
+            return messages
         }
 
-        return MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
+        return MessageContext(
+            messages: messages,
+            pagination: .byNextPage(token: list.nextPageToken)
+        )
     }
 }
 
