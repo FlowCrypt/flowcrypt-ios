@@ -17,7 +17,7 @@ protocol CachedObject: Object {
 }
 
 // MARK: - Cache
-final class CacheService<T: CachedObject> {
+final class EncryptedCacheService<T: CachedObject> {
     let encryptedStorage: EncryptedStorageType
     var realm: Realm { encryptedStorage.storage }
 

@@ -1,5 +1,5 @@
 //
-//  ClientConfigurationProviderMock.swift
+//  LocalClientConfigurationMock.swift
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 21.09.2021.
@@ -9,13 +9,13 @@
 import Foundation
 @testable import FlowCrypt
 
-class ClientConfigurationProviderMock: ClientConfigurationProviderType {
+class LocalClientConfigurationMock: LocalClientConfigurationType {
     var fetchInvoked = false
     var fetchCount = 0
-    var fetchCall: () -> (ClientConfiguration?) = {
+    var fetchCall: () -> (RawClientConfiguration?) = {
         nil
     }
-    func fetch() -> ClientConfiguration? {
+    func load() -> RawClientConfiguration? {
         fetchInvoked = true
         fetchCount += 1
         return fetchCall()
@@ -23,19 +23,19 @@ class ClientConfigurationProviderMock: ClientConfigurationProviderType {
 
     var removeClientConfigurationInvoked = false
     var removeClientConfigurationCount = 0
-    func removeClientConfiguration() {
+    func remove() {
         removeClientConfigurationInvoked = true
         removeClientConfigurationCount += 1
     }
 
     var saveInvoked = false
     var saveCount = 0
-    var saveCall: (ClientConfiguration) -> (Void) = { clientConfiguration in
+    var saveCall: (RawClientConfiguration) -> (Void) = { clientConfiguration in
 
     }
-    func save(clientConfiguration: ClientConfiguration) {
+    func save(raw: RawClientConfiguration) {
         saveInvoked = true
         saveCount += 1
-        saveCall(clientConfiguration)
+        saveCall(raw)
     }
 }

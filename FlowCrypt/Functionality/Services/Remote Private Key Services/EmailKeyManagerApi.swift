@@ -39,19 +39,19 @@ extension EmailKeyManagerApiError: LocalizedError {
 /// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
 class EmailKeyManagerApi: EmailKeyManagerApiType {
 
-    private let organisationalRulesService: OrganisationalRulesServiceType
+    private let clientConfigurationService: ClientConfigurationServiceType
     private let core: Core
 
     init(
-        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService(),
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
         core: Core = .shared
     ) {
-        self.organisationalRulesService = organisationalRulesService
+        self.clientConfigurationService = clientConfigurationService
         self.core = core
     }
 
     func getPrivateKeysUrlString() -> String? {
-        guard let keyManagerUrlString = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser().keyManagerUrlString else {
+        guard let keyManagerUrlString = clientConfigurationService.getSavedClientConfigurationForCurrentUser().keyManagerUrlString else {
             return nil
         }
         return "\(keyManagerUrlString)v1/keys/private"

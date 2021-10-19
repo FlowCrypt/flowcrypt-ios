@@ -19,14 +19,14 @@ protocol LocalContactsProviderType: PublicKeyProvider {
 }
 
 struct LocalContactsProvider {
-    private let localContactsCache: CacheService<RecipientObject>
+    private let localContactsCache: EncryptedCacheService<RecipientObject>
     let core: Core
 
     init(
         encryptedStorage: EncryptedStorageType = EncryptedStorage(),
         core: Core = .shared
     ) {
-        self.localContactsCache = CacheService<RecipientObject>(encryptedStorage: encryptedStorage)
+        self.localContactsCache = EncryptedCacheService<RecipientObject>(encryptedStorage: encryptedStorage)
         self.core = core
     }
 }
@@ -42,7 +42,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
     func retrievePubKeys(for email: String) -> [String] {
         find(with: email)?.pubKeys
-            .map { $0.key } ?? []
+            .map { $0.armored } ?? []
     }
 
     func save(recipient: RecipientWithPubKeys) {
@@ -66,7 +66,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .objects(RecipientObject.self)
             .map { object in
                 let keyDetails = object.pubKeys
-                                    .compactMap { try? core.parseKeys(armoredOrBinary: $0.key.data()).keyDetails }
+                                    .compactMap { try? core.parseKeys(armoredOrBinary: $0.armored.data()).keyDetails }
                                     .flatMap { $0 }
                 return RecipientWithPubKeys(object, keyDetails: Array(keyDetails))
             }

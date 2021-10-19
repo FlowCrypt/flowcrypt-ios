@@ -30,14 +30,14 @@ final class AttesterApi: AttesterApiType {
     }
 
     private let core: Core
-    private let organisationalRules: OrganisationalRules
+    private let clientConfiguration: ClientConfiguration
 
     init(
         core: Core = .shared,
-        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.core = core
-        self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
+        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
     }
 
     private func urlPub(emailOrLongid: String) -> String {
@@ -53,7 +53,7 @@ extension AttesterApi {
         Promise { [weak self] () -> [KeyDetails] in
             guard let self = self else { throw AppErr.nilSelf }
 
-            if !(try self.organisationalRules.canLookupThisRecipientOnAttester(recipient: email)) {
+            if !(try self.clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
                 return []
             }
 

@@ -1,5 +1,5 @@
 //
-//  ClientConfigurationTests.swift
+//  RawClientConfigurationTests.swift
 //  FlowCryptTests
 //
 //  Created by Yevhen Kyivskyi on 20.05.2021.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import FlowCrypt
 
-class ClientConfigurationTests: XCTestCase {
+class RawClientConfigurationTests: XCTestCase {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -26,7 +26,7 @@ class ClientConfigurationTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        let model = try? decoder.decode(RawClientConfiguration.self, from: data)
         
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.customKeyserverUrl != nil)
@@ -43,7 +43,7 @@ class ClientConfigurationTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        let model = try? decoder.decode(RawClientConfiguration.self, from: data)
         
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.enforceKeygenAlgo != nil)
@@ -61,7 +61,7 @@ class ClientConfigurationTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        let model = try? decoder.decode(RawClientConfiguration.self, from: data)
         
         XCTAssert(model != nil)
         
@@ -80,7 +80,7 @@ class ClientConfigurationTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        let model = try? decoder.decode(ClientConfiguration.self, from: data)
+        let model = try? decoder.decode(RawClientConfiguration.self, from: data)
         
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.customKeyserverUrl != nil)

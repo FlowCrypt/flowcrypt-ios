@@ -6,7 +6,8 @@
 "ok" = "Ok";
 "cancel" = "Cancel";
 "open" = "Open";
-"setttings" = "Settings";
+"settings" = "Settings";
+"go_back" = "Go back";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -23,11 +24,12 @@
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved.";
+"message_open_anyway" = "Open anyway";
 
 // REPLY
 "reply_title" = "Your reply"; // not used
 
-// EROOR
+// ERROR
 "error_internet_connection" = "No internet connection"; // not used
 "error_google_service" = "Could not configure google services"; // not used
 "error_background_core" = "Background core service error"; // not used
@@ -38,6 +40,7 @@
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
 "error_general_text" = "Something went wrong.";
 "error_no_folders" = "There are no folders on your account";
+"error_key_mismatch" = "No matched key found";
 
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
