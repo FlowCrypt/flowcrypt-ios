@@ -53,4 +53,4 @@ blocks:
       epilogue:
         on_fail:
           commands:
-            - artifact push job appium/tmp
+            - artifact push job ~/git/flowcrypt-ios/appium/tmp
