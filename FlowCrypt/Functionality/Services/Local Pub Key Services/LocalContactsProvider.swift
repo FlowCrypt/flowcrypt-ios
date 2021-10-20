@@ -15,6 +15,7 @@ protocol LocalContactsProviderType: PublicKeyProvider {
     func searchRecipient(with email: String) -> RecipientWithPubKeys?
     func save(recipient: RecipientWithPubKeys)
     func remove(recipient: RecipientWithPubKeys)
+    func updateKeys(for recipient: RecipientWithPubKeys)
     func getAllRecipients() -> [RecipientWithPubKeys]
 }
 
@@ -56,6 +57,22 @@ extension LocalContactsProvider: LocalContactsProviderType {
         )
     }
 
+    func updateKeys(for recipient: RecipientWithPubKeys) {
+        guard let recipientObject = find(with: recipient.email) else {
+            localContactsCache.save(RecipientObject(recipient))
+            return
+        }
+
+        recipient.pubKeys
+            .forEach { pubKey in
+                if let index = recipientObject.pubKeys.firstIndex(where: { $0.primaryFingerprint == pubKey.fingerprint }) {
+                    update(pubKey: pubKey, for: recipientObject, at: index)
+                } else {
+                    add(pubKey: pubKey, to: recipientObject)
+                }
+            }
+    }
+
     func searchRecipient(with email: String) -> RecipientWithPubKeys? {
         guard let recipientObject = find(with: email) else { return nil }
         return RecipientWithPubKeys(recipientObject)
@@ -76,7 +93,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     func removePubKey(with fingerprint: String, for email: String) {
         find(with: email)?
             .pubKeys
-            .filter { $0.fingerprint == fingerprint }
+            .filter { $0.primaryFingerprint == fingerprint }
             .forEach { key in
                 try? localContactsCache.realm.write {
                     localContactsCache.realm.delete(key)
@@ -89,5 +106,23 @@ extension LocalContactsProvider {
     private func find(with email: String) -> RecipientObject? {
         localContactsCache.realm.object(ofType: RecipientObject.self,
                                         forPrimaryKey: email)
+    }
+
+    private func add(pubKey: PubKey, to recipient: RecipientObject) {
+        guard let pubKeyObject = try? PubKeyObject(pubKey) else { return }
+        try? localContactsCache.realm.write {
+            recipient.pubKeys.append(pubKeyObject)
+        }
+    }
+
+    private func update(pubKey: PubKey, for recipient: RecipientObject, at index: Int) {
+        guard let existingKeyLastSig = recipient.pubKeys[index].lastSig,
+              let updateKeyLastSig = pubKey.lastSig,
+              updateKeyLastSig > existingKeyLastSig
+        else { return }
+
+        try? localContactsCache.realm.write {
+            recipient.pubKeys[index].update(from: pubKey)
+        }
     }
 }

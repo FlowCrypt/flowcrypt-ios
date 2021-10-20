@@ -38,7 +38,7 @@ final class PubKeyObject: Object {
         self.expiresOn = expiresOn
         self.created = created
 
-        self.longids.append(objectsIn: fingerprints)
+        self.longids.append(objectsIn: longids)
         self.fingerprints.append(objectsIn: fingerprints)
 
         guard let primaryFingerprint = self.fingerprints.first else {
@@ -64,5 +64,19 @@ extension PubKeyObject {
 }
 
 extension PubKeyObject {
-    var fingerprint: String? { fingerprints.first }
+    func update(from key: PubKey) {
+        self.armored = key.armored
+        self.lastSig = key.lastSig
+        self.lastChecked = key.lastChecked
+        self.expiresOn = key.expiresOn
+        self.created = key.created
+
+        let longids = List<String>()
+        longids.append(objectsIn: key.longids)
+        self.longids = longids
+
+        let fingerprints = List<String>()
+        fingerprints.append(objectsIn: key.fingerprints)
+        self.fingerprints = fingerprints
+    }
 }

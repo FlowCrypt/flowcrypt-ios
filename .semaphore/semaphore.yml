@@ -1,41 +1,39 @@
 version: v1.0
 name: FlowCrypt iOS App
+
 agent:
   machine:
     type: a1-standard-4
     os_image: macos-xcode13
+
 execution_time_limit:
   minutes: 45
-auto_cancel:
+
+auto_cancel: # cancel running CI for older commits on same branch if new commits are added
   running:
-    when: branch != 'master'
+    when: "branch != 'master'"
+
 blocks:
-  - name: iOS Tests
+
+  - name: Ubuntu iOS tests
     execution_time_limit:
-      minutes: 40
+      minutes: 10
     task:
-      secrets:
-        - name: flowcrypt-ios-ci-secrets
+      agent:
+        machine:
+          type: e1-standard-2
+          os_image: ubuntu1804
       env_vars:
         - name: LANG
           value: en_US.UTF-8
         - name: SEMAPHORE_GIT_DIR
-          value: /Users/semaphore/git/flowcrypt-ios
-        - name: ACCOUNT_EMAIL
-          value: e2e.enterprise.test@flowcrypt.com
-        - name: ACCOUNT_PASSWORD
-          value: d874k3bd74
-        - name: PASS_PHRASE
-          value: Londonisthecapitalofgreatbritain
+          value: /home/semaphore/git/flowcrypt-ios
       prologue:
         commands:
           - checkout
           - cd ~/git/flowcrypt-ios/
-          - cache restore
-          - make dependencies
-          - cache store
-          - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
       jobs:
+
         - name: TypeScript - Core standalone tests
           commands:
             - sem-version node 12
@@ -46,11 +44,44 @@ blocks:
             - ../.custom-npm/node_modules/.bin/npm --version
             - ../.custom-npm/node_modules/.bin/npm install
             - ../.custom-npm/node_modules/.bin/npm test
-            - npm install -g appium@1.22.0
-            - cd ../appium
-            - npm i
-            - npm run ios.smoke
-      epilogue:
-        on_fail:
+      
+  - name: Mac iOS tests
+    execution_time_limit:
+      minutes: 40
+    task:
+      secrets:
+        - name: flowcrypt-ios-ci-secrets
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+        - name: SEMAPHORE_GIT_DIR
+          value: /Users/semaphore/git/flowcrypt-ios
+      prologue:
+        commands:
+          - checkout
+          - cd ~/git/flowcrypt-ios/
+          - cache restore
+          - make dependencies
+          - cache store
+          - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
+      jobs:
+
+        - name: 'Swift - FlowCryptTests'
           commands:
-            - artifact push job ~/git/flowcrypt-ios/appium/tmp
+            - bundle exec fastlane do_everything
+            # - bundle exec fastlane test_ui
+
+        # - name: 'Swift - FlowCryptTests(with email server)'
+        #   commands:
+        #     # telnet is used by check_email_server.sh
+        #     - brew install telnet
+        #     # point domain "mail" to IP of dev IMAP mailserver
+        #     - sudo bash -c 'echo "217.163.30.119 mail" >> /etc/hosts'
+        #     - cat /etc/hosts
+        #     # mailserver runs on ports 10025, 10143
+        #     # ports 10456, 10993 are not enabled yet
+        #     - nc -zv 217.163.30.119 10025
+        #     - nc -zv 217.163.30.119 10143
+        #     - nc -zv mail 10025
+        #     - nc -zv mail 10143
+        #     - cd docker-mailserver/ && ./check_email_server.sh

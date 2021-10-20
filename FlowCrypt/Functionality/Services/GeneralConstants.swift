@@ -35,7 +35,7 @@ enum GoogleScope: CaseIterable {
         switch self {
         case .userInfo: return "https://www.googleapis.com/auth/userinfo.profile"
         case .mail: return "https://mail.google.com/"
-        case .contacts: return "https://www.googleapis.com/auth/contacts.readonly"
+        case .contacts: return "https://www.googleapis.com/auth/contacts"
         }
     }
 }
