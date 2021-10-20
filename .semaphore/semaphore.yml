@@ -46,10 +46,11 @@ blocks:
             - ../.custom-npm/node_modules/.bin/npm --version
             - ../.custom-npm/node_modules/.bin/npm install
             - ../.custom-npm/node_modules/.bin/npm test
-        - name: Install appium
-          commands:
             - npm install -g appium@1.22.0
-            - npm install -g node-gyp
-            - cd appium
+            - cd ../appium
             - npm i
             - npm run ios.smoke
+      epilogue:
+        on_fail:
+          commands:
+            - artifact push job ~/git/flowcrypt-ios/appium/tmp
