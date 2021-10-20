@@ -598,13 +598,15 @@ extension ComposeViewController {
 // MARK: - Action Handling
 extension ComposeViewController {
     private func searchEmail(with query: String) {
-        cloudContactProvider.searchContacts(query: query)
-            .then(on: .main) { [weak self] emails in
-                let state: State = emails.isNotEmpty
-                    ? .searchEmails(emails)
-                    : .main
-                self?.updateState(with: state)
-            }
+        Task {
+            let localEmails = contactsService.searchContacts(query: query)
+            let cloudEmails = try? await cloudContactProvider.searchContacts(query: query)
+            let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
+            let state: State = emails.isNotEmpty
+                ? .searchEmails(Array(emails))
+                : .main
+            updateState(with: state)
+        }
     }
 
     private func evaluate(recipient: ComposeMessageRecipient) {
