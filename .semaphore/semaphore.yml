@@ -60,12 +60,7 @@ blocks:
       jobs:
         - name: Swift - FlowCryptTests
           commands:
-            - '# bundle exec fastlane do_everything'
-            - bundle exec fastlane build
-      epilogue:
-        on_pass:
-          commands:
-            - artifact push job FlowCrypt.app
+            - bundle exec fastlane do_everything
   - name: Appium iOS tests
     task:
       prologue:
