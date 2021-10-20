@@ -61,9 +61,9 @@ blocks:
       jobs:
         - name: Swift - FlowCryptTests
           commands:
-            - bundle exec fastlane do_everything
+            - '# bundle exec fastlane do_everything'
             - npm install -g appium@1.22.0
-            - cd ../appium
+            - cd ~/git/flowcrypt-ios/appium
             - npm i
             - npm run ios.smoke
       epilogue:
