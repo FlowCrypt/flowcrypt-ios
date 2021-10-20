@@ -61,7 +61,7 @@ blocks:
         - name: Swift - FlowCryptTests
           commands:
             - '# bundle exec fastlane do_everything'
-            - bundle exec fastlane generate_test_app
+            - bundle exec fastlane build
   - name: Appium iOS tests
     task:
       prologue:
