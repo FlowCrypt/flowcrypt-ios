@@ -46,10 +46,8 @@ blocks:
             - ../.custom-npm/node_modules/.bin/npm --version
             - ../.custom-npm/node_modules/.bin/npm install
             - ../.custom-npm/node_modules/.bin/npm test
-        - name: Install appium
-          commands:
             - npm install -g appium@1.22.0
-            - cd appium
+            - cd ../appium
             - npm -v
             - node -v
             - npm i
