@@ -61,16 +61,30 @@ blocks:
       jobs:
         - name: Swift - FlowCryptTests
           commands:
-            - '# bundle exec fastlane do_everything'
+            - bundle exec fastlane do_everything
+  - name: Appium iOS tests
+    task:
+      prologue:
+        commands:
+          - checkout
+          - cd ~/git/flowcrypt-ios/
+          - cache restore
+          - make dependencies
+          - cache store
+          - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
+      epilogue:
+        on_fail:
+          commands:
+            - artifact push job ~/git/flowcrypt-ios/appium/tmp
+      jobs:
+        - name: Appium - FlowCryptTests
+          commands:
             - sem-version node 12
             - mkdir .custom-npm
             - cd .custom-npm
             - npm install npm@7.23.0
             - npm install -g appium@1.22.0
             - cd ~/git/flowcrypt-ios/appium
+            - mkdir apps
             - npm i
             - npm run ios.smoke
-      epilogue:
-        on_fail:
-          commands:
-            - artifact push job ~/git/flowcrypt-ios/appium/tmp
