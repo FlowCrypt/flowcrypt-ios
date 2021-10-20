@@ -583,7 +583,6 @@ extension ComposeViewController {
     private func handleEditingChanged(with text: String?) {
         guard let text = text, text.isNotEmpty else {
             search.send("")
-            updateState(with: .main)
             return
         }
 
@@ -714,11 +713,13 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
+        node.reloadSections([1], with: .automatic)
+
         switch state {
         case .main:
-            node.reloadSections([0, 1], with: .fade)
+            node.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         case .searchEmails:
-            node.reloadSections([1], with: .fade)
+            break
         }
     }
 }
