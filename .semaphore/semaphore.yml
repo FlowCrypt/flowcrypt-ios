@@ -50,5 +50,7 @@ blocks:
           commands:
             - npm install -g appium@1.22.0
             - cd appium
+            - npm -v
+            - node -v
             - npm i
             - npm run ios.smoke
