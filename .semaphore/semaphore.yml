@@ -48,7 +48,9 @@ blocks:
             - ../.custom-npm/node_modules/.bin/npm test
             - npm install -g appium@1.22.0
             - cd ../appium
-            - npm -v
-            - node -v
             - npm i
             - npm run ios.smoke
+      epilogue:
+        on_fail:
+          commands:
+            - artifact push job appium/tmp
