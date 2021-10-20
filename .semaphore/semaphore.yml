@@ -9,10 +9,11 @@ execution_time_limit:
 auto_cancel:
   running:
     when: branch != 'master'
+
 blocks:
   - name: Ubuntu iOS tests
     execution_time_limit:
-      minutes: 10
+      minutes: 5
     task:
       agent:
         machine:
@@ -30,14 +31,10 @@ blocks:
       jobs:
         - name: TypeScript - Core standalone tests
           commands:
-            - sem-version node 12
-            - mkdir .custom-npm
-            - cd .custom-npm
-            - npm install npm@7.23.0
-            - cd ../Core
-            - ../.custom-npm/node_modules/.bin/npm --version
+            - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ../Core
             - ../.custom-npm/node_modules/.bin/npm install
             - ../.custom-npm/node_modules/.bin/npm test
+
   - name: Mac iOS tests
     execution_time_limit:
       minutes: 40
@@ -57,33 +54,18 @@ blocks:
           - make dependencies
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
-      jobs:
-        - name: Swift - FlowCryptTests
-          commands:
-            - bundle exec fastlane do_everything
-  - name: Appium iOS tests
-    task:
-      prologue:
-        commands:
-          - checkout
-          - cd ~/git/flowcrypt-ios/
-          - cache restore
-          - make dependencies
-          - cache store
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
+      jobs:
+        - name: Swift tests + Appium tests
+          commands:
+            # build app + swift tests
+            - bundle exec fastlane do_everything
+            # appium tests
+            # - mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && 
+            - sem-version node 12 && npm install -g appium@1.22.0 && cd ~/git/flowcrypt-ios/appium && npm i
+            - npm run ios.smoke
+
       epilogue:
         on_fail:
           commands:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
-      jobs:
-        - name: Appium - FlowCryptTests
-          commands:
-            - sem-version node 12
-            - mkdir .custom-npm
-            - cd .custom-npm
-            - npm install npm@7.23.0
-            - npm install -g appium@1.22.0
-            - cd ~/git/flowcrypt-ios/appium
-            - mkdir apps
-            - npm i
-            - npm run ios.smoke
