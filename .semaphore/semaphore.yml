@@ -57,11 +57,11 @@ blocks:
           - make dependencies
           - cache store
           - mv ~/test-ci-secrets.json ~/git/flowcrypt-ios/FlowCryptUITests/test-ci-secrets.json
-          - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
       jobs:
         - name: Swift - FlowCryptTests
           commands:
-            - bundle exec fastlane do_everything
+            - '# bundle exec fastlane do_everything'
+            - bundle exec fastlane generate_test_app
   - name: Appium iOS tests
     task:
       prologue:
