@@ -62,6 +62,10 @@ blocks:
         - name: Swift - FlowCryptTests
           commands:
             - '# bundle exec fastlane do_everything'
+            - sem-version node 12
+            - mkdir .custom-npm
+            - cd .custom-npm
+            - npm install npm@7.23.0
             - npm install -g appium@1.22.0
             - cd ~/git/flowcrypt-ios/appium
             - npm i
