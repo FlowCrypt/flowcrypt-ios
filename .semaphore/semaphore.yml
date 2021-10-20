@@ -21,6 +21,12 @@ blocks:
           value: en_US.UTF-8
         - name: SEMAPHORE_GIT_DIR
           value: /Users/semaphore/git/flowcrypt-ios
+        - name: ACCOUNT_EMAIL
+          value: e2e.enterprise.test@flowcrypt.com
+        - name: ACCOUNT_PASSWORD
+          value: d874k3bd74
+        - name: PASS_PHRASE
+          value: Londonisthecapitalofgreatbritain
       prologue:
         commands:
           - checkout
@@ -43,5 +49,7 @@ blocks:
         - name: Install appium
           commands:
             - npm install -g appium@1.22.0
+            - npm install -g node-gyp
             - cd appium
             - npm i
+            - npm run ios.smoke
