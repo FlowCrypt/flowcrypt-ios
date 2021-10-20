@@ -159,6 +159,7 @@
 		9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E903826A1AD7A0021C07F /* KeyDetailsTests.swift */; };
 		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */; };
+		9F883912271F242900669B56 /* ThreadDetailsDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */; };
 		9F8C160826C1379A000A460F /* SignInImapTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF364C235A1CCD00614596 /* SignInImapTest.swift */; };
 		9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		9F9361A52573CE260009912F /* MessageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9361A42573CE260009912F /* MessageProvider.swift */; };
@@ -600,6 +601,7 @@
 		9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSubjectNode.swift; sourceTree = "<group>"; };
 		9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextSubjectNode.swift; sourceTree = "<group>"; };
 		9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewContainerController.swift; sourceTree = "<group>"; };
+		9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsDecorator.swift; sourceTree = "<group>"; };
 		9F8C160E26C137B9000A460F /* Gmail.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Gmail.xctestplan; sourceTree = "<group>"; };
 		9F8C161426C1382E000A460F /* Imap.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Imap.xctestplan; sourceTree = "<group>"; };
 		9F8D5E61236B04E300186E43 /* CellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellNode.swift; sourceTree = "<group>"; };
@@ -1338,6 +1340,7 @@
 			isa = PBXGroup;
 			children = (
 				9F778E7B27161C06001D4B21 /* ThreadDetailsViewController.swift */,
+				9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */,
 				9F778E7D27162038001D4B21 /* MessageThread.swift */,
 			);
 			path = Threads;
@@ -2541,12 +2544,13 @@
 				9F4300CC2571045B00791CFB /* InboxViewControllerContainerDecorator.swift in Sources */,
 				9FB22CE425715D3E0026EE64 /* GmailServiceErrorHandler.swift in Sources */,
 				9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */,
+				9F883912271F242900669B56 /* ThreadDetailsDecorator.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
 				51B4AE5327144E590001F33B /* PubKey.swift in Sources */,
 				21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				9F5FAF6D271DCDAF00B8762B /* MessageActionsHandler.swift in Sources */,
-				21489B7C267CBA0E00BDE4AC /* ClientConfiguration.swift in Sources */,
+				21489B7C267CBA0E00BDE4AC /* RawClientConfiguration.swift in Sources */,
 				21489B7C267CBA0E00BDE4AC /* RawClientConfiguration.swift in Sources */,
 				9F976592267E19880058419D /* TestData.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
@@ -2599,7 +2603,7 @@
 				9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */,
 				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
 				9FAFD75F2714BAE500321FA4 /* InboxRenderable.swift in Sources */,
-				21EFF61F265A5C6700AB0B71 /* WKDURLsApi.swift in Sources */,
+				21EFF61F265A5C6700AB0B71 /* WkdApi.swift in Sources */,
 				21EFF61F265A5C6700AB0B71 /* WkdApi.swift in Sources */,
 				D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */,
 				9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */,

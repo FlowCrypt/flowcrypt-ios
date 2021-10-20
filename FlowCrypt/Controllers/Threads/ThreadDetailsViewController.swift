@@ -14,6 +14,17 @@ import Foundation
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
+    class Input {
+        let message: Message
+        var isExpanded: Bool
+        var processedMessage: ProcessedMessage = .empty
+
+        init(message: Message, isExpanded: Bool) {
+            self.message = message
+            self.isExpanded = isExpanded
+        }
+    }
+    
     private lazy var logger = Logger.nested(Self.self)
 
     private enum Parts: Int, CaseIterable {
@@ -222,7 +233,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             case .thread:
                 return TextImageNode(
                     input: .init(threadMessage: self.messages[indexPath.row]),
-                    onTap: { [weak self] node in
+                    onTap: { [weak self] _ in
                         self?.handleTap(at: indexPath)
                     }
                 )
@@ -234,7 +245,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard let node = tableNode.nodeForRow(at: indexPath) as? TextImageNode  else {
+        guard tableNode.nodeForRow(at: indexPath) is TextImageNode  else {
             return
         }
         handleTap(at: indexPath)
