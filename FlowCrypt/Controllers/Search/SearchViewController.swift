@@ -276,17 +276,18 @@ extension SearchViewController: UISearchResultsUpdating {
         state = .startFetching
         searchedExpression = searchText
 
-        searchProvider.searchExpression(
-            using: MessageSearchContext(
-                expression: searchText,
-                count: Constants.messageCount
-            )
-        )
-        .catch(on: .main) { [weak self] error in
-            self?.handleError(with: error)
-        }
-        .then(on: .main) { [weak self] messages in
-            self?.handleProcessedMessage(with: messages)
+        Task {
+            do {
+                let messages = try await searchProvider.searchExpression(
+                    using: MessageSearchContext(
+                        expression: searchText,
+                        count: Constants.messageCount
+                    )
+                )
+                handleProcessedMessage(with: messages)
+            } catch {
+                handleError(with: error)
+            }
         }
     }
 

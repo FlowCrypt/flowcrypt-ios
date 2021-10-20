@@ -132,20 +132,22 @@ extension InboxViewController {
 // MARK: - Functionality
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
-        provider.fetchMessages(
-            using: FetchMessageContext(
-                folderPath: viewModel.path,
-                count: numberOfMessagesToLoad,
-                pagination: currentMessagesListPagination()
-            )
+        let context = FetchMessageContext(
+            folderPath: viewModel.path,
+            count: numberOfMessagesToLoad,
+            pagination: currentMessagesListPagination()
         )
-            .then(on: .main) { [weak self] value in
-                self?.handleEndFetching(with: value, context: batchContext)
+
+        Task {
+            do {
+                let value = try await provider.fetchMessages(using: context)
+                handleEndFetching(with: value, context: batchContext)
+            } catch {
+                handle(error: error)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+        }
     }
+
 
     private func loadMore(_ batchContext: ASBatchContext?) {
         guard state.canLoadMore else { return }
@@ -153,20 +155,21 @@ extension InboxViewController {
         let pagination = currentMessagesListPagination(from: inboxInput.count)
         state = .fetching
 
-        provider.fetchMessages(
-            using: FetchMessageContext(
-                folderPath: viewModel.path,
-                count: messagesToLoad(),
-                pagination: pagination
-            )
-        )
-            .then { [weak self] context in
-                self?.state = .fetched(context.pagination)
-                self?.handleEndFetching(with: context, context: batchContext)
+        Task {
+            do {
+                let context = try await provider.fetchMessages(
+                    using: FetchMessageContext(
+                        folderPath: viewModel.path,
+                        count: messagesToLoad(),
+                        pagination: pagination
+                    )
+                )
+                state = .fetched(context.pagination)
+                handleEndFetching(with: context, context: batchContext)
+            } catch {
+                handle(error: error)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+        }
     }
 
     func shouldBatchFetch(for _: ASTableNode) -> Bool {

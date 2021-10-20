@@ -15,7 +15,7 @@ struct InboxContext {
 }
 
 class InboxDataProvider {
-    func fetchMessages(using context: FetchMessageContext) -> Promise<InboxContext> {
+    func fetchMessages(using context: FetchMessageContext) async throws -> InboxContext {
         fatalError("Should be implemented")
     }
 }
@@ -27,16 +27,14 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchMessages(using context: FetchMessageContext) -> Promise<InboxContext> {
-        Promise<InboxContext> { (resolve, _) in
-            let result = try awaitPromise(self.provider.fetchThreads(using: context))
-            let inboxData = result.threads.map(InboxRenderable.init)
-            let inboxContext = InboxContext(
-                data: inboxData,
-                pagination: result.pagination
-            )
-            resolve(inboxContext)
-        }
+    override func fetchMessages(using context: FetchMessageContext) async throws -> InboxContext {
+        let result = try await provider.fetchThreads(using: context)
+        let inboxData = result.threads.map(InboxRenderable.init)
+        let inboxContext = InboxContext(
+            data: inboxData,
+            pagination: result.pagination
+        )
+        return inboxContext
     }
 }
 
@@ -47,15 +45,13 @@ class InboxMessageListProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchMessages(using context: FetchMessageContext) -> Promise<InboxContext> {
-        Promise<InboxContext> { (resolve, _) in
-            let result = try awaitPromise(self.provider.fetchMessages(using: context))
-            let inboxData = result.messages.map(InboxRenderable.init)
-            let inboxContext = InboxContext(
-                data: inboxData,
-                pagination: result.pagination
-            )
-            resolve(inboxContext)
-        }
+    override func fetchMessages(using context: FetchMessageContext) async throws -> InboxContext {
+        let result = try await provider.fetchMessages(using: context)
+        let inboxData = result.messages.map(InboxRenderable.init)
+        let inboxContext = InboxContext(
+            data: inboxData,
+            pagination: result.pagination
+        )
+        return inboxContext
     }
 }

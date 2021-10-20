@@ -5,56 +5,92 @@
 //  Created by Anton Kharchevskyi on 17.11.2020.
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
+//
 
 import FlowCryptCommon
 import GoogleAPIClientForREST_Gmail
-import Promises
-import UIKit
 
 protocol MessagesThreadProvider {
-    func fetchThreads(using context: FetchMessageContext) -> Promise<MessageThreadContext>
+    func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext
 }
 
 extension GmailService: MessagesThreadProvider {
-    func fetchThreads(using context: FetchMessageContext) -> Promise<MessageThreadContext> {
-        Promise<MessageThreadContext> { (resolve, _) in
-            let threadsList = try awaitPromise(getThreadsList(using: context))
-            let threadsRequests = threadsList.threads?
-                .compactMap {
-                    if let id = $0.identifier {
-                        return (id, $0.snippet)
-                    }
+    func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext {
+        let threadsList = try await getThreadsList(using: context)
+
+        let requests = threadsList.threads?
+            .compactMap { (thread) -> (String, String?)? in
+                guard let id = thread.identifier else {
                     return nil
                 }
-                .map(getThread)
-            ?? []
+                return (id, thread.snippet)
+            }
+        ?? []
 
-            all(threadsRequests)
-                .then { result in
-                    let messageThreadContext = MessageThreadContext(
-                        threads: result,
-                        pagination: .byNextPage(token: threadsList.nextPageToken)
-                    )
-                    resolve(messageThreadContext)
+        return try await withThrowingTaskGroup(of: MessageThread.self) { (taskGroup) in
+            var messages: [MessageThread] = []
+            for request in requests {
+                taskGroup.addTask {
+                    try await getThread(with: request.0, snippet: request.1)
                 }
+            }
+            for try await result in taskGroup {
+                messages.append(result)
+            }
+
+            return MessageThreadContext(
+                threads: messages,
+                pagination: .byNextPage(token: threadsList.nextPageToken)
+            )
         }
     }
 
-    private func getThreadsList(using context: FetchMessageContext) -> Promise<GTLRGmail_ListThreadsResponse> {
-        Promise<GTLRGmail_ListThreadsResponse> { (resolve, reject) in
-            let query = makeQuery(using: context)
-
+    private func getThreadsList(using context: FetchMessageContext) async throws -> GTLRGmail_ListThreadsResponse {
+        let query = makeQuery(using: context)
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListThreadsResponse, Error>) in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
                 guard let threadsResponse = data as? GTLRGmail_ListThreadsResponse else {
-                    return reject(AppErr.cast("GTLRGmail_ListThreadsResponse"))
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListThreadsResponse"))
+                }
+                continuation.resume(returning: threadsResponse)
+            }
+        }
+    }
+
+    private func getThread(with identifier: String, snippet: String?) async throws -> MessageThread {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
+            self.gmailService.executeQuery(
+                GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
+            ) { (_, data, error) in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
-                resolve(threadsResponse)
+                guard let thread = data as? GTLRGmail_Thread else {
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Thread"))
+                }
+
+                guard let threadMsg = thread.messages else {
+                    let empty = MessageThread(
+                        snippet: snippet,
+                        path: identifier,
+                        messages: []
+                    )
+                    return continuation.resume(returning: empty)
+                }
+
+                let messages = try? threadMsg.compactMap(Message.init)
+
+                let result = MessageThread(
+                    snippet: snippet,
+                    path: identifier,
+                    messages: messages ?? []
+                )
+                continuation.resume(returning: result)
             }
         }
     }
@@ -80,33 +116,6 @@ extension GmailService: MessagesThreadProvider {
         }
 
         return query
-    }
-
-    private func getThread(with identifier: String, snippet: String?) -> Promise<MessageThread> {
-        Promise<MessageThread> { (resolve, reject) in
-            let query = GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
-            self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    return reject(GmailServiceError.providerError(error))
-                }
-
-                guard let thread = data as? GTLRGmail_Thread else {
-                    return reject(AppErr.cast("GTLRGmail_Thread"))
-                }
-
-                do {
-                    let messages = try (thread.messages ?? []).compactMap(Message.init)
-                    let thread = MessageThread(
-                        snippet: snippet,
-                        path: identifier,
-                        messages: messages
-                    )
-                    resolve(thread)
-                } catch {
-                    reject(error)
-                }
-            }
-        }
     }
 }
 
@@ -162,77 +171,5 @@ private extension Message {
             attachmentIds: attachmentsIds,
             threadId: message.threadId
         )
-    }
-}
-
-// TODO: - ANTON - remove
-extension GmailService: MessagesListProvider {
-     func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
-         Promise { resolve, reject in
-             let list = try awaitPromise(fetchMessagesList(using: context))
-             let messageRequests: [Promise<Message>] = list.messages?.compactMap(\.identifier).map(fetchFullMessage(with:)) ?? []
-
-             all(messageRequests)
-                 .then { messages in
-                    let context = MessageContext(messages: messages, pagination: .byNextPage(token: list.nextPageToken))
-                    resolve(context)
-                }
-                .catch { error in
-                    reject(error)
-                }
-        }
-    }
-}
-extension GmailService {
-    private func fetchMessagesList(using context: FetchMessageContext) -> Promise<GTLRGmail_ListMessagesResponse> {
-        let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
-        if let pagination = context.pagination {
-            guard case let .byNextPage(token) = pagination else {
-                fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
-            }
-            query.pageToken = token
-        }
-        if let folderPath = context.folderPath, folderPath.isNotEmpty {
-            query.labelIds = [folderPath]
-        }
-        if let count = context.count {
-            query.maxResults = UInt(count)
-        }
-        if let searchQuery = context.searchQuery {
-            query.q = searchQuery
-        }
-        return Promise { resolve, reject in
-            self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
-                }
-                guard let messageList = data as? GTLRGmail_ListMessagesResponse else {
-                    return reject(AppErr.cast("GTLRGmail_ListMessagesResponse"))
-                }
-                resolve(messageList)
-            }
-        }
-    }
-    private func fetchFullMessage(with identifier: String) -> Promise<Message> {
-        let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
-        query.format = kGTLRGmailFormatFull
-        return Promise { resolve, reject in
-            self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
-                }
-                guard let gmailMessage = data as? GTLRGmail_Message else {
-                    return reject(AppErr.cast("GTLRGmail_Message"))
-                }
-                do {
-                    let message = try Message(gmailMessage)
-                    resolve(message)
-                } catch {
-                    reject(error)
-                }
-            }
-        }
     }
 }

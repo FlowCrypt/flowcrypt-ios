@@ -10,6 +10,7 @@ Project to run Appium tests together with WebdriverIO for:
 ACCOUNT_EMAIL=
 ACCOUNT_PASSWORD=
 PASS_PHRASE=
+BUNDLE_ID= 
 
 ## Install dependencies with `npm i`
 

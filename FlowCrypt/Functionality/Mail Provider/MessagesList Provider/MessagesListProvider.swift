@@ -37,5 +37,5 @@ enum MessagesListProviderError {
 }
 
 protocol MessagesListProvider {
-    func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext>
+    func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext
 }
