@@ -11,6 +11,32 @@ import MailCore
 import Promises
 
 extension Imap: MessageOperationsProvider {
+    func markAsUnread(message: Message, folder: String) async throws {
+        try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<Void, Error>) in
+            guard let self = self else {
+                return continuation.resume(throwing: AppErr.nilSelf)
+            }
+
+            guard let identifier = message.identifier.intId else {
+                return continuation.resume(throwing: ImapError.missedMessageInfo("intId"))
+            }
+            
+            self.imapSess?
+                .storeFlagsOperation(
+                    withFolder: folder,
+                    uids: MCOIndexSet(index: UInt64(identifier)),
+                    kind: MCOIMAPStoreFlagsRequestKind.remove,
+                    flags: [.seen]
+                )
+                .start { error in
+                    if let error = error {
+                        continuation.resume(throwing: GmailServiceError.providerError(error))
+                    } else {
+                        continuation.resume(returning: ())
+                    }
+                }
+        }
+    }
 
     // MARK: - read
     func markAsRead(message: Message, folder: String) -> Promise<Void> {
@@ -51,7 +77,6 @@ extension Imap: MessageOperationsProvider {
             }
 
             var flagsToRemove: MCOMessageFlag = []
-            
             // add seen flag
             flagsToRemove.insert(MCOMessageFlag.seen)
 

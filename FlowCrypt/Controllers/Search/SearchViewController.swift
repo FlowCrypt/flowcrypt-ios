@@ -37,7 +37,7 @@ final class SearchViewController: TableNodeViewController {
         didSet { updateState() }
     }
 
-    // TODO: - Adopt to gmail threads https://github.com/FlowCrypt/flowcrypt-ios/issues/669
+    // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads 
     private let searchProvider: MessageSearchProvider
     private var searchTask: DispatchWorkItem?
 

@@ -11,6 +11,10 @@ import GoogleAPIClientForREST_Gmail
 import Promises
 
 extension GmailService: MessageOperationsProvider {
+    func markAsUnread(message: Message, folder: String) async throws {
+        try await update(message: message, labelsToAdd: [.unread])
+    }
+
     func markAsRead(message: Message, folder: String) -> Promise<Void> {
         update(message: message, labelsToAdd: [], labelsToRemove: [.unread])
     }
@@ -71,6 +75,33 @@ extension GmailService: MessageOperationsProvider {
                     reject(GmailServiceError.providerError(error))
                 }
                 resolve(())
+            }
+        }
+    }
+
+    private func update(
+        message: Message,
+        labelsToAdd: [MessageLabelType] = [],
+        labelsToRemove: [MessageLabelType] = []
+    ) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            guard let identifier = message.identifier.stringId else {
+                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
+            }
+            let request = GTLRGmail_ModifyMessageRequest()
+            request.addLabelIds = labelsToAdd.map(\.value)
+            request.removeLabelIds = labelsToRemove.map(\.value)
+            let query = GTLRGmailQuery_UsersMessagesModify.query(
+                withObject: request,
+                userId: .me,
+                identifier: identifier
+            )
+
+            self.gmailService.executeQuery(query) { _, _, error in
+                if let error = error {
+                    continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+                continuation.resume(returning: ())
             }
         }
     }

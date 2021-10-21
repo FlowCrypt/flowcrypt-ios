@@ -14,6 +14,8 @@ import Foundation
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
+    typealias Completion = (MessageAction, MessageThread) -> Void
+
     class Input {
         let message: Message
         var isExpanded: Bool
@@ -24,7 +26,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             self.isExpanded = isExpanded
         }
     }
-    
+
     private lazy var logger = Logger.nested(Self.self)
 
     private enum Parts: Int, CaseIterable {
@@ -32,6 +34,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
 
     private let messageService: MessageService
+    private let messageOperationsProvider: MessageOperationsProvider
     private let thread: MessageThread
     private let messages: [ThreadDetailsViewController.Input]
 
@@ -39,15 +42,20 @@ final class ThreadDetailsViewController: TableNodeViewController {
     var currentFolderPath: String {
         thread.path
     }
+    private let onComplete: Completion
 
     init(
         messageService: MessageService = MessageService(),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
-        thread: MessageThread
+        messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
+        thread: MessageThread,
+        completion: @escaping Completion
     ) {
         self.messageService = messageService
+        self.messageOperationsProvider = messageOperationsProvider
         self.trashFolderProvider = trashFolderProvider
         self.thread = thread
+        self.onComplete = completion
         self.messages = thread.messages
             .sorted(by: { $0 > $1 })
             .map { Input(message: $0, isExpanded: false) }
@@ -208,7 +216,36 @@ extension ThreadDetailsViewController: MessageActionsHandler {
     }
 
     func handleMarkUnreadTap() {
+        // TODO: - ANTON - mark as unread
+//        messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
+//            .then(on: .main) { [weak self] in
+//                guard let self = self else { return }
+//                self.input.objMessage = self.input.objMessage.markAsRead(false)
+//                self.onCompletion?(MessageAction.changeReadFlag, self.input.objMessage)
+//                self.navigationController?.popViewController(animated: true)
+//            }
+//            .catch(on: .main) { [weak self] error in
+//                self?.showToast("Could not mark message as unread: \(error)")
+//            }
 
+//        messages
+//            .filter { $0.isExpanded }
+//            .forEach { threadMessage in
+////            messageOperationsProvider.markAsUnread(message: threadMessage, folder: <#T##String#>)
+//            }
+
+        let message = messages[0].message
+        Task {
+            do {
+                showSpinner()
+                try await messageOperationsProvider.markAsUnread(message: message, folder: thread.path)
+                onComplete(.changeReadFlag, thread)
+                hideSpinner()
+                navigationController?.popViewController(animated: true)
+            } catch {
+                showToast("Could not mark message as unread: \(error)")
+            }
+        }
     }
 }
 
@@ -255,7 +292,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 // TODO: - ANTON
 
 /*
- For actions on the conversation (mark unread) the buttons will remain on the top bar like before.
+ + For actions on the conversation (mark unread) the buttons will remain on the top bar like before.
 
  mark unread: acts on whichever message is currently expanded in the thread
  delete: acts on whole thread (there should be api for that?)

@@ -148,7 +148,6 @@ extension InboxViewController {
         }
     }
 
-
     private func loadMore(_ batchContext: ASBatchContext?) {
         guard state.canLoadMore else { return }
 
@@ -334,14 +333,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-
-        switch inboxInput[indexPath.row].wrappedType {
-        case .message(let message):
-            msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
-        case .thread(let thread):
-            let viewController = ThreadDetailsViewController(thread: thread)
-            navigationController?.pushViewController(viewController, animated: true)
-        }
+        open(with: inboxInput[indexPath.row], path: viewModel.path)
     }
 
     // MARK: Cell Nodes
@@ -381,6 +373,10 @@ extension InboxViewController: MsgListViewController {
     func msgListGetIndex(message: Message) -> Int? {
         inboxInput.compactMap(\.wrappedMessage)
             .firstIndex(of: message)
+    }
+
+    func getUpdatedIndex(for message: InboxRenderable) -> Int? {
+        inboxInput.firstIndex(of: message)
     }
 
     func msgListUpdateReadFlag(message: Message, at index: Int) {
