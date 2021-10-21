@@ -181,7 +181,8 @@ extension KeyInfo {
                 lastModified: nil,
                 expiration: nil,
                 users: [],
-                algo: nil
+                algo: nil,
+                revoked: false
             ),
             passphrase: nil,
             source: .backup,
