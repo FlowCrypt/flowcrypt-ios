@@ -614,13 +614,14 @@ extension ComposeViewController {
             return
         }
 
-        contactsService.searchContact(with: recipient.email)
-            .then(on: .main) { [weak self] _ in
-                self?.handleEvaluation(for: recipient)
+        Task {
+            do {
+                _ = try await contactsService.searchContact(with: recipient.email)
+                handleEvaluation(for: recipient)
+            } catch {
+                handleEvaluation(error: error, with: recipient)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleEvaluation(error: error, with: recipient)
-            }
+        }
     }
 
     private func handleEvaluation(for recipient: ComposeMessageRecipient) {
