@@ -46,6 +46,7 @@ extension ProcessedMessage {
 enum MessageServiceError: Error {
     case missedPassPhrase(_ rawMimeData: Data)
     case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
+    case keyMismatch(_ rawMimeData: Data)
     // Could not fetch keys
     case emptyKeys
     case unknown
@@ -137,6 +138,8 @@ final class MessageService {
                 switch errorType {
                 case .needPassphrase:
                     reject(MessageServiceError.missedPassPhrase(rawMimeData))
+                case .keyMismatch:
+                    reject(MessageServiceError.keyMismatch(rawMimeData))
                 default:
                     reject(MessageServiceError.unknown)
                 }

@@ -41,7 +41,7 @@ extension GmailService: RemoteFoldersProviderType {
                             return nil
                         }
                         guard identifier.range(of: "CATEGORY_", options: .caseInsensitive) == nil else {
-                            logger.logInfo("Skip category label with \(label.identifier ?? "")")
+                            logger.logDebug("Skip category label with \(label.identifier ?? "")")
                             return nil
                         }
                         return label

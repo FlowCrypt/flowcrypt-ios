@@ -23,7 +23,7 @@ struct ComposeMessageRecipient {
 }
 
 protocol CoreComposeMessageType {
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) -> Future<CoreRes.ComposeEmail, Error>
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
 }
 
 final class ComposeMessageService {
@@ -48,7 +48,8 @@ final class ComposeMessageService {
     func validateMessage(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        email: String
+        email: String,
+        signingPrv: PrvKeyInfo?
     ) -> Result<SendableMsg, ComposeMessageError> {
         let recipients = contextToSend.recipients
         guard recipients.isNotEmpty else {
@@ -106,40 +107,37 @@ final class ComposeMessageService {
                     subject: subject,
                     replyToMimeMsg: replyToMimeMsg,
                     atts: sendableAttachments,
-                    pubKeys: allRecipientPubs + [myPubKey]
+                    pubKeys: allRecipientPubs + [myPubKey],
+                    signingPrv: signingPrv
                 )
             }
     }
 
-    private func getPubKeys(for recepients: [ComposeMessageRecipient]) -> Result<[String], MessageValidationError> {
-        let pubKeys = recepients.map {
-            ($0.email, contactsService.retrievePubKey(for: $0.email))
+    private func getPubKeys(for recipients: [ComposeMessageRecipient]) -> Result<[String], MessageValidationError> {
+        let pubKeys = recipients.map {
+            (email: $0.email, keys: contactsService.retrievePubKeys(for: $0.email))
         }
 
-        let emailsWithoutPubKeys = pubKeys.filter { $0.1 == nil }.map(\.0)
+        let emailsWithoutPubKeys = pubKeys.filter { $0.keys.isEmpty }.map(\.email)
 
         guard emailsWithoutPubKeys.isEmpty else {
             return .failure(.noPubRecipients(emailsWithoutPubKeys))
         }
 
-        return .success(pubKeys.compactMap(\.1))
+        return .success(pubKeys.filter({ $0.keys.isNotEmpty }).flatMap(\.keys))
     }
 
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg, threadId: String?) -> AnyPublisher<Void, ComposeMessageError> {
-        return encryptMessage(with: message, threadId: threadId)
-            .flatMap(messageGateway.sendMail)
-            .mapError { ComposeMessageError.gatewayError($0) }
-            .eraseToAnyPublisher()
-    }
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+        do {
+            let r = try await core.composeEmail(
+                msg: message,
+                fmt: MsgFmt.encryptInline
+            )
 
-    private func encryptMessage(with msg: SendableMsg, threadId: String?) -> AnyPublisher<MessageGatewayInput, Error> {
-        return core.composeEmail(
-            msg: msg,
-            fmt: MsgFmt.encryptInline,
-            pubKeys: msg.pubKeys
-        )
-        .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: threadId) })
-        .eraseToAnyPublisher()
+            try await messageGateway.sendMail(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId))
+        } catch {
+            throw ComposeMessageError.gatewayError(error)
+        }
     }
 }

@@ -18,14 +18,14 @@ final public class RecipientEmailsCellNode: CellNode {
     }
 
     private enum Constants {
-        static let sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)
+        static let sectionInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
         static let minimumLineSpacing: CGFloat = 4
     }
 
     private var onAction: RecipientTap?
 
     public lazy var collectionNode: ASCollectionNode = {
-        let layout = UICollectionViewFlowLayout()
+        let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 1
         layout.minimumLineSpacing = Constants.minimumLineSpacing
@@ -42,6 +42,7 @@ final public class RecipientEmailsCellNode: CellNode {
         super.init()
         collectionNode.dataSource = self
         collectionNode.delegate = self
+
         automaticallyManagesSubnodes = true
     }
 

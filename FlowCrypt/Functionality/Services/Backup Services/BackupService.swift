@@ -29,69 +29,47 @@ final class BackupService {
 
 // MARK: - BackupServiceType
 extension BackupService: BackupServiceType {
-    func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]> {
-        Promise<[KeyDetails]> { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        let backupData = try await self.backupProvider.searchBackups(for: userId.email)
 
-            let backupData = try awaitPromise(self.backupProvider.searchBackups(for: userId.email))
-
-            do {
-                let parsed = try self.core.parseKeys(armoredOrBinary: backupData)
-                let keys = parsed.keyDetails.filter { $0.private != nil }
-                resolve(keys)
-            } catch {
-                reject(BackupServiceError.parse)
-            }
+        do {
+            let parsed = try core.parseKeys(armoredOrBinary: backupData)
+            let keys = parsed.keyDetails.filter { $0.private != nil }
+            return keys
+        } catch {
+            throw BackupServiceError.parse
         }
     }
 
-    func backupToInbox(keys: [KeyDetails], for userId: UserId) -> Promise<Void> {
-        Promise { [weak self] resolve, reject -> Void in
-            guard let self = self else { throw AppErr.nilSelf }
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
+        let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
 
-            let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
-
-            guard isFullyEncryptedKeys else {
-                throw BackupServiceError.keyIsNotFullyEncrypted
-            }
-
-            let privateKeyContext = keys
-                .compactMap { $0 }
-                .joinedPrivateKey
-
-            let privateKeyData = privateKeyContext.data().base64EncodedString()
-
-            let filename = "flowcrypt-backup-\(userId.email.withoutSpecialCharacters).key"
-            let attachments = [SendableMsg.Attachment(name: filename, type: "text/plain", base64: privateKeyData)]
-            let message = SendableMsg(
-                text: "setup_backup_email".localized,
-                to: [userId.toMime],
-                cc: [],
-                bcc: [],
-                from: userId.toMime,
-                subject: "Your FlowCrypt Backup",
-                replyToMimeMsg: nil,
-                atts: attachments,
-                pubKeys: nil)
-
-            self.core.composeEmail(msg: message, fmt: .plain, pubKeys: message.pubKeys)
-                .map({ MessageGatewayInput(mime: $0.mimeEncoded, threadId: nil) })
-                .flatMap(self.messageSender.sendMail)
-                .sink(
-                    receiveCompletion: { result in
-                        switch result {
-                        case .failure(let error):
-                            reject(error)
-                        case .finished:
-                            break
-                        }
-                    },
-                    receiveValue: {
-                        resolve(())
-                    }
-                )
-                .store(in: &self.cancellable)
+        guard isFullyEncryptedKeys else {
+            throw BackupServiceError.keyIsNotFullyEncrypted
         }
+
+        let privateKeyContext = keys
+            .compactMap { $0 }
+            .joinedPrivateKey
+
+        let privateKeyData = privateKeyContext.data().base64EncodedString()
+
+        let filename = "flowcrypt-backup-\(userId.email.withoutSpecialCharacters).key"
+        let attachments = [SendableMsg.Attachment(name: filename, type: "text/plain", base64: privateKeyData)]
+        let message = SendableMsg(
+            text: "setup_backup_email".localized,
+            to: [userId.toMime],
+            cc: [],
+            bcc: [],
+            from: userId.toMime,
+            subject: "Your FlowCrypt Backup",
+            replyToMimeMsg: nil,
+            atts: attachments,
+            pubKeys: nil,
+            signingPrv: nil)
+
+        let t = try await core.composeEmail(msg: message, fmt: .plain)
+        try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil))
     }
 
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {

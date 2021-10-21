@@ -45,7 +45,7 @@ final class ClientConfigurationObject: Object {
     }
 
     convenience init(
-        _ clientConfiguration: ClientConfiguration,
+        _ clientConfiguration: RawClientConfiguration,
         user: UserObject
     ) {
         self.init(

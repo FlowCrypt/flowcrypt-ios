@@ -67,66 +67,61 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     }
 
     override func setupAccount(with passphrase: String) {
-        setupAccountWithGeneratedKey(with: passphrase)
+        showSpinner()
+        Task {
+            do {
+                try await setupAccountWithGeneratedKey(with: passphrase)
+                hideSpinner()
+                moveToMainFlow()
+            } catch {
+                hideSpinner()
+
+                let isErrorHandled = handleCommon(error: error)
+
+                if !isErrorHandled {
+                    showAlert(error: error, message: "Could not finish setup, please try again")
+                }
+            }
+        }
     }
 }
 
 // MARK: - Setup
 
 extension SetupGenerateKeyViewController {
-    private func setupAccountWithGeneratedKey(with passPhrase: String) {
-        Promise { [weak self] in
-            guard let self = self else { return }
-            self.showSpinner()
+    private func setupAccountWithGeneratedKey(with passPhrase: String) async throws {
+        let userId = try getUserId()
 
-            let userId = try self.getUserId()
+        try awaitPromise(validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
 
-            try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
+        let encryptedPrv = try await core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
+        try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
 
-            let encryptedPrv = try self.core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
+        keyStorage.addKeys(keyDetails: [encryptedPrv.key],
+                           passPhrase: storageMethod == .persistent ? passPhrase: nil,
+                           source: .generated,
+                           for: user.email)
 
-            try awaitPromise(self.backupService.backupToInbox(keys: [encryptedPrv.key], for: self.user))
-
-            self.keyStorage.addKeys(keyDetails: [encryptedPrv.key],
-                                    passPhrase: self.storageMethod == .persistent ? passPhrase: nil,
-                                    source: .generated,
-                                    for: self.user.email)
-
-            if self.storageMethod == .memory {
-                let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
-                self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
-            }
-
-            let updateKey = self.attester.updateKey(
-                email: userId.email,
-                pubkey: encryptedPrv.key.public,
-                token: self.storage.token
-            )
-
-            try awaitPromise(self.alertAndSkipOnRejection(
-                updateKey,
-                fail: "Failed to submit Public Key")
-            )
-            let testWelcome = self.attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
-            try awaitPromise(self.alertAndSkipOnRejection(
-                testWelcome,
-                fail: "Failed to send you welcome email")
-            )
+        if storageMethod == .memory {
+            let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
+            passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
-        .then(on: .main) { [weak self] in
-            self?.hideSpinner()
-            self?.moveToMainFlow()
-        }
-        .catch(on: .main) { [weak self] error in
-            guard let self = self else { return }
-            self.hideSpinner()
 
-            let isErrorHandled = self.handleCommon(error: error)
+        let updateKey = attester.updateKey(
+            email: userId.email,
+            pubkey: encryptedPrv.key.public,
+            token: storage.token
+        )
 
-            if !isErrorHandled {
-                self.showAlert(error: error, message: "Could not finish setup, please try again")
-            }
-        }
+        try awaitPromise(alertAndSkipOnRejection(
+            updateKey,
+            fail: "Failed to submit Public Key")
+        )
+        let testWelcome = attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
+        try awaitPromise(alertAndSkipOnRejection(
+            testWelcome,
+            fail: "Failed to send you welcome email")
+        )
     }
 
     private func getUserId() throws -> UserId {

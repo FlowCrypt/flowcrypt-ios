@@ -2,18 +2,22 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import Combine
 import Foundation
 
 extension Imap: MessageGateway {
-    func sendMail(input: MessageGatewayInput) -> Future<Void, Error> {
-        Future { [smtpSess] promise in
-            smtpSess?.sendOperation(with: input.mime)
+    func sendMail(input: MessageGatewayInput) async throws {
+        try await withCheckedThrowingContinuation { [weak smtpSess] (continuation: CheckedContinuation<Void, Error>) in
+            guard let session = smtpSess else {
+                continuation.resume(returning: ())
+                return
+            }
+
+            session.sendOperation(with: input.mime)
                 .start { error in
                     if let error = error {
-                        promise(.failure(error))
+                        continuation.resume(throwing: error)
                     } else {
-                        promise(.success(()))
+                        continuation.resume(returning: ())
                     }
                 }
         }

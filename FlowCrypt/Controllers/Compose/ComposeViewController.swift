@@ -36,6 +36,7 @@ final class ComposeViewController: TableNodeViewController {
     private let contactsService: ContactsServiceType
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
+    private let keyService: KeyServiceType
 
     private let search = PassthroughSubject<String, Never>()
     private let cloudContactProvider: CloudContactsProvider
@@ -59,7 +60,8 @@ final class ComposeViewController: TableNodeViewController {
         contactsService: ContactsServiceType = ContactsService(),
         composeMessageService: ComposeMessageService = ComposeMessageService(),
         filesManager: FilesManagerType = FilesManager(),
-        photosManager: PhotosManagerType = PhotosManager()
+        photosManager: PhotosManagerType = PhotosManager(),
+        keyService: KeyServiceType = KeyService()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
@@ -71,6 +73,7 @@ final class ComposeViewController: TableNodeViewController {
         self.composeMessageService = composeMessageService
         self.filesManager = filesManager
         self.photosManager = photosManager
+        self.keyService = keyService
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -211,38 +214,64 @@ extension ComposeViewController {
     }
 
     @objc private func handleSendTap() {
-        sendMessage()
+        prepareSigningKey()
     }
 }
 
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    private func sendMessage() {
+    private func prepareSigningKey() {
+        guard let signingKey = try? keyService.getSigningKey() else {
+            showAlert(message: "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key.")
+            return
+        }
+
+        guard signingKey.passphrase != nil else {
+            let alert = AlertsFactory.makePassPhraseAlert(
+                onCancel: { [weak self] in
+                    self?.showAlert(message: "Passphrase is required for message signing")
+                },
+                onCompletion: { [weak self] passPhrase in
+                    self?.sendMessage(signingKey.copy(with: passPhrase))
+                })
+            present(alert, animated: true, completion: nil)
+            return
+        }
+
+        sendMessage(signingKey)
+    }
+
+    private func sendMessage(_ signingKey: PrvKeyInfo) {
         view.endEditing(true)
         showSpinner("sending_title".localized)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
-        composeMessageService.validateMessage(
+        let result = composeMessageService.validateMessage(
             input: input,
             contextToSend: contextToSend,
-            email: email
+            email: email,
+            signingPrv: signingKey
         )
-        .publisher
-        .flatMap(encryptAndSend)
-        .receive(on: DispatchQueue.main)
-        .sinkFuture(
-            receiveValue: { [weak self] in
-                self?.handleSuccessfullySentMessage()
-            },
-            receiveError: { [weak self] error in
-                self?.handle(error: error)
-            })
-        .store(in: &cancellable)
+        switch result {
+        case .success(let message):
+            encryptAndSend(message)
+        case .failure(let error):
+            handle(error: error)
+        }
     }
 
-    private func encryptAndSend(_ message: SendableMsg) -> AnyPublisher<Void, ComposeMessageError> {
-        composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
+    private func encryptAndSend(_ message: SendableMsg) {
+        Task {
+            do {
+                try await composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
+                handleSuccessfullySentMessage()
+            } catch {
+                if let error = error as? ComposeMessageError {
+                    handle(error: error)
+                }
+            }
+        }
     }
 
     private func handle(error: ComposeMessageError) {
@@ -554,7 +583,6 @@ extension ComposeViewController {
     private func handleEditingChanged(with text: String?) {
         guard let text = text, text.isNotEmpty else {
             search.send("")
-            updateState(with: .main)
             return
         }
 
@@ -569,13 +597,15 @@ extension ComposeViewController {
 // MARK: - Action Handling
 extension ComposeViewController {
     private func searchEmail(with query: String) {
-        cloudContactProvider.searchContacts(query: query)
-            .then(on: .main) { [weak self] emails in
-                let state: State = emails.isNotEmpty
-                    ? .searchEmails(emails)
-                    : .main
-                self?.updateState(with: state)
-            }
+        Task {
+            let localEmails = contactsService.searchContacts(query: query)
+            let cloudEmails = try? await cloudContactProvider.searchContacts(query: query)
+            let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
+            let state: State = emails.isNotEmpty
+                ? .searchEmails(Array(emails))
+                : .main
+            updateState(with: state)
+        }
     }
 
     private func evaluate(recipient: ComposeMessageRecipient) {
@@ -683,11 +713,13 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
+        node.reloadSections([1], with: .automatic)
+
         switch state {
         case .main:
-            node.reloadSections([0, 1], with: .fade)
+            node.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         case .searchEmails:
-            node.reloadSections([1], with: .fade)
+            break
         }
     }
 }
@@ -806,7 +838,7 @@ extension ComposeViewController {
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(
-            title: "setttings".localized,
+            title: "settings".localized,
             style: .default
         ) { _ in
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)

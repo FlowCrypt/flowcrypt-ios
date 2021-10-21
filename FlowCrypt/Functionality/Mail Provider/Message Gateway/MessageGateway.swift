@@ -6,7 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Combine
 import Foundation
 
 struct MessageGatewayInput {
@@ -15,5 +14,5 @@ struct MessageGatewayInput {
 }
 
 protocol MessageGateway {
-    func sendMail(input: MessageGatewayInput) -> Future<Void, Error>
+    func sendMail(input: MessageGatewayInput) async throws
 }
