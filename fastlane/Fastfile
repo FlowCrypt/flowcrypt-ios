@@ -99,7 +99,7 @@ platform :ios do
         silent: true,
         clean: true,
         skip_codesigning: true,
-        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
+        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'",
         configuration: "Debug"
     )
 
