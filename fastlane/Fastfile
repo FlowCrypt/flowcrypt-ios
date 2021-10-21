@@ -97,9 +97,8 @@ platform :ios do
         skip_package_ipa: true,
         skip_archive: true,
         silent: true,
-        clean: true,
         skip_codesigning: true,
-        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'",
+        xcargs: "iphonesimulator SYMROOT='/var/tmp/'",
         configuration: "Debug"
     )
 
