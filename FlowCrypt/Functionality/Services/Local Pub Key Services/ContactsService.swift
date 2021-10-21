@@ -19,6 +19,7 @@ protocol ContactsServiceType: PublicKeyProvider, ContactsProviderType {
 
 protocol ContactsProviderType {
     func searchContact(with email: String) -> Promise<RecipientWithPubKeys>
+    func searchContacts(query: String) -> [String]
 }
 
 protocol PublicKeyProvider {
@@ -54,6 +55,9 @@ extension ContactsService: ContactsProviderType {
         return Promise(contact)
     }
 
+    func searchContacts(query: String) -> [String] {
+        localContactsProvider.searchEmails(query: query)
+    }
 }
 
 extension ContactsService: PublicKeyProvider {

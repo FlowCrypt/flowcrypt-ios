@@ -13,6 +13,7 @@ import RealmSwift
 protocol LocalContactsProviderType: PublicKeyProvider {
     func updateLastUsedDate(for email: String)
     func searchRecipient(with email: String) -> RecipientWithPubKeys?
+    func searchEmails(query: String) -> [String]
     func save(recipient: RecipientWithPubKeys)
     func remove(recipient: RecipientWithPubKeys)
     func updateKeys(for recipient: RecipientWithPubKeys)
@@ -76,6 +77,13 @@ extension LocalContactsProvider: LocalContactsProviderType {
     func searchRecipient(with email: String) -> RecipientWithPubKeys? {
         guard let recipientObject = find(with: email) else { return nil }
         return RecipientWithPubKeys(recipientObject)
+    }
+
+    func searchEmails(query: String) -> [String] {
+        localContactsCache.realm
+            .objects(RecipientObject.self)
+            .filter("email contains[c] %@", query)
+            .map(\.email)
     }
 
     func getAllRecipients() -> [RecipientWithPubKeys] {

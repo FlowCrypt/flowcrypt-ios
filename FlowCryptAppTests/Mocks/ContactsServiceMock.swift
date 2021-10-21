@@ -20,6 +20,7 @@ class ContactsServiceMock: ContactsServiceType {
     func searchContact(with email: String) -> Promise<RecipientWithPubKeys> {
         Promise<RecipientWithPubKeys>.resolveAfter(with: searchContactResult)
     }
+    func searchContacts(query: String) -> [String] { [] }
 
     func removePubKey(with fingerprint: String, for email: String) {}
 }
