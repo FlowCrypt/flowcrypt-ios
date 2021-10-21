@@ -24,7 +24,8 @@ class PrvKeyInfoTests: XCTestCase {
         lastModified: 1,
         expiration: 2,
         users: [],
-        algo: nil
+        algo: nil,
+        revoked: false
     )
 
     private let user = UserObject(name: "name", email: "email", imap: nil, smtp: nil)
