@@ -31,6 +31,15 @@ extension PubKey {
     var longid: String? { longids.first }
     /// first key fingerprint
     var fingerprint: String? { fingerprints.first }
+
+    var keyState: PubKeyState {
+        guard let expiresOn = expiresOn else { return .revoked }
+
+        // TODO: Update implementation
+        guard expiresOn.timeIntervalSinceNow.sign == .plus else { return .expired }
+
+        return .active
+    }
 }
 
 extension PubKey {

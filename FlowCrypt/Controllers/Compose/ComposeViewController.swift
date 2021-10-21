@@ -615,17 +615,32 @@ extension ComposeViewController {
         }
 
         contactsService.searchContact(with: recipient.email)
-            .then(on: .main) { [weak self] _ in
-                self?.handleEvaluation(for: recipient)
+            .then(on: .main) { [weak self] contact in
+                guard let self = self else { return }
+                let state = self.getRecipientState(from: contact)
+                self.handleEvaluation(for: recipient, with: state)
             }
             .catch(on: .main) { [weak self] error in
                 self?.handleEvaluation(error: error, with: recipient)
             }
     }
 
-    private func handleEvaluation(for recipient: ComposeMessageRecipient) {
+    private func getRecipientState(from recipient: RecipientWithPubKeys) -> RecipientState {
+        switch recipient.keyState {
+        case .active:
+            return decorator.recipientKeyFoundState
+        case .expired:
+            return decorator.recipientKeyExpiredState
+        case .revoked:
+            return decorator.recipientKeyRevokedState
+        case .empty:
+            return decorator.recipientKeyNotFoundState
+        }
+    }
+
+    private func handleEvaluation(for recipient: ComposeMessageRecipient, with state: RecipientState) {
         updateRecipientWithNew(
-            state: decorator.recipientKeyFoundState,
+            state: state,
             for: .left(recipient)
         )
     }
@@ -660,6 +675,7 @@ extension ComposeViewController {
             }
         }()
 
+        print("STATE \(state)")
         guard let recipientIndex = index else { return }
         contextToSend.recipients[recipientIndex].state = state
         node.reloadRows(at: [recipientsIndexPath], with: .fade)
