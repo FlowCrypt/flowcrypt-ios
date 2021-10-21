@@ -27,7 +27,6 @@ final class RecipientEmailNode: CellNode {
 
     let titleNode = ASTextNode()
     let input: Input
-    let displayNode = ASDisplayNode()
     let imageNode = ASImageNode()
 
     private var onTap: ((Tap) -> Void)?
@@ -44,7 +43,6 @@ final class RecipientEmailNode: CellNode {
         titleNode.borderColor = input.recipient.state.borderColor.cgColor
         titleNode.textContainerInset = RecipientEmailNode.Constants.titleInsets
 
-        displayNode.backgroundColor = .clear
         imageNode.image = input.recipient.state.stateImage
         imageNode.alpha = 0
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -98,18 +96,12 @@ final class RecipientEmailNode: CellNode {
     }
 
     override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        displayNode.style.preferredSize.width = input.width
-        displayNode.style.preferredSize.height = 1
-        let spec = ASStackLayoutSpec()
-        spec.children = [displayNode, titleNode]
-        spec.direction = .vertical
-        spec.alignItems = .baselineFirst
         let elements: [ASLayoutElement]
 
         if imageNode.image == nil {
-            elements = [spec]
+            elements = [titleNode]
         } else {
-            elements = [imageNode, spec]
+            elements = [imageNode, titleNode]
             imageNode.hitTestSlop = UIEdgeInsets(top: -8, left: -8, bottom: -8, right: -20)
         }
 
