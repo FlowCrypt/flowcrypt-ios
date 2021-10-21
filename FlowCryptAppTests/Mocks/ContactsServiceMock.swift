@@ -27,6 +27,7 @@ final class ContactsServiceMock: ContactsServiceType {
             fatalError()
         }
     }
+    func searchContacts(query: String) -> [String] { [] }
 
     func removePubKey(with fingerprint: String, for email: String) {}
 }
