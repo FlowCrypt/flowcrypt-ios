@@ -21,7 +21,7 @@ config.capabilities = [
         deviceName: 'iPhone 11 Pro Max',
         platformVersion: '15.0',
         automationName: 'XCUITest',
-        app: join(process.cwd(), './apps/FlowCrypt.app'),
+        app: join(process.cwd(), './FlowCrypt.app'),
         newCommandTimeout: 10000,
         wdaLaunchTimeout: 300000,
         wdaConnectionTimeout: 600000,

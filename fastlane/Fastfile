@@ -99,8 +99,7 @@ platform :ios do
         silent: true,
         clean: true,
         skip_codesigning: true,
-        output_directory: "~/git/flowcrypt-ios/appium/apps",
-        output_name: "FlowCrypt.app",
+        destination: "~/git/flowcrypt-ios/appium",
         configuration: "Debug"
     )
 
