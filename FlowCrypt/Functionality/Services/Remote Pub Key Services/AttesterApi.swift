@@ -54,7 +54,11 @@ extension AttesterApi {
             return []
         }
 
-        let res = try await URLSession.shared.asyncCall(urlPub(emailOrLongid: email), tolerateStatus: [404])
+        let res = try await URLSession.shared.asyncCall(
+            urlPub(emailOrLongid: email),
+            tolerateStatus: [404],
+            timeout: Constants.lookupEmailRequestTimeout
+        )
 
         if res.status >= 200, res.status <= 299 {
             let keys = try core.parseKeys(armoredOrBinary: res.data)

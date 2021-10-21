@@ -72,14 +72,18 @@ extension WkdApi {
 
     private func urlLookup(_ urls: WkdUrls) async throws -> (hasPolicy: Bool, key: Data?) {
         do {
-            _ = try await URLSession.shared.asyncCall(URLRequest.urlRequest(with: urls.policy))
+            var request = URLRequest.urlRequest(with: urls.policy)
+            request.timeoutInterval = Constants.lookupEmailRequestTimeout
+            _ = try await URLSession.shared.asyncCall(request)
         } catch {
             Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
             return (hasPolicy: false, key: nil)
         }
 
+        var request = URLRequest.urlRequest(with: urls.pubKeys)
+        request.timeoutInterval = Constants.lookupEmailRequestTimeout
         let pubKeyResponse = try await URLSession.shared.asyncCall(
-            URLRequest.urlRequest(with: urls.pubKeys),
+            request,
             tolerateStatus: [404]
         )
         if !pubKeyResponse.data.toStr().isEmpty {
