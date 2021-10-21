@@ -99,6 +99,22 @@ orig message
   t.pass();
 });
 
+ava.default('composeEmail format:plain with attachment', async t => {
+  const content = 'hello\nwrld';
+  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64')}] };
+  const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
+  expectEmptyJson(composeEmailJson);
+  const plainMimeStr = plainMimeMsg.toString();
+  expect(plainMimeStr).contains('To: some@to.com');
+  expect(plainMimeStr).contains('From: some@from.com');
+  expect(plainMimeStr).contains('Subject: a subj');
+  expect(plainMimeStr).contains('Cc: some@cc.com');
+  expect(plainMimeStr).contains('Date: ');
+  expect(plainMimeStr).contains('MIME-Version: 1.0');
+  expect(plainMimeStr).contains('sometext.txt');
+  t.pass();
+});
+
 ava.default('parseDecryptMsg unescaped special characters in text (originally text/plain)', async t => {
   const mime = `MIME-Version: 1.0
 Date: Fri, 6 Sep 2019 10:48:25 +0000
@@ -243,6 +259,20 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [encryptedMimeMsg]));
   expect(decryptJson).deep.equal({ text: content, replyType: 'encrypted', subject: 'encr subj' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
+  t.pass();
+});
+
+ava.default('composeEmail format:encrypt-inline with attachment', async t => {
+  const content = 'hello\nwrld';
+  const { pubKeys } = getKeypairs('rsa1');
+  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj', atts: [{name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
+  const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
+  expectEmptyJson(encryptJson);
+  const encryptedMimeStr = encryptedMimeMsg.toString();
+  expect(encryptedMimeStr).contains('To: encrypted@to.com');
+  expect(encryptedMimeStr).contains('MIME-Version: 1.0');
+  expect(encryptedMimeStr).contains('topsecret.txt.pgp');
+  expectData(encryptedMimeMsg, 'armoredMsg'); // armored msg block should be contained in the mime message
   t.pass();
 });
 
