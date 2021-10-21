@@ -91,15 +91,12 @@ platform :ios do
   end
 
   desc "Debug Build without code sign. Just to see if the build is working for e2e"
-    lane :build_e2e do |options|
-      gym(
-        scheme: "FlowCrypt",
-        skip_package_ipa: true,
-        skip_archive: true,
-        silent: true,
-        skip_codesigning: true,
-        xcargs: "iphonesimulator SYMROOT='/var/tmp/'",
-        configuration: "Debug"
+  lane :build_e2e do
+    xcbuild(
+       workspace: "FlowCrypt.xcworkspace",
+       scheme: "FlowCrypt",
+       configuration: "Debug",
+       xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
 
   end
