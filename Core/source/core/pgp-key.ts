@@ -62,6 +62,7 @@ export interface KeyDetails {
   created: number;
   lastModified: number | undefined; // date of last signature, or undefined if never had valid signature
   expiration: number | undefined; // number of millis of expiration or undefined if never expires
+  revoked: boolean;
   algo: { // same as OpenPGP.key.AlgorithmInfo
     algorithm: string;
     algorithmId: number;
@@ -339,7 +340,8 @@ export class PgpKey {
       algo,
       created,
       expiration,
-      lastModified
+      lastModified,
+      revoked: k.revocationSignatures.length > 0
     };
   }
 
