@@ -9,7 +9,6 @@ execution_time_limit:
 auto_cancel:
   running:
     when: branch != 'master'
-
 blocks:
   - name: Ubuntu iOS tests
     execution_time_limit:
@@ -34,7 +33,6 @@ blocks:
             - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ../Core
             - ../.custom-npm/node_modules/.bin/npm install
             - ../.custom-npm/node_modules/.bin/npm test
-
   - name: Mac iOS tests
     execution_time_limit:
       minutes: 40
@@ -58,13 +56,10 @@ blocks:
       jobs:
         - name: Swift tests + Appium tests
           commands:
-            # build app + swift tests
-            - bundle exec fastlane do_everything
-            # appium tests
-            # - mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && 
+            - '# bundle exec fastlane do_everything'
+            - bundle exec fastlane build_e2e
             - sem-version node 12 && npm install -g appium@1.22.0 && cd ~/git/flowcrypt-ios/appium && npm i
             - npm run ios.smoke
-
       epilogue:
         on_fail:
           commands:
