@@ -26,7 +26,8 @@ class KeyInfoTests: XCTestCase {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
 
         var thrownError: Error?
@@ -50,7 +51,8 @@ class KeyInfoTests: XCTestCase {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
 
         var thrownError: Error?
@@ -72,7 +74,8 @@ class KeyInfoTests: XCTestCase {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
 
         var thrownError: Error?
@@ -98,7 +101,8 @@ class KeyInfoTests: XCTestCase {
             lastModified: nil,
             expiration: nil,
             users: [ ],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
 
         let key = try KeyInfo(keyDetail, passphrase: "123", source: .backup, user: user)
