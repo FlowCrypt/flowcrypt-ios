@@ -610,7 +610,7 @@ extension ComposeViewController {
 
     private func evaluate(recipient: ComposeMessageRecipient) {
         guard isValid(email: recipient.email) else {
-            updateRecipientWithNew(state: self.decorator.recipientErrorState, for: .left(recipient))
+            updateRecipientWithNew(state: self.decorator.recipientInvalidEmailState, for: .left(recipient))
             return
         }
 
@@ -688,7 +688,7 @@ extension ComposeViewController {
         switch recipient.state {
         case .idle:
             handleRecipientSelection(with: indexPath)
-        case .keyFound, .keyNotFound, .selected:
+        case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .selected:
             break
         case let .error(_, isRetryError):
             if isRetryError {
