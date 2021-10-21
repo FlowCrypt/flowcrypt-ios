@@ -16,10 +16,10 @@ protocol LocalFoldersProviderType {
 }
 
 struct LocalFoldersProvider: LocalFoldersProviderType {
-    private let folderCache: CacheService<FolderObject>
+    private let folderCache: EncryptedCacheService<FolderObject>
 
     init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
-        self.folderCache = CacheService(encryptedStorage: encryptedStorage)
+        self.folderCache = EncryptedCacheService(encryptedStorage: encryptedStorage)
     }
 
     func fetchFolders() -> [FolderViewModel] {

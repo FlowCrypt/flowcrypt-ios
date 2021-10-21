@@ -21,6 +21,11 @@ class InboxScreen extends BaseScreen {
         $(selector).click();
     }
 
+    clickOnEmailBySubject (subject) {
+        const selector = `~${subject}`;
+        $(selector).click();
+    }
+
     clickCreateEmail () {
         this.createEmailButton.click();
     }

@@ -11,27 +11,27 @@ import UIKit
 
 protocol ContactsListDecoratorType {
     var title: String { get }
-    func contactNodeInput(with contact: Contact) -> ContactCellNode.Input
+    func contactNodeInput(with recipient: RecipientWithPubKeys) -> ContactCellNode.Input
 }
 
 struct ContactsListDecorator: ContactsListDecoratorType {
     let title = "contacts_screen_title".localized
 
-    func contactNodeInput(with contact: Contact) -> ContactCellNode.Input {
+    func contactNodeInput(with recipient: RecipientWithPubKeys) -> ContactCellNode.Input {
         let name: String
 
-        if let contactName = contact.name, contactName.isNotEmpty {
-            let components = contactName
+        if let recipientName = recipient.name, recipientName.isNotEmpty {
+            let components = recipientName
                 .split(separator: " ")
                 .filter { !$0.contains("@") }
 
             if components.isEmpty {
-                name = nameFrom(email: contact.email)
+                name = nameFrom(email: recipient.email)
             } else {
                 name = components.joined(separator: " ")
             }
         } else {
-            name = nameFrom(email: contact.email)
+            name = nameFrom(email: recipient.email)
         }
 
         let buttonColor = UIColor.colorFor(
@@ -39,11 +39,14 @@ struct ContactsListDecorator: ContactsListDecoratorType {
             lightStyle: .darkGray
         )
 
+        let keysCount = "%@ public key(s)".localizeWithArguments(recipient.pubKeys.count)
+
         return ContactCellNode.Input(
             name: name.attributed(.medium(16)),
-            email: contact.email.attributed(.medium(14)),
+            email: recipient.email.attributed(.medium(14)),
+            keys: "(\(keysCount))".attributed(.medium(14), color: .mainTextColor.withAlphaComponent(0.5)),
             insets: UIEdgeInsets(top: 16, left: 16, bottom: 8, right: 16),
-            buttonImage: #imageLiteral(resourceName: "trash").tinted(buttonColor)
+            buttonImage: UIImage(systemName: "trash")?.tinted(buttonColor)
         )
     }
 
