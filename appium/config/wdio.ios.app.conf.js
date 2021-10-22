@@ -8,8 +8,7 @@ config.suites = {
         './tests/specs/**/*.spec.ts'
     ],
     smoke: [
-        './tests/specs/login/GmailLogin.spec.ts',
-        './tests/specs/inbox/ReadTextEmail.spec.ts'
+        './tests/specs/login/GmailLogin.spec.ts'
     ]
 };
 
@@ -17,7 +16,7 @@ config.capabilities = [
     {
         platformName: 'iOS',
         iosInstallPause: 5000,
-        deviceName: 'iPhone 11 Pro Max',
+        deviceName: 'iPhone 13',
         platformVersion: '15.0',
         automationName: 'XCUITest',
         app: join(process.cwd(), './FlowCrypt.app'),

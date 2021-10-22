@@ -65,3 +65,4 @@ blocks:
         on_fail:
           commands:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
+            - artifact push job ~/git/flowcrypt-ios/appium/FlowCrypt.app
