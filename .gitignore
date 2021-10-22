@@ -48,4 +48,4 @@ appium/node_modules
 appium/package-lock.json
 appium/tmp
 appium/.env
-# appium/apps
+appium/apps
