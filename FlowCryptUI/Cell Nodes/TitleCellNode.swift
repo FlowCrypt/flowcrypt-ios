@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-public final class SettingsCellNode: CellNode {
+public final class TitleCellNode: CellNode {
     private let textNode = ASTextNode2()
     private let insets: UIEdgeInsets
 
