@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { Contact, KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key.js';
+import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key.js';
 import { MsgBlock, MsgBlockType } from './msg-block.js';
 import { Str, Value } from './common.js';
 
@@ -19,9 +19,9 @@ export namespace PgpMsgMethod {
   export namespace Arg {
     export type Encrypt = { pubkeys: string[], signingPrv?: OpenPGP.key.Key, pwd?: string, data: Uint8Array, filename?: string, armor: boolean, date?: Date };
     export type Type = { data: Uint8Array };
-    export type Decrypt = { kisWithPp: PrvKeyInfo[], encryptedData: Uint8Array, msgPwd?: string };
+    export type Decrypt = { kisWithPp: PrvKeyInfo[], encryptedData: Uint8Array, msgPwd?: string, verificationPubkeys?: string[] };
     export type DiagnosePubkeys = { privateKis: KeyInfo[], message: Uint8Array };
-    export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array };
+    export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array, verificationPubkeys?: string[] };
   }
   export type DiagnosePubkeys = (arg: Arg.DiagnosePubkeys) => Promise<DiagnoseMsgPubkeysResult>;
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
@@ -31,7 +31,6 @@ export namespace PgpMsgMethod {
 }
 
 type SortedKeysForDecrypt = {
-  verificationContacts: Contact[];
   forVerification: OpenPGP.key.Key[];
   encryptedFor: string[];
   signedBy: string[];
@@ -53,7 +52,13 @@ type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: Open
 
 type OpenpgpMsgOrCleartext = OpenPGP.message.Message | OpenPGP.cleartext.CleartextMessage;
 
-export type VerifyRes = { signer?: string; contact?: Contact; match: boolean | null; error?: string; };
+export type VerifyRes = {
+  signer?: string;
+  match: boolean | null;
+  error?: string;
+  mixed?: boolean;
+  partial?: boolean;
+};
 export type PgpMsgTypeResult = { armored: boolean, type: MsgBlockType } | undefined;
 export type DecryptResult = DecryptSuccess | DecryptError;
 export type DiagnoseMsgPubkeysResult = { found_match: boolean, receivers: number, };
@@ -123,8 +128,8 @@ export class PgpMsg {
     return await openpgp.stream.readToEnd((signRes as OpenPGP.SignArmorResult).data);
   }
 
-  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.message.Verification[], pubs: OpenPGP.key.Key[], contact?: Contact): Promise<VerifyRes> => {
-    const sig: VerifyRes = { contact, match: null }; // tslint:disable-line:no-null-keyword
+  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.message.Verification[], pubs: OpenPGP.key.Key[]): Promise<VerifyRes> => {
+    const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
     try {
       // While this looks like bad method API design, it's here to ensure execution order when 1) reading data, 2) verifying, 3) processing signatures
       // Else it will hang trying to read a stream: https://github.com/openpgpjs/openpgpjs/issues/916#issuecomment-510620625
@@ -152,14 +157,19 @@ export class PgpMsg {
     return sig;
   }
 
-  public static verifyDetached: PgpMsgMethod.VerifyDetached = async ({ plaintext, sigText }) => {
+  public static verifyDetached: PgpMsgMethod.VerifyDetached = async ({ plaintext, sigText, verificationPubkeys }) => {
     const message = openpgp.message.fromText(Buf.fromUint8(plaintext).toUtfStr());
     await message.appendSignature(Buf.fromUint8(sigText).toUtfStr());
     const keys = await PgpMsg.getSortedKeys([], message);
-    return await PgpMsg.verify(message, keys.forVerification, keys.verificationContacts[0]);
+    if (verificationPubkeys) {
+      for (const verificationPubkey of verificationPubkeys) {
+        keys.forVerification.push(...(await openpgp.key.readArmored(verificationPubkey)).keys);
+      }
+    }
+    return await PgpMsg.verify(message, keys.forVerification);
   }
 
-  public static decrypt: PgpMsgMethod.Decrypt = async ({ kisWithPp, encryptedData, msgPwd }) => {
+  public static decrypt: PgpMsgMethod.Decrypt = async ({ kisWithPp, encryptedData, msgPwd, verificationPubkeys }) => {
     let prepared: PreparedForDecrypt;
     const longids: DecryptError$longids = { message: [], matching: [], chosen: [], needPassphrase: [] };
     try {
@@ -167,14 +177,14 @@ export class PgpMsg {
     } catch (formatErr) {
       return { success: false, error: { type: DecryptErrTypes.format, message: String(formatErr) }, longids };
     }
-    const keys = await PgpMsg.getSortedKeys(kisWithPp, prepared.message);
+    const keys = await PgpMsg.getSortedKeys(kisWithPp, prepared.message, verificationPubkeys);
     longids.message = keys.encryptedFor;
     longids.matching = keys.prvForDecrypt.map(ki => ki.longid);
     longids.chosen = keys.prvForDecryptDecrypted.map(ki => ki.longid);
     longids.needPassphrase = keys.prvForDecryptWithoutPassphrases.map(ki => ki.longid);
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
-      const signature = await PgpMsg.verify(prepared.message, keys.forVerification, keys.verificationContacts[0]);
+      const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
       const text = await openpgp.stream.readToEnd(prepared.message.getText()!);
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
@@ -194,10 +204,12 @@ export class PgpMsg {
       const passwords = msgPwd ? [msgPwd] : undefined;
       const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!);
       const decrypted = await (prepared.message as OpenPGP.message.Message).decrypt(privateKeys, passwords, undefined, false);
-      await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys); // we can only figure out who signed the msg once it's decrypted
+      // we can only figure out who signed the msg once it's decrypted
+      await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
+      await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined; // verify first to prevent stream hang
       const content = new Buf(await openpgp.stream.readToEnd(decrypted.getLiteralData()!)); // read content second to prevent stream hang
-      const signature = verifyResults ? await PgpMsg.verify(verifyResults, [], keys.verificationContacts[0]) : undefined; // evaluate verify results third to prevent stream hang
+      const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined; // evaluate verify results third to prevent stream hang
       if (!prepared.isCleartext && (prepared.message as OpenPGP.message.Message).packets.filterByTag(openpgp.enums.packet.symmetricallyEncrypted).length) {
         const noMdc = 'Security threat!\n\nMessage is missing integrity checks (MDC). The sender should update their outdated software.\n\nDisplay the message at your own risk.';
         return { success: false, content, error: { type: DecryptErrTypes.noMdc, message: noMdc }, message: prepared.message, longids, isEncrypted };
@@ -299,21 +311,23 @@ export class PgpMsg {
   }
 
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {
-    keys.signedBy = Value.arr.unique(await PgpKey.longids(msg.getSigningKeyIds ? msg.getSigningKeyIds() : []));
-    if (keys.signedBy.length && typeof Store.dbContactGet === 'function') {
-      const verificationContacts = await Store.dbContactGet(undefined, keys.signedBy);
-      keys.verificationContacts = verificationContacts.filter(contact => contact && contact.pubkey) as Contact[];
+    keys.signedBy = Value.arr.unique(await PgpKey.longids(
+      msg.getSigningKeyIds ? msg.getSigningKeyIds() : []));
+  }
+
+  private static populateKeysForVerification = async (keys: SortedKeysForDecrypt,
+    verificationPubkeys?: string[]) => {
+    if (typeof verificationPubkeys !== 'undefined') {
       keys.forVerification = [];
-      for (const contact of keys.verificationContacts) {
-        const { keys: keysForVerification } = await openpgp.key.readArmored(contact.pubkey!);
+      for (const verificationPubkey of verificationPubkeys) {
+        const { keys: keysForVerification } = await openpgp.key.readArmored(verificationPubkey);
         keys.forVerification.push(...keysForVerification);
       }
     }
   }
 
-  private static getSortedKeys = async (kiWithPp: PrvKeyInfo[], msg: OpenpgpMsgOrCleartext): Promise<SortedKeysForDecrypt> => {
+  private static getSortedKeys = async (kiWithPp: PrvKeyInfo[], msg: OpenpgpMsgOrCleartext, verificationPubkeys?: string[]): Promise<SortedKeysForDecrypt> => {
     const keys: SortedKeysForDecrypt = {
-      verificationContacts: [],
       forVerification: [],
       encryptedFor: [],
       signedBy: [],
@@ -322,16 +336,21 @@ export class PgpMsg {
       prvForDecryptDecrypted: [],
       prvForDecryptWithoutPassphrases: [],
     };
-    const encryptedForKeyids = msg instanceof openpgp.message.Message ? (msg as OpenPGP.message.Message).getEncryptionKeyIds() : [];
+    const encryptedForKeyids = msg instanceof openpgp.message.Message
+      ? (msg as OpenPGP.message.Message).getEncryptionKeyIds()
+      : [];
     keys.encryptedFor = await PgpKey.longids(encryptedForKeyids);
     await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
+    await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
     if (keys.encryptedFor.length) {
       for (const ki of kiWithPp) {
         ki.parsed = await PgpKey.read(ki.private); // todo
         // this is inefficient because we are doing unnecessary parsing of all keys here
-        // better would be to compare to already stored KeyInfo, however KeyInfo currently only holds primary longid, not longids of subkeys
-        // while messages are typically encrypted for subkeys, thus we have to parse the key to get the info
-        // we are filtering here to avoid a significant performance issue of having to attempt decrypting with all keys simultaneously
+        // better would be to compare to already stored KeyInfo, however KeyInfo currently
+        // only holds primary longid, not longids of subkeys, while messages are typically
+        // encrypted for subkeys, thus we have to parse the key to get the info
+        // we are filtering here to avoid a significant performance issue of having
+        // to attempt decrypting with all keys simultaneously
         for (const longid of await Promise.all(ki.parsed.getKeyIds().map(({ bytes }) => PgpKey.longid(bytes)))) {
           if (keys.encryptedFor.includes(longid!)) {
             keys.prvMatching.push(ki);

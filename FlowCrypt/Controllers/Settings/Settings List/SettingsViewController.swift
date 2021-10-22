@@ -32,7 +32,7 @@ final class SettingsViewController: TableNodeViewController {
             }
         }
 
-        static func filtered(with rules: OrganisationalRules) -> [SettingsMenuItem] {
+        static func filtered(with rules: ClientConfiguration) -> [SettingsMenuItem] {
             var cases = SettingsMenuItem.allCases
 
             if !rules.canBackupKeys {
@@ -45,18 +45,18 @@ final class SettingsViewController: TableNodeViewController {
 
     private let decorator: SettingsViewDecoratorType
     private let currentUser: User?
-    private let organisationalRules: OrganisationalRules
+    private let clientConfiguration: ClientConfiguration
     private let rows: [SettingsMenuItem]
 
     init(
         decorator: SettingsViewDecoratorType = SettingsViewDecorator(),
         currentUser: User? = DataService.shared.currentUser,
-        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService()
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.decorator = decorator
         self.currentUser = currentUser
-        self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
-        self.rows = SettingsMenuItem.filtered(with: self.organisationalRules)
+        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
+        self.rows = SettingsMenuItem.filtered(with: self.clientConfiguration)
         super.init(node: TableNode())
     }
 
@@ -93,7 +93,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
             let setting = self.rows[indexPath.row]
-            return SettingsCellNode(
+            return TitleCellNode(
                 title: self.decorator.attributedSetting(setting.title),
                 insets: self.decorator.insets
             )
@@ -121,7 +121,7 @@ extension SettingsViewController {
             viewController = ContactsListViewController()
         case .backups:
             guard let currentUser = currentUser,
-                  organisationalRules.canBackupKeys else {
+                  clientConfiguration.canBackupKeys else {
                 viewController = nil
                 return
             }

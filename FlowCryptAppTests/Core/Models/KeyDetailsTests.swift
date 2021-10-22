@@ -24,7 +24,8 @@ class KeyDetailsTests: XCTestCase {
             lastModified: 1,
             expiration: 2,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
         
         let keyDetailWithSameKeyId = KeyDetails(
@@ -39,7 +40,8 @@ class KeyDetailsTests: XCTestCase {
             lastModified: 1,
             expiration: 2,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
         
         let set = Set([keyDetail, keyDetailWithSameKeyId])

@@ -58,9 +58,8 @@ final class SetupInitialViewController: TableNodeViewController {
     private let user: UserId
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
-    private let organisationalRules: OrganisationalRules
+    private let clientConfiguration: ClientConfiguration
     private let emailKeyManagerApi: EmailKeyManagerApiType
-    private let clientConfigurationService: ClientConfigurationServiceType
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -69,17 +68,15 @@ final class SetupInitialViewController: TableNodeViewController {
         backupService: BackupServiceType = BackupService(),
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        organisationalRulesService: OrganisationalRulesServiceType = OrganisationalRulesService(),
-        emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi(),
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
+        emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi()
     ) {
         self.user = user
         self.backupService = backupService
         self.router = router
         self.decorator = decorator
-        self.organisationalRules = organisationalRulesService.getSavedOrganisationalRulesForCurrentUser()
+        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
         self.emailKeyManagerApi = emailKeyManagerApi
-        self.clientConfigurationService = clientConfigurationService
 
         super.init(node: TableNode())
     }
@@ -121,7 +118,7 @@ extension SetupInitialViewController {
     }
 
     private func searchKeyBackupsInInbox() {
-        if !organisationalRules.canBackupKeys {
+        if !clientConfiguration.canBackupKeys {
             logger.logInfo("Skipping backups searching because canBackupKeys == false")
             proceedToSetupWith(keys: [])
             return
@@ -129,13 +126,14 @@ extension SetupInitialViewController {
 
         logger.logInfo("Searching for backups in inbox")
 
-        backupService.fetchBackupsFromInbox(for: user)
-            .then(on: .main) { [weak self] keys in
-                self?.proceedToSetupWith(keys: keys)
+        Task {
+            do {
+                let keys = try await backupService.fetchBackupsFromInbox(for: user)
+                proceedToSetupWith(keys: keys)
+            } catch {
+                handle(error: error)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+        }
     }
 
     private func handleOtherAccount() {
@@ -154,7 +152,7 @@ extension SetupInitialViewController {
     }
 
     private func decideIfEKMshouldBeUsed() {
-        switch clientConfigurationService.checkShouldUseEKM() {
+        switch clientConfiguration.checkUsesEKM() {
         case .usesEKM:
             state = .fetchingKeysFromEKM
         case .doesNotUseEKM:

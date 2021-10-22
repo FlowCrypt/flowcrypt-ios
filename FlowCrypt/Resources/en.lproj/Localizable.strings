@@ -6,7 +6,8 @@
 "ok" = "Ok";
 "cancel" = "Cancel";
 "open" = "Open";
-"setttings" = "Settings";
+"settings" = "Settings";
+"go_back" = "Go back";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -23,11 +24,12 @@
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved.";
+"message_open_anyway" = "Open anyway";
 
 // REPLY
 "reply_title" = "Your reply"; // not used
 
-// EROOR
+// ERROR
 "error_internet_connection" = "No internet connection"; // not used
 "error_google_service" = "Could not configure google services"; // not used
 "error_background_core" = "Background core service error"; // not used
@@ -38,6 +40,7 @@
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
 "error_general_text" = "Something went wrong.";
 "error_no_folders" = "There are no folders on your account";
+"error_key_mismatch" = "No matched key found";
 
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
@@ -142,8 +145,19 @@
 
 // Contacts
 "contacts_screen_title" = "Contacts";
-"contact_detail_screen_title" = "Public Key";
+"contact_detail_screen_title" = "Public Keys";
 "contact_detail_copy" = "Public Key copied to clipboard";
+"contact_key_detail_screen_title" = "Public Key";
+
+// Contacts keys
+"contact_key_pub" = "Key";
+"contact_key_signature" = "Signature";
+"contact_key_fetched" = "Last fetched";
+"contact_key_expires" = "Expires";
+"contact_key_longids" = "Longids";
+"contact_key_fingerprints" = "Fingerprints";
+"contact_key_created" = "Created";
+"contact_key_algo" = "Algo";
 
 // Key Settings
 "key_settings_title" = "Keys";

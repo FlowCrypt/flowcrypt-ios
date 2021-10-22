@@ -41,7 +41,7 @@ ava.default('generateKey', async t => {
   t.pass();
 });
 
-for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
+for (const keypairName of allKeypairNames.filter(name => name != 'expired' && name != 'revoked')) {
   ava.default(`encryptMsg -> parseDecryptMsg (${keypairName})`, async t => {
     const content = 'hello\nwrld';
     const { pubKeys, keys } = getKeypairs(keypairName);
@@ -96,6 +96,22 @@ orig message
   const mimeMsgReplyStr = mimeMsgReply.toString();
   expect(mimeMsgReplyStr).contains('In-Reply-To: <originalmsg@from.com>');
   expect(mimeMsgReplyStr).contains('References: <originalmsg@from.com>');
+  t.pass();
+});
+
+ava.default('composeEmail format:plain with attachment', async t => {
+  const content = 'hello\nwrld';
+  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64')}] };
+  const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
+  expectEmptyJson(composeEmailJson);
+  const plainMimeStr = plainMimeMsg.toString();
+  expect(plainMimeStr).contains('To: some@to.com');
+  expect(plainMimeStr).contains('From: some@from.com');
+  expect(plainMimeStr).contains('Subject: a subj');
+  expect(plainMimeStr).contains('Cc: some@cc.com');
+  expect(plainMimeStr).contains('Date: ');
+  expect(plainMimeStr).contains('MIME-Version: 1.0');
+  expect(plainMimeStr).contains('sometext.txt');
   t.pass();
 });
 
@@ -246,7 +262,21 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
   t.pass();
 });
 
-for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
+ava.default('composeEmail format:encrypt-inline with attachment', async t => {
+  const content = 'hello\nwrld';
+  const { pubKeys } = getKeypairs('rsa1');
+  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj', atts: [{name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
+  const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
+  expectEmptyJson(encryptJson);
+  const encryptedMimeStr = encryptedMimeMsg.toString();
+  expect(encryptedMimeStr).contains('To: encrypted@to.com');
+  expect(encryptedMimeStr).contains('MIME-Version: 1.0');
+  expect(encryptedMimeStr).contains('topsecret.txt.pgp');
+  expectData(encryptedMimeMsg, 'armoredMsg'); // armored msg block should be contained in the mime message
+  t.pass();
+});
+
+for (const keypairName of allKeypairNames.filter(name => name != 'expired' && name != 'revoked')) {
   ava.default(`encryptFile -> decryptFile ${keypairName}`, async t => {
     const { pubKeys, keys } = getKeypairs(keypairName);
     const name = 'myfile.txt';
@@ -310,7 +340,8 @@ ava.default('parseKeys', async t => {
           "algorithmId": 1
         },
         "created": 1543592161,
-        "lastModified": 1543592161
+        "lastModified": 1543592161,
+        "revoked": false
       }
     ]
   });
@@ -350,7 +381,29 @@ ava.default('parseKeys - expiration and date last updated', async t => {
         },
         "created": 1594847701,
         "expiration": 1594847702,
-        "lastModified": 1594847701
+        "lastModified": 1594847701,
+        "revoked": false
+      }
+    ]
+  });
+  expectNoData(data);
+  t.pass();
+});
+
+ava.default('parseKeys - revoked', async t => {
+  const { pubKeys: [pubkey] } = getKeypairs('revoked');
+  const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
+  expect(json).to.deep.equal({
+    "format": "armored", 
+    "keyDetails": [
+      { 
+        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\r\nVersion: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\r\nComment: Seamlessly send and receive encrypted email\r\n\r\nxjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7\r\nuXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK\r\nACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7\r\nEFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY\r\nDKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA\r\nBgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW\r\nRBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN\r\nFXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ\r\noXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS\r\nzZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==\r\n=bMwq\r\n-----END PGP PUBLIC KEY BLOCK-----\r\n", 
+        "users": ["revoekd@flowcrypt.com", "revoked@flowcrypt.com"], 
+        "ids": [{ "fingerprint": "3931B7413DBB2FA60CEF85CE5F15978910A1780A", "longid": "5F15978910A1780A", "shortid": "10A1780A", "keywords": "GALLERY PROTECT TIME CANDY BLEAK ACCESS" }], 
+        "algo": { "algorithm": "eddsa", "curve": "ed25519", "algorithmId": 22 }, 
+        "created": 1634664782, 
+        "lastModified": 1634664811, 
+        "revoked": true 
       }
     ]
   });
@@ -517,7 +570,8 @@ ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
         ],
         "algo": { "algorithm": "rsa_encrypt_sign", "bits": 2048, "algorithmId": 1 },
         "created": 1543592161,
-        "lastModified": 1543592161
+        "lastModified": 1543592161,
+        "revoked": false
       }
     },
   ]);
@@ -556,5 +610,103 @@ ava.default('can process dirty html without throwing', async t => {
   expect(clean).to.not.contain('style');
   expect(clean).to.not.contain('src=http');
   expect(clean).to.not.contain('src="http');
+  t.pass();
+});
+
+ava.default('verify encrypted+signed message by providing it correct public key', async t => {
+  const { keys, pubKeys } = getKeypairs('rsa1');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  expect(decryptJson.replyType).equals('encrypted');
+  expect(decryptJson.subject).equals('mime email encrypted inline text signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(true);
+  t.pass();
+});
+
+ava.default('verify encrypted+signed message by providing it one wrong and one correct', async t => {
+  const { keys, pubKeys } = getKeypairs('rsa1');
+  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+  const allPubKeys = [];
+  for (const pubkey of pubKeys2) allPubKeys.push(pubkey);
+  for (const pubkey of pubKeys) allPubKeys.push(pubkey);
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  expect(decryptJson.replyType).equals('encrypted');
+  expect(decryptJson.subject).equals('mime email encrypted inline text signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(true);
+  t.pass();
+});
+
+ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  expect(decryptJson.replyType).equals('encrypted');
+  expect(decryptJson.subject).equals('mime email encrypted inline text signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(null);
+  t.pass();
+});
+
+ava.default('verify plain-text signed message by providing it correct key', async t => {
+  const { keys, pubKeys } = getKeypairs('rsa1');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('mime email plain signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(true);
+  t.pass();
+});
+
+ava.default('verify plain-text signed message by providing it both correct and incorrect keys', async t => {
+  const { keys, pubKeys } = getKeypairs('rsa1');
+  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+  const allPubKeys = [];
+  for (const pubkey of pubKeys2) allPubKeys.push(pubkey);
+  for (const pubkey of pubKeys) allPubKeys.push(pubkey);
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('mime email plain signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(true);
+  t.pass();
+});
+
+ava.default('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-plain-signed')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('mime email plain signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(null);
+  t.pass();
+});
+
+ava.default('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
+  const { keys, pubKeys } = getKeypairs('rsa1');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-edited')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('mime email plain signed');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(false);
+  t.pass();
+});
+
+ava.default('verify signed message with detached signature by providing it correct key', async t => {
+  const { keys, pubKeys } = getKeypairs('rsa1');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-detached')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('mime email plain signed detached');
+  const parsedDecryptData = JSON.parse(decryptData.toString());
+  expect(!!parsedDecryptData.verifyRes).equals(true);
+  expect(parsedDecryptData.verifyRes.match).equals(true);
   t.pass();
 });

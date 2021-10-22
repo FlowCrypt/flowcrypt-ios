@@ -3,7 +3,7 @@
 //
 
 import FlowCryptCommon
-import Promises
+import MailCore
 
 final class Imap: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.imap

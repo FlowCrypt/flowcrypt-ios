@@ -214,6 +214,9 @@ extension MessageViewController {
             handleMissedPassPhrase(for: rawMimeData)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
             handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+        case let .keyMismatch(rawMimeData):
+            handleKeyMismatch(for: rawMimeData)
+
         default:
             // TODO: - Ticket - Improve error handling for MessageViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -248,6 +251,37 @@ extension MessageViewController {
             onCompletion: { [weak self] passPhrase in
                 self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
             })
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func handleKeyMismatch(for rawMimeData: Data) {
+        let alert = UIAlertController(
+            title: "error_key_mismatch".localized,
+            message: nil, preferredStyle: .alert
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "go_back".localized,
+                style: .cancel,
+                handler: { [weak self] _ in
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "message_open_anyway".localized,
+                style: .default,
+                handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.processedMessage = ProcessedMessage(rawMimeData: rawMimeData,
+                                                              text: String(data: rawMimeData, encoding: .utf8) ?? "",
+                                                              attachments: [],
+                                                              messageType: .encrypted)
+                    self.handleReceivedMessage()
+                }
+            )
+        )
         present(alert, animated: true, completion: nil)
     }
 

@@ -10,7 +10,10 @@ Project to run Appium tests together with WebdriverIO for:
 ACCOUNT_EMAIL=
 ACCOUNT_PASSWORD=
 PASS_PHRASE=
+BUNDLE_ID= 
 
 ## Install dependencies with `npm i`
+
+## Install Appium 1.22.0 version with `npm install -g appium@1.22.0`
 
 ## Run smoke tests for iOS with `npm run ios.smoke`, all tests with tag #smoke will be included

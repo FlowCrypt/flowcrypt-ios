@@ -65,6 +65,15 @@
         }
       },
       {
+        "package": "MailCore",
+        "repositoryURL": "https://github.com/FlowCrypt/mailcore2",
+        "state": {
+          "branch": null,
+          "revision": "512e3074f7b80a4425be806e3ce968f1e84b995f",
+          "version": "0.7.5"
+        }
+      },
+      {
         "package": "MBProgressHUD",
         "repositoryURL": "https://github.com/jdg/MBProgressHUD",
         "state": {
@@ -98,6 +107,15 @@
           "branch": null,
           "revision": "23f60515a00f076a9e3f2dc672fe1ae07601ee90",
           "version": "11.4.1"
+        }
+      },
+      {
+        "package": "Toast",
+        "repositoryURL": "https://github.com/scalessec/Toast-Swift",
+        "state": {
+          "branch": null,
+          "revision": "0c9493eeacb102cc614da385cfaaf475379f4ab4",
+          "version": "5.0.1"
         }
       }
     ]
