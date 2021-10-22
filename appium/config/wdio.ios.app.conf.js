@@ -8,12 +8,7 @@ config.suites = {
         './tests/specs/**/*.spec.ts'
     ],
     smoke: [
-        './tests/specs/login/GmailLogin.spec.ts',
-        './tests/specs/inbox/ReadTextEmail.spec.ts',
-        './tests/specs/composeEmail/CheckComposeEmailAfterReopening.spec.ts',
-        './tests/specs/inbox/ReadEmailAfterRestartApp.spec.ts',
-        './tests/specs/inbox/CheckEncryptedEmailAfterRestartApp.spec.ts',
-        './tests/specs/settings/CheckSettingsForLoggedUser.spec.ts',
+        './tests/specs/login/GmailLogin.spec.ts'
     ]
 };
 
@@ -21,10 +16,10 @@ config.capabilities = [
     {
         platformName: 'iOS',
         iosInstallPause: 5000,
-        deviceName: 'iPhone 11',
+        deviceName: 'iPhone 13',
         platformVersion: '15.0',
         automationName: 'XCUITest',
-        app: join(process.cwd(), './apps/FlowCrypt.app'),
+        app: join(process.cwd(), './FlowCrypt.app'),
         newCommandTimeout: 10000,
         wdaLaunchTimeout: 300000,
         wdaConnectionTimeout: 600000,
