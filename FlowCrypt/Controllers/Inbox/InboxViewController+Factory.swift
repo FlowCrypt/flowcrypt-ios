@@ -21,9 +21,9 @@ class InboxViewControllerFactory {
             guard let threadsProvider = MailProvider.shared.messagesThreadProvider else {
                 fatalError("Internal inconsistency")
             }
-            let provider = InboxMessageThreadsProvider(provider: threadsProvider)
+//            let provider = InboxMessageThreadsProvider(provider: threadsProvider)
             // TODO: - ANTON - remove
-//            let provider = InboxMessageListProvider()
+            let provider = InboxMessageListProvider()
             return InboxViewController(
                 viewModel,
                 numberOfMessagesToLoad: 20,

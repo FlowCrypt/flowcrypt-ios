@@ -9,15 +9,17 @@
 
 import Foundation
 
+typealias MessageActionCompletion = (MessageAction, InboxRenderable) -> Void
+
 enum MessageAction {
-    case moveToTrash, archive, changeReadFlag, permanentlyDelete
+    case moveToTrash, archive, markUnread(Bool), permanentlyDelete
 
     var text: String? {
         switch self {
         case .moveToTrash: return "email_removed".localized
         case .archive: return "email_archived".localized
         case .permanentlyDelete: return "email_deleted".localized
-        case .changeReadFlag: return nil
+        case .markUnread: return nil
         }
     }
 
@@ -26,7 +28,7 @@ enum MessageAction {
         case .moveToTrash: return "error_move_trash".localized
         case .archive: return "error_archive".localized
         case .permanentlyDelete: return "error_permanently_delete".localized
-        case .changeReadFlag: return nil
+        case .markUnread: return nil
         }
     }
 }

@@ -31,8 +31,7 @@ final class MessageViewController: TableNodeViewController {
         }
     }
 
-    typealias MsgViewControllerCompletion = (MessageAction, Message) -> Void
-    private let onCompletion: MsgViewControllerCompletion?
+    private let onCompletion: MessageActionCompletion
 
     private var cancellable = Set<AnyCancellable>()
 
@@ -55,7 +54,7 @@ final class MessageViewController: TableNodeViewController {
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         filesManager: FilesManagerType = FilesManager(),
         input: MessageViewController.Input,
-        completion: MsgViewControllerCompletion?
+        completion: @escaping MessageActionCompletion
     ) {
         self.messageService = messageService
         self.messageOperationsProvider = messageOperationsProvider
@@ -132,14 +131,14 @@ extension MessageViewController {
     }
 
     private func asyncMarkAsReadIfNotAlreadyMarked() {
-        messageOperationsProvider.markAsRead(message: input.objMessage, folder: input.path)
-            .then(on: .main) { [weak self] in
-                guard let self = self else { return }
-                self.input.objMessage = self.input.objMessage.markAsRead(true)
+        Task {
+            do {
+                try await messageOperationsProvider.markAsRead(message: input.objMessage, folder: input.path)
+                input.objMessage = self.input.objMessage.markAsRead(true)
+            } catch {
+                showToast("Could not mark message as read: \(error)")
             }
-            .catch(on: .main) { [weak self] error in
-                self?.showToast("Could not mark message as read: \(error)")
-            }
+        }
     }
 
     private func handleOpSuccess(operation: MessageAction) {
@@ -148,7 +147,7 @@ extension MessageViewController {
 
         navigationController?.popViewController(animated: true) { [weak self] in
             guard let self = self else { return }
-            self.onCompletion?(operation, self.input.objMessage)
+            self.onCompletion(operation, .init(message: self.input.objMessage))
         }
     }
 }
@@ -246,23 +245,22 @@ extension MessageViewController {
 extension MessageViewController: MessageActionsHandler {
 
     func handleMarkUnreadTap() {
-        messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
-            .then(on: .main) { [weak self] in
-                guard let self = self else { return }
-                self.input.objMessage = self.input.objMessage.markAsRead(false)
-                self.onCompletion?(MessageAction.changeReadFlag, self.input.objMessage)
-                self.navigationController?.popViewController(animated: true)
+        Task {
+            do {
+                try await messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
+                onCompletion(MessageAction.markUnread(true), .init(message: self.input.objMessage))
+                navigationController?.popViewController(animated: true)
+            } catch {
+                showToast("Could not mark message as unread: \(error)")
             }
-            .catch(on: .main) { [weak self] error in
-                self?.showToast("Could not mark message as unread: \(error)")
-            }
+        }
     }
 
     func handleTrashTap() {
         showSpinner()
 
         trashFolderProvider.getTrashFolderPath()
-            .then { [weak self] trashPath in
+            .then(on: .main) { [weak self] trashPath in
                 guard let strongSelf = self, let path = trashPath else {
                     self?.permanentlyDelete()
                     return
@@ -278,52 +276,63 @@ extension MessageViewController: MessageActionsHandler {
     }
 
     func handleArchiveTap() {
-        showSpinner()
-        messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
-            .then(on: .main) { [weak self] _ in
-                self?.handleOpSuccess(operation: .archive)
+        Task {
+            do {
+                showSpinner()
+                try await messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
+                handleOpSuccess(operation: .archive)
+            } catch {
+                handleOpErr(operation: .archive)
             }
-            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
-                self?.handleOpErr(operation: .archive)
-            }
+        }
     }
 
     private func permanentlyDelete() {
-        Promise<Bool> { [weak self] () -> Bool in
-            guard let self = self else { throw AppErr.nilSelf }
-            guard try awaitPromise(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-            try awaitPromise(self.messageOperationsProvider.delete(message: self.input.objMessage, form: self.input.path))
-            return true
-        }
-        .then(on: .main) { [weak self] didPerformOp in
-            guard didPerformOp else { self?.hideSpinner(); return }
-            self?.handleOpSuccess(operation: .permanentlyDelete)
-        }.catch(on: .main) { [weak self] _ in
-            self?.handleOpErr(operation: .permanentlyDelete)
+        awaitUserConfirmation { [weak self] in
+            self?.delete()
         }
     }
 
-    private func awaitUserConfirmation(title: String) -> Promise<Bool> {
-        Promise<Bool>(on: .main) { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let alert = UIAlertController(title: "Are you sure?", message: title, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in resolve(false) }))
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in resolve(true) }))
-            self.present(alert, animated: true, completion: nil)
+    private func delete() {
+        Task {
+            do {
+                try await messageOperationsProvider.delete(message: self.input.objMessage, form: self.input.path)
+                handleOpSuccess(operation: .permanentlyDelete)
+            } catch {
+                handleOpErr(operation: .archive)
+            }
         }
+    }
+
+    func awaitUserConfirmation(_ completion: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: "Are you sure?",
+            message: "You're about to permanently delete a message",
+            preferredStyle: .alert
+        )
+        alert.addAction(
+            UIAlertAction(title: "Cancel", style: .default)
+        )
+        alert.addAction(
+            UIAlertAction(title: "OK", style: .default) { _ in
+                completion()
+            }
+        )
+        present(alert, animated: true, completion: nil)
     }
 
     private func moveToTrash(with trashPath: String) {
-        messageOperationsProvider.moveMessageToTrash(
-            message: input.objMessage,
-            trashPath: trashPath,
-            from: input.path
-        )
-        .then(on: .main) { [weak self] in
-            self?.handleOpSuccess(operation: .moveToTrash)
-        }
-        .catch(on: .main) { [weak self] _ in
-            self?.handleOpErr(operation: .moveToTrash)
+        Task {
+            do {
+                try await messageOperationsProvider.moveMessageToTrash(
+                    message: input.objMessage,
+                    trashPath: trashPath,
+                    from: input.path
+                )
+                handleOpSuccess(operation: .moveToTrash)
+            } catch {
+                handleOpErr(operation: .moveToTrash)
+            }
         }
     }
 
@@ -351,7 +360,7 @@ extension MessageViewController: MessageActionsHandler {
 
 extension MessageViewController: NavigationChildController {
     func handleBackButtonTap() {
-        onCompletion?(MessageAction.changeReadFlag, input.objMessage)
+        onCompletion(MessageAction.markUnread(false), .init(message: input.objMessage))
         navigationController?.popViewController(animated: true)
     }
 }

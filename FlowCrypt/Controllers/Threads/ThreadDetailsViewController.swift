@@ -14,8 +14,6 @@ import Foundation
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
-    typealias Completion = (MessageAction, MessageThread) -> Void
-
     class Input {
         let message: Message
         var isExpanded: Bool
@@ -42,14 +40,14 @@ final class ThreadDetailsViewController: TableNodeViewController {
     var currentFolderPath: String {
         thread.path
     }
-    private let onComplete: Completion
+    private let onComplete: MessageActionCompletion
 
     init(
         messageService: MessageService = MessageService(),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         thread: MessageThread,
-        completion: @escaping Completion
+        completion: @escaping MessageActionCompletion
     ) {
         self.messageService = messageService
         self.messageOperationsProvider = messageOperationsProvider
@@ -101,6 +99,10 @@ extension ThreadDetailsViewController {
         let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand)
         handleTap(at: indexPath)
     }
+
+    private func markAsRead() {
+
+    }
 }
 
 extension ThreadDetailsViewController {
@@ -141,8 +143,6 @@ extension ThreadDetailsViewController {
             completion: { _ in
                 self.node.scrollToRow(at: indexPath, at: .middle, animated: true)
             })
-        // TODO: - ANTON
-        // asyncMarkAsReadIfNotAlreadyMarked()
     }
 
     private func handleError(_ error: Error, at indexPath: IndexPath) {
@@ -239,7 +239,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
             do {
                 showSpinner()
                 try await messageOperationsProvider.markAsUnread(message: message, folder: thread.path)
-                onComplete(.changeReadFlag, thread)
+                onComplete(.markUnread(true), .init(thread: thread))
                 hideSpinner()
                 navigationController?.popViewController(animated: true)
             } catch {
@@ -286,6 +286,14 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             return
         }
         handleTap(at: indexPath)
+    }
+}
+
+extension ThreadDetailsViewController: NavigationChildController {
+    func handleBackButtonTap() {
+        let isAnyUnread = thread.messages.contains(where: { !$0.isMessageRead })
+        onComplete(MessageAction.markUnread(isAnyUnread), .init(thread: thread))
+        navigationController?.popViewController(animated: true)
     }
 }
 

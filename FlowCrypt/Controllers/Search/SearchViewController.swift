@@ -107,23 +107,55 @@ extension SearchViewController {
 
 // MARK: - MessageHandlerViewConroller
 extension SearchViewController: MsgListViewController {
-    func msgListGetIndex(message: Message) -> Int? {
-        state.messages.firstIndex(of: message)
+//    func getUpdatedIndex(for message: InboxRenderable) -> IndexPath? {
+//        guard let message = message.wrappedMessage else {
+//            return nil
+//        }
+//        return state.messages.firstIndex(of: message)
+//    }
+//
+//    func updateMessage(at index: IndexPath) {
+//        // TODO: - ANTON
+//    }
+//
+//    func removeMessage(at index: IndexPath) {
+//        var updatedMessages = state.messages
+//        guard updatedMessages[safe: index] != nil else { return }
+//        updatedMessages.remove(at: index)
+//        state = updatedMessages.isEmpty
+//            ? .empty
+//            : .fetched(updatedMessages, .removed(index))
+//    }
+//
+//    func msgListGetIndex(message: Message) -> Int? {
+//        state.messages.firstIndex(of: message)
+//    }
+//
+//    func msgListRenderAsRemoved(message _: Message, at index: Int) {
+//        var updatedMessages = state.messages
+//        guard updatedMessages[safe: index] != nil else { return }
+//        updatedMessages.remove(at: index)
+//        state = updatedMessages.isEmpty
+//            ? .empty
+//            : .fetched(updatedMessages, .removed(index))
+//    }
+//
+//    func msgListUpdateReadFlag(message: Message, at index: Int) {
+//        var updatedMessages = state.messages
+//        updatedMessages[safe: index] = message
+//        state = .fetched(updatedMessages, .added(index))
+//    }
+
+    func getUpdatedIndex(for message: InboxRenderable) -> Int? {
+        nil
     }
 
-    func msgListRenderAsRemoved(message _: Message, at index: Int) {
-        var updatedMessages = state.messages
-        guard updatedMessages[safe: index] != nil else { return }
-        updatedMessages.remove(at: index)
-        state = updatedMessages.isEmpty
-            ? .empty
-            : .fetched(updatedMessages, .removed(index))
+    func updateMessage(isUnread: Bool, at index: Int) {
+
     }
 
-    func msgListUpdateReadFlag(message: Message, at index: Int) {
-        var updatedMessages = state.messages
-        updatedMessages[safe: index] = message
-        state = .fetched(updatedMessages, .added(index))
+    func removeMessage(at index: Int) {
+        
     }
 }
 
@@ -199,7 +231,8 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         tableNode.deselectRow(at: indexPath, animated: false)
         guard let message = state.messages[safe: indexPath.row] else { return }
 
-        msgListOpenMsgElseShowToast(with: message, path: folderPath)
+        // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
+        open(with: .init(message: message), path: folderPath)
     }
 }
 

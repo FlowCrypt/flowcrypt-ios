@@ -370,43 +370,51 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
 // MARK: - MsgListViewController
 extension InboxViewController: MsgListViewController {
-    func msgListGetIndex(message: Message) -> Int? {
-        inboxInput.compactMap(\.wrappedMessage)
-            .firstIndex(of: message)
-    }
+//    func getUpdatedIndex(for message: InboxRenderable) -> Int? {
+//        inboxInput.firstIndex(of: message)
+//    }
+//
+//    func updateMessage(at index: IndexPath) {
+//        // TODO: - ANTON
+////        inboxInput[index] = InboxRenderable(message: message)
+////        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+////            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+////        }
+//    }
+//
+//    func removeMessage(at indexPath: IndexPath) {
+//        guard inboxInput[safe: indexPath.section] != nil else { return }
+//        inboxInput.remove(at: indexPath.section)
+//
+//        guard inboxInput.isNotEmpty else {
+//            state = .empty
+//            tableNode.reloadData()
+//            return
+//        }
+//        switch state {
+//        case .fetched(.byNumber(let total)):
+//            let newTotalNumber = (total ?? 0) - 1
+//            if newTotalNumber == 0 {
+//                state = .empty
+//                tableNode.reloadData()
+//            } else {
+//                state = .fetched(.byNumber(total: newTotalNumber))
+//                tableNode.deleteRows(at: [indexPath], with: .left)
+//            }
+//        default:
+//            tableNode.deleteRows(at: [indexPath], with: .left)
+//        }
+//    }
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
-        inboxInput.firstIndex(of: message)
+        nil
     }
 
-    func msgListUpdateReadFlag(message: Message, at index: Int) {
-        inboxInput[index] = InboxRenderable(message: message)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-        }
+    func updateMessage(isUnread: Bool, at index: Int) {
+
     }
 
-    func msgListRenderAsRemoved(message _: Message, at index: Int) {
-        guard inboxInput[safe: index] != nil else { return }
-        inboxInput.remove(at: index)
+    func removeMessage(at index: Int) {
 
-        guard inboxInput.isNotEmpty else {
-            state = .empty
-            tableNode.reloadData()
-            return
-        }
-        switch state {
-        case .fetched(.byNumber(let total)):
-            let newTotalNumber = (total ?? 0) - 1
-            if newTotalNumber == 0 {
-                state = .empty
-                tableNode.reloadData()
-            } else {
-                state = .fetched(.byNumber(total: newTotalNumber))
-                tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-            }
-        default:
-            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-        }
     }
 }
