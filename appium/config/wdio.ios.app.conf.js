@@ -12,6 +12,8 @@ config.suites = {
         './tests/specs/inbox/ReadTextEmail.spec.ts',
         './tests/specs/composeEmail/CheckComposeEmailAfterReopening.spec.ts',
         './tests/specs/inbox/ReadEmailAfterRestartApp.spec.ts',
+        './tests/specs/inbox/CheckEncryptedEmailAfterRestartApp.spec.ts',
+        './tests/specs/settings/CheckSettingsForLoggedUser.spec.ts',
     ]
 };
 
@@ -19,7 +21,7 @@ config.capabilities = [
     {
         platformName: 'iOS',
         iosInstallPause: 5000,
-        deviceName: 'iPhone 11 Pro Max',
+        deviceName: 'iPhone 11',
         platformVersion: '15.0',
         automationName: 'XCUITest',
         app: join(process.cwd(), './apps/FlowCrypt.app'),

@@ -1,7 +1,12 @@
 import BaseScreen from './base.screen';
+import {CommonData} from "../data";
 
 const SELECTORS = {
-    BACK_BTN: '~arrow left c'
+    BACK_BTN: '~arrow left c',
+    ENTER_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
+    OK_BUTTON: '~Ok',
+    WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
+    SAVE_BUTTON: '~Save',
 };
 
 const { join } = require('path');
@@ -13,6 +18,22 @@ class EmailScreen extends BaseScreen {
 
     get backButton() {
         return $(SELECTORS.BACK_BTN)
+    }
+
+    get enterPassPhraseField() {
+        return $(SELECTORS.ENTER_PASS_PHRASE_FIELD)
+    }
+
+    get okButton () {
+        return $(SELECTORS.OK_BUTTON)
+    }
+
+    get wrongPassPhraseMessage () {
+        return $(SELECTORS.WRONG_PASS_PHRASE_MESSAGE)
+    }
+
+    get saveButton() {
+        return $(SELECTORS.SAVE_BUTTON)
     }
 
     checkEmailAddress (email) {
@@ -39,6 +60,22 @@ class EmailScreen extends BaseScreen {
 
     clickBackButton () {
         this.backButton.click();
+    }
+
+    clickOkButton() {
+        this.okButton.click();
+    }
+
+    enterPassPhrase (text: string = CommonData.account.passPhrase) {
+        this.enterPassPhraseField.setValue(text);
+    };
+
+    checkErrorMessage() {
+        this.wrongPassPhraseMessage.waitForDisplayed();
+    }
+
+    clickSaveButton() {
+        this.saveButton.click();
     }
 }
 
