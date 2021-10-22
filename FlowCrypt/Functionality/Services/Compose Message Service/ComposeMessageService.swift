@@ -86,7 +86,7 @@ final class ComposeMessageService {
         let sendableAttachments: [SendableMsg.Attachment] = contextToSend.attachments
             .map { composeAttachment in
                 return SendableMsg.Attachment(
-                    name: "\(composeAttachment.name).pgp",
+                    name: composeAttachment.name,
                     type: composeAttachment.type,
                     base64: composeAttachment.data.base64EncodedString()
                 )

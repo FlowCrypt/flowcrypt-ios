@@ -57,7 +57,6 @@ class NewMessageScreen extends BaseScreen {
         expect(this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
 
     }
-
 }
 
 export default new NewMessageScreen();

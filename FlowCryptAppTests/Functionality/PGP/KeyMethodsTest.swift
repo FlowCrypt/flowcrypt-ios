@@ -42,7 +42,8 @@ class KeyMethodsTest: XCTestCase {
                 lastModified: nil,
                 expiration: nil,
                 users: [],
-                algo: nil
+                algo: nil,
+                revoked: false
             ),
             KeyDetails(
                 public: "Public part2",
@@ -56,7 +57,8 @@ class KeyMethodsTest: XCTestCase {
                 lastModified: nil,
                 expiration: nil,
                 users: [],
-                algo: nil
+                algo: nil,
+                revoked: false
             )
         ]
         let result = sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
@@ -91,7 +93,8 @@ extension KeyMethodsTest {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         ),
         KeyDetails(
             public: "Public part2",
@@ -105,7 +108,8 @@ extension KeyMethodsTest {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
     ]}
 }

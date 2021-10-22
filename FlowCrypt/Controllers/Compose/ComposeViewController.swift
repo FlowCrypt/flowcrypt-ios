@@ -583,7 +583,6 @@ extension ComposeViewController {
     private func handleEditingChanged(with text: String?) {
         guard let text = text, text.isNotEmpty else {
             search.send("")
-            updateState(with: .main)
             return
         }
 
@@ -598,33 +597,50 @@ extension ComposeViewController {
 // MARK: - Action Handling
 extension ComposeViewController {
     private func searchEmail(with query: String) {
-        cloudContactProvider.searchContacts(query: query)
-            .then(on: .main) { [weak self] emails in
-                let state: State = emails.isNotEmpty
-                    ? .searchEmails(emails)
-                    : .main
-                self?.updateState(with: state)
-            }
+        Task {
+            let localEmails = contactsService.searchContacts(query: query)
+            let cloudEmails = try? await cloudContactProvider.searchContacts(query: query)
+            let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
+            let state: State = emails.isNotEmpty
+                ? .searchEmails(Array(emails))
+                : .main
+            updateState(with: state)
+        }
     }
 
     private func evaluate(recipient: ComposeMessageRecipient) {
         guard isValid(email: recipient.email) else {
-            updateRecipientWithNew(state: self.decorator.recipientErrorState, for: .left(recipient))
+            updateRecipientWithNew(state: self.decorator.recipientInvalidEmailState, for: .left(recipient))
             return
         }
 
-        contactsService.searchContact(with: recipient.email)
-            .then(on: .main) { [weak self] _ in
-                self?.handleEvaluation(for: recipient)
+        Task {
+            do {
+                let contact = try await contactsService.searchContact(with: recipient.email)
+                let state = self.getRecipientState(from: contact)
+                handleEvaluation(for: recipient, with: state)
+            } catch {
+                handleEvaluation(error: error, with: recipient)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleEvaluation(error: error, with: recipient)
-            }
+        }
     }
 
-    private func handleEvaluation(for recipient: ComposeMessageRecipient) {
+    private func getRecipientState(from recipient: RecipientWithPubKeys) -> RecipientState {
+        switch recipient.keyState {
+        case .active:
+            return decorator.recipientKeyFoundState
+        case .expired:
+            return decorator.recipientKeyExpiredState
+        case .revoked:
+            return decorator.recipientKeyRevokedState
+        case .empty:
+            return decorator.recipientKeyNotFoundState
+        }
+    }
+
+    private func handleEvaluation(for recipient: ComposeMessageRecipient, with state: RecipientState) {
         updateRecipientWithNew(
-            state: decorator.recipientKeyFoundState,
+            state: state,
             for: .left(recipient)
         )
     }
@@ -687,7 +703,7 @@ extension ComposeViewController {
         switch recipient.state {
         case .idle:
             handleRecipientSelection(with: indexPath)
-        case .keyFound, .keyNotFound, .selected:
+        case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .selected:
             break
         case let .error(_, isRetryError):
             if isRetryError {
@@ -712,11 +728,13 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
+        node.reloadSections([1], with: .automatic)
+
         switch state {
         case .main:
-            node.reloadSections([0, 1], with: .fade)
+            node.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         case .searchEmails:
-            node.reloadSections([1], with: .fade)
+            break
         }
     }
 }
