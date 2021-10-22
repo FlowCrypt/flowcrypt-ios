@@ -137,11 +137,11 @@ extension UIColor {
     }
 
     static var expiredKeyColor: UIColor {
-        UIColor(r: 194/255, g: 126/255, b: 35/255)
+        UIColor(r: 194, g: 126, b: 35)
     }
 
     static var revokedKeyColor: UIColor {
-        UIColor(r: 209/255, g: 72/255, b: 54/255)
+        UIColor(r: 209, g: 72, b: 54)
     }
 }
 

@@ -616,16 +616,9 @@ extension ComposeViewController {
 
         Task {
             do {
-            //     contactsService.searchContact(with: recipient.email)
-            // .then(on: .main) { [weak self] contact in
-            //     guard let self = self else { return }
-            //     let state = self.getRecipientState(from: contact)
-            //     self.handleEvaluation(for: recipient, with: state)
-            // }
-            // .catch(on: .main) { [weak self] error in
-            //     self?.handleEvaluation(error: error, with: recipient)
-                _ = try await contactsService.searchContact(with: recipient.email)
-                handleEvaluation(for: recipient)
+                let contact = try await contactsService.searchContact(with: recipient.email)
+                let state = self.getRecipientState(from: contact)
+                handleEvaluation(for: recipient, with: state)
             } catch {
                 handleEvaluation(error: error, with: recipient)
             }
@@ -682,7 +675,6 @@ extension ComposeViewController {
             }
         }()
 
-        print("STATE \(state)")
         guard let recipientIndex = index else { return }
         contextToSend.recipients[recipientIndex].state = state
         node.reloadRows(at: [recipientsIndexPath], with: .fade)
