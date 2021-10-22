@@ -18,7 +18,7 @@ protocol ContactsServiceType: PublicKeyProvider, ContactsProviderType {
 }
 
 protocol ContactsProviderType {
-    func searchContact(with email: String) -> Promise<RecipientWithPubKeys>
+    func searchContact(with email: String) async throws -> RecipientWithPubKeys
     func searchContacts(query: String) -> [String]
 }
 
@@ -43,16 +43,16 @@ struct ContactsService: ContactsServiceType {
 }
 
 extension ContactsService: ContactsProviderType {
-    func searchContact(with email: String) -> Promise<RecipientWithPubKeys> {
+    func searchContact(with email: String) async throws -> RecipientWithPubKeys {
         guard let contact = localContactsProvider.searchRecipient(with: email) else {
-            return pubLookup.lookup(with: email).then { recipient in
-                localContactsProvider.save(recipient: recipient)
-            }
+            let recipient = try await pubLookup.lookup(with: email)
+            localContactsProvider.save(recipient: recipient)
+            return recipient
         }
-        pubLookup.lookup(with: email).then { recipient in
-            localContactsProvider.updateKeys(for: recipient)
-        }
-        return Promise(contact)
+
+        let recipient = try await pubLookup.lookup(with: email)
+        localContactsProvider.updateKeys(for: recipient)
+        return contact
     }
 
     func searchContacts(query: String) -> [String] {

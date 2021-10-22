@@ -614,15 +614,22 @@ extension ComposeViewController {
             return
         }
 
-        contactsService.searchContact(with: recipient.email)
-            .then(on: .main) { [weak self] contact in
-                guard let self = self else { return }
-                let state = self.getRecipientState(from: contact)
-                self.handleEvaluation(for: recipient, with: state)
+        Task {
+            do {
+            //     contactsService.searchContact(with: recipient.email)
+            // .then(on: .main) { [weak self] contact in
+            //     guard let self = self else { return }
+            //     let state = self.getRecipientState(from: contact)
+            //     self.handleEvaluation(for: recipient, with: state)
+            // }
+            // .catch(on: .main) { [weak self] error in
+            //     self?.handleEvaluation(error: error, with: recipient)
+                _ = try await contactsService.searchContact(with: recipient.email)
+                handleEvaluation(for: recipient)
+            } catch {
+                handleEvaluation(error: error, with: recipient)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleEvaluation(error: error, with: recipient)
-            }
+        }
     }
 
     private func getRecipientState(from recipient: RecipientWithPubKeys) -> RecipientState {

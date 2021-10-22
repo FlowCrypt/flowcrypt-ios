@@ -93,7 +93,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
             let setting = self.rows[indexPath.row]
-            return SettingsCellNode(
+            return TitleCellNode(
                 title: self.decorator.attributedSetting(setting.title),
                 insets: self.decorator.insets
             )

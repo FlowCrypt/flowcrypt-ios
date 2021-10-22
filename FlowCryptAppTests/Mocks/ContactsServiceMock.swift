@@ -10,15 +10,22 @@ import Foundation
 import Promises
 @testable import FlowCrypt
 
-class ContactsServiceMock: ContactsServiceType {
+final class ContactsServiceMock: ContactsServiceType {
     var retrievePubKeysResult: ((String) -> ([String]))!
     func retrievePubKeys(for email: String) -> [String] {
         retrievePubKeysResult(email)
     }
-    
+
     var searchContactResult: Result<RecipientWithPubKeys, Error>!
-    func searchContact(with email: String) -> Promise<RecipientWithPubKeys> {
-        Promise<RecipientWithPubKeys>.resolveAfter(with: searchContactResult)
+    func searchContact(with email: String) async throws -> RecipientWithPubKeys {
+        switch searchContactResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        default:
+            fatalError()
+        }
     }
     func searchContacts(query: String) -> [String] { [] }
 

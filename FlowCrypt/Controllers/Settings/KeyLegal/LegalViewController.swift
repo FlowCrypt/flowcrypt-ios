@@ -6,23 +6,45 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
+import AsyncDisplayKit
+import FlowCryptUI
 
 /**
  * View controller which shows legal information (privacy, license, sources, terms)
  * - User can be redirected here from settings *SettingsViewController*
  */
-final class LegalViewController: UIViewController {
-    private let provider: LegalViewControllersProviderType
-    private lazy var segment: SegmentedViewController = SegmentedViewController(
-        dataSource: self.provider.viewControllers()
-    )
+final class LegalViewController: TableNodeViewController {
+
+    private enum Items: Int, CaseIterable {
+        case privacy, terms, license, sources
+
+        var title: String {
+            switch self {
+            case .privacy: return "settings_legal_privacy".localized
+            case .terms: return "settings_legal_terms".localized
+            case .license: return "settings_legal_license".localized
+            case .sources: return "settings_legal_sources".localized
+            }
+        }
+
+        var url: URL {
+            switch self {
+            case .privacy: return URL(string: "https://flowcrypt.com/privacy")!
+            case .terms: return URL(string: "https://flowcrypt.com/terms")!
+            case .license: return URL(string: "https://flowcrypt.com/license")!
+            case .sources: return URL(string: "https://github.com/FlowCrypt/flowcrypt-ios")!
+            }
+        }
+    }
+
+    private let decorator: LegalViewDecoratorType
+    private let rows = Items.allCases
 
     init(
-        provider: LegalViewControllersProviderType = LegalViewControllersProvider()
+        decorator: LegalViewDecoratorType = LegalViewDecorator()
     ) {
-        self.provider = provider
-        super.init(nibName: nil, bundle: nil)
+        self.decorator = decorator
+        super.init(node: TableNode())
     }
 
     @available(*, unavailable)
@@ -32,27 +54,42 @@ final class LegalViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setup()
+        setupUI()
     }
 
-    private func setup() {
-        title = "settings_screen_legal".localized
-        edgesForExtendedLayout = [.top]
-        addChild(segment)
-        view.addSubview(segment.node.view)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
+    private func setupUI() {
+        node.delegate = self
+        node.dataSource = self
+        title = decorator.sceneTitle
         view.backgroundColor = .backgroundColor
-        segment.didMove(toParent: self)
+    }
+}
+
+// MARK: - ASTableDelegate, ASTableDataSource
+
+extension LegalViewController: ASTableDelegate, ASTableDataSource {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
+        rows.count
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        let originY = safeAreaWindowInsets.top
-            + (navigationController?.navigationBar.frame.height ?? 0)
-        segment.node.view.frame = CGRect(
-            x: 0,
-            y: originY,
-            width: view.frame.width,
-            height: view.frame.height - originY
-        )
+    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self else { return ASCellNode() }
+            let legal = self.rows[indexPath.row]
+            return TitleCellNode(
+                title: self.decorator.attributedSetting(legal.title),
+                insets: self.decorator.insets
+            )
+        }
+    }
+
+    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        let legal = rows[indexPath.row]
+        UIApplication.shared.open(legal.url)
     }
 }
