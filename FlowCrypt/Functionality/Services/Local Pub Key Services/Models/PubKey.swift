@@ -24,7 +24,7 @@ struct PubKey {
     let created: Date?
     /// key algo
     let algo: KeyAlgo?
-    /// key revoked status
+    /// is key revoked
     let isRevoked: Bool
 }
 
