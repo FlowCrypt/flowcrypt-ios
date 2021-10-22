@@ -42,6 +42,10 @@ class MenuBarScreen extends BaseScreen {
     clickLogout () {
         this.logoutButton.click();
     }
+
+    clickSettingsButton () {
+        this.settingsButton.click();
+    }
 }
 
 export default new MenuBarScreen();
