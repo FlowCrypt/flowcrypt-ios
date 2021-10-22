@@ -6,6 +6,7 @@ import AsyncDisplayKit
 import Combine
 import FlowCryptCommon
 import FlowCryptUI
+import Foundation
 
 /**
  * View controller to compose the message and send it
@@ -118,10 +119,28 @@ final class ComposeViewController: TableNodeViewController {
         cancellable.forEach { $0.cancel() }
         setupSearch()
         startTimer()
+
+        evaluateIfNeeded()
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    private func evaluateIfNeeded() {
+        guard contextToSend.recipients.isNotEmpty else {
+            return
+        }
+
+        for recepient in contextToSend.recipients {
+            evaluate(recipient: recepient)
+        }
+    }
+
+    func updateWithMessage(message: Message) {
+        self.contextToSend.subject = message.subject
+//        self.contextToSend.message = message.raw
+        self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", state: decorator.recipientIdleState)]
     }
 
 }
@@ -163,7 +182,6 @@ extension ComposeViewController {
             guard shouldSaveDraft() else { return }
 
             do {
-//                let key = try await prepareSigningKey()
                 let messagevalidationResult = composeMessageService.validateMessage(
                     input: input,
                     contextToSend: contextToSend,
@@ -325,6 +343,7 @@ extension ComposeViewController {
                         continuation.resume(throwing: MessageServiceError.unknown)
                     },
                     onCompletion: { passPhrase in
+                        // save passphrase
                         continuation.resume(returning: signingKey.copy(with: passPhrase))
                     })
                 present(alert, animated: true, completion: nil)

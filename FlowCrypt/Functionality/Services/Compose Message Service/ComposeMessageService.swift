@@ -36,11 +36,11 @@ final class ComposeMessageService {
     private let dataService: KeyStorageType
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
-    private let draftGateway: DraftSaveGateway?
+    private let draftGateway: DraftGateway?
 
     init(
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
-        draftGateway: DraftSaveGateway? = MailProvider.shared.draftGateway,
+        draftGateway: DraftGateway? = MailProvider.shared.draftGateway,
         dataService: KeyStorageType = KeyDataStorage(),
         contactsService: ContactsServiceType = ContactsService(),
         core: CoreComposeMessageType & KeyParser = Core.shared
@@ -158,6 +158,12 @@ final class ComposeMessageService {
         }
     }
 
+    func getDraft(with identifier: String) {
+        Task {
+            let draft = try await draftGateway?.getFraft(with: identifier)
+        }
+    }
+
     // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
         do {
@@ -168,6 +174,10 @@ final class ComposeMessageService {
 
             try await messageGateway.sendMail(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
                                               progressHandler: progressHandler)
+            // cleaning any draft saved/created/fetched during editing
+            if let draftId = draft?.identifier {
+                await draftGateway?.deleteDraft(with: draftId)
+            }
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }

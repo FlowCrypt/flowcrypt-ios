@@ -20,6 +20,10 @@ struct InboxViewModel {
             self.path = path
         }
     }
+
+    var isDrafts: Bool {
+        return folderName == "Draft"
+    }
 }
 
 extension InboxViewModel {

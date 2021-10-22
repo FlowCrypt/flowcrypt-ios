@@ -65,8 +65,12 @@ final class MailProvider {
         resolveService(of: UsersMailSessionProvider.self)
     }
 
-    var draftGateway: DraftSaveGateway? {
-        resolveOptionalService(of: DraftSaveGateway.self)
+    var draftGateway: DraftGateway? {
+        resolveOptionalService(of: DraftGateway.self)
+    }
+
+    var draftsProvider: DraftsListProvider? {
+        resolveOptionalService(of: DraftsListProvider.self)
     }
 
     private init(

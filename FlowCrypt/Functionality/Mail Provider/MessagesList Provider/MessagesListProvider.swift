@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 
 struct FetchMessageContext {
     /// Specify specific folder, or in all folders

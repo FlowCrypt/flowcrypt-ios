@@ -18,6 +18,8 @@ protocol MessageGateway {
     func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws
 }
 
-protocol DraftSaveGateway {
+protocol DraftGateway {
     func saveDraft(input: MessageGatewayInput, draft: GTLRGmail_Draft?) async throws -> GTLRGmail_Draft
+    func getFraft(with identifier: String) async throws -> GTLRGmail_Draft
+    func deleteDraft(with identifier: String) async
 }

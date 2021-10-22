@@ -57,6 +57,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let enterpriseServerApi: EnterpriseServerApiType
+    private let draftsListProvider: DraftsListProvider?
     private let refreshControl = UIRefreshControl()
     private let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
@@ -71,11 +72,13 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     init(
         _ viewModel: InboxViewModel,
         messageProvider: MessagesListProvider = MailProvider.shared.messageListProvider,
+        draftsListProvider: DraftsListProvider? = MailProvider.shared.draftsProvider,
         decorator: InboxViewDecorator = InboxViewDecorator(),
         enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
         self.viewModel = viewModel
         self.service = ServiceActor(messageProvider: messageProvider)
+        self.draftsListProvider = draftsListProvider
         self.decorator = decorator
         self.enterpriseServerApi = enterpriseServerApi
         tableNode = TableNode()
@@ -155,6 +158,31 @@ extension InboxViewController {
 // MARK: - Functionality
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
+        guard let provider = draftsListProvider, viewModel.isDrafts else {
+            fetchAndRenderEmailsOnly(batchContext)
+            return
+        }
+        fetchAndRenderDrafts(batchContext, draftsProvider: provider)
+    }
+
+    private func fetchAndRenderDrafts(_ batchContext: ASBatchContext?, draftsProvider: DraftsListProvider) {
+        Task {
+            do {
+                let context = try await draftsProvider.fetchDrafts(
+                    using: FetchMessageContext(
+                        folderPath: viewModel.path,
+                        count: Constants.numberOfMessagesToLoad,
+                        pagination: currentMessagesListPagination()
+                    )
+                )
+                handleEndFetching(with: context, context: batchContext)
+            } catch {
+                handle(error: error)
+            }
+        }
+    }
+
+    private func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
         Task {
             do {
                 let context = try await service.fetchMessages(
@@ -341,8 +369,19 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
         guard let message = messages[safe: indexPath.row] else { return }
+        if viewModel.isDrafts {
+            openDraft(with: message)
+        } else {
+            msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
+        }
+    }
 
-        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
+    private func openDraft(with message: Message) {
+        guard let email = DataService.shared.email else { return }
+
+        let controller = ComposeViewController(email: email)
+        controller.updateWithMessage(message: message)
+        navigationController?.pushViewController(controller, animated: true)
     }
 }
 
@@ -455,7 +494,6 @@ extension InboxViewController {
 }
 
 extension InboxViewController: Refreshable {
-
      func startRefreshing() {
          refresh()
      }

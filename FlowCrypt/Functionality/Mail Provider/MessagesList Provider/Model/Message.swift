@@ -18,6 +18,8 @@ struct Message: Hashable {
     let size: Int?
     let attachmentIds: [String]
     let threadId: String?
+    let draftIdentifier: String?
+    let raw: String?
     private(set) var labels: [MessageLabel]
 
     var isMessageRead: Bool {
@@ -41,7 +43,9 @@ struct Message: Hashable {
         size: Int?,
         labels: [MessageLabel],
         attachmentIds: [String],
-        threadId: String? = nil
+        threadId: String? = nil,
+        draftIdentifier: String? = nil,
+        raw: String? = nil
     ) {
         self.identifier = identifier
         self.date = date
@@ -51,6 +55,8 @@ struct Message: Hashable {
         self.labels = labels
         self.attachmentIds = attachmentIds
         self.threadId = threadId
+        self.draftIdentifier = draftIdentifier
+        self.raw = raw
     }
 }
 
