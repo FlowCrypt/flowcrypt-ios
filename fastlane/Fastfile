@@ -95,7 +95,6 @@ platform :ios do
     xcbuild(
        workspace: "FlowCrypt.xcworkspace",
        scheme: "FlowCrypt",
-       exportFormat: "app",
        configuration: "Debug",
        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
