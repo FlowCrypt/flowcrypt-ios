@@ -58,7 +58,7 @@ blocks:
           commands:
             - bundle exec fastlane do_everything
             - bundle exec fastlane build_e2e
-            - mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ~/git/flowcrypt-ios/appium/apps
+            - mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ~/git/flowcrypt-ios/appium
             - sem-version node 12 && npm install -g appium@1.22.0 && cd ~/git/flowcrypt-ios/appium/apps && npm i
             - npm run ios.smoke
       epilogue:
