@@ -4,7 +4,6 @@ import {
     MenuBarScreen
 } from '../../screenobjects/all-screens';
 
-import {CommonData} from '../../data';
 
 describe('LOGIN: ', () => {
 
