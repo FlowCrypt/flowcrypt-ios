@@ -77,7 +77,7 @@
 		5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
 		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
 		5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */; };
-		5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */; };
+		5A39F441239EF17F001F4607 /* LegalViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F440239EF17F001F4607 /* LegalViewDecorator.swift */; };
 		5A5C234B23A042520015E705 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5C234A23A042520015E705 /* WebViewController.swift */; };
 		5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A948DC4239EF2F4006284D7 /* LegalViewController.swift */; };
 		5ADEDCAF23A3EA9E00EC495E /* KeySettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCAE23A3EA9E00EC495E /* KeySettingsViewDecorator.swift */; };
@@ -278,7 +278,7 @@
 		D271774B242558DA00BDA9A9 /* MessageSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */; };
 		D271774C242558DA00BDA9A9 /* MessageTextSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */; };
 		D271774E24255F1100BDA9A9 /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */; };
-		D27177502425659F00BDA9A9 /* SettingsCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F433239EC61C001F4607 /* SettingsCellNode.swift */; };
+		D27177502425659F00BDA9A9 /* TitleCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F433239EC61C001F4607 /* TitleCellNode.swift */; };
 		D27177512425678F00BDA9A9 /* KeySettingCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB023A3EAAF00EC495E /* KeySettingCellNode.swift */; };
 		D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */; };
 		D2717753242568A600BDA9A9 /* NavigationBarItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A19230FD781005067A6 /* NavigationBarItemsView.swift */; };
@@ -480,11 +480,11 @@
 		55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.enterprise.xcconfig"; sourceTree = "<group>"; };
 		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewDecorator.swift; sourceTree = "<group>"; };
-		5A39F433239EC61C001F4607 /* SettingsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCellNode.swift; sourceTree = "<group>"; };
+		5A39F433239EC61C001F4607 /* TitleCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleCellNode.swift; sourceTree = "<group>"; };
 		5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F438239ECDD0001F4607 /* ExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExtensionTests.swift; path = FlowCryptAppTests/ExtensionTests.swift; sourceTree = SOURCE_ROOT; };
 		5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedViewController.swift; sourceTree = "<group>"; };
-		5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewControllersProvider.swift; sourceTree = "<group>"; };
+		5A39F440239EF17F001F4607 /* LegalViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewDecorator.swift; sourceTree = "<group>"; };
 		5A5C234A23A042520015E705 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		5A948DC4239EF2F4006284D7 /* LegalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewController.swift; sourceTree = "<group>"; };
 		5ADEDCAE23A3EA9E00EC495E /* KeySettingsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsViewDecorator.swift; sourceTree = "<group>"; };
@@ -1026,7 +1026,7 @@
 			isa = PBXGroup;
 			children = (
 				5A948DC4239EF2F4006284D7 /* LegalViewController.swift */,
-				5A39F440239EF17F001F4607 /* LegalViewControllersProvider.swift */,
+				5A39F440239EF17F001F4607 /* LegalViewDecorator.swift */,
 			);
 			path = KeyLegal;
 			sourceTree = "<group>";
@@ -1921,7 +1921,7 @@
 			children = (
 				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F1797652368EE50002BF770 /* SetupTitleNode.swift */,
-				5A39F433239EC61C001F4607 /* SettingsCellNode.swift */,
+				5A39F433239EC61C001F4607 /* TitleCellNode.swift */,
 				9F82779923737E1900E19C07 /* MessageSenderNode.swift */,
 				9F82779B23737E2A00E19C07 /* MessageSubjectNode.swift */,
 				9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */,
@@ -2522,7 +2522,7 @@
 				21489B7C267CBA0E00BDE4AC /* RawClientConfiguration.swift in Sources */,
 				9F976592267E19880058419D /* TestData.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
-				5A39F441239EF17F001F4607 /* LegalViewControllersProvider.swift in Sources */,
+				5A39F441239EF17F001F4607 /* LegalViewDecorator.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */,
@@ -2730,7 +2730,7 @@
 				D20D3C7C2520ABC600D4AA9A /* BackupCellNode.swift in Sources */,
 				D28655912423B4580066F52E /* HeaderNode.swift in Sources */,
 				D271774C242558DA00BDA9A9 /* MessageTextSubjectNode.swift in Sources */,
-				D27177502425659F00BDA9A9 /* SettingsCellNode.swift in Sources */,
+				D27177502425659F00BDA9A9 /* TitleCellNode.swift in Sources */,
 				50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */,
 				D2CDC3D824047066002B045F /* RecipientEmailNode.swift in Sources */,
 				D2717753242568A600BDA9A9 /* NavigationBarItemsView.swift in Sources */,
