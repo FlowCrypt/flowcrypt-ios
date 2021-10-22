@@ -21,6 +21,7 @@ struct KeyDetails: Decodable {
     let expiration: Int?
     let users: [String]
     let algo: KeyAlgo?
+    let revoked: Bool
 }
 
 // MARK: - Convenience

@@ -7,11 +7,10 @@
 //
 
 import FlowCryptCommon
-import Promises
 import GoogleAPIClientForREST_PeopleService
 
 protocol CloudContactsProvider {
-    func searchContacts(query: String) -> Promise<[String]>
+    func searchContacts(query: String) async throws -> [String]
 }
 
 enum CloudContactsProviderError: Error {
@@ -37,30 +36,39 @@ final class UserContactsProvider {
 
     init(userService: GoogleUserServiceType = GoogleUserService()) {
         self.userService = userService
-        
-        // Warmup query for contacts cache
-        _ = self.searchContacts(query: "")
+
+        runWarmupQuery()
+    }
+
+    private func runWarmupQuery() {
+        Task {
+            // Warmup query for google contacts cache
+            _ = try? await searchContacts(query: "")
+        }
     }
 }
 
 extension UserContactsProvider: CloudContactsProvider {
-    func searchContacts(query: String) -> Promise<[String]> {
+    func searchContacts(query: String) async throws -> [String] {
         let searchQuery = GTLRPeopleServiceQuery_PeopleSearchContacts.query()
         searchQuery.readMask = "names,emailAddresses"
         searchQuery.query = query
 
-        return Promise<[String]> { resolve, reject in
+        return try await withCheckedThrowingContinuation { continuation in
             self.peopleService.executeQuery(searchQuery) { _, data, error in
                 if let error = error {
-                    return reject(CloudContactsProviderError.providerError(error))
+                    continuation.resume(throwing: CloudContactsProviderError.providerError(error))
+                    return
                 }
 
                 guard let response = data as? GTLRPeopleService_SearchResponse else {
-                    return reject(AppErr.cast("GTLRPeopleService_SearchResponse"))
+                    continuation.resume(throwing: AppErr.cast("GTLRPeopleService_SearchResponse"))
+                    return
                 }
 
                 guard let contacts = response.results else {
-                    return reject(CloudContactsProviderError.failedToParseData(data))
+                    continuation.resume(throwing: CloudContactsProviderError.failedToParseData(data))
+                    return
                 }
 
                 let emails = contacts
@@ -68,7 +76,7 @@ extension UserContactsProvider: CloudContactsProvider {
                     .flatMap { $0 }
                     .compactMap { $0.value }
 
-                resolve(emails)
+                continuation.resume(returning: emails)
             }
         }
     }

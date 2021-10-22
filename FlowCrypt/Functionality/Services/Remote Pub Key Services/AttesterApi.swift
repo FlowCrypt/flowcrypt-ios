@@ -11,7 +11,7 @@ struct PubkeySearchResult {
 }
 
 protocol AttesterApiType {
-    func lookupEmail(email: String) -> Promise<[KeyDetails]>
+    func lookupEmail(email: String) async throws -> [KeyDetails]
     func updateKey(email: String, pubkey: String, token: String?) -> Promise<String>
     func replaceKey(email: String, pubkey: String) -> Promise<String>
     func testWelcome(email: String, pubkey: String) -> Promise<Void>
@@ -49,29 +49,30 @@ final class AttesterApi: AttesterApiType {
 }
 
 extension AttesterApi {
-    func lookupEmail(email: String) -> Promise<[KeyDetails]> {
-        Promise { [weak self] () -> [KeyDetails] in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            if !(try self.clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
-                return []
-            }
-
-            let res = try awaitPromise(URLSession.shared.call(self.urlPub(emailOrLongid: email), tolerateStatus: [404]))
-
-            if res.status >= 200, res.status <= 299 {
-                let keys = try self.core.parseKeys(armoredOrBinary: res.data)
-                let pubKeys = keys.keyDetails
-                        .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
-                return pubKeys
-            }
-            if res.status == 404 {
-                return []
-            }
-            // programming error because should never happen
-            throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
+    func lookupEmail(email: String) async throws -> [KeyDetails] {
+        if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
+            return []
         }
-        .timeout(Constants.lookupEmailRequestTimeout)
+
+        let res = try await URLSession.shared.asyncCall(
+            urlPub(emailOrLongid: email),
+            tolerateStatus: [404],
+            timeout: Constants.lookupEmailRequestTimeout
+        )
+
+        if res.status >= 200, res.status <= 299 {
+            let keys = try core.parseKeys(armoredOrBinary: res.data)
+            let pubKeys = keys.keyDetails
+                    .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
+            return pubKeys
+        }
+
+        if res.status == 404 {
+            return []
+        }
+
+        // programming error because should never happen
+        throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
     }
 
     @discardableResult
