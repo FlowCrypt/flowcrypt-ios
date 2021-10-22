@@ -1,6 +1,4 @@
 import BaseScreen from './base.screen';
-import {CommonData} from "../data";
-import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     BACK_BTN: '~arrow left c',
@@ -22,8 +20,8 @@ class PublicKeyScreen extends BaseScreen {
 
     checkPublicKey() {
         this.backButton.waitForDisplayed();
-        this.publicKey.waitForDisplayed();
-        expect(this.publicKey).not.toHaveAttribute('value', null);
+        this.publicKey.waitForExist();
+        expect(this.publicKey.getAttribute('value')).not.toEqual(null);
     }
 }
 

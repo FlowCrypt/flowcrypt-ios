@@ -1,6 +1,4 @@
 import BaseScreen from './base.screen';
-import {CommonData} from "../data";
-import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     KEYS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Keys"`]',
@@ -60,15 +58,16 @@ class KeysScreen extends BaseScreen {
         return $(SELECTORS.COPY_TO_CLIPBOARD_BUTTON);
     }
 
-    checkKeysScreen() {//will add value verification for key later, need to create Api request for get key value
+    checkKeysScreen() {
+        //will add value verification for key later, need to create Api request for get key value
         this.keysHeader.waitForDisplayed();
         //this.addButton.waitForDisplayed({reverse: true}); -  disabled due to https://github.com/FlowCrypt/flowcrypt-ios/issues/715
-        this.nameAndEmail.waitForDisplayed();
-        this.dateCreated.waitForDisplayed();
-        this.fingerPrint.waitForDisplayed();
-        expect(this.nameAndEmail).not.toHaveAttribute('value', null);
-        expect(this.dateCreated).not.toHaveAttribute('value', null);
-        expect(this.fingerPrint).not.toHaveAttribute('value', null);
+        this.nameAndEmail.waitForExist();
+        this.dateCreated.waitForExist();
+        this.fingerPrint.waitForExist();
+        expect(this.nameAndEmail.getAttribute('value')).not.toEqual(null);
+        expect(this.dateCreated.getAttribute('value')).not.toEqual(null);
+        expect(this.fingerPrint.getAttribute('value')).not.toEqual(null);
     }
 
     clickOnKey() {
