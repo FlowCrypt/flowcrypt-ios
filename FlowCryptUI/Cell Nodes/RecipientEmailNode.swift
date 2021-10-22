@@ -49,7 +49,8 @@ final class RecipientEmailNode: CellNode {
             switch input.recipient.state {
             case .idle: self.animateImageRotation()
             case .error: self.animateImageScaling()
-            case .keyFound, .keyNotFound, .selected: break
+            case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .selected:
+                break
             }
         }
         imageNode.addTarget(self, action: #selector(handleTap(_:)), forControlEvents: .touchUpInside)
