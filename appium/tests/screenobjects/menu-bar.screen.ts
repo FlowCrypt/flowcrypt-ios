@@ -1,6 +1,5 @@
 import BaseScreen from './base.screen';
 import {CommonData} from "../data";
-import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     MENU_ICON: '~menu icn',

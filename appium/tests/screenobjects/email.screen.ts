@@ -77,9 +77,6 @@ class EmailScreen extends BaseScreen {
     clickSaveButton() {
         this.saveButton.click();
     }
-
-
-
 }
 
 export default new EmailScreen();

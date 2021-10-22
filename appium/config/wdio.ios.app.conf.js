@@ -13,8 +13,8 @@ config.suites = {
         './tests/specs/composeEmail/CheckComposeEmailAfterReopening.spec.ts',
         './tests/specs/inbox/ReadEmailAfterRestartApp.spec.ts',
         './tests/specs/inbox/CheckEncryptedEmailAfterRestartApp.spec.ts',
-    ],
-    testss: ['./tests/specs/settings/CheckSettingsForLoggedUser.spec.ts']
+        './tests/specs/settings/CheckSettingsForLoggedUser.spec.ts',
+    ]
 };
 
 config.capabilities = [

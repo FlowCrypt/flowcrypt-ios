@@ -54,7 +54,7 @@ class KeysScreen extends BaseScreen {
         return $(SELECTORS.SHARE_BUTTON);
     }
 
-    get copiToClipboardButton() {
+    get copyToClipboardButton() {
         return $(SELECTORS.COPY_TO_CLIPBOARD_BUTTON);
     }
 
@@ -79,7 +79,7 @@ class KeysScreen extends BaseScreen {
         this.showPrivateKeyButton.waitForDisplayed();
         this.showKeyDetailsButton.waitForDisplayed();
         this.shareButton.waitForDisplayed();
-        this.copiToClipboardButton.waitForDisplayed();
+        this.copyToClipboardButton.waitForDisplayed();
     }
 
     clickOnShowPublicKey() {
