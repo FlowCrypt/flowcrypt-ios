@@ -7,7 +7,6 @@ import {
     PublicKeyScreen
 } from '../../screenobjects/all-screens';
 
-import {CommonData} from '../../data';
 
 describe('SETTINGS: ', () => {
 
