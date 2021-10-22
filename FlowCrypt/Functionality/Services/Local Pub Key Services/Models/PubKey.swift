@@ -24,6 +24,8 @@ struct PubKey {
     let created: Date?
     /// key algo
     let algo: KeyAlgo?
+    /// key revoked status
+    let isRevoked: Bool
 }
 
 extension PubKey {
@@ -33,12 +35,13 @@ extension PubKey {
     var fingerprint: String? { fingerprints.first }
 
     var keyState: PubKeyState {
-        guard let expiresOn = expiresOn else { return .revoked }
+        guard !isRevoked else { return .revoked }
 
-        // TODO: Update implementation
-        guard expiresOn.timeIntervalSinceNow.sign == .plus else { return .expired }
+        guard let expiresOn = expiresOn,
+              expiresOn.timeIntervalSinceNow.sign == .minus
+        else { return .active }
 
-        return .active
+        return .expired
     }
 }
 
@@ -55,7 +58,8 @@ extension PubKey {
                   longids: longids,
                   fingerprints: fingerprints,
                   created: Date(timeIntervalSince1970: Double(keyDetails.created)),
-                  algo: keyDetails.algo)
+                  algo: keyDetails.algo,
+                  isRevoked: keyDetails.revoked)
     }
 }
 
