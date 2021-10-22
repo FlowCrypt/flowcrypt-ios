@@ -76,7 +76,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
     func searchRecipient(with email: String) -> RecipientWithPubKeys? {
         guard let recipientObject = find(with: email) else { return nil }
-        return RecipientWithPubKeys(recipientObject)
+        return parseRecipient(from: recipientObject)
     }
 
     func searchEmails(query: String) -> [String] {
@@ -89,12 +89,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     func getAllRecipients() -> [RecipientWithPubKeys] {
         localContactsCache.realm
             .objects(RecipientObject.self)
-            .map { object in
-                let keyDetails = object.pubKeys
-                                    .compactMap { try? core.parseKeys(armoredOrBinary: $0.armored.data()).keyDetails }
-                                    .flatMap { $0 }
-                return RecipientWithPubKeys(object, keyDetails: Array(keyDetails))
-            }
+            .map(parseRecipient)
             .sorted(by: { $0.email > $1.email })
     }
 
@@ -114,6 +109,13 @@ extension LocalContactsProvider {
     private func find(with email: String) -> RecipientObject? {
         localContactsCache.realm.object(ofType: RecipientObject.self,
                                         forPrimaryKey: email)
+    }
+
+    private func parseRecipient(from object: RecipientObject) -> RecipientWithPubKeys {
+        let keyDetails = object.pubKeys
+                            .compactMap { try? core.parseKeys(armoredOrBinary: $0.armored.data()).keyDetails }
+                            .flatMap { $0 }
+        return RecipientWithPubKeys(object, keyDetails: Array(keyDetails))
     }
 
     private func add(pubKey: PubKey, to recipient: RecipientObject) {
