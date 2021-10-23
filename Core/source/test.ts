@@ -490,29 +490,28 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t 
   expect(decryptJson.subject).to.eq('New Message from App Store Review Regarding Enterprise FlowCrypt');
   expect(decryptJson.replyType).to.eq('plain');
   const htmlMsg = '<font size=\"-1\" color=\"#31a217\" face=\"monospace\">' +
-    '[remote content blocked for your privacy]</font><br /><br />\n\n\n  App ' +
-    'Store Connect\n  \n  \n  \n  \n  \n \n\n  \n\n  \n\n\n\n<table>\n  <tr>\n' +
-    '    <td>\n      <a href=\"https://itunesconnect.apple.com/itc/images/email/spacer.gif\"' +
-    ' target=\"_blank\"><font color=\"#D14836\" face=\"monospace\">[img]</font></a>\n' +
-    '    </td>\n    <td>\n      <table>\n        <tr>\n        \n          <td>\n' +
-    '            \n            \n                \n                    ' +
+    '[remote content blocked for your privacy]</font><br /><br />\\n\\n\\n  App ' +
+    'Store Connect\\n  \\n  \\n  \\n  \\n  \\n \\n\\n  \\n\\n  \\n\\n\\n\\n<table>\\n  <tr>\\n' +
+    '    <td>\\n      <a href=\"https://itunesconnect.apple.com/itc/images/email/spacer.gif\"' +
+    ' target=\"_blank\"><font color=\"#D14836\" face=\"monospace\">[img]</font></a>\\n' +
+    '    </td>\\n    <td>\\n      <table>\\n        <tr>\\n        \\n          <td>\\n' +
+    '            \\n            \\n                \\n                    ' +
     '<a href=\"https://appstoreconnect.apple.com/itc/images/email/email-asc-logo@2X.png\"' +
     ' target=\"_blank\"><font color=\"#D14836\" face=\"monospace\">[img]</font></' +
-    'a>\n                \n                \n            \n          </td>\n          \n' +
-    '        \n        </tr>\n        \n        <tr>\n          <td> </td>\n        ' +
-    '</tr>\n        \n        <tr>\n          <td>\n                        ' +
-    '\n\n                                \n  <div>\n    <p>Dear Tomas,</p>\n\n    ' +
+    'a>\\n                \\n                \\n            \\n          </td>\\n          \\n' +
+    '        \\n        </tr>\\n        \\n        <tr>\\n          <td> </td>\\n        ' +
+    '</tr>\\n        \\n        <tr>\\n          <td>\\n                        ' +
+    '\\n\\n                                \\n  <div>\\n    <p>Dear Tomas,</p>\\n\\n    ' +
     '<p>We\'ve sent you a new message about your app, Enterprise FlowCrypt, ' +
-    'app Apple ID: 1591462989.\n    To view or reply to the message, go to ' +
+    'app Apple ID: 1591462989.\\n    To view or reply to the message, go to ' +
     '<a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/' +
     '1591462989/platform/ios/versions/844846907/resolutioncenter\">Resolution Center</a>' +
-    ' in App Store Connect.</p>\n\n    <p>Best regards,<br />\n    App Store Review</p>\n'
-    .replace('\n', ' ').replace(/  +/g, ' ');
+    ' in App Store Connect.</p>\\n\\n    <p>Best regards,<br />\\n    App Store Review</p>\\n'
+    .replace('\\n', ' ').replace(/  +/g, ' ');
   console.log("==============");
   console.log(blocks.toString());
   console.log("==============");
-  expect(blocks.toString().replace('\n', ' ').replace(/  +/g, ' ')).to.contain(
-    htmlMsg);
+  expect(blocks.toString().replace('\\n', ' ').replace(/  +/g, ' ')).to.contain(htmlMsg);
   expect(blocks.toString()).to.match(/<div class="MsgBlock plain" style="[^"]+">([\s\S]+)<\/div>/);
   // expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlMsg }]);
   t.pass();
