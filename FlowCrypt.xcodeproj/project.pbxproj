@@ -2926,7 +2926,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Enterpise";
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Enterprise";
 				BUNDLE_LOADER = "";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = FlowCrypt/FlowCryptEnterprise.entitlements;
