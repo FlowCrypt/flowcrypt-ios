@@ -4,13 +4,7 @@
 
 import { Buf } from '../core/buf';
 import { randomBytes } from 'crypto';
-
-interface ConvertStringOptions {
-  to: string;
-  from?: string | undefined;
-  type: 'string';
-  bom?: boolean | string | undefined;
-}
+import { ConvertStringOptions } from 'encoding-japanese';
 
 declare const dereq_encoding_japanese : {
   convert: (data: Uint8Array, options: ConvertStringOptions) => string;
