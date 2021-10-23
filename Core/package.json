@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "TypeScript core for FlowCrypt iOS internal use",
   "dependencies": {
+    "encoding-japanese": "^1.0.30",
     "sanitize-html": "1.21.1",
     "zxcvbn": "4.4.2"
   },
