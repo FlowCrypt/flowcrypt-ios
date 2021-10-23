@@ -71,7 +71,6 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
       const renderedContentBlocks = body.split('<!-- next MsgBlock -->\n');
       const lastEmpty = renderedContentBlocks.pop(); // last one should be empty due to the splitting above
       expect(lastEmpty).to.equal('');
-      console.log(">>>> RenderedContentBlocks:\n" + JSON.stringify(renderedContentBlocks))
       for (const renderedContentBlock of renderedContentBlocks) {
         // it was before, but it doesn't work for whitespaces
         // const m = (renderedContentBlock as string).match(/<div class="MsgBlock ([a-z]+)" style="[^"]+">(.*)<\/div>/);
