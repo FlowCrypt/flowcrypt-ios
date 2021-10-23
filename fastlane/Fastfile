@@ -80,7 +80,7 @@ platform :ios do
   desc "Build without code sign. Just to see if the build is working"
   lane :build do |options|
     gym(
-      scheme: "FlowCrypt",
+      scheme: "Debug FlowCrypt",
       skip_package_ipa: true,
       skip_archive: true,
       silent: true,
@@ -94,7 +94,7 @@ platform :ios do
   lane :build_e2e do
     xcbuild(
        workspace: "FlowCrypt.xcworkspace",
-       scheme: "FlowCrypt",
+       scheme: "Debug FlowCrypt",
        configuration: "Debug",
        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
