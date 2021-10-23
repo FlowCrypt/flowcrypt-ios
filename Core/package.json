@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@types/chai": "4.2.22",
+    "@types/encoding-japanese": "^1.0.18",
     "@types/node": "^13.13.52",
     "@types/node-cleanup": "2.1.1",
     "ava": "1.4.1",
