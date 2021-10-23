@@ -157,35 +157,36 @@ extension SetupInitialViewController {
     }
 
     private func fetchKeysFromEKM() {
-        emailKeyManagerApi.getPrivateKeys()
-            .then(on: .main) { [weak self] result in
+        Task {
+            do {
+                let result = try await emailKeyManagerApi.getPrivateKeys()
                 switch result {
                 case .success(keys: let keys):
-                    self?.proceedToSetupWithEKMKeys(keys: keys)
+                    proceedToSetupWithEKMKeys(keys: keys)
                 case .noKeys:
-                    self?.showRetryAlert(
+                    showRetryAlert(
                         message: "organisational_rules_ekm_empty_private_keys_error".localized,
-                        onRetry: {
+                        onRetry: { [weak self] in
                             self?.state = .fetchingKeysFromEKM
                         },
-                        onOk: {
+                        onOk: { [weak self] in
                             self?.router.signOut()
                         }
                     )
                 case .keysAreNotDecrypted:
-                    self?.showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: {
+                    showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: { [weak self] in
                         self?.router.signOut()
                     })
                 }
-            }
-            .catch { [weak self] error in
+            } catch {
                 if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
                     return
                 }
-                self?.showAlert(message: error.localizedDescription, onOk: {
+                showAlert(message: error.localizedDescription, onOk: { [weak self] in
                     self?.state = .decidingIfEKMshouldBeUsed
                 })
             }
+        }
     }
 }
 

@@ -7,14 +7,13 @@
 //
 
 import MailCore
-import Promises
 
 protocol EnterpriseServerApiType {
-    func getActiveFesUrl(for email: String) -> Promise<String?>
-    func getActiveFesUrlForCurrentUser() -> Promise<String?>
+    func getActiveFesUrl(for email: String) async throws -> String?
+    func getActiveFesUrlForCurrentUser() async throws -> String?
 
-    func getClientConfiguration(for email: String) -> Promise<RawClientConfiguration>
-    func getClientConfigurationForCurrentUser() -> Promise<RawClientConfiguration>
+    func getClientConfiguration(for email: String) async throws -> RawClientConfiguration
+    func getClientConfigurationForCurrentUser() async throws -> RawClientConfiguration
 }
 
 enum EnterpriseServerApiError: Error {
@@ -54,51 +53,44 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         }
     }
 
-    func getActiveFesUrlForCurrentUser() -> Promise<String?> {
+    func getActiveFesUrlForCurrentUser() async throws -> String? {
         guard let email = DataService.shared.currentUser?.email else {
-            return Promise<String?> { resolve, _ in
-                resolve(nil)
-            }
+            return nil
         }
-        return getActiveFesUrl(for: email)
+        return try await getActiveFesUrl(for: email)
     }
 
-    func getActiveFesUrl(for email: String) -> Promise<String?> {
-        Promise<String?> { resolve, _ in
+    func getActiveFesUrl(for email: String) async throws -> String? {
+        do {
             guard let userDomain = email.recipientDomain,
                   !Configuration.publicEmailProviderDomains.contains(userDomain) else {
-                resolve(nil)
-                return
+                return nil
             }
             let urlString = "https://fes.\(userDomain)/"
-            let request = URLRequest.urlRequest(
+            var request = URLRequest.urlRequest(
                 with: "\(urlString)api/",
                 method: .get,
                 body: nil
             )
+            request.timeoutInterval = Constants.getActiveFesTimeout
 
-            let response = try awaitPromise(
-                URLSession.shared.call(
-                    request,
-                    tolerateStatus: Constants.getToleratedHTTPStatuses
-                )
+            let response = try await URLSession.shared.asyncCall(
+                request,
+                tolerateStatus: Constants.getToleratedHTTPStatuses
             )
 
             if Constants.getToleratedHTTPStatuses.contains(response.status) {
-                resolve(nil)
+                return nil
             }
 
             guard let responseDictionary = try? response.data.toDict(),
                   let service = responseDictionary[Constants.serviceKey] as? String,
                   service == Constants.serviceNeededValue else {
-                resolve(nil)
-                return
+                return nil
             }
 
-            resolve(urlString)
-        }
-        .timeout(Constants.getActiveFesTimeout)
-        .recover { error -> String? in
+            return urlString
+        } catch {
             if let httpError = error as? HttpErr,
                let nsError = httpError.error as NSError?,
                Constants.getToleratedNSErrorCodes.contains(nsError.code) {
@@ -106,53 +98,44 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             }
             throw error
         }
-        .recoverFromTimeOut(result: nil)
     }
 
-    func getClientConfiguration(for email: String) -> Promise<RawClientConfiguration> {
-        Promise<RawClientConfiguration> { resolve, reject in
-            guard let userDomain = email.recipientDomain else {
-                reject(EnterpriseServerApiError.emailFormat)
-                return
-            }
-
-            guard try awaitPromise(self.getActiveFesUrl(for: email)) != nil else {
-                resolve(.empty)
-                return
-            }
-
-            if Configuration.publicEmailProviderDomains.contains(userDomain) {
-                resolve(.empty)
-                return
-            }
-            let request = URLRequest.urlRequest(
-                with: "https://fes.\(userDomain)/api/v1/client-configuration?domain=\(userDomain)",
-                method: .get,
-                body: nil
-            )
-            let safeReponse = try awaitPromise(URLSession.shared.call(request))
-
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-            guard let clientConfiguration = (try? decoder.decode(
-                    ClientConfigurationResponse.self,
-                    from: safeReponse.data
-                  ))?.clientConfiguration
-            else {
-                reject(EnterpriseServerApiError.parse)
-                return
-            }
-            resolve(clientConfiguration)
+    func getClientConfiguration(for email: String) async throws -> RawClientConfiguration {
+        guard let userDomain = email.recipientDomain else {
+            throw EnterpriseServerApiError.emailFormat
         }
+
+        guard try await getActiveFesUrl(for: email) != nil else {
+            return .empty
+        }
+
+        if Configuration.publicEmailProviderDomains.contains(userDomain) {
+            return .empty
+        }
+        let request = URLRequest.urlRequest(
+            with: "https://fes.\(userDomain)/api/v1/client-configuration?domain=\(userDomain)",
+            method: .get,
+            body: nil
+        )
+        let safeReponse = try await URLSession.shared.asyncCall(request)
+
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+        guard let clientConfiguration = (try? decoder.decode(
+                ClientConfigurationResponse.self,
+                from: safeReponse.data
+              ))?.clientConfiguration
+        else {
+            throw EnterpriseServerApiError.parse
+        }
+        return clientConfiguration
     }
 
-    func getClientConfigurationForCurrentUser() -> Promise<RawClientConfiguration> {
+    func getClientConfigurationForCurrentUser() async throws -> RawClientConfiguration {
         guard let email = DataService.shared.currentUser?.email else {
-            return Promise<RawClientConfiguration> { _, _ in
-                fatalError("User has to be set while getting client configuration")
-            }
+            fatalError("User has to be set while getting client configuration")
         }
-        return getClientConfiguration(for: email)
+        return try await getClientConfiguration(for: email)
     }
 }
