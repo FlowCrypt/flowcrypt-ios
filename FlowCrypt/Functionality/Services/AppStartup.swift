@@ -12,7 +12,8 @@ import UIKit
 
 private let logger = Logger.nested("AppStart")
 
-struct AppStartup {
+@MainActor
+final class AppStartup {
     private enum EntryPoint {
         case signIn, setupFlow(UserId), mainFlow
     }
@@ -24,15 +25,16 @@ struct AppStartup {
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
 
-        Promise<Void> {
-            try awaitPromise(self.setupCore())
-            try self.setupMigrationIfNeeded()
-            try self.setupSession()
-            try self.getUserOrgRulesIfNeeded()
-        }.then(on: .main) {
-            self.chooseView(for: window, session: session)
-        }.catch(on: .main) { error in
-            self.showErrorAlert(with: error, on: window, session: session)
+        Task {
+            do {
+                try awaitPromise(setupCore())
+                try setupMigrationIfNeeded()
+                try setupSession()
+                try await getUserOrgRulesIfNeeded()
+                chooseView(for: window, session: session)
+            } catch {
+                showErrorAlert(with: error, on: window, session: session)
+            }
         }
     }
 
@@ -96,10 +98,10 @@ struct AppStartup {
         }
     }
 
-    private func getUserOrgRulesIfNeeded() throws {
+    private func getUserOrgRulesIfNeeded() async throws {
         if DataService.shared.isLoggedIn {
             let service = ClientConfigurationService()
-            _ = try awaitPromise(service.fetchClientConfigurationForCurrentUser())
+            _ = try await service.fetchClientConfigurationForCurrentUser()
         }
     }
 
