@@ -37,9 +37,9 @@ final class ComposeViewController: TableNodeViewController {
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyService: KeyServiceType
+    private let service: ServiceActor
 
     private let search = PassthroughSubject<String, Never>()
-    private let cloudContactProvider: CloudContactsProvider
     private let userDefaults: UserDefaults
 
     private let email: String
@@ -67,13 +67,17 @@ final class ComposeViewController: TableNodeViewController {
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        self.cloudContactProvider = cloudContactProvider
         self.userDefaults = userDefaults
         self.contactsService = contactsService
         self.composeMessageService = composeMessageService
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.keyService = keyService
+        self.service = ServiceActor(
+            composeMessageService: composeMessageService,
+            contactsService: contactsService,
+            cloudContactProvider: cloudContactProvider
+        )
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -264,7 +268,7 @@ extension ComposeViewController {
     private func encryptAndSend(_ message: SendableMsg) {
         Task {
             do {
-                try await composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
+                try await service.encryptAndSend(message: message, threadId: input.threadId)
                 handleSuccessfullySentMessage()
             } catch {
                 if let error = error as? ComposeMessageError {
@@ -599,7 +603,7 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             let localEmails = contactsService.searchContacts(query: query)
-            let cloudEmails = try? await cloudContactProvider.searchContacts(query: query)
+            let cloudEmails = try? await service.searchContacts(query: query)
             let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
             let state: State = emails.isNotEmpty
                 ? .searchEmails(Array(emails))
@@ -616,8 +620,8 @@ extension ComposeViewController {
 
         Task {
             do {
-                let contact = try await contactsService.searchContact(with: recipient.email)
-                let state = self.getRecipientState(from: contact)
+                let contact = try await service.searchContact(with: recipient.email)
+                let state = getRecipientState(from: contact)
                 handleEvaluation(for: recipient, with: state)
             } catch {
                 handleEvaluation(error: error, with: recipient)
@@ -892,5 +896,32 @@ extension ComposeViewController {
 
     private func shouldRenewToken(for newScope: [GoogleScope]) -> Bool {
         false
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let composeMessageService: ComposeMessageService
+    private let contactsService: ContactsServiceType
+    private let cloudContactProvider: CloudContactsProvider
+
+    init(composeMessageService: ComposeMessageService,
+         contactsService: ContactsServiceType,
+         cloudContactProvider: CloudContactsProvider) {
+        self.composeMessageService = composeMessageService
+        self.contactsService = contactsService
+        self.cloudContactProvider = cloudContactProvider
+    }
+
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+        try await composeMessageService.encryptAndSend(message: message, threadId: threadId)
+    }
+
+    func searchContacts(query: String) async throws -> [String] {
+        return try await cloudContactProvider.searchContacts(query: query)
+    }
+
+    func searchContact(with email: String) async throws -> RecipientWithPubKeys {
+        return try await contactsService.searchContact(with: email)
     }
 }
