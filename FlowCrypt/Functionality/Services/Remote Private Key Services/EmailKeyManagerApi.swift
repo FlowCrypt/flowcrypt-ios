@@ -9,8 +9,6 @@
 import Foundation
 
 protocol EmailKeyManagerApiType {
-
-    func getPrivateKeysUrlString() -> String?
     func getPrivateKeys() async throws -> EmailKeyManagerApiResult
 }
 
@@ -36,7 +34,7 @@ extension EmailKeyManagerApiError: LocalizedError {
 
 /// A customer-specific server that provides private keys
 /// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
-class EmailKeyManagerApi: EmailKeyManagerApiType {
+actor EmailKeyManagerApi: EmailKeyManagerApiType {
 
     private let clientConfigurationService: ClientConfigurationServiceType
     private let core: Core
@@ -47,13 +45,6 @@ class EmailKeyManagerApi: EmailKeyManagerApiType {
     ) {
         self.clientConfigurationService = clientConfigurationService
         self.core = core
-    }
-
-    func getPrivateKeysUrlString() -> String? {
-        guard let keyManagerUrlString = clientConfigurationService.getSavedClientConfigurationForCurrentUser().keyManagerUrlString else {
-            return nil
-        }
-        return "\(keyManagerUrlString)v1/keys/private"
     }
 
     func getPrivateKeys() async throws -> EmailKeyManagerApiResult {
@@ -96,5 +87,12 @@ class EmailKeyManagerApi: EmailKeyManagerApiType {
         }
 
         return .success(keys: parsedPrivateKeys)
+    }
+
+    private func getPrivateKeysUrlString() -> String? {
+        guard let keyManagerUrlString = clientConfigurationService.getSavedClientConfigurationForCurrentUser().keyManagerUrlString else {
+            return nil
+        }
+        return "\(keyManagerUrlString)v1/keys/private"
     }
 }
