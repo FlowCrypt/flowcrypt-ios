@@ -4,6 +4,8 @@
 
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_html_sanitize = require("sanitize-html");
+// @ts-ignore - this way we can test ISO-2201-JP encoding
+global.dereq_encoding_japanese = require("encoding-japanese");
 (global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder');
 (global as any)["emailjs-mime-parser"] = require('../../source/lib/emailjs/emailjs-mime-parser');
 (global as any)["iso88592"] = require('../../source/lib/iso-8859-2');
@@ -483,10 +485,10 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t 
   console.log('==============================');
   console.log(JSON.stringify(blocks));
   console.log('==============================');
-  console.log(JSON.stringify(decryptJson));
-  console.log('==============================');
+  expect(decryptJson.text).to.contain('Dear Tomas,\\n    \\nWe\'ve sent you a new message about your app, Enterprise FlowCrypt, app Apple ID: 1591462989.    To view or reply to the message, go to Resolution Center in App Store Connect.\\n    \\nBest regards,\\n    App Store Review\\n');
+  expect(decryptJson.subject).to.eq('New Message from App Store Review Regarding Enterprise FlowCrypt');
+  expect(decryptJson.replyType).to.eq('plain');
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent }]);
-  expect(decryptJson).to.deep.equal({ text, replyType: 'plain', subject: 'mime email plain' });
   t.pass();
 });
 
