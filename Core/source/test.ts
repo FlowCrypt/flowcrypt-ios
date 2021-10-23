@@ -477,7 +477,7 @@ ava.default('parseDecryptMsg compat mime-email-plain', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
+ava.default.only('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-iso-2201-jp')]));
   console.log('==============================');
