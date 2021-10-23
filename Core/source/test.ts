@@ -506,8 +506,15 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t 
     'app Apple ID: 1591462989.\n    To view or reply to the message, go to ' +
     '<a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/' +
     '1591462989/platform/ios/versions/844846907/resolutioncenter\">Resolution Center</a>' +
-    ' in App Store Connect.</p>\n\n    <p>Best regards,<br />\n    App Store Review</p>\n';
-  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlMsg }]);
+    ' in App Store Connect.</p>\n\n    <p>Best regards,<br />\n    App Store Review</p>\n'
+    .replace('\n', ' ').replace(/  +/g, ' ');
+  console.log("==============");
+  console.log(blocks.toString());
+  console.log("==============");
+  expect(blocks.toString().replace('\n', ' ').replace(/  +/g, ' ')).to.contain(
+    htmlMsg);
+  expect(blocks.toString()).to.match(/<div class="MsgBlock plain" style="[^"]+">([\s\S]+)<\/div>/);
+  // expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlMsg }]);
   t.pass();
 });
 

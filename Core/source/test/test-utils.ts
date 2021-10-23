@@ -73,7 +73,9 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
       expect(lastEmpty).to.equal('');
       console.log(">>>> RenderedContentBlocks:\n" + JSON.stringify(renderedContentBlocks))
       for (const renderedContentBlock of renderedContentBlocks) {
-        const m = (renderedContentBlock as string).match(/<div class="MsgBlock ([a-z]+)" style="[^"]+">(.*)<\/div>/);
+        // it was before, but it doesn't work for whitespaces
+        // const m = (renderedContentBlock as string).match(/<div class="MsgBlock ([a-z]+)" style="[^"]+">(.*)<\/div>/);
+        const m = (renderedContentBlock as string).match(/<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/);
         if (m === null) {
           blocks.unshift({ error: "TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT", content: renderedContentBlock });
         } else {
