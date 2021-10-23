@@ -12,8 +12,7 @@ import UIKit
 
 private let logger = Logger.nested("AppStart")
 
-@MainActor
-final class AppStartup {
+struct AppStartup {
     private enum EntryPoint {
         case signIn, setupFlow(UserId), mainFlow
     }
@@ -31,9 +30,9 @@ final class AppStartup {
                 try setupMigrationIfNeeded()
                 try setupSession()
                 try await getUserOrgRulesIfNeeded()
-                chooseView(for: window, session: session)
+                await chooseView(for: window, session: session)
             } catch {
-                showErrorAlert(with: error, on: window, session: session)
+                await showErrorAlert(with: error, on: window, session: session)
             }
         }
     }
@@ -64,6 +63,7 @@ final class AppStartup {
         return MailProvider.shared.sessionProvider.renewSession()
     }
 
+    @MainActor
     private func chooseView(for window: UIWindow, session: SessionType?) {
         let entryPoint = entryPointForUser(session: session)
 
@@ -133,6 +133,7 @@ final class AppStartup {
         return userId
     }
 
+    @MainActor
     private func showErrorAlert(with error: Error, on window: UIWindow, session: SessionType?) {
         let alert = UIAlertController(title: "Startup Error", message: "\(error.localizedDescription)", preferredStyle: .alert)
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in
