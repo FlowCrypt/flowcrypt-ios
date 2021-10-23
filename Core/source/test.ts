@@ -489,21 +489,14 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t 
   expect(decryptJson.text).to.contain(msg);
   expect(decryptJson.subject).to.eq('New Message from App Store Review Regarding Enterprise FlowCrypt');
   expect(decryptJson.replyType).to.eq('plain');
-  const htmlMsg = '<p>Dear Tomas,</p>\n\n <p>We\'ve sent you a new message about your app, ' +
-    'Enterprise FlowCrypt, app Apple ID: 1591462989.\n To view or reply to the message,' +
-    ' go to <a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/' +
-    'ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">' +
-    'Resolution Center</a> in App Store Connect.</p>\n\n <p>Best regards,<br />' +
-    '\n App Store Review</p>';
-  const blocksStr = blocks.toString().replace(/[\s]+/g, ' ').replace('\\n', '\n');
+  const htmlMsg = '<p>Dear Tomas,</p> <p>We\'ve sent you a new message about your app, Enterprise FlowCrypt, app Apple ID: 1591462989. To view or reply to the message, go to <a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">Resolution Center</a> in App Store Connect.</p> <p>Best regards,<br /> App Store Review</p>';
+  const blocksStr = blocks.toString().replace(/\\n/g, '').replace(/\s+/g, ' ');
   console.log("==============");
   console.log(htmlMsg);
   console.log("==============");
-  console.log(blocks.toString());
-  console.log("==============");
   console.log(blocksStr);
   console.log("==============");
-  // expect(blocksStr).to.contain(htmlMsg);
+  expect(blocksStr).to.contain(htmlMsg);
   t.pass();
 });
 
