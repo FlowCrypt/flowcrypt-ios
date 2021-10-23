@@ -495,9 +495,11 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t 
     'ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">' +
     'Resolution Center</a> in App Store Connect.</p>\n\n <p>Best regards,<br />' +
     '\n App Store Review</p>';
-  const blocksStr = blocks.toString().replace('\\\\n', ' ').replace(/[\s]+/g, ' ');
+  const blocksStr = blocks.toString().replace(/[\s]+/g, ' ').replace('\\n', '\n');
   console.log("==============");
   console.log(htmlMsg);
+  console.log("==============");
+  console.log(blocks.toString());
   console.log("==============");
   console.log(blocksStr);
   console.log("==============");
