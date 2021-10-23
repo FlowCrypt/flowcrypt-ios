@@ -489,6 +489,8 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t 
   expect(decryptJson.text).to.contain(msg);
   expect(decryptJson.subject).to.eq('New Message from App Store Review Regarding Enterprise FlowCrypt');
   expect(decryptJson.replyType).to.eq('plain');
+  const blocksStr = blocks.toString();
+  expect(blocksStr).to.match(/<div class="MsgBlock plain" style="[^"]+">([\s\S]+)<\/div>/);
   const htmlMsg = '<font size=\"-1\" color=\"#31a217\" face=\"monospace\">' +
     '[remote content blocked for your privacy]</font><br /><br />\\n\\n\\n  App ' +
     'Store Connect\\n  \\n  \\n  \\n  \\n  \\n \\n\\n  \\n\\n  \\n\\n\\n\\n<table>\\n  <tr>\\n' +
@@ -507,12 +509,14 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t 
     '<a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/' +
     '1591462989/platform/ios/versions/844846907/resolutioncenter\">Resolution Center</a>' +
     ' in App Store Connect.</p>\\n\\n    <p>Best regards,<br />\\n    App Store Review</p>\\n'
-    .replace('\\n', ' ').replace(/  +/g, ' ');
+    .replace('\\n', ' ').replace(/\w+/g, ' ');
+  const adjustedBlocksStr = blocksStr.replace('\\n', ' ').replace(/\w+/g, ' ');
   console.log("==============");
-  console.log(blocks.toString());
+  console.log(htmlMsg);
   console.log("==============");
-  expect(blocks.toString().replace('\\n', ' ').replace(/  +/g, ' ')).to.contain(htmlMsg);
-  expect(blocks.toString()).to.match(/<div class="MsgBlock plain" style="[^"]+">([\s\S]+)<\/div>/);
+  console.log(adjustedBlocksStr);
+  console.log("==============");
+  expect(adjustedBlocksStr).to.contain(htmlMsg);
   // expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlMsg }]);
   t.pass();
 });
