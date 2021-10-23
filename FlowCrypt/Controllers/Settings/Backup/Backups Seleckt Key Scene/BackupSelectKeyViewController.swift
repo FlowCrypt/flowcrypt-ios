@@ -12,6 +12,7 @@ import Foundation
 
 final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
     private let backupService: BackupServiceType
+    private let service: ServiceActor
     private let decorator: BackupSelectKeyDecoratorType
     private var backupsContext: [(KeyDetails, Bool)]
     private let selectedOption: BackupOption
@@ -28,6 +29,7 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
         // set all selected bu default
         self.backupsContext = backups.map { ($0, true) }
         self.backupService = backupService
+        self.service = ServiceActor(backupService: backupService)
         self.selectedOption = selectedOption
         self.userId = userId
 
@@ -87,7 +89,7 @@ extension BackupSelectKeyViewController {
 
         Task {
             do {
-                try await backupService.backupToInbox(keys: backupsToSave, for: userId)
+                try await service.backupToInbox(keys: backupsToSave, for: userId)
                 hideSpinner()
                 navigationController?.popToRootViewController(animated: true)
             } catch {
@@ -126,5 +128,18 @@ extension BackupSelectKeyViewController: ASTableDelegate, ASTableDataSource {
         let backup = self.backupsContext[indexPath.row]
         backupsContext[indexPath.row] = (backup.0, !backup.1)
         tableNode.reloadRows(at: [indexPath], with: .fade)
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let backupService: BackupServiceType
+
+    init(backupService: BackupServiceType) {
+        self.backupService = backupService
+    }
+
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
+        try await backupService.backupToInbox(keys: keys, for: userId)
     }
 }

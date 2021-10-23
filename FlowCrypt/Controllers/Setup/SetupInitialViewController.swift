@@ -51,6 +51,7 @@ final class SetupInitialViewController: TableNodeViewController {
     }
 
     private let backupService: BackupServiceType
+    private let service: ServiceActor
     private let user: UserId
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
@@ -69,6 +70,7 @@ final class SetupInitialViewController: TableNodeViewController {
     ) {
         self.user = user
         self.backupService = backupService
+        self.service = ServiceActor(backupService: backupService)
         self.router = router
         self.decorator = decorator
         self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
@@ -124,7 +126,7 @@ extension SetupInitialViewController {
 
         Task {
             do {
-                let keys = try await backupService.fetchBackupsFromInbox(for: user)
+                let keys = try await service.fetchBackupsFromInbox(for: user)
                 proceedToSetupWith(keys: keys)
             } catch {
                 handle(error: error)
@@ -334,5 +336,18 @@ extension SetupInitialViewController {
             let viewController = SetupBackupsViewController(fetchedEncryptedKeys: keys, user: user)
             navigationController?.pushViewController(viewController, animated: true)
         }
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let backupService: BackupServiceType
+
+    init(backupService: BackupServiceType) {
+        self.backupService = backupService
+    }
+
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        return try await backupService.fetchBackupsFromInbox(for: userId)
     }
 }

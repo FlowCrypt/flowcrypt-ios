@@ -34,6 +34,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 
     private let backupService: BackupServiceType
     private let attester: AttesterApiType
+    private let service: Service
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -50,6 +51,15 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     ) {
         self.backupService = backupService
         self.attester = attester
+        self.service = Service(
+            user: user,
+            backupService: backupService,
+            core: core,
+            keyStorage: keyStorage,
+            storage: storage,
+            attester: attester,
+            passPhraseService: passPhraseService
+        )
         super.init(
             user: user,
             core: core,
@@ -70,7 +80,11 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         showSpinner()
         Task {
             do {
-                try await setupAccountWithGeneratedKey(with: passphrase)
+                try await service.setupAccount(
+                    passPhrase: passphrase,
+                    storageMethod: storageMethod,
+                    viewController: self
+                )
                 hideSpinner()
                 moveToMainFlow()
             } catch {
@@ -86,13 +100,40 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     }
 }
 
-// MARK: - Setup
+// TODO temporary solution for background execution problem
+private actor Service {
+    typealias ViewController = SetupCreatePassphraseAbstractViewController
 
-extension SetupGenerateKeyViewController {
-    private func setupAccountWithGeneratedKey(with passPhrase: String) async throws {
+    private let user: UserId
+    private let backupService: BackupServiceType
+    private let core: Core
+    private let keyStorage: KeyStorageType
+    private let storage: DataServiceType
+    private let attester: AttesterApiType
+    private let passPhraseService: PassPhraseServiceType
+
+    init(user: UserId,
+         backupService: BackupServiceType,
+         core: Core,
+         keyStorage: KeyStorageType,
+         storage: DataServiceType,
+         attester: AttesterApiType,
+         passPhraseService: PassPhraseServiceType) {
+        self.user = user
+        self.backupService = backupService
+        self.core = core
+        self.keyStorage = keyStorage
+        self.storage = storage
+        self.attester = attester
+        self.passPhraseService = passPhraseService
+    }
+
+    func setupAccount(passPhrase: String,
+                      storageMethod: StorageMethod,
+                      viewController: ViewController) async throws {
         let userId = try getUserId()
 
-        try awaitPromise(validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
+        try awaitPromise(await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
 
         let encryptedPrv = try await core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
         try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
@@ -113,22 +154,22 @@ extension SetupGenerateKeyViewController {
             token: storage.token
         )
 
-        try awaitPromise(alertAndSkipOnRejection(
+        try awaitPromise(await viewController.alertAndSkipOnRejection(
             updateKey,
             fail: "Failed to submit Public Key")
         )
         let testWelcome = attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
-        try awaitPromise(alertAndSkipOnRejection(
+        try awaitPromise(await viewController.alertAndSkipOnRejection(
             testWelcome,
             fail: "Failed to send you welcome email")
         )
     }
 
     private func getUserId() throws -> UserId {
-        guard let email = DataService.shared.email, !email.isEmpty else {
+        guard let email = storage.email, !email.isEmpty else {
             throw CreateKeyError.missedUserEmail
         }
-        guard let name = DataService.shared.email, !name.isEmpty else {
+        guard let name = storage.email, !name.isEmpty else {
             throw CreateKeyError.missedUserName
         }
         return UserId(email: email, name: name)
