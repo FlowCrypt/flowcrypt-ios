@@ -72,9 +72,9 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
       const lastEmpty = renderedContentBlocks.pop(); // last one should be empty due to the splitting above
       expect(lastEmpty).to.equal('');
       for (const renderedContentBlock of renderedContentBlocks) {
-        // it was before, but it doesn't work for whitespaces
-        // const m = (renderedContentBlock as string).match(/<div class="MsgBlock ([a-z]+)" style="[^"]+">(.*)<\/div>/);
-        const m = (renderedContentBlock as string).match(/<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/);
+        // (.*) doesn't work for some whitespaces, so use ([\s\S]+)
+        const m = (renderedContentBlock as string).match(
+          /<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/);
         if (m === null) {
           blocks.unshift({ error: "TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT", content: renderedContentBlock });
         } else {
