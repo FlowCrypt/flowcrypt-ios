@@ -394,16 +394,16 @@ ava.default('parseKeys - revoked', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('revoked');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   expect(json).to.deep.equal({
-    "format": "armored", 
+    "format": "armored",
     "keyDetails": [
-      { 
-        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\r\nVersion: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\r\nComment: Seamlessly send and receive encrypted email\r\n\r\nxjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7\r\nuXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK\r\nACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7\r\nEFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY\r\nDKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA\r\nBgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW\r\nRBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN\r\nFXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ\r\noXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS\r\nzZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==\r\n=bMwq\r\n-----END PGP PUBLIC KEY BLOCK-----\r\n", 
-        "users": ["revoekd@flowcrypt.com", "revoked@flowcrypt.com"], 
-        "ids": [{ "fingerprint": "3931B7413DBB2FA60CEF85CE5F15978910A1780A", "longid": "5F15978910A1780A", "shortid": "10A1780A", "keywords": "GALLERY PROTECT TIME CANDY BLEAK ACCESS" }], 
-        "algo": { "algorithm": "eddsa", "curve": "ed25519", "algorithmId": 22 }, 
-        "created": 1634664782, 
-        "lastModified": 1634664811, 
-        "revoked": true 
+      {
+        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\r\nVersion: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\r\nComment: Seamlessly send and receive encrypted email\r\n\r\nxjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7\r\nuXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK\r\nACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7\r\nEFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY\r\nDKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA\r\nBgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW\r\nRBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN\r\nFXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ\r\noXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS\r\nzZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==\r\n=bMwq\r\n-----END PGP PUBLIC KEY BLOCK-----\r\n",
+        "users": ["revoekd@flowcrypt.com", "revoked@flowcrypt.com"],
+        "ids": [{ "fingerprint": "3931B7413DBB2FA60CEF85CE5F15978910A1780A", "longid": "5F15978910A1780A", "shortid": "10A1780A", "keywords": "GALLERY PROTECT TIME CANDY BLEAK ACCESS" }],
+        "algo": { "algorithm": "eddsa", "curve": "ed25519", "algorithmId": 22 },
+        "created": 1634664782,
+        "lastModified": 1634664811,
+        "revoked": true
       }
     ]
   });
@@ -472,6 +472,19 @@ ava.default('parseDecryptMsg compat direct-encrypted-pgpmime', async t => {
 ava.default('parseDecryptMsg compat mime-email-plain', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain')]));
+  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent }]);
+  expect(decryptJson).to.deep.equal({ text, replyType: 'plain', subject: 'mime email plain' });
+  t.pass();
+});
+
+ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-iso-2201-jp')]));
+  console.log('==============================');
+  console.log(JSON.stringify(blocks));
+  console.log('==============================');
+  console.log(JSON.stringify(decryptJson));
+  console.log('==============================');
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'plain', subject: 'mime email plain' });
   t.pass();
