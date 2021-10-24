@@ -19,13 +19,16 @@ final class KeySettingsViewController: TableNodeViewController {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
     private let keyService: KeyServiceType
+    private let clientConfigurationService: ClientConfigurationServiceType
 
     init(
         decorator: KeySettingsViewDecorator = KeySettingsViewDecorator(),
-        keyService: KeyServiceType = KeyService()
+        keyService: KeyServiceType = KeyService(),
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.decorator = decorator
         self.keyService = keyService
+        self.clientConfigurationService = clientConfigurationService
         super.init(node: TableNode())
     }
 
@@ -47,11 +50,14 @@ final class KeySettingsViewController: TableNodeViewController {
     }
 
     private func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .add,
-            target: self,
-            action: #selector(handleAddButtonTap)
-        )
+        let configuration = clientConfigurationService.getSavedForCurrentUser()
+        if !configuration.isUsingKeyManager {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .add,
+                target: self,
+                action: #selector(handleAddButtonTap)
+            )
+        }
     }
 }
 
