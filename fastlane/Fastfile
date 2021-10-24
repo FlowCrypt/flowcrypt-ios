@@ -26,25 +26,20 @@ platform :ios do
     )
   end
 
-  desc "Build for UI testing"
-  lane :build_e2e do
+  desc "Build for swift and UI tests"
+  lane :build do
     xcbuild(
        workspace: "FlowCrypt.xcworkspace",
        scheme: "Debug FlowCrypt",
        configuration: "Debug",
        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
-    # sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ./appium/FlowCrypt.app")
-  end
-
-  desc "Build for UI testing"
-  lane :move_e2e do
     sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app appium/")
   end
 
-  desc "Build app and run Swift tests"
-  lane :swift_tests do
-    build_e2e
+  desc "Run Swift tests"
+  lane :test do
+    build
     scan(
       scheme: "FlowCryptAppTests",
       skip_build: true
