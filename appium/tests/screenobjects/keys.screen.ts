@@ -61,7 +61,7 @@ class KeysScreen extends BaseScreen {
     checkKeysScreen() {
         //will add value verification for key later, need to create Api request for get key value
         this.keysHeader.waitForDisplayed();
-        //this.addButton.waitForDisplayed({reverse: true}); -  disabled due to https://github.com/FlowCrypt/flowcrypt-ios/issues/715
+        this.addButton.waitForDisplayed({reverse: true});
         this.nameAndEmail.waitForExist();
         this.dateCreated.waitForExist();
         this.fingerPrint.waitForExist();
@@ -76,7 +76,7 @@ class KeysScreen extends BaseScreen {
 
     checkSelectedKeyScreen() {
         this.showPublicKeyButton.waitForDisplayed();
-        this.showPrivateKeyButton.waitForDisplayed();
+        this.showPrivateKeyButton.waitForDisplayed({reverse: true});
         this.showKeyDetailsButton.waitForDisplayed();
         this.shareButton.waitForDisplayed();
         this.copyToClipboardButton.waitForDisplayed();
