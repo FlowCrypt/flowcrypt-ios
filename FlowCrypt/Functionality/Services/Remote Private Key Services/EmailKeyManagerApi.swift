@@ -90,7 +90,7 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
     }
 
     private func getPrivateKeysUrlString() -> String? {
-        guard let keyManagerUrlString = clientConfigurationService.getSavedClientConfigurationForCurrentUser().keyManagerUrlString else {
+        guard let keyManagerUrlString = clientConfigurationService.getSavedForCurrentUser().keyManagerUrlString else {
             return nil
         }
         return "\(keyManagerUrlString)v1/keys/private"
