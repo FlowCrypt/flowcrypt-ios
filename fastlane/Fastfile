@@ -34,7 +34,12 @@ platform :ios do
        configuration: "Debug",
        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
-    sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ./appium/FlowCrypt.app")
+    # sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ./appium/FlowCrypt.app")
+  end
+
+  desc "Build for UI testing"
+  lane :move_e2e do
+    sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app appium/")
   end
 
   desc "Build app and run Swift tests"

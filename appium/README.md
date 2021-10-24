@@ -9,7 +9,7 @@ The following commands should be run in `appium` folder.
 
 ## Run tests
 
-1. Place built `FlowCrypt.app` in `appium` folder
+1. `bundle exec fastlane build_e2e`
 2. `npm run ios.smoke` (all tests with tag #smoke will be included)
 
 (todo - how to run all tests, how to run one test)
