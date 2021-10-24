@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+@testable import FlowCrypt
 import Foundation
 import Promises
-@testable import FlowCrypt
 
 final class ContactsServiceMock: ContactsServiceType {
     var retrievePubKeysResult: ((String) -> ([String]))!

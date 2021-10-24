@@ -9,7 +9,7 @@
 import XCTest
 
 class FilesManagerTests: XCTestCase {
-    
+
     var filesManager: FilesManagerType!
 
     override func setUp() {
@@ -24,19 +24,19 @@ class FilesManagerTests: XCTestCase {
         var isFileSaved = false
         let file = FileMock.stringedFile
         let expectation = XCTestExpectation()
-        
+
         filesManager.save(file: file)
             .then { _ in
                 isFileSaved = true
                 expectation.fulfill()
             }
-        
+
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let pathComponent = url.appendingPathComponent(file.name)
         let filePath = pathComponent.path
-        
+
         wait(for: [expectation], timeout: 2)
-        
+
         XCTAssertTrue(
             isFileSaved, "filesManager.save should call then block if file succesfully saved"
         )

@@ -13,7 +13,8 @@ fi
 if [ -f "./Pods/SwiftFormat/CommandLineTool/swiftformat" ]; then
   echo "Start formatting"
   # swiftlint autocorrect --path .
-  ./Pods/SwiftFormat/CommandLineTool/swiftformat "FlowCrypt", "FlowCryptUITests" \
+  ./Pods/SwiftFormat/CommandLineTool/swiftformat \
+    "FlowCrypt", "FlowCryptCommon", "FlowCryptUI", "FlowCryptUIApplication", "FlowCryptAppTests" \
     --rules trailingSpace \
     --rules blankLinesAtEndOfScope \
     --rules consecutiveBlankLines \

@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 @testable import FlowCrypt
+import Foundation
 
 final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
 

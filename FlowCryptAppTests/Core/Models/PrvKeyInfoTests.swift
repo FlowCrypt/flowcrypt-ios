@@ -5,10 +5,9 @@
 //  Created by Roma Sosnovsky on 04/10/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class PrvKeyInfoTests: XCTestCase {
 

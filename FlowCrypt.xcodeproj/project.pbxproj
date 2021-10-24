@@ -625,7 +625,6 @@
 		9FD364852381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupManuallyEnterPassPhraseViewController.swift; sourceTree = "<group>"; };
 		9FDF3637235A0B3100614596 /* InfoCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoCellNode.swift; sourceTree = "<group>"; };
 		9FDF3639235A0B3B00614596 /* HeaderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderNode.swift; sourceTree = "<group>"; };
-		9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDF3653235A218E00614596 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		9FDF3655235A22DA00614596 /* AppReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReset.swift; sourceTree = "<group>"; };
 		9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesListProvider.swift; sourceTree = "<group>"; };
@@ -1567,7 +1566,6 @@
 			isa = PBXGroup;
 			children = (
 				C132B9B01EC2DBD800763715 /* FlowCrypt.app */,
-				9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */,
 				D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */,
 				D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */,
 				D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */,
@@ -2022,24 +2020,6 @@
 			productReference = 9F2AC5C6267BE99E00F6149B /* FlowCryptAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		9FDF3640235A1B0100614596 /* FlowCryptUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9FDF364B235A1B0100614596 /* Build configuration list for PBXNativeTarget "FlowCryptUITests" */;
-			buildPhases = (
-				9FDF363D235A1B0100614596 /* Sources */,
-				9FDF363E235A1B0100614596 /* Frameworks */,
-				9FDF363F235A1B0100614596 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				9FDF3647235A1B0100614596 /* PBXTargetDependency */,
-			);
-			name = FlowCryptUITests;
-			productName = FlowCryptUITests;
-			productReference = 9FDF3641235A1B0100614596 /* FlowCryptUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		C132B9AF1EC2DBD800763715 /* FlowCrypt */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */;
@@ -2194,7 +2174,6 @@
 			projectRoot = "";
 			targets = (
 				C132B9AF1EC2DBD800763715 /* FlowCrypt */,
-				9FDF3640235A1B0100614596 /* FlowCryptUITests */,
 				D204DB9D23FB35700083B9D6 /* FlowCryptUI */,
 				D2A1D3B623FD64AB00D626D6 /* FlowCryptUIApplication */,
 				D2531F2A23FEEF52007E5198 /* FlowCryptCommon */,
@@ -2923,30 +2902,6 @@
 			};
 			name = Enterprise;
 		};
-		9F1C905126F1F38C0046E7D7 /* Enterprise */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W57XRJ27NX;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FlowCryptUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.FlowCryptUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FlowCrypt;
-			};
-			name = Enterprise;
-		};
 		9F1C905226F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */;
@@ -3173,77 +3128,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FlowCrypt.app/FlowCrypt";
-			};
-			name = TestFlight;
-		};
-		9FDF3648235A1B0100614596 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W57XRJ27NX;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FlowCryptUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.FlowCryptUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FlowCrypt;
-			};
-			name = Debug;
-		};
-		9FDF3649235A1B0100614596 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W57XRJ27NX;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FlowCryptUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.FlowCryptUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FlowCrypt;
-			};
-			name = Release;
-		};
-		9FDF364A235A1B0100614596 /* TestFlight */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W57XRJ27NX;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = FlowCryptUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.FlowCryptUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FlowCrypt;
 			};
 			name = TestFlight;
 		};
@@ -3924,17 +3808,6 @@
 				9F1C905526F1F38C0046E7D7 /* Enterprise */,
 				9F2AC5CF267BE99E00F6149B /* Release */,
 				9F2AC5D0267BE99E00F6149B /* TestFlight */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		9FDF364B235A1B0100614596 /* Build configuration list for PBXNativeTarget "FlowCryptUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9FDF3648235A1B0100614596 /* Debug */,
-				9F1C905126F1F38C0046E7D7 /* Enterprise */,
-				9FDF3649235A1B0100614596 /* Release */,
-				9FDF364A235A1B0100614596 /* TestFlight */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -6,27 +6,27 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class KeyMethodsTest: XCTestCase {
 
     var sut: KeyMethods!
     var decrypter: MockKeyDecrypter!
     var passPhrase = "Some long frase"
-    
+
     override func setUp() {
         decrypter = MockKeyDecrypter()
         sut = KeyMethods(decrypter: decrypter)
     }
-    
+
     func testEmptyParsingKey() {
         let emptyKeys: [KeyDetails] = []
         let result = sut.filterByPassPhraseMatch(keys: emptyKeys, passPhrase: passPhrase)
-        
+
         XCTAssertTrue(result.isEmpty)
     }
-    
+
     func testNoPrivateKey() {
         // private part = nil
         let keys = [
@@ -62,16 +62,16 @@ class KeyMethodsTest: XCTestCase {
             )
         ]
         let result = sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
-        
+
         XCTAssertTrue(result.isEmpty)
     }
-    
+
     func testCantDecryptKey() {
         decrypter.result = .failure(.some)
         let result = sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
         XCTAssertTrue(result.isEmpty)
     }
-    
+
     func testSuccessDecryption() {
         decrypter.result = .success(CoreRes.DecryptKey(decryptedKey: "some key"))
         let result = sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
@@ -80,7 +80,7 @@ class KeyMethodsTest: XCTestCase {
 }
 
 extension KeyMethodsTest {
-    var validKeys: [KeyDetails] {[
+    var validKeys: [KeyDetails] { [
         KeyDetails(
             public: "Public part",
             private: "private 1",
@@ -111,12 +111,12 @@ extension KeyMethodsTest {
             algo: nil,
             revoked: false
         )
-    ]}
+    ] }
 }
 
 class MockKeyDecrypter: KeyDecrypter {
     var result: Result<CoreRes.DecryptKey, MockError> = .success(CoreRes.DecryptKey(decryptedKey: "decrypted"))
-    
+
     func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey {
         switch result {
         case .success(let key):
