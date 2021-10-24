@@ -7,6 +7,7 @@ import AppAuth
 import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    var blurViewController: BlurViewController?
     var googleAuthSession: OIDExternalUserAgentSession?
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
 
@@ -25,5 +26,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         googleAuthSession = nil
         return true
+    }
+}
+
+extension AppDelegate: BlursTopView {
+    func applicationWillResignActive(_ application: UIApplication) {
+        if !isBlurViewShowing() {
+            coverTopViewWithBlurView()
+        }
+    }
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        if isBlurViewShowing() {
+            removeBlurView()
+        }
     }
 }
