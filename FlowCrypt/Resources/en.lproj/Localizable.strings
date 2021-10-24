@@ -1,5 +1,6 @@
 // COMMON
 "loading_title" = "Loading";
+"encrypting_title" = "Encrypting...";
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";

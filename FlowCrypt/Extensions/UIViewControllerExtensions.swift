@@ -118,6 +118,14 @@ extension UIViewController {
         }
     }
 
+    func updateSpinner(progress: Float) {
+        DispatchQueue.main.async {
+            guard let spinner = MBProgressHUD.forView(self.view) else { return }
+            spinner.mode = .annularDeterminate
+            spinner.progress = progress
+        }
+    }
+
     func hideSpinner() {
         DispatchQueue.main.async {
             self.view.subviews

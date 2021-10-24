@@ -23,9 +23,16 @@ struct GmailService: MailServiceProvider {
             logger.logWarning("authorization for current user is nil")
         }
 
+        service.uploadProgressBlock = { _, totalBytesUploaded, totalBytesExpectedToUpload in
+            print("\(totalBytesUploaded) from \(totalBytesExpectedToUpload)")
+            guard totalBytesExpectedToUpload > 0 else { return }
+            let progress = Float(totalBytesUploaded) / Float(totalBytesExpectedToUpload)
+            progressHandler?(progress)
+        }
         service.authorizer = userService.authorization
         return service
     }
+    var progressHandler: ((Float) -> Void)?
 
     init(
         userService: GoogleUserServiceType = GoogleUserService(),

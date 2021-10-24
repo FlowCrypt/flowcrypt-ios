@@ -244,27 +244,39 @@ extension ComposeViewController {
 
     private func sendMessage(_ signingKey: PrvKeyInfo) {
         view.endEditing(true)
-        showSpinner("sending_title".localized)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
-        let result = composeMessageService.validateMessage(
-            input: input,
-            contextToSend: contextToSend,
-            email: email,
-            signingPrv: signingKey
-        )
-        switch result {
-        case .success(let message):
-            encryptAndSend(message)
-        case .failure(let error):
-            handle(error: error)
+        let spinnerTitle = contextToSend.attachments.isEmpty ? "sending_title" : "encrypting_title"
+        showSpinner(spinnerTitle.localized)
+
+        // TODO: - fix for spinner
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+            let result = self.composeMessageService.validateMessage(
+                input: self.input,
+                contextToSend: self.contextToSend,
+                email: self.email,
+                signingPrv: signingKey
+            )
+            switch result {
+            case .success(let message):
+                self.encryptAndSend(message)
+            case .failure(let error):
+                self.handle(error: error)
+            }
         }
     }
 
     private func encryptAndSend(_ message: SendableMsg) {
         Task {
             do {
-                try await composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
+                try await composeMessageService.encryptAndSend(message: message,
+                                                               threadId: input.threadId,
+                                                               progressHandler: { [weak self] progress in
+                    print(progress)
+                    self?.updateSpinner(progress: progress)
+                })
                 handleSuccessfullySentMessage()
             } catch {
                 if let error = error as? ComposeMessageError {
@@ -346,6 +358,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
                 return ASCellNode()
+                
             }
         }
     }
