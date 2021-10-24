@@ -69,6 +69,7 @@ extension GlobalRouter {
             completion()
         } catch {
             let controller = InvalidStorageViewController(
+                error: error,
                 encryptedStorage: storage,
                 router: self
             )
