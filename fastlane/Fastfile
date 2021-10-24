@@ -13,18 +13,19 @@ platform :ios do
     )
   end
 
-  desc "Build for CI testing"
-  lane :build do |options|
-    gym(
-      scheme: "Debug FlowCrypt",
-      skip_package_ipa: true,
-      skip_archive: true,
-      silent: true,
-      clean: false,
-      skip_codesigning: true,
-      configuration: "Debug"
-    )
-  end
+  # original build using gym - does not support exporting app for Appium
+  # desc "Build for CI testing"
+  # lane :build do |options|
+  #   gym(
+  #     scheme: "Debug FlowCrypt",
+  #     skip_package_ipa: true,
+  #     skip_archive: true,
+  #     silent: true,
+  #     clean: false,
+  #     skip_codesigning: true,
+  #     configuration: "Debug"
+  #   )
+  # end
 
   desc "Build for swift and UI tests"
   lane :build do
