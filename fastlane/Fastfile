@@ -8,27 +8,12 @@ platform :ios do
   before_all do
     # installed via the semaphore plugin with `fastlane add_plugin semaphore`
     # setup_semaphore
-    cocoapod_update
-  end
-
-  desc "Cocoapod update"
-  lane :cocoapod_update do
     cocoapods(
       try_repo_update_on_error: true
     )
   end
 
-  # UnitTests
-  desc "Run Tests"
-  lane :unit_tests do
-    scan(
-      scheme: "FlowCryptAppTests",
-      skip_build: true
-  )
-  end
-
-  desc "Build"
-  desc "Build without code sign. Just to see if the build is working"
+  desc "Build without code sign, for CI"
   lane :build do |options|
     gym(
       scheme: "Debug FlowCrypt",
@@ -37,11 +22,10 @@ platform :ios do
       silent: true,
       clean: true,
       skip_codesigning: true
-  )
-
+    )
   end
 
-  desc "Debug Build for e2e testing"
+  desc "Build for e2e testing"
   lane :build_e2e do
     xcbuild(
        workspace: "FlowCrypt.xcworkspace",
@@ -49,13 +33,15 @@ platform :ios do
        configuration: "Debug",
        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
-
   end
 
   desc "Build app and run Swift tests"
-  lane :do_everything do
+  lane :swift_tests do
     build
-    unit_tests
+    scan(
+      scheme: "FlowCryptAppTests",
+      skip_build: true
+    )
   end
 
 end
