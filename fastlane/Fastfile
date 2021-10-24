@@ -44,7 +44,7 @@ platform :ios do
 
   desc "Build app and run Swift tests"
   lane :swift_tests do
-    build
+    build_e2e
     scan(
       scheme: "FlowCryptAppTests",
       skip_build: true

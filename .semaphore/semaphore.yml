@@ -60,10 +60,10 @@ blocks:
       jobs:
         - name: Swift tests + Appium tests
           commands:
-            - cache restore derived-data
+            # - cache restore derived-data
             - bundle exec fastlane swift_tests
-            - bundle exec fastlane build_e2e
-            - cache store derived-data /Users/semaphore/Library/Developer/Xcode/DerivedData
+            # - bundle exec fastlane build_e2e
+            # - cache store derived-data /Users/semaphore/Library/Developer/Xcode/DerivedData
             - bundle exec fastlane move_e2e
             - npm run ios.smoke
       epilogue:
