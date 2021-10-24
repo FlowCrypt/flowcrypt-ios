@@ -9,6 +9,9 @@ config.suites = {
     ],
     smoke: [
         './tests/specs/login/GmailLogin.spec.ts'
+    ],
+    settings: [
+        './tests/specs/settings/*.spec.ts'
     ]
 };
 

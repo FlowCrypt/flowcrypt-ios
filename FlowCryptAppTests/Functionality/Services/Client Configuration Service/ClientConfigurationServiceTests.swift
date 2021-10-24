@@ -37,7 +37,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             expectedConfiguration
         }
 
-        let clientConfiguration = sut.getSavedClientConfigurationForCurrentUser()
+        let clientConfiguration = sut.getSavedForCurrentUser()
         XCTAssert(localClientConfigurationProvider.fetchCount == 1)
         XCTAssert(localClientConfigurationProvider.fetchInvoked == true)
         XCTAssert(clientConfiguration.raw == expectedConfiguration)
@@ -48,7 +48,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             nil
         }
         do {
-            _ = try await sut.fetchClientConfigurationForCurrentUser()
+            _ = try await sut.fetchForCurrentUser()
             XCTFail()
         } catch {
         }
@@ -70,7 +70,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             "example@flowcrypt.test"
         }
 
-        _ = try await sut.fetchClientConfigurationForCurrentUser()
+        _ = try await sut.fetchForCurrentUser()
     }
 
     func testInCaseGetClientConfigurationReturnsError() async throws {
@@ -88,7 +88,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             expectedClientConfiguration
         }
 
-        let clientConfiguration = try await sut.fetchClientConfigurationForCurrentUser()
+        let clientConfiguration = try await sut.fetchForCurrentUser()
         XCTAssertTrue(clientConfiguration.raw == expectedClientConfiguration)
     }
 }

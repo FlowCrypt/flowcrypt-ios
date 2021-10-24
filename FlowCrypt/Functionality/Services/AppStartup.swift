@@ -100,8 +100,7 @@ struct AppStartup {
 
     private func getUserOrgRulesIfNeeded() async throws {
         if DataService.shared.isLoggedIn {
-            let service = ClientConfigurationService()
-            _ = try await service.fetchClientConfigurationForCurrentUser()
+            _ = try await ClientConfigurationService().fetchForCurrentUser()
         }
     }
 

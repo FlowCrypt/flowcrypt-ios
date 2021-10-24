@@ -56,8 +56,25 @@ final class GlobalRouter: GlobalRouterType {
 extension GlobalRouter {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        userAccountService.cleanupSessions()
-        proceed(with: nil)
+        validateEncryptedStorage {
+            userAccountService.cleanupSessions()
+            proceed(with: nil)
+        }
+    }
+
+    private func validateEncryptedStorage(_ completion: () -> Void) {
+        let storage = EncryptedStorage()
+        do {
+            try storage.validate()
+            completion()
+        } catch {
+            let controller = InvalidStorageViewController(
+                encryptedStorage: storage,
+                router: self
+            )
+            keyWindow.rootViewController = UINavigationController(rootViewController: controller)
+            keyWindow.makeKeyAndVisible()
+        }
     }
 
     private func proceed(with session: SessionType?) {

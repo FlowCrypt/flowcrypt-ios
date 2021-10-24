@@ -20,6 +20,8 @@ protocol EncryptedStorageType: KeyStorageType {
     var activeUser: UserObject? { get }
     func doesAnyKeyExist(for email: String) -> Bool
 
+    func validate() throws
+    func reset() throws
     func cleanup()
 }
 
@@ -79,7 +81,6 @@ final class EncryptedStorage: EncryptedStorageType {
             let realm = try Realm(configuration: encryptedConfiguration)
             return realm
         } catch {
-//             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
             fatalError("failed to initiate realm: \(error)")
         }
     }
@@ -254,6 +255,16 @@ extension EncryptedStorage {
 }
 
 extension EncryptedStorage {
+    func validate() throws {
+        Realm.Configuration.defaultConfiguration = encryptedConfiguration
+        _ = try Realm(configuration: encryptedConfiguration)
+    }
+
+    func reset() throws {
+        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        try FileManager.default.removeItem(atPath: path)
+    }
+
     func cleanup() {
         do {
             try storage.write {
