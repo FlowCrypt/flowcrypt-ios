@@ -6,17 +6,18 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import AsyncDisplayKit
-import FlowCryptUI
+import UIKit
 
-final class InvalidStorageViewController: TableNodeViewController {
+final class InvalidStorageViewController: UIViewController {
+    private let error: Error
     private let encryptedStorage: EncryptedStorageType
     private let router: GlobalRouterType
 
-    init(encryptedStorage: EncryptedStorageType, router: GlobalRouterType) {
+    init(error: Error, encryptedStorage: EncryptedStorageType, router: GlobalRouterType) {
+        self.error = error
         self.encryptedStorage = encryptedStorage
         self.router = router
-        super.init(node: TableNode())
+        super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)
@@ -28,47 +29,54 @@ final class InvalidStorageViewController: TableNodeViewController {
         super.viewDidLoad()
         title = "invalid_storage_title".localized
 
-        node.delegate = self
-        node.dataSource = self
-        node.reloadData()
+        view.backgroundColor = .white
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "invalid_storage_text".localized
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 16)
+        view.addSubview(label)
+
+        let textView = UITextView()
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.isEditable = false
+        textView.text = error.localizedDescription
+        view.addSubview(textView)
+
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .red
+        button.setTitle("invalid_storage_reset_button".localized, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(handleTap), for: .touchUpInside)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        button.layer.cornerRadius = 5
+        view.addSubview(button)
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            label.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
+            label.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
+
+            textView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 10),
+            textView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
+            textView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
+            textView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -10),
+
+            button.heightAnchor.constraint(equalToConstant: 50),
+            button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
+            button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
+            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8)
+        ])
     }
 
-    private func handleTap() {
+    @objc private func handleTap() {
         do {
             try encryptedStorage.reset()
             router.proceed()
         } catch {
             showAlert(message: "invalid_storage_reset_error".localized)
-        }
-    }
-}
-
-extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        2
-    }
-
-    func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        {
-            if indexPath.row == 0 {
-                return KeyTextCellNode(
-                    title: "invalid_storage_text".localized.attributed(.regular(12), color: .black),
-                    insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-                )
-            }
-
-            if indexPath.row == 1 {
-                let input = ButtonCellNode.Input(
-                    title: "invalid_storage_reset_button".localized.attributed(.bold(16), color: .white),
-                    insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
-                    color: .red
-                )
-                return ButtonCellNode(input: input) { [weak self] in
-                    self?.handleTap()
-                }
-            }
-
-            return ASCellNode()
         }
     }
 }

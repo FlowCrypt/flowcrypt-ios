@@ -253,7 +253,7 @@
 
 // Invalid storage view controller
 "invalid_storage_title" = "Error";
-"invalid_storage_text" = "Your data storage is invalid. You could reset it and start with new one";
+"invalid_storage_text" = "Your data storage is invalid. You could reset it and start with new one. Check error description below";
 "invalid_storage_reset_button" = "Reset";
 "invalid_storage_reset_error" = "Couldn't remove storage. Please reinstall application";
 
