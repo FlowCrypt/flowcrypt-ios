@@ -35,7 +35,7 @@ platform :ios do
        configuration: "Debug",
        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
-    sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app appium/")
+    sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ~/git/flowcrypt-ios/appium/")
   end
 
   desc "Run Swift tests"

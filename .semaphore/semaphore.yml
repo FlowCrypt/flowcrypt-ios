@@ -62,6 +62,7 @@ blocks:
           commands:
             # - cache restore derived-data
             - bundle exec fastlane test
+            - ls -la appium
             # - cache store derived-data /Users/semaphore/Library/Developer/Xcode/DerivedData
             - cd appium && npm run ios.smoke
       epilogue:
