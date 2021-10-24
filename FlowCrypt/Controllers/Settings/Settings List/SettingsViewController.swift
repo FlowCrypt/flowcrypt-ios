@@ -55,7 +55,7 @@ final class SettingsViewController: TableNodeViewController {
     ) {
         self.decorator = decorator
         self.currentUser = currentUser
-        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
+        self.clientConfiguration = clientConfigurationService.getSavedForCurrentUser()
         self.rows = SettingsMenuItem.filtered(with: self.clientConfiguration)
         super.init(node: TableNode())
     }

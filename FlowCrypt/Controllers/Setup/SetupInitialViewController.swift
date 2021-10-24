@@ -73,7 +73,7 @@ final class SetupInitialViewController: TableNodeViewController {
         self.service = ServiceActor(backupService: backupService)
         self.router = router
         self.decorator = decorator
-        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
+        self.clientConfiguration = clientConfigurationService.getSavedForCurrentUser()
         self.emailKeyManagerApi = emailKeyManagerApi
 
         super.init(node: TableNode())

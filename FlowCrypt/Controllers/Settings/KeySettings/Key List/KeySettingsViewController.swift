@@ -19,13 +19,16 @@ final class KeySettingsViewController: TableNodeViewController {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
     private let keyService: KeyServiceType
+    private let isUsingKeyManager: Bool
 
     init(
         decorator: KeySettingsViewDecorator = KeySettingsViewDecorator(),
-        keyService: KeyServiceType = KeyService()
+        keyService: KeyServiceType = KeyService(),
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.decorator = decorator
         self.keyService = keyService
+        self.isUsingKeyManager = clientConfigurationService.getSavedForCurrentUser().isUsingKeyManager
         super.init(node: TableNode())
     }
 
@@ -47,11 +50,13 @@ final class KeySettingsViewController: TableNodeViewController {
     }
 
     private func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .add,
-            target: self,
-            action: #selector(handleAddButtonTap)
-        )
+        if !isUsingKeyManager {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .add,
+                target: self,
+                action: #selector(handleAddButtonTap)
+            )
+        }
     }
 }
 
@@ -95,7 +100,15 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard let key = keys[safe: indexPath.row] else { return }
-        let viewController = KeyDetailViewController(key: key)
+
+        var parts = KeyDetailViewController.Parts.allCases
+        if isUsingKeyManager {
+            if let index = parts.firstIndex(where: { $0 == .privateInfo }) {
+                parts.remove(at: index)
+            }
+        }
+
+        let viewController = KeyDetailViewController(key: key, parts: parts)
         navigationController?.pushViewController(viewController, animated: true)
     }
 }

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "ios.smoke": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite smoke"
+    "ios.smoke": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite smoke",
+    "ios.settings": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite settings"
   },
   "author": "",
   "license": "ISC",

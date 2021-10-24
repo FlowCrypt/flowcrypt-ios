@@ -10,8 +10,8 @@ import FlowCryptCommon
 import Foundation
 
 protocol ClientConfigurationServiceType {
-    func fetchClientConfigurationForCurrentUser() async throws -> ClientConfiguration
-    func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration
+    func fetchForCurrentUser() async throws -> ClientConfiguration
+    func getSavedForCurrentUser() -> ClientConfiguration
 }
 
 final class ClientConfigurationService {
@@ -34,7 +34,7 @@ final class ClientConfigurationService {
 // MARK: - OrganisationalRulesServiceType
 extension ClientConfigurationService: ClientConfigurationServiceType {
 
-    func fetchClientConfigurationForCurrentUser() async throws -> ClientConfiguration {
+    func fetchForCurrentUser() async throws -> ClientConfiguration {
         guard let currentUserEmail = getCurrentUserEmail() else {
             throw AppErr.noCurrentUser
         }
@@ -50,7 +50,7 @@ extension ClientConfigurationService: ClientConfigurationServiceType {
         }
     }
 
-    func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration {
+    func getSavedForCurrentUser() -> ClientConfiguration {
         guard let raw = self.local.load() else {
             fatalError("There should not be a user without OrganisationalRules")
         }
