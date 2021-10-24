@@ -13,7 +13,7 @@ platform :ios do
     )
   end
 
-  desc "Build without code sign, for CI"
+  desc "Build for CI testing"
   lane :build do |options|
     gym(
       scheme: "Debug FlowCrypt",
@@ -21,11 +21,12 @@ platform :ios do
       skip_archive: true,
       silent: true,
       clean: true,
-      skip_codesigning: true
+      skip_codesigning: true,
+      configuration: "Debug"
     )
   end
 
-  desc "Build for e2e testing"
+  desc "Build for UI testing"
   lane :build_e2e do
     xcbuild(
        workspace: "FlowCrypt.xcworkspace",
@@ -33,6 +34,7 @@ platform :ios do
        configuration: "Debug",
        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
+    sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ./appium/FlowCrypt.app")
   end
 
   desc "Build app and run Swift tests"
