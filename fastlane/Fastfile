@@ -18,55 +18,6 @@ platform :ios do
     )
   end
 
-  # UITests
-  desc "Run all UI tests"
-  lane :test_ui do
-    test_ui_prepare
-    test_ui_gmail
-    test_ui_imap
-  end
-
-  desc "Run Gmail UI Tests"
-  lane :test_ui_gmail do
-    test_ui_prepare
-    scan(
-      workspace: "FlowCrypt.xcworkspace",
-      scheme: "FlowCryptUITests",
-      reinstall_app: true,
-      skip_build: true,
-      disable_slide_to_type: true,
-      force_quit_simulator: false,
-      reset_simulator: true,
-      prelaunch_simulator: true,
-      include_simulator_logs: true,
-      skip_build: true,
-      testplan: "Gmail"
-  )
-  end
-
-  desc "Run Imap UI Tests"
-  lane :test_ui_imap do
-    test_ui_prepare
-    scan(
-      workspace: "FlowCrypt.xcworkspace",
-      scheme: "FlowCryptUITests",
-      reinstall_app: true,
-      skip_build: true,
-      disable_slide_to_type: true,
-      force_quit_simulator: false,
-      reset_simulator: true,
-      prelaunch_simulator: true,
-      include_simulator_logs: true,
-      skip_build: true,
-      testplan: "Imap"
-  )
-  end
-
-  desc "Prepare for UI tests"
-  lane :test_ui_prepare do
-    reset_simulator_contents()
-  end
-
   # UnitTests
   desc "Run Tests"
   lane :unit_tests do
@@ -101,19 +52,10 @@ platform :ios do
 
   end
 
-  desc "Record ui tests"
-  lane :record_tests do
-      reset_simulator
-      sh("./record.sh")
-  end
-
-  desc "Build app, run tests, run UI test"
+  desc "Build app and run Swift tests"
   lane :do_everything do
     build
     unit_tests
-    # test_ui_gmail
-    # test_ui_imap
-    # record_tests
   end
 
 end
