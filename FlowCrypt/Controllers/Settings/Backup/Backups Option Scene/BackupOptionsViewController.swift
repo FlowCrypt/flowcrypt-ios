@@ -33,6 +33,7 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     }
     private let attester = AttesterApi()
     private let backupService: BackupServiceType
+    private let service: ServiceActor
     private let userId: UserId
 
     init(
@@ -44,6 +45,7 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
         self.decorator = decorator
         self.backups = backups
         self.backupService = backupService
+        self.service = ServiceActor(backupService: backupService)
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -107,7 +109,7 @@ extension BackupOptionsViewController {
 
         Task {
             do {
-                try await backupService.backupToInbox(keys: backups, for: userId)
+                try await service.backupToInbox(keys: backups, for: userId)
                 hideSpinner()
                 navigationController?.popToRootViewController(animated: true)
             } catch {
@@ -174,5 +176,18 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
         case .action: handleButtonTap()
         case .info: break
         }
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let backupService: BackupServiceType
+
+    init(backupService: BackupServiceType) {
+        self.backupService = backupService
+    }
+
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
+        try await backupService.backupToInbox(keys: keys, for: userId)
     }
 }

@@ -35,7 +35,7 @@ final class BackupViewController: ASDKViewController<TableNode> {
     }
 
     private let decorator: BackupViewDecoratorType
-    private let backupProvider: BackupServiceType
+    private let service: ServiceActor
     private let userId: UserId
     private var state: State = .idle { didSet { updateState() } }
 
@@ -45,7 +45,7 @@ final class BackupViewController: ASDKViewController<TableNode> {
         userId: UserId
     ) {
         self.decorator = decorator
-        self.backupProvider = backupProvider
+        self.service = ServiceActor(backupProvider: backupProvider)
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -77,7 +77,7 @@ extension BackupViewController {
     private func fetchBackups() {
         Task {
             do {
-                let keys = try await backupProvider.fetchBackupsFromInbox(for: userId)
+                let keys = try await service.fetchBackupsFromInbox(for: userId)
                 state = keys.isEmpty
                     ? .noBackups
                     : .backups(keys)
@@ -133,5 +133,18 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
     private func proceedToBackupOptionsScreen() {
         let optionsScreen = BackupOptionsViewController(backups: state.backups, userId: userId)
         navigationController?.pushViewController(optionsScreen, animated: true)
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let backupProvider: BackupServiceType
+
+    init(backupProvider: BackupServiceType) {
+        self.backupProvider = backupProvider
+    }
+
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        return try await backupProvider.fetchBackupsFromInbox(for: userId)
     }
 }

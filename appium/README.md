@@ -4,7 +4,7 @@ Project to run Appium tests together with WebdriverIO for:
 
 - iOS/Android Native Apps
 
-## Before running tests, please create a `./apps` directory, download the app and move the app file into that directory
+## Before running tests, please download the app and move the app file into appium directory
 
 ##Create .env file in appium root and set next variables in that file:  
 ACCOUNT_EMAIL=

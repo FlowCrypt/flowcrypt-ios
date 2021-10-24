@@ -32,7 +32,10 @@ extension RecipientEmailsCellNode {
             case idle(StateContext)
             case selected(StateContext)
             case keyFound(StateContext)
+            case keyExpired(StateContext)
+            case keyRevoked(StateContext)
             case keyNotFound(StateContext)
+            case invalidEmail(StateContext)
             case error(StateContext, Bool)
 
             private var stateContext: StateContext {
@@ -40,7 +43,10 @@ extension RecipientEmailsCellNode {
                 case .idle(let context),
                      .selected(let context),
                      .keyFound(let context),
+                     .keyExpired(let context),
+                     .keyRevoked(let context),
                      .keyNotFound(let context),
+                     .invalidEmail(let context),
                      .error(let context, _):
                     return context
                 }
@@ -74,7 +80,10 @@ extension RecipientEmailsCellNode {
                 case .idle: return "idle"
                 case .selected: return "selected"
                 case .keyFound: return "keyFound"
+                case .keyExpired: return "keyExpired"
+                case .keyRevoked: return "keyRevoked"
                 case .keyNotFound: return "keyNotFound"
+                case .invalidEmail: return "invalidEmail"
                 case .error: return "error"
                 }
             }

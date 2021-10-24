@@ -8,10 +8,9 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 protocol ClientConfigurationServiceType {
-    func fetchClientConfigurationForCurrentUser() -> Promise<ClientConfiguration>
+    func fetchClientConfigurationForCurrentUser() async throws -> ClientConfiguration
     func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration
 }
 
@@ -35,23 +34,16 @@ final class ClientConfigurationService {
 // MARK: - OrganisationalRulesServiceType
 extension ClientConfigurationService: ClientConfigurationServiceType {
 
-    func fetchClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
+    func fetchClientConfigurationForCurrentUser() async throws -> ClientConfiguration {
         guard let currentUserEmail = getCurrentUserEmail() else {
-            return Promise<ClientConfiguration> { _, reject in
-                reject(AppErr.noCurrentUser)
-            }
+            throw AppErr.noCurrentUser
         }
-        return Promise<ClientConfiguration> { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let raw = try awaitPromise(
-                self.server.getClientConfiguration(for: currentUserEmail)
-            )
-            self.local.save(raw: raw)
-            resolve(ClientConfiguration(raw: raw))
-        }
-        .recover { [weak self] error -> ClientConfiguration in
-            guard let self = self else { throw AppErr.nilSelf }
-            guard let raw = self.local.load() else {
+        do {
+            let raw = try await server.getClientConfiguration(for: currentUserEmail)
+            local.save(raw: raw)
+            return ClientConfiguration(raw: raw)
+        } catch {
+            guard let raw = local.load() else {
                 throw error
             }
             return ClientConfiguration(raw: raw)

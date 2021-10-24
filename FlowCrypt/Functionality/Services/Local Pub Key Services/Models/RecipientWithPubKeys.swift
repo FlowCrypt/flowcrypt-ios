@@ -40,6 +40,8 @@ extension RecipientWithPubKeys {
     mutating func remove(pubKey: PubKey) {
         pubKeys.removeAll(where: { $0 == pubKey })
     }
+
+    var keyState: PubKeyState { pubKeys.first?.keyState ?? .empty }
 }
 
 extension RecipientWithPubKeys: Equatable {

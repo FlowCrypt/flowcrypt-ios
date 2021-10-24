@@ -7,21 +7,25 @@
 //
 
 import Foundation
-import Promises
 @testable import FlowCrypt
 
-class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
+final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
 
     var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError.some)
-    func fetchClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
-        .resolveAfter(timeout: 1, with: fetchOrganisationalRulesForCurrentUserResult)
+    func fetchClientConfigurationForCurrentUser() async throws -> ClientConfiguration {
+        switch fetchOrganisationalRulesForCurrentUserResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
 
-    var fetchOrganisationalRulesForEmail: (String) -> (Result<ClientConfiguration, Error>) = { email in
-        return .failure(MockError.some)
+    var fetchOrganisationalRulesForEmail: (String) throws -> ClientConfiguration = { _ in
+        throw MockError.some
     }
-    func fetchOrganisationalRules(for email: String) -> Promise<ClientConfiguration> {
-        .resolveAfter(timeout: 1, with: fetchOrganisationalRulesForEmail(email))
+    func fetchOrganisationalRules(for email: String) async throws -> ClientConfiguration {
+        return try fetchOrganisationalRulesForEmail(email)
     }
 
     var clientConfiguration: RawClientConfiguration!
