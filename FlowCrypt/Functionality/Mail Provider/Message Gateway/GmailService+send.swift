@@ -17,6 +17,8 @@ extension GmailService: MessageGateway {
                 return
             }
 
+            self.progressHandler = progressHandler
+
             let gtlMessage = GTLRGmail_Message()
             gtlMessage.raw = raw
             gtlMessage.threadId = input.threadId
@@ -27,11 +29,8 @@ extension GmailService: MessageGateway {
                 uploadParameters: nil
             )
 
-            // self.progressHandler = progressHandler
-
-            gmailService.executeQuery(querySend) { _, _, error in
-                //gmailService.uploadProgressBlock = nil
-
+            gmailService.executeQuery(querySend) { [weak self] _, _, error in
+                self?.progressHandler = nil
                 if let error = error {
                     continuation.resume(throwing: GmailServiceError.providerError(error))
                 } else {

@@ -278,7 +278,6 @@ extension ComposeViewController {
                 try await service.encryptAndSend(message: message,
                                                                threadId: input.threadId,
                                                                progressHandler: { [weak self] progress in
-                    print(progress)
                     self?.updateSpinner(progress: progress)
                 })
                 handleSuccessfullySentMessage()
