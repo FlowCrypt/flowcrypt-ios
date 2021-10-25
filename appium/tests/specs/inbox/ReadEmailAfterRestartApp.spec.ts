@@ -7,7 +7,7 @@ import {
 
 import {CommonData} from '../../data';
 
-xdescribe('INBOX: ', () => {
+describe('INBOX: ', () => {
 
     it('user is able to see plain email without setting pass phrase after restart app', () => {
 
