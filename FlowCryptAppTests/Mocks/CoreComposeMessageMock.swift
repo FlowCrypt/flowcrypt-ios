@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 import Combine
 @testable import FlowCrypt
+import Foundation
 
 class CoreComposeMessageMock: CoreComposeMessageType {
 

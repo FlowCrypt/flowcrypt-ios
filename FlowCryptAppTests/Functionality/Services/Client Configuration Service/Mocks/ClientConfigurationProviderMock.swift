@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 @testable import FlowCrypt
+import Foundation
 
 class LocalClientConfigurationMock: LocalClientConfigurationType {
     var fetchInvoked = false
@@ -30,8 +30,7 @@ class LocalClientConfigurationMock: LocalClientConfigurationType {
 
     var saveInvoked = false
     var saveCount = 0
-    var saveCall: (RawClientConfiguration) -> (Void) = { clientConfiguration in
-
+    var saveCall: (RawClientConfiguration) -> Void = { clientConfiguration in
     }
     func save(raw: RawClientConfiguration) {
         saveInvoked = true

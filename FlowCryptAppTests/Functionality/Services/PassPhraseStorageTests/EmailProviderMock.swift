@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 @testable import FlowCrypt
+import Foundation
 
 class EmailProviderMock: EmailProviderType {
     var email: String? = "test@gmail.com"

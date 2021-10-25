@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 final class ClientConfigurationServiceTests: XCTestCase {
 
@@ -98,4 +98,4 @@ enum OrganisationalRulesServiceError: Error {
     case getActiveFesUrlForCurrentUserCall
     case getClientConfigurationCall
     case getClientConfigurationForCurrentUserCall
-} 
+}

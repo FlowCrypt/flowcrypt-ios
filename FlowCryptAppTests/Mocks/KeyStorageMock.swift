@@ -6,23 +6,21 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 @testable import FlowCrypt
+import Foundation
 
 class KeyStorageMock: KeyStorageType {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-        
     }
-    
+
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-        
     }
-    
+
     var publicKeyResult: (() -> (String?))!
     func publicKey() -> String? {
         publicKeyResult()
     }
-    
+
     var keysInfoResult: (() -> ([KeyInfo]))!
     func keysInfo() -> [KeyInfo] {
         keysInfoResult()

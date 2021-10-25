@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+@testable import FlowCrypt
 import Promises
 import UIKit
-@testable import FlowCrypt
 
 final class BackupServiceMock: BackupServiceType {
     var fetchBackupsResult: Result<[KeyDetails], Error> = .success([])

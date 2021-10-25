@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class KeyDetailsTests: XCTestCase {
 
@@ -27,7 +27,7 @@ class KeyDetailsTests: XCTestCase {
             algo: nil,
             revoked: false
         )
-        
+
         let keyDetailWithSameKeyId = KeyDetails(
             public: "public2",
             private: "private2",
@@ -43,7 +43,7 @@ class KeyDetailsTests: XCTestCase {
             algo: nil,
             revoked: false
         )
-        
+
         let set = Set([keyDetail, keyDetailWithSameKeyId])
         XCTAssert(set.count == 1)
     }
