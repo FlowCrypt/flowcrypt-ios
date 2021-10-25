@@ -7,7 +7,7 @@
 //
 
 protocol PubLookupType {
-    func lookup(with email: String) async throws -> RecipientWithPubKeys
+    func lookup(with email: String) async throws -> RecipientWithSortedPubKeys
 }
 
 class PubLookup: PubLookupType {
@@ -22,13 +22,13 @@ class PubLookup: PubLookupType {
         self.attesterApi = attesterApi
     }
 
-    func lookup(with email: String) async throws -> RecipientWithPubKeys {
+    func lookup(with email: String) async throws -> RecipientWithSortedPubKeys {
         let wkdResult = try await wkd.lookupEmail(email)
         if !wkdResult.isEmpty {
-            return RecipientWithPubKeys(email: email, keyDetails: wkdResult)
+            return RecipientWithSortedPubKeys(email: email, keyDetails: wkdResult)
         }
 
         let attesterResult = try await attesterApi.lookupEmail(email: email)
-        return RecipientWithPubKeys(email: email, keyDetails: attesterResult)
+        return RecipientWithSortedPubKeys(email: email, keyDetails: attesterResult)
     }
 }

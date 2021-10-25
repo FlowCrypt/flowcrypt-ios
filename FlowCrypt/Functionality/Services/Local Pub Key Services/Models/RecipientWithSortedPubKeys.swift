@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RecipientWithPubKeys {
+struct RecipientWithSortedPubKeys {
     let email: String
     /// name if known
     let name: String?
@@ -18,7 +18,7 @@ struct RecipientWithPubKeys {
     var pubKeys: [PubKey]
 }
 
-extension RecipientWithPubKeys {
+extension RecipientWithSortedPubKeys {
     init(_ recipientObject: RecipientObject, keyDetails: [KeyDetails] = []) {
         self.email = recipientObject.email
         self.name = recipientObject.name.nilIfEmpty
@@ -27,7 +27,7 @@ extension RecipientWithPubKeys {
     }
 }
 
-extension RecipientWithPubKeys {
+extension RecipientWithSortedPubKeys {
     init(email: String, keyDetails: [KeyDetails]) {
         self.email = email
         self.name = keyDetails.first?.users.first ?? email
@@ -36,7 +36,7 @@ extension RecipientWithPubKeys {
     }
 }
 
-extension RecipientWithPubKeys {
+extension RecipientWithSortedPubKeys {
     mutating func remove(pubKey: PubKey) {
         pubKeys.removeAll(where: { $0 == pubKey })
     }
@@ -44,8 +44,8 @@ extension RecipientWithPubKeys {
     var keyState: PubKeyState { pubKeys.first?.keyState ?? .empty }
 }
 
-extension RecipientWithPubKeys: Equatable {
-    static func == (lhs: RecipientWithPubKeys, rhs: RecipientWithPubKeys) -> Bool {
+extension RecipientWithSortedPubKeys: Equatable {
+    static func == (lhs: RecipientWithSortedPubKeys, rhs: RecipientWithSortedPubKeys) -> Bool {
         lhs.email == rhs.email
     }
 }

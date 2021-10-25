@@ -100,7 +100,6 @@
 		9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProviderType.swift */; };
 		9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2523194E0A00299985 /* FolderViewModel.swift */; };
 		9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */; };
-		9F228BAA23C67729005D2CB6 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
 		9F23EA50237217140017DFED /* ComposeViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */; };
 		9F268891237DC55600428A94 /* SetupManuallyImportKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268890237DC55600428A94 /* SetupManuallyImportKeyViewController.swift */; };
 		9F2AC5B1267BDED100F6149B /* GmailSearchExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2AC5B0267BDED100F6149B /* GmailSearchExpressionGenerator.swift */; };
@@ -205,7 +204,6 @@
 		9FD364862381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD364852381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift */; };
 		9FDF3654235A218E00614596 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3653235A218E00614596 /* main.swift */; };
 		9FDF3656235A22DA00614596 /* AppReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3655235A22DA00614596 /* AppReset.swift */; };
-		9FDF3658235A233400614596 /* AppReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3655235A22DA00614596 /* AppReset.swift */; };
 		9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */; };
 		9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */; };
 		9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B39F2565B0CD00D6D086 /* Message.swift */; };
@@ -283,7 +281,7 @@
 		D274724424FD1932006BA6EF /* FolderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724324FD1932006BA6EF /* FolderObject.swift */; };
 		D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */; };
 		D27B911D24EFE806002DF0A1 /* RecipientObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911C24EFE806002DF0A1 /* RecipientObject.swift */; };
-		D27B911F24EFE828002DF0A1 /* RecipientWithPubKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911E24EFE828002DF0A1 /* RecipientWithPubKeys.swift */; };
+		D27B911F24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911E24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift */; };
 		D28325DD24895F5700D311BD /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		D28655912423B4580066F52E /* HeaderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF3639235A0B3B00614596 /* HeaderNode.swift */; };
 		D28655932423B4EE0066F52E /* MyMenuViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */; };
@@ -348,13 +346,6 @@
 
 /* Begin PBXContainerItemProxy section */
 		9F2AC5CB267BE99E00F6149B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C132B9A81EC2DBD800763715 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C132B9AF1EC2DBD800763715;
-			remoteInfo = FlowCrypt;
-		};
-		9FDF3646235A1B0100614596 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C132B9A81EC2DBD800763715 /* Project object */;
 			proxyType = 1;
@@ -696,7 +687,7 @@
 		D274724324FD1932006BA6EF /* FolderObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderObject.swift; sourceTree = "<group>"; };
 		D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProvider.swift; sourceTree = "<group>"; };
 		D27B911C24EFE806002DF0A1 /* RecipientObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientObject.swift; sourceTree = "<group>"; };
-		D27B911E24EFE828002DF0A1 /* RecipientWithPubKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientWithPubKeys.swift; sourceTree = "<group>"; };
+		D27B911E24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientWithSortedPubKeys.swift; sourceTree = "<group>"; };
 		D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMenuViewDecorator.swift; sourceTree = "<group>"; };
 		D28655942423BFF60066F52E /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
 		D2891AC124C59EFA008918E3 /* KeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyService.swift; sourceTree = "<group>"; };
@@ -742,13 +733,6 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		9F2AC5C3267BE99E00F6149B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9FDF363E235A1B0100614596 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1786,7 +1770,7 @@
 		D27B912024EFE842002DF0A1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				D27B911E24EFE828002DF0A1 /* RecipientWithPubKeys.swift */,
+				D27B911E24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift */,
 				51B4AE5227144E590001F33B /* PubKey.swift */,
 				51DA5BD52721AB07001C4359 /* PubKeyState.swift */,
 			);
@@ -2133,10 +2117,6 @@
 						CreatedOnToolsVersion = 12.4;
 						TestTargetID = C132B9AF1EC2DBD800763715;
 					};
-					9FDF3640235A1B0100614596 = {
-						CreatedOnToolsVersion = 11.0;
-						TestTargetID = C132B9AF1EC2DBD800763715;
-					};
 					C132B9AF1EC2DBD800763715 = {
 						CreatedOnToolsVersion = 8.3.2;
 						LastSwiftMigration = 1020;
@@ -2198,13 +2178,6 @@
 				9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */,
 				215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */,
 				21594C9626F1DBA900BE654C /* data.txt in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9FDF363F235A1B0100614596 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2435,15 +2408,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9FDF363D235A1B0100614596 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9FDF3658235A233400614596 /* AppReset.swift in Sources */,
-				9F228BAA23C67729005D2CB6 /* DataExtensions.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C132B9AC1EC2DBD800763715 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2541,7 +2505,7 @@
 				9F3EF33123B1785600FA0CEF /* MsgListViewConroller.swift in Sources */,
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
 				9F5C2A92257E94DF00DE9B4B /* Imap+MessageOperations.swift in Sources */,
-				D27B911F24EFE828002DF0A1 /* RecipientWithPubKeys.swift in Sources */,
+				D27B911F24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
 				9FB22CF725715DC50026EE64 /* KeyServiceErrorHandler.swift in Sources */,
 				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
@@ -2736,11 +2700,6 @@
 			isa = PBXTargetDependency;
 			target = C132B9AF1EC2DBD800763715 /* FlowCrypt */;
 			targetProxy = 9F2AC5CB267BE99E00F6149B /* PBXContainerItemProxy */;
-		};
-		9FDF3647235A1B0100614596 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C132B9AF1EC2DBD800763715 /* FlowCrypt */;
-			targetProxy = 9FDF3646235A1B0100614596 /* PBXContainerItemProxy */;
 		};
 		D2CDC3DC24052D0F002B045F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

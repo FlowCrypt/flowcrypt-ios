@@ -629,7 +629,7 @@ extension ComposeViewController {
         }
     }
 
-    private func getRecipientState(from recipient: RecipientWithPubKeys) -> RecipientState {
+    private func getRecipientState(from recipient: RecipientWithSortedPubKeys) -> RecipientState {
         switch recipient.keyState {
         case .active:
             return decorator.recipientKeyFoundState
@@ -921,7 +921,7 @@ private actor ServiceActor {
         return try await cloudContactProvider.searchContacts(query: query)
     }
 
-    func searchContact(with email: String) async throws -> RecipientWithPubKeys {
+    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
         return try await contactsService.searchContact(with: email)
     }
 }
