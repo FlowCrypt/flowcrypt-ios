@@ -25,7 +25,7 @@ exports.config = {
     ],
     services: [
         ['appium', {
-            command : 'appium',
+            command : './node_modules/.bin/appium',
             logPath : join(process.cwd(), './tmp')
         }]
     ],
