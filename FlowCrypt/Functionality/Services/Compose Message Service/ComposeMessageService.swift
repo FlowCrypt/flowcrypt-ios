@@ -128,14 +128,15 @@ final class ComposeMessageService {
     }
 
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+    func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
         do {
             let r = try await core.composeEmail(
                 msg: message,
                 fmt: MsgFmt.encryptInline
             )
 
-            try await messageGateway.sendMail(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId))
+            try await messageGateway.sendMail(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
+                                              progressHandler: progressHandler)
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }
