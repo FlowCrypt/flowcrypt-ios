@@ -99,6 +99,7 @@ class SplashScreen extends BaseScreen {
     }
 
     changeLanguage (language: string = '‪English (United States)‬') {
+        this.languageDropdown.waitForDisplayed();
         this.languageDropdown.click();
         const selector = `~${language}`;
         $(selector).waitForDisplayed();
@@ -126,6 +127,7 @@ class SplashScreen extends BaseScreen {
     gmailLogin (email: string, password: string) {
         const emailSelector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
         this.signInAsGoogleAccounLabel.waitForDisplayed();
+        browser.pause(1000); // stability sleep for language change
         if($(emailSelector).isDisplayed()) {
             $(emailSelector).click();
         } else {
