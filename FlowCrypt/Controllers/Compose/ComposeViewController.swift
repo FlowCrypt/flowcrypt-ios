@@ -45,6 +45,7 @@ final class ComposeViewController: TableNodeViewController {
     private let photosManager: PhotosManagerType
     private let keyService: KeyServiceType
     private let service: ServiceActor
+    private let passPhraseService: PassPhraseService
 
     private let search = PassthroughSubject<String, Never>()
     private let userDefaults: UserDefaults
@@ -71,7 +72,8 @@ final class ComposeViewController: TableNodeViewController {
         composeMessageService: ComposeMessageService = ComposeMessageService(),
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
-        keyService: KeyServiceType = KeyService()
+        keyService: KeyServiceType = KeyService(),
+        passPhraseService: PassPhraseService = PassPhraseService()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
@@ -88,6 +90,7 @@ final class ComposeViewController: TableNodeViewController {
             contactsService: contactsService,
             cloudContactProvider: cloudContactProvider
         )
+        self.passPhraseService = passPhraseService
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -182,12 +185,13 @@ extension ComposeViewController {
             guard shouldSaveDraft() else { return }
 
             do {
+                let signingPrv = try await prepareSigningKey()
                 let messagevalidationResult = composeMessageService.validateMessage(
                     input: input,
                     contextToSend: contextToSend,
                     email: email,
                     includeAttachments: false,
-                    signingPrv: nil
+                    signingPrv: signingPrv
                 )
                 guard case let .success(message) = messagevalidationResult else {
                     return
@@ -342,9 +346,11 @@ extension ComposeViewController {
                         self?.showAlert(message: "Passphrase is required for message signing")
                         continuation.resume(throwing: MessageServiceError.unknown)
                     },
-                    onCompletion: { passPhrase in
+                    onCompletion: { [weak self] passPhrase in
                         // save passphrase
-                        continuation.resume(returning: signingKey.copy(with: passPhrase))
+                        let keyInfo = signingKey.copy(with: passPhrase)
+                        self?.savePassPhrases(value: passPhrase, with: [keyInfo])
+                        continuation.resume(returning: keyInfo)
                     })
                 present(alert, animated: true, completion: nil)
                 return
@@ -352,6 +358,12 @@ extension ComposeViewController {
 
             continuation.resume(returning: signingKey.copy(with: passphrase))
         }
+    }
+
+    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
+        privateKeys
+            .map { PassPhrase(value: passPhrase, fingerprints: $0.fingerprints) }
+            .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
     }
 
     private func sendMessage(_ signingKey: PrvKeyInfo) {
