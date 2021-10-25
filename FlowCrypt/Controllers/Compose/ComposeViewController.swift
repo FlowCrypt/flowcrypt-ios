@@ -60,7 +60,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private var state: State = .main
 
-    private weak var timer: Timer?
+    private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
 
     init(
@@ -153,18 +153,18 @@ final class ComposeViewController: TableNodeViewController {
 // MARK: - Drafts
 extension ComposeViewController {
     @objc private func startTimer() {
-        timer = Timer.scheduledTimer(
+        saveDraftTimer = Timer.scheduledTimer(
             timeInterval: 1,
             target: self,
             selector: #selector(saveDraftIfNeeded),
             userInfo: nil,
             repeats: true)
-        timer?.fire()
+        saveDraftTimer?.fire()
     }
 
     @objc private func stopTimer() {
-        timer?.invalidate()
-        timer = nil
+        saveDraftTimer?.invalidate()
+        saveDraftTimer = nil
 
         saveDraftIfNeeded()
     }

@@ -175,9 +175,9 @@ final class ComposeMessageService {
             try await messageGateway.sendMail(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
                                               progressHandler: progressHandler)
             // cleaning any draft saved/created/fetched during editing
-//            if let draftId = draft?.identifier {
-//                await draftGateway?.deleteDraft(with: draftId)
-//            }
+            if let draftId = draft?.identifier {
+                await draftGateway?.deleteDraft(with: draftId)
+            }
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }

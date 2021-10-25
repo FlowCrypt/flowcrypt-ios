@@ -44,7 +44,7 @@ extension GmailService: DraftsListProvider {
 
             for draft in list.drafts ?? [] {
                 taskGroup.addTask {
-                    try await fetchFullMessage(
+                    try await self.fetchFullMessage(
                         with: draft.message?.identifier ?? "",
                         draftIdentifier: draft.identifier)
                 }

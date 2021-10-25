@@ -25,7 +25,6 @@ extension GmailService: DraftGateway {
                 if let error = error {
                     continuation.resume(throwing: GmailServiceError.providerError(error))
                 } else if let draft = object as? GTLRGmail_Draft {
-                    print("$$ received draft message: \(draft.message?.raw)")
                     continuation.resume(returning: (draft))
                 } else {
                     continuation.resume(throwing: GmailServiceError.failedToParseData(nil))

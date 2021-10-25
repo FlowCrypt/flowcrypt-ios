@@ -9,7 +9,7 @@
 import Foundation
 import GoogleAPIClientForREST_Gmail
 
-extension GmailService: MessageGateway, DraftSaveGateway {
+extension GmailService: MessageGateway {
     func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let raw = GTLREncodeBase64(input.mime) else {
