@@ -25,6 +25,7 @@ class MenuBarScreen extends BaseScreen {
     }
 
     clickMenuIcon () {
+        this.menuIcon.waitForDisplayed();
         this.menuIcon.click();
     }
 

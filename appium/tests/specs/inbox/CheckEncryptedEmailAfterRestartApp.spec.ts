@@ -23,7 +23,7 @@ describe('INBOX: ', () => {
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();
 
-        InboxScreen.clickOnEmailBySubject(senderEmail);
+        InboxScreen.clickOnEmailBySubject(emailSubject);
         EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
         driver.terminateApp(bundleId);
@@ -35,7 +35,7 @@ describe('INBOX: ', () => {
         //try to see encrypted message with wrong pass phrase
         EmailScreen.enterPassPhrase(wrongPassPhrase);
         EmailScreen.clickOkButton();
-        EmailScreen.checkErrorMessage();
+        EmailScreen.checkWrongPassPhraseErrorMessage();
 
         //check email after setting correct pass phrase
         EmailScreen.enterPassPhrase(correctPassPhrase);
