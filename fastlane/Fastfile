@@ -8,112 +8,43 @@ platform :ios do
   before_all do
     # installed via the semaphore plugin with `fastlane add_plugin semaphore`
     # setup_semaphore
-    cocoapod_update
-  end
-
-  desc "Cocoapod update"
-  lane :cocoapod_update do
     cocoapods(
       try_repo_update_on_error: true
     )
   end
 
-  # UITests
-  desc "Run all UI tests"
-  lane :test_ui do
-    test_ui_prepare
-    test_ui_gmail
-    test_ui_imap
-  end
+  # original build using gym - does not support exporting app for Appium
+  # desc "Build for CI testing"
+  # lane :build do |options|
+  #   gym(
+  #     scheme: "Debug FlowCrypt",
+  #     skip_package_ipa: true,
+  #     skip_archive: true,
+  #     silent: true,
+  #     clean: false,
+  #     skip_codesigning: true,
+  #     configuration: "Debug"
+  #   )
+  # end
 
-  desc "Run Gmail UI Tests"
-  lane :test_ui_gmail do
-    test_ui_prepare
-    scan(
-      workspace: "FlowCrypt.xcworkspace",
-      scheme: "FlowCryptUITests",
-      reinstall_app: true,
-      skip_build: true,
-      disable_slide_to_type: true,
-      force_quit_simulator: false,
-      reset_simulator: true,
-      prelaunch_simulator: true,
-      include_simulator_logs: true,
-      skip_build: true,
-      testplan: "Gmail"
-  )
-  end
-
-  desc "Run Imap UI Tests"
-  lane :test_ui_imap do
-    test_ui_prepare
-    scan(
-      workspace: "FlowCrypt.xcworkspace",
-      scheme: "FlowCryptUITests",
-      reinstall_app: true,
-      skip_build: true,
-      disable_slide_to_type: true,
-      force_quit_simulator: false,
-      reset_simulator: true,
-      prelaunch_simulator: true,
-      include_simulator_logs: true,
-      skip_build: true,
-      testplan: "Imap"
-  )
-  end
-
-  desc "Prepare for UI tests"
-  lane :test_ui_prepare do
-    reset_simulator_contents()
-  end
-
-  # UnitTests
-  desc "Run Tests"
-  lane :unit_tests do
-    scan(
-      scheme: "FlowCryptAppTests",
-      skip_build: true
-  )
-  end
-
-  desc "Build"
-  desc "Build without code sign. Just to see if the build is working"
-  lane :build do |options|
-    gym(
-      scheme: "Debug FlowCrypt",
-      skip_package_ipa: true,
-      skip_archive: true,
-      silent: true,
-      clean: true,
-      skip_codesigning: true
-  )
-
-  end
-
-  desc "Debug Build for e2e testing"
-  lane :build_e2e do
+  desc "Build for swift and UI tests"
+  lane :build do
     xcbuild(
        workspace: "FlowCrypt.xcworkspace",
        scheme: "Debug FlowCrypt",
        configuration: "Debug",
        xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
     )
-
+    sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ~/git/flowcrypt-ios/appium/")
   end
 
-  desc "Record ui tests"
-  lane :record_tests do
-      reset_simulator
-      sh("./record.sh")
-  end
-
-  desc "Build app, run tests, run UI test"
-  lane :do_everything do
+  desc "Run Swift tests"
+  lane :test do
     build
-    unit_tests
-    # test_ui_gmail
-    # test_ui_imap
-    # record_tests
+    scan(
+      scheme: "FlowCryptAppTests",
+      skip_build: true
+    )
   end
 
 end

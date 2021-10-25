@@ -135,14 +135,6 @@ extension UIColor {
             lightStyle: UIColor.black.withAlphaComponent(0.3)
         )
     }
-
-    static var expiredKeyColor: UIColor {
-        UIColor(r: 194, g: 126, b: 35)
-    }
-
-    static var revokedKeyColor: UIColor {
-        UIColor(r: 209, g: 72, b: 54)
-    }
 }
 
 // MARK: - RecipientState
@@ -176,7 +168,7 @@ extension ComposeViewDecorator {
 
     private static var keyExpiredStateContext: RecipientStateContext {
         RecipientStateContext(
-            backgroundColor: .expiredKeyColor,
+            backgroundColor: .warningColor,
             borderColor: .borderColor,
             textColor: .white,
             image: nil
@@ -185,7 +177,7 @@ extension ComposeViewDecorator {
 
     private static var keyRevokedStateContext: RecipientStateContext {
         RecipientStateContext(
-            backgroundColor: .revokedKeyColor,
+            backgroundColor: .errorColor,
             borderColor: .borderColor,
             textColor: .white,
             image: nil
