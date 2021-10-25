@@ -16,7 +16,7 @@ blocks:
     task:
       agent:
         machine:
-          type: e1-standard-2
+          type: e1-standard-4
           os_image: ubuntu1804
       env_vars:
         - name: LANG
@@ -31,9 +31,7 @@ blocks:
         - name: TypeScript - Core standalone tests
           commands:
             - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ../Core
-            - cache restore core-npm
-            - ../.custom-npm/node_modules/.bin/npm install
-            - cache store core-npm node_modules
+            - cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules
             - ../.custom-npm/node_modules/.bin/npm test
   - name: Mac iOS tests
     execution_time_limit:
@@ -49,22 +47,17 @@ blocks:
       prologue:
         commands:
           - checkout && sem-version node 12 && cd ~/git/flowcrypt-ios/
-          - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
-          - cache restore
-          - make dependencies
-          - cache store
-          - cache restore appium-npm
-          - cd ./appium && npm i && cd ..
-          - cache store appium-npm appium/node_modules
-
+          - cache restore && make dependencies && cache store
       jobs:
-        - name: Swift tests + Appium tests
+        - name: Swift tests
           commands:
-            # - cache restore derived-data
             - bundle exec fastlane test
-            - ls -la appium
-            # - cache store derived-data /Users/semaphore/Library/Developer/Xcode/DerivedData
-            - cd appium && npm run ios.smoke
+        - name: Appium tests
+          commands:
+            - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
+            - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
+            - bundle exec fastlane build
+            - ls -la appium && cd appium && npm run ios.smoke
       epilogue:
         on_fail:
           commands:
