@@ -12,6 +12,9 @@ config.suites = {
     ],
     settings: [
         './tests/specs/settings/*.spec.ts'
+    ],
+    inbox: [
+        './tests/specs/inbox/*.spec.ts'
     ]
 };
 

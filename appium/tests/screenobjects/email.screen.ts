@@ -70,7 +70,7 @@ class EmailScreen extends BaseScreen {
         this.enterPassPhraseField.setValue(text);
     };
 
-    checkErrorMessage() {
+    checkWrongPassPhraseErrorMessage() {
         this.wrongPassPhraseMessage.waitForDisplayed();
     }
 

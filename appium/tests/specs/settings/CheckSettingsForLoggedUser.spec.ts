@@ -30,6 +30,5 @@ describe('SETTINGS: ', () => {
 
         KeysScreen.clickOnShowPublicKey();
         PublicKeyScreen.checkPublicKey();
-
     });
 });
