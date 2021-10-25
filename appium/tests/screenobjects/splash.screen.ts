@@ -109,6 +109,7 @@ class SplashScreen extends BaseScreen {
         this.loginField.click();
         this.loginField.setValue(email);
         this.doneButton.click();
+        browser.pause(500); // stability sleep
     }
 
     clickNextBtn () {
@@ -119,6 +120,7 @@ class SplashScreen extends BaseScreen {
         this.passwordField.click();
         this.passwordField.setValue(password);
         this.doneButton.click();
+        browser.pause(500); // stability sleep
     }
 
     gmailLogin (email: string, password: string) {

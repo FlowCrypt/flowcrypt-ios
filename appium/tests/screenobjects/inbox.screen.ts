@@ -25,6 +25,7 @@ class InboxScreen extends BaseScreen {
     clickOnEmailBySubject (subject) {
         this.createEmailButton.waitForDisplayed();
         const selector = `~${subject}`;
+        $(selector).waitForDisplayed();
         $(selector).click();
     }
 

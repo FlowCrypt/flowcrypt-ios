@@ -6,7 +6,7 @@ import {
 } from '../../screenobjects/all-screens';
 
 import {CommonData} from '../../data';
-//disabled(terminateApp doesnt work now)
+
 xdescribe('INBOX: ', () => {
 
     it('user is able to see plain email without setting pass phrase after restart app', () => {

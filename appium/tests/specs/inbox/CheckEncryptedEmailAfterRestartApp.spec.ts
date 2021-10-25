@@ -6,8 +6,8 @@ import {
 } from '../../screenobjects/all-screens';
 
 import {CommonData} from '../../data';
-//disabled(terminateApp doesnt work now)
-xdescribe('INBOX: ', () => {
+
+describe('INBOX: ', () => {
 
     it('user is able to see encrypted email with pass phrase after restart app', () => {
 
