@@ -1,4 +1,5 @@
 import BaseScreen from './base.screen';
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     ADD_RECIPIENT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Add Recipient"`]',
@@ -32,8 +33,7 @@ class NewMessageScreen extends BaseScreen {
     }
 
     setSubject(subject) {
-        this.subjectField.click();
-        this.subjectField.setValue(subject);
+        ElementHelper.clickAndType(this.subjectField, subject);
     }
 
     setComposeSecurityMessage(message) {
@@ -55,7 +55,6 @@ class NewMessageScreen extends BaseScreen {
         expect(this.composeSecurityMesage).toHaveText(message);
         this.filledSubject(subject).waitForDisplayed();
         expect(this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
-
     }
 }
 

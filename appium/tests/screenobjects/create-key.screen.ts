@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import {CommonData} from '../data';
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     SET_PASS_PHRASE_BUTTON: '~Set pass phrase',
@@ -29,24 +30,23 @@ class CreateKeyScreen extends BaseScreen {
         return $(SELECTORS.CONFIRM_PASS_PHRASE_FIELD)
     }
 
-    fillPassPhrase (passPhrase: string) {
-        this.enterPassPhraseField.setValue(passPhrase);
-    }
-
-    clickSetPassPhraseBtn () {
-        this.setPassPhraseButton.click();
-    }
-
-    confirmPassPhrase (passPhrase: string) {
-        this.confirmPassPhraseField.click();
-        this.confirmPassPhraseField.setValue(passPhrase);
-        this.okButton.click();
-    }
-
     setPassPhrase(text: string = CommonData.account.passPhrase) {
         this.fillPassPhrase(text);
         this.clickSetPassPhraseBtn();
         this.confirmPassPhrase(text);
+    }
+
+    fillPassPhrase (passPhrase: string) {
+        ElementHelper.clickAndType(this.enterPassPhraseField, passPhrase);
+    }
+
+    clickSetPassPhraseBtn () {
+        ElementHelper.waitAndClick(this.setPassPhraseButton);
+    }
+
+    confirmPassPhrase (passPhrase: string) {
+        ElementHelper.clickAndType(this.confirmPassPhraseField, passPhrase);
+        ElementHelper.waitAndClick(this.okButton);
     }
 }
 
