@@ -6,10 +6,10 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
-import Promises
-import GTMAppAuth
 @testable import FlowCrypt
+import GTMAppAuth
+import Promises
+import XCTest
 
 class GmailServiceTest: XCTestCase {
 
@@ -41,8 +41,8 @@ class GmailServiceTest: XCTestCase {
 
 // MARK: - Mock
 class GoogleUserServiceMock: GoogleUserServiceType {
-    var authorization: GTMAppAuthFetcherAuthorization? = nil
-    
+    var authorization: GTMAppAuthFetcherAuthorization?
+
     var renewSessionResult: Result<Void, Error> = .success(())
     func renewSession() -> Promise<Void> {
         Promise<Void>.resolveAfter(timeout: 1, with: renewSessionResult)

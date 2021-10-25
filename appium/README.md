@@ -1,19 +1,13 @@
-# appium project
+# iOS UI tests with Appium
 
-Project to run Appium tests together with WebdriverIO for:
+## Setup
 
-- iOS/Android Native Apps
+1. You will need a secrets file at `appium/.env` - ask @tomholub to send it to you
+2. `cd appium && npm i`
 
-## Before running tests, please download the app and move the app file into appium directory
+## Run tests
 
-##Create .env file in appium root and set next variables in that file:  
-ACCOUNT_EMAIL=
-ACCOUNT_PASSWORD=
-PASS_PHRASE=
-BUNDLE_ID= 
+1. `bundle exec fastlane build`
+2. `cd appium && npm run ios.smoke` (all tests with tag #smoke will be included)
 
-## Install dependencies with `npm i`
-
-## Install Appium 1.22.0 version with `npm install -g appium@1.22.0`
-
-## Run smoke tests for iOS with `npm run ios.smoke`, all tests with tag #smoke will be included
+(todo - how to run all tests, how to run one test)

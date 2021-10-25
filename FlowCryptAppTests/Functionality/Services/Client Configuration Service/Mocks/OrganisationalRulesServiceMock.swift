@@ -6,13 +6,13 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 @testable import FlowCrypt
+import Foundation
 
 final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
 
     var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError.some)
-    func fetchClientConfigurationForCurrentUser() async throws -> ClientConfiguration {
+    func fetchForCurrentUser() async throws -> ClientConfiguration {
         switch fetchOrganisationalRulesForCurrentUserResult {
         case .success(let result):
             return result
@@ -33,7 +33,7 @@ final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
     var getSavedOrganisationalRulesForCurrentUserResult: ClientConfiguration {
         ClientConfiguration(raw: clientConfiguration)
     }
-    func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration {
+    func getSavedForCurrentUser() -> ClientConfiguration {
         getSavedOrganisationalRulesForCurrentUserResult
     }
 }

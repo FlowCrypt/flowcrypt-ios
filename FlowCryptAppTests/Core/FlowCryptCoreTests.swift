@@ -1,21 +1,20 @@
 //
-//  FlowCryptUITests.swift
-//  FlowCryptUITests
+//  FlowCryptCoreTests.swift
 //
 //  Created by luke on 21/7/2019.
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 import Combine
 @testable import FlowCrypt
+import XCTest
 
 final class FlowCryptCoreTests: XCTestCase {
     var core: Core! = .shared
-    
+
     override func setUp() {
         let expectation = XCTestExpectation()
-        core.startInBackgroundIfNotAlreadyRunning() {
+        core.startInBackgroundIfNotAlreadyRunning {
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 10)
@@ -215,14 +214,14 @@ final class FlowCryptCoreTests: XCTestCase {
         let e = decryptErrBlock.decryptErr!
         XCTAssertEqual(e.error.type, MsgBlock.DecryptErr.ErrorType.keyMismatch)
     }
-    
+
     func testEncryptFile() async throws {
         // Given
         let initialFileName = "data.txt"
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
             .path(forResource: "data", ofType: "txt")!)
         let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
-        
+
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
         let generateKeyRes = try await core.generateKey(
@@ -239,7 +238,7 @@ final class FlowCryptCoreTests: XCTestCase {
                 fingerprints: k.fingerprints
             )
         ]
-        
+
         // When
         let encrypted = try core.encryptFile(
             pubKeys: [k.public],
@@ -251,19 +250,19 @@ final class FlowCryptCoreTests: XCTestCase {
             keys: keys,
             msgPwd: nil
         )
-        
+
         // Then
         XCTAssertTrue(decrypted.content == fileData)
         XCTAssertTrue(decrypted.content.toStr() == fileData.toStr())
         XCTAssertTrue(decrypted.name == initialFileName)
     }
-    
+
     func testDecryptNotEncryptedFile() async throws {
         // Given
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
             .path(forResource: "data", ofType: "txt")!)
         let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
-        
+
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
         let generateKeyRes = try await core.generateKey(
@@ -280,7 +279,7 @@ final class FlowCryptCoreTests: XCTestCase {
                 fingerprints: k.fingerprints
             )
         ]
-        
+
         // When
         do {
             _ = try self.core.decryptFile(
@@ -294,14 +293,14 @@ final class FlowCryptCoreTests: XCTestCase {
             XCTAssertNotNil(message.range(of: "Error: Error during parsing"))
         }
     }
-    
+
     func testDecryptWithNoKeys() async throws {
         // Given
         let initialFileName = "data.txt"
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
             .path(forResource: "data", ofType: "txt")!)
         let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
-        
+
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
         let generateKeyRes = try await core.generateKey(
@@ -310,7 +309,7 @@ final class FlowCryptCoreTests: XCTestCase {
             userIds: [UserId(email: email, name: "End to end")]
         )
         let k = generateKeyRes.key
-        
+
         // When
         do {
             let encrypted = try core.encryptFile(
@@ -329,14 +328,14 @@ final class FlowCryptCoreTests: XCTestCase {
             XCTAssertNotNil(message.range(of: "Missing appropriate key"))
         }
     }
-    
+
     func testDecryptEncryptedFile() async throws {
         // Given
         let initialFileName = "data.txt"
         let urlPath = URL(fileURLWithPath: Bundle(for: type(of: self))
             .path(forResource: "data", ofType: "txt")!)
         let fileData = try! Data(contentsOf: urlPath, options: .dataReadingMapped)
-        
+
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"
         let generateKeyRes = try await core.generateKey(
@@ -353,27 +352,24 @@ final class FlowCryptCoreTests: XCTestCase {
                 fingerprints: k.fingerprints
             )
         ]
-        
+
         // When
-        do {
-            let encrypted = try core.encryptFile(
-                pubKeys: [k.public],
-                fileData: fileData,
-                name: initialFileName
-            )
-            let decrypted = try self.core.decryptFile(
-                encrypted: encrypted.encryptedFile,
-                keys: keys,
-                msgPwd: nil
-            )
-            // Then
-            XCTAssertEqual(decrypted.name, initialFileName)
-            XCTAssertEqual(decrypted.content.count, fileData.count)
-        } catch {
-            XCTFail("Core file decryption should not fail")
-        }
+        let encrypted = try core.encryptFile(
+            pubKeys: [k.public],
+            fileData: fileData,
+            name: initialFileName
+        )
+        let decrypted = try self.core.decryptFile(
+            encrypted: encrypted.encryptedFile,
+            keys: keys,
+            msgPwd: nil
+        )
+
+        // Then
+        XCTAssertEqual(decrypted.name, initialFileName)
+        XCTAssertEqual(decrypted.content.count, fileData.count)
     }
-    
+
     func testException() throws {
         do {
             _ = try core.decryptKey(armoredPrv: "not really a key", passphrase: "whatnot")

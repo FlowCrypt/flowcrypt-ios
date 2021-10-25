@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+@testable import FlowCrypt
 import Foundation
 import XCTest
-@testable import FlowCrypt
 
 class ClientConfigurationTests: XCTestCase {
 
@@ -92,7 +92,6 @@ class ClientConfigurationTests: XCTestCase {
             flags: [],
             keyManagerUrl: nil
         )).checkUsesEKM() == .doesNotUseEKM)
-
 
         XCTAssert(ClientConfiguration(raw: RawClientConfiguration(
             flags: [.forbidStoringPassphrase],
