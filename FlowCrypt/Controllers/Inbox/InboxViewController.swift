@@ -369,11 +369,14 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
         guard let message = messages[safe: indexPath.row] else { return }
-        if viewModel.isDrafts {
-            openDraft(with: message)
-        } else {
-            msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
-        }
+        msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
+
+        // TODO: uncomment in "sent message from draft" feature
+//        if viewModel.isDrafts {
+//            openDraft(with: message)
+//        } else {
+//            msgListOpenMsgElseShowToast(with: message, path: viewModel.path)
+//        }
     }
 
     private func openDraft(with message: Message) {

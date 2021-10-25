@@ -12,7 +12,9 @@ import Foundation
  * View controller to compose the message and send it
  * - User can be redirected here from *InboxViewController* by tapping on *+*
  * - Or from *MessageViewController* controller by tapping on *reply*
- */
+ **/
+
+// swiftlint:disable file_length
 private struct ComposedDraft: Equatable {
     let email: String
     let input: ComposeMessageInput
@@ -142,7 +144,7 @@ final class ComposeViewController: TableNodeViewController {
 
     func updateWithMessage(message: Message) {
         self.contextToSend.subject = message.subject
-//        self.contextToSend.message = message.raw
+        self.contextToSend.message = message.raw
         self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", state: decorator.recipientIdleState)]
     }
 
