@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "ios.smoke": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite smoke",
-    "ios.settings": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite settings"
+    "only.test.smoke": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite smoke",
+    "only.test.settings": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite settings",
+    "only.test.all": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite all",
+    "test": "(cd .. && bundle exec fastlane build) && npm run-script only.test.all"
   },
   "author": "FlowCrypt a. s.",
   "license": "proprietary",
