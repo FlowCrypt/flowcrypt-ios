@@ -31,8 +31,9 @@ blocks:
         - name: TypeScript - Core standalone tests
           commands:
             - cache restore custom-npm 
-            - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ../Core
+            - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ..
             - cache store custom-npm .custom-npm
+            - cd Core
             - cache restore core-npm
             - ../.custom-npm/node_modules/.bin/npm install
             - cache store core-npm node_modules
