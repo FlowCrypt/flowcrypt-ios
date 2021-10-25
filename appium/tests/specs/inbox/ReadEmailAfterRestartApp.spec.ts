@@ -6,8 +6,8 @@ import {
 } from '../../screenobjects/all-screens';
 
 import {CommonData} from '../../data';
-
-describe('INBOX: ', () => {
+//disabled(terminateApp doesnt work now)
+xdescribe('INBOX: ', () => {
 
     it('user is able to see plain email without setting pass phrase after restart app', () => {
 
@@ -20,7 +20,7 @@ describe('INBOX: ', () => {
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();
 
-        InboxScreen.clickOnEmailBySubject(senderEmail);
+        InboxScreen.clickOnEmailBySubject(emailSubject);
         EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
         driver.terminateApp(bundleId);

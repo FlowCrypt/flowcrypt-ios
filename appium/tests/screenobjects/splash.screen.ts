@@ -15,6 +15,7 @@ const SELECTORS = {
     PASSWORD_FIELD: '~Enter your password',
     DONE_BTN: '~Done',
     LANGUAGE_DROPDOWN: '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
+    SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]'
 };
 
 class SplashScreen extends BaseScreen {
@@ -74,6 +75,10 @@ class SplashScreen extends BaseScreen {
         return $(SELECTORS.LANGUAGE_DROPDOWN)
     }
 
+    get signInAsGoogleAccounLabel () {
+        return $(SELECTORS.SIGN_IN_WITH_GMAIL);
+    }
+
     checkLoginPage () {
         expect(this.privacyTab).toBeDisplayed();
         expect(this.termsTab).toBeDisplayed();
@@ -118,6 +123,7 @@ class SplashScreen extends BaseScreen {
 
     gmailLogin (email: string, password: string) {
         const emailSelector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
+        this.signInAsGoogleAccounLabel.waitForDisplayed();
         if($(emailSelector).isDisplayed()) {
             $(emailSelector).click();
         } else {
