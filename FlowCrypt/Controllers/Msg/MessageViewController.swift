@@ -248,7 +248,7 @@ extension MessageViewController: MessageActionsHandler {
         Task {
             do {
                 try await messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
-                onCompletion(MessageAction.markUnread(true), .init(message: self.input.objMessage))
+                onCompletion(MessageAction.markAsRead(false), .init(message: self.input.objMessage))
                 navigationController?.popViewController(animated: true)
             } catch {
                 showToast("Could not mark message as unread: \(error)")
@@ -360,7 +360,7 @@ extension MessageViewController: MessageActionsHandler {
 
 extension MessageViewController: NavigationChildController {
     func handleBackButtonTap() {
-        onCompletion(MessageAction.markUnread(false), .init(message: input.objMessage))
+        onCompletion(MessageAction.markAsRead(true), .init(message: input.objMessage))
         navigationController?.popViewController(animated: true)
     }
 }

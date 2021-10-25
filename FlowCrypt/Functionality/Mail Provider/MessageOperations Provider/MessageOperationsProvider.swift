@@ -8,6 +8,7 @@
 
 import Foundation
 import Promises
+import FlowCryptCommon
 
 protocol MessageOperationsProvider {
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws

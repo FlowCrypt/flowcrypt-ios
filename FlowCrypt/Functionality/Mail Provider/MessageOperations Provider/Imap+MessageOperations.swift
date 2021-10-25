@@ -41,7 +41,6 @@ extension Imap: MessageOperationsProvider {
             guard let self = self else {
                 return continuation.resume(throwing: AppErr.nilSelf)
             }
-            
             guard let identifier = message.identifier.intId else {
                 return continuation.resume(throwing: ImapError.missedMessageInfo("intId"))
             }

@@ -11,10 +11,10 @@ import UIKit
 
 extension TextImageNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
-        let sender = threadMessage.message.sender ?? "message_unknown_sender".localized
-        let date = DateFormatter().formatDate(threadMessage.message.date)
+        let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
+        let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
         // TODO: - ANTON - is read
-        let isMessageRead = threadMessage.message.isMessageRead
+        let isMessageRead = threadMessage.rawMessage.isMessageRead
 
         let collapseImage = #imageLiteral(resourceName: "arrow_up").tinted(.white)
         let expandImage = #imageLiteral(resourceName: "arrow_down").tinted(.white)

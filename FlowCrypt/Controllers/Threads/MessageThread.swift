@@ -14,9 +14,10 @@ struct MessageThreadContext {
 }
 
 struct MessageThread: Equatable {
+    let identifier: String?
     let snippet: String?
     let path: String
-    let messages: [Message]
+    var messages: [Message]
 
     var subject: String? {
         messages.compactMap(\.subject)

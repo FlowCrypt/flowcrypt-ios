@@ -1,34 +1,32 @@
 //
-//  Gmail+MessageOperations.swift
+//  MessagesThreadOperationsProvider.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 07.12.2020.
+//  Created by Anton Kharchevskyi on 25.10.2021
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
+    
 
 import Foundation
 import GoogleAPIClientForREST_Gmail
 
-extension GmailService: MessageOperationsProvider {
-    func markAsUnread(message: Message, folder: String) async throws {
-        try await update(message: message, labelsToAdd: [.unread])
-    }
+protocol MessagesThreadOperationsProvider {
+    func delete(thread: MessageThread) async throws
+    func moveThreadToTrash(thread: MessageThread) async throws
+    func markThreadAsUnread(thread: MessageThread, folder: String) async throws
+    func markThreadAsRead(thread: MessageThread, folder: String) async throws
 
-    func markAsRead(message: Message, folder: String) async throws {
-        try await update(message: message, labelsToRemove: [.unread])
-    }
+    // func archive(thread: MessageThread) async throws
+}
 
-    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
-        try await update(message: message, labelsToAdd: [.trash])
-    }
-
-    func delete(message: Message, form folderPath: String?) async throws {
+extension GmailService: MessagesThreadOperationsProvider {
+    func delete(thread: MessageThread) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            guard let identifier = message.identifier.stringId else {
+            guard let identifier = thread.identifier else {
                 return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
             }
 
-            let query = GTLRGmailQuery_UsersMessagesDelete.query(
+            let query = GTLRGmailQuery_UsersThreadsDelete.query(
                 withUserId: .me,
                 identifier: identifier
             )
@@ -42,28 +40,43 @@ extension GmailService: MessageOperationsProvider {
         }
     }
 
-    func archiveMessage(message: Message, folderPath: String) async throws {
-        try await update(
-            message: message,
-            labelsToRemove: message.labels
-                .filter(\.isLabel)
-                .map(\.type)
-        )
+    func moveThreadToTrash(thread: MessageThread) async throws {
+        try await update(thread: thread, labelsToAdd: [.trash])
     }
 
+    func markThreadAsUnread(thread: MessageThread, folder: String) async throws {
+        try await update(thread: thread, labelsToAdd: [.unread])
+    }
+
+    func markThreadAsRead(thread: MessageThread, folder: String) async throws {
+        try await update(thread: thread, labelsToRemove: [.unread])
+    }
+
+    // TODO: - ANTON - archive
+//    func archive(thread: MessageThread) async throws {
+//        try await update(
+//            thread: thread,
+//            labelsToRemove: thread.labels
+//                .filter(\.isLabel)
+//                .map(\.type)
+//        )
+//    }
+
     private func update(
-        message: Message,
+        thread: MessageThread,
         labelsToAdd: [MessageLabelType] = [],
         labelsToRemove: [MessageLabelType] = []
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            guard let identifier = message.identifier.stringId else {
+            guard let identifier = thread.identifier else {
                 return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
             }
-            let request = GTLRGmail_ModifyMessageRequest()
+
+            let request = GTLRGmail_ModifyThreadRequest()
             request.addLabelIds = labelsToAdd.map(\.value)
             request.removeLabelIds = labelsToRemove.map(\.value)
-            let query = GTLRGmailQuery_UsersMessagesModify.query(
+
+            let query = GTLRGmailQuery_UsersThreadsModify.query(
                 withObject: request,
                 userId: .me,
                 identifier: identifier

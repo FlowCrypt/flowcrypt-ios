@@ -69,6 +69,10 @@ final class MailProvider {
         resolveService(of: MessagesThreadProvider?.self)
     }
 
+    var threadOperationsProvider: MessagesThreadOperationsProvider? {
+        resolveService(of: MessagesThreadOperationsProvider?.self)
+    }
+
     private init(
         currentAuthType: @autoclosure @escaping () -> (AuthType?),
         services: [MailServiceProvider]

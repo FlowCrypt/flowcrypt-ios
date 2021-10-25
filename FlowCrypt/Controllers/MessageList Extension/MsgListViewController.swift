@@ -12,7 +12,7 @@ protocol MsgListViewController {
     func open(with message: InboxRenderable, path: String)
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int?
-    func updateMessage(isUnread: Bool, at index: Int)
+    func updateMessage(isRead: Bool, at index: Int)
     func removeMessage(at index: Int)
 }
 
@@ -43,7 +43,14 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     private func openThread(with thread: MessageThread) {
-        let viewController = ThreadDetailsViewController(thread: thread) { [weak self] (action, message) in
+        guard let threadOperationsProvider = MailProvider.shared.threadOperationsProvider else {
+            assertionFailure("Internal error. Provider should conform to MessagesThreadOperationsProvider")
+            return
+        }
+        let viewController = ThreadDetailsViewController(
+            threadOperationsProvider: threadOperationsProvider,
+            thread: thread
+        ) { [weak self] (action, message) in
             self?.handleMessageOperation(with: message, action: action)
         }
         navigationController?.pushViewController(viewController, animated: true)
@@ -56,8 +63,8 @@ extension MsgListViewController where Self: UIViewController {
         }
 
         switch action {
-        case .markUnread(let isUnread):
-            updateMessage(isUnread: isUnread, at: indexToUpdate)
+        case .markAsRead(let isRead):
+            updateMessage(isRead: isRead, at: indexToUpdate)
         case .archive, .moveToTrash, .permanentlyDelete:
             removeMessage(at: indexToUpdate)
         }

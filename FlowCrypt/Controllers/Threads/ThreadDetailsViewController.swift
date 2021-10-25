@@ -14,18 +14,18 @@ import Foundation
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
+    private lazy var logger = Logger.nested(Self.self)
+
     class Input {
-        let message: Message
+        var rawMessage: Message
         var isExpanded: Bool
-        var processedMessage: ProcessedMessage = .empty
+        var processedMessage: ProcessedMessage?
 
         init(message: Message, isExpanded: Bool) {
-            self.message = message
+            self.rawMessage = message
             self.isExpanded = isExpanded
         }
     }
-
-    private lazy var logger = Logger.nested(Self.self)
 
     private enum Parts: Int, CaseIterable {
         case thread, message
@@ -33,8 +33,9 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
+    private let threadOperationsProvider: MessagesThreadOperationsProvider
     private let thread: MessageThread
-    private let messages: [ThreadDetailsViewController.Input]
+    private var input: [ThreadDetailsViewController.Input]
 
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
@@ -46,15 +47,17 @@ final class ThreadDetailsViewController: TableNodeViewController {
         messageService: MessageService = MessageService(),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
+        threadOperationsProvider: MessagesThreadOperationsProvider,
         thread: MessageThread,
         completion: @escaping MessageActionCompletion
     ) {
+        self.threadOperationsProvider = threadOperationsProvider
         self.messageService = messageService
         self.messageOperationsProvider = messageOperationsProvider
         self.trashFolderProvider = trashFolderProvider
         self.thread = thread
         self.onComplete = completion
-        self.messages = thread.messages
+        self.input = thread.messages
             .sorted(by: { $0 > $1 })
             .map { Input(message: $0, isExpanded: false) }
 
@@ -78,6 +81,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
 }
 
 extension ThreadDetailsViewController {
+    private func expandThreadMessage() {
+        let indexOfSectionToExpand = thread.messages.firstIndex(where: { $0.isMessageRead == false }) ?? input.count - 1
+        let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand)
+        handleTap(at: indexPath)
+    }
+
     private func handleTap(at indexPath: IndexPath) {
         guard let threadNode = node.nodeForRow(at: indexPath) as? TextImageNode else {
             logger.logError("Fail to handle tap at \(indexPath)")
@@ -89,25 +98,40 @@ extension ThreadDetailsViewController {
                 threadNode.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
             },
             completion: { [weak self] _ in
-                self?.fetchDecryptAndRenderMsg(at: indexPath)
+                guard let self = self else {
+                    return
+                }
+
+                if let processedMessage = self.input[indexPath.section].processedMessage {
+                    self.handleReceived(message: processedMessage, at: indexPath)
+                } else {
+                    self.fetchDecryptAndRenderMsg(at: indexPath)
+                }
             }
         )
     }
 
-    private func expandThreadMessage() {
-        let indexOfSectionToExpand = thread.messages.firstIndex(where: { $0.isMessageRead == false }) ?? messages.count - 1
-        let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand)
-        handleTap(at: indexPath)
-    }
+    private func markAsRead(at index: Int) {
+        logger.logInfo("Mark message as read at \(index)")
+        guard let message = input[safe: index]?.rawMessage else {
+            return
+        }
 
-    private func markAsRead() {
-
+        Task {
+            do {
+                try await messageOperationsProvider.markAsRead(message: message, folder: currentFolderPath)
+                let updatedMessage = input[index].rawMessage.markAsRead(true)
+                input[index].rawMessage = updatedMessage
+            } catch {
+                showToast("Could not mark message as read: \(error)")
+            }
+        }
     }
 }
 
 extension ThreadDetailsViewController {
     private func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
-        let message = messages[indexPath.section].message
+        let message = input[indexPath.section].rawMessage
         logger.logInfo("Start loading message")
 
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
@@ -132,8 +156,9 @@ extension ThreadDetailsViewController {
     private func handleReceived(message processedMessage: ProcessedMessage, at indexPath: IndexPath) {
         hideSpinner()
 
-        self.messages[indexPath.section].processedMessage = processedMessage
-        self.messages[indexPath.section].isExpanded = !self.messages[indexPath.section].isExpanded
+        input[indexPath.section].processedMessage = processedMessage
+        input[indexPath.section].isExpanded = !input[indexPath.section].isExpanded
+        markAsRead(at: indexPath.section)
 
         UIView.animate(
             withDuration: 0.2,
@@ -217,31 +242,26 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
     func handleMarkUnreadTap() {
         // TODO: - ANTON - mark as unread
-//        messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
-//            .then(on: .main) { [weak self] in
-//                guard let self = self else { return }
-//                self.input.objMessage = self.input.objMessage.markAsRead(false)
-//                self.onCompletion?(MessageAction.changeReadFlag, self.input.objMessage)
-//                self.navigationController?.popViewController(animated: true)
-//            }
-//            .catch(on: .main) { [weak self] error in
-//                self?.showToast("Could not mark message as unread: \(error)")
-//            }
+        let messages = input.filter { $0.isExpanded }
+            .map(\.rawMessage)
 
-//        messages
-//            .filter { $0.isExpanded }
-//            .forEach { threadMessage in
-////            messageOperationsProvider.markAsUnread(message: threadMessage, folder: <#T##String#>)
-//            }
+        guard messages.isNotEmpty else {
+            return
+        }
 
-        let message = messages[0].message
+        showSpinner()
+        // TODO: - ANTON - mark multiple messages as unread
+
+        //        onComplete(.markAsRead(false), .init(thread: thread))
+        //        hideSpinner()
+    }
+
+    private func markUnread(message: Message) async throws {
+        logger.logInfo("Mark unread message \(message)")
+
         Task {
             do {
-                showSpinner()
                 try await messageOperationsProvider.markAsUnread(message: message, folder: thread.path)
-                onComplete(.markUnread(true), .init(thread: thread))
-                hideSpinner()
-                navigationController?.popViewController(animated: true)
             } catch {
                 showToast("Could not mark message as unread: \(error)")
             }
@@ -251,11 +271,11 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
 extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
-        messages.count
+        input.count
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        messages[section].isExpanded
+        input[section].isExpanded
             ? Parts.allCases.count
             : [Parts.message].count
     }
@@ -269,13 +289,15 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             switch part {
             case .thread:
                 return TextImageNode(
-                    input: .init(threadMessage: self.messages[indexPath.row]),
+                    input: .init(threadMessage: self.input[indexPath.row]),
                     onTap: { [weak self] _ in
                         self?.handleTap(at: indexPath)
                     }
                 )
             case .message:
-                let processedMessage = self.messages[indexPath.section].processedMessage
+                guard let processedMessage = self.input[indexPath.section].processedMessage else {
+                    return ASCellNode()
+                }
                 return MessageTextSubjectNode(processedMessage.attributedMessage)
             }
         }
@@ -291,8 +313,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
 extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
-        let isAnyUnread = thread.messages.contains(where: { !$0.isMessageRead })
-        onComplete(MessageAction.markUnread(isAnyUnread), .init(thread: thread))
+        let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
+        onComplete(MessageAction.markAsRead(isRead), .init(thread: thread))
         navigationController?.popViewController(animated: true)
     }
 }
@@ -302,7 +324,7 @@ extension ThreadDetailsViewController: NavigationChildController {
 /*
  + For actions on the conversation (mark unread) the buttons will remain on the top bar like before.
 
- mark unread: acts on whichever message is currently expanded in the thread
+ // TODO: - ANTON - mark as unread - mark unread: acts on whichever message is currently expanded in the thread
  delete: acts on whole thread (there should be api for that?)
  archive: acts on whole thread
  move to inbox: acts on whole thread

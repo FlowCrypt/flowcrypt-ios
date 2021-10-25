@@ -150,7 +150,7 @@ extension SearchViewController: MsgListViewController {
         nil
     }
 
-    func updateMessage(isUnread: Bool, at index: Int) {
+    func updateMessage(isRead: Bool, at index: Int) {
 
     }
 
