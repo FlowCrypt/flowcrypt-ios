@@ -100,6 +100,7 @@ class SplashScreen extends BaseScreen {
 
     changeLanguage (language: string = '‪English (United States)‬') {
         this.languageDropdown.waitForDisplayed();
+        browser.pause(500); // stability sleep
         this.languageDropdown.click();
         const selector = `~${language}`;
         $(selector).waitForDisplayed();
