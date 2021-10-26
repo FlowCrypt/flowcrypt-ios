@@ -44,15 +44,16 @@ class RecipientTests: XCTestCase {
     }
 
     func testRecipientKeysOrder() {
-        let revokedKey = generateKey(expiration: Int(Date().timeIntervalSince1970 + 60 * 60), revoked: true)
+        let now = Int(Date().timeIntervalSince1970)
+        let revokedKey = generateKey(expiration: now + 60 * 60, revoked: true)
 
-        let activeKey1 = generateKey(expiration: Int(Date().timeIntervalSince1970 + 60 * 60))
-        let activeKey2 = generateKey(expiration: Int(Date().timeIntervalSince1970 + 48 * 60 * 60))
-        let activeKey3 = generateKey(expiration: Int(Date().timeIntervalSince1970 + 24 * 60 * 60))
+        let activeKey1 = generateKey(expiration: now + 60 * 60)
+        let activeKey2 = generateKey(expiration: now + 48 * 60 * 60)
+        let activeKey3 = generateKey(expiration: now + 24 * 60 * 60)
 
         let nonExpiringKey = generateKey(expiration: nil)
-        let expiredKey = generateKey(expiration: Int(Date().timeIntervalSince1970 - 60 * 60))
-        let oldExpiredKey = generateKey(expiration: Int(Date().timeIntervalSince1970 - 24 * 60 * 60))
+        let expiredKey = generateKey(expiration: now - 60 * 60)
+        let oldExpiredKey = generateKey(expiration: now - 24 * 60 * 60)
 
         let keyDetails = [revokedKey, oldExpiredKey, activeKey1, expiredKey, activeKey2, nonExpiringKey, activeKey3]
         let recipient = RecipientWithSortedPubKeys(email: "test@test.com",
