@@ -10,29 +10,6 @@ auto_cancel:
   running:
     when: branch != 'master'
 blocks:
-  - name: Ubuntu iOS tests
-    execution_time_limit:
-      minutes: 5
-    task:
-      agent:
-        machine:
-          type: e1-standard-4
-          os_image: ubuntu1804
-      env_vars:
-        - name: LANG
-          value: en_US.UTF-8
-        - name: SEMAPHORE_GIT_DIR
-          value: /home/semaphore/git/flowcrypt-ios
-      prologue:
-        commands:
-          - checkout
-          - cd ~/git/flowcrypt-ios/
-      jobs:
-        - name: TypeScript - Core standalone tests
-          commands:
-            - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ../Core
-            - cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules
-            - ../.custom-npm/node_modules/.bin/npm test
   - name: Mac iOS tests
     execution_time_limit:
       minutes: 55
@@ -48,16 +25,18 @@ blocks:
         commands:
           - checkout && sem-version node 12 && cd ~/git/flowcrypt-ios/
           - cache restore && make dependencies && cache store
+          - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ..
       jobs:
-        - name: Swift tests
-          commands:
-            - bundle exec fastlane test
-        - name: Appium tests
+        - name: Appium UI tests
           commands:
             - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
             - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
             - bundle exec fastlane build
-            - ls -la appium && cd appium && npm run ios.smoke
+            - ls -la appium && cd appium && npm run-script only.test.all
+        - name: TypeScript + Swift tests
+          commands:
+            - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
+            - bundle exec fastlane test
       epilogue:
         on_fail:
           commands:

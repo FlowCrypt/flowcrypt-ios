@@ -11,19 +11,22 @@ import GoogleAPIClientForREST_Gmail
 
 extension GmailService: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
-        return try await withThrowingTaskGroup(of: Message.self) { taskGroup -> MessageContext in
+        return try await withThrowingTaskGroup(of: Message.self) { [weak self] taskGroup -> MessageContext in
             let list = try await fetchMessagesList(using: context)
             let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
 
-            for identifier in messageIdentifiers {
-                taskGroup.addTask {
-                    try await fetchFullMessage(with: identifier)
-                }
-            }
-
             var messages: [Message] = []
-            for try await result in taskGroup {
-                messages.append(result)
+
+            if let self = self {
+                for identifier in messageIdentifiers {
+                    taskGroup.addTask {
+                        try await self.fetchFullMessage(with: identifier)
+                    }
+                }
+
+                for try await result in taskGroup {
+                    messages.append(result)
+                }
             }
 
             return MessageContext(

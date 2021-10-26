@@ -103,8 +103,10 @@ final class CoreHost: NSObject, CoreHostExports {
     }
 
     func clearTimeout(_ id: String) {
-        let timer = timers.removeValue(forKey: id)
-        timer?.invalidate()
+        DispatchQueue.main.async { // use consistent queue for modifications
+            let timer = timers.removeValue(forKey: id)
+            timer?.invalidate()
+        }
     }
 
     func setTimeout(_ cb: JSValue, _ ms: Double) -> String {
@@ -112,7 +114,7 @@ final class CoreHost: NSObject, CoreHostExports {
         let uuid = NSUUID().uuidString
         DispatchQueue.main.async { // queue all in the same executable queue, JS calls are getting lost if the queue is not specified
             let timer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.callJsCb), userInfo: cb, repeats: false)
-            timers[uuid] = timer
+            timers[uuid] = timer // use consistent queue for modifications of timers
         }
         return uuid
     }

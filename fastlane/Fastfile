@@ -13,21 +13,7 @@ platform :ios do
     )
   end
 
-  # original build using gym - does not support exporting app for Appium
-  # desc "Build for CI testing"
-  # lane :build do |options|
-  #   gym(
-  #     scheme: "Debug FlowCrypt",
-  #     skip_package_ipa: true,
-  #     skip_archive: true,
-  #     silent: true,
-  #     clean: false,
-  #     skip_codesigning: true,
-  #     configuration: "Debug"
-  #   )
-  # end
-
-  desc "Build for swift and UI tests"
+  desc "Build for UI tests"
   lane :build do
     xcbuild(
        workspace: "FlowCrypt.xcworkspace",
@@ -40,10 +26,8 @@ platform :ios do
 
   desc "Run Swift tests"
   lane :test do
-    build
     scan(
-      scheme: "FlowCryptAppTests",
-      skip_build: true
+      scheme: "FlowCryptAppTests"
     )
   end
 

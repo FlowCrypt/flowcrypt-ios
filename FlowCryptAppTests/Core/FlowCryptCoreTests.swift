@@ -17,7 +17,7 @@ final class FlowCryptCoreTests: XCTestCase {
         core.startInBackgroundIfNotAlreadyRunning {
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 10)
+        wait(for: [expectation], timeout: 20)
     }
 
     // the tests below

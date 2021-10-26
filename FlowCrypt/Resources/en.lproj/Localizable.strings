@@ -1,5 +1,6 @@
 // COMMON
 "loading_title" = "Loading";
+"encrypting_title" = "Encrypting...";
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
@@ -61,12 +62,14 @@
 "compose_error" = "Could not compose message";
 "compose_reply_successfull" = "Reply successfully sent";
 "compose_reply_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
-"compose_sent" = "Encrypted message sent";
+"compose_encrypted_sent" = "Encrypted message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
 "compose_recipient" = "Add Recipient";
 "compose_subject" = "Subject";
 "compose_enable_search" = "To enable searching contacts, please Log out and set up FlowCrypt again";
+"compose_uploading" = "Uploading";
+"compose_sent" = "Sent";
 
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";
