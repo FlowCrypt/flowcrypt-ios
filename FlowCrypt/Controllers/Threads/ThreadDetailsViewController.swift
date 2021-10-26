@@ -92,6 +92,7 @@ extension ThreadDetailsViewController {
             logger.logError("Fail to handle tap at \(indexPath)")
             return
         }
+
         UIView.animate(
             withDuration: 0.3,
             animations: {
@@ -229,41 +230,48 @@ extension ThreadDetailsViewController {
     }
 }
 
-// TODO: - ANTON
 extension ThreadDetailsViewController: MessageActionsHandler {
+    private func handleSuccessfulMessage(action: MessageAction) {
+        hideSpinner()
+        onComplete(action, .init(thread: thread))
+        navigationController?.popViewController(animated: true)
+    }
+
+    private func handleMessageAction(error: Error) {
+        logger.logError("Error mark as read \(error)")
+        hideSpinner()
+    }
 
     func handleTrashTap() {
-
+        // TODO: - ANTON - handleTrashTap
     }
 
     func handleArchiveTap() {
-
+        Task {
+            do {
+                showSpinner()
+                try await threadOperationsProvider.archive(thread: thread, in: currentFolderPath)
+                handleSuccessfulMessage(action: .archive)
+            } catch {
+                handleMessageAction(error: error)
+            }
+        }
     }
 
     func handleMarkUnreadTap() {
-        // TODO: - ANTON - mark as unread
-        let messages = input.filter { $0.isExpanded }
-            .map(\.rawMessage)
+        let messages = input.filter { $0.isExpanded }.map(\.rawMessage)
 
         guard messages.isNotEmpty else {
             return
         }
 
-        showSpinner()
-        // TODO: - ANTON - mark multiple messages as unread
-
-        //        onComplete(.markAsRead(false), .init(thread: thread))
-        //        hideSpinner()
-    }
-
-    private func markUnread(message: Message) async throws {
-        logger.logInfo("Mark unread message \(message)")
-
         Task {
             do {
-                try await messageOperationsProvider.markAsUnread(message: message, folder: thread.path)
+                showSpinner()
+                try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
+                handleSuccessfulMessage(action: .markAsRead(false))
             } catch {
-                showToast("Could not mark message as unread: \(error)")
+                handleMessageAction(error: error)
             }
         }
     }
@@ -323,10 +331,11 @@ extension ThreadDetailsViewController: NavigationChildController {
 
 /*
  + For actions on the conversation (mark unread) the buttons will remain on the top bar like before.
-
- // TODO: - ANTON - mark as unread - mark unread: acts on whichever message is currently expanded in the thread
+ + mark unread: acts on whichever message is currently expanded in the thread
+ + archive: acts on whole thread
+ 
  delete: acts on whole thread (there should be api for that?)
- archive: acts on whole thread
+
  move to inbox: acts on whole thread
 
  */

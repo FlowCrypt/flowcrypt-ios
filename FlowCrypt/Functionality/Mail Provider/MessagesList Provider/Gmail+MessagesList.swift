@@ -22,7 +22,6 @@ extension GmailService: MessagesListProvider {
                     try await fetchFullMessage(with: identifier)
                 }
             }
-
             var messages: [Message] = []
             for try await result in taskGroup {
                 messages.append(result)

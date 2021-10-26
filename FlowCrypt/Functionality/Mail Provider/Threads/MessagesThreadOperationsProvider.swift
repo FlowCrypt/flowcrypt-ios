@@ -5,18 +5,17 @@
 //  Created by Anton Kharchevskyi on 25.10.2021
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
 import Foundation
 import GoogleAPIClientForREST_Gmail
 
 protocol MessagesThreadOperationsProvider {
+    func mark(thread: MessageThread, asRead: Bool, in folder: String) async throws
     func delete(thread: MessageThread) async throws
     func moveThreadToTrash(thread: MessageThread) async throws
     func markThreadAsUnread(thread: MessageThread, folder: String) async throws
     func markThreadAsRead(thread: MessageThread, folder: String) async throws
-
-    // func archive(thread: MessageThread) async throws
+    func archive(thread: MessageThread, in folder: String) async throws
 }
 
 extension GmailService: MessagesThreadOperationsProvider {
@@ -52,15 +51,30 @@ extension GmailService: MessagesThreadOperationsProvider {
         try await update(thread: thread, labelsToRemove: [.unread])
     }
 
-    // TODO: - ANTON - archive
-//    func archive(thread: MessageThread) async throws {
-//        try await update(
-//            thread: thread,
-//            labelsToRemove: thread.labels
-//                .filter(\.isLabel)
-//                .map(\.type)
-//        )
-//    }
+    func mark(thread: MessageThread, asRead: Bool, in folder: String) async throws {
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            thread.messages.forEach { message in
+                taskGroup.addTask {
+                    asRead
+                        ? try await markAsRead(message: message, folder: folder)
+                        : try await markAsUnread(message: message, folder: folder)
+                }
+            }
+
+            try await taskGroup.waitForAll()
+        }
+    }
+
+    func archive(thread: MessageThread, in folder: String) async throws {
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            thread.messages.forEach { message in
+                taskGroup.addTask {
+                    try await archiveMessage(message: message, folderPath: folder)
+                }
+            }
+            try await taskGroup.waitForAll()
+        }
+    }
 
     private func update(
         thread: MessageThread,
