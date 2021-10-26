@@ -22,6 +22,24 @@ struct ComposeMessageRecipient {
     var state: RecipientState
 }
 
+extension ComposeMessageRecipient {
+    var isKeyRevoked: Bool {
+        if case .keyRevoked = state {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    var isKeyExpired: Bool {
+        if case .keyExpired = state {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
 }
@@ -73,6 +91,14 @@ final class ComposeMessageService {
 
         guard let text = contextToSend.message, text.hasContent else {
             return .failure(.validationError(.emptyMessage))
+        }
+
+        guard recipients.filter(\.isKeyRevoked).isEmpty else {
+            return .failure(.validationError(.revokedKeyRecipients))
+        }
+
+        guard recipients.filter(\.isKeyExpired).isEmpty else {
+            return .failure(.validationError(.expiredKeyRecipients))
         }
 
         let subject = input.subjectReplyTitle

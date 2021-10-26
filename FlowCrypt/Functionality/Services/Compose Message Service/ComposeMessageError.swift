@@ -13,8 +13,9 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     case emptySubject
     case emptyMessage
     case missedPublicKey
-    case missedRecipientPublicKey
     case noPubRecipients([String])
+    case revokedKeyRecipients
+    case expiredKeyRecipients
     case internalError(String)
 
     var description: String {
@@ -27,14 +28,12 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
             return "compose_enter_secure".localized
         case .missedPublicKey:
             return "compose_no_pub_sender".localized
-        case .missedRecipientPublicKey:
-            return "Public key is missing"
-        case .noPubRecipients(let emails):
-            return emails.count == 1
-                ? "compose_no_pub_recipient".localized
-                : "compose_no_pub_multiple".localized
-                + "\n"
-                + emails.joined(separator: ",")
+        case .noPubRecipients:
+            return "compose_recipient_no_pub".localized
+        case .revokedKeyRecipients:
+            return "compose_recipient_revoked".localized
+        case .expiredKeyRecipients:
+            return "compose_recipient_expired".localized
         case .internalError(let message):
             return message
         }
