@@ -51,11 +51,23 @@ class NewMessageScreen extends BaseScreen {
         this.setComposeSecurityMessage(message);
     }
 
+    setComposeEmailByName(name, email, subject, message) {
+        this.setAddRecipientByName(name, email);
+        this.setSubject(subject);
+        this.setComposeSecurityMessage(message);
+    }
+
+    setAddRecipientByName(name, email) {
+        this.addRecipientField.setValue(name);
+        const selector = `~${email}`;
+        $(selector).waitForDisplayed();
+        $(selector).click();
+    }
+
     checkFilledComposeEmailInfo(recipient, subject, message) {
         expect(this.composeSecurityMesage).toHaveText(message);
         this.filledSubject(subject).waitForDisplayed();
         expect(this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
-
     }
 }
 
