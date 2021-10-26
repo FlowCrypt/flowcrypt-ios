@@ -256,25 +256,6 @@ extension MessageViewController: MessageActionsHandler {
         }
     }
 
-    func handleTrashTap() {
-        showSpinner()
-
-        trashFolderProvider.getTrashFolderPath()
-            .then(on: .main) { [weak self] trashPath in
-                guard let strongSelf = self, let path = trashPath else {
-                    self?.permanentlyDelete()
-                    return
-                }
-
-                strongSelf.input.path == trashPath
-                    ? strongSelf.permanentlyDelete()
-                    : strongSelf.moveToTrash(with: path)
-            }
-            .catch(on: .main) { error in
-                self.showToast(error.localizedDescription)
-            }
-    }
-
     func handleArchiveTap() {
         Task {
             do {
@@ -287,13 +268,7 @@ extension MessageViewController: MessageActionsHandler {
         }
     }
 
-    private func permanentlyDelete() {
-        awaitUserConfirmation { [weak self] in
-            self?.delete()
-        }
-    }
-
-    private func delete() {
+    func permanentlyDelete() {
         Task {
             do {
                 try await messageOperationsProvider.delete(message: self.input.objMessage, form: self.input.path)
@@ -304,24 +279,7 @@ extension MessageViewController: MessageActionsHandler {
         }
     }
 
-    func awaitUserConfirmation(_ completion: @escaping () -> Void) {
-        let alert = UIAlertController(
-            title: "Are you sure?",
-            message: "You're about to permanently delete a message",
-            preferredStyle: .alert
-        )
-        alert.addAction(
-            UIAlertAction(title: "Cancel", style: .default)
-        )
-        alert.addAction(
-            UIAlertAction(title: "OK", style: .default) { _ in
-                completion()
-            }
-        )
-        present(alert, animated: true, completion: nil)
-    }
-
-    private func moveToTrash(with trashPath: String) {
+    func moveToTrash(with trashPath: String) {
         Task {
             do {
                 try await messageOperationsProvider.moveMessageToTrash(

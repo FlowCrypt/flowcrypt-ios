@@ -123,6 +123,7 @@ extension ThreadDetailsViewController {
                 try await messageOperationsProvider.markAsRead(message: message, folder: currentFolderPath)
                 let updatedMessage = input[index].rawMessage.markAsRead(true)
                 input[index].rawMessage = updatedMessage
+                node.reloadSections(IndexSet(integer: index), with: .fade)
             } catch {
                 showToast("Could not mark message as read: \(error)")
             }
@@ -242,8 +243,13 @@ extension ThreadDetailsViewController: MessageActionsHandler {
         hideSpinner()
     }
 
-    func handleTrashTap() {
-        // TODO: - ANTON - handleTrashTap
+    func permanentlyDelete() {
+        logger.logInfo("permanently delete")
+
+    }
+
+    func moveToTrash(with trashPath: String) {
+        logger.logInfo("move to trash \(trashPath)")
     }
 
     func handleArchiveTap() {
@@ -326,16 +332,3 @@ extension ThreadDetailsViewController: NavigationChildController {
         navigationController?.popViewController(animated: true)
     }
 }
-
-// TODO: - ANTON
-
-/*
- + For actions on the conversation (mark unread) the buttons will remain on the top bar like before.
- + mark unread: acts on whichever message is currently expanded in the thread
- + archive: acts on whole thread
- 
- delete: acts on whole thread (there should be api for that?)
-
- move to inbox: acts on whole thread
-
- */

@@ -18,6 +18,9 @@ protocol MessageActionsHandler: AnyObject {
     func handleInfoTap()
     func handleArchiveTap()
     func handleMarkUnreadTap()
+
+    func permanentlyDelete()
+    func moveToTrash(with trashPath: String)
 }
 
 extension MessageActionsHandler where Self: UIViewController {
@@ -67,5 +70,46 @@ extension MessageActionsHandler where Self: UIViewController {
 
     func handleAttachmentTap() {
         showToast("Downloading attachments is not implemented yet")
+    }
+
+    func handleTrashTap() {
+        showSpinner()
+
+        trashFolderProvider.getTrashFolderPath()
+            .then(on: .main) { [weak self] trashPath in
+                guard let self = self, let trashPath = trashPath else {
+                    return
+                }
+
+                if self.currentFolderPath.caseInsensitiveCompare(trashPath) == .orderedSame {
+                    self.awaitUserConfirmation { [weak self] in
+                        self?.permanentlyDelete()
+                    }
+                } else {
+                    self.moveToTrash(with: trashPath)
+                }
+            }
+            .catch(on: .main) { error in
+                self.showToast(error.localizedDescription)
+            }
+    }
+
+    func awaitUserConfirmation(_ completion: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: "Are you sure?",
+            message: "You're about to permanently delete a message",
+            preferredStyle: .alert
+        )
+        alert.addAction(
+            UIAlertAction(title: "Cancel", style: .default) { _ in
+                self.hideSpinner()
+            }
+        )
+        alert.addAction(
+            UIAlertAction(title: "OK", style: .default) { _ in
+                completion()
+            }
+        )
+        present(alert, animated: true, completion: nil)
     }
 }

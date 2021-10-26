@@ -30,7 +30,7 @@ extension GmailService: MessagesThreadProvider {
             var messages: [MessageThread] = []
             for request in requests {
                 taskGroup.addTask {
-                    try await getThread(with: request.0, snippet: request.1)
+                    try await getThread(with: request.0, snippet: request.1, path: context.folderPath ?? "")
                 }
             }
             for try await result in taskGroup {
@@ -60,7 +60,7 @@ extension GmailService: MessagesThreadProvider {
         }
     }
 
-    private func getThread(with identifier: String, snippet: String?) async throws -> MessageThread {
+    private func getThread(with identifier: String, snippet: String?, path: String) async throws -> MessageThread {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
             self.gmailService.executeQuery(
                 GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
@@ -75,9 +75,9 @@ extension GmailService: MessagesThreadProvider {
 
                 guard let threadMsg = thread.messages else {
                     let empty = MessageThread(
-                        identifier: nil,
+                        identifier: identifier,
                         snippet: snippet,
-                        path: identifier,
+                        path: path,
                         messages: []
                     )
                     return continuation.resume(returning: empty)
@@ -88,7 +88,7 @@ extension GmailService: MessagesThreadProvider {
                 let result = MessageThread(
                     identifier: thread.identifier,
                     snippet: snippet,
-                    path: identifier,
+                    path: path,
                     messages: messages ?? []
                 )
                 continuation.resume(returning: result)
