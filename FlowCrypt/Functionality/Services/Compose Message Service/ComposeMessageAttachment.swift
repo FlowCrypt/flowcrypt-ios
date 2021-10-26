@@ -26,8 +26,6 @@ extension ComposeMessageAttachment {
         switch mediaType {
         case PhotosManager.MediaType.image:
             urlKey = .imageURL
-        case PhotosManager.MediaType.video:
-            urlKey = .mediaURL
         default: return nil
         }
 

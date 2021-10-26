@@ -54,7 +54,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     private var state: State = .idle
 
-    private let messageProvider: MessagesListProvider
+    private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let enterpriseServerApi: EnterpriseServerApiType
     private let refreshControl = UIRefreshControl()
@@ -75,7 +75,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         enterpriseServerApi: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
         self.viewModel = viewModel
-        self.messageProvider = messageProvider
+        self.service = ServiceActor(messageProvider: messageProvider)
         self.decorator = decorator
         self.enterpriseServerApi = enterpriseServerApi
         tableNode = TableNode()
@@ -157,7 +157,7 @@ extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
         Task {
             do {
-                let context = try await messageProvider.fetchMessages(
+                let context = try await service.fetchMessages(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: Constants.numberOfMessagesToLoad,
@@ -179,7 +179,7 @@ extension InboxViewController {
 
         Task {
             do {
-                let context = try await messageProvider.fetchMessages(
+                let context = try await service.fetchMessages(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
@@ -460,3 +460,16 @@ extension InboxViewController: Refreshable {
          refresh()
      }
  }
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let messageProvider: MessagesListProvider
+
+    init(messageProvider: MessagesListProvider) {
+        self.messageProvider = messageProvider
+    }
+
+    func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
+        return try await messageProvider.fetchMessages(using: context)
+    }
+}

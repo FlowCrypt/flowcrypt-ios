@@ -37,9 +37,9 @@ final class ComposeViewController: TableNodeViewController {
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyService: KeyServiceType
+    private let service: ServiceActor
 
     private let search = PassthroughSubject<String, Never>()
-    private let cloudContactProvider: CloudContactsProvider
     private let userDefaults: UserDefaults
 
     private let email: String
@@ -67,13 +67,17 @@ final class ComposeViewController: TableNodeViewController {
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        self.cloudContactProvider = cloudContactProvider
         self.userDefaults = userDefaults
         self.contactsService = contactsService
         self.composeMessageService = composeMessageService
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.keyService = keyService
+        self.service = ServiceActor(
+            composeMessageService: composeMessageService,
+            contactsService: contactsService,
+            cloudContactProvider: cloudContactProvider
+        )
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -244,27 +248,38 @@ extension ComposeViewController {
 
     private func sendMessage(_ signingKey: PrvKeyInfo) {
         view.endEditing(true)
-        showSpinner("sending_title".localized)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
-        let result = composeMessageService.validateMessage(
-            input: input,
-            contextToSend: contextToSend,
-            email: email,
-            signingPrv: signingKey
-        )
-        switch result {
-        case .success(let message):
-            encryptAndSend(message)
-        case .failure(let error):
-            handle(error: error)
+        let spinnerTitle = contextToSend.attachments.isEmpty ? "sending_title" : "encrypting_title"
+        showSpinner(spinnerTitle.localized)
+
+        // TODO: - fix for spinner
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+            let result = self.composeMessageService.validateMessage(
+                input: self.input,
+                contextToSend: self.contextToSend,
+                email: self.email,
+                signingPrv: signingKey
+            )
+            switch result {
+            case .success(let message):
+                self.encryptAndSend(message)
+            case .failure(let error):
+                self.handle(error: error)
+            }
         }
     }
 
     private func encryptAndSend(_ message: SendableMsg) {
         Task {
             do {
-                try await composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
+                try await service.encryptAndSend(message: message,
+                                                 threadId: input.threadId,
+                                                 progressHandler: { [weak self] progress in
+                    self?.updateSpinner(progress: progress)
+                })
                 handleSuccessfullySentMessage()
             } catch {
                 if let error = error as? ComposeMessageError {
@@ -346,6 +361,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
                 return ASCellNode()
+                
             }
         }
     }
@@ -599,7 +615,7 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             let localEmails = contactsService.searchContacts(query: query)
-            let cloudEmails = try? await cloudContactProvider.searchContacts(query: query)
+            let cloudEmails = try? await service.searchContacts(query: query)
             let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
             let state: State = emails.isNotEmpty
                 ? .searchEmails(Array(emails))
@@ -610,23 +626,37 @@ extension ComposeViewController {
 
     private func evaluate(recipient: ComposeMessageRecipient) {
         guard isValid(email: recipient.email) else {
-            updateRecipientWithNew(state: self.decorator.recipientErrorState, for: .left(recipient))
+            updateRecipientWithNew(state: self.decorator.recipientInvalidEmailState, for: .left(recipient))
             return
         }
 
         Task {
             do {
-                _ = try await contactsService.searchContact(with: recipient.email)
-                handleEvaluation(for: recipient)
+                let contact = try await service.searchContact(with: recipient.email)
+                let state = getRecipientState(from: contact)
+                handleEvaluation(for: recipient, with: state)
             } catch {
                 handleEvaluation(error: error, with: recipient)
             }
         }
     }
 
-    private func handleEvaluation(for recipient: ComposeMessageRecipient) {
+    private func getRecipientState(from recipient: RecipientWithSortedPubKeys) -> RecipientState {
+        switch recipient.keyState {
+        case .active:
+            return decorator.recipientKeyFoundState
+        case .expired:
+            return decorator.recipientKeyExpiredState
+        case .revoked:
+            return decorator.recipientKeyRevokedState
+        case .empty:
+            return decorator.recipientKeyNotFoundState
+        }
+    }
+
+    private func handleEvaluation(for recipient: ComposeMessageRecipient, with state: RecipientState) {
         updateRecipientWithNew(
-            state: decorator.recipientKeyFoundState,
+            state: state,
             for: .left(recipient)
         )
     }
@@ -689,7 +719,7 @@ extension ComposeViewController {
         switch recipient.state {
         case .idle:
             handleRecipientSelection(with: indexPath)
-        case .keyFound, .keyNotFound, .selected:
+        case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .selected:
             break
         case let .error(_, isRetryError):
             if isRetryError {
@@ -878,5 +908,34 @@ extension ComposeViewController {
 
     private func shouldRenewToken(for newScope: [GoogleScope]) -> Bool {
         false
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let composeMessageService: ComposeMessageService
+    private let contactsService: ContactsServiceType
+    private let cloudContactProvider: CloudContactsProvider
+
+    init(composeMessageService: ComposeMessageService,
+         contactsService: ContactsServiceType,
+         cloudContactProvider: CloudContactsProvider) {
+        self.composeMessageService = composeMessageService
+        self.contactsService = contactsService
+        self.cloudContactProvider = cloudContactProvider
+    }
+
+    func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
+        try await composeMessageService.encryptAndSend(message: message,
+                                                       threadId: threadId,
+                                                       progressHandler: progressHandler)
+    }
+
+    func searchContacts(query: String) async throws -> [String] {
+        return try await cloudContactProvider.searchContacts(query: query)
+    }
+
+    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
+        return try await contactsService.searchContact(with: email)
     }
 }

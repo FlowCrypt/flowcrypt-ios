@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+@testable import FlowCrypt
 import Foundation
 import Promises
-@testable import FlowCrypt
 
 final class ContactsServiceMock: ContactsServiceType {
     var retrievePubKeysResult: ((String) -> ([String]))!
@@ -16,8 +16,8 @@ final class ContactsServiceMock: ContactsServiceType {
         retrievePubKeysResult(email)
     }
 
-    var searchContactResult: Result<RecipientWithPubKeys, Error>!
-    func searchContact(with email: String) async throws -> RecipientWithPubKeys {
+    var searchContactResult: Result<RecipientWithSortedPubKeys, Error>!
+    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
         switch searchContactResult {
         case .success(let result):
             return result

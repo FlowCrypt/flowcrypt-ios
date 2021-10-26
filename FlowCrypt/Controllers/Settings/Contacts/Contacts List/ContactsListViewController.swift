@@ -18,7 +18,7 @@ import FlowCryptUI
 final class ContactsListViewController: TableNodeViewController {
     private let decorator: ContactsListDecoratorType
     private let contactsProvider: LocalContactsProviderType
-    private var recipients: [RecipientWithPubKeys] = []
+    private var recipients: [RecipientWithSortedPubKeys] = []
     private var selectedIndexPath: IndexPath?
 
     init(
@@ -109,8 +109,8 @@ extension ContactsListViewController {
         navigationController?.pushViewController(contactDetailViewController, animated: true)
     }
 
-    private func delete(with context: Either<RecipientWithPubKeys, IndexPath>) {
-        let recipientToRemove: RecipientWithPubKeys
+    private func delete(with context: Either<RecipientWithSortedPubKeys, IndexPath>) {
+        let recipientToRemove: RecipientWithSortedPubKeys
         let indexPathToRemove: IndexPath
         switch context {
         case .left(let recipient):

@@ -1,6 +1,5 @@
 import BaseScreen from './base.screen';
 import {CommonData} from "../data";
-import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     MENU_ICON: '~menu icn',
@@ -26,6 +25,7 @@ class MenuBarScreen extends BaseScreen {
     }
 
     clickMenuIcon () {
+        this.menuIcon.waitForDisplayed();
         this.menuIcon.click();
     }
 
@@ -41,6 +41,10 @@ class MenuBarScreen extends BaseScreen {
 
     clickLogout () {
         this.logoutButton.click();
+    }
+
+    clickSettingsButton () {
+        this.settingsButton.click();
     }
 }
 

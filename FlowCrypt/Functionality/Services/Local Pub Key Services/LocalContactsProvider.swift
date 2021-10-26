@@ -12,12 +12,12 @@ import RealmSwift
 
 protocol LocalContactsProviderType: PublicKeyProvider {
     func updateLastUsedDate(for email: String)
-    func searchRecipient(with email: String) -> RecipientWithPubKeys?
+    func searchRecipient(with email: String) -> RecipientWithSortedPubKeys?
     func searchEmails(query: String) -> [String]
-    func save(recipient: RecipientWithPubKeys)
-    func remove(recipient: RecipientWithPubKeys)
-    func updateKeys(for recipient: RecipientWithPubKeys)
-    func getAllRecipients() -> [RecipientWithPubKeys]
+    func save(recipient: RecipientWithSortedPubKeys)
+    func remove(recipient: RecipientWithSortedPubKeys)
+    func updateKeys(for recipient: RecipientWithSortedPubKeys)
+    func getAllRecipients() -> [RecipientWithSortedPubKeys]
 }
 
 struct LocalContactsProvider {
@@ -47,18 +47,18 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .map { $0.armored } ?? []
     }
 
-    func save(recipient: RecipientWithPubKeys) {
+    func save(recipient: RecipientWithSortedPubKeys) {
         localContactsCache.save(RecipientObject(recipient))
     }
 
-    func remove(recipient: RecipientWithPubKeys) {
+    func remove(recipient: RecipientWithSortedPubKeys) {
         localContactsCache.remove(
             object: RecipientObject(recipient),
             with: recipient.email
         )
     }
 
-    func updateKeys(for recipient: RecipientWithPubKeys) {
+    func updateKeys(for recipient: RecipientWithSortedPubKeys) {
         guard let recipientObject = find(with: recipient.email) else {
             localContactsCache.save(RecipientObject(recipient))
             return
@@ -74,9 +74,9 @@ extension LocalContactsProvider: LocalContactsProviderType {
             }
     }
 
-    func searchRecipient(with email: String) -> RecipientWithPubKeys? {
+    func searchRecipient(with email: String) -> RecipientWithSortedPubKeys? {
         guard let recipientObject = find(with: email) else { return nil }
-        return RecipientWithPubKeys(recipientObject)
+        return parseRecipient(from: recipientObject)
     }
 
     func searchEmails(query: String) -> [String] {
@@ -86,15 +86,10 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .map(\.email)
     }
 
-    func getAllRecipients() -> [RecipientWithPubKeys] {
+    func getAllRecipients() -> [RecipientWithSortedPubKeys] {
         localContactsCache.realm
             .objects(RecipientObject.self)
-            .map { object in
-                let keyDetails = object.pubKeys
-                                    .compactMap { try? core.parseKeys(armoredOrBinary: $0.armored.data()).keyDetails }
-                                    .flatMap { $0 }
-                return RecipientWithPubKeys(object, keyDetails: Array(keyDetails))
-            }
+            .map(parseRecipient)
             .sorted(by: { $0.email > $1.email })
     }
 
@@ -114,6 +109,13 @@ extension LocalContactsProvider {
     private func find(with email: String) -> RecipientObject? {
         localContactsCache.realm.object(ofType: RecipientObject.self,
                                         forPrimaryKey: email)
+    }
+
+    private func parseRecipient(from object: RecipientObject) -> RecipientWithSortedPubKeys {
+        let keyDetails = object.pubKeys
+                            .compactMap { try? core.parseKeys(armoredOrBinary: $0.armored.data()).keyDetails }
+                            .flatMap { $0 }
+        return RecipientWithSortedPubKeys(object, keyDetails: Array(keyDetails))
     }
 
     private func add(pubKey: PubKey, to recipient: RecipientObject) {

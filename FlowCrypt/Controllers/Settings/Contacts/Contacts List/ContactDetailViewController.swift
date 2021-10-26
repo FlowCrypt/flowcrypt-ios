@@ -18,7 +18,7 @@ final class ContactDetailViewController: TableNodeViewController {
     typealias ContactDetailAction = (Action) -> Void
 
     enum Action {
-        case delete(_ recipient: RecipientWithPubKeys)
+        case delete(_ recipient: RecipientWithSortedPubKeys)
     }
 
     private enum Section: Int, CaseIterable {
@@ -27,13 +27,13 @@ final class ContactDetailViewController: TableNodeViewController {
 
     private let decorator: ContactDetailDecoratorType
     private let contactsProvider: LocalContactsProviderType
-    private var recipient: RecipientWithPubKeys
+    private var recipient: RecipientWithSortedPubKeys
     private let action: ContactDetailAction?
 
     init(
         decorator: ContactDetailDecoratorType = ContactDetailDecorator(),
         contactsProvider: LocalContactsProviderType = LocalContactsProvider(),
-        recipient: RecipientWithPubKeys,
+        recipient: RecipientWithSortedPubKeys,
         action: ContactDetailAction?
     ) {
         self.decorator = decorator

@@ -20,7 +20,7 @@ describe('INBOX: ', () => {
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();
 
-        InboxScreen.clickOnEmailBySubject(senderEmail);
+        InboxScreen.clickOnEmailBySubject(emailSubject);
         EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
         driver.terminateApp(bundleId);
