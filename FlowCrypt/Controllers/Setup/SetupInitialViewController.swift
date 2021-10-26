@@ -337,7 +337,8 @@ extension SetupInitialViewController {
                     backgroundColor: .backgroundColor,
                     title: "gmail_service_no_access_to_account_message".localized,
                     withSpinner: false,
-                    size: CGSize(width: 200, height: 200)
+                    size: CGSize(width: 200, height: 200),
+                    alignment: .center
                 )
             )
         case 2:
@@ -384,7 +385,7 @@ extension SetupInitialViewController {
 private extension ButtonCellNode.Input {
     static var signInAgain: ButtonCellNode.Input {
         return .init(
-            title: "sign_in_again"
+            title: "continue"
                 .localized
                 .attributed(.bold(16), color: .white, alignment: .center),
             insets: UIEdgeInsets(top: 16, left: 24, bottom: 8, right: 24),
