@@ -322,11 +322,13 @@ extension ComposeViewController {
         openAttachmentsInputSourcesSheet()
     }
 
-    @objc private func handleSendTap() async {
-        do {
-            let key = try await prepareSigningKey()
-            sendMessage(key)
-        } catch {}
+    @objc private func handleSendTap() {
+        Task {
+            do {
+                let key = try await prepareSigningKey()
+                sendMessage(key)
+            } catch {}
+        }
     }
 }
 
@@ -357,7 +359,6 @@ extension ComposeViewController {
                 present(alert, animated: true, completion: nil)
                 return
             }
-
             continuation.resume(returning: signingKey.copy(with: passphrase))
         }
     }
