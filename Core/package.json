@@ -13,7 +13,7 @@
     "@types/node": "^16.11.6",
     "@types/node-cleanup": "2.1.1",
     "ava": "1.4.1",
-    "babel-loader": "8.2.2",
+    "babel-loader": "8.2.3",
     "babel-preset-env": "1.7.0",
     "chai": "4.3.4",
     "node-cleanup": "2.1.2",
