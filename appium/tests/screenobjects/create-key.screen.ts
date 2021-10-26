@@ -37,6 +37,7 @@ class CreateKeyScreen extends BaseScreen {
     }
 
     fillPassPhrase (passPhrase: string) {
+        browser.pause(1000);
         ElementHelper.clickAndType(this.enterPassPhraseField, passPhrase);
     }
 
