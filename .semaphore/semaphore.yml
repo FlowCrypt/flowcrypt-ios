@@ -57,6 +57,7 @@ blocks:
           - checkout && cd ~/git/flowcrypt-ios/
           - cache restore && make dependencies && cache store
           - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ..
+      jobs:
         - name: TypeScript + Swift tests
           commands:
             - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
