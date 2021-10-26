@@ -6,7 +6,11 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/Core/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/appium/"
     schedule:
       interval: "daily"
   - package-ecosystem: "bundler"
