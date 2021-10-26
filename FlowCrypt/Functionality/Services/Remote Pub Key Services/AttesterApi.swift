@@ -95,7 +95,7 @@ extension AttesterApi {
             headers: headers
         )
         return Promise { () -> String in
-            let res = try awaitPromise(URLSession.shared.call(request))
+            let res = try awaitPromise(ApiCall.call(request))
             return res.data.toStr()
         }
     }
