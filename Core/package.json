@@ -11,7 +11,7 @@
     "@types/chai": "4.2.22",
     "@types/encoding-japanese": "^1.0.18",
     "@types/node": "^16.11.6",
-    "@types/node-cleanup": "2.1.1",
+    "@types/node-cleanup": "2.1.2",
     "ava": "1.4.1",
     "babel-loader": "8.2.3",
     "babel-preset-env": "1.7.0",
