@@ -12,7 +12,7 @@
     "@types/encoding-japanese": "^1.0.18",
     "@types/node": "^13.13.52",
     "@types/node-cleanup": "2.1.1",
-    "ava": "1.4.1",
+    "ava": "3.15.0",
     "babel-loader": "8.2.2",
     "babel-preset-env": "1.7.0",
     "chai": "4.3.4",
