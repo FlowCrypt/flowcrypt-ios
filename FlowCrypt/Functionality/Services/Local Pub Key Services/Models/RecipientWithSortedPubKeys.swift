@@ -53,10 +53,10 @@ extension RecipientWithSortedPubKeys {
             .sorted(by: { key1, key2 in
                 // check if key1 is revoked
                 guard !key1.isRevoked else { return false }
-                // check if key1 never expires
-                guard let expire1 = key1.expiresOn else { return true }
                 // check if key2 is revoked
                 guard !key2.isRevoked else { return true }
+                // check if key1 never expires
+                guard let expire1 = key1.expiresOn else { return true }
                 // check if key2 never expires
                 guard let expire2 = key2.expiresOn else { return false }
                 // compare expire dates
