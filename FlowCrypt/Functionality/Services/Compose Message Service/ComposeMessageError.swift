@@ -13,7 +13,7 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     case emptySubject
     case emptyMessage
     case missedPublicKey
-    case noPubRecipients([String])
+    case noPubRecipients
     case revokedKeyRecipients
     case expiredKeyRecipients
     case invalidEmailRecipient
