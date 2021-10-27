@@ -16,6 +16,7 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     case noPubRecipients([String])
     case revokedKeyRecipients
     case expiredKeyRecipients
+    case invalidEmailRecipient
     case internalError(String)
 
     var description: String {
@@ -34,6 +35,8 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
             return "compose_recipient_revoked".localized
         case .expiredKeyRecipients:
             return "compose_recipient_expired".localized
+        case .invalidEmailRecipient:
+            return "compose_recipient_invalid_email".localized
         case .internalError(let message):
             return message
         }

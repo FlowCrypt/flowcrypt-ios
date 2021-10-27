@@ -85,6 +85,10 @@ final class ComposeMessageService {
             return .failure(.validationError(.emptyRecipient))
         }
 
+        guard emails.filter({ !$0.isValidEmail }).isEmpty else {
+            return .failure(.validationError(.invalidEmailRecipient))
+        }
+
         guard input.isReply || contextToSend.subject?.hasContent ?? false else {
             return .failure(.validationError(.emptySubject))
         }

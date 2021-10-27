@@ -253,9 +253,12 @@ extension ComposeViewController {
         let spinnerTitle = contextToSend.attachments.isEmpty ? "sending_title" : "encrypting_title"
         showSpinner(spinnerTitle.localized)
 
+        let selectedRecipients = contextToSend.recipients.filter(\.state.isSelected)
+        selectedRecipients.forEach(evaluate)
+
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             guard let self = self else { return }
             let result = self.composeMessageService.validateMessage(
                 input: self.input,
@@ -625,8 +628,8 @@ extension ComposeViewController {
     }
 
     private func evaluate(recipient: ComposeMessageRecipient) {
-        guard isValid(email: recipient.email) else {
-            updateRecipientWithNew(state: self.decorator.recipientInvalidEmailState, for: .left(recipient))
+        guard recipient.email.isValidEmail else {
+            handleEvaluation(for: recipient, with: self.decorator.recipientInvalidEmailState)
             return
         }
 
@@ -730,12 +733,6 @@ extension ComposeViewController {
                 node.reloadRows(at: [recipientsIndexPath], with: .fade)
             }
         }
-    }
-
-    private func isValid(email: String) -> Bool {
-        let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
-        return emailPredicate.evaluate(with: email)
     }
 }
 
