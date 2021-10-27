@@ -74,7 +74,7 @@ extension WkdApi {
         do {
             var request = URLRequest.urlRequest(with: urls.policy)
             request.timeoutInterval = Constants.lookupEmailRequestTimeout
-            _ = try await URLSession.shared.asyncCall(request)
+            _ = try await ApiCall.asyncCall(request)
         } catch {
             Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
             return (hasPolicy: false, key: nil)
@@ -82,7 +82,7 @@ extension WkdApi {
 
         var request = URLRequest.urlRequest(with: urls.pubKeys)
         request.timeoutInterval = Constants.lookupEmailRequestTimeout
-        let pubKeyResponse = try await URLSession.shared.asyncCall(
+        let pubKeyResponse = try await ApiCall.asyncCall(
             request,
             tolerateStatus: [404]
         )

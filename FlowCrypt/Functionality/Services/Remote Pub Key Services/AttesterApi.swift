@@ -54,7 +54,7 @@ extension AttesterApi {
             return []
         }
 
-        let res = try await URLSession.shared.asyncCall(
+        let res = try await ApiCall.asyncCall(
             urlPub(emailOrLongid: email),
             tolerateStatus: [404],
             timeout: Constants.lookupEmailRequestTimeout

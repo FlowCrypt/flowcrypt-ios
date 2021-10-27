@@ -67,7 +67,7 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             body: nil,
             headers: headers
         )
-        let response = try await URLSession.shared.asyncCall(request)
+        let response = try await ApiCall.asyncCall(request)
         let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
 
         if decryptedPrivateKeysResponse.privateKeys.isEmpty {

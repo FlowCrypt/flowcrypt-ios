@@ -74,7 +74,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             )
             request.timeoutInterval = Constants.getActiveFesTimeout
 
-            let response = try await URLSession.shared.asyncCall(
+            let response = try await ApiCall.asyncCall(
                 request,
                 tolerateStatus: Constants.getToleratedHTTPStatuses
             )
@@ -117,7 +117,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             method: .get,
             body: nil
         )
-        let safeReponse = try await URLSession.shared.asyncCall(request)
+        let safeReponse = try await ApiCall.asyncCall(request)
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
