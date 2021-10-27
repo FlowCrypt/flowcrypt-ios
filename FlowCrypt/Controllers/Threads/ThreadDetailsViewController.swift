@@ -243,13 +243,32 @@ extension ThreadDetailsViewController: MessageActionsHandler {
         hideSpinner()
     }
 
+    // TODO: - ANTON - test
     func permanentlyDelete() {
         logger.logInfo("permanently delete")
-
+        Task {
+            do {
+                showSpinner()
+                try await threadOperationsProvider.delete(thread: thread)
+                handleSuccessfulMessage(action: .permanentlyDelete)
+            } catch {
+                handleMessageAction(error: error)
+            }
+        }
     }
 
+    // TODO: - ANTON - test
     func moveToTrash(with trashPath: String) {
         logger.logInfo("move to trash \(trashPath)")
+        Task {
+            do {
+                showSpinner()
+                try await threadOperationsProvider.moveThreadToTrash(thread: thread)
+                handleSuccessfulMessage(action: .moveToTrash)
+            } catch {
+                handleMessageAction(error: error)
+            }
+        }
     }
 
     func handleArchiveTap() {
