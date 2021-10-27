@@ -11,7 +11,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     it('check filled compose email after reopening app', () => {
 
-        const senderEmail = CommonData.sender.email;
+        const recipientEmail = CommonData.recipient.email;
         const emailSubject = 'TestSubject';
         const emailText = 'Test email';
 
@@ -19,11 +19,11 @@ describe('COMPOSE EMAIL: ', () => {
         CreateKeyScreen.setPassPhrase();
 
         InboxScreen.clickCreateEmail();
-        NewMessageScreen.setComposeEmail(senderEmail, emailSubject, emailText);
-        NewMessageScreen.checkFilledComposeEmailInfo(senderEmail, emailSubject, emailText);
+        NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);
+        NewMessageScreen.checkFilledComposeEmailInfo(recipientEmail, emailSubject, emailText);
 
         driver.background(3);
 
-        NewMessageScreen.checkFilledComposeEmailInfo(senderEmail, emailSubject, emailText);
+        NewMessageScreen.checkFilledComposeEmailInfo(recipientEmail, emailSubject, emailText);
     });
 });

@@ -45,17 +45,12 @@ class NewMessageScreen extends BaseScreen {
         return $(`-ios class chain:${selector}`);
     }
 
-    setComposeEmail(recipient, subject, message) {
+    composeEmail(recipient, subject, message) {
         this.setAddRecipient(recipient);
         this.setSubject(subject);
         this.setComposeSecurityMessage(message);
     }
 
-    setComposeEmailByName(name, email, subject, message) {
-        this.setAddRecipientByName(name, email);
-        this.setSubject(subject);
-        this.setComposeSecurityMessage(message);
-    }
 
     setAddRecipientByName(name, email) {
         this.addRecipientField.setValue(name);
@@ -67,6 +62,10 @@ class NewMessageScreen extends BaseScreen {
     checkFilledComposeEmailInfo(recipient, subject, message) {
         expect(this.composeSecurityMesage).toHaveText(message);
         this.filledSubject(subject).waitForDisplayed();
+        this.checkAddedRecipient(recipient);
+    }
+
+    checkAddedRecipient(recipient)  {
         expect(this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
     }
 }

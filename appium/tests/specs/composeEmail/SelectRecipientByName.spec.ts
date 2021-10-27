@@ -11,16 +11,15 @@ describe('COMPOSE EMAIL: ', () => {
 
     it('user is able to select recipient from contact list using name', () => {
 
-        const senderEmail = CommonData.sender.email;
-        const emailSubject = 'TestSubject';
-        const emailText = 'Test email';
-        const recipientName = 'Dima';
+        const recipientEmail = CommonData.recipient.email;
+        const recipientName = CommonData.recipient.name;
 
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();
 
         InboxScreen.clickCreateEmail();
-        NewMessageScreen.setComposeEmailByName(recipientName, senderEmail, emailSubject, emailText);
-        NewMessageScreen.checkFilledComposeEmailInfo(senderEmail, emailSubject, emailText);
+
+        NewMessageScreen.setAddRecipientByName(recipientName, recipientEmail);
+        NewMessageScreen.checkAddedRecipient(recipientEmail);
     });
 });
