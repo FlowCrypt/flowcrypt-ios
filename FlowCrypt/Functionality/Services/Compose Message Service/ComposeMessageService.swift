@@ -160,7 +160,7 @@ final class ComposeMessageService {
 
     func getDraft(with identifier: String) {
         Task {
-            let draft = try await draftGateway?.getFraft(with: identifier)
+            let draft = try await draftGateway?.getDraft(with: identifier)
         }
     }
 

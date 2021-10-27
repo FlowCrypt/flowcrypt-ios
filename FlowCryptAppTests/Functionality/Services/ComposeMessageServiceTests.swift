@@ -31,6 +31,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
         sut = ComposeMessageService(
             messageGateway: MessageGatewayMock(),
+            draftGateway: DraftGatewayMock(),
             dataService: keyStorage,
             contactsService: contactsService,
             core: core

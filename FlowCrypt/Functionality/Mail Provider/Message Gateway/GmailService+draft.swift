@@ -42,7 +42,7 @@ extension GmailService: DraftGateway {
         }
     }
 
-    func getFraft(with identifier: String) async throws -> GTLRGmail_Draft {
+    func getDraft(with identifier: String) async throws -> GTLRGmail_Draft {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_Draft, Error>) in
 
             let query = GTLRGmailQuery_UsersDraftsGet.query(withUserId: .me, identifier: identifier)
