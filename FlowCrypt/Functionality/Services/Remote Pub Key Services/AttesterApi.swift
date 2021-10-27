@@ -61,18 +61,14 @@ extension AttesterApi {
         )
 
         if res.status >= 200, res.status <= 299 {
-            let keys = try core.parseKeys(armoredOrBinary: res.data)
-            let pubKeys = keys.keyDetails
-                    .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
-            return pubKeys
+            return try core.parseKeys(armoredOrBinary: res.data).keyDetails
         }
 
         if res.status == 404 {
             return []
         }
 
-        // programming error because should never happen
-        throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
+        throw AppErr.unexpected("programing error - should have been caught above - unexpected status \(res.status) when looking up pubkey for \(email)")
     }
 
     @discardableResult
