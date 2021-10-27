@@ -26,7 +26,6 @@ class MenuBarScreen extends BaseScreen {
     }
 
     clickMenuIcon () {
-        browser.pause(1000);//just for test
         ElementHelper.waitAndClick(this.menuIcon);
     }
 
