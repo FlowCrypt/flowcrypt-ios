@@ -8,7 +8,8 @@ const SELECTORS = {
     ADDED_RECIPIENT: '-ios class chain:**/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther' +
         '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
         '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
-        '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText' //it works only with this selector
+        '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText',//it works only with this selector
+    RETURN_BUTTON: '~Return'
 };
 
 class NewMessageScreen extends BaseScreen {
@@ -30,6 +31,8 @@ class NewMessageScreen extends BaseScreen {
 
     setAddRecipient(recipient) {
         this.addRecipientField.setValue(recipient);
+        browser.pause(1000);
+        $(SELECTORS.RETURN_BUTTON).click()
     }
 
     setSubject(subject) {
