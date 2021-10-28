@@ -5,7 +5,7 @@ require('dotenv').config({ path: pathWdioConfig.resolve(__dirname, '../.env') })
 
 config.suites = {
     all: [
-        './tests/specs/composeEmail/CheckComposeEmailAfterReopening.spec.ts'
+        './tests/specs/**/*.spec.ts'
     ],
     smoke: [
         './tests/specs/login/GmailLogin.spec.ts'
