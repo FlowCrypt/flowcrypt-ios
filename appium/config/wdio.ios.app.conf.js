@@ -27,11 +27,10 @@ config.capabilities = [
         automationName: 'XCUITest',
         app: join(process.cwd(), './FlowCrypt.app'),
         newCommandTimeout: 10000,
-        wdaLaunchTimeout: 600000,
+        wdaLaunchTimeout: 300000,
         wdaConnectionTimeout: 600000,
         wdaStartupRetries: 4,
-        wdaStartupRetryInterval: 120000,
-        resetOnSessionStartOnly: true
+        wdaStartupRetryInterval: 120000
     },
 ];
 
