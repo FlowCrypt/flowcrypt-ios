@@ -23,9 +23,14 @@ private extension GoogleScope {
 class CheckAuthScopesViewController: TableNodeViewController {
 
     private let missingScopes: [GoogleScope]
+    private let globalRouter: GlobalRouterType
 
-    init(missingScopes: [GoogleScope]) {
+    init(
+        missingScopes: [GoogleScope],
+        globalRouter: GlobalRouterType = GlobalRouter()
+    ) {
         self.missingScopes = missingScopes
+        self.globalRouter = globalRouter
         super.init(node: TableNode())
     }
 
@@ -98,7 +103,8 @@ extension CheckAuthScopesViewController {
             )
         case 2:
             return ButtonCellNode(input: .signInAgain) { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                guard let self = self else { return }
+                self.globalRouter.signIn(with: .gmailLogin(self))
             }
         default:
             return ASCellNode()
