@@ -16,6 +16,7 @@ import UIKit
  * - User can be redirected here from *InboxViewController* by tapping on search icon
  */
 final class SearchViewController: TableNodeViewController {
+    private lazy var logger = Logger.nested(Self.self)
     private enum Constants {
         // TODO: - Ticket - Add pagination for SearchViewController
         static let messageCount = 100
@@ -107,55 +108,31 @@ extension SearchViewController {
 
 // MARK: - MessageHandlerViewConroller
 extension SearchViewController: MsgListViewController {
-//    func getUpdatedIndex(for message: InboxRenderable) -> IndexPath? {
-//        guard let message = message.wrappedMessage else {
-//            return nil
-//        }
-//        return state.messages.firstIndex(of: message)
-//    }
-//
-//    func updateMessage(at index: IndexPath) {
-//        // TODO: - ANTON
-//    }
-//
-//    func removeMessage(at index: IndexPath) {
-//        var updatedMessages = state.messages
-//        guard updatedMessages[safe: index] != nil else { return }
-//        updatedMessages.remove(at: index)
-//        state = updatedMessages.isEmpty
-//            ? .empty
-//            : .fetched(updatedMessages, .removed(index))
-//    }
-//
-//    func msgListGetIndex(message: Message) -> Int? {
-//        state.messages.firstIndex(of: message)
-//    }
-//
-//    func msgListRenderAsRemoved(message _: Message, at index: Int) {
-//        var updatedMessages = state.messages
-//        guard updatedMessages[safe: index] != nil else { return }
-//        updatedMessages.remove(at: index)
-//        state = updatedMessages.isEmpty
-//            ? .empty
-//            : .fetched(updatedMessages, .removed(index))
-//    }
-//
-//    func msgListUpdateReadFlag(message: Message, at index: Int) {
-//        var updatedMessages = state.messages
-//        updatedMessages[safe: index] = message
-//        state = .fetched(updatedMessages, .added(index))
-//    }
-
+    // TODO: - ANTON - check
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
-        nil
+        guard let message = message.wrappedMessage else {
+            return nil
+        }
+        return state.messages.firstIndex(of: message)
     }
 
     func updateMessage(isRead: Bool, at index: Int) {
-
+        guard let messageToUpdate = state.messages[safe: index] else {
+            return
+        }
+        logger.logInfo("Mark as read \(isRead) at \(index)")
+        var updatedMessages = state.messages
+        updatedMessages[safe: index] = messageToUpdate.markAsRead(isRead)
+        state = .fetched(updatedMessages, .added(index))
     }
 
     func removeMessage(at index: Int) {
-        
+        var updatedMessages = state.messages
+        guard updatedMessages[safe: index] != nil else { return }
+        updatedMessages.remove(at: index)
+        state = updatedMessages.isEmpty
+            ? .empty
+            : .fetched(updatedMessages, .removed(index))
     }
 }
 
