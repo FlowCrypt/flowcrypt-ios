@@ -20,7 +20,9 @@ class ComposeMessageServiceTests: XCTestCase {
         ComposeMessageRecipient(email: "test2@gmail.com", state: recipientIdleState),
         ComposeMessageRecipient(email: "test3@gmail.com", state: recipientIdleState)
     ]
+    let validKeyDetails = KeyStorageMock.createFakeKeyDetails(expiration: nil)
 
+    var core = CoreComposeMessageMock()
     var keyStorage = KeyStorageMock()
     var contactsService = ContactsServiceMock()
 
@@ -31,8 +33,12 @@ class ComposeMessageServiceTests: XCTestCase {
             messageGateway: MessageGatewayMock(),
             dataService: keyStorage,
             contactsService: contactsService,
-            core: CoreComposeMessageMock()
+            core: core
         )
+
+        core.parseKeysResult = { _ in
+            CoreRes.ParseKeys(format: .armored, keyDetails: [self.validKeyDetails])
+        }
     }
 
     func testValidateMessageInputWithEmptyRecipients() {
@@ -196,6 +202,10 @@ class ComposeMessageServiceTests: XCTestCase {
     }
 
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() {
+        core.parseKeysResult = { _ in
+            CoreRes.ParseKeys(format: .armored, keyDetails: [])
+        }
+
         keyStorage.publicKeyResult = {
             "public key"
         }
@@ -220,7 +230,7 @@ class ComposeMessageServiceTests: XCTestCase {
         var thrownError: Error?
         XCTAssertThrowsError(try result.get()) { thrownError = $0 }
         let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.noPubRecipients(recipients.map(\.email))))
+        XCTAssertEqual(error, .validationError(.noPubRecipients))
     }
 
     func testValidateMessageInputWithoutOneRecipientPubKey() {
@@ -252,7 +262,7 @@ class ComposeMessageServiceTests: XCTestCase {
         var thrownError: Error?
         XCTAssertThrowsError(try result.get()) { thrownError = $0 }
         let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.noPubRecipients([recWithoutPubKey])))
+        XCTAssertEqual(error, .validationError(.noPubRecipients))
     }
 
     func testSuccessfulMessageValidation() {

@@ -5,10 +5,9 @@
 //  Created by Tom on 27/10/2021
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class PubLookupTest: XCTestCase {
 
@@ -20,5 +19,4 @@ class PubLookupTest: XCTestCase {
         XCTAssertTrue(r.pubKeys.isNotEmpty, "expected pubkeys not empty")
         XCTAssertEqual(r.pubKeys.first?.longid, "0C9C2E6A4D273C6F")
     }
-
 }
