@@ -56,6 +56,10 @@ blocks:
           commands:
             - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
             - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
+            - brew install ideviceinstaller
+            - npm install -g ios-deploy --unsafe-perm=true --allow-root
+            - npm install ios-sim -g --unsafe-perm=true --allow-root
+            - ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-13
             - bundle exec fastlane build
             - ls -la appium && cd appium && npm run-script only.test.all
       epilogue:
