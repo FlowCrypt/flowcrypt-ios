@@ -30,8 +30,7 @@ config.capabilities = [
         wdaLaunchTimeout: 300000,
         wdaConnectionTimeout: 600000,
         wdaStartupRetries: 4,
-        wdaStartupRetryInterval: 120000,
-        resetOnSessionStartOnly: true
+        wdaStartupRetryInterval: 120000
     },
 ];
 
