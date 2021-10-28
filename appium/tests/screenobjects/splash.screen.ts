@@ -142,11 +142,11 @@ class SplashScreen extends BaseScreen {
     }
 
     login(email: string = CommonData.account.email, password: string = CommonData.account.password) {
-        driver.launchApp();
         this.clickContinueWithGmail();
         this.clickContinueBtn();
         this.changeLanguage();
         this.gmailLogin(email, password);
+        browser.pause(10000); // just to test
     }
 }
 

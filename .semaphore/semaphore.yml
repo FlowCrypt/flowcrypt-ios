@@ -66,7 +66,3 @@ blocks:
         always:
           commands:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
-        on_fail:
-          commands:
-            - /Users/semaphore/.npm/_logs/*-debug.log
-            - artifact push job ~/git/flowcrypt-ios/appium/FlowCrypt.app
