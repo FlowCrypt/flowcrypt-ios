@@ -16,8 +16,7 @@ const SELECTORS = {
     PASSWORD_FIELD: '~Enter your password',
     DONE_BTN: '~Done',
     LANGUAGE_DROPDOWN: '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
-    SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]',
-    SKIP_FAST_FINGER_PRINT_BUTTON: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Continue"`]'
+    SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]'
 };
 
 class SplashScreen extends BaseScreen {
@@ -139,7 +138,6 @@ class SplashScreen extends BaseScreen {
             this.clickNextBtn();
             this.fillPassword(password);
             this.clickNextBtn();
-            ElementHelper.waitAndClick($(SELECTORS.SKIP_FAST_FINGER_PRINT_BUTTON));
         }
     }
 
