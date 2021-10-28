@@ -8,6 +8,7 @@
 
 import UIKit
 import FlowCryptUI
+import FlowCryptCommon
 
 protocol MessageActionsHandler: AnyObject {
     var currentFolderPath: String { get }
@@ -24,6 +25,10 @@ protocol MessageActionsHandler: AnyObject {
 }
 
 extension MessageActionsHandler where Self: UIViewController {
+    private var logger: Logger {
+        Logger.nested("MessageActions")
+    }
+
     func setupNavigationBar() {
         trashFolderProvider.getTrashFolderPath()
             .then(on: .main) { [weak self] path in
@@ -32,6 +37,9 @@ extension MessageActionsHandler where Self: UIViewController {
     }
 
     private func setupNavigationBarItems(with trashFolderPath: String?) {
+        logger.logInfo("setup navigation bar with \(trashFolderPath ?? "N/A")")
+        logger.logInfo("currentFolderPath \(currentFolderPath)")
+
         let helpButton = NavigationBarItemsView.Input(image: UIImage(named: "help_icn")) { [weak self] in
             self?.handleInfoTap()
         }
@@ -46,8 +54,10 @@ extension MessageActionsHandler where Self: UIViewController {
         }
 
         let items: [NavigationBarItemsView.Input]
+
         switch currentFolderPath.lowercased() {
         case trashFolderPath?.lowercased():
+            logger.logInfo("trash - helpButton, trashButton")
             // in case we are in trash folder ([Gmail]/Trash or Deleted for Outlook, etc)
             // we need to have only help and trash buttons
             items = [helpButton, trashButton]
@@ -55,9 +65,11 @@ extension MessageActionsHandler where Self: UIViewController {
         // TODO: - Ticket - Check if this should be fixed
         case "inbox":
             // for Gmail inbox we also need to have archive and unread buttons
+            logger.logInfo("inbox - helpButton, archiveButton, trashButton, unreadButton")
             items = [helpButton, archiveButton, trashButton, unreadButton]
         default:
             // in any other folders
+            logger.logInfo("default - helpButton, trashButton, unreadButton")
             items = [helpButton, trashButton, unreadButton]
         }
 
@@ -73,8 +85,6 @@ extension MessageActionsHandler where Self: UIViewController {
     }
 
     func handleTrashTap() {
-        showSpinner()
-
         trashFolderProvider.getTrashFolderPath()
             .then(on: .main) { [weak self] trashPath in
                 guard let self = self, let trashPath = trashPath else {
@@ -101,9 +111,7 @@ extension MessageActionsHandler where Self: UIViewController {
             preferredStyle: .alert
         )
         alert.addAction(
-            UIAlertAction(title: "Cancel", style: .default) { _ in
-                self.hideSpinner()
-            }
+            UIAlertAction(title: "Cancel", style: .default)
         )
         alert.addAction(
             UIAlertAction(title: "OK", style: .default) { _ in

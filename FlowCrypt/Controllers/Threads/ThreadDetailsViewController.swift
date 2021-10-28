@@ -243,7 +243,6 @@ extension ThreadDetailsViewController: MessageActionsHandler {
         hideSpinner()
     }
 
-    // TODO: - ANTON - test
     func permanentlyDelete() {
         logger.logInfo("permanently delete")
         Task {
@@ -257,7 +256,6 @@ extension ThreadDetailsViewController: MessageActionsHandler {
         }
     }
 
-    // TODO: - ANTON - test
     func moveToTrash(with trashPath: String) {
         logger.logInfo("move to trash \(trashPath)")
         Task {

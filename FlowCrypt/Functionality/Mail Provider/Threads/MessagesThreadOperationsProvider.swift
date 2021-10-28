@@ -66,8 +66,7 @@ extension GmailService: MessagesThreadOperationsProvider {
     }
 
     func archive(thread: MessageThread, in folder: String) async throws {
-        // TODO: - ANTON - check 
-        try await update(thread: thread, labelsToRemove: [.label("INBOX")])
+        try await update(thread: thread, labelsToRemove: [.inbox])
     }
 
     private func update(

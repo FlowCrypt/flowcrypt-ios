@@ -142,7 +142,6 @@ extension Message {
         let labelTypes: [MessageLabelType] = message.labelIds?.map(MessageLabelType.init) ?? []
         let labels = labelTypes.map(MessageLabel.init)
 
-        print("^^ labels \(labels)")
         var sender: String?
         var subject: String?
 
