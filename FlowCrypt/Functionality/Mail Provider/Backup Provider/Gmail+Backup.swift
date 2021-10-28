@@ -33,9 +33,6 @@ extension GmailService: BackupProvider {
             logger.logVerbose("downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
             return data
         } catch {
-            if error is GmailServiceError {
-                throw error
-            }
             throw GmailServiceError.missedBackupQuery(error)
         }
     }

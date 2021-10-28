@@ -41,16 +41,3 @@ extension GmailServiceError: LocalizedError {
         }
     }
 }
-
-extension GmailServiceError {
-    var underlyingError: Error? {
-        switch self {
-        case .failedToParseData, .messageEncode, .missedMessagePayload, .missedMessageInfo:
-            return nil
-        case .providerError(let error):
-            return error
-        case .missedBackupQuery(let error):
-            return error
-        }
-    }
-}

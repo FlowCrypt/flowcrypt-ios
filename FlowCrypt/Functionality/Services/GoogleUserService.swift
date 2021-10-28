@@ -25,6 +25,7 @@ enum GoogleUserServiceError: Error {
     case serviceError(Error)
     case parsingError(Error)
     case inconsistentState(String)
+    case userNotAllowedAllNeededScopes(missingScopes: [GoogleScope])
 }
 
 struct GoogleUser: Codable {
@@ -88,6 +89,12 @@ extension GoogleUserService: UserServiceType {
                 presenting: viewController
             ) { authState, error in
                 if let authState = authState {
+                    let missingScopes = self.checkMissingScopes(authState.scope)
+                    if !missingScopes.isEmpty {
+                        reject(GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes))
+                        return
+                    }
+
                     let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
                     guard let email = authorization.userEmail else {
                         reject(GoogleUserServiceError.inconsistentState("Missed email"))
@@ -198,6 +205,13 @@ extension GoogleUserService {
         } else {
             logger.logError("Authorization error during fetching user info")
         }
+    }
+
+    private func checkMissingScopes(_ scope: String?) -> [GoogleScope] {
+        guard let scope = scope else {
+            return GoogleScope.allCases
+        }
+        return GoogleScope.allCases.filter { !scope.contains($0.value) }
     }
 }
 
