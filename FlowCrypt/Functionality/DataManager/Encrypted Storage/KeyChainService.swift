@@ -14,7 +14,7 @@ import Security
 // it does not contain any actual data or keys other than the db encryption key
 
 protocol KeyChainServiceType {
-    func getStorageEncryptionKey() -> Data
+    func getStorageEncryptionKey() throws -> Data
 }
 
 struct KeyChainService: KeyChainServiceType {
@@ -43,12 +43,14 @@ struct KeyChainService: KeyChainServiceType {
 
     private let keyByteLen = 64
 
-    private func generateAndSaveStorageEncryptionKey() {
+    private func generateAndSaveStorageEncryptionKey() throws {
         Self.logger.logInfo("generateAndSaveStorageEncryptionKey")
 
         guard let randomBytes = CoreHost().getSecureRandomByteNumberArray(keyByteLen) else {
-            fatalError("KeyChainServiceType generateAndSaveStorageEncryptionKey getSecureRandomByteNumberArray bytes are nil")
+            let message = "KeyChainService getSecureRandomByteNumberArray bytes are nil"
+            throw AppErr.general(message)
         }
+
         let key = Data(randomBytes)
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -57,11 +59,12 @@ struct KeyChainService: KeyChainServiceType {
         ]
         let addOsStatus = SecItemAdd(query as CFDictionary, nil)
         guard addOsStatus == noErr else {
-            fatalError("KeyChainServiceType generateAndSaveStorageEncryptionKey SecItemAdd osStatus = \(addOsStatus), expected 'noErr'")
+            let message = "KeyChainService SecItemAdd osStatus = \(addOsStatus), expected 'noErr'"
+            throw AppErr.general(message)
         }
     }
 
-    func getStorageEncryptionKey() -> Data {
+    func getStorageEncryptionKey() throws -> Data {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: KeyChainService.keychainIndex,
@@ -71,18 +74,25 @@ struct KeyChainService: KeyChainServiceType {
         var keyFromKeychain: AnyObject?
         let findOsStatus = SecItemCopyMatching(query as CFDictionary, &keyFromKeychain)
         guard findOsStatus != errSecItemNotFound else {
-            generateAndSaveStorageEncryptionKey() // saves new key to storage
-            return getStorageEncryptionKey() // retries search
+            try generateAndSaveStorageEncryptionKey() // saves new key to storage
+            return try getStorageEncryptionKey() // retries search
         }
+
         guard findOsStatus == noErr else {
-            fatalError("KeyChainServiceType getStorageEncryptionKey SecItemCopyMatching status = \(findOsStatus), expected 'noErr'")
+            let message = "KeyChainService SecItemCopyMatching status = \(findOsStatus), expected 'noErr'"
+            throw AppErr.general(message)
         }
+
         guard let validKey = keyFromKeychain as? Data else {
-            fatalError("KeyChainServiceType getStorageEncryptionKey keyFromKeychain not usable as Data. Is nil?: \(keyFromKeychain == nil)")
+            let message = "KeyChainService keyFromKeychain not usable as Data. Is nil?: \(keyFromKeychain == nil)"
+            throw AppErr.general(message)
         }
+
         guard validKey.count == keyByteLen else {
-            fatalError("KeyChainServiceType getStorageEncryptionKey validKey.count != \(keyByteLen), instead is \(validKey.count)")
+            let message = "KeyChainService validKey.count != \(keyByteLen), instead is \(validKey.count)"
+            throw AppErr.general(message)
         }
+
         return validKey
     }
 }

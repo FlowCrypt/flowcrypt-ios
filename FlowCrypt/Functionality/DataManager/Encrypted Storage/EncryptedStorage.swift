@@ -51,34 +51,17 @@ final class EncryptedStorage: EncryptedStorageType {
 
     private let keychainService: KeyChainServiceType
 
-    private var realmKey: Data {
-        keychainService.getStorageEncryptionKey()
-    }
-
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
     private let currentSchema: EncryptedStorageSchema = .initial
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
-    private var encryptedConfiguration: Realm.Configuration {
-        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        let latestSchemaVersion = currentSchema.version.dbSchemaVersion
-
-        return Realm.Configuration(
-            fileURL: URL(fileURLWithPath: path),
-            encryptionKey: realmKey,
-            schemaVersion: latestSchemaVersion,
-            migrationBlock: { [weak self] migration, oldSchemaVersion in
-                self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
-            }
-        )
-    }
-
     var storage: Realm {
         do {
-            Realm.Configuration.defaultConfiguration = encryptedConfiguration
-            let realm = try Realm(configuration: encryptedConfiguration)
+            let configuration = try getConfiguration()
+            Realm.Configuration.defaultConfiguration = configuration
+            let realm = try Realm(configuration: configuration)
             return realm
         } catch {
             fatalError("failed to initiate realm: \(error)")
@@ -94,6 +77,21 @@ final class EncryptedStorage: EncryptedStorageType {
             fatalError("No path direction for .documentDirectory")
         }
         return documentDirectory
+    }
+
+    private func getConfiguration() throws -> Realm.Configuration {
+        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let key = try keychainService.getStorageEncryptionKey()
+        let latestSchemaVersion = currentSchema.version.dbSchemaVersion
+
+        return Realm.Configuration(
+            fileURL: URL(fileURLWithPath: path),
+            encryptionKey: key,
+            schemaVersion: latestSchemaVersion,
+            migrationBlock: { [weak self] migration, oldSchemaVersion in
+                self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
+            }
+        )
     }
 }
 
@@ -256,8 +254,9 @@ extension EncryptedStorage {
 
 extension EncryptedStorage {
     func validate() throws {
-        Realm.Configuration.defaultConfiguration = encryptedConfiguration
-        _ = try Realm(configuration: encryptedConfiguration)
+        let configuration = try getConfiguration()
+        Realm.Configuration.defaultConfiguration = configuration
+        _ = try Realm(configuration: configuration)
     }
 
     func reset() throws {
