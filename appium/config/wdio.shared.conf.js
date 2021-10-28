@@ -31,7 +31,7 @@ exports.config = {
     ],
     port: 4723,
     path: '/wd/hub',
-    specFileRetries: 1,
+    specFileRetries: 0,
     specFileRetriesDeferred: false,
 
     afterTest: function (test, context, { error, result, duration, passed, retries }) {

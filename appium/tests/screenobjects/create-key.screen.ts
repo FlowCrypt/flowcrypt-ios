@@ -31,9 +31,11 @@ class CreateKeyScreen extends BaseScreen {
     }
 
     setPassPhrase(text: string = CommonData.account.passPhrase) {
-        browser.pause(5000);
-        console.log(driver.getPageSource());
-        this.fillPassPhrase(text);
+        try {
+            this.fillPassPhrase(text);
+        } catch {
+            console.log(driver.getPageSource());
+        }
         this.clickSetPassPhraseBtn();
         this.confirmPassPhrase(text);
     }
