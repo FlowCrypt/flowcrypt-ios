@@ -23,6 +23,7 @@ final class AttesterApi: AttesterApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 10
+        static let endpointName = "AttesterApi"
     }
 
     private enum Endpoint {
@@ -53,12 +54,14 @@ extension AttesterApi {
         if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
             return []
         }
-
-        let res = try await ApiCall.asyncCall(
-            urlPub(emailOrLongid: email),
-            tolerateStatus: [404],
-            timeout: Constants.lookupEmailRequestTimeout
+        
+        let endpoint = ApiCall.Endpoint(
+            name: Constants.endpointName,
+            url: urlPub(emailOrLongid: email),
+            timeout: Constants.lookupEmailRequestTimeout,
+            tolerateStatus: [404]
         )
+        let res = try await ApiCall.asyncCall(endpoint)
 
         if res.status >= 200, res.status <= 299 {
             let keys = try core.parseKeys(armoredOrBinary: res.data)
@@ -88,41 +91,44 @@ extension AttesterApi {
             headers = []
         }
 
-        let request = URLRequest.urlRequest(
-            with: urlPub(emailOrLongid: email),
+        let endpoint = ApiCall.Endpoint(
+            name: Constants.endpointName,
+            url: urlPub(emailOrLongid: email),
             method: httpMethod,
             body: pubkey.data(),
             headers: headers
         )
         return Promise { () -> String in
-            let res = try awaitPromise(ApiCall.call(request))
+            let res = try awaitPromise(ApiCall.call(endpoint))
             return res.data.toStr()
         }
     }
 
     @discardableResult
     func replaceKey(email: String, pubkey: String) -> Promise<String> {
-        let request = URLRequest.urlRequest(
-            with: urlPub(emailOrLongid: email),
+        let endpoint = ApiCall.Endpoint(
+            name: Constants.endpointName,
+            url: urlPub(emailOrLongid: email),
             method: .post,
             body: pubkey.data()
         )
         return Promise { () -> String in
-            let res = try awaitPromise(URLSession.shared.call(request))
+            let res = try awaitPromise(ApiCall.call(endpoint))
             return res.data.toStr()
         }
     }
 
     @discardableResult
     func testWelcome(email: String, pubkey: String) -> Promise<Void> {
-        let request = URLRequest.urlRequest(
-            with: Endpoint.baseURL + "test/welcome",
+        let endpoint = ApiCall.Endpoint(
+            name: Constants.endpointName,
+            url: Endpoint.baseURL + "test/welcome",
             method: .post,
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
         return Promise { () -> Void in
-            _ = try awaitPromise(URLSession.shared.call(request)) // will throw on non-200
+            _ = try awaitPromise(ApiCall.call(endpoint)) // will throw on non-200
         }
     }
 }

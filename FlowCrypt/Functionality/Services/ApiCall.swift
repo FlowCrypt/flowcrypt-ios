@@ -12,50 +12,82 @@ import Promises
 enum ApiCall {}
 
 extension ApiCall {
-    static func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
-        do {
-            let result = try awaitPromise(URLSession.shared.call(urlRequest, tolerateStatus: tolerateStatus))
-            return Promise(result)
-        } catch {
-            guard let httpError = error as? HttpErr else {
-                return Promise(error)
-            }
-            return Promise(ApiError.create(from: httpError))
-        }
+    struct Endpoint {
+        var name: String
+        var url: String
+        var method: HTTPMetod = .get
+        var body: Data?
+        var headers: [URLHeader] = []
+        var timeout: TimeInterval = 60.0
+        var tolerateStatus: [Int]?
     }
+}
 
-    static func call(_ urlStr: String, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
+extension ApiCall {
+    static func call(_ endpoint: Endpoint) -> Promise<HttpRes> {
         Promise { () -> HttpRes in
-            let url = URL(string: urlStr)
-            guard url != nil else {
-                throw HttpErr(status: -2, data: Data(), error: AppErr.unexpected("Invalid url: \(urlStr)"))
+            guard let url = URL(string: endpoint.url) else {
+                throw HttpErr(
+                    status: -2,
+                    data: Data(),
+                    error: AppErr.unexpected("Invalid url: \(endpoint.url)")
+                )
             }
-            return try awaitPromise(call(URLRequest(url: url!), tolerateStatus: tolerateStatus))
+
+            var request = URLRequest.urlRequest(
+                with: url,
+                method: endpoint.method,
+                body: endpoint.body,
+                headers: endpoint.headers
+            )
+            request.timeoutInterval = endpoint.timeout
+
+            do {
+                let result = try awaitPromise(URLSession.shared.call(
+                    request,
+                    tolerateStatus: endpoint.tolerateStatus)
+                )
+                return result
+            } catch {
+                guard let httpError = error as? HttpErr else {
+                    throw error
+                }
+                throw ApiError.create(from: httpError, endpoint: endpoint)
+            }
         }
     }
 }
 
 extension ApiCall {
-    static func asyncCall(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
+    static func asyncCall(_ endpoint: Endpoint) async throws -> HttpRes {
+        guard let url = URL(string: endpoint.url) else {
+            throw HttpErr(
+                status: -2,
+                data: Data(),
+                error: AppErr.unexpected("Invalid url: \(endpoint.url)")
+            )
+        }
+
+        var request = URLRequest.urlRequest(
+            with: url,
+            method: endpoint.method,
+            body: endpoint.body,
+            headers: endpoint.headers
+        )
+        request.timeoutInterval = endpoint.timeout
+
         do {
-            let result = try await URLSession.shared.asyncCall(urlRequest, tolerateStatus: tolerateStatus)
+            let result = try await URLSession.shared.asyncCall(
+                request,
+                tolerateStatus: endpoint.tolerateStatus
+            )
             return result
         } catch {
             guard let httpError = error as? HttpErr else {
                 throw error
             }
-            throw ApiError.create(from: httpError)
+            throw ApiError.create(from: httpError, endpoint: endpoint)
         }
-    }
-
-    static func asyncCall(_ urlStr: String, tolerateStatus: [Int]? = nil, timeout: TimeInterval = 60) async throws -> HttpRes {
-        guard let url = URL(string: urlStr) else {
-            throw HttpErr(status: -2, data: Data(), error: AppErr.unexpected("Invalid url: \(urlStr)"))
-        }
-
-        var request = URLRequest(url: url)
-        request.timeoutInterval = timeout
-        return try await asyncCall(request, tolerateStatus: tolerateStatus)
     }
 }
 
@@ -64,14 +96,18 @@ struct ApiError: LocalizedError {
 }
 
 extension ApiError {
-    static func create(from httpError: HttpErr) -> Self {
+    static func create(from httpError: HttpErr, endpoint: ApiCall.Endpoint) -> Self {
         guard
             let data = httpError.data,
             let object = try? JSONDecoder().decode(HttpError.self, from: data)
         else {
             return ApiError(errorDescription: httpError.error?.localizedDescription ?? "")
         }
-        return ApiError(errorDescription: "Status code \(object.code), message: \(object.message)")
+
+        var message = "\(endpoint.name) \(object.code) \(object.message)"
+        message += "\n"
+        message += "\(endpoint.method) \(endpoint.url)"
+        return ApiError(errorDescription: message)
     }
 }
 

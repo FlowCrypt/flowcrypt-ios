@@ -36,6 +36,10 @@ extension EmailKeyManagerApiError: LocalizedError {
 /// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
 actor EmailKeyManagerApi: EmailKeyManagerApiType {
 
+    private enum Constants {
+        static let endpointName = "EmailKeyManagerApi"
+    }
+
     private let clientConfigurationService: ClientConfigurationServiceType
     private let core: Core
 
@@ -61,13 +65,14 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
                 value: "Bearer \(idToken)",
                 httpHeaderField: "Authorization"
             )]
-        let request = URLRequest.urlRequest(
-            with: urlString,
+        let endpoint = ApiCall.Endpoint(
+            name: Constants.endpointName,
+            url: urlString,
             method: .get,
             body: nil,
             headers: headers
         )
-        let response = try await ApiCall.asyncCall(request)
+        let response = try await ApiCall.asyncCall(endpoint)
         let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
 
         if decryptedPrivateKeysResponse.privateKeys.isEmpty {

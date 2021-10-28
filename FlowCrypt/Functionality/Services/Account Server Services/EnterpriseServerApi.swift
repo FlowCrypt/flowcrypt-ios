@@ -44,6 +44,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
         static let serviceKey = "service"
         static let serviceNeededValue = "enterprise-server"
+
+        static let endpointName = "EnterpriseServerApi"
     }
 
     private struct ClientConfigurationResponse: Codable {
@@ -67,17 +69,13 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 return nil
             }
             let urlString = "https://fes.\(userDomain)/"
-            var request = URLRequest.urlRequest(
-                with: "\(urlString)api/",
-                method: .get,
-                body: nil
-            )
-            request.timeoutInterval = Constants.getActiveFesTimeout
-
-            let response = try await ApiCall.asyncCall(
-                request,
+            let endpoint = ApiCall.Endpoint(
+                name: Constants.endpointName,
+                url: "\(urlString)api/",
+                timeout: Constants.getActiveFesTimeout,
                 tolerateStatus: Constants.getToleratedHTTPStatuses
             )
+            let response = try await ApiCall.asyncCall(endpoint)
 
             if Constants.getToleratedHTTPStatuses.contains(response.status) {
                 return nil
@@ -112,12 +110,11 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         if Configuration.publicEmailProviderDomains.contains(userDomain) {
             return .empty
         }
-        let request = URLRequest.urlRequest(
-            with: "https://fes.\(userDomain)/api/v1/client-configuration?domain=\(userDomain)",
-            method: .get,
-            body: nil
+        let endpoint = ApiCall.Endpoint(
+            name: Constants.endpointName,
+            url: "https://fes.\(userDomain)/api/v1/client-configuration?domain=\(userDomain)"
         )
-        let safeReponse = try await ApiCall.asyncCall(request)
+        let safeReponse = try await ApiCall.asyncCall(endpoint)
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
