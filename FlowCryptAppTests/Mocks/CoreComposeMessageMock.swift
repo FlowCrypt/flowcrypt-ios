@@ -10,10 +10,15 @@ import Combine
 @testable import FlowCrypt
 import Foundation
 
-class CoreComposeMessageMock: CoreComposeMessageType {
+class CoreComposeMessageMock: CoreComposeMessageType, KeyParser {
 
     var composeEmailResult: ((SendableMsg, MsgFmt) -> (CoreRes.ComposeEmail))!
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
         return composeEmailResult(msg, fmt)
+    }
+
+    var parseKeysResult: ((Data) -> (CoreRes.ParseKeys))!
+    func parseKeys(armoredOrBinary: Data) throws -> CoreRes.ParseKeys {
+        return parseKeysResult(armoredOrBinary)
     }
 }

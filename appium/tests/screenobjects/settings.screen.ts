@@ -1,4 +1,5 @@
 import BaseScreen from './base.screen';
+import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
     MENU_ICON: '~menu icn',
 };
@@ -24,7 +25,7 @@ class SettingsScreen extends BaseScreen {
     }
 
     clickOnSettingItem(item) {
-        this.settingsItem(item).click();
+        ElementHelper.waitAndClick(this.settingsItem(item));
     }
 }
 

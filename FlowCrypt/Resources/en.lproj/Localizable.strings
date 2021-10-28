@@ -57,9 +57,11 @@
 
 // Compose
 "compose_enter_recipient" = "Enter recipient";
-"compose_no_pub_recipient" = "Recipient doesn't seem to have encryption set up";
-"compose_no_pub_multiple" = "Some recipients don't have encryption set up";
 "compose_no_pub_sender" = "Missing sender public key. Is FlowCrypt iOS app well set up?";
+"compose_recipient_no_pub" = "One or more of your recipients are missing a public key (marked in gray).\n\nPlease ask them to share it with you, or ask them to also set up FlowCrypt.";
+"compose_recipient_revoked" = "One or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.";
+"compose_recipient_expired" = "One or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.";
+"compose_recipient_invalid_email" = "One or more of your recipients have invalid email address (marked in red)";
 "compose_error" = "Could not compose message";
 "compose_reply_successfull" = "Reply successfully sent";
 "compose_reply_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender

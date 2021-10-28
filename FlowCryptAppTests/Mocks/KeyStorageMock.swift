@@ -26,3 +26,22 @@ class KeyStorageMock: KeyStorageType {
         keysInfoResult()
     }
 }
+
+extension KeyStorageMock {
+    static func createFakeKeyDetails(pub: String = "pubKey", expiration: Int?, revoked: Bool = false) -> KeyDetails {
+        KeyDetails(
+            public: pub,
+            private: nil,
+            isFullyDecrypted: false,
+            isFullyEncrypted: false,
+            ids: [KeyId(longid: String.random(length: 40),
+                        fingerprint: String.random(length: 40))],
+            created: 1,
+            lastModified: nil,
+            expiration: expiration,
+            users: [],
+            algo: nil,
+            revoked: revoked
+        )
+    }
+}

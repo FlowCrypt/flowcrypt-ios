@@ -4,7 +4,8 @@
     "target": "es2016",
     "module": "commonjs",
     "types": ["node", "@wdio/sync", "@wdio/jasmine-framework"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": "."
   },
   "include": [
     "./tests/**/*.ts"

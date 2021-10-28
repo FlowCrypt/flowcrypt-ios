@@ -49,7 +49,11 @@ protocol KeyDecrypter {
     func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey
 }
 
-final class Core: KeyDecrypter, CoreComposeMessageType {
+protocol KeyParser {
+    func parseKeys(armoredOrBinary: Data) throws -> CoreRes.ParseKeys
+}
+
+final class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     static let shared = Core()
 
     private var jsEndpointListener: JSValue?

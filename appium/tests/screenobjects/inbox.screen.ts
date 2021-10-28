@@ -1,4 +1,5 @@
 import BaseScreen from './base.screen';
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     ENTER_YOUR_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField[`value == "Enter your pass phrase"`]',
@@ -24,13 +25,13 @@ class InboxScreen extends BaseScreen {
 
     clickOnEmailBySubject (subject) {
         this.createEmailButton.waitForDisplayed();
+        browser.pause(500); // stability fix
         const selector = `~${subject}`;
-        $(selector).waitForDisplayed();
-        $(selector).click();
+        ElementHelper.waitAndClick($(selector));
     }
 
     clickCreateEmail () {
-        this.createEmailButton.click();
+        ElementHelper.waitAndClick(this.createEmailButton);
     }
 }
 
