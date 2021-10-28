@@ -35,6 +35,7 @@
 		21EFF61F265A5C6700AB0B71 /* WkdApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EFF61E265A5C6700AB0B71 /* WkdApi.swift */; };
 		21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */; };
 		21FEE26626FDD91A00E3783F /* ComposeMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */; };
+		2C124DB42728809100A2EFA6 /* ApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C124DB32728809100A2EFA6 /* ApiCall.swift */; };
 		2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */; };
 		2C2A3B4D2719EF7300B7F27B /* PassPhraseServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */; };
 		2C60AB0C272564D40040D7F2 /* InvalidStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */; };
@@ -427,6 +428,7 @@
 		21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZBase32EncodingTests.swift; sourceTree = "<group>"; };
 		21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructorTests.swift; sourceTree = "<group>"; };
 		21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageAttachment.swift; sourceTree = "<group>"; };
+		2C124DB32728809100A2EFA6 /* ApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiCall.swift; sourceTree = "<group>"; };
 		2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceTests.swift; sourceTree = "<group>"; };
 		2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseServiceMock.swift; sourceTree = "<group>"; };
 		2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidStorageViewController.swift; sourceTree = "<group>"; };
@@ -1056,20 +1058,21 @@
 		9F0C3C1F23191F2000299985 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				A3B7C31823F576BA0022D628 /* AppStartup.swift */,
-				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
-				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
-				D274724024F97C5C006BA6EF /* EncryptedCacheService.swift */,
-				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				A381F250271C1D1A00A3D13C /* Account Server Services */,
-				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */,
+				2C124DB32728809100A2EFA6 /* ApiCall.swift */,
+				A3B7C31823F576BA0022D628 /* AppStartup.swift */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
-				D227C0E4250538190070F805 /* Folders Services */,
 				21489B81267CC3BC00BDE4AC /* Client Configuration Service */,
-				D27B911724EFE787002DF0A1 /* Local Pub Key Services */,
+				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */,
+				D274724024F97C5C006BA6EF /* EncryptedCacheService.swift */,
+				D227C0E4250538190070F805 /* Folders Services */,
+				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
+				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
+				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
 				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
-				A381F24D271C1C1100A3D13C /* Remote Pub Key Services */,
+				D27B911724EFE787002DF0A1 /* Local Pub Key Services */,
 				A381F24F271C1CA300A3D13C /* Remote Private Key Services */,
+				A381F24D271C1C1100A3D13C /* Remote Pub Key Services */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -2486,6 +2489,7 @@
 				214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */,
 				D2E26F7424F2705B00612AF1 /* ContactDetailDecorator.swift in Sources */,
 				2C60AB0C272564D40040D7F2 /* InvalidStorageViewController.swift in Sources */,
+				2C124DB42728809100A2EFA6 /* ApiCall.swift in Sources */,
 				21C7DF0526697DA500C44800 /* PromiseKitExtension.swift in Sources */,
 				9F7E8F19269C538E0021C07F /* NavigationChildController.swift in Sources */,
 				9FB22CD625715CA10026EE64 /* BackupServiceErrorHandler.swift in Sources */,
