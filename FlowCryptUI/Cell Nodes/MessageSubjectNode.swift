@@ -9,12 +9,16 @@
 import AsyncDisplayKit
 
 public final class MessageSubjectNode: CellNode {
-    private let textNode = ASTextNode2()
+    private let textNode = ASEditableTextNode()
     private let timeNode = ASTextNode2()
 
     public init(_ text: NSAttributedString?, time: NSAttributedString?) {
         super.init()
         textNode.attributedText = text
+        DispatchQueue.main.async {
+            self.textNode.textView.isSelectable = true
+            self.textNode.textView.isEditable = false
+        }
         timeNode.attributedText = time
     }
 

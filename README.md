@@ -21,6 +21,10 @@ make dependencies
 bundle exec pod install
 ```
 
+## Development
+
+Recommended to develop and run tests only using `Debug FlowCrypt` scheme
+
 ## UI Tests
 
 See [Appium README](./appium/README.md)
