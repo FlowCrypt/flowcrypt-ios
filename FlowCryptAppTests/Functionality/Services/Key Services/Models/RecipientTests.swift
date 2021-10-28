@@ -13,7 +13,7 @@ class RecipientTests: XCTestCase {
     private let calendar = Calendar.current
 
     func testRecipientWithRevokedKey() {
-        let keyDetails = createFakeKeyDetails(expiration: nil, revoked: true)
+        let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: nil, revoked: true)
         let recipient = RecipientWithSortedPubKeys(email: "test@test.com", keyDetails: [keyDetails])
 
         XCTAssertEqual(recipient.keyState, .revoked)
@@ -21,7 +21,7 @@ class RecipientTests: XCTestCase {
 
     func testRecipientWithExpiredKey() {
         let expiration = Date().timeIntervalSince1970 - 60 * 60
-        let keyDetails = createFakeKeyDetails(expiration: Int(expiration), revoked: false)
+        let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: Int(expiration))
 
         let recipient = RecipientWithSortedPubKeys(email: "test@test.com", keyDetails: [keyDetails])
         XCTAssertEqual(recipient.keyState, .expired)
@@ -29,11 +29,11 @@ class RecipientTests: XCTestCase {
 
     func testRecipientWithValidKey() {
         let expiration = Date().timeIntervalSince1970 + 60 * 60
-        let keyDetails = createFakeKeyDetails(expiration: Int(expiration), revoked: false)
+        let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: Int(expiration))
         let recipient = RecipientWithSortedPubKeys(email: "test@test.com", keyDetails: [keyDetails])
         XCTAssertEqual(recipient.keyState, .active)
 
-        let keyDetails2 = createFakeKeyDetails(expiration: nil, revoked: false)
+        let keyDetails2 = KeyStorageMock.createFakeKeyDetails(expiration: nil)
         let recipient2 = RecipientWithSortedPubKeys(email: "test@test.com", keyDetails: [keyDetails2])
         XCTAssertEqual(recipient2.keyState, .active)
     }
@@ -45,15 +45,15 @@ class RecipientTests: XCTestCase {
 
     func testRecipientKeysOrder() {
         let now = Int(Date().timeIntervalSince1970)
-        let revokedKey = createFakeKeyDetails(expiration: now + 1 * 3600, revoked: true)
+        let revokedKey = KeyStorageMock.createFakeKeyDetails(expiration: now + 1 * 3600, revoked: true)
 
-        let activeKey1 = createFakeKeyDetails(expiration: now + 1 * 3600)
-        let activeKey2 = createFakeKeyDetails(expiration: now + 2 * 3600)
-        let activeKey3 = createFakeKeyDetails(expiration: now + 3 * 3600)
+        let activeKey1 = KeyStorageMock.createFakeKeyDetails(expiration: now + 1 * 3600)
+        let activeKey2 = KeyStorageMock.createFakeKeyDetails(expiration: now + 2 * 3600)
+        let activeKey3 = KeyStorageMock.createFakeKeyDetails(expiration: now + 3 * 3600)
 
-        let nonExpiringKey = createFakeKeyDetails(expiration: nil)
-        let expiredKey = createFakeKeyDetails(expiration: now - 1 * 3600)
-        let oldExpiredKey = createFakeKeyDetails(expiration: now - 2 * 3600)
+        let nonExpiringKey = KeyStorageMock.createFakeKeyDetails(expiration: nil)
+        let expiredKey = KeyStorageMock.createFakeKeyDetails(expiration: now - 1 * 3600)
+        let oldExpiredKey = KeyStorageMock.createFakeKeyDetails(expiration: now - 2 * 3600)
 
         let keyDetails = [revokedKey, oldExpiredKey, activeKey1, expiredKey, activeKey2, nonExpiringKey, activeKey3]
         let recipient = RecipientWithSortedPubKeys(email: "test@test.com",
@@ -66,29 +66,5 @@ class RecipientTests: XCTestCase {
         XCTAssertEqual(recipient.pubKeys[4].fingerprint, expiredKey.primaryFingerprint)
         XCTAssertEqual(recipient.pubKeys[5].fingerprint, oldExpiredKey.primaryFingerprint)
         XCTAssertEqual(recipient.pubKeys[6].fingerprint, revokedKey.primaryFingerprint)
-    }
-}
-
-extension RecipientTests {
-    private func createFakeKeyDetails(expiration: Int?, revoked: Bool = false) -> KeyDetails {
-        KeyDetails(
-            public: "Public part",
-            private: nil,
-            isFullyDecrypted: false,
-            isFullyEncrypted: false,
-            ids: [KeyId(longid: randomString(length: 40),
-                        fingerprint: randomString(length: 40))],
-            created: 1,
-            lastModified: nil,
-            expiration: expiration,
-            users: [],
-            algo: nil,
-            revoked: revoked
-        )
-    }
-
-    private func randomString(length: Int) -> String {
-        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return String((0..<length).map { _ in letters.randomElement()! })
     }
 }
