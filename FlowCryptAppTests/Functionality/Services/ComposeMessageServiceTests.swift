@@ -229,6 +229,72 @@ class ComposeMessageServiceTests: XCTestCase {
         XCTAssertEqual(error, .validationError(.noPubRecipients))
     }
 
+    func testValidateMessageInputWithExpiredRecipientPubKey() {
+        core.parseKeysResult = { _ in
+            let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: Int(Date().timeIntervalSince1970 - 60 * 60))
+            return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
+        }
+
+        keyStorage.publicKeyResult = {
+            "public key"
+        }
+
+        recipients.forEach { recipient in
+            contactsService.retrievePubKeysResult = { _ in
+                ["pubKey"]
+            }
+        }
+
+        let result = sut.validateMessage(
+            input: ComposeMessageInput(type: .idle),
+            contextToSend: ComposeMessageContext(
+                message: "some message",
+                recipients: recipients,
+                subject: "Some subject"
+            ),
+            email: "some@gmail.com",
+            signingPrv: nil
+        )
+
+        var thrownError: Error?
+        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
+        let error = expectComposeMessageError(for: thrownError)
+        XCTAssertEqual(error, .validationError(.expiredKeyRecipients))
+    }
+
+    func testValidateMessageInputWithRevokedRecipientPubKey() {
+        core.parseKeysResult = { _ in
+            let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: nil, revoked: true)
+            return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
+        }
+
+        keyStorage.publicKeyResult = {
+            "public key"
+        }
+
+        recipients.forEach { recipient in
+            contactsService.retrievePubKeysResult = { _ in
+                ["pubKey"]
+            }
+        }
+
+        let result = sut.validateMessage(
+            input: ComposeMessageInput(type: .idle),
+            contextToSend: ComposeMessageContext(
+                message: "some message",
+                recipients: recipients,
+                subject: "Some subject"
+            ),
+            email: "some@gmail.com",
+            signingPrv: nil
+        )
+
+        var thrownError: Error?
+        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
+        let error = expectComposeMessageError(for: thrownError)
+        XCTAssertEqual(error, .validationError(.revokedKeyRecipients))
+    }
+
     func testValidateMessageInputWithoutOneRecipientPubKey() {
         keyStorage.publicKeyResult = {
             "public key"
