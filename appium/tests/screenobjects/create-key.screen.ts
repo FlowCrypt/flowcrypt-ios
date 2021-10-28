@@ -37,7 +37,7 @@ class CreateKeyScreen extends BaseScreen {
     }
 
     fillPassPhrase (passPhrase: string) {
-        ElementHelper.clickAndType(this.enterPassPhraseField, passPhrase);
+        ElementHelper.waitClickAndType(this.enterPassPhraseField, passPhrase);
     }
 
     clickSetPassPhraseBtn () {
@@ -45,7 +45,7 @@ class CreateKeyScreen extends BaseScreen {
     }
 
     confirmPassPhrase (passPhrase: string) {
-        ElementHelper.clickAndType(this.confirmPassPhraseField, passPhrase);
+        ElementHelper.waitClickAndType(this.confirmPassPhraseField, passPhrase);
         ElementHelper.waitAndClick(this.okButton);
     }
 }

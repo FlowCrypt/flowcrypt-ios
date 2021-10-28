@@ -50,7 +50,7 @@ class ElementHelper {
         element.click();
     }
 
-    static clickAndType(element, text: string) {
+    static waitClickAndType(element, text: string) {
         this.waitAndClick(element)
         element.setValue(text);
     }

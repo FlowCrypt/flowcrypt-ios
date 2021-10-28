@@ -108,13 +108,13 @@ class SplashScreen extends BaseScreen {
     }
 
     fillEmail (email: string) {
-        ElementHelper.clickAndType(this.loginField, email);
+        ElementHelper.waitClickAndType(this.loginField, email);
         this.clickDoneBtn();
         browser.pause(500); // stability sleep
     }
 
     fillPassword(password: string) {
-        ElementHelper.clickAndType(this.passwordField, password);
+        ElementHelper.waitClickAndType(this.passwordField, password);
         this.clickDoneBtn();
         browser.pause(500); // stability sleep
     }

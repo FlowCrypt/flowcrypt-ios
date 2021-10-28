@@ -36,7 +36,7 @@ class NewMessageScreen extends BaseScreen {
     }
 
     setSubject(subject) {
-        ElementHelper.clickAndType(this.subjectField, subject);
+        ElementHelper.waitClickAndType(this.subjectField, subject);
     }
 
     setComposeSecurityMessage(message) {
