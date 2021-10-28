@@ -117,6 +117,7 @@ final class ComposeViewController: TableNodeViewController {
 
 extension ComposeViewController {
     private func setupNavigationBar() {
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(
