@@ -14,5 +14,5 @@ struct MessageGatewayInput {
 }
 
 protocol MessageGateway {
-    func sendMail(input: MessageGatewayInput) async throws
+    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws
 }

@@ -69,7 +69,8 @@ extension BackupService: BackupServiceType {
             signingPrv: nil)
 
         let t = try await core.composeEmail(msg: message, fmt: .plain)
-        try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil))
+        try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil),
+                                         progressHandler: nil)
     }
 
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {

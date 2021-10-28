@@ -248,27 +248,38 @@ extension ComposeViewController {
 
     private func sendMessage(_ signingKey: PrvKeyInfo) {
         view.endEditing(true)
-        showSpinner("sending_title".localized)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
-        let result = composeMessageService.validateMessage(
-            input: input,
-            contextToSend: contextToSend,
-            email: email,
-            signingPrv: signingKey
-        )
-        switch result {
-        case .success(let message):
-            encryptAndSend(message)
-        case .failure(let error):
-            handle(error: error)
+        let spinnerTitle = contextToSend.attachments.isEmpty ? "sending_title" : "encrypting_title"
+        showSpinner(spinnerTitle.localized)
+
+        // TODO: - fix for spinner
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+            let result = self.composeMessageService.validateMessage(
+                input: self.input,
+                contextToSend: self.contextToSend,
+                email: self.email,
+                signingPrv: signingKey
+            )
+            switch result {
+            case .success(let message):
+                self.encryptAndSend(message)
+            case .failure(let error):
+                self.handle(error: error)
+            }
         }
     }
 
     private func encryptAndSend(_ message: SendableMsg) {
         Task {
             do {
-                try await service.encryptAndSend(message: message, threadId: input.threadId)
+                try await service.encryptAndSend(message: message,
+                                                 threadId: input.threadId,
+                                                 progressHandler: { [weak self] progress in
+                    self?.updateSpinner(progress: progress)
+                })
                 handleSuccessfullySentMessage()
             } catch {
                 if let error = error as? ComposeMessageError {
@@ -350,6 +361,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
                 return ASCellNode()
+                
             }
         }
     }
@@ -629,7 +641,7 @@ extension ComposeViewController {
         }
     }
 
-    private func getRecipientState(from recipient: RecipientWithPubKeys) -> RecipientState {
+    private func getRecipientState(from recipient: RecipientWithSortedPubKeys) -> RecipientState {
         switch recipient.keyState {
         case .active:
             return decorator.recipientKeyFoundState
@@ -913,15 +925,17 @@ private actor ServiceActor {
         self.cloudContactProvider = cloudContactProvider
     }
 
-    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
-        try await composeMessageService.encryptAndSend(message: message, threadId: threadId)
+    func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
+        try await composeMessageService.encryptAndSend(message: message,
+                                                       threadId: threadId,
+                                                       progressHandler: progressHandler)
     }
 
     func searchContacts(query: String) async throws -> [String] {
         return try await cloudContactProvider.searchContacts(query: query)
     }
 
-    func searchContact(with email: String) async throws -> RecipientWithPubKeys {
+    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
         return try await contactsService.searchContact(with: email)
     }
 }

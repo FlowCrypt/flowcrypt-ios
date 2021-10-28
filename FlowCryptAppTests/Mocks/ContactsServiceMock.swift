@@ -16,8 +16,8 @@ final class ContactsServiceMock: ContactsServiceType {
         retrievePubKeysResult(email)
     }
 
-    var searchContactResult: Result<RecipientWithPubKeys, Error>!
-    func searchContact(with email: String) async throws -> RecipientWithPubKeys {
+    var searchContactResult: Result<RecipientWithSortedPubKeys, Error>!
+    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
         switch searchContactResult {
         case .success(let result):
             return result

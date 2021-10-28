@@ -18,4 +18,4 @@ Run this in `appium` folder.
 
 `npm run-script only.test.all` - run all ui tests without building the `.app`. Use this if you already built the `.app` before, and now only want to change the UI test spec without rebuilding the app
 
-To only run a single test, find the test you want to run and change `it(` to `iit(` on that test, then run tests. Don't push this change to git, as it would affect CI too.
+`npm run-script only.test.filter "user is able to view text email"` - run a particular ui test without building `.app`, filtered by name

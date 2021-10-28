@@ -5,6 +5,6 @@
 # For more information about the Appfile, see:
 #     https://docs.fastlane.tools/advanced/#appfile
 
-app_identifier "com.flowcrypt.ios.testflight" # The bundle identifier of your app
-apple_id "carboncode@protonmail.com" # Your Apple email address
-team_id "W57XRJ27NX" # Developer Portal Team ID
+app_identifier "com.flowcrypt.as.ios.debug" # The bundle identifier of your app
+apple_id "tom@flowcrypt.com" # Your Apple email address
+team_id "6DZ6CC3YMY" # Developer Portal Team ID
