@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-struct ComposeMessageAttachment {
+struct ComposeMessageAttachment: Equatable {
     let name: String
     let size: Int
     let data: Data
