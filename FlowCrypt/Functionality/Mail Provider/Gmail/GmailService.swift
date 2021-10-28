@@ -10,7 +10,7 @@ import FlowCryptCommon
 import Foundation
 import GoogleAPIClientForREST_Gmail
 
-struct GmailService: MailServiceProvider {
+class GmailService: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.gmail
     let userService: GoogleUserServiceType
     let backupSearchQueryProvider: GmailBackupSearchQueryProviderType
@@ -23,9 +23,16 @@ struct GmailService: MailServiceProvider {
             logger.logWarning("authorization for current user is nil")
         }
 
+        service.uploadProgressBlock = { [weak self] _, uploaded, total in
+            guard total > 0 else { return }
+            let progress = Float(uploaded) / Float(total)
+            self?.progressHandler?(progress)
+        }
         service.authorizer = userService.authorization
         return service
     }
+    
+    var progressHandler: ((Float) -> Void)?
 
     init(
         userService: GoogleUserServiceType = GoogleUserService(),

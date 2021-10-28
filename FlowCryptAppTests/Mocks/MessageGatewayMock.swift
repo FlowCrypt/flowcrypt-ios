@@ -12,7 +12,7 @@ import Foundation
 
 class MessageGatewayMock: MessageGateway {
     var sendMailResult: ((Data) -> (Result<Void, Error>))!
-    func sendMail(input: MessageGatewayInput) async throws {
+    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws {
         if case .failure(let error) = sendMailResult(input.mime) {
             throw error
         }

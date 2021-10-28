@@ -46,7 +46,7 @@ struct ComposeMessageInput {
 
     var successfullySentToast: String {
         switch type {
-        case .idle: return "compose_sent".localized
+        case .idle: return "compose_encrypted_sent".localized
         case .reply: return "compose_reply_successfull".localized
         }
     }

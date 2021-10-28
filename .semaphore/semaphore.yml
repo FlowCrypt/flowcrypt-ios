@@ -10,30 +10,10 @@ auto_cancel:
   running:
     when: branch != 'master'
 blocks:
-  - name: Ubuntu iOS tests
-    execution_time_limit:
-      minutes: 5
-    task:
-      agent:
-        machine:
-          type: e1-standard-4
-          os_image: ubuntu1804
-      env_vars:
-        - name: LANG
-          value: en_US.UTF-8
-        - name: SEMAPHORE_GIT_DIR
-          value: /home/semaphore/git/flowcrypt-ios
-      prologue:
-        commands:
-          - checkout
-          - cd ~/git/flowcrypt-ios/
-      jobs:
-        - name: TypeScript - Core standalone tests
-          commands:
-            - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ../Core
-            - cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules
-            - ../.custom-npm/node_modules/.bin/npm test
-  - name: Mac iOS tests
+  - name: Appium UI tests
+    dependencies: []
+    run: # don't run if the only thing that changed is Core deps
+      when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json']})"
     execution_time_limit:
       minutes: 55
     task:
@@ -46,23 +26,43 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - checkout && sem-version node 12 && cd ~/git/flowcrypt-ios/
+          - checkout && cd ~/git/flowcrypt-ios/
           - cache restore && make dependencies && cache store
+          - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
+          - sem-version node 12 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
+          - brew install ideviceinstaller
+          - npm install ios-deploy -g --unsafe-perm=true --allow-root
+          - npm install ios-sim -g --unsafe-perm=true --allow-root
       jobs:
-        - name: Swift tests
+        - name: Appium UI tests
           commands:
-            - bundle exec fastlane test
-        - name: Appium tests
-          commands:
-            - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
-            - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
-            - brew install ideviceinstaller
-            - npm install -g ios-deploy --unsafe-perm=true --allow-root
-            - npm install ios-sim -g --unsafe-perm=true --allow-root
             - ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-13
-            - bundle exec fastlane build
-            - ls -la appium && cd appium && npm run-script only.test.all
+            - bundle exec fastlane build && ls -la appium
+            - cd appium && npm run-script only.test.all
       epilogue:
         always:
           commands:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
+  - name: TypeScript + Swift tests
+    dependencies: []
+    run: # don't run if the only thing that changed is Appium test deps
+      when: "change_in('/', {exclude: ['/appium/package.json', '/appium/package-lock.json']})"
+    execution_time_limit:
+      minutes: 55
+    task:
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+        - name: SEMAPHORE_GIT_DIR
+          value: /Users/semaphore/git/flowcrypt-ios
+      prologue:
+        commands:
+          - checkout && cd ~/git/flowcrypt-ios/
+          - cache restore && make dependencies && cache store
+          - sem-version node 12 && mkdir .custom-npm && cd .custom-npm && npm install npm@7.23.0 && cd ..
+      jobs:
+        - name: TypeScript + Swift tests
+          commands:
+            - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
+            - bundle exec fastlane test
+

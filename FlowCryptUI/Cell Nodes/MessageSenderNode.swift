@@ -12,7 +12,7 @@ import FlowCryptCommon
 public final class MessageSenderNode: CellNode {
     public typealias ButtonAction = () -> Void
 
-    private let textNode = ASTextNode2()
+    private let textNode = ASEditableTextNode()
     private let buttonNode = ASButtonNode()
     private let onTap: ButtonAction?
 
@@ -20,6 +20,10 @@ public final class MessageSenderNode: CellNode {
         onTap = action
         super.init()
         textNode.attributedText = text
+        DispatchQueue.main.async { [weak self] in
+            self?.textNode.textView.isSelectable = true
+            self?.textNode.textView.isEditable = false
+        }
         buttonNode.accessibilityLabel = "reply-all"
         buttonNode.setImage(UIImage(named: "reply-all")?.tinted(.main), for: .normal)
         buttonNode.addTarget(self, action: #selector(tapHandler), forControlEvents: .touchUpInside)
