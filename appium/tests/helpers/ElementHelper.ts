@@ -44,6 +44,16 @@ class ElementHelper {
         this.waitElementVisible(element);
         element.doubleClick();
     }
+
+    static waitAndClick(element) {
+        element.waitForDisplayed();
+        element.click();
+    }
+
+    static waitClickAndType(element, text: string) {
+        this.waitAndClick(element)
+        element.setValue(text);
+    }
 }
 
 export default ElementHelper;
