@@ -59,7 +59,9 @@ blocks:
             - bundle exec fastlane build
             - ls -la appium && cd appium && npm run-script only.test.all
       epilogue:
-        on_fail:
+        always:
           commands:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
+        on_fail:
+          commands:
             - artifact push job ~/git/flowcrypt-ios/appium/FlowCrypt.app
