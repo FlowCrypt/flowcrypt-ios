@@ -202,10 +202,6 @@ class ComposeMessageServiceTests: XCTestCase {
     }
 
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() {
-        core.parseKeysResult = { _ in
-            CoreRes.ParseKeys(format: .armored, keyDetails: [])
-        }
-
         keyStorage.publicKeyResult = {
             "public key"
         }

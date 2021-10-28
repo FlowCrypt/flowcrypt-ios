@@ -126,7 +126,7 @@ final class ComposeMessageService {
 
     private func validate(recipients: [RecipientWithSortedPubKeys]) -> Result<[String], MessageValidationError> {
         func contains(keyState: PubKeyState) -> Bool {
-            recipients.first(where: { $0.keyState == keyState }) == nil
+            recipients.first(where: { $0.keyState == keyState }) != nil
         }
 
         guard !contains(keyState: .empty) else { return .failure(.noPubRecipients) }

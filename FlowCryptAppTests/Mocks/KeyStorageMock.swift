@@ -30,7 +30,7 @@ class KeyStorageMock: KeyStorageType {
 extension KeyStorageMock {
     static func createFakeKeyDetails(expiration: Int?, revoked: Bool = false) -> KeyDetails {
         KeyDetails(
-            public: "Public part",
+            public: "pubKey",
             private: nil,
             isFullyDecrypted: false,
             isFullyEncrypted: false,
