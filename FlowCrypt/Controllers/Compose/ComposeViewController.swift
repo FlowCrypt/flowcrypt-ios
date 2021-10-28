@@ -153,13 +153,16 @@ final class ComposeViewController: TableNodeViewController {
 // MARK: - Drafts
 extension ComposeViewController {
     @objc private func startTimer() {
-        saveDraftTimer = Timer.scheduledTimer(
-            timeInterval: 1,
-            target: self,
-            selector: #selector(saveDraftIfNeeded),
-            userInfo: nil,
-            repeats: true)
-        saveDraftTimer?.fire()
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            self.saveDraftTimer = Timer.scheduledTimer(
+                timeInterval: 1,
+                target: self,
+                selector: #selector(self.saveDraftIfNeeded),
+                userInfo: nil,
+                repeats: true)
+            self.saveDraftTimer?.fire()
+        }
     }
 
     @objc private func stopTimer() {
@@ -185,7 +188,6 @@ extension ComposeViewController {
     @objc private func saveDraftIfNeeded() {
         Task {
             guard shouldSaveDraft() else { return }
-
             do {
                 let signingPrv = try await prepareSigningKey()
                 let messagevalidationResult = composeMessageService.validateMessage(
