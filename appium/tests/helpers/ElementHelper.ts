@@ -51,8 +51,7 @@ class ElementHelper {
     }
 
     static clickAndType(element, text: string) {
-        element.waitForDisplayed();
-        element.click();
+        this.waitAndClick(element)
         element.setValue(text);
     }
 }
