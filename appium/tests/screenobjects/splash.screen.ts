@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import {CommonData} from "../data";
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     PRIVACY_TAB: '~privacy',
@@ -89,7 +90,7 @@ class SplashScreen extends BaseScreen {
     }
 
     clickContinueWithGmail () {
-        this.continueWithGmailBtn.click();
+        ElementHelper.waitAndClick(this.continueWithGmailBtn);
     }
 
     clickContinueBtn () {
@@ -103,26 +104,27 @@ class SplashScreen extends BaseScreen {
         browser.pause(500); // stability sleep
         this.languageDropdown.click();
         const selector = `~${language}`;
-        $(selector).waitForDisplayed();
-        $(selector).click();
+        ElementHelper.waitAndClick($(selector));
     }
 
     fillEmail (email: string) {
-        this.loginField.click();
-        this.loginField.setValue(email);
-        this.doneButton.click();
+        ElementHelper.waitClickAndType(this.loginField, email);
+        this.clickDoneBtn();
+        browser.pause(500); // stability sleep
+    }
+
+    fillPassword(password: string) {
+        ElementHelper.waitClickAndType(this.passwordField, password);
+        this.clickDoneBtn();
         browser.pause(500); // stability sleep
     }
 
     clickNextBtn () {
-        this.nextButton.click();
+        ElementHelper.waitAndClick(this.nextButton);
     }
 
-    fillPassword(password: string) {
-        this.passwordField.click();
-        this.passwordField.setValue(password);
-        this.doneButton.click();
-        browser.pause(500); // stability sleep
+    clickDoneBtn () {
+        ElementHelper.waitAndClick(this.doneButton);
     }
 
     gmailLogin (email: string, password: string) {
@@ -140,11 +142,11 @@ class SplashScreen extends BaseScreen {
     }
 
     login(email: string = CommonData.account.email, password: string = CommonData.account.password) {
-        driver.launchApp();
         this.clickContinueWithGmail();
         this.clickContinueBtn();
         this.changeLanguage();
         this.gmailLogin(email, password);
+        browser.pause(10000); // STABILITY FIX UNTIL WE WLL FIGURE OUT WITH ISSUE
     }
 }
 
