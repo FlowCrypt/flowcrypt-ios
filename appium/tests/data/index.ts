@@ -8,8 +8,8 @@ export const CommonData = {
         email: process.env.SENDER_EMAIL,
     },
     contact: {
-        name: 'dmitry@flowcrypt.com',
-        email: 'Dima'
+        email: 'dmitry@flowcrypt.com',
+        name: 'Dima'
     },
     bundleId: {
         id: process.env.BUNDLE_ID
