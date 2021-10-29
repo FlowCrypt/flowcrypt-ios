@@ -9,7 +9,7 @@ import {CommonData} from '../../data';
 
 describe('COMPOSE EMAIL: ', () => {
 
-    it('user is able to select recipient from contact list using name', () => {
+    it('user is able to select recipient from contact list using contact name', () => {
 
         const contactEmail = CommonData.contact.email;
         const contactName = CommonData.contact.name;
