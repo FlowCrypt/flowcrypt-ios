@@ -20,6 +20,7 @@ class WkdApi: WkdApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 4
+        static let endpointName = "WkdApi"
     }
 
     private let urlConstructor: WkdUrlConstructorType
@@ -72,20 +73,24 @@ extension WkdApi {
 
     private func urlLookup(_ urls: WkdUrls) async throws -> (hasPolicy: Bool, key: Data?) {
         do {
-            var request = URLRequest.urlRequest(with: urls.policy)
-            request.timeoutInterval = Constants.lookupEmailRequestTimeout
-            _ = try await URLSession.shared.asyncCall(request)
+            let endpoint = ApiCall.Endpoint(
+                name: Constants.endpointName,
+                url: urls.policy,
+                timeout: Constants.lookupEmailRequestTimeout
+            )
+            _ = try await ApiCall.asyncCall(endpoint)
         } catch {
             Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
             return (hasPolicy: false, key: nil)
         }
 
-        var request = URLRequest.urlRequest(with: urls.pubKeys)
-        request.timeoutInterval = Constants.lookupEmailRequestTimeout
-        let pubKeyResponse = try await URLSession.shared.asyncCall(
-            request,
+        let endpoint = ApiCall.Endpoint(
+            name: Constants.endpointName,
+            url: urls.pubKeys,
+            timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
+        let pubKeyResponse = try await ApiCall.asyncCall(endpoint)
         if !pubKeyResponse.data.toStr().isEmpty {
             Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(urls.pubKeys) and will try to extract Public Keys")
         }

@@ -113,14 +113,11 @@ struct URLHeader {
 
 extension URLRequest {
     static func urlRequest(
-        with urlString: String,
+        with url: URL,
         method: HTTPMetod = .get,
         body: Data? = nil,
         headers: [URLHeader] = []
     ) -> URLRequest {
-        guard let url = URL(string: urlString) else {
-            fatalError("can't create URL")
-        }
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.httpBody = body

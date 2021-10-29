@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ComposeMessageInput {
+struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
     struct ReplyInfo: Equatable {
