@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-struct ComposeMessageAttachment {
+struct ComposeMessageAttachment: Equatable {
     let name: String
     let size: Int
     let data: Data
@@ -26,8 +26,6 @@ extension ComposeMessageAttachment {
         switch mediaType {
         case PhotosManager.MediaType.image:
             urlKey = .imageURL
-        case PhotosManager.MediaType.video:
-            urlKey = .mediaURL
         default: return nil
         }
 

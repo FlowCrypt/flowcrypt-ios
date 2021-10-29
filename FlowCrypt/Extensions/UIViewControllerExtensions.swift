@@ -6,7 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import MBProgressHUD
 import Promises
 import Toast
 import UIKit
@@ -51,10 +50,6 @@ extension UIViewController {
 }
 
 extension UIViewController {
-    var statusBarHeight: CGFloat {
-        UIApplication.shared.statusBarFrame.height
-    }
-
     private func errorToUserFriendlyString(error: Error, title: String) -> String? {
         // todo - more intelligent handling of HttpErr
         do {
@@ -101,29 +96,6 @@ extension UIViewController {
             alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
             alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
             self.present(alert, animated: true, completion: nil)
-        }
-    }
-
-    func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
-        DispatchQueue.main.async {
-            guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
-                // hud is already shown
-                return
-            }
-            self.view.isUserInteractionEnabled = isUserInteractionEnabled
-
-            let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
-            spinner.label.text = message
-            spinner.isUserInteractionEnabled = isUserInteractionEnabled
-        }
-    }
-
-    func hideSpinner() {
-        DispatchQueue.main.async {
-            self.view.subviews
-                .compactMap { $0 as? MBProgressHUD }
-                .forEach { $0.hide(animated: true) }
-            self.view.isUserInteractionEnabled = true
         }
     }
 

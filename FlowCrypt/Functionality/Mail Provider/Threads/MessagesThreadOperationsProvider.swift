@@ -56,8 +56,8 @@ extension GmailService: MessagesThreadOperationsProvider {
             thread.messages.forEach { message in
                 taskGroup.addTask {
                     asRead
-                        ? try await markAsRead(message: message, folder: folder)
-                        : try await markAsUnread(message: message, folder: folder)
+                    ? try await self.markAsRead(message: message, folder: folder)
+                    : try await self.markAsUnread(message: message, folder: folder)
                 }
             }
 

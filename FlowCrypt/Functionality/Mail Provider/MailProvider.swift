@@ -65,6 +65,14 @@ final class MailProvider {
         resolveService(of: UsersMailSessionProvider.self)
     }
 
+    var draftGateway: DraftGateway? {
+        resolveOptionalService(of: DraftGateway.self)
+    }
+
+    var draftsProvider: DraftsListProvider? {
+        resolveOptionalService(of: DraftsListProvider.self)
+    }
+
     var messagesThreadProvider: MessagesThreadProvider? {
         resolveService(of: MessagesThreadProvider?.self)
     }
@@ -84,6 +92,13 @@ final class MailProvider {
     private func resolveService<T>(of type: T.Type) -> T {
         guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
             fatalError("Email Provider should support this functionality")
+        }
+        return service
+    }
+
+    private func resolveOptionalService<T>(of type: T.Type) -> T? {
+        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
+            return nil
         }
         return service
     }

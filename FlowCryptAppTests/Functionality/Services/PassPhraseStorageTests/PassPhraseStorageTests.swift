@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class PassPhraseStorageTests: XCTestCase {
 
@@ -124,7 +124,6 @@ class PassPhraseStorageTests: XCTestCase {
             ]
         }
 
-
         // encrypted storage should not contains pass phrase which user decide to save locally
         encryptedStorage.isRemovePassPhraseResult = { passPhraseToRemove in
             if passPhraseToRemove.primaryFingerprint == "fingerprint 1" {
@@ -158,7 +157,6 @@ class PassPhraseStorageTests: XCTestCase {
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
-
 }
 
 extension KeyInfo {
@@ -181,7 +179,8 @@ extension KeyInfo {
                 lastModified: nil,
                 expiration: nil,
                 users: [],
-                algo: nil
+                algo: nil,
+                revoked: false
             ),
             passphrase: nil,
             source: .backup,

@@ -5,10 +5,9 @@
 //  Created by Roma Sosnovsky on 04/10/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class PrvKeyInfoTests: XCTestCase {
 
@@ -24,7 +23,8 @@ class PrvKeyInfoTests: XCTestCase {
         lastModified: 1,
         expiration: 2,
         users: [],
-        algo: nil
+        algo: nil,
+        revoked: false
     )
 
     private let user = UserObject(name: "name", email: "email", imap: nil, smtp: nil)

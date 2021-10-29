@@ -24,15 +24,16 @@ struct AppStartup {
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
 
-        Promise<Void> {
-            try awaitPromise(self.setupCore())
-            try self.setupMigrationIfNeeded()
-            try self.setupSession()
-            try self.getUserOrgRulesIfNeeded()
-        }.then(on: .main) {
-            self.chooseView(for: window, session: session)
-        }.catch(on: .main) { error in
-            self.showErrorAlert(with: error, on: window, session: session)
+        Task {
+            do {
+                try awaitPromise(setupCore())
+                try setupMigrationIfNeeded()
+                try setupSession()
+                try await getUserOrgRulesIfNeeded()
+                await chooseView(for: window, session: session)
+            } catch {
+                await showErrorAlert(with: error, on: window, session: session)
+            }
         }
     }
 
@@ -62,6 +63,7 @@ struct AppStartup {
         return MailProvider.shared.sessionProvider.renewSession()
     }
 
+    @MainActor
     private func chooseView(for window: UIWindow, session: SessionType?) {
         let entryPoint = entryPointForUser(session: session)
 
@@ -98,10 +100,9 @@ struct AppStartup {
         }
     }
 
-    private func getUserOrgRulesIfNeeded() throws {
+    private func getUserOrgRulesIfNeeded() async throws {
         if DataService.shared.isLoggedIn {
-            let service = ClientConfigurationService()
-            _ = try awaitPromise(service.fetchClientConfigurationForCurrentUser())
+            _ = try await ClientConfigurationService().fetchForCurrentUser()
         }
     }
 
@@ -133,6 +134,7 @@ struct AppStartup {
         return userId
     }
 
+    @MainActor
     private func showErrorAlert(with error: Error, on window: UIWindow, session: SessionType?) {
         let alert = UIAlertController(title: "Startup Error", message: "\(error.localizedDescription)", preferredStyle: .alert)
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in

@@ -26,7 +26,7 @@ class MenuBarScreen extends BaseScreen {
     }
 
     clickMenuIcon () {
-        this.menuIcon.click();
+        ElementHelper.waitAndClick(this.menuIcon);
     }
 
     checkUserEmail (email: string = CommonData.account.email) {
@@ -40,7 +40,11 @@ class MenuBarScreen extends BaseScreen {
     }
 
     clickLogout () {
-        this.logoutButton.click();
+        ElementHelper.waitAndClick(this.logoutButton);
+    }
+
+    clickSettingsButton () {
+        ElementHelper.waitAndClick(this.settingsButton);
     }
 }
 

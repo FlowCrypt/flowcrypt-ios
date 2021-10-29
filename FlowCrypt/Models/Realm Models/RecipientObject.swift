@@ -43,7 +43,7 @@ final class RecipientObject: Object {
 }
 
 extension RecipientObject {
-    convenience init(_ recipient: RecipientWithPubKeys) {
+    convenience init(_ recipient: RecipientWithSortedPubKeys) {
         self.init(
             email: recipient.email,
             name: recipient.name,

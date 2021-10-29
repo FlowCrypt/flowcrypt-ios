@@ -1,0 +1,376 @@
+Delivered-To: tom@flowcrypt.com
+Received: by 2002:a05:6a10:1791:0:0:0:0 with SMTP id hy17csp1576728pxb;
+        Fri, 22 Oct 2021 04:11:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzkl25UClLkH7C4QPnTS06j9z2lF+jhY7grYWGWZyTYz+atItY3srbtPoBk7R1ltBZSPOVS
+X-Received: by 2002:a05:6402:5114:: with SMTP id m20mr16005942edd.256.1634901083202;
+        Fri, 22 Oct 2021 04:11:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1634901083; cv=none;
+        d=google.com; s=arc-20160816;
+        b=hCfDPabm8j0iDrOCk8wY+GCE+o/XxFwyJEf0vavOfg+8q2cadNyd1iPWwGj/lTPLTa
+         fGZj0zgXBZ8sOksqn0xbegps3OMmiMquloXl9yC8EX0PvH7BMt67HdBIkcTes4sftNv4
+         rGvNuQrALQvlFNjxc/KvK6Gc9musACN9KRBqU/L2UoYQjRe6gGm/EGT7Db0RBkDSghLT
+         cr7BTVz7LYKardh+yTXu4/K5FMf4q7g/qpmJyECZl2xFNYqZ14dejtWCwbkDGg8hkQhY
+         jnrZxD1Th76n8lg/cg96c9AY8iGAbO5uv983rxk1+UMMcWdcyFzgN27v5moWKrAFFyLE
+         K+eA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=mime-version:subject:message-id:to:from:date:dkim-signature;
+        bh=cu3QjumdYCALoQyj+ZZ1ZTykCXmLOdVYNgKHKuCQulA=;
+        b=uQerClB9LWIxwBjVYPVOupSONHkk3zBUfrYGgS0H0cAREtUhJ2MSnn9t31Uc8ygd6v
+         OSoq/Yaqe6ou9R2oIkd5TOSyusKOY/fV9dzyUg28FMZe28U6rq2/61IDqv+Tntby+ol8
+         NQdoxKV9AKfm3m+usbQcWBuc01I8gTNcFSmQYhRpL7JLOeDOULqckKLPVrkpjW6+YlxH
+         o6b4YtXhJfCXFa/8iFleX6xAHt4C8z4rkLYUdQYABdKbXkaGMUJO6dn4H4eCR6G6bxqJ
+         KNXHYVIvj7bvMEw8HnNJfWjMoPfOwwDs6/PpVgZJzLgQ3iCM+ljhnISV8HdUF1OYYvQx
+         O7zQ==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@email.apple.com header.s=email0517 header.b=sTj3NmwF;
+       spf=pass (google.com: domain of no_reply@email.apple.com designates 17.111.110.101 as permitted sender) smtp.mailfrom=no_reply@email.apple.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=email.apple.com
+Return-Path: <no_reply@email.apple.com>
+Received: from rn2-txn-msbadger06106.apple.com (rn2-txn-msbadger06106.apple.com. [17.111.110.101])
+        by mx.google.com with ESMTPS id m15si17455630edc.103.2021.10.22.04.11.22
+        for <tom@flowcrypt.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 22 Oct 2021 04:11:23 -0700 (PDT)
+Received-SPF: pass (google.com: domain of no_reply@email.apple.com designates 17.111.110.101 as permitted sender) client-ip=17.111.110.101;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@email.apple.com header.s=email0517 header.b=sTj3NmwF;
+       spf=pass (google.com: domain of no_reply@email.apple.com designates 17.111.110.101 as permitted sender) smtp.mailfrom=no_reply@email.apple.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=email.apple.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=email.apple.com;
+	s=email0517; t=1634901081;
+	bh=cu3QjumdYCALoQyj+ZZ1ZTykCXmLOdVYNgKHKuCQulA=;
+	h=Date:From:To:Message-ID:Subject:Content-Type;
+	b=sTj3NmwFQiNNDxbbyRC5AgtsV10VRK8GnE9nsbGAQW6qhb8XdI7Z7hbLBdg9SnUuq
+	 0DXqSqKonu9b6KFYLdlnspWkOujzdtO3i2GqGyrRrti/lJf9gra5OxMHEON2ZLGs7x
+	 bQFQdT+6hzJznYeGuJmY0ulYMM7TWtPrthZzM1kFxa84xmbaLHhx947SPw5ZYCoZYQ
+	 jU+3DrlhA1v0/MG5EVB2yQzPvoa0CB8piVcd8ETWTo39/sLYQ0u/rB2pC/y5ygGCa4
+	 1e1XeEjlOS+7kebTjnr7t5ajS22dmZ9sNmwHcfO4f5KXPftMRyb/KsH229rRGEKQpQ
+	 TdyX+Rc64sY2g==
+Date: Fri, 22 Oct 2021 11:11:21 +0000 (GMT)
+From: "\"App Store Connect\"" <no_reply@email.apple.com>
+To: tom@flowcrypt.com
+Message-ID: <694019457.7562904.1634901081184@email.apple.com>
+Subject: New Message from App Store Review Regarding Enterprise FlowCrypt
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_Part_7562902_316595892.1634901081183"
+X-Attach-Flag: N
+X-COMMS-C: N
+X-Sent-To: tom@flowcrypt.com,2,h1WHvKL7iuCXlXw2BctUU6jzFn18XfuSTRvEsLh%2B3gRkyXJUnAIbeIpFUZKopOOYnLpsWUqbQ4%2BK9IixjwUR8uCIL8jKAaFeu%2FXaQzgrLBZWodYgmuxOR7eQ6niLpl%2F0BottPOO6Z4PqZ57r%2BWoEeVPAW16uWFdy3Xu0duLtfQvbP%2BKmsIi3D3r1VdryCeNlmZQlv48NNyh7XxeiOuIVhsPFLFqvSye2IA%2BuPS8RUaoPEXeONAs6D9U44GyIl4fNSugxRibXfytsv3M5M0Lf7DdEG2mzzm7rMVM%2Fpqgy3bmRVEDLqE1ZMUI0UnDZLmCvE42YbtPsX12f6QgjUitifHWS06pabVryIZJBOLv87HmVazl2kJPLF%2BNZ0NiSHutv8bYMmfBRXvK%2BX59STI%2FP2T7PQYJC%2FENOtmpVox%2BhD3%2B3i6tSfRzcoQUBPMkesxDiO37q%2FzzDS9K9EoA53aew5g%3D%3D
+X-TXN_ID: f145ef6d-3bb0-4300-a4bc-4b8567f0d52e
+X-DKIM_SIGN_REQUIRED: YES
+X-EmailType-Id: 10631
+X-Business-Group: iTunes
+X-Country: US
+
+------=_Part_7562902_316595892.1634901081183
+Content-Type: text/plain; charset=ISO-2022-JP
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Disposition: inline
+
+Dear Tomas,
+
+We've sent you a new message about your app, Enterprise FlowCrypt, app Appl=
+e ID: 1591462989.
+To view or reply to the message, go to Resolution Center in App Store Conne=
+ct.
+
+Best regards,
+App Store Review
+
+
+---
+
+<br/><br/><h3>Guideline 2.1 - Information Needed</h3><br/><br/>We have star=
+ted the review of your app, but in addition to the demo account username an=
+d password you provided, we need an authentication code to access your app=
+=1B$B!G=1B(Bs content and verify its functionality.<br/><br/><b>Next Steps<=
+/b><br/><br/>In order for us to proceed with the review of your app, you wi=
+ll need to provide an authentication code. Please respond to this message w=
+ith the code. <br/><br/>If you are unable to provide a code by reply, we wi=
+ll arrange for an Apple representative to call you to obtain the code. Plea=
+se respond to this message to confirm you require a call for us to obtain t=
+he code to access your app.<br/><br/>To ensure we have accurate contact inf=
+ormation, please verify the phone number listed in the App Review Informati=
+on section of this app's Version Information page in <a href=3D"https://app=
+storeconnect.apple.com/">App Store Connect</a> is up-to-date.<br/><br/>You =
+may also include a demonstration mode that exhibits your app=1B$B!G=1B(Bs f=
+ull features and functionality. We do not accept demo videos to show your a=
+pp in use for this issue.<br/><br/>Please see attached screenshot for detai=
+ls.<br/><br/>Since your App Store Connect status is Metadata Rejected, we d=
+o NOT require a new binary. To revise the metadata, visit App Store Connect=
+ to select your app and revise the desired metadata values. Once you=1B$B!G=
+=1B(Bve completed all changes, reply to this message in Resolution Center a=
+nd we will continue the review.<br/><br/><br/><br/><br/><br/><br/><br/><br/=
+><br/>
+------=_Part_7562902_316595892.1634901081183
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Disposition: inline
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>App Store Connect</title>
+  <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-885=
+9-1" />
+  <meta name=3D"x-apple-disable-message-reformatting" />
+ =20
+ =20
+  <style type=3D"text/css">
+    A { text-decoration: none; }
+
+    A:link { color: #0088FF; text-decoration: none; }
+
+    A:visited { text-decoration: none; }
+
+    A:active { color: #696969; text-decoration: underline;}
+
+    A:hover { text-decoration: underline; }
+
+    BODY, TD, P, UL, OL {
+    font-family: Helvetica, Lucida Grande, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 18px;
+    color: #666666;
+    text-align: left;
+    }
+
+    P {
+    margin-bottom: 1em;
+    }
+
+    H1 {
+    line-height:145%;
+    }
+
+    HR {
+    border: 0;
+    border-top: 1px solid #dddddd;
+    margin: 10px 0px 15px 0px;
+    }
+
+    @media only screen and (max-device-width: 481px) and (min-device-pixel-=
+ratio : 2), only screen and (min-device-width: 481px) and (-webkit-min-devi=
+ce-pixel-ratio : 2) {
+     =20
+     =20
+       =20
+=09      *[id=3Dheader] { background:url('https://appstoreconnect.apple.com=
+/itc/images/email/email-asc-logo@2X.png') no-repeat 0 top; -webkit-backgrou=
+nd-size: 173px 45px; }
+       =20
+       =20
+     =20
+    *[id=3Dhr-fade] { background:url('https://itunesconnect.apple.com/itc/i=
+mages/email/email-hr@2X.png') no-repeat 0 top; -webkit-background-size: 648=
+px 18px; }
+    }
+
+    @media only screen and (max-device-width: 480px) {
+
+   =20
+      table[class=3D"table"], td[class=3D"cell"] {
+      width: 270px !important;
+      }
+      table[class=3D"table3"], td[class=3D"cell3"] {
+      width: 270px !important;
+      text-align: left !important;
+      }
+      img[id=3D"header"] {
+      width: 135px !important;
+      height: 35px !important;
+      }
+      td[id=3D"header"] {
+      -webkit-background-size: 135px 35px;
+      }
+   =20
+
+    table[class=3D"footer_table"] {
+    display: none !important;
+    }
+
+    .hide { max-height: none !important; font-size: 11px !important; displa=
+y: block !important; }
+
+   =20
+    p {
+    text-align: left !important;
+    }
+   =20
+
+    }
+  </style>
+=20
+
+ =20
+
+ =20
+
+</head>
+<body>
+<table class=3D"table" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" ali=
+gn=3D"center" width=3D"700">
+  <tr align=3D"center">
+    <td class=3D"spacer" align=3D"left" valign=3D"top" bgcolor=3D"#ffffff" =
+width=3D"20">
+      <img src=3D"https://itunesconnect.apple.com/itc/images/email/spacer.g=
+if" border=3D"0" alt=3D"" width=3D"20" height=3D"1">
+    </td>
+    <td align=3D"left">
+      <table class=3D"table3" width=3D"648" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" align=3D"center" bgcolor=3D"#ffffff" >
+        <tr>
+       =20
+          <td class=3D"cell3" id=3D"header" width=3D"648" align=3D"left" st=
+yle=3D"padding-bottom: 10px;">
+           =20
+           =20
+               =20
+                    <img id=3D"header" src=3D"https://appstoreconnect.apple=
+.com/itc/images/email/email-asc-logo@2X.png" border=3D"0" alt=3D"App Store =
+Connect" width=3D"173" height=3D"45">
+               =20
+               =20
+           =20
+          </td>
+         =20
+       =20
+        </tr>
+       =20
+        <tr>
+          <td class=3D"cell3" style=3D"font-size: 0px; line-height: 1px; ba=
+ckground:none; border-top:solid 1px #dddddd; height:1px; width:648px; margi=
+n:0px 0px 0px 0px; padding-bottom: 15px">=C2=A0</td>
+        </tr>
+       =20
+        <tr>
+          <td class=3D"cell3" align=3D"left" valign=3D"top" bgcolor=3D"#fff=
+fff" width=3D"648" style=3D"font-family: Helvetica, Lucida Grande, Arial, s=
+ans-serif; font-size: 14px; line-height: 18px; color: #666666; text-align: =
+justify;">
+                       =20
+
+                               =20
+  <div id=3D"rejectionEmail">
+    <p>Dear Tomas,</p>
+
+    <p>We've sent you a new message about your app, Enterprise FlowCrypt, a=
+pp Apple ID: 1591462989.
+    To view or reply to the message, go to <a href=3D'https://appstoreconne=
+ct.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1591462989/platform/ios=
+/versions/844846907/resolutioncenter'>Resolution Center</a> in App Store Co=
+nnect.</p>
+
+    <p>Best regards,<br>
+    App Store Review</p>
+   =20
+      <hr>
+      <br/><br/><h3>Guideline 2.1 - Information Needed</h3><br/><br/>We hav=
+e started the review of your app, but in addition to the demo account usern=
+ame and password you provided, we need an authentication code to access you=
+r app=E2=80=99s content and verify its functionality.<br/><br/><b>Next Step=
+s</b><br/><br/>In order for us to proceed with the review of your app, you =
+will need to provide an authentication code. Please respond to this message=
+ with the code. <br/><br/>If you are unable to provide a code by reply, we =
+will arrange for an Apple representative to call you to obtain the code. Pl=
+ease respond to this message to confirm you require a call for us to obtain=
+ the code to access your app.<br/><br/>To ensure we have accurate contact i=
+nformation, please verify the phone number listed in the App Review Informa=
+tion section of this app's Version Information page in <a href=3D"https://a=
+ppstoreconnect.apple.com/">App Store Connect</a> is up-to-date.<br/><br/>Yo=
+u may also include a demonstration mode that exhibits your app=E2=80=99s fu=
+ll features and functionality. We do not accept demo videos to show your ap=
+p in use for this issue.<br/><br/>Please see attached screenshot for detail=
+s.<br/><br/>Since your App Store Connect status is Metadata Rejected, we do=
+ NOT require a new binary. To revise the metadata, visit App Store Connect =
+to select your app and revise the desired metadata values. Once you=E2=80=
+=99ve completed all changes, reply to this message in Resolution Center and=
+ we will continue the review.<br/><br/><br/><br/><br/><br/><br/><br/><br/><=
+br/>
+   =20
+  </div>
+
+
+                       =20
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td class=3D"spacer" align=3D"right" valign=3D"top" bgcolor=3D"#ffffff"=
+ width=3D"20">
+      <img src=3D"https://itunesconnect.apple.com/itc/images/email/spacer.g=
+if" border=3D"0" alt=3D"" width=3D"20" height=3D"1">
+    </td>
+  </tr>
+</table>
+
+
+  <table class=3D"footer_table" width=3D"700" border=3D"0" cellspacing=3D"0=
+" cellpadding=3D"0" align=3D"center" style=3D"margin-top:25px; margin-botto=
+m:15px;">
+    <tr>
+      <td class=3D"cell" align=3D"left">=C2=A0</td>
+    </tr>
+    <tr>
+      <td class=3D"cell" style=3D"font-size:10px; line-height: 12px; color:=
+#9f9f9f; font-family: Helvetica, Lucida Grande, Arial, sans-serif; text-ali=
+gn: center; -webkit-text-size-adjust:none;">
+          <a href=3D"https://developer.apple.com/contact/">Contact Us</a>  =
+|  <a href=3D"https://appstoreconnect.apple.com">App Store Connect</a>  |  =
+One Apple Park Way, Cupertino, CA 95014
+      </td>
+    </tr>
+    <tr>
+      <td class=3D"cell" id=3D"hr-fade" style=3D"text-align: center;">
+        <img id=3D"footer" src=3D"https://itunesconnect.apple.com/itc/image=
+s/email/email-hr.png" width=3D"648" height=3D"18"/>
+      </td>
+    </tr>
+    <tr>
+      <td class=3D"cell" style=3D"font-size:10px; line-height: 12px; color:=
+#9f9f9f; font-family: Helvetica, Lucida Grande, Arial, sans-serif; text-ali=
+gn: center; -webkit-text-size-adjust:none;">
+        <a href=3D"https://www.apple.com/legal/privacy/">Privacy Policy</a>=
+  |  <a href=3D"https://www.apple.com/legal/internet-services/itunes/">Term=
+s of Service</a>
+      </td>
+    </tr>
+  </table>
+  <table class=3D"hide" width=3D"270" border=3D"0" cellspacing=3D"0" cellpa=
+dding=3D"0" align=3D"center" style=3D"margin-top:45px; margin-bottom:15px; =
+max-height: 0px; font-size: 0; display: none;">
+    <tr>
+      <td class=3D"hide" style=3D"max-height: 0px; font-size: 0; display: n=
+one; height: 1px; background:none; border-top:solid 1px #dddddd; width:648p=
+x; margin:0px 0px 0px 0px;">=C2=A0</td>
+    </tr>
+    <tr>
+      <td class=3D"hide" style=3D"line-height: 120%; color:#9f9f9f; font-fa=
+mily: Helvetica, Lucida Grande, Arial, sans-serif; text-align: center; max-=
+height: 0px; font-size: 0; display: none; -webkit-text-size-adjust:none;"><=
+br/>
+          <a href=3D"https://developer.apple.com/contact/">Contact Us</a>  =
+|  <a href=3D"https://appstoreconnect.apple.com">App Store Connect</a><br/>=
+One Apple Park Way, Cupertino, CA 95014
+      </td>
+    </tr>
+    <tr>
+      <td class=3D"hide" align=3D"left" style=3D"max-height: 0px; font-size=
+: 0; display: none; line-height: 120%;">=C2=A0</td>
+    </tr>
+    <tr>
+      <td class=3D"hide" style=3D"line-height: 120%; color:#9f9f9f; font-fa=
+mily: Helvetica, Lucida Grande, Arial, sans-serif; text-align: center; max-=
+height: 0px; font-size: 0; display: none; -webkit-text-size-adjust:none;">
+        <a href=3D"https://www.apple.com/legal/privacy/">Privacy Policy</a>=
+  |  <a href=3D"https://www.apple.com/legal/internet-services/itunes/">Term=
+s of Service</a>
+      </td>
+    </tr>
+  </table>
+
+</body>
+
+</html>
+------=_Part_7562902_316595892.1634901081183--

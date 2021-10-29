@@ -26,6 +26,15 @@ extension MsgListViewController where Self: UIViewController {
         }
     }
 
+    // TODO: uncomment in "sent message from draft" feature
+    private func openDraft(with message: Message) {
+        guard let email = DataService.shared.email else { return }
+
+        let controller = ComposeViewController(email: email)
+        controller.updateWithMessage(message: message)
+        navigationController?.pushViewController(controller, animated: true)
+    }
+
     private func openMsgElseShowToast(with message: Message, path: String) {
         if message.size ?? 0 > GeneralConstants.Global.messageSizeLimit {
             showToast("Messages larger than 5MB are not supported yet")

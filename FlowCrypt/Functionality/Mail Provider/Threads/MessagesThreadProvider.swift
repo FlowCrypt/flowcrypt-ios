@@ -30,7 +30,7 @@ extension GmailService: MessagesThreadProvider {
             var messages: [MessageThread] = []
             for request in requests {
                 taskGroup.addTask {
-                    try await getThread(with: request.0, snippet: request.1, path: context.folderPath ?? "")
+                    try await self.getThread(with: request.0, snippet: request.1, path: context.folderPath ?? "")
                 }
             }
             for try await result in taskGroup {
@@ -83,7 +83,7 @@ extension GmailService: MessagesThreadProvider {
                     return continuation.resume(returning: empty)
                 }
 
-                let messages = try? threadMsg.compactMap(Message.init)
+                let messages = try? threadMsg.compactMap { try? Message($0, draftIdentifier: nil) }
 
                 let result = MessageThread(
                     identifier: thread.identifier,
@@ -121,7 +121,10 @@ extension GmailService: MessagesThreadProvider {
 }
 
 extension Message {
-    init(_ message: GTLRGmail_Message) throws {
+    init(
+        _ message: GTLRGmail_Message,
+        draftIdentifier: String? = nil
+    ) throws {
         guard let payload = message.payload else {
             throw GmailServiceError.missedMessagePayload
         }
@@ -170,7 +173,9 @@ extension Message {
             size: message.sizeEstimate.flatMap(Int.init),
             labels: labels,
             attachmentIds: attachmentsIds,
-            threadId: message.threadId
+            threadId: message.threadId,
+            draftIdentifier: draftIdentifier,
+            raw: message.raw
         )
     }
 }

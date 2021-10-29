@@ -38,8 +38,8 @@ final class SearchViewController: TableNodeViewController {
         didSet { updateState() }
     }
 
-    // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads 
-    private let searchProvider: MessageSearchProvider
+    // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads
+    private let service: ServiceActor
     private var searchTask: DispatchWorkItem?
 
     private let searchController = UISearchController(searchResultsController: nil)
@@ -50,7 +50,7 @@ final class SearchViewController: TableNodeViewController {
         searchProvider: MessageSearchProvider = MailProvider.shared.messageSearchProvider,
         folderPath: String
     ) {
-        self.searchProvider = searchProvider
+        self.service = ServiceActor(searchProvider: searchProvider)
         self.folderPath = folderPath
         super.init(node: TableNode())
     }
@@ -288,7 +288,7 @@ extension SearchViewController: UISearchResultsUpdating {
 
         Task {
             do {
-                let messages = try await searchProvider.searchExpression(
+                let messages = try await service.searchExpression(
                     using: MessageSearchContext(
                         expression: searchText,
                         count: Constants.messageCount
@@ -335,5 +335,18 @@ extension SearchViewController: UISearchResultsUpdating {
             node.reloadData()
             node.bounces = false
         }
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let searchProvider: MessageSearchProvider
+
+    init(searchProvider: MessageSearchProvider) {
+        self.searchProvider = searchProvider
+    }
+
+    func searchExpression(using context: MessageSearchContext) async throws -> [Message] {
+        return try await searchProvider.searchExpression(using: context)
     }
 }

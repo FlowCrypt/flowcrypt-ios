@@ -12,8 +12,10 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private lazy var logger = Logger.nested(Self.self)
 
     private let numberOfMessagesToLoad: Int
-    private let provider: InboxDataProvider
+
+    private let service: ServiceActor
     private let decorator: InboxViewDecorator
+    private let draftsListProvider: DraftsListProvider?
     private let refreshControl = UIRefreshControl()
     private let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
@@ -33,11 +35,14 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         _ viewModel: InboxViewModel,
         numberOfMessagesToLoad: Int,
         provider: InboxDataProvider,
+        draftsListProvider: DraftsListProvider? = MailProvider.shared.draftsProvider,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
         self.viewModel = viewModel
         self.numberOfMessagesToLoad = numberOfMessagesToLoad
-        self.provider = provider
+
+        self.service = ServiceActor(messageProvider: provider)
+        self.draftsListProvider = draftsListProvider
         self.decorator = decorator
         self.tableNode = TableNode()
 
@@ -135,16 +140,45 @@ extension InboxViewController {
 // MARK: - Functionality
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
-        let context = FetchMessageContext(
-            folderPath: viewModel.path,
-            count: numberOfMessagesToLoad,
-            pagination: currentMessagesListPagination()
-        )
+        if let provider = draftsListProvider, viewModel.isDrafts {
+            fetchAndRenderDrafts(batchContext, draftsProvider: provider)
+        } else {
+            fetchAndRenderEmailsOnly(batchContext)
+        }
+    }
 
+    private func fetchAndRenderDrafts(_ batchContext: ASBatchContext?, draftsProvider: DraftsListProvider) {
         Task {
             do {
-                let value = try await provider.fetchMessages(using: context)
-                handleEndFetching(with: value, context: batchContext)
+                let context = try await draftsProvider.fetchDrafts(
+                    using: FetchMessageContext(
+                        folderPath: viewModel.path,
+                        count: numberOfMessagesToLoad,
+                        pagination: currentMessagesListPagination()
+                    )
+                )
+                let inboxContext = InboxContext(
+                    data: context.messages.map(InboxRenderable.init),
+                    pagination: context.pagination
+                )
+                handleEndFetching(with: inboxContext, context: batchContext)
+            } catch {
+                handle(error: error)
+            }
+        }
+    }
+
+    private func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
+        Task {
+            do {
+                let context = try await service.fetchMessages(
+                    using: FetchMessageContext(
+                        folderPath: viewModel.path,
+                        count: numberOfMessagesToLoad,
+                        pagination: currentMessagesListPagination()
+                    )
+                )
+                handleEndFetching(with: context, context: batchContext)
             } catch {
                 handle(error: error)
             }
@@ -159,7 +193,7 @@ extension InboxViewController {
 
         Task {
             do {
-                let context = try await provider.fetchMessages(
+                let context = try await service.fetchMessages(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
@@ -419,5 +453,18 @@ extension InboxViewController: MsgListViewController {
         default:
             tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
         }
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let messageProvider: InboxDataProvider
+
+    init(messageProvider: InboxDataProvider) {
+        self.messageProvider = messageProvider
+    }
+
+    func fetchMessages(using context: FetchMessageContext) async throws -> InboxContext {
+        return try await messageProvider.fetchMessages(using: context)
     }
 }

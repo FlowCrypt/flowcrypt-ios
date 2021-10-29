@@ -16,7 +16,10 @@ struct ComposeViewDecorator {
     let recipientIdleState: RecipientState = .idle(idleStateContext)
     let recipientSelectedState: RecipientState = .selected(selectedStateContext)
     let recipientKeyFoundState: RecipientState = .keyFound(keyFoundStateContext)
+    let recipientKeyExpiredState: RecipientState = .keyExpired(keyExpiredStateContext)
+    let recipientKeyRevokedState: RecipientState = .keyRevoked(keyRevokedStateContext)
     let recipientKeyNotFoundState: RecipientState = .keyNotFound(keyNotFoundStateContext)
+    let recipientInvalidEmailState: RecipientState = .invalidEmail(invalidEmailStateContext)
     let recipientErrorState: RecipientState = .error(errorStateContext, false)
     var recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
 
@@ -163,6 +166,24 @@ extension ComposeViewDecorator {
         )
     }
 
+    private static var keyExpiredStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .warningColor,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil
+        )
+    }
+
+    private static var keyRevokedStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .errorColor,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil
+        )
+    }
+
     private static var keyNotFoundStateContext: RecipientStateContext {
         RecipientStateContext(
             backgroundColor: .titleNodeBackgroundColorSelected,
@@ -172,10 +193,19 @@ extension ComposeViewDecorator {
         )
     }
 
-    private static var errorStateContext: RecipientStateContext {
+    private static var invalidEmailStateContext: RecipientStateContext {
         RecipientStateContext(
             backgroundColor: .red,
-            borderColor: .borderColor,
+            borderColor: .borderColorSelected,
+            textColor: .white,
+            image: nil
+        )
+    }
+
+    private static var errorStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .gray,
+            borderColor: .red,
             textColor: .white,
             image: #imageLiteral(resourceName: "cancel")
         )
