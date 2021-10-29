@@ -29,7 +29,8 @@ class GeneralConstantsTest: XCTestCase {
         let expectedScope = Set([
             "https://www.googleapis.com/auth/userinfo.profile",
             "https://mail.google.com/",
-            "https://www.googleapis.com/auth/contacts"
+            "https://www.googleapis.com/auth/contacts",
+            "https://www.googleapis.com/auth/contacts.other.readonly"
         ])
         XCTAssert(currentScope == expectedScope)
 
