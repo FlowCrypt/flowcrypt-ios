@@ -86,6 +86,18 @@ extension GlobalRouter {
             AppStartup().initializeApp(window: window, session: session)
         }
     }
+
+    private func handleGmailError(_ error: Error) {
+        logger.logInfo("gmail login failed with error \(error.localizedDescription)")
+        if let gmailUserError = error as? GoogleUserServiceError,
+           case .userNotAllowedAllNeededScopes(let missingScopes) = gmailUserError {
+            DispatchQueue.main.async {
+                let topNavigation = (self.keyWindow.rootViewController as? UINavigationController)
+                let checkAuthViewControlelr = CheckAuthScopesViewController(missingScopes: missingScopes)
+                topNavigation?.pushViewController(checkAuthViewControlelr, animated: true)
+            }
+        }
+    }
 }
 
 // MARK: -
@@ -99,6 +111,8 @@ extension GlobalRouter {
                 .then(on: .main) { [weak self] session in
                     self?.userAccountService.startSessionFor(user: session)
                     self?.proceed(with: session)
+                }.catch { [weak self] error in
+                    self?.handleGmailError(error)
                 }
         case .other(let session):
             userAccountService.startSessionFor(user: session)

@@ -1,4 +1,5 @@
 import BaseScreen from './base.screen';
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     KEYS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Keys"`]',
@@ -71,7 +72,7 @@ class KeysScreen extends BaseScreen {
     }
 
     clickOnKey() {
-        this.nameAndEmail.click();
+        ElementHelper.waitAndClick(this.nameAndEmail);
     }
 
     checkSelectedKeyScreen() {
@@ -83,7 +84,7 @@ class KeysScreen extends BaseScreen {
     }
 
     clickOnShowPublicKey() {
-        this.showPublicKeyButton.click();
+        ElementHelper.waitAndClick(this.showPublicKeyButton);
     }
 }
 

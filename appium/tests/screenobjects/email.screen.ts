@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import {CommonData} from "../data";
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     BACK_BTN: '~arrow left c',
@@ -59,11 +60,11 @@ class EmailScreen extends BaseScreen {
     }
 
     clickBackButton () {
-        this.backButton.click();
+        ElementHelper.waitAndClick(this.backButton);
     }
 
     clickOkButton() {
-        this.okButton.click();
+        ElementHelper.waitAndClick(this.okButton);
     }
 
     enterPassPhrase (text: string = CommonData.account.passPhrase) {
@@ -75,7 +76,7 @@ class EmailScreen extends BaseScreen {
     }
 
     clickSaveButton() {
-        this.saveButton.click();
+        ElementHelper.waitAndClick(this.saveButton);
     }
 }
 

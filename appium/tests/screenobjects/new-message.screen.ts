@@ -1,4 +1,5 @@
 import BaseScreen from './base.screen';
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     ADD_RECIPIENT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Add Recipient"`]',
@@ -7,7 +8,8 @@ const SELECTORS = {
     ADDED_RECIPIENT: '-ios class chain:**/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther' +
         '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
         '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
-        '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText' //it works only with this selector
+        '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText',//it works only with this selector
+    RETURN_BUTTON: '~Return'
 };
 
 class NewMessageScreen extends BaseScreen {
@@ -29,11 +31,12 @@ class NewMessageScreen extends BaseScreen {
 
     setAddRecipient(recipient) {
         this.addRecipientField.setValue(recipient);
+        browser.pause(1000);
+        $(SELECTORS.RETURN_BUTTON).click()
     }
 
     setSubject(subject) {
-        this.subjectField.click();
-        this.subjectField.setValue(subject);
+        ElementHelper.waitClickAndType(this.subjectField, subject);
     }
 
     setComposeSecurityMessage(message) {
@@ -45,17 +48,27 @@ class NewMessageScreen extends BaseScreen {
         return $(`-ios class chain:${selector}`);
     }
 
-    setComposeEmail(recipient, subject, message) {
+    composeEmail(recipient, subject, message) {
         this.setAddRecipient(recipient);
         this.setSubject(subject);
         this.setComposeSecurityMessage(message);
     }
 
+    setAddRecipientByName(name, email) {
+        this.addRecipientField.setValue(name);
+        const selector = `~${email}`;
+        $(selector).waitForDisplayed();
+        $(selector).click();
+    }
+
     checkFilledComposeEmailInfo(recipient, subject, message) {
         expect(this.composeSecurityMesage).toHaveText(message);
         this.filledSubject(subject).waitForDisplayed();
-        expect(this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
+        this.checkAddedRecipient(recipient);
+    }
 
+    checkAddedRecipient(recipient)  {
+        expect(this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
     }
 }
 
