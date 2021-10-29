@@ -107,7 +107,6 @@ final class MessageViewController: TableNodeViewController {
     }
 
     private func setupNavigationBar() {
-        navigationController?.interactivePopGestureRecognizer?.delegate = nil
         trashFolderProvider.getTrashFolderPath()
             .then(on: .main) { [weak self] path in
                 self?.setupNavigationBarItems(with: path)
