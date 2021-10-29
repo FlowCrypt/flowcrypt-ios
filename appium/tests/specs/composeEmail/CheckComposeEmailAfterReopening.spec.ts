@@ -11,7 +11,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     it('check filled compose email after reopening app', () => {
 
-        const recipientEmail = CommonData.recipient.email;
+        const recipientEmail = 'dmitry@flowcrypt.com';
         const emailSubject = 'TestSubject';
         const emailText = 'Test email';
 

@@ -11,8 +11,8 @@ describe('COMPOSE EMAIL: ', () => {
 
     it('user is able to select recipient from contact list using name', () => {
 
-        const recipientEmail = CommonData.recipient.email;
-        const recipientName = CommonData.recipient.name;
+        const recipientEmail = 'dmitry@flowcrypt.com';
+        const recipientName = 'Dima';
 
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();

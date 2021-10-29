@@ -54,7 +54,6 @@ class NewMessageScreen extends BaseScreen {
         this.setComposeSecurityMessage(message);
     }
 
-
     setAddRecipientByName(name, email) {
         this.addRecipientField.setValue(name);
         const selector = `~${email}`;
