@@ -19,6 +19,14 @@ struct HttpErr: Error {
 
 private let logger = Logger.nested("URLSession")
 
+private func toString(_ trace: Trace) -> String {
+    let result = trace.result()
+    if result < 1.0 {
+        return "ms:\(Int(1000 * result))"
+    }
+    return "s:\(Int(result))"
+}
+
 extension URLSession {
     func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
         Promise { resolve, reject in
@@ -29,7 +37,7 @@ extension URLSession {
                 let urlMethod = urlRequest.httpMethod ?? "GET"
                 let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
                 let headers = urlRequest.headersWithFilteredTokens
-                let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString), headers: \(headers)"
+                let message = "URLSession.call status:\(status) \(toString(trace)) \(urlMethod) \(urlString), headers: \(headers)"
                 Logger.nested("URLSession").logInfo(message)
 
                 let validStatusCode = 200 ... 299
@@ -42,16 +50,6 @@ extension URLSession {
                     reject(HttpErr(status: status, data: data, error: error))
                 }
             }.resume()
-        }
-    }
-
-    func call(_ urlStr: String, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
-        Promise { () -> HttpRes in
-            let url = URL(string: urlStr)
-            guard url != nil else {
-                throw HttpErr(status: -2, data: Data(), error: AppErr.unexpected("Invalid url: \(urlStr)"))
-            }
-            return try awaitPromise(self.call(URLRequest(url: url!), tolerateStatus: tolerateStatus))
         }
     }
 }
@@ -77,7 +75,7 @@ extension URLSession {
         let urlMethod = urlRequest.httpMethod ?? "GET"
         let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
         let headers = urlRequest.headersWithFilteredTokens
-        let message = "URLSession.asyncCall status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString), headers: \(headers)"
+        let message = "URLSession.asyncCall status:\(status) \(toString(trace)) \(urlMethod) \(urlString), headers: \(headers)"
         Logger.nested("URLSession").logInfo(message)
 
         let validStatusCode = 200 ... 299
@@ -87,16 +85,6 @@ extension URLSession {
         }
 
         return HttpRes(status: status, data: data)
-    }
-
-    func asyncCall(_ urlStr: String, tolerateStatus: [Int]? = nil, timeout: TimeInterval = 60) async throws -> HttpRes {
-        guard let url = URL(string: urlStr) else {
-            throw HttpErr(status: -2, data: Data(), error: AppErr.unexpected("Invalid url: \(urlStr)"))
-        }
-
-        var request = URLRequest(url: url)
-        request.timeoutInterval = timeout
-        return try await asyncCall(request, tolerateStatus: tolerateStatus)
     }
 }
 
