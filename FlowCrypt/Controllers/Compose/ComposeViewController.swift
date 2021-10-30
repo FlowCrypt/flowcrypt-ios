@@ -332,7 +332,10 @@ extension ComposeViewController {
             do {
                 let key = try await prepareSigningKey()
                 sendMessage(key)
-            } catch {}
+            } catch {
+                // todo - unify with `self.handle(error)`
+                self.showAlert(message: "Could not send message.\n\n \(error.localizedDescription)")
+            }
         }
     }
 }
@@ -426,11 +429,13 @@ extension ComposeViewController {
     private func encryptAndSend(_ message: SendableMsg) {
         Task {
             do {
-                try await service.encryptAndSend(message: message,
-                                                 threadId: input.threadId,
-                                                 progressHandler: { [weak self] progress in
-                    self?.updateSpinner(progress: progress)
-                })
+                try await service.encryptAndSend(
+                    message: message,
+                    threadId: input.threadId,
+                    progressHandler: { [weak self] progress in
+                        self?.updateSpinner(progress: progress)
+                    }
+                )
                 handleSuccessfullySentMessage()
             } catch {
                 if let error = error as? ComposeMessageError {

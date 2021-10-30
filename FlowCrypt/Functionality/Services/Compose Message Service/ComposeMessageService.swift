@@ -53,6 +53,7 @@ final class ComposeMessageService {
     }
 
     // MARK: - Validation
+    // todo - this should be an async method instead
     func validateMessage(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
@@ -160,6 +161,7 @@ final class ComposeMessageService {
 
     func getDraft(with identifier: String) {
         Task {
+            // tom - unsure what this does? the result is unused
             let draft = try await draftGateway?.getDraft(with: identifier)
         }
     }
