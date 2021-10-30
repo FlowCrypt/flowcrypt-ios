@@ -341,58 +341,57 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<PrvKeyInfo, Error>) in
-            guard let signingKey = try? keyService.getSigningKey() else {
-                showAlert(message: "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key.")
-                // todo - why unknown? Should be .missingSignignPrv ?
-                continuation.resume(throwing: MessageServiceError.unknown)
-                return
-            }
-
-            guard let passphrase = signingKey.passphrase else {
-                let alert = AlertsFactory.makePassPhraseAlert(
-                    onCancel: { [weak self] in
-                        self?.showAlert(message: "Passphrase is required for message signing")
-                        // tom - todo - what does .unknown mean here? Why is it unknown?
-                        //   shouldn't it be .userCanceledAction or something like that?
-                        continuation.resume(throwing: MessageServiceError.unknown)
-                    },
-                    onCompletion: { [weak self] passPhrase in
-                        guard let self = self else {
-                            continuation.resume(throwing: AppErr.nilSelf)
-                            return
-                        }
-                        // since pass phrase was entered (an inconvenient thing for user to do),
-                        //  let's find all keys that match and save the pass phrase for all
-                        guard let allKeys = try? self.keyService.getPrvKeyInfo().get(), allKeys.isNotEmpty else {
-                            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
-                            //   I copied it from another usage, but has to be changed
-                            continuation.resume(throwing: CoreError.notReady("Failed to load keys from storage"))
-                            return
-                        }
-                        let matchingKeys = self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
-                        // save passphrase for all matching keys
-                        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
-                        // now figure out if the pass phrase also matched the signing prv itself
-                        let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
-                        if matched != nil {
-                            continuation.resume(returning: signingKey.copy(with: passPhrase))
-                            return
-                        } else {
-                            Task {
-                                do {
-                                    continuation.resume(returning: try await self.prepareSigningKey())
-                                } catch {
-                                    continuation.resume(throwing: error)
-                                }
-                            }
-                        }
-                    })
-                present(alert, animated: true, completion: nil)
-                return
-            }
-            continuation.resume(returning: signingKey.copy(with: passphrase))
+        guard let signingKey = try? keyService.getSigningKey() else {
+            showAlert(message: "None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
+            throw KeyServiceError.retrieve
         }
+        guard let existingPassPhrase = signingKey.passphrase else {
+            return signingKey.copy(with: try await self.requestMissingPassPhraseWithModal(for: signingKey))
+        }
+        return signingKey.copy(with: existingPassPhrase)
+    }
+
+    private func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo) async throws -> String {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+            let alert = AlertsFactory.makePassPhraseAlert(
+                onCancel: {
+                    continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
+                },
+                onCompletion: { [weak self] passPhrase in
+                    guard let self = self else {
+                        continuation.resume(throwing: AppErr.nilSelf)
+                        return
+                    }
+                    do {
+                        let matched = try self.handlePassPhraseEntry(passPhrase, for: signingKey)
+                        if matched {
+                            continuation.resume(returning: passPhrase)
+                        } else {
+                            throw AppErr.user("This pass phrase did not match your signing private key")
+                        }
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            )
+            present(alert, animated: true, completion: nil)
+        }
+    }
+
+    private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) throws -> Bool {
+        // since pass phrase was entered (an inconvenient thing for user to do),
+        //  let's find all keys that match and save the pass phrase for all
+        guard let allKeys = try? self.keyService.getPrvKeyInfo().get(), allKeys.isNotEmpty else {
+            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
+            //   I copied it from another usage, but has to be changed
+            throw KeyServiceError.retrieve
+        }
+        let matchingKeys = self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
+        // save passphrase for all matching keys
+        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        // now figure out if the pass phrase also matched the signing prv itself
+        let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
+        return matched != nil// true if the pass phrase matched signing key
     }
 
     private func sendMessage(_ signingKey: PrvKeyInfo) {

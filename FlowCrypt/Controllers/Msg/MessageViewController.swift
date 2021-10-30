@@ -163,16 +163,18 @@ extension MessageViewController {
 
     private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String) {
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
-        do { // todo - should be a task on non-main thread?
-            let matched = try messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
-            if matched {
-                self.processedMessage = try awaitPromise(self.messageService.decryptAndProcessMessage(mime: rawMimeData))
-                self.handleReceivedMessage()
-            } else {
-                handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+        Task {
+            do {
+                let matched = try messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+                if matched {
+                    self.processedMessage = try awaitPromise(self.messageService.decryptAndProcessMessage(mime: rawMimeData))
+                    self.handleReceivedMessage()
+                } else {
+                    handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+                }
+            } catch {
+                self.handleError(error)
             }
-        } catch {
-            self.handleError(error)
         }
     }
 
