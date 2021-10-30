@@ -45,7 +45,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         static let serviceKey = "service"
         static let serviceNeededValue = "enterprise-server"
 
-        static let endpointName = "EnterpriseServerApi"
+        static let apiName = "EnterpriseServerApi"
     }
 
     private struct ClientConfigurationResponse: Codable {
@@ -69,8 +69,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 return nil
             }
             let urlString = "https://fes.\(userDomain)/"
-            let endpoint = ApiCall.Endpoint(
-                name: Constants.endpointName,
+            let endpoint = ApiCall.Request(
+                apiName: Constants.apiName,
                 url: "\(urlString)api/",
                 timeout: Constants.getActiveFesTimeout,
                 tolerateStatus: Constants.getToleratedHTTPStatuses
@@ -110,8 +110,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         if Configuration.publicEmailProviderDomains.contains(userDomain) {
             return .empty
         }
-        let endpoint = ApiCall.Endpoint(
-            name: Constants.endpointName,
+        let endpoint = ApiCall.Request(
+            apiName: Constants.apiName,
             url: "https://fes.\(userDomain)/api/v1/client-configuration?domain=\(userDomain)"
         )
         let safeReponse = try await ApiCall.asyncCall(endpoint)

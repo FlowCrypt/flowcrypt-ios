@@ -20,7 +20,7 @@ class WkdApi: WkdApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 4
-        static let endpointName = "WkdApi"
+        static let apiName = "WkdApi"
     }
 
     private let urlConstructor: WkdUrlConstructorType
@@ -73,8 +73,8 @@ extension WkdApi {
 
     private func urlLookup(_ urls: WkdUrls) async throws -> (hasPolicy: Bool, key: Data?) {
         do {
-            let endpoint = ApiCall.Endpoint(
-                name: Constants.endpointName,
+            let endpoint = ApiCall.Request(
+                apiName: Constants.apiName,
                 url: urls.policy,
                 timeout: Constants.lookupEmailRequestTimeout
             )
@@ -84,8 +84,8 @@ extension WkdApi {
             return (hasPolicy: false, key: nil)
         }
 
-        let endpoint = ApiCall.Endpoint(
-            name: Constants.endpointName,
+        let endpoint = ApiCall.Request(
+            apiName: Constants.apiName,
             url: urls.pubKeys,
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
