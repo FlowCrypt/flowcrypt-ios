@@ -489,7 +489,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
                 return ASCellNode()
-                
             }
         }
     }
@@ -809,11 +808,7 @@ extension ComposeViewController {
         let index: Int? = {
             switch context {
             case let .left(recipient):
-                guard let index = recipients.firstIndex(where: { $0.email == recipient.email }) else {
-                    assertionFailure()
-                    return nil
-                }
-                return index
+                return recipients.firstIndex(where: { $0.email == recipient.email })
             case let .right(index):
                 return index.row
             }
