@@ -78,7 +78,8 @@ final class MessageService {
         Promise<ProcessedMessage> { [weak self] resolve, reject in
             guard let self = self else { return }
 
-            guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
+            let keys = try self.keyService.getPrvKeyInfo().get()
+            guard keys.isNotEmpty else {
                 return reject(MessageServiceError.emptyKeys)
             }
 
@@ -117,8 +118,9 @@ final class MessageService {
                 self.messageProvider.fetchMsg(message: input, folder: folder)
             )
 
-            guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
-                return reject(CoreError.notReady("Failed to load keys from storage"))
+            let keys = try self.keyService.getPrvKeyInfo().get()
+            guard keys.isNotEmpty else {
+                return reject(MessageServiceError.emptyKeys)
             }
 
             let decrypted = try self.core.parseDecryptMsg(
