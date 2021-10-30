@@ -345,7 +345,7 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
         guard let signingKey = try? keyService.getSigningKey() else {
-            showAlert(message: "None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
+//            showAlert(message: "None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
             throw KeyServiceError.retrieve
         }
         guard let existingPassPhrase = signingKey.passphrase else {

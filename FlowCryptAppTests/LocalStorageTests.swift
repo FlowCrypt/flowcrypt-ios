@@ -15,7 +15,7 @@ class LocalStorageTests: XCTestCase {
     override func setUp() {
         sut = LocalStorage()
 
-        let passPhrase = PassPhrase(value: "123", fingerprints: ["123"], date: nil)
+        let passPhrase = PassPhrase(value: "123", fingerprintsOfAssociatedKey: ["123"], date: nil)
         sut.passPhraseStorage.save(passPhrase: passPhrase)
     }
 

@@ -45,7 +45,7 @@ final class KeyServiceTests: XCTestCase {
         passPhraseService.passPhrases = [
             PassPhrase(
                 value: "this is a test phrase",
-                fingerprints: ["4D5BFAD925F6ED3A43002B21127071C29744D9AC"],
+                fingerprintsOfAssociatedKey: ["4D5BFAD925F6ED3A43002B21127071C29744D9AC"],
                 date: nil
             )
         ]

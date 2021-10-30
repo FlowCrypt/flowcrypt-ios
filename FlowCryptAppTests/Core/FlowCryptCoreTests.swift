@@ -378,4 +378,42 @@ final class FlowCryptCoreTests: XCTestCase {
             XCTAssertNotNil(message.range(of: "Error: Misformed armored text"))
         }
     }
+
+    func testCoreResponseCorrectnessUnderConcurrency() async throws {
+        // given: a bunch of keys
+        let pp = "this particular pass phrase is long enough"
+        let k1 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k1@concurrent.test", name: "k1")])
+        let k2 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k2@concurrent.test", name: "k2")])
+        let k3 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k3@concurrent.test", name: "k3")])
+        let k4 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k4@concurrent.test", name: "k4")])
+        let k5 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k5@concurrent.test", name: "k5")])
+        // when: keys are parsed concurrently
+        async let p1prv = try core.parseKeys(armoredOrBinary: k1.key.private!.data())
+        async let p1pub = try core.parseKeys(armoredOrBinary: k1.key.public.data())
+        async let p2prv = try core.parseKeys(armoredOrBinary: k2.key.private!.data())
+        async let p2pub = try core.parseKeys(armoredOrBinary: k2.key.public.data())
+        async let p3prv = try core.parseKeys(armoredOrBinary: k3.key.private!.data())
+        async let p3pub = try core.parseKeys(armoredOrBinary: k3.key.public.data())
+        async let p4prv = try core.parseKeys(armoredOrBinary: k4.key.private!.data())
+        async let p4pub = try core.parseKeys(armoredOrBinary: k4.key.public.data())
+        async let p5prv = try core.parseKeys(armoredOrBinary: k5.key.private!.data())
+        async let p5pub = try core.parseKeys(armoredOrBinary: k5.key.public.data())
+        let prvs = try await [p1prv, p2prv, p3prv, p4prv, p5prv]
+        let pubs = try await [p1pub, p2pub, p3pub, p4pub, p5pub]
+        // then: parse results are not mixed up
+        for (i, parsed) in prvs.enumerated() {
+            XCTAssertEqual(
+                parsed.keyDetails.first?.pgpUserEmails.first,
+                "k\(i)@concurrent.test"
+            )
+            XCTAssertNotNil(parsed.keyDetails.first?.private)
+        }
+        for (i, parsed) in pubs.enumerated() {
+            XCTAssertEqual(
+                parsed.keyDetails.first?.pgpUserEmails.first,
+                "k\(i)@concurrent.test"
+            )
+            XCTAssertNil(parsed.keyDetails.first?.private)
+        }
+    }
 }
