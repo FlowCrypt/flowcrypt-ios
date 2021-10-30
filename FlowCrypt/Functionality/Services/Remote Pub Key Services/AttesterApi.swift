@@ -52,13 +52,13 @@ extension AttesterApi {
             return []
         }
 
-        let endpoint = ApiCall.Request(
+        let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: urlPub(emailOrLongid: email),
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
-        let res = try await ApiCall.asyncCall(endpoint)
+        let res = try await ApiCall.asyncCall(request)
 
         if res.status >= 200, res.status <= 299 {
             return try core.parseKeys(armoredOrBinary: res.data).keyDetails
@@ -84,7 +84,7 @@ extension AttesterApi {
             headers = []
         }
 
-        let endpoint = ApiCall.Request(
+        let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: urlPub(emailOrLongid: email),
             method: httpMethod,
@@ -92,28 +92,28 @@ extension AttesterApi {
             headers: headers
         )
         return Promise { () -> String in
-            let res = try awaitPromise(ApiCall.call(endpoint))
+            let res = try awaitPromise(ApiCall.call(request))
             return res.data.toStr()
         }
     }
 
     @discardableResult
     func replaceKey(email: String, pubkey: String) -> Promise<String> {
-        let endpoint = ApiCall.Request(
+        let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: urlPub(emailOrLongid: email),
             method: .post,
             body: pubkey.data()
         )
         return Promise { () -> String in
-            let res = try awaitPromise(ApiCall.call(endpoint))
+            let res = try awaitPromise(ApiCall.call(request))
             return res.data.toStr()
         }
     }
 
     @discardableResult
     func testWelcome(email: String, pubkey: String) -> Promise<Void> {
-        let endpoint = ApiCall.Request(
+        let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: Constants.baseURL + "test/welcome",
             method: .post,
@@ -121,7 +121,7 @@ extension AttesterApi {
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
         return Promise { () -> Void in
-            _ = try awaitPromise(ApiCall.call(endpoint)) // will throw on non-200
+            _ = try awaitPromise(ApiCall.call(request)) // will throw on non-200
         }
     }
 }

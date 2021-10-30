@@ -84,13 +84,13 @@ extension WkdApi {
             return (hasPolicy: false, key: nil)
         }
 
-        let endpoint = ApiCall.Request(
+        let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: urls.pubKeys,
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
-        let pubKeyResponse = try await ApiCall.asyncCall(endpoint)
+        let pubKeyResponse = try await ApiCall.asyncCall(request)
         if !pubKeyResponse.data.toStr().isEmpty {
             Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(urls.pubKeys) and will try to extract Public Keys")
         }

@@ -69,13 +69,13 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 return nil
             }
             let urlString = "https://fes.\(userDomain)/"
-            let endpoint = ApiCall.Request(
+            let request = ApiCall.Request(
                 apiName: Constants.apiName,
                 url: "\(urlString)api/",
                 timeout: Constants.getActiveFesTimeout,
                 tolerateStatus: Constants.getToleratedHTTPStatuses
             )
-            let response = try await ApiCall.asyncCall(endpoint)
+            let response = try await ApiCall.asyncCall(request)
 
             if Constants.getToleratedHTTPStatuses.contains(response.status) {
                 return nil
@@ -110,11 +110,11 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         if Configuration.publicEmailProviderDomains.contains(userDomain) {
             return .empty
         }
-        let endpoint = ApiCall.Request(
+        let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: "https://fes.\(userDomain)/api/v1/client-configuration?domain=\(userDomain)"
         )
-        let safeReponse = try await ApiCall.asyncCall(endpoint)
+        let safeReponse = try await ApiCall.asyncCall(request)
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
