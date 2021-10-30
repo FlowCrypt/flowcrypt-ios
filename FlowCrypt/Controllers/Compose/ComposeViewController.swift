@@ -46,6 +46,7 @@ final class ComposeViewController: TableNodeViewController {
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyService: KeyServiceType
+    private let keyMethods: KeyMethodsType
     private let service: ServiceActor
     private let passPhraseService: PassPhraseService
 
@@ -75,7 +76,8 @@ final class ComposeViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyService: KeyServiceType = KeyService(),
-        passPhraseService: PassPhraseService = PassPhraseService()
+        passPhraseService: PassPhraseService = PassPhraseService(),
+        keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
@@ -87,6 +89,7 @@ final class ComposeViewController: TableNodeViewController {
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.keyService = keyService
+        self.keyMethods = keyMethods
         self.service = ServiceActor(
             composeMessageService: composeMessageService,
             contactsService: contactsService,
@@ -340,8 +343,8 @@ extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<PrvKeyInfo, Error>) in
             guard let signingKey = try? keyService.getSigningKey() else {
-                let message = "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key."
-                showAlert(message: message)
+                showAlert(message: "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key.")
+                // todo - why unknown? Should be .missingSignignPrv ?
                 continuation.resume(throwing: MessageServiceError.unknown)
                 return
             }
@@ -350,25 +353,46 @@ extension ComposeViewController {
                 let alert = AlertsFactory.makePassPhraseAlert(
                     onCancel: { [weak self] in
                         self?.showAlert(message: "Passphrase is required for message signing")
+                        // tom - todo - what does .unknown mean here? Why is it unknown?
+                        //   shouldn't it be .userCanceledAction or something like that?
                         continuation.resume(throwing: MessageServiceError.unknown)
                     },
                     onCompletion: { [weak self] passPhrase in
-                        // save passphrase
-                        let keyInfo = signingKey.copy(with: passPhrase)
-                        self?.savePassPhrases(value: passPhrase, with: [keyInfo])
-                        continuation.resume(returning: keyInfo)
+                        guard let self = self else {
+                            continuation.resume(throwing: AppErr.nilSelf)
+                            return
+                        }
+                        // since pass phrase was entered (an inconvenient thing for user to do),
+                        //  let's find all keys that match and save the pass phrase for all
+                        guard let allKeys = try? self.keyService.getPrvKeyInfo().get(), allKeys.isNotEmpty else {
+                            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
+                            //   I copied it from another usage, but has to be changed
+                            continuation.resume(throwing: CoreError.notReady("Failed to load keys from storage"))
+                            return
+                        }
+                        let matchingKeys = self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
+                        // save passphrase for all matching keys
+                        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+                        // now figure out if the pass phrase also matched the signing prv itself
+                        let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
+                        if matched != nil {
+                            continuation.resume(returning: signingKey.copy(with: passPhrase))
+                            return
+                        } else {
+                            Task {
+                                do {
+                                    continuation.resume(returning: try await self.prepareSigningKey())
+                                } catch {
+                                    continuation.resume(throwing: error)
+                                }
+                            }
+                        }
                     })
                 present(alert, animated: true, completion: nil)
                 return
             }
             continuation.resume(returning: signingKey.copy(with: passphrase))
         }
-    }
-
-    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
-        privateKeys
-            .map { PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints) }
-            .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
     }
 
     private func sendMessage(_ signingKey: PrvKeyInfo) {
