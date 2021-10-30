@@ -243,6 +243,7 @@ final class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             let resJsonData = cb_last_value?.0.data(using: .utf8),
             let rawResponse = cb_last_value?.1
         else {
+            logger.logError("could not see callback response, got cb_last_value: \(String(describing: cb_last_value))")
             throw CoreError.format("JavaScript callback response not available")
         }
 
