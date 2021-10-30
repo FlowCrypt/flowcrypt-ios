@@ -73,7 +73,7 @@ final class KeyService: KeyServiceType {
             .map { keyInfo -> PrvKeyInfo in
                 let passphrase = storedPassPhrases
                     .filter { $0.value.isNotEmpty }
-                    .first(where: { $0.primaryFingerprint == keyInfo.primaryFingerprint })?
+                    .first(where: { $0.primaryFingerprintOfAssociatedKey == keyInfo.primaryFingerprint })?
                     .value
 
                 return PrvKeyInfo(keyInfo: keyInfo, passphrase: passphrase)
@@ -97,7 +97,7 @@ final class KeyService: KeyServiceType {
         let storedPassPhrases = passPhraseService.getPassPhrases()
         let passphrase = storedPassPhrases
             .filter { $0.value.isNotEmpty }
-            .first(where: { $0.primaryFingerprint == foundKey.primaryFingerprint })?
+            .first(where: { $0.primaryFingerprintOfAssociatedKey == foundKey.primaryFingerprint })?
             .value
 
         return PrvKeyInfo(keyInfo: foundKey, passphrase: passphrase)

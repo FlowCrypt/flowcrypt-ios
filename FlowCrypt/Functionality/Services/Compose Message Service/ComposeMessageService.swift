@@ -116,7 +116,7 @@ final class ComposeMessageService {
                     subject: subject,
                     replyToMimeMsg: replyToMimeMsg,
                     atts: sendableAttachments,
-                    pubKeys: allRecipientPubs + [myPubKey],
+                    pubKeys: [myPubKey] + allRecipientPubs,
                     signingPrv: signingPrv
                 )
             }

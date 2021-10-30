@@ -88,15 +88,8 @@ final class MessageService {
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
-        self.savePassPhrasesInMemory(value: passPhrase, with: matchingKeys)
+        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         return matchingKeys.isNotEmpty
-    }
-
-    private func savePassPhrasesInMemory(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
-        for privateKey in privateKeys {
-            let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: privateKey.fingerprints)
-            self.passPhraseService.savePassPhrase(with: pp, storageMethod: .memory)
-        }
     }
 
     func decryptAndProcessMessage(mime rawMimeData: Data) -> Promise<ProcessedMessage> {

@@ -367,7 +367,7 @@ extension ComposeViewController {
 
     private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
         privateKeys
-            .map { PassPhrase(value: passPhrase, fingerprints: $0.fingerprints) }
+            .map { PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints) }
             .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
     }
 

@@ -147,7 +147,7 @@ extension SetupBackupsViewController {
             // save pass phrase
             matchingKeyBackups
                 .map {
-                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
                     passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)

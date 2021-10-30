@@ -247,7 +247,7 @@ extension SetupManuallyEnterPassPhraseViewController {
         if storageMethod == .memory {
             keysToUpdate
                 .map {
-                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
                     passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
@@ -255,7 +255,7 @@ extension SetupManuallyEnterPassPhraseViewController {
 
             newKeysToAdd
                 .map {
-                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
                     passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)

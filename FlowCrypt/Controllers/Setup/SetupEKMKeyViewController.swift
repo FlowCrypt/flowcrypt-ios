@@ -102,7 +102,7 @@ extension SetupEKMKeyViewController {
             }
 
             if self.storageMethod == .memory {
-                let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
+                let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: allFingerprints.unique())
                 self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
             }
         }
