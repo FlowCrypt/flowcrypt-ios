@@ -61,6 +61,7 @@ final class MessageViewController: TableNodeViewController {
     private var input: MessageViewController.Input
     private let decorator: MessageViewDecorator
     private let messageService: MessageService
+    private let messageProvider: MessageProvider
     private let messageOperationsProvider: MessageOperationsProvider
     private let trashFolderProvider: TrashFolderProviderType
     private let filesManager: FilesManagerType
@@ -69,6 +70,7 @@ final class MessageViewController: TableNodeViewController {
     init(
         messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
+        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         filesManager: FilesManagerType = FilesManager(),
@@ -82,6 +84,7 @@ final class MessageViewController: TableNodeViewController {
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
         self.filesManager = filesManager
+        self.messageProvider = messageProvider
 
         super.init(node: TableNode())
     }
@@ -147,12 +150,8 @@ extension MessageViewController {
 
         Promise { [weak self] in
             guard let self = self else { return }
-            let promise = self.messageService.getAndProcessMessage(
-                with: self.input.objMessage,
-                folder: self.input.path
-            )
-            let message = try awaitPromise(promise)
-            self.processedMessage = message
+            let rawMimeData = try awaitPromise(self.messageProvider.fetchMsg(message: self.input.objMessage, folder: self.input.path))
+            self.processedMessage = try awaitPromise(self.messageService.decryptAndProcessMessage(mime: rawMimeData))
         }
         .then(on: .main) { [weak self] in
             self?.handleReceivedMessage()
@@ -162,17 +161,19 @@ extension MessageViewController {
         }
     }
 
-    private func validateMessage(rawMimeData: Data, with passPhrase: String) {
+    private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String) {
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
-
-        messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
-            .then(on: .main) { [weak self] message in
-                self?.processedMessage = message
-                self?.handleReceivedMessage()
+        do { // todo - should be a task on non-main thread?
+            let matched = try messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+            if matched {
+                self.processedMessage = try awaitPromise(self.messageService.decryptAndProcessMessage(mime: rawMimeData))
+                self.handleReceivedMessage()
+            } else {
+                handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleError(error)
-            }
+        } catch {
+            self.handleError(error)
+        }
     }
 
     private func handleReceivedMessage() {
@@ -210,8 +211,8 @@ extension MessageViewController {
         hideSpinner()
 
         switch error as? MessageServiceError {
-        case let .missedPassPhrase(rawMimeData):
-            handleMissedPassPhrase(for: rawMimeData)
+        case let .missingPassPhrase(rawMimeData):
+            handleMissingPassPhrase(for: rawMimeData)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
             handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
         case let .keyMismatch(rawMimeData):
@@ -231,13 +232,13 @@ extension MessageViewController {
         }
     }
 
-    private func handleMissedPassPhrase(for rawMimeData: Data) {
+    private func handleMissingPassPhrase(for rawMimeData: Data) {
         let alert = AlertsFactory.makePassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase)
             })
 
         present(alert, animated: true, completion: nil)
@@ -249,7 +250,7 @@ extension MessageViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase)
             })
         present(alert, animated: true, completion: nil)
     }

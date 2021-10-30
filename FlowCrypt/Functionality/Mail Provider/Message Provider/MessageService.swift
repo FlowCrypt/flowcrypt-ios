@@ -44,7 +44,7 @@ extension ProcessedMessage {
 
 // MARK: - MessageService
 enum MessageServiceError: Error {
-    case missedPassPhrase(_ rawMimeData: Data)
+    case missingPassPhrase(_ rawMimeData: Data)
     case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
     case keyMismatch(_ rawMimeData: Data)
     // Could not fetch keys
@@ -59,63 +59,49 @@ final class MessageService {
 
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
+    private let keyMethods: KeyMethodsType
     private let passPhraseService: PassPhraseServiceType
     private let core: Core
+    private let logger: Logger
 
     init(
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         keyService: KeyServiceType = KeyService(),
         core: Core = Core.shared,
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        passPhraseService: PassPhraseServiceType = PassPhraseService(),
+        keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.messageProvider = messageProvider
         self.keyService = keyService
         self.core = core
         self.passPhraseService = passPhraseService
+        self.logger = Logger.nested(in: Self.self, with: "MessageService")
+        self.keyMethods = keyMethods
     }
 
-    func validateMessage(rawMimeData: Data, with passPhrase: String) -> Promise<ProcessedMessage> {
-        Promise<ProcessedMessage> { [weak self] resolve, reject in
-            guard let self = self else { return }
+    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) throws -> Bool {
+        guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
+            throw MessageServiceError.emptyKeys
+        }
+        let keysWithoutPassPhrases = keys.filter { $0.passphrase == nil }
+        let matchingKeys = self.keyMethods.filterByPassPhraseMatch(
+            keys: keysWithoutPassPhrases,
+            passPhrase: passPhrase
+        )
+        self.savePassPhrasesInMemory(value: passPhrase, with: matchingKeys)
+        return matchingKeys.isNotEmpty
+    }
 
-            guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
-                return reject(MessageServiceError.emptyKeys)
-            }
-
-            let keysWithFilledPassPhrase = keys.map { $0.copy(with: passPhrase) }
-            let keysToSave = keys.filter { $0.passphrase == passPhrase }
-
-            self.savePassPhrases(value: passPhrase, with: keysToSave)
-
-            let decrypted = try self.core.parseDecryptMsg(
-                encrypted: rawMimeData,
-                keys: keysWithFilledPassPhrase,
-                msgPwd: nil,
-                isEmail: true
-            )
-
-            guard !self.hasWrongPassPhraseError(decrypted) else {
-                return reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
-            }
-
-            let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
-            resolve(processedMessage)
+    private func savePassPhrasesInMemory(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
+        for privateKey in privateKeys {
+            let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: privateKey.fingerprints)
+            self.passPhraseService.savePassPhrase(with: pp, storageMethod: .memory)
         }
     }
 
-    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
-        privateKeys
-            .map { PassPhrase(value: passPhrase, fingerprints: $0.fingerprints) }
-            .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
-    }
-
-    func getAndProcessMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
+    func decryptAndProcessMessage(mime rawMimeData: Data) -> Promise<ProcessedMessage> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
-
-            let rawMimeData = try awaitPromise(
-                self.messageProvider.fetchMsg(message: input, folder: folder)
-            )
 
             guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
                 return reject(CoreError.notReady("Failed to load keys from storage"))
@@ -128,8 +114,8 @@ final class MessageService {
                 isEmail: true
             )
 
-            guard !self.hasWrongPassPhraseError(decrypted) else {
-                return reject(MessageServiceError.missedPassPhrase(rawMimeData))
+            guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
+                return reject(MessageServiceError.missingPassPhrase(rawMimeData))
             }
 
             let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
@@ -137,7 +123,7 @@ final class MessageService {
             case .error(let errorType):
                 switch errorType {
                 case .needPassphrase:
-                    reject(MessageServiceError.missedPassPhrase(rawMimeData))
+                    reject(MessageServiceError.missingPassPhrase(rawMimeData))
                 case .keyMismatch:
                     reject(MessageServiceError.keyMismatch(rawMimeData))
                 default:
@@ -190,8 +176,13 @@ final class MessageService {
         )
     }
 
-    private func hasWrongPassPhraseError(_ msg: CoreRes.ParseDecryptMsg) -> Bool {
-        msg.blocks.first(where: { $0.decryptErr?.error.type == .needPassphrase }) != nil
+    private func hasMsgBlockThatNeedsPassPhrase(_ msg: CoreRes.ParseDecryptMsg) -> Bool {
+        let maybeBlock = msg.blocks.first(where: { $0.decryptErr?.error.type == .needPassphrase })
+        guard let block = maybeBlock, let decryptErr = block.decryptErr else {
+            return false
+        }
+        logger.logInfo("missing pass phrase for one of longids \(decryptErr.longids)")
+        return true
     }
 }
 
