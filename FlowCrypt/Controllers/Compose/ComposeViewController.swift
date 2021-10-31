@@ -332,7 +332,9 @@ extension ComposeViewController {
                 let key = try await prepareSigningKey()
                 try await sendMessage(key)
             } catch {
-                handle(error: error)
+                DispatchQueue.main.async {
+                    self.handle(error: error)
+                }
             }
         }
     }
