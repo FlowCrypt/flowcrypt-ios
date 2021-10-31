@@ -222,7 +222,7 @@ extension SetupManuallyImportKeyViewController: UIDocumentPickerDelegate {
                 do {
                     try await self.parseUserProvided(data: metadata)
                 } catch {
-                    userInfoMessage = error.localizedDescription
+                    self.userInfoMessage = error.localizedDescription
                 }
             }
         }

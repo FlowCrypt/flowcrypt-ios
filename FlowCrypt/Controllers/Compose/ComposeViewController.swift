@@ -342,9 +342,8 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
-        guard let signingKey = try? keyService.getSigningKey() else {
-//            showAlert(message: "None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
-            throw KeyServiceError.retrieve
+        guard let signingKey = try await keyService.getSigningKey() else {
+            throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
         guard let existingPassPhrase = signingKey.passphrase else {
             return signingKey.copy(with: try await self.requestMissingPassPhraseWithModal(for: signingKey))
@@ -363,15 +362,17 @@ extension ComposeViewController {
                         continuation.resume(throwing: AppErr.nilSelf)
                         return
                     }
-                    do {
-                        let matched = try self.handlePassPhraseEntry(passPhrase, for: signingKey)
-                        if matched {
-                            continuation.resume(returning: passPhrase)
-                        } else {
-                            throw AppErr.user("This pass phrase did not match your signing private key")
+                    Task {
+                        do {
+                            let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
+                            if matched {
+                                continuation.resume(returning: passPhrase)
+                            } else {
+                                throw AppErr.user("This pass phrase did not match your signing private key")
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
                         }
-                    } catch {
-                        continuation.resume(throwing: error)
                     }
                 }
             )
@@ -379,15 +380,16 @@ extension ComposeViewController {
         }
     }
 
-    private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) throws -> Bool {
+    private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        guard let allKeys = try? self.keyService.getPrvKeyInfo().get(), allKeys.isNotEmpty else {
+        let allKeys = try await self.keyService.getPrvKeyInfo()
+        guard allKeys.isNotEmpty else {
             // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
             //   I copied it from another usage, but has to be changed
             throw KeyServiceError.retrieve
         }
-        let matchingKeys = self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
+        let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
         self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         // now figure out if the pass phrase also matched the signing prv itself
@@ -403,7 +405,9 @@ extension ComposeViewController {
         showSpinner(spinnerTitle.localized)
 
         let selectedRecipients = contextToSend.recipients.filter(\.state.isSelected)
-        selectedRecipients.forEach(evaluate)
+        for selectedRecipient in selectedRecipients {
+            evaluate(recipient: selectedRecipient)
+        }
 
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291

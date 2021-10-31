@@ -321,7 +321,7 @@ extension SetupInitialViewController {
         let viewController = SetupGenerateKeyViewController(user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
-    private func proceedToSetupWithEKMKeys(keys: [CoreRes.ParseKeys]) {
+    private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {
         let viewController = SetupEKMKeyViewController(user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }

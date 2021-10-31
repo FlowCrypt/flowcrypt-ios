@@ -13,7 +13,7 @@ extension GmailService: BackupProvider {
     func searchBackups(for email: String) async throws -> Data {
         do {
             logger.logVerbose("will begin searching for backups")
-            let query = try backupSearchQueryProvider.makeBackupQuery(for: email)
+            let query = try await backupSearchQueryProvider.makeBackupQuery(for: email)
             let backupMessages = try await searchExpression(using: MessageSearchContext(expression: query))
             logger.logVerbose("searching done, found \(backupMessages.count) backup messages")
             let uniqueMessages = Set(backupMessages)

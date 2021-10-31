@@ -28,13 +28,13 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
     override var parts: [SetupCreatePassphraseAbstractViewController.Parts] {
         SetupCreatePassphraseAbstractViewController.Parts.ekmKeysSetup
     }
-    private let keys: [CoreRes.ParseKeys]
+    private let keys: [KeyDetails]
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
         user: UserId,
-        keys: [CoreRes.ParseKeys] = [],
+        keys: [KeyDetails] = [],
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
@@ -91,28 +91,24 @@ extension SetupEKMKeyViewController {
 
     private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) async throws {
         self.showSpinner()
-        try awaitPromise( // todo - convert to async
-            self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
-        )
+        try await self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
         var allFingerprints: [String] = []
-        for key in self.keys {
-            for keyDetail in key.keyDetails {
-                guard let privateKey = keyDetail.private else {
-                    throw CreatePassphraseWithExistingKeyError.noPrivateKey
-                }
-                let encryptedPrv = try await self.core.encryptKey(
-                    armoredPrv: privateKey,
-                    passphrase: passPhrase
-                )
-                let parsedKey = try await self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-                self.keyStorage.addKeys(
-                    keyDetails: parsedKey.keyDetails,
-                    passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
-                    source: .ekm,
-                    for: self.user.email
-                )
-                allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
+        for keyDetail in self.keys {
+            guard let privateKey = keyDetail.private else {
+                throw CreatePassphraseWithExistingKeyError.noPrivateKey
             }
+            let encryptedPrv = try await self.core.encryptKey(
+                armoredPrv: privateKey,
+                passphrase: passPhrase
+            )
+            let parsedKey = try await self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
+            self.keyStorage.addKeys(
+                keyDetails: parsedKey.keyDetails,
+                passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
+                source: .ekm,
+                for: self.user.email
+            )
+            allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
         }
         if self.storageMethod == .memory {
             let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: allFingerprints.unique())

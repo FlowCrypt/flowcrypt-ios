@@ -18,7 +18,7 @@ enum EmailKeyManagerApiError: Error {
 }
 
 enum EmailKeyManagerApiResult {
-    case success(keys: [CoreRes.ParseKeys])
+    case success(keys: [KeyDetails])
     case noKeys
     case keysAreNotDecrypted
 }
@@ -79,19 +79,19 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             return .noKeys
         }
 
-        let privateKeys = decryptedPrivateKeysResponse.privateKeys
-            .map { $0.decryptedPrivateKey.data() }
-        let parsedPrivateKeys = privateKeys
-            .compactMap { try? core.parseKeys(armoredOrBinary: $0) }
-        let areKeysDecrypted = parsedPrivateKeys
-            .compactMap { $0.keyDetails.map { $0.isFullyDecrypted } }
-            .flatMap { $0 }
-
+        let privateKeysArmored = decryptedPrivateKeysResponse.privateKeys
+            .map { $0.decryptedPrivateKey }
+            .joined(separator: "\n")
+            .data()
+        let parsedPrivateKeys = try await core.parseKeys(armoredOrBinary: privateKeysArmored)
+        // todo - check that parsedPrivateKeys don't contain public keys
+        let areKeysDecrypted = parsedPrivateKeys.keyDetails
+            .compactMap { $0.isFullyDecrypted }
         if areKeysDecrypted.contains(false) {
             return .keysAreNotDecrypted
         }
 
-        return .success(keys: parsedPrivateKeys)
+        return .success(keys: parsedPrivateKeys.keyDetails)
     }
 
     private func getPrivateKeysUrlString() -> String? {

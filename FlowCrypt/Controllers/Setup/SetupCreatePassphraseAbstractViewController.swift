@@ -137,50 +137,37 @@ extension SetupCreatePassphraseAbstractViewController {
 
 extension SetupCreatePassphraseAbstractViewController {
 
-    func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
-        Promise { [weak self] in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
-
-            guard strength.word.pass else {
-                throw CreateKeyError.weakPassPhrase(strength)
-            }
-
-            let confirmPassPhrase = try awaitPromise(self.awaitUserPassPhraseEntry())
-
-            guard confirmPassPhrase != nil else {
-                throw CreateKeyError.conformingPassPhraseError
-            }
-
-            guard confirmPassPhrase == passPhrase else {
-                throw CreateKeyError.doesntMatch
-            }
+    func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) async throws {
+        let strength = try await self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
+        guard strength.word.pass else {
+            throw CreateKeyError.weakPassPhrase(strength)
+        }
+        let confirmPassPhrase = try await self.awaitUserPassPhraseEntry()
+        guard confirmPassPhrase != nil else {
+            throw CreateKeyError.conformingPassPhraseError
+        }
+        guard confirmPassPhrase == passPhrase else {
+            throw CreateKeyError.doesntMatch
         }
     }
 
-    private func awaitUserPassPhraseEntry() -> Promise<String?> {
-        Promise<String?>(on: .main) { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let alert = UIAlertController(
-                title: "Pass Phrase",
-                message: "Confirm Pass Phrase",
-                preferredStyle: .alert
-            )
-
-            alert.addTextField { textField in
-                textField.isSecureTextEntry = true
-                textField.accessibilityLabel = "textField"
-            }
-
+    private func awaitUserPassPhraseEntry() async throws -> String? {
+        let alert = UIAlertController(
+            title: "await Pass Phrase",
+            message: "Confirm Pass Phrase",
+            preferredStyle: .alert
+        )
+        alert.addTextField { textField in
+            textField.isSecureTextEntry = true
+            textField.accessibilityLabel = "textField"
+        }
+        return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
             alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
-                resolve(nil)
+                continuation.resume(returning: nil)
             })
-
             alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
-                resolve(alert?.textFields?[0].text)
+                continuation.resume(returning: alert?.textFields?[0].text)
             })
-
             self.present(alert, animated: true, completion: nil)
         }
     }

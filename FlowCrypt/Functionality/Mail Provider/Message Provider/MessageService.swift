@@ -79,12 +79,13 @@ final class MessageService {
         self.keyMethods = keyMethods
     }
 
-    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) throws -> Bool {
-        guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
+    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
+        let keys = try await self.keyService.getPrvKeyInfo()
+        guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
         let keysWithoutPassPhrases = keys.filter { $0.passphrase == nil }
-        let matchingKeys = self.keyMethods.filterByPassPhraseMatch(
+        let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
@@ -96,7 +97,8 @@ final class MessageService {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
             Task<Void, Error> {
-                guard let keys = try await self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
+                let keys = try await self.keyService.getPrvKeyInfo()
+                guard keys.isNotEmpty else {
                     return reject(CoreError.notReady("Failed to load keys from storage"))
                 }
                 let decrypted = try await self.core.parseDecryptMsg(
@@ -109,7 +111,7 @@ final class MessageService {
                     return reject(MessageServiceError.missingPassPhrase(rawMimeData))
                 }
 
-                let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+                let processedMessage = try await self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
                 switch processedMessage.messageType {
                 case .error(let errorType):
                     switch errorType {
@@ -128,26 +130,25 @@ final class MessageService {
         }
     }
 
-    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg, keys: [PrvKeyInfo]) throws -> ProcessedMessage {
+    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg, keys: [PrvKeyInfo]) async throws -> ProcessedMessage {
         let decryptErrBlocks = decrypted.blocks
             .filter { $0.decryptErr != nil }
-
-        let attachments = try decrypted.blocks
+        let attachmentBlocks = decrypted.blocks
             .filter(\.isAttachmentBlock)
-            .compactMap { block -> MessageAttachment? in
-                guard let attMeta = block.attMeta else { return nil }
-                var name = attMeta.name
-                let size = attMeta.length
-                var data = attMeta.data
-
-                if block.type == .encryptedAtt {
-                    data = (try core.decryptFile(encrypted: data, keys: keys, msgPwd: nil).content)
-                    name = name.deletingPathExtension
-                }
-
-                return MessageAttachment(name: name, size: size, data: data)
+        var attachments: [MessageAttachment] = []
+        for block in attachmentBlocks {
+            guard let meta = block.attMeta else { continue }
+            var name = meta.name
+            var data = meta.data
+            var size = meta.length
+            if block.type == .encryptedAtt { // decrypt
+                let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
+                data = decrypted.content
+                name = decrypted.name
+                size = decrypted.content.count
             }
-
+            attachments.append(MessageAttachment(name: name, size: size, data: data))
+        }
         let messageType: ProcessedMessage.MessageType
         let text: String
 

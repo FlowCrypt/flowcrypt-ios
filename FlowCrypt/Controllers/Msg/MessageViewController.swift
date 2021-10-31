@@ -165,7 +165,7 @@ extension MessageViewController {
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
         Task {
             do {
-                let matched = try messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+                let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
                     self.processedMessage = try awaitPromise(self.messageService.decryptAndProcessMessage(mime: rawMimeData))
                     self.handleReceivedMessage()

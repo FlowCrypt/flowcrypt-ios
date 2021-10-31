@@ -44,9 +44,14 @@ final class KeySettingsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
         node.reloadData()
-
-        loadKeysFromStorageAndRender()
         setupNavigationBar()
+        Task {
+            do {
+                try await loadKeysFromStorageAndRender()
+            } catch {
+                handleCommon(error: error)
+            }
+        }
     }
 
     private func setupNavigationBar() {
@@ -61,14 +66,9 @@ final class KeySettingsViewController: TableNodeViewController {
 }
 
 extension KeySettingsViewController {
-    private func loadKeysFromStorageAndRender() {
-        switch keyService.getPrvKeyDetails() {
-        case let .failure(error):
-            handleCommon(error: error)
-        case let .success(keys):
-            self.keys = keys
-            node.reloadData()
-        }
+    private func loadKeysFromStorageAndRender() async throws {
+        self.keys = try await keyService.getPrvKeyDetails()
+        await node.reloadData()
     }
 }
 

@@ -210,7 +210,7 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
             storageMethod = .memory
         default:
             break
-        } async
+        }
     }
 }
 
@@ -225,7 +225,7 @@ extension SetupManuallyEnterPassPhraseViewController {
             return
         }
         showSpinner()
-        let matchingKeys = keyMethods.filterByPassPhraseMatch(
+        let matchingKeys = try await keyMethods.filterByPassPhraseMatch(
             keys: fetchedKeys,
             passPhrase: passPhrase
         )
