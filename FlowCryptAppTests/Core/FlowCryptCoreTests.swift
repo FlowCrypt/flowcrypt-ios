@@ -7,6 +7,7 @@
 
 import Combine
 @testable import FlowCrypt
+import FlowCryptCommon
 import XCTest
 
 final class FlowCryptCoreTests: XCTestCase {
@@ -96,7 +97,7 @@ final class FlowCryptCoreTests: XCTestCase {
             _ = try await core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong")
             XCTFail("Should have thrown above")
         } catch {
-            // todo - should check exact thrown error
+            Logger.logDebug("catched \(error)")
             return
         }
         XCTFail("Should have thrown above")

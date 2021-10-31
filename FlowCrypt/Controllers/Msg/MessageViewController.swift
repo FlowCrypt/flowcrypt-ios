@@ -147,17 +147,18 @@ final class MessageViewController: TableNodeViewController {
 extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
-
-        Promise { [weak self] in
-            guard let self = self else { return }
-            let rawMimeData = try awaitPromise(self.messageProvider.fetchMsg(message: self.input.objMessage, folder: self.input.path))
-            self.processedMessage = try awaitPromise(self.messageService.decryptAndProcessMessage(mime: rawMimeData))
-        }
-        .then(on: .main) { [weak self] in
-            self?.handleReceivedMessage()
-        }
-        .catch(on: .main) { [weak self] error in
-            self?.handleError(error)
+        Task {
+            do {
+                let rawMimeData = try awaitPromise(self.messageProvider.fetchMsg(message: self.input.objMessage, folder: self.input.path))
+                self.processedMessage = try await self.messageService.decryptAndProcessMessage(mime: rawMimeData)
+                DispatchQueue.main.async {
+                    self.handleReceivedMessage()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.handleError(error)
+                }
+            }
         }
     }
 
@@ -167,7 +168,7 @@ extension MessageViewController {
             do {
                 let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
-                    self.processedMessage = try awaitPromise(self.messageService.decryptAndProcessMessage(mime: rawMimeData))
+                    self.processedMessage = try await self.messageService.decryptAndProcessMessage(mime: rawMimeData)
                     self.handleReceivedMessage()
                 } else {
                     handleWrongPathPhrase(for: rawMimeData, with: passPhrase)

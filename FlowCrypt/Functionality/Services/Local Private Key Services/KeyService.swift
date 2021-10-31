@@ -21,7 +21,6 @@ enum KeyServiceError: Error {
 
 final class KeyService: KeyServiceType {
 
-
     let coreService: Core = .shared
     let storage: KeyStorageType
     let passPhraseService: PassPhraseServiceType
@@ -105,7 +104,7 @@ final class KeyService: KeyServiceType {
             guard let parsedKey = parsedKeys.keyDetails.first else {
                 throw KeyServiceError.parsingError
             }
-            logger.logDebug("findKeyByUserEmail: PrvKeyInfo from storage has primary fingerprint \(keyInfo.primaryFingerprint) vs parsed key \(parsedKey.primaryFingerprint) and has emails \(parsedKey.pgpUserEmails)")
+//            logger.logDebug("findKeyByUserEmail: PrvKeyInfo from storage has primary fingerprint \(keyInfo.primaryFingerprint) vs parsed key \(parsedKey.primaryFingerprint) and has emails \(parsedKey.pgpUserEmails)")
             keys.append((keyInfo, parsedKey))
         }
         if let primaryEmailMatch = keys.first(where: { $0.1.pgpUserEmails.first?.lowercased() == email.lowercased() }) {

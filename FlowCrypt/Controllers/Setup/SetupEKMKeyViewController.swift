@@ -65,14 +65,17 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
         Task {
             do {
                 try await setupAccountWithKeysFetchedFromEkm(with: passphrase)
-                // todo - do this on main thread?
                 self.hideSpinner()
-                self.moveToMainFlow()
+                DispatchQueue.main.async {
+                    self.moveToMainFlow()
+                }
             } catch {
                 self.hideSpinner()
-                let isErrorHandled = self.handleCommon(error: error)
-                if !isErrorHandled {
-                    self.showAlert(error: error, message: "Could not finish setup, please try again")
+                DispatchQueue.main.async {
+                    let isErrorHandled = self.handleCommon(error: error)
+                    if !isErrorHandled {
+                        self.showAlert(error: error, message: "Could not finish setup, please try again")
+                    }
                 }
             }
         }
