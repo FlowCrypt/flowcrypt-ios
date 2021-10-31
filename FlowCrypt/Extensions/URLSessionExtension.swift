@@ -58,16 +58,13 @@ extension URLSession {
     func asyncCall(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
         let trace = Trace(id: "asyncCall")
 
-        let data: Data
-        let response: URLResponse
+        var data: Data?
+        var response: URLResponse?
+        var requestError: Error?
         do {
             (data, response) = try await self.data(for: urlRequest)
         } catch {
-            throw HttpErr(
-                status: GeneralConstants.Global.generalError,
-                data: nil,
-                error: error
-            )
+            requestError = error
         }
 
         let res = response as? HTTPURLResponse
@@ -80,11 +77,13 @@ extension URLSession {
 
         let validStatusCode = 200 ... 299
         let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
-        guard validStatusCode ~= status || isInToleranceStatusCodes else {
-            throw HttpErr(status: status, data: data, error: nil)
+        let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes
+        let isValidResponse = requestError == nil && isCodeValid
+        if let data = data, isValidResponse {
+            return HttpRes(status: status, data: data)
+        } else {
+            throw (HttpErr(status: status, data: data, error: requestError))
         }
-
-        return HttpRes(status: status, data: data)
     }
 }
 
