@@ -62,7 +62,21 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
     }
 
     override func setupAccount(with passphrase: String) {
-        setupAccountWithKeysFetchedFromEkm(with: passphrase)
+        Task {
+            do {
+                try await setupAccountWithKeysFetchedFromEkm(with: passphrase)
+                // todo - do this on main thread?
+                self.hideSpinner()
+                self.moveToMainFlow()
+            } catch {
+                self.hideSpinner()
+                let isErrorHandled = self.handleCommon(error: error)
+                if !isErrorHandled {
+                    self.showAlert(error: error, message: "Could not finish setup, please try again")
+                }
+            }
+        }
+
     }
 
     override func setupUI() {
@@ -75,50 +89,34 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
 
 extension SetupEKMKeyViewController {
 
-    private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) {
-        Promise { [weak self] in
-            guard let self = self else { return }
-            self.showSpinner()
-
-            try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
-
-            var allFingerprints: [String] = []
-            try self.keys.forEach { key in
-                try key.keyDetails.forEach { keyDetail in
-                    guard let privateKey = keyDetail.private else {
-                        throw CreatePassphraseWithExistingKeyError.noPrivateKey
-                    }
-                    let encryptedPrv = try self.core.encryptKey(
-                        armoredPrv: privateKey,
-                        passphrase: passPhrase
-                    )
-                    let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails,
-                                            passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
-                                            source: .ekm,
-                                            for: self.user.email)
-                    allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
+    private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) async throws {
+        self.showSpinner()
+        try awaitPromise( // todo - convert to async
+            self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
+        )
+        var allFingerprints: [String] = []
+        for key in self.keys {
+            for keyDetail in key.keyDetails {
+                guard let privateKey = keyDetail.private else {
+                    throw CreatePassphraseWithExistingKeyError.noPrivateKey
                 }
-            }
-
-            if self.storageMethod == .memory {
-                let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: allFingerprints.unique())
-                self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
+                let encryptedPrv = try await self.core.encryptKey(
+                    armoredPrv: privateKey,
+                    passphrase: passPhrase
+                )
+                let parsedKey = try await self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
+                self.keyStorage.addKeys(
+                    keyDetails: parsedKey.keyDetails,
+                    passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
+                    source: .ekm,
+                    for: self.user.email
+                )
+                allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
             }
         }
-        .then(on: .main) { [weak self] in
-            self?.hideSpinner()
-            self?.moveToMainFlow()
-        }
-        .catch(on: .main) { [weak self] error in
-            guard let self = self else { return }
-            self.hideSpinner()
-
-            let isErrorHandled = self.handleCommon(error: error)
-
-            if !isErrorHandled {
-                self.showAlert(error: error, message: "Could not finish setup, please try again")
-            }
+        if self.storageMethod == .memory {
+            let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: allFingerprints.unique())
+            self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
         }
     }
 }

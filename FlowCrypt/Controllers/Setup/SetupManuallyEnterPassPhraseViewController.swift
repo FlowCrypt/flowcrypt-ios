@@ -176,7 +176,15 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                     insets: self.decorator.insets.buttonInsets
                 )
                 return ButtonCellNode(input: input) { [weak self] in
-                    self?.handleContinueAction()
+                    guard let self = self else { return }
+                    Task {
+                        do {
+                            try await self.handleContinueAction()
+                        } catch {
+                            self.handleCommon(error: error)
+                        }
+                    }
+
                 }
             case .chooseAnother:
                 return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
@@ -202,39 +210,31 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
             storageMethod = .memory
         default:
             break
-        }
+        } async
     }
 }
 
 // MARK: - Actions
 
 extension SetupManuallyEnterPassPhraseViewController {
-    private func handleContinueAction() {
+    private func handleContinueAction() async throws {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
-
         guard passPhrase.isNotEmpty else {
             showAlert(message: "setup_enter_pass_phrase".localized)
             return
         }
         showSpinner()
-
         let matchingKeys = keyMethods.filterByPassPhraseMatch(
             keys: fetchedKeys,
             passPhrase: passPhrase
         )
-
         guard matchingKeys.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-
-        switch keyService.getPrvKeyDetails() {
-        case let .failure(error):
-            handleCommon(error: error)
-        case let .success(existedKeys):
-            importKeys(with: existedKeys, and: passPhrase)
-        }
+        let keyDetails = try await keyService.getPrvKeyDetails()
+        importKeys(with: keyDetails, and: passPhrase)
     }
 
     private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) {

@@ -22,8 +22,8 @@ final class FlowCryptCoreTests: XCTestCase {
 
     // the tests below
 
-    func testVersions() throws {
-        let r = try core.version()
+    func testVersions() async throws {
+        let r = try await core.version()
         XCTAssertEqual(r.app_version, "iOS 0.2")
     }
 
@@ -41,8 +41,8 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(r.key.ids.count, 2)
     }
 
-    func testZxcvbnStrengthBarWeak() throws {
-        let r = try core.zxcvbnStrengthBar(passPhrase: "nothing much")
+    func testZxcvbnStrengthBarWeak() async throws {
+        let r = try await core.zxcvbnStrengthBar(passPhrase: "nothing much")
         XCTAssertEqual(r.word.word, CoreRes.ZxcvbnStrengthBar.WordDetails.Word.weak)
         XCTAssertEqual(r.word.pass, false)
         XCTAssertEqual(r.word.color, CoreRes.ZxcvbnStrengthBar.WordDetails.Color.red)
@@ -50,8 +50,8 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(r.time, "less than a second")
     }
 
-    func testZxcvbnStrengthBarStrong() throws {
-        let r = try core.zxcvbnStrengthBar(passPhrase: "this one is seriously over the top strong pwd")
+    func testZxcvbnStrengthBarStrong() async throws {
+        let r = try await core.zxcvbnStrengthBar(passPhrase: "this one is seriously over the top strong pwd")
         XCTAssertEqual(r.word.word, CoreRes.ZxcvbnStrengthBar.WordDetails.Word.perfect)
         XCTAssertEqual(r.word.pass, true)
         XCTAssertEqual(r.word.color, CoreRes.ZxcvbnStrengthBar.WordDetails.Color.green)
@@ -59,8 +59,8 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(r.time, "millennia")
     }
 
-    func testParseKeys() throws {
-        let r = try core.parseKeys(armoredOrBinary: TestData.k0.pub.data(using: .utf8)! + [10] + TestData.k1.prv.data(using: .utf8)!)
+    func testParseKeys() async throws {
+        let r = try await core.parseKeys(armoredOrBinary: TestData.k0.pub.data(using: .utf8)! + [10] + TestData.k1.prv.data(using: .utf8)!)
         XCTAssertEqual(r.format, CoreRes.ParseKeys.Format.armored)
         XCTAssertEqual(r.keyDetails.count, 2)
         // k0 k is public
@@ -82,17 +82,24 @@ final class FlowCryptCoreTests: XCTestCase {
         // todo - could test user ids
     }
 
-    func testDecryptKeyWithCorrectPassPhrase() throws {
-        let decryptKeyRes = try core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: TestData.k0.passphrase)
+    func testDecryptKeyWithCorrectPassPhrase() async throws {
+        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: TestData.k0.passphrase)
         XCTAssertNotNil(decryptKeyRes.decryptedKey)
         // make sure indeed decrypted
-        let parseKeyRes = try core.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey.data(using: .utf8)!)
+        let parseKeyRes = try await core.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey.data(using: .utf8)!)
         XCTAssertEqual(parseKeyRes.keyDetails[0].isFullyDecrypted, true)
         XCTAssertEqual(parseKeyRes.keyDetails[0].isFullyEncrypted, false)
     }
 
-    func testDecryptKeyWithWrongPassPhrase() {
-        XCTAssertThrowsError(try core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong"))
+    func testDecryptKeyWithWrongPassPhrase() async {
+        do {
+            _ = try await core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong")
+            XCTFail("Should have thrown above")
+        } catch {
+            // todo - should check exact thrown error
+            return
+        }
+        XCTFail("Should have thrown above")
     }
 
     func testComposeEmailPlain() async throws {
@@ -187,7 +194,7 @@ final class FlowCryptCoreTests: XCTestCase {
         )
         let mime = try await core.composeEmail(msg: msg, fmt: .encryptInline)
         let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase, fingerprints: k.fingerprints)]
-        let decrypted = try core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true)
+        let decrypted = try await core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true)
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.encrypted)
         XCTAssertEqual(decrypted.blocks.count, 1)
@@ -198,9 +205,9 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertNotNil(b.content.range(of: text)) // original text contained within the formatted html block
     }
 
-    func testDecryptErrMismatch() throws {
+    func testDecryptErrMismatch() async throws {
         let key = PrvKeyInfo(private: TestData.k0.prv, longid: TestData.k0.longid, passphrase: TestData.k0.passphrase, fingerprints: TestData.k0.fingerprints)
-        let r = try core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false)
+        let r = try await core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false)
         let decrypted = r
         XCTAssertEqual(decrypted.text, "")
         XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.plain) // replies to errors should be plain
@@ -240,12 +247,12 @@ final class FlowCryptCoreTests: XCTestCase {
         ]
 
         // When
-        let encrypted = try core.encryptFile(
+        let encrypted = try await core.encryptFile(
             pubKeys: [k.public],
             fileData: fileData,
             name: initialFileName
         )
-        let decrypted = try core.decryptFile(
+        let decrypted = try await core.decryptFile(
             encrypted: encrypted.encryptedFile,
             keys: keys,
             msgPwd: nil
@@ -282,7 +289,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // When
         do {
-            _ = try self.core.decryptFile(
+            _ = try await core.decryptFile(
                 encrypted: fileData,
                 keys: keys,
                 msgPwd: nil
@@ -312,12 +319,12 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // When
         do {
-            let encrypted = try core.encryptFile(
+            let encrypted = try await core.encryptFile(
                 pubKeys: [k.public],
                 fileData: fileData,
                 name: initialFileName
             )
-            _ = try self.core.decryptFile(
+            _ = try await core.decryptFile(
                 encrypted: encrypted.encryptedFile,
                 keys: [],
                 msgPwd: nil
@@ -354,12 +361,12 @@ final class FlowCryptCoreTests: XCTestCase {
         ]
 
         // When
-        let encrypted = try core.encryptFile(
+        let encrypted = try await core.encryptFile(
             pubKeys: [k.public],
             fileData: fileData,
             name: initialFileName
         )
-        let decrypted = try self.core.decryptFile(
+        let decrypted = try await core.decryptFile(
             encrypted: encrypted.encryptedFile,
             keys: keys,
             msgPwd: nil
@@ -370,47 +377,50 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(decrypted.content.count, fileData.count)
     }
 
-    func testException() throws {
+    func testException() async throws {
         do {
-            _ = try core.decryptKey(armoredPrv: "not really a key", passphrase: "whatnot")
+            _ = try await core.decryptKey(armoredPrv: "not really a key", passphrase: "whatnot")
             XCTFail("Should have thrown above")
         } catch let CoreError.exception(message) {
             XCTAssertNotNil(message.range(of: "Error: Misformed armored text"))
         }
     }
 
+    // this test is only meaningful on a real device
+    // it passes on simulator even if implementation is broken
+    // maybe there's a way to run simulator with more cores? (on a mac that has them) which would simulate real device better
     func testCoreResponseCorrectnessUnderConcurrency() async throws {
         // given: a bunch of keys
         let pp = "this particular pass phrase is long enough"
+        let k0 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k0@concurrent.test", name: "k0")])
         let k1 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k1@concurrent.test", name: "k1")])
         let k2 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k2@concurrent.test", name: "k2")])
         let k3 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k3@concurrent.test", name: "k3")])
         let k4 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k4@concurrent.test", name: "k4")])
-        let k5 = try await core.generateKey(passphrase: pp, variant: KeyVariant.curve25519, userIds: [UserId(email: "k5@concurrent.test", name: "k5")])
         // when: keys are parsed concurrently
-        async let p1prv = try core.parseKeys(armoredOrBinary: k1.key.private!.data())
-        async let p1pub = try core.parseKeys(armoredOrBinary: k1.key.public.data())
-        async let p2prv = try core.parseKeys(armoredOrBinary: k2.key.private!.data())
-        async let p2pub = try core.parseKeys(armoredOrBinary: k2.key.public.data())
-        async let p3prv = try core.parseKeys(armoredOrBinary: k3.key.private!.data())
-        async let p3pub = try core.parseKeys(armoredOrBinary: k3.key.public.data())
-        async let p4prv = try core.parseKeys(armoredOrBinary: k4.key.private!.data())
-        async let p4pub = try core.parseKeys(armoredOrBinary: k4.key.public.data())
-        async let p5prv = try core.parseKeys(armoredOrBinary: k5.key.private!.data())
-        async let p5pub = try core.parseKeys(armoredOrBinary: k5.key.public.data())
-        let prvs = try await [p1prv, p2prv, p3prv, p4prv, p5prv]
-        let pubs = try await [p1pub, p2pub, p3pub, p4pub, p5pub]
+        async let p0prv = try await core.parseKeys(armoredOrBinary: k0.key.private!.data())
+        async let p0pub = try await core.parseKeys(armoredOrBinary: k0.key.public.data())
+        async let p1prv = try await core.parseKeys(armoredOrBinary: k1.key.private!.data())
+        async let p1pub = try await core.parseKeys(armoredOrBinary: k1.key.public.data())
+        async let p2prv = try await core.parseKeys(armoredOrBinary: k2.key.private!.data())
+        async let p2pub = try await core.parseKeys(armoredOrBinary: k2.key.public.data())
+        async let p3prv = try await core.parseKeys(armoredOrBinary: k3.key.private!.data())
+        async let p3pub = try await core.parseKeys(armoredOrBinary: k3.key.public.data())
+        async let p4prv = try await core.parseKeys(armoredOrBinary: k4.key.private!.data())
+        async let p4pub = try await core.parseKeys(armoredOrBinary: k4.key.public.data())
+        let prvs = try await [p0prv, p1prv, p2prv, p3prv, p4prv]
+        let pubs = try await [p0pub, p1pub, p2pub, p3pub, p4pub]
         // then: parse results are not mixed up
         for (i, parsed) in prvs.enumerated() {
             XCTAssertEqual(
-                parsed.keyDetails.first?.pgpUserEmails.first,
+                parsed.keyDetails.first!.pgpUserEmails.first!,
                 "k\(i)@concurrent.test"
             )
             XCTAssertNotNil(parsed.keyDetails.first?.private)
         }
         for (i, parsed) in pubs.enumerated() {
             XCTAssertEqual(
-                parsed.keyDetails.first?.pgpUserEmails.first,
+                parsed.keyDetails.first!.pgpUserEmails.first!,
                 "k\(i)@concurrent.test"
             )
             XCTAssertNil(parsed.keyDetails.first?.private)

@@ -193,18 +193,17 @@ extension ComposeViewController {
             guard shouldSaveDraft() else { return }
             do {
                 let signingPrv = try await prepareSigningKey()
-                let messagevalidationResult = composeMessageService.validateMessage(
+                let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
                     input: input,
                     contextToSend: contextToSend,
                     email: email,
                     includeAttachments: false,
                     signingPrv: signingPrv
                 )
-                guard case let .success(message) = messagevalidationResult else {
-                    return
-                }
-                try await composeMessageService.encryptAndSaveDraft(message: message, threadId: input.threadId)
-            } catch {}
+                try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
+            } catch {
+                showToast("Error saving draft: \(error.localizedDescription)")
+            }
         }
     }
 }
@@ -331,10 +330,9 @@ extension ComposeViewController {
         Task {
             do {
                 let key = try await prepareSigningKey()
-                sendMessage(key)
+                try await sendMessage(key)
             } catch {
-                // todo - unify with `self.handle(error)`
-                self.showAlert(message: "Could not send message.\n\n \(error.localizedDescription)")
+                handle(error: error)
             }
         }
     }
@@ -397,7 +395,7 @@ extension ComposeViewController {
         return matched != nil// true if the pass phrase matched signing key
     }
 
-    private func sendMessage(_ signingKey: PrvKeyInfo) {
+    private func sendMessage(_ signingKey: PrvKeyInfo) async throws {
         view.endEditing(true)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
@@ -409,51 +407,29 @@ extension ComposeViewController {
 
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            guard let self = self else { return }
-            let result = self.composeMessageService.validateMessage(
-                input: self.input,
-                contextToSend: self.contextToSend,
-                email: self.email,
-                signingPrv: signingKey
-            )
-            switch result {
-            case .success(let message):
-                self.encryptAndSend(message)
-            case .failure(let error):
-                self.handle(error: error)
+        try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
+        let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
+            input: self.input,
+            contextToSend: self.contextToSend,
+            email: self.email,
+            signingPrv: signingKey
+        )
+        try await service.encryptAndSend(
+            message: sendableMsg,
+            threadId: input.threadId,
+            progressHandler: { [weak self] progress in
+                self?.updateSpinner(progress: progress)
             }
-        }
+        )
+        handleSuccessfullySentMessage()
     }
 
-    private func encryptAndSend(_ message: SendableMsg) {
-        Task {
-            do {
-                try await service.encryptAndSend(
-                    message: message,
-                    threadId: input.threadId,
-                    progressHandler: { [weak self] progress in
-                        self?.updateSpinner(progress: progress)
-                    }
-                )
-                handleSuccessfullySentMessage()
-            } catch {
-                if let error = error as? ComposeMessageError {
-                    handle(error: error)
-                }
-            }
-        }
-    }
-
-    private func handle(error: ComposeMessageError) {
+    private func handle(error: Error) {
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-
-        let message = "compose_error".localized
-            + "\n\n"
-            + error.description
-
-        showAlert(message: message)
+        let err = error as? ComposeMessageError
+        let description = err?.description ?? error.localizedDescription
+        showAlert(message: "compose_error".localized + "\n\n" + description)
     }
 
     private func handleSuccessfullySentMessage() {

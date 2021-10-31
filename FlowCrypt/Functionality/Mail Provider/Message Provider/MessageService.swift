@@ -95,36 +95,36 @@ final class MessageService {
     func decryptAndProcessMessage(mime rawMimeData: Data) -> Promise<ProcessedMessage> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
-
-            guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
-                return reject(CoreError.notReady("Failed to load keys from storage"))
-            }
-
-            let decrypted = try self.core.parseDecryptMsg(
-                encrypted: rawMimeData,
-                keys: keys,
-                msgPwd: nil,
-                isEmail: true
-            )
-
-            guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-                return reject(MessageServiceError.missingPassPhrase(rawMimeData))
-            }
-
-            let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
-            switch processedMessage.messageType {
-            case .error(let errorType):
-                switch errorType {
-                case .needPassphrase:
-                    reject(MessageServiceError.missingPassPhrase(rawMimeData))
-                case .keyMismatch:
-                    reject(MessageServiceError.keyMismatch(rawMimeData))
-                default:
-                    reject(MessageServiceError.unknown)
+            Task<Void, Error> {
+                guard let keys = try await self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
+                    return reject(CoreError.notReady("Failed to load keys from storage"))
                 }
-            case .plain, .encrypted:
-                resolve(processedMessage)
+                let decrypted = try await self.core.parseDecryptMsg(
+                    encrypted: rawMimeData,
+                    keys: keys,
+                    msgPwd: nil,
+                    isEmail: true
+                )
+                guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
+                    return reject(MessageServiceError.missingPassPhrase(rawMimeData))
+                }
+
+                let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+                switch processedMessage.messageType {
+                case .error(let errorType):
+                    switch errorType {
+                    case .needPassphrase:
+                        reject(MessageServiceError.missingPassPhrase(rawMimeData))
+                    case .keyMismatch:
+                        reject(MessageServiceError.keyMismatch(rawMimeData))
+                    default:
+                        reject(MessageServiceError.unknown)
+                    }
+                case .plain, .encrypted:
+                    resolve(processedMessage)
+                }
             }
+            return
         }
     }
 

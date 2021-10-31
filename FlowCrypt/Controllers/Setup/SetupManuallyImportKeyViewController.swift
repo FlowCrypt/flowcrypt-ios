@@ -125,7 +125,14 @@ extension SetupManuallyImportKeyViewController: ASTableDelegate, ASTableDataSour
                     insets: self.decorator.insets.buttonInsets
                 )
                 return ButtonCellNode(input: input) { [weak self] in
-                    self?.proceedToKeyImportFromPasteboard()
+                    guard let self = self else { return }
+                    Task {
+                        do {
+                            try await self.proceedToKeyImportFromPasteboard()
+                        } catch {
+                            self.userInfoMessage = error.localizedDescription
+                        }
+                    }
                 }
                 .then {
                     $0.isButtonEnabled = self.pasteboard.hasStrings
@@ -159,25 +166,20 @@ extension SetupManuallyImportKeyViewController {
         present(documentInteractionController, animated: true, completion: nil)
     }
 
-    private func proceedToKeyImportFromPasteboard() {
+    private func proceedToKeyImportFromPasteboard() async throws {
         guard let armoredKey = pasteboard.string else { return }
-        parseUserProvided(data: Data(armoredKey.utf8))
+        try await parseUserProvided(data: Data(armoredKey.utf8))
     }
 
-    private func parseUserProvided(data keyData: Data) {
-        do {
-            let keys = try core.parseKeys(armoredOrBinary: keyData)
-            let privateKey = keys.keyDetails.filter { $0.private != nil }
-            let user = dataService.email ?? "unknown_title".localized
-
-            if privateKey.isEmpty {
-                userInfoMessage = "import_no_backups_clipboard".localized + user
-            } else {
-                userInfoMessage = "Found \(privateKey.count) key\(privateKey.count > 1 ? "s" : "")"
-                proceedToPassPhrase(with: user, keys: privateKey)
-            }
-        } catch {
-            userInfoMessage = error.localizedDescription
+    private func parseUserProvided(data keyData: Data) async throws {
+        let keys = try await core.parseKeys(armoredOrBinary: keyData)
+        let privateKey = keys.keyDetails.filter { $0.private != nil }
+        let user = dataService.email ?? "unknown_title".localized
+        if privateKey.isEmpty {
+            userInfoMessage = "import_no_backups_clipboard".localized + user
+        } else {
+            userInfoMessage = "Found \(privateKey.count) key\(privateKey.count > 1 ? "s" : "")"
+            proceedToPassPhrase(with: user, keys: privateKey)
         }
     }
 
@@ -215,7 +217,14 @@ extension SetupManuallyImportKeyViewController: UIDocumentPickerDelegate {
         document.open { [weak self] success in
             guard success else { assertionFailure("Failed to open doc"); return }
             guard let metadata = document.data else { assertionFailure("Failed to fetch data"); return }
-            self?.parseUserProvided(data: metadata)
+            guard let self = self else { return}
+            Task {
+                do {
+                    try await self.parseUserProvided(data: metadata)
+                } catch {
+                    userInfoMessage = error.localizedDescription
+                }
+            }
         }
     }
 }
