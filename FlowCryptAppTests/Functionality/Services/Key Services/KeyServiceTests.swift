@@ -21,15 +21,15 @@ final class KeyServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10)
     }
 
-    func testGetSigningKeyFirstEmail() throws {
+    func testGetSigningKeyFirstEmail() async throws {
         // arrange
         let userObject = UserObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
 
-        guard let key1 = try Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
+        guard let key1 = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
             XCTFail("key details expected")
             return
         }
-        guard let key2 = try Core.shared.parseKeys(armoredOrBinary: Self.privateKey2.data()).keyDetails.first else {
+        guard let key2 = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey2.data()).keyDetails.first else {
             XCTFail("key details expected")
             return
         }
@@ -57,18 +57,18 @@ final class KeyServiceTests: XCTestCase {
         )
 
         // act
-        let result = try keyService.getSigningKey()
+        let result = try await keyService.getSigningKey()
 
         // assert
         XCTAssertEqual(result?.private, Self.privateKey2)
         XCTAssertEqual(result?.passphrase, "this is a test phrase")
     }
 
-    func testGetSigningKeyNotFirstEmail() throws {
+    func testGetSigningKeyNotFirstEmail() async throws {
         // arrange
         let userObject = UserObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
 
-        guard let key = try Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
+        guard let key = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
             XCTFail("key details expected")
             return
         }
@@ -86,7 +86,7 @@ final class KeyServiceTests: XCTestCase {
         )
 
         // act
-        let result = try keyService.getSigningKey()
+        let result = try await keyService.getSigningKey()
 
         // assert
         XCTAssertEqual(result?.private, Self.privateKey1)
