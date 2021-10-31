@@ -37,8 +37,11 @@ class ComposeMessageServiceTests: XCTestCase {
             core: core
         )
 
-        core.parseKeysResult = { _ in
-            CoreRes.ParseKeys(format: .armored, keyDetails: [self.validKeyDetails])
+        core.parseKeysResult = { data in
+            guard !data.isEmpty else {
+                return CoreRes.ParseKeys(format: .unknown, keyDetails: [])
+            }
+            return CoreRes.ParseKeys(format: .armored, keyDetails: [self.validKeyDetails])
         }
     }
 
@@ -210,7 +213,7 @@ class ComposeMessageServiceTests: XCTestCase {
             }
         }
         do {
-            let result = try await sut.validateAndProduceSendableMsg(
+            _ = try await sut.validateAndProduceSendableMsg(
                 input: ComposeMessageInput(type: .idle),
                 contextToSend: ComposeMessageContext(
                     message: "some message",
@@ -288,15 +291,20 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testValidateMessageInputWithValidAndInvalidRecipientPubKeys() async throws {
         core.parseKeysResult = { data in
-            let pubKey = data.toStr()
-            let isRevoked = pubKey == "revoked"
-            let expiration: Int? = pubKey == "expired" ? Int(Date().timeIntervalSince1970 - 60) : nil
-            let keyDetails = KeyStorageMock.createFakeKeyDetails(
-                pub: pubKey,
-                expiration: expiration,
-                revoked: isRevoked
-            )
-            return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
+            var allKeyDetails: [KeyDetails] = []
+            let pubKeys = data.toStr()
+                .split(separator: "\n")
+                .map { String($0) }
+            for pubKey in pubKeys {
+                let isRevoked = pubKey == "revoked"
+                let expiration: Int? = pubKey == "expired" ? Int(Date().timeIntervalSince1970 - 60) : nil
+                allKeyDetails.append(KeyStorageMock.createFakeKeyDetails(
+                    pub: pubKey,
+                    expiration: expiration,
+                    revoked: isRevoked
+                ))
+            }
+            return CoreRes.ParseKeys(format: .armored, keyDetails: allKeyDetails)
         }
         keyStorage.publicKeyResult = {
             "public key"
@@ -332,10 +340,10 @@ class ComposeMessageServiceTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: [
+                "public key",
                 "valid",
                 "valid",
-                "valid",
-                "public key"
+                "valid"
             ],
             signingPrv: nil)
 
@@ -410,10 +418,10 @@ class ComposeMessageServiceTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: [
+                "public key",
                 "pubKey",
                 "pubKey",
-                "pubKey",
-                "public key"
+                "pubKey"
             ],
             signingPrv: nil)
 

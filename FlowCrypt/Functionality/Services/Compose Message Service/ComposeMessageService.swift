@@ -10,6 +10,7 @@ import Combine
 import FlowCryptUI
 import Foundation
 import GoogleAPIClientForREST_Gmail
+import FlowCryptCommon
 
 struct ComposeMessageContext: Equatable {
     var message: String?
@@ -37,6 +38,7 @@ final class ComposeMessageService {
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
+    private let logger: Logger
 
     init(
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
@@ -50,6 +52,7 @@ final class ComposeMessageService {
         self.dataService = dataService
         self.contactsService = contactsService
         self.core = core
+        self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
     func validateAndProduceSendableMsg(
@@ -124,13 +127,15 @@ final class ComposeMessageService {
             let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
             recipientsWithKeys.append(RecipientWithSortedPubKeys(email: recipient.email, keyDetails: parsed.keyDetails))
         }
-        return try await validate(recipients: recipientsWithKeys)
+        return try validate(recipients: recipientsWithKeys)
     }
 
-    private func validate(recipients: [RecipientWithSortedPubKeys]) async throws -> [String] {
+    private func validate(recipients: [RecipientWithSortedPubKeys]) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.first(where: { $0.keyState == keyState }) != nil
         }
+        logger.logDebug("validate recipients: \(recipients)")
+        logger.logDebug("validate recipient keyStates: \(recipients.map { $0.keyState })")
         guard !contains(keyState: .empty) else {
             throw MessageValidationError.noPubRecipients
         }
