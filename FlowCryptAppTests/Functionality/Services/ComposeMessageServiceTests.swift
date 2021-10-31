@@ -42,32 +42,33 @@ class ComposeMessageServiceTests: XCTestCase {
         }
     }
 
-    func testValidateMessageInputWithEmptyRecipients() {
-        let result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "",
-                recipients: [],
-                subject: nil
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        var thrownError: Error?
-        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-
-        let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.emptyRecipient))
+    func testValidateMessageInputWithEmptyRecipients() async throws {
+        do {
+            let result = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "",
+                    recipients: [],
+                    subject: nil
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            let err = expectComposeMessageError(for: error)
+            // todo
+            XCTAssertEqual(err, MessageValidationError.emptyRecipient)
+        }
     }
 
-    func testValidateMessageInputWithWhitespaceRecipients() {
+    func testValidateMessageInputWithWhitespaceRecipients() async {
         let recipients: [ComposeMessageRecipient] = [
             ComposeMessageRecipient(email: "   ", state: recipientIdleState),
             ComposeMessageRecipient(email: " ", state: recipientIdleState),
             ComposeMessageRecipient(email: "sdfff", state: recipientIdleState)
         ]
-        let result = sut.validateMessage(
+        let result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "",
@@ -82,19 +83,19 @@ class ComposeMessageServiceTests: XCTestCase {
         XCTAssertThrowsError(try result.get()) { thrownError = $0 }
 
         let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.emptyRecipient))
+        XCTAssertEqual(error, MessageValidationError.validationError(.emptyRecipient))
     }
 
-    func testValidateMessageInputWithEmptySubject() {
+    func testValidateMessageInputWithEmptySubject() async {
         func test() {
             var thrownError: Error?
             XCTAssertThrowsError(try result.get()) { thrownError = $0 }
 
             let error = expectComposeMessageError(for: thrownError)
-            XCTAssertEqual(error, .validationError(.emptySubject))
+            XCTAssertEqual(error, MessageValidationError.emptySubject)
         }
 
-        var result = sut.validateMessage(
+        var result = sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "",
@@ -107,7 +108,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
         test()
 
-        result = sut.validateMessage(
+        result = sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "",
@@ -120,7 +121,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
         test()
 
-        result = sut.validateMessage(
+        result = sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "",
@@ -132,15 +133,15 @@ class ComposeMessageServiceTests: XCTestCase {
         )
     }
 
-    func testValidateMessageInputWithEmptyMessage() {
+    func testValidateMessageInputWithEmptyMessage() async {
         func test() {
             var thrownError: Error?
             XCTAssertThrowsError(try result.get()) { thrownError = $0 }
             let error = expectComposeMessageError(for: thrownError)
-            XCTAssertEqual(error, .validationError(.emptyMessage))
+            XCTAssertEqual(error, MessageValidationError.emptyMessage)
         }
 
-        var result = sut.validateMessage(
+        var result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: nil,
@@ -153,7 +154,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
         test()
 
-        result = sut.validateMessage(
+        result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "",
@@ -166,7 +167,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
         test()
 
-        result = sut.validateMessage(
+        result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "                  ",
@@ -180,12 +181,12 @@ class ComposeMessageServiceTests: XCTestCase {
         test()
     }
 
-    func testValidateMessageInputWithEmptyPublicKey() {
+    func testValidateMessageInputWithEmptyPublicKey() async {
         keyStorage.publicKeyResult = {
             nil
         }
 
-        let result = sut.validateMessage(
+        let result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "some message",
@@ -199,10 +200,10 @@ class ComposeMessageServiceTests: XCTestCase {
         var thrownError: Error?
         XCTAssertThrowsError(try result.get()) { thrownError = $0 }
         let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.missedPublicKey))
+        XCTAssertEqual(error, MessageValidationError.missedPublicKey)
     }
 
-    func testValidateMessageInputWithAllEmptyRecipientPubKeys() {
+    func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
         keyStorage.publicKeyResult = {
             "public key"
         }
@@ -213,7 +214,7 @@ class ComposeMessageServiceTests: XCTestCase {
             }
         }
 
-        let result = sut.validateMessage(
+        let result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "some message",
@@ -227,10 +228,10 @@ class ComposeMessageServiceTests: XCTestCase {
         var thrownError: Error?
         XCTAssertThrowsError(try result.get()) { thrownError = $0 }
         let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.noPubRecipients))
+        XCTAssertEqual(error, MessageValidationError.noPubRecipients)
     }
 
-    func testValidateMessageInputWithExpiredRecipientPubKey() {
+    func testValidateMessageInputWithExpiredRecipientPubKey() async {
         core.parseKeysResult = { _ in
             let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: Int(Date().timeIntervalSince1970 - 60))
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
@@ -246,7 +247,7 @@ class ComposeMessageServiceTests: XCTestCase {
             }
         }
 
-        let result = sut.validateMessage(
+        let result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "some message",
@@ -260,10 +261,10 @@ class ComposeMessageServiceTests: XCTestCase {
         var thrownError: Error?
         XCTAssertThrowsError(try result.get()) { thrownError = $0 }
         let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.expiredKeyRecipients))
+        XCTAssertEqual(error, MessageValidationError.validationError(.expiredKeyRecipients))
     }
 
-    func testValidateMessageInputWithRevokedRecipientPubKey() {
+    func testValidateMessageInputWithRevokedRecipientPubKey() async {
         core.parseKeysResult = { _ in
             let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: nil, revoked: true)
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
@@ -279,7 +280,7 @@ class ComposeMessageServiceTests: XCTestCase {
             }
         }
 
-        let result = sut.validateMessage(
+        let result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "some message",
@@ -293,10 +294,10 @@ class ComposeMessageServiceTests: XCTestCase {
         var thrownError: Error?
         XCTAssertThrowsError(try result.get()) { thrownError = $0 }
         let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.revokedKeyRecipients))
+        XCTAssertEqual(error, MessageValidationError.validationError(.revokedKeyRecipients))
     }
 
-    func testValidateMessageInputWithValidAndInvalidRecipientPubKeys() {
+    func testValidateMessageInputWithValidAndInvalidRecipientPubKeys() async {
         core.parseKeysResult = { data in
             let pubKey = data.toStr()
             let isRevoked = pubKey == "revoked"
@@ -322,7 +323,7 @@ class ComposeMessageServiceTests: XCTestCase {
         let email = "some@gmail.com"
         let input = ComposeMessageInput(type: .idle)
 
-        let result = try? sut.validateMessage(
+        let result = try? await sut.validateAndProduceSendableMsg(
             input: input,
             contextToSend: ComposeMessageContext(
                 message: message,
@@ -354,7 +355,7 @@ class ComposeMessageServiceTests: XCTestCase {
         XCTAssertEqual(result!, expected)
     }
 
-    func testValidateMessageInputWithoutOneRecipientPubKey() {
+    func testValidateMessageInputWithoutOneRecipientPubKey() async {
         keyStorage.publicKeyResult = {
             "public key"
         }
@@ -369,7 +370,7 @@ class ComposeMessageServiceTests: XCTestCase {
             }
         }
 
-        let result = sut.validateMessage(
+        let result = try await sut.validateAndProduceSendableMsg(
             input: ComposeMessageInput(type: .idle),
             contextToSend: ComposeMessageContext(
                 message: "some message",
@@ -383,10 +384,10 @@ class ComposeMessageServiceTests: XCTestCase {
         var thrownError: Error?
         XCTAssertThrowsError(try result.get()) { thrownError = $0 }
         let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.noPubRecipients))
+        XCTAssertEqual(error, MessageValidationError.validationError(.noPubRecipients))
     }
 
-    func testSuccessfulMessageValidation() {
+    func testSuccessfulMessageValidation() async {
         keyStorage.publicKeyResult = {
             "public key"
         }
