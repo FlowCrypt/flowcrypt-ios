@@ -9,27 +9,23 @@
 import UIKit
 
 protocol MsgListViewConroller {
-    func msgListOpenMsgElseShowToast(with message: Message, path: String)
+    func msgListOpenMsg(with message: Message, path: String)
     func msgListGetIndex(message: Message) -> Array<Message>.Index?
     func msgListUpdateReadFlag(message: Message, at index: Int)
     func msgListRenderAsRemoved(message _: Message, at index: Int)
 }
 
 extension MsgListViewConroller where Self: UIViewController {
-    func msgListOpenMsgElseShowToast(with message: Message, path: String) {
-        if message.size ?? 0 > GeneralConstants.Global.messageSizeLimit {
-            showToast("Messages larger than 5MB are not supported yet")
-        } else {
-            let messageInput = MessageViewController.Input(
-                objMessage: message,
-                bodyMessage: nil,
-                path: path
-            )
-            let msgVc = MessageViewController(input: messageInput) { [weak self] operation, message in
-                self?.msgListHandleOperation(message: message, operation: operation)
-            }
-            navigationController?.pushViewController(msgVc, animated: true)
+    func msgListOpenMsg(with message: Message, path: String) {
+        let messageInput = MessageViewController.Input(
+            objMessage: message,
+            bodyMessage: nil,
+            path: path
+        )
+        let msgVc = MessageViewController(input: messageInput) { [weak self] operation, message in
+            self?.msgListHandleOperation(message: message, operation: operation)
         }
+        navigationController?.pushViewController(msgVc, animated: true)
     }
 
     private func msgListHandleOperation(message: Message, operation: MessageViewController.MessageAction) {
