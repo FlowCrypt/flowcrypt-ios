@@ -94,14 +94,9 @@ final class ComposeMessageService {
             throw MessageValidationError.missedPublicKey
         }
 
-        let sendableAttachments: [SendableMsg.Attachment] = contextToSend.attachments
-            .map { composeAttachment in
-                return SendableMsg.Attachment(
-                    name: composeAttachment.name,
-                    type: composeAttachment.type,
-                    base64: composeAttachment.data.base64EncodedString()
-                )
-            }
+        let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
+                ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
+                : []
 
         let allRecipientPubs = try await getPubKeys(for: recipients)
         let replyToMimeMsg = input.replyToMime

@@ -166,7 +166,7 @@ extension ComposeViewController {
     @objc private func stopTimer() {
         saveDraftTimer?.invalidate()
         saveDraftTimer = nil
-
+        
         saveDraftIfNeeded()
     }
 
