@@ -78,8 +78,8 @@ final class KeyService: KeyServiceType {
             logger.logError("no current user email")
             throw AppErr.noCurrentUser
         }
-        // get keys associated with this account
-        let keysInfo = storage.keysInfo().filter { $0.account == email }
+        // get keys associated with this account, freeze them to pass across threads
+        let keysInfo = storage.keysInfo().filter { $0.account == email }.map { $0.freeze() }
         guard let foundKey = try await findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
             return nil
         }
@@ -98,7 +98,7 @@ final class KeyService: KeyServiceType {
         logger.logDebug("findKeyByUserEmail: found \(keysInfo.count) candidate prvs in storage, searching by:\(email)")
         var keys: [(KeyInfo, KeyDetails)] = []
         for keyInfo in keysInfo {
-            let parsedKeys = try await self.coreService.parseKeys(
+            let parsedKeys = try await coreService.parseKeys(
                 armoredOrBinary: keyInfo.`private`.data()
             )
             guard let parsedKey = parsedKeys.keyDetails.first else {

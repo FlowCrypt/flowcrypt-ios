@@ -65,6 +65,7 @@ final class MessageViewController: TableNodeViewController {
     private let messageOperationsProvider: MessageOperationsProvider
     private let trashFolderProvider: TrashFolderProviderType
     private let filesManager: FilesManagerType
+    private let serviceActor: ServiceActor
     private var processedMessage: ProcessedMessage = .empty
 
     init(
@@ -85,6 +86,10 @@ final class MessageViewController: TableNodeViewController {
         self.onCompletion = completion
         self.filesManager = filesManager
         self.messageProvider = messageProvider
+        self.serviceActor = ServiceActor(
+            messageService: messageService,
+            messageProvider: messageProvider
+        )
 
         super.init(node: TableNode())
     }
@@ -149,15 +154,10 @@ extension MessageViewController {
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
         Task {
             do {
-                let rawMimeData = try awaitPromise(self.messageProvider.fetchMsg(message: self.input.objMessage, folder: self.input.path))
-                self.processedMessage = try await self.messageService.decryptAndProcessMessage(mime: rawMimeData)
-                DispatchQueue.main.async {
-                    self.handleReceivedMessage()
-                }
+                processedMessage = try await serviceActor.fetchDecryptAndRenderMsg(message: input.objMessage, path: input.path)
+                handleReceivedMessage()
             } catch {
-                DispatchQueue.main.async {
-                    self.handleError(error)
-                }
+                handleError(error)
             }
         }
     }
@@ -166,15 +166,15 @@ extension MessageViewController {
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
         Task {
             do {
-                let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+                let matched = try await serviceActor.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
-                    self.processedMessage = try await self.messageService.decryptAndProcessMessage(mime: rawMimeData)
-                    self.handleReceivedMessage()
+                    processedMessage = try await serviceActor.decryptAndProcessMessage(mime: rawMimeData)
+                    handleReceivedMessage()
                 } else {
                     handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
                 }
             } catch {
-                self.handleError(error)
+                handleError(error)
             }
         }
     }
@@ -525,5 +525,30 @@ extension MessageViewController: UIDocumentPickerDelegate {
         alert.addAction(open)
 
         present(alert, animated: true)
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let messageService: MessageService
+    private let messageProvider: MessageProvider
+
+    init(messageService: MessageService,
+         messageProvider: MessageProvider) {
+        self.messageService = messageService
+        self.messageProvider = messageProvider
+    }
+
+    func fetchDecryptAndRenderMsg(message: Message, path: String) async throws -> ProcessedMessage {
+        let rawMimeData = try awaitPromise(messageProvider.fetchMsg(message: message, folder: path))
+        return try await messageService.decryptAndProcessMessage(mime: rawMimeData)
+    }
+
+    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
+        return try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+    }
+
+    func decryptAndProcessMessage(mime: Data) async throws -> ProcessedMessage {
+        return try await messageService.decryptAndProcessMessage(mime: mime)
     }
 }

@@ -156,16 +156,10 @@ final class ComposeViewController: TableNodeViewController {
 // MARK: - Drafts
 extension ComposeViewController {
     @objc private func startTimer() {
-        DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            self.saveDraftTimer = Timer.scheduledTimer(
-                timeInterval: 1,
-                target: self,
-                selector: #selector(self.saveDraftIfNeeded),
-                userInfo: nil,
-                repeats: true)
-            self.saveDraftTimer?.fire()
+        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.saveDraftIfNeeded()
         }
+        saveDraftTimer?.fire()
     }
 
     @objc private func stopTimer() {
@@ -188,9 +182,9 @@ extension ComposeViewController {
         return result
     }
 
-    @objc private func saveDraftIfNeeded() {
+    private func saveDraftIfNeeded() {
+        guard shouldSaveDraft() else { return }
         Task {
-            guard shouldSaveDraft() else { return }
             do {
                 let signingPrv = try await prepareSigningKey()
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
@@ -343,18 +337,20 @@ extension ComposeViewController {
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    private func prepareSigningKey() async throws -> PrvKeyInfo {
+    @MainActor private func prepareSigningKey() async throws -> PrvKeyInfo {
         guard let signingKey = try await keyService.getSigningKey() else {
             throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
+
         guard let existingPassPhrase = signingKey.passphrase else {
             return signingKey.copy(with: try await self.requestMissingPassPhraseWithModal(for: signingKey))
         }
+
         return signingKey.copy(with: existingPassPhrase)
     }
 
     private func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo) async throws -> String {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
                 onCancel: {
                     continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
