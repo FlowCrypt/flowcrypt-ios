@@ -170,7 +170,9 @@ extension SetupCreatePassphraseAbstractViewController {
             alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
                 continuation.resume(returning: alert?.textFields?[0].text)
             })
-            self.present(alert, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
+            }
         }
     }
 }
