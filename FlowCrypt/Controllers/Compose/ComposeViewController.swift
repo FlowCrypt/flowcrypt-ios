@@ -171,13 +171,12 @@ extension ComposeViewController {
     }
 
     private func shouldSaveDraft() -> Bool {
+        // todo - that draft should only be saved when one of the fields are dirty (edited by user). Right now, a draft may get saved right after rendering compose (or reply), which is annoying.
         let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
-
         guard let oldDraft = composedLatestDraft else {
             composedLatestDraft = newDraft
             return true
         }
-
         let result = newDraft != oldDraft
         composedLatestDraft = newDraft
         return result
@@ -197,7 +196,12 @@ extension ComposeViewController {
                 )
                 try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
             } catch {
-                showToast("Error saving draft: \(error.localizedDescription)")
+                if !(error is MessageValidationError) {
+                    // no need to save or notify user if validation error
+                    // for other errors show toast
+                    // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?
+                    showToast("Error saving draft: \(error.localizedDescription)")
+                }
             }
         }
     }
