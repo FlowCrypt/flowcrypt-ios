@@ -25,7 +25,6 @@ struct InboxRenderable {
     let wrappedType: WrappedType
 }
 
-
 extension InboxRenderable: Comparable {
     static func < (lhs: InboxRenderable, rhs: InboxRenderable) -> Bool {
         lhs.date > rhs.date

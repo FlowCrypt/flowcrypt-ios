@@ -22,6 +22,8 @@ private struct ComposedDraft: Equatable {
 }
 
 final class ComposeViewController: TableNodeViewController {
+    private lazy var logger = Logger.nested(Self.self)
+
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
         static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
@@ -155,13 +157,19 @@ extension ComposeViewController {
     @objc private func startTimer() {
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
-            self.saveDraftTimer = Timer.scheduledTimer(
+
+            let timer = Timer.scheduledTimer(
                 timeInterval: 1,
                 target: self,
                 selector: #selector(self.saveDraftIfNeeded),
                 userInfo: nil,
-                repeats: true)
-            self.saveDraftTimer?.fire()
+                repeats: true
+            )
+            let runLoop = RunLoop.current
+            runLoop.add(timer, forMode: .default)
+            runLoop.run()
+
+            self.saveDraftTimer = timer
         }
     }
 
@@ -173,6 +181,7 @@ extension ComposeViewController {
     }
 
     private func shouldSaveDraft() -> Bool {
+        logger.logInfo("Draft. Should save draft check")
         let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
 
         guard let oldDraft = composedLatestDraft else {
@@ -182,6 +191,7 @@ extension ComposeViewController {
 
         let result = newDraft != oldDraft
         composedLatestDraft = newDraft
+        logger.logInfo("Draft. Should save draft \(result)")
         return result
     }
 
@@ -190,14 +200,15 @@ extension ComposeViewController {
             guard shouldSaveDraft() else { return }
             do {
                 let signingPrv = try await prepareSigningKey()
-                let messagevalidationResult = composeMessageService.validateMessage(
+                let messageValidationResult = composeMessageService.validateMessage(
                     input: input,
                     contextToSend: contextToSend,
                     email: email,
                     includeAttachments: false,
                     signingPrv: signingPrv
                 )
-                guard case let .success(message) = messagevalidationResult else {
+                guard case let .success(message) = messageValidationResult else {
+                    logger.logInfo("Draft. Save validation \(messageValidationResult)")
                     return
                 }
                 try await composeMessageService.encryptAndSaveDraft(message: message, threadId: input.threadId)

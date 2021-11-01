@@ -52,6 +52,11 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     private func openThread(with thread: MessageThread) {
+        guard !thread.messages.contains(where: { ($0.size ?? 0) > GeneralConstants.Global.messageSizeLimit }) else {
+            showToast("Messages larger than 5MB are not supported yet")
+            return
+        }
+        
         guard let threadOperationsProvider = MailProvider.shared.threadOperationsProvider else {
             assertionFailure("Internal error. Provider should conform to MessagesThreadOperationsProvider")
             return

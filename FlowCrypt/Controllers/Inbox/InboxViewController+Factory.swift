@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 
 class InboxViewControllerFactory {
+    // TODO: - ANTON - remove
+    static var counter = 0
+
     static func make(with viewModel: InboxViewModel) -> InboxViewController {
         guard let currentAuthType = DataService.shared.currentAuthType else {
             fatalError("Internal inconsistency")
@@ -21,14 +24,22 @@ class InboxViewControllerFactory {
             guard let threadsProvider = MailProvider.shared.messagesThreadProvider else {
                 fatalError("Internal inconsistency")
             }
-            let provider = InboxMessageThreadsProvider(provider: threadsProvider)
-            // TODO: - ANTON - remove
-//            let provider = InboxMessageListProvider()
-            return InboxViewController(
-                viewModel,
-                numberOfMessagesToLoad: 20,
-                provider: provider
-            )
+
+            if counter % 2 == 0 {
+                counter += 1
+                return InboxViewController(
+                    viewModel,
+                    numberOfMessagesToLoad: 20,
+                    provider: InboxMessageThreadsProvider(provider: threadsProvider)
+                )
+            } else {
+                counter += 1
+                return InboxViewController(
+                    viewModel,
+                    numberOfMessagesToLoad: 20,
+                    provider: InboxMessageListProvider()
+                )
+            }
         case .password:
             // Inject message list provider
             let provider = InboxMessageListProvider()

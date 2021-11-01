@@ -10,7 +10,6 @@ import GoogleAPIClientForREST_Gmail
 
 extension GmailService: MessageSearchProvider {
     func searchExpression(using context: MessageSearchContext) async throws -> [Message] {
-        fatalError()
         let context = try await self.fetchMessages(using: FetchMessageContext(searchContext: context))
         return context.messages
     }

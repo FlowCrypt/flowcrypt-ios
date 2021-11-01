@@ -83,13 +83,13 @@ extension GmailService: MessagesThreadProvider {
                     return continuation.resume(returning: empty)
                 }
 
-                let messages = try? threadMsg.compactMap { try? Message($0, draftIdentifier: nil) }
+                let messages = threadMsg.compactMap { try? Message($0, draftIdentifier: nil) }
 
                 let result = MessageThread(
                     identifier: thread.identifier,
                     snippet: snippet,
                     path: path,
-                    messages: messages ?? []
+                    messages: messages
                 )
                 continuation.resume(returning: result)
             }

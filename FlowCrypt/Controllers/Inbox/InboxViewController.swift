@@ -333,6 +333,7 @@ extension InboxViewController {
     }
 
     @objc private func refresh() {
+        logger.logInfo("Refresh")
         state = .refresh
         handleBeginFetching(nil)
     }
@@ -423,9 +424,14 @@ extension InboxViewController: MsgListViewController {
         logger.logInfo("Mark as read \(isRead) at \(index)")
         input.isRead = isRead
         inboxInput[index] = input
-        let animationDuration = 0.3
-        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
-            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+
+        if inboxInput[index].wrappedMessage == nil {
+            refresh()
+        } else {
+            let animationDuration = 0.3
+            DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
+                self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+            }
         }
     }
 

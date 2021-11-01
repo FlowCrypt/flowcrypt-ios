@@ -320,7 +320,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             switch part {
             case .thread:
                 return TextImageNode(
-                    input: .init(threadMessage: self.input[indexPath.row]),
+                    input: .init(threadMessage: self.input[indexPath.section]),
                     onTap: { [weak self] _ in
                         self?.handleTap(at: indexPath)
                     }
@@ -345,6 +345,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
+        logger.logInfo("Back button. Are all messages read \(isRead) ")
         onComplete(MessageAction.markAsRead(isRead), .init(thread: thread))
         navigationController?.popViewController(animated: true)
     }
