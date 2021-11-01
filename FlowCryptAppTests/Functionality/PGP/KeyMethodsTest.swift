@@ -27,7 +27,7 @@ class KeyMethodsTest: XCTestCase {
         XCTAssertTrue(result.isEmpty)
     }
 
-    func testNoPrivateKey() async throws {
+    func testPassPublicKeyWhenExpectingPrivateForPassPhraseMatch() async throws {
         // private part = nil
         let keys = [
             KeyDetails(
@@ -61,9 +61,12 @@ class KeyMethodsTest: XCTestCase {
                 revoked: false
             )
         ]
-        let result = try await sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
-
-        XCTAssertTrue(result.isEmpty)
+        do {
+            try await sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? KeyServiceError, KeyServiceError.expectedPrivateGotPublic)
+        }
     }
 
     func testCantDecryptKey() async throws {
