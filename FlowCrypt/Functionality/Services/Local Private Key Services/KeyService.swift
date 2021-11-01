@@ -16,7 +16,7 @@ protocol KeyServiceType {
 }
 
 enum KeyServiceError: Error {
-    case unexpected, parsingError, retrieve
+    case unexpected, parsingError, retrieve, expectedPrivateGotPublic
 }
 
 final class KeyService: KeyServiceType {

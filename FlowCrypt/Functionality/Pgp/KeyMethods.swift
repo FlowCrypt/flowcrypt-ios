@@ -44,7 +44,7 @@ final class KeyMethods: KeyMethodsType {
         var matching: [KeyDetails] = []
         for key in keys {
             guard let privateKey = key.private else {
-                throw AppErr.general("unexpectedly received public key: \(key.primaryFingerprint)")
+                throw KeyServiceError.expectedPrivateGotPublic
             }
             do {
                 _ = try await self.decrypter.decryptKey(armoredPrv: privateKey, passphrase: passPhrase)
