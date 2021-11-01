@@ -23,11 +23,8 @@ final class AttesterApi: AttesterApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 10
-        static let endpointName = "AttesterApi"
-    }
-
-    private enum Endpoint {
         static let baseURL = "https://flowcrypt.com/attester/"
+        static let apiName = "AttesterApi"
     }
 
     private let core: Core
@@ -45,7 +42,7 @@ final class AttesterApi: AttesterApiType {
         let normalizedEmail = emailOrLongid
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return "\(Endpoint.baseURL)pub/\(normalizedEmail)"
+        return "\(Constants.baseURL)pub/\(normalizedEmail)"
     }
 }
 
@@ -54,14 +51,14 @@ extension AttesterApi {
         if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
             return []
         }
-        
-        let endpoint = ApiCall.Endpoint(
-            name: Constants.endpointName,
+
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
             url: urlPub(emailOrLongid: email),
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
-        let res = try await ApiCall.asyncCall(endpoint)
+        let res = try await ApiCall.asyncCall(request)
 
         if res.status >= 200, res.status <= 299 {
             return try await core.parseKeys(armoredOrBinary: res.data).keyDetails
@@ -87,44 +84,44 @@ extension AttesterApi {
             headers = []
         }
 
-        let endpoint = ApiCall.Endpoint(
-            name: Constants.endpointName,
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
             url: urlPub(emailOrLongid: email),
             method: httpMethod,
             body: pubkey.data(),
             headers: headers
         )
         return Promise { () -> String in
-            let res = try awaitPromise(ApiCall.call(endpoint))
+            let res = try awaitPromise(ApiCall.call(request))
             return res.data.toStr()
         }
     }
 
     @discardableResult
     func replaceKey(email: String, pubkey: String) -> Promise<String> {
-        let endpoint = ApiCall.Endpoint(
-            name: Constants.endpointName,
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
             url: urlPub(emailOrLongid: email),
             method: .post,
             body: pubkey.data()
         )
         return Promise { () -> String in
-            let res = try awaitPromise(ApiCall.call(endpoint))
+            let res = try awaitPromise(ApiCall.call(request))
             return res.data.toStr()
         }
     }
 
     @discardableResult
     func testWelcome(email: String, pubkey: String) -> Promise<Void> {
-        let endpoint = ApiCall.Endpoint(
-            name: Constants.endpointName,
-            url: Endpoint.baseURL + "test/welcome",
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: Constants.baseURL + "test/welcome",
             method: .post,
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
         return Promise { () -> Void in
-            _ = try awaitPromise(ApiCall.call(endpoint)) // will throw on non-200
+            _ = try awaitPromise(ApiCall.call(request)) // will throw on non-200
         }
     }
 }

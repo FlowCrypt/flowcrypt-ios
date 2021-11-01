@@ -37,7 +37,7 @@ extension EmailKeyManagerApiError: LocalizedError {
 actor EmailKeyManagerApi: EmailKeyManagerApiType {
 
     private enum Constants {
-        static let endpointName = "EmailKeyManagerApi"
+        static let apiName = "EmailKeyManagerApi"
     }
 
     private let clientConfigurationService: ClientConfigurationServiceType
@@ -65,14 +65,14 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
                 value: "Bearer \(idToken)",
                 httpHeaderField: "Authorization"
             )]
-        let endpoint = ApiCall.Endpoint(
-            name: Constants.endpointName,
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
             url: urlString,
             method: .get,
             body: nil,
             headers: headers
         )
-        let response = try await ApiCall.asyncCall(endpoint)
+        let response = try await ApiCall.asyncCall(request)
         let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
 
         if decryptedPrivateKeysResponse.privateKeys.isEmpty {

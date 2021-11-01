@@ -16,7 +16,7 @@ protocol KeyServiceType {
 }
 
 enum KeyServiceError: Error {
-    case unexpected, parsingError, retrieve, expectedPrivateGotPublic
+    case unexpected, parsingError, retrieve, missingCurrentUserEmail, expectedPrivateGotPublic
 }
 
 final class KeyService: KeyServiceType {
@@ -41,7 +41,7 @@ final class KeyService: KeyServiceType {
     /// Use to get list of keys (including missing pass phrases keys)
     func getPrvKeyDetails() async throws -> [KeyDetails] {
         guard let email = currentUserEmail() else {
-            throw KeyServiceError.retrieve
+            throw KeyServiceError.missingCurrentUserEmail
         }
         let privateKeys = storage.keysInfo()
             .filter { $0.account == email }
@@ -57,7 +57,7 @@ final class KeyService: KeyServiceType {
     /// Use to get list of PrvKeyInfo
     func getPrvKeyInfo() async throws -> [PrvKeyInfo] {
         guard let email = currentUserEmail() else {
-            throw KeyServiceError.retrieve
+            throw KeyServiceError.missingCurrentUserEmail
         }
         let keysInfo = storage.keysInfo()
             .filter { $0.account == email }
