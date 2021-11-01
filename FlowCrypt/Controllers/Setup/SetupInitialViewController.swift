@@ -129,9 +129,7 @@ extension SetupInitialViewController {
                 let keys = try await service.fetchBackupsFromInbox(for: user)
                 proceedToSetupWith(keys: keys)
             } catch {
-                DispatchQueue.main.async {
-                    self.handle(error: error)
-                }
+                handle(error: error)
             }
         }
     }

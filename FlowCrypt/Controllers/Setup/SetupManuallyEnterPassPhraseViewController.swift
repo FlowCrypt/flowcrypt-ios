@@ -181,9 +181,7 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                         do {
                             try await self.handleContinueAction()
                         } catch {
-                            DispatchQueue.main.async {
-                                self.handleCommon(error: error)
-                            }
+                            self.handleCommon(error: error)
                         }
                     }
 

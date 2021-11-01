@@ -177,9 +177,7 @@ extension InboxViewController {
                 )
                 handleEndFetching(with: context, context: batchContext)
             } catch {
-                DispatchQueue.main.async {
-                    self.handle(error: error)
-                }
+                handle(error: error)
             }
         }
     }
@@ -196,9 +194,7 @@ extension InboxViewController {
                 )
                 handleEndFetching(with: context, context: batchContext)
             } catch {
-                DispatchQueue.main.async {
-                    self.handle(error: error)
-                }
+                handle(error: error)
             }
         }
     }
@@ -221,9 +217,7 @@ extension InboxViewController {
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
             } catch {
-                DispatchQueue.main.async {
-                    self.handle(error: error)
-                }
+                handle(error: error)
             }
         }
     }
