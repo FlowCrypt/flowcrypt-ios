@@ -24,7 +24,6 @@ class InboxScreen extends BaseScreen {
     }
 
     clickOnEmailBySubject (subject) {
-        this.createEmailButton.waitForDisplayed();
         browser.pause(500); // stability fix
         const selector = `~${subject}`;
         ElementHelper.waitAndClick($(selector));

@@ -5,7 +5,8 @@ import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
     MENU_ICON: '~menu icn',
     LOGOUT_BTN: '~Log out',
-    SETTINGS_BTN: '~Settings'
+    SETTINGS_BTN: '~Settings',
+    DRAFT_BUTTON: '~Draft'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -23,6 +24,10 @@ class MenuBarScreen extends BaseScreen {
 
     get settingsButton () {
         return $(SELECTORS.SETTINGS_BTN)
+    }
+
+    get draftButton () {
+        return $(SELECTORS.DRAFT_BUTTON)
     }
 
     clickMenuIcon () {
@@ -45,6 +50,10 @@ class MenuBarScreen extends BaseScreen {
 
     clickSettingsButton () {
         ElementHelper.waitAndClick(this.settingsButton);
+    }
+
+    clickDraftButton () {
+        ElementHelper.waitAndClick(this.draftButton);
     }
 }
 

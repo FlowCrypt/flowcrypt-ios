@@ -15,6 +15,9 @@ config.suites = {
     ],
     inbox: [
         './tests/specs/inbox/*.spec.ts'
+    ],
+    draft: [
+        './tests/specs/draft/*.spec.ts'
     ]
 };
 

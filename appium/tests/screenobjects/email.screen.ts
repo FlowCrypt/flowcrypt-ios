@@ -10,7 +10,6 @@ const SELECTORS = {
     SAVE_BUTTON: '~Save',
 };
 
-const { join } = require('path');
 
 class EmailScreen extends BaseScreen {
     constructor () {
@@ -38,7 +37,7 @@ class EmailScreen extends BaseScreen {
     }
 
     checkEmailAddress (email) {
-        const selector = `~${email}`;
+        const selector = `-ios class chain:**/XCUIElementTypeTextView[\`label == "${email}"\`]`;
         $(selector).waitForDisplayed();
     }
 
