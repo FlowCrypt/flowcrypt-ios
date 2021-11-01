@@ -20,7 +20,7 @@
     "@babel/register": "^7.10.4",
     "@babel/traverse": "^7.10.4",
     "@babel/types": "^7.10.4",
-    "@wdio/allure-reporter": "6.10.6",
+    "@wdio/allure-reporter": "7.0.0",
     "@wdio/appium-service": "6.10.11",
     "@wdio/cli": "6.10.11",
     "@wdio/jasmine-framework": "6.10.11",
