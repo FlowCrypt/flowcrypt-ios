@@ -29,16 +29,18 @@ extension UIViewController {
                        systemImageName: String? = nil) {
         DispatchQueue.main.async {
             if let progress = progress {
-                if progress >= 1 {
+                if progress >= 1, let imageName = systemImageName {
                     self.updateSpinner(label: "compose_sent".localized,
-                                       systemImageName: "checkmark.circle")
+                                       systemImageName: imageName)
                 } else {
                     self.showProgressHUD(progress: progress, label: label)
                 }
             } else if let imageName = systemImageName {
                 self.showProgressHUDWithCustomImage(imageName: imageName, label: label)
+            } else if let hud = MBProgressHUD.forView(self.view) {
+                hud.mode = .indeterminate
+                hud.label.text = label
             }
-
         }
     }
 

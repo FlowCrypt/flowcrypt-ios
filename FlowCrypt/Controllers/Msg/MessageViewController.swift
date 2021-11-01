@@ -143,13 +143,14 @@ final class MessageViewController: TableNodeViewController {
 
 extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        handleFetchProgress(state: .fetch)
 
         Promise { [weak self] in
             guard let self = self else { return }
             let promise = self.messageService.getAndProcessMessage(
                 with: self.input.objMessage,
-                folder: self.input.path
+                folder: self.input.path,
+                progressHandler: self.handleFetchProgress
             )
             let message = try awaitPromise(promise)
             self.processedMessage = message
@@ -159,6 +160,17 @@ extension MessageViewController {
         }
         .catch(on: .main) { [weak self] error in
             self?.handleError(error)
+        }
+    }
+
+    private func handleFetchProgress(state: MessageFetchState) {
+        switch state {
+        case .fetch:
+            showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        case .download(let progress):
+            updateSpinner(label: "downloading_title".localized, progress: progress)
+        case .decrypt:
+            updateSpinner(label: "decrypting_title".localized)
         }
     }
 

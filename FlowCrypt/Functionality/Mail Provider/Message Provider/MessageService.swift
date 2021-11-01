@@ -20,6 +20,11 @@ struct MessageAttachment: FileType {
     }
 }
 
+// MARK: - MessageFetchState
+enum MessageFetchState {
+    case fetch, download(Float), decrypt
+}
+
 // MARK: - ProcessedMessage
 struct ProcessedMessage {
     enum MessageType {
@@ -110,13 +115,17 @@ final class MessageService {
             .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
     }
 
-    func getAndProcessMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
+    func getAndProcessMessage(with input: Message,
+                              folder: String,
+                              progressHandler: ((MessageFetchState) -> Void)?) -> Promise<ProcessedMessage> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
 
             let rawMimeData = try awaitPromise(
-                self.messageProvider.fetchMsg(message: input, folder: folder)
+                self.messageProvider.fetchMsg(message: input, folder: folder, progressHandler: progressHandler)
             )
+
+            progressHandler?(.decrypt)
 
             let keys = try self.keyService.getPrvKeyInfo().get()
             guard keys.isNotEmpty else {

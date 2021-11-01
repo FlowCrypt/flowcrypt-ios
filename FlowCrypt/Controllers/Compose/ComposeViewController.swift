@@ -406,7 +406,7 @@ extension ComposeViewController {
                 try await service.encryptAndSend(message: message,
                                                  threadId: input.threadId,
                                                  progressHandler: { [weak self] progress in
-                    self?.updateSpinner(progress: progress)
+                    self?.updateSpinner(progress: progress, systemImageName: "checkmark.circle")
                 })
                 handleSuccessfullySentMessage()
             } catch {

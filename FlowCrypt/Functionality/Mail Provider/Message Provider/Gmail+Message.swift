@@ -11,7 +11,9 @@ import Promises
 import GTMSessionFetcherCore
 
 extension GmailService: MessageProvider {
-    func fetchMsg(message: Message, folder: String) -> Promise<Data> {
+    func fetchMsg(message: Message,
+                  folder: String,
+                  progressHandler: ((MessageFetchState) -> Void)?) -> Promise<Data> {
         Promise { [weak self] resolve, reject in
             guard let self = self else { return }
 
@@ -24,7 +26,7 @@ extension GmailService: MessageProvider {
                 let fetcher = self.createMessageFetcher(identifier: identifier)
                 fetcher.receivedProgressBlock = { _, received in
                     let progress = min(Float(received)/messageSize, 1)
-                    print(progress)
+                    progressHandler?(.download(progress))
                 }
                 fetcher.beginFetch { data, error in
                     if let error = error {
@@ -67,7 +69,8 @@ extension GmailService: MessageProvider {
                     return
                 }
 
-                let totalSize = sizeEstimate * Float(1.33)
+                // google returns smaller estimated size
+                let totalSize = sizeEstimate * Float(1.3)
                 continuation.resume(with: .success(totalSize))
             }
         }
