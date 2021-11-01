@@ -96,7 +96,7 @@ final class MessageService {
     func decryptAndProcessMessage(mime rawMimeData: Data) async throws -> ProcessedMessage {
         let keys = try await self.keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
-            throw CoreError.notReady("Failed to load keys from storage")
+            throw MessageServiceError.emptyKeys
         }
         let decrypted = try await self.core.parseDecryptMsg(
             encrypted: rawMimeData,
