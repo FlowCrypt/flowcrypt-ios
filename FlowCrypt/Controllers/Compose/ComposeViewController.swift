@@ -21,6 +21,7 @@ private struct ComposedDraft: Equatable {
     let contextToSend: ComposeMessageContext
 }
 
+@MainActor
 final class ComposeViewController: TableNodeViewController {
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]

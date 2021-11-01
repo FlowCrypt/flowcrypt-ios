@@ -76,7 +76,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? {
         guard let recipientObject = find(with: email) else { return nil }
-        return try await parseRecipient(from: recipientObject)
+        // TODO temporary fix for Realm thread problem
+        return try await parseRecipient(from: recipientObject.freeze())
     }
 
     func searchEmails(query: String) -> [String] {
