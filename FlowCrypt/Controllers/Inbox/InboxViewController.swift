@@ -33,7 +33,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel,
-        numberOfMessagesToLoad: Int,
+        numberOfMessagesToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = MailProvider.shared.draftsProvider,
         decorator: InboxViewDecorator = InboxViewDecorator()
