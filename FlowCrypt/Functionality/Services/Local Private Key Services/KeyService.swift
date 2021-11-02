@@ -46,8 +46,9 @@ final class KeyService: KeyServiceType {
         let privateKeys = storage.keysInfo()
             .filter { $0.account == email }
             .map(\.private)
-            .joined(separator: "\n")
-        let parsed = try await coreService.parseKeys(armoredOrBinary: privateKeys.data())
+        let parsed = try await coreService.parseKeys(
+            armoredOrBinary: privateKeys.joined(separator: "\n").data()
+        )
         guard parsed.keyDetails.count == privateKeys.count else {
             throw KeyServiceError.parsingError
         }
