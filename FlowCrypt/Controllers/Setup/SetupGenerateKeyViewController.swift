@@ -133,7 +133,7 @@ private actor Service {
                       viewController: ViewController) async throws {
         let userId = try getUserId()
 
-        try awaitPromise(await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
+        try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
         let encryptedPrv = try await core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
         try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
@@ -144,7 +144,7 @@ private actor Service {
                            for: user.email)
 
         if storageMethod == .memory {
-            let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
+            let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey:  encryptedPrv.key.fingerprints)
             passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 

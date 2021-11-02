@@ -214,15 +214,15 @@ extension EncryptedStorage {
 // MARK: - PassPhrase
 extension EncryptedStorage: PassPhraseStorageType {
     func save(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
+        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
     }
 
     func update(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
+        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
     }
 
     func remove(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: nil)
+        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
     }
 
     func getPassPhrases() -> [PassPhrase] {

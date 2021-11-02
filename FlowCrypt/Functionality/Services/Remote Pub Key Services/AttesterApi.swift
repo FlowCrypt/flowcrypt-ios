@@ -61,7 +61,7 @@ extension AttesterApi {
         let res = try await ApiCall.asyncCall(request)
 
         if res.status >= 200, res.status <= 299 {
-            return try core.parseKeys(armoredOrBinary: res.data).keyDetails
+            return try await core.parseKeys(armoredOrBinary: res.data).keyDetails
         }
 
         if res.status == 404 {
