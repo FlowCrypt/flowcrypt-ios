@@ -7,6 +7,7 @@ import Combine
 import FlowCryptCommon
 import FlowCryptUI
 import Foundation
+import UIKit
 
 /**
  * View controller to compose the message and send it
@@ -393,6 +394,7 @@ extension ComposeViewController {
             )
             switch result {
             case .success(let message):
+                UIApplication.shared.isIdleTimerDisabled = true
                 self.encryptAndSend(message)
             case .failure(let error):
                 self.handle(error: error)
@@ -418,6 +420,7 @@ extension ComposeViewController {
     }
 
     private func handle(error: ComposeMessageError) {
+        UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
 
@@ -429,6 +432,7 @@ extension ComposeViewController {
     }
 
     private func handleSuccessfullySentMessage() {
+        UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
         showToast(input.successfullySentToast)
