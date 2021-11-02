@@ -10,6 +10,10 @@ import MBProgressHUD
 import UIKit
 
 extension UIViewController {
+    var currentProgressHUD: MBProgressHUD {
+        MBProgressHUD.forView(view) ?? MBProgressHUD.showAdded(to: view, animated: true)
+    }
+
     func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
         DispatchQueue.main.async {
             guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
@@ -37,9 +41,9 @@ extension UIViewController {
                 }
             } else if let imageName = systemImageName {
                 self.showProgressHUDWithCustomImage(imageName: imageName, label: label)
-            } else if let hud = MBProgressHUD.forView(self.view) {
-                hud.mode = .indeterminate
-                hud.label.text = label
+            } else {
+                self.currentProgressHUD.mode = .indeterminate
+                self.currentProgressHUD.label.text = label
             }
         }
     }
@@ -56,22 +60,18 @@ extension UIViewController {
 
 extension UIViewController {
     private func showProgressHUD(progress: Float, label: String) {
-        guard let hud = MBProgressHUD.forView(view) else { return }
-
         let percent = Int(progress * 100)
-        hud.label.text = "\(label) \(percent)%"
-        hud.progress = progress
-        hud.mode = .annularDeterminate
+        currentProgressHUD.label.text = "\(label) \(percent)%"
+        currentProgressHUD.progress = progress
+        currentProgressHUD.mode = .annularDeterminate
     }
 
     private func showProgressHUDWithCustomImage(imageName: String, label: String) {
-        guard let hud = MBProgressHUD.forView(view) else { return }
-
         let configuration = UIImage.SymbolConfiguration(pointSize: 36)
         let imageView = UIImageView(image: .init(systemName: imageName, withConfiguration: configuration))
-        hud.minSize = CGSize(width: 150, height: 90)
-        hud.customView = imageView
-        hud.mode = .customView
-        hud.label.text = label
+        currentProgressHUD.minSize = CGSize(width: 150, height: 90)
+        currentProgressHUD.customView = imageView
+        currentProgressHUD.mode = .customView
+        currentProgressHUD.label.text = label
     }
 }

@@ -175,7 +175,7 @@ extension MessageViewController {
     }
 
     private func validateMessage(rawMimeData: Data, with passPhrase: String) {
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        handleFetchProgress(state: .decrypt)
 
         messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
             .then(on: .main) { [weak self] message in
