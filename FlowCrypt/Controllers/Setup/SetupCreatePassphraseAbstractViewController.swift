@@ -152,25 +152,26 @@ extension SetupCreatePassphraseAbstractViewController {
     }
 
     private func awaitUserPassPhraseEntry() async throws -> String? {
-        let alert = UIAlertController(
-            title: "Pass Phrase",
-            message: "Confirm Pass Phrase",
-            preferredStyle: .alert
-        )
-        DispatchQueue.main.async {
-            alert.addTextField { textField in
-                textField.isSecureTextEntry = true
-                textField.accessibilityLabel = "textField"
-            }
-        }
         return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
-            alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
-                continuation.resume(returning: nil)
-            })
-            alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
-                continuation.resume(returning: alert?.textFields?[0].text)
-            })
             DispatchQueue.main.async {
+                let alert = UIAlertController(
+                    title: "Pass Phrase",
+                    message: "Confirm Pass Phrase",
+                    preferredStyle: .alert
+                )
+
+                alert.addTextField { textField in
+                    textField.isSecureTextEntry = true
+                    textField.accessibilityLabel = "textField"
+                }
+
+                alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
+                    continuation.resume(returning: nil)
+                })
+                alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
+                    continuation.resume(returning: alert?.textFields?[0].text)
+                })
+
                 self.present(alert, animated: true, completion: nil)
             }
         }
