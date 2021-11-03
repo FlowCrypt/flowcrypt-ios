@@ -15,21 +15,22 @@ final class KeyServiceTests: XCTestCase {
         super.setUp()
 
         let expectation = XCTestExpectation()
-        Core.shared.startInBackgroundIfNotAlreadyRunning {
+        Task {
+            await Core.shared.startIfNotAlreadyRunning()
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 10)
     }
 
-    func testGetSigningKeyFirstEmail() throws {
+    func testGetSigningKeyFirstEmail() async throws {
         // arrange
         let userObject = UserObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
 
-        guard let key1 = try Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
+        guard let key1 = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
             XCTFail("key details expected")
             return
         }
-        guard let key2 = try Core.shared.parseKeys(armoredOrBinary: Self.privateKey2.data()).keyDetails.first else {
+        guard let key2 = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey2.data()).keyDetails.first else {
             XCTFail("key details expected")
             return
         }
@@ -45,7 +46,7 @@ final class KeyServiceTests: XCTestCase {
         passPhraseService.passPhrases = [
             PassPhrase(
                 value: "this is a test phrase",
-                fingerprints: ["4D5BFAD925F6ED3A43002B21127071C29744D9AC"],
+                fingerprintsOfAssociatedKey: ["4D5BFAD925F6ED3A43002B21127071C29744D9AC"],
                 date: nil
             )
         ]
@@ -57,18 +58,18 @@ final class KeyServiceTests: XCTestCase {
         )
 
         // act
-        let result = try keyService.getSigningKey()
+        let result = try await keyService.getSigningKey()
 
         // assert
         XCTAssertEqual(result?.private, Self.privateKey2)
         XCTAssertEqual(result?.passphrase, "this is a test phrase")
     }
 
-    func testGetSigningKeyNotFirstEmail() throws {
+    func testGetSigningKeyNotFirstEmail() async throws {
         // arrange
         let userObject = UserObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
 
-        guard let key = try Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
+        guard let key = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
             XCTFail("key details expected")
             return
         }
@@ -86,7 +87,7 @@ final class KeyServiceTests: XCTestCase {
         )
 
         // act
-        let result = try keyService.getSigningKey()
+        let result = try await keyService.getSigningKey()
 
         // assert
         XCTAssertEqual(result?.private, Self.privateKey1)

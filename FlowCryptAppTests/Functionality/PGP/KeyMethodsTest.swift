@@ -20,14 +20,14 @@ class KeyMethodsTest: XCTestCase {
         sut = KeyMethods(decrypter: decrypter)
     }
 
-    func testEmptyParsingKey() {
+    func testEmptyParsingKey() async throws {
         let emptyKeys: [KeyDetails] = []
-        let result = sut.filterByPassPhraseMatch(keys: emptyKeys, passPhrase: passPhrase)
+        let result = try await sut.filterByPassPhraseMatch(keys: emptyKeys, passPhrase: passPhrase)
 
         XCTAssertTrue(result.isEmpty)
     }
 
-    func testNoPrivateKey() {
+    func testPassPublicKeyWhenExpectingPrivateForPassPhraseMatch() async throws {
         // private part = nil
         let keys = [
             KeyDetails(
@@ -61,20 +61,23 @@ class KeyMethodsTest: XCTestCase {
                 revoked: false
             )
         ]
-        let result = sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
-
-        XCTAssertTrue(result.isEmpty)
+        do {
+            try await sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? KeyServiceError, KeyServiceError.expectedPrivateGotPublic)
+        }
     }
 
-    func testCantDecryptKey() {
+    func testCantDecryptKey() async throws {
         decrypter.result = .failure(.some)
-        let result = sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
+        let result = try await sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
         XCTAssertTrue(result.isEmpty)
     }
 
-    func testSuccessDecryption() {
+    func testSuccessDecryption() async throws {
         decrypter.result = .success(CoreRes.DecryptKey(decryptedKey: "some key"))
-        let result = sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
+        let result = try await sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
         XCTAssertTrue(result.isNotEmpty)
     }
 }

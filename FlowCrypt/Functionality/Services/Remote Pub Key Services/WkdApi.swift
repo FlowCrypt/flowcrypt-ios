@@ -47,25 +47,21 @@ class WkdApi: WkdApiType {
         else {
             return nil
         }
-
         var response: (hasPolicy: Bool, key: Data?)?
         response = try await urlLookup(advancedUrl)
         if response?.hasPolicy == true && response?.key == nil {
             return nil
         }
-
         if response?.key == nil {
             response = try await urlLookup(directUrl)
             if response?.key == nil {
                 return nil
             }
         }
-
         guard let binaryKeysData = response?.key else {
             return nil
         }
-
-        return try? core.parseKeys(armoredOrBinary: binaryKeysData)
+        return try await core.parseKeys(armoredOrBinary: binaryKeysData)
     }
 }
 

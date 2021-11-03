@@ -8,7 +8,6 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 protocol UserAccountServiceType {
     func startSessionFor(user type: SessionType)
