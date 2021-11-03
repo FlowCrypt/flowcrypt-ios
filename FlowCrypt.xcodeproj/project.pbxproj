@@ -95,6 +95,7 @@
 		5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */; };
 		5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBF23A43B0800EC495E /* KeyDetailInfoViewDecorator.swift */; };
 		601EEE31272B19D200FE445B /* CheckAuthScopesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601EEE30272B19D200FE445B /* CheckAuthScopesViewController.swift */; };
+		661496983CE59CB3B7F085C2 /* Pods_FlowCryptShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23ABD900C5AD87ED7A3DB597 /* Pods_FlowCryptShareExtension.framework */; };
 		7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
@@ -352,6 +353,9 @@
 		F80E95362720B6640093F243 /* DraftsListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E95352720B6640093F243 /* DraftsListProvider.swift */; };
 		F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678DCB2722143300BB1710 /* GmailService+draft.swift */; };
 		F8A72FA12729F82800E4BCAB /* DraftGatewayMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A72FA02729F82800E4BCAB /* DraftGatewayMock.swift */; };
+		F8CBC03627331ACA00ECD0B3 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8CBC03527331ACA00ECD0B3 /* ShareViewController.swift */; };
+		F8CBC03927331ACA00ECD0B3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8CBC03727331ACA00ECD0B3 /* MainInterface.storyboard */; };
+		F8CBC03E27331ACA00ECD0B3 /* FlowCryptShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F8CBC03327331ACA00ECD0B3 /* FlowCryptShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -376,6 +380,13 @@
 			remoteGlobalIDString = D204DB9D23FB35700083B9D6;
 			remoteInfo = FlowCryptUI;
 		};
+		F8CBC03B27331ACA00ECD0B3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C132B9A81EC2DBD800763715 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F8CBC03227331ACA00ECD0B3;
+			remoteInfo = FlowCryptShareExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -389,6 +400,17 @@
 				D2CDC3DE24052D50002B045F /* FlowCryptUI.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8CBC03D27331ACA00ECD0B3 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F8CBC03E27331ACA00ECD0B3 /* FlowCryptShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -432,6 +454,7 @@
 		21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZBase32EncodingTests.swift; sourceTree = "<group>"; };
 		21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructorTests.swift; sourceTree = "<group>"; };
 		21FEE26526FDD91A00E3783F /* ComposeMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageAttachment.swift; sourceTree = "<group>"; };
+		23ABD900C5AD87ED7A3DB597 /* Pods_FlowCryptShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C124DB32728809100A2EFA6 /* ApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiCall.swift; sourceTree = "<group>"; };
 		2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceTests.swift; sourceTree = "<group>"; };
 		2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseServiceMock.swift; sourceTree = "<group>"; };
@@ -496,7 +519,9 @@
 		5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewController.swift; sourceTree = "<group>"; };
 		5ADEDCBF23A43B0800EC495E /* KeyDetailInfoViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewDecorator.swift; sourceTree = "<group>"; };
 		5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTextCellNode.swift; sourceTree = "<group>"; };
+		6001B08FDB6E77F07C5D96B5 /* Pods-FlowCryptShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptShareExtension/Pods-FlowCryptShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		601EEE30272B19D200FE445B /* CheckAuthScopesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckAuthScopesViewController.swift; sourceTree = "<group>"; };
+		7B83E7F98A3536FC8B41951B /* Pods-FlowCryptShareExtension.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptShareExtension.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptShareExtension/Pods-FlowCryptShareExtension.enterprise.xcconfig"; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* UserAccountService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountService.swift; sourceTree = "<group>"; };
@@ -742,9 +767,14 @@
 		D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.release.xcconfig"; sourceTree = "<group>"; };
 		D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		F191F620272511790053833E /* BlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurViewController.swift; sourceTree = "<group>"; };
+		F78F35DDB5A359FC0CC8451F /* Pods-FlowCryptShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptShareExtension.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptShareExtension/Pods-FlowCryptShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		F80E95352720B6640093F243 /* DraftsListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftsListProvider.swift; sourceTree = "<group>"; };
 		F8678DCB2722143300BB1710 /* GmailService+draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GmailService+draft.swift"; sourceTree = "<group>"; };
 		F8A72FA02729F82800E4BCAB /* DraftGatewayMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftGatewayMock.swift; sourceTree = "<group>"; };
+		F8CBC03327331ACA00ECD0B3 /* FlowCryptShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FlowCryptShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8CBC03527331ACA00ECD0B3 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		F8CBC03827331ACA00ECD0B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		F8CBC03A27331ACA00ECD0B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -799,6 +829,14 @@
 				D28655992424D1EB0066F52E /* FlowCryptCommon.framework in Frameworks */,
 				D286559A2424D1EB0066F52E /* FlowCryptUI.framework in Frameworks */,
 				7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8CBC03027331ACA00ECD0B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				661496983CE59CB3B7F085C2 /* Pods_FlowCryptShareExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -936,6 +974,9 @@
 				3B945B2BE6B66D5E6B43AD2E /* Pods-FlowCryptUIApplication.debug.xcconfig */,
 				55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */,
 				4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */,
+				6001B08FDB6E77F07C5D96B5 /* Pods-FlowCryptShareExtension.debug.xcconfig */,
+				7B83E7F98A3536FC8B41951B /* Pods-FlowCryptShareExtension.enterprise.xcconfig */,
+				F78F35DDB5A359FC0CC8451F /* Pods-FlowCryptShareExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -1584,6 +1625,7 @@
 				D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */,
 				D2531F2C23FEEF52007E5198 /* FlowCryptCommon */,
 				9F2AC5C7267BE99E00F6149B /* FlowCryptAppTests */,
+				F8CBC03427331ACA00ECD0B3 /* FlowCryptShareExtension */,
 				C132B9B11EC2DBD800763715 /* Products */,
 				CE0C659EE9FC297F6DAC8F59 /* Frameworks */,
 			);
@@ -1597,6 +1639,7 @@
 				D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */,
 				D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */,
 				9F2AC5C6267BE99E00F6149B /* FlowCryptAppTests.xctest */,
+				F8CBC03327331ACA00ECD0B3 /* FlowCryptShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1689,6 +1732,7 @@
 				4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */,
 				3F083C28BC034555B67F7F00 /* Pods_FlowCryptUI.framework */,
 				3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */,
+				23ABD900C5AD87ED7A3DB597 /* Pods_FlowCryptShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2016,6 +2060,16 @@
 			path = DraftsListProvider;
 			sourceTree = "<group>";
 		};
+		F8CBC03427331ACA00ECD0B3 /* FlowCryptShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				F8CBC03527331ACA00ECD0B3 /* ShareViewController.swift */,
+				F8CBC03727331ACA00ECD0B3 /* MainInterface.storyboard */,
+				F8CBC03A27331ACA00ECD0B3 /* Info.plist */,
+			);
+			path = FlowCryptShareExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2068,12 +2122,14 @@
 				C132B9AE1EC2DBD800763715 /* Resources */,
 				D2CDC3E124052D50002B045F /* Embed Frameworks */,
 				E531C3B50A9C90454C72F878 /* [CP] Embed Pods Frameworks */,
+				F8CBC03D27331ACA00ECD0B3 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				D2CDC3DC24052D0F002B045F /* PBXTargetDependency */,
 				D2CDC3E024052D50002B045F /* PBXTargetDependency */,
+				F8CBC03C27331ACA00ECD0B3 /* PBXTargetDependency */,
 			);
 			name = FlowCrypt;
 			packageProductDependencies = (
@@ -2149,13 +2205,31 @@
 			productReference = D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F8CBC03227331ACA00ECD0B3 /* FlowCryptShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F8CBC04227331ACA00ECD0B3 /* Build configuration list for PBXNativeTarget "FlowCryptShareExtension" */;
+			buildPhases = (
+				AC73A95059166DF0D5D684E0 /* [CP] Check Pods Manifest.lock */,
+				F8CBC02F27331ACA00ECD0B3 /* Sources */,
+				F8CBC03027331ACA00ECD0B3 /* Frameworks */,
+				F8CBC03127331ACA00ECD0B3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FlowCryptShareExtension;
+			productName = FlowCryptShareExtension;
+			productReference = F8CBC03327331ACA00ECD0B3 /* FlowCryptShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		C132B9A81EC2DBD800763715 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1240;
+				LastSwiftUpdateCheck = 1300;
 				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = "FlowCrypt Limited";
 				TargetAttributes = {
@@ -2177,6 +2251,9 @@
 					};
 					D2A1D3B623FD64AB00D626D6 = {
 						CreatedOnToolsVersion = 11.3.1;
+					};
+					F8CBC03227331ACA00ECD0B3 = {
+						CreatedOnToolsVersion = 13.0;
 					};
 				};
 			};
@@ -2210,6 +2287,7 @@
 				D2A1D3B623FD64AB00D626D6 /* FlowCryptUIApplication */,
 				D2531F2A23FEEF52007E5198 /* FlowCryptCommon */,
 				9F2AC5C5267BE99E00F6149B /* FlowCryptAppTests */,
+				F8CBC03227331ACA00ECD0B3 /* FlowCryptShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -2267,6 +2345,14 @@
 				D28325DD24895F5700D311BD /* Colors.xcassets in Resources */,
 				D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */,
 				D2A1D3C323FD64AD00D626D6 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8CBC03127331ACA00ECD0B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8CBC03927331ACA00ECD0B3 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2328,6 +2414,28 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-FlowCrypt-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AC73A95059166DF0D5D684E0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FlowCryptShareExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2749,6 +2857,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F8CBC02F27331ACA00ECD0B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8CBC03627331ACA00ECD0B3 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -2766,6 +2882,11 @@
 			isa = PBXTargetDependency;
 			target = D204DB9D23FB35700083B9D6 /* FlowCryptUI */;
 			targetProxy = D2CDC3DF24052D50002B045F /* PBXContainerItemProxy */;
+		};
+		F8CBC03C27331ACA00ECD0B3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F8CBC03227331ACA00ECD0B3 /* FlowCryptShareExtension */;
+			targetProxy = F8CBC03B27331ACA00ECD0B3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2794,6 +2915,14 @@
 				D2A1D3C523FD64AD00D626D6 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		F8CBC03727331ACA00ECD0B3 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F8CBC03827331ACA00ECD0B3 /* Base */,
+			);
+			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -2866,6 +2995,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Enterprise";
 				BUNDLE_LOADER = "";
 				CLANG_ENABLE_MODULES = YES;
@@ -3250,6 +3380,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BBFB58E712FFB19AEC513D40 /* Pods-FlowCrypt.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				BUNDLE_LOADER = "";
 				CLANG_ENABLE_MODULES = YES;
@@ -3313,6 +3444,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = FlowCrypt/FlowCryptRelease.entitlements;
@@ -3576,6 +3708,100 @@
 			};
 			name = Release;
 		};
+		F8CBC03F27331ACA00ECD0B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6001B08FDB6E77F07C5D96B5 /* Pods-FlowCryptShareExtension.debug.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6DZ6CC3YMY;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FlowCryptShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FlowCryptShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 FlowCrypt Limited. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.as.ios.debug.FlowCryptShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F8CBC04027331ACA00ECD0B3 /* Enterprise */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7B83E7F98A3536FC8B41951B /* Pods-FlowCryptShareExtension.enterprise.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6DZ6CC3YMY;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FlowCryptShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FlowCryptShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 FlowCrypt Limited. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.as.ios.enterprise.FlowCryptShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Enterprise;
+		};
+		F8CBC04127331ACA00ECD0B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F78F35DDB5A359FC0CC8451F /* Pods-FlowCryptShareExtension.release.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6DZ6CC3YMY;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FlowCryptShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FlowCryptShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 FlowCrypt Limited. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.as.ios.consumer.FlowCryptShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3635,6 +3861,16 @@
 				D2A1D3C923FD64AD00D626D6 /* Debug */,
 				9F1C905326F1F38C0046E7D7 /* Enterprise */,
 				D2A1D3CA23FD64AD00D626D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F8CBC04227331ACA00ECD0B3 /* Build configuration list for PBXNativeTarget "FlowCryptShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8CBC03F27331ACA00ECD0B3 /* Debug */,
+				F8CBC04027331ACA00ECD0B3 /* Enterprise */,
+				F8CBC04127331ACA00ECD0B3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

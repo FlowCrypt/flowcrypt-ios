@@ -17,6 +17,10 @@ def ui_pods
   pod 'Texture'
 end
 
+def extension_pods
+  pod 'GoogleAPIClientForREST'
+end
+
 ############################ Targets ############################
 target 'FlowCrypt' do
   app_pods
@@ -29,6 +33,11 @@ end
 target 'FlowCryptUIApplication' do
   ui_pods
 end
+
+target 'FlowCryptShareExtension' do
+  extension_pods
+end
+
 
 ## Set IPHONEOS_DEPLOYMENT_TARGET for all pods
 post_install do |installer|
