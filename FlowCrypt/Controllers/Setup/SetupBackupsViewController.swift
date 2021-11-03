@@ -5,7 +5,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
 
 /**
  * Scene which is responsible for recovering user account with backups from inbox and entered pass phrase

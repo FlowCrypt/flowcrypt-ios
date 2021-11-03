@@ -7,22 +7,21 @@
 //
 
 import GoogleAPIClientForREST_Gmail
-import Promises
 import GTMSessionFetcherCore
 
 extension GmailService: MessageProvider {
     func fetchMsg(message: Message,
                   folder: String,
-                  progressHandler: ((MessageFetchState) -> Void)?) -> Promise<Data> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return }
-
+                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
             guard let identifier = message.identifier.stringId else {
-                return reject(GmailServiceError.missedMessageInfo("id"))
+                continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
+                return
             }
 
             Task {
                 let messageSize = try await self.fetchMessageSize(identifier: identifier)
+
                 let fetcher = self.createMessageFetcher(identifier: identifier)
                 fetcher.receivedProgressBlock = { _, received in
                     let progress = min(Float(received)/messageSize, 1)
@@ -30,7 +29,7 @@ extension GmailService: MessageProvider {
                 }
                 fetcher.beginFetch { data, error in
                     if let error = error {
-                        reject(GmailServiceError.providerError(error))
+                        continuation.resume(throwing: GmailServiceError.providerError(error))
                         return
                     }
 
@@ -38,13 +37,16 @@ extension GmailService: MessageProvider {
                           let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                           let raw = dictionary["raw"] as? String
                     else {
-                        return reject(GmailServiceError.missedMessageInfo("raw"))
+                        continuation.resume(throwing: GmailServiceError.missedMessageInfo("raw"))
+                        return
                     }
 
                     guard let data = GTLRDecodeWebSafeBase64(raw) else {
-                        return reject(GmailServiceError.missedMessageInfo("data"))
+                        continuation.resume(throwing: GmailServiceError.missedMessageInfo("data"))
+                        return
                     }
-                    resolve(data)
+
+                    continuation.resume(returning: data)
                 }
             }
         }

@@ -556,18 +556,18 @@ private actor ServiceActor {
 
     func fetchDecryptAndRenderMsg(message: Message, path: String,
                                   progressHandler: ((MessageFetchState) -> Void)?) async throws -> ProcessedMessage {
-        let rawMimeData = try awaitPromise(messageProvider.fetchMsg(message: message,
-                                                                    folder: path,
-                                                                    progressHandler: progressHandler))
+        let rawMimeData = try await messageProvider.fetchMsg(message: message,
+                                                             folder: path,
+                                                             progressHandler: progressHandler)
         progressHandler?(.decrypt)
         return try await messageService.decryptAndProcessMessage(mime: rawMimeData)
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
-        return try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+        try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
     }
 
     func decryptAndProcessMessage(mime: Data) async throws -> ProcessedMessage {
-        return try await messageService.decryptAndProcessMessage(mime: mime)
+        try await messageService.decryptAndProcessMessage(mime: mime)
     }
 }

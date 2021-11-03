@@ -8,7 +8,6 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 import RealmSwift
 
 // swiftlint:disable force_try

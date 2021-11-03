@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 import RealmSwift
 import IDZSwiftCommonCrypto
 

@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Promises
 import UIKit
 
 protocol GlobalRouterType {

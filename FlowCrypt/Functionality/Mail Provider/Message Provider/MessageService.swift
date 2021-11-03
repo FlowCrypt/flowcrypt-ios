@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 import FlowCryptCommon
 
 // MARK: - MessageAttachment
