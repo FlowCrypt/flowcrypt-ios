@@ -42,23 +42,6 @@ extension GmailService: DraftGateway {
         }
     }
 
-    func getDraft(with identifier: String) async throws -> GTLRGmail_Draft {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_Draft, Error>) in
-
-            let query = GTLRGmailQuery_UsersDraftsGet.query(withUserId: .me, identifier: identifier)
-
-            gmailService.executeQuery(query) { _, object, error in
-                if let error = error {
-                    continuation.resume(throwing: GmailServiceError.providerError(error))
-                } else if let draft = object as? GTLRGmail_Draft {
-                    continuation.resume(returning: (draft))
-                } else {
-                    continuation.resume(throwing: GmailServiceError.failedToParseData(nil))
-                }
-            }
-        }
-    }
-
     private func createQueryForDraftAction(raw: String, threadId: String?, draft: GTLRGmail_Draft?) -> GTLRGmailQuery {
         guard
             let createdDraft = draft,
