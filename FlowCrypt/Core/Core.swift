@@ -215,8 +215,8 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return result.query
     }
 
-    func handleCallbackResult(endpointKey: String, json: String, data: [UInt8]) {
-        callbackResults[endpointKey] = (json, data)
+    func handleCallbackResult(callbackId: String, json: String, data: [UInt8]) {
+        callbackResults[callbackId] = (json, data)
     }
 
     // MARK: Private calls
@@ -233,20 +233,20 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             throw CoreError.exception("Core is not ready yet. Most likeyly startIfNotAlreadyRunning wasn't called first")
         }
 
-        let endpointKey = NSUUID().uuidString
+        let callbackId = NSUUID().uuidString
         jsEndpointListener!.call(withArguments: [
             endpoint,
-            endpointKey,
+            callbackId,
             String(data: jsonData, encoding: .utf8)!,
             Array<UInt8>(data), cb_catcher!
         ])
 
-        while callbackResults[endpointKey] == nil {
+        while callbackResults[callbackId] == nil {
             await Task.sleep(1_000_000) // 1ms
         }
 
         guard
-            let result = callbackResults.removeValue(forKey: endpointKey),
+            let result = callbackResults.removeValue(forKey: callbackId),
             let resJsonData = result.0.data(using: .utf8)
         else {
             throw CoreError.format("JavaScript callback response not available")

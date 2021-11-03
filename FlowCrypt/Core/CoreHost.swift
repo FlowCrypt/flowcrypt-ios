@@ -119,9 +119,9 @@ final class CoreHost: NSObject, CoreHostExports {
         return uuid
     }
 
-    func handleCallback(_ endpointKey: String, _ string: String, _ data: [UInt8]) {
+    func handleCallback(_ callbackId: String, _ string: String, _ data: [UInt8]) {
         Task {
-            await Core.shared.handleCallbackResult(endpointKey: endpointKey, json: string, data: data)
+            await Core.shared.handleCallbackResult(callbackId: callbackId, json: string, data: data)
         }
     }
 
