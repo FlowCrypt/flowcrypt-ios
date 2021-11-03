@@ -196,7 +196,7 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         tableNode.deselectRow(at: indexPath, animated: false)
         guard let message = state.messages[safe: indexPath.row] else { return }
 
-        msgListOpenMsgElseShowToast(with: message, path: folderPath)
+        msgListOpenMsg(with: message, path: folderPath)
     }
 }
 

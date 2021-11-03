@@ -425,7 +425,7 @@ extension ComposeViewController {
             message: sendableMsg,
             threadId: input.threadId,
             progressHandler: { [weak self] progress in
-                self?.updateSpinner(progress: progress)
+                self?.updateSpinner(progress: progress, systemImageName: "checkmark.circle")
             }
         )
         handleSuccessfullySentMessage()

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 import FlowCryptCommon
 
 // MARK: - MessageAttachment
@@ -18,6 +17,11 @@ struct MessageAttachment: FileType {
     var humanReadableSizeString: String {
         return ByteCountFormatter().string(fromByteCount: Int64(self.size))
     }
+}
+
+// MARK: - MessageFetchState
+enum MessageFetchState {
+    case fetch, download(Float), decrypt
 }
 
 // MARK: - ProcessedMessage

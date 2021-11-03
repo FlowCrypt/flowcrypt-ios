@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 
 enum ContactsError: Error {
     case keyMissing

@@ -9,7 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
 
 /**
  * Controller which decalres a base logic for passphrase setup

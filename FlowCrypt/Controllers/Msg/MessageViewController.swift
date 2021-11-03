@@ -148,13 +148,17 @@ final class MessageViewController: TableNodeViewController {
 }
 
 // MARK: - Message
-
 extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        handleFetchProgress(state: .fetch)
+
         Task {
             do {
-                processedMessage = try await serviceActor.fetchDecryptAndRenderMsg(message: input.objMessage, path: input.path)
+                processedMessage = try await serviceActor.fetchDecryptAndRenderMsg(message: input.objMessage,
+                                                                                   path: input.path,
+                                                                                   progressHandler: { [weak self] state in
+                                                                                        self?.handleFetchProgress(state: state)
+                                                                                   })
                 handleReceivedMessage()
             } catch {
                 handleError(error)
@@ -176,6 +180,17 @@ extension MessageViewController {
             } catch {
                 handleError(error)
             }
+        }
+    }
+
+    private func handleFetchProgress(state: MessageFetchState) {
+        switch state {
+        case .fetch:
+            showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        case .download(let progress):
+            updateSpinner(label: "downloading_title".localized, progress: progress)
+        case .decrypt:
+            updateSpinner(label: "decrypting_title".localized)
         }
     }
 
@@ -539,16 +554,20 @@ private actor ServiceActor {
         self.messageProvider = messageProvider
     }
 
-    func fetchDecryptAndRenderMsg(message: Message, path: String) async throws -> ProcessedMessage {
-        let rawMimeData = try awaitPromise(messageProvider.fetchMsg(message: message, folder: path))
+    func fetchDecryptAndRenderMsg(message: Message, path: String,
+                                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> ProcessedMessage {
+        let rawMimeData = try await messageProvider.fetchMsg(message: message,
+                                                             folder: path,
+                                                             progressHandler: progressHandler)
+        progressHandler?(.decrypt)
         return try await messageService.decryptAndProcessMessage(mime: rawMimeData)
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
-        return try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+        try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
     }
 
     func decryptAndProcessMessage(mime: Data) async throws -> ProcessedMessage {
-        return try await messageService.decryptAndProcessMessage(mime: mime)
+        try await messageService.decryptAndProcessMessage(mime: mime)
     }
 }

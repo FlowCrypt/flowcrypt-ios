@@ -9,7 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
 
 enum CreatePassphraseWithExistingKeyError: Error {
     // No private key was found
