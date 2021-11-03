@@ -120,7 +120,9 @@ final class CoreHost: NSObject, CoreHostExports {
     }
 
     func handleCallback(_ string: String, _ data: [UInt8]) {
-        Core.shared.handleCallbackResult(json: string, data: data)
+        Task {
+            await Core.shared.handleCallbackResult(json: string, data: data)
+        }
     }
 
     @objc func callJsCb(_ timer: Timer) {

@@ -53,20 +53,22 @@ protocol KeyParser {
     func parseKeys(armoredOrBinary: Data) async throws -> CoreRes.ParseKeys
 }
 
-final class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
+actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     static let shared = Core()
+
+    private typealias CallbackResult = (String, [UInt8])
 
     private var jsEndpointListener: JSValue?
     private var cb_catcher: JSValue?
-    private var cb_last_value: (String, [UInt8])?
     private var vm = JSVirtualMachine()!
     private var context: JSContext?
-    private dynamic var started = false
-    private dynamic var ready = false
-    
-    private let queue = DispatchQueue(label: "com.flowcrypt.core", qos: .default) // todo - try also with .userInitiated
+
+    private var cb_last_value = [CallbackResult]()
+    private var started = false
+    private var ready = false
 
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
+    private lazy var resultSemaphore = DispatchSemaphore(value: 0)
 
     private init() {}
 
@@ -188,31 +190,28 @@ final class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
-    func startInBackgroundIfNotAlreadyRunning(_ completion: @escaping (() -> Void)) {
-        if self.ready {
-            completion()
-        }
+    func startInBackgroundIfNotAlreadyRunning() async {
+        guard !ready else { return }
+
         if !started {
             started = true
-            DispatchQueue.global(qos: .default).async { [weak self] in
-                guard let self = self else { return }
-                let trace = Trace(id: "Start in background")
-                let jsFile = Bundle(for: Core.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil)!
-                let jsFileSrc = try? String(contentsOfFile: jsFile)
-                self.context = JSContext(virtualMachine: self.vm)!
-                self.context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
-                self.context!.exceptionHandler = { [weak self] _, exception in
-                    guard let exception = exception else { return }
-                    self?.logger.logWarning("\(exception)")
-                }
-                self.context!.evaluateScript("const APP_VERSION = 'iOS 0.2';")
-                self.context!.evaluateScript(jsFileSrc)
-                self.jsEndpointListener = self.context!.objectForKeyedSubscript("handleRequestFromHost")
-                self.cb_catcher = self.context!.objectForKeyedSubscript("engine_host_cb_value_formatter")
-                self.ready = true
-                self.logger.logInfo("JsContext took \(trace.finish()) to start")
-                completion()
+
+            let trace = Trace(id: "Start in background")
+            let jsFile = Bundle(for: Self.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil)!
+            let jsFileSrc = try? String(contentsOfFile: jsFile)
+            context = JSContext(virtualMachine: vm)!
+            context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
+            context!.exceptionHandler = { _, exception in
+                guard let exception = exception else { return }
+                let logger = Logger.nested(in: Self.self, with: "Js")
+                logger.logWarning("\(exception)")
             }
+            context!.evaluateScript("const APP_VERSION = 'iOS 0.2';")
+            context!.evaluateScript(jsFileSrc)
+            jsEndpointListener = context!.objectForKeyedSubscript("handleRequestFromHost")
+            cb_catcher = context!.objectForKeyedSubscript("engine_host_cb_value_formatter")
+            ready = true
+            logger.logInfo("JsContext took \(trace.finish()) to start")
         }
     }
 
@@ -223,7 +222,7 @@ final class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     func handleCallbackResult(json: String, data: [UInt8]) {
-        cb_last_value = (json, data)
+        cb_last_value.append((json, data))
     }
 
     // MARK: Private calls
@@ -236,47 +235,29 @@ final class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     private func call(_ endpoint: String, jsonData: Data, data: Data) async throws -> RawRes {
-        try await sleepUntilReadyOrThrow()
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<RawRes, Error>) in
-            // tom - todo - currently there is only one callback storage variable "cb_last_value"
-            //   for all JavaScript calls, and so we have to synchronize
-            //   all calls into JavaScript to happen serially, else
-            //   the return values would be undefined when used concurrently
-            //   see https://github.com/FlowCrypt/flowcrypt-ios/issues/852
-            // A possible solution would be to only synchronize returning o fthe callbac values into some dict. But I'm unsure if JavaScript is otherwise safe to call concurrently, so for now we'll do the safer thing.
-            queue.async {
-                self.cb_last_value = nil
-                self.jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, Array<UInt8>(data), self.cb_catcher!])
-                guard
-                    let resJsonData = self.cb_last_value?.0.data(using: .utf8),
-                    let rawResponse = self.cb_last_value?.1
-                else {
-                    self.logger.logError("could not see callback response, got cb_last_value: \(String(describing: self.cb_last_value))")
-                    continuation.resume(throwing: CoreError.format("JavaScript callback response not available"))
-                    return
-                }
-                let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
-                if let error = error {
-                    let errMsg = "------ js err -------\nCore \(endpoint):\n\(error.error.message)\n\(error.error.stack ?? "no stack")\n------- end js err -----"
-                    self.logger.logError(errMsg)
-                    continuation.resume(throwing: CoreError(coreError: error))
-                    return
-                }
-                continuation.resume(returning: RawRes(json: resJsonData, data: Data(rawResponse)))
-            }
-        }
-    }
-    
-    private func sleepUntilReadyOrThrow() async throws {
-        // This will block the task for up to 1000ms if the app was just started and Core method was called before JSContext is ready
-        // It should only affect the user if Core method was called within 500-800ms of starting the app
-        let start = DispatchTime.now()
-        while !ready {
-            if start.millisecondsSince > 1000 { // already waited for 1000 ms, give up
-                throw CoreError.notReady("App Core not ready yet")
-            }
+        jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, Array<UInt8>(data), cb_catcher!])
+
+        while cb_last_value.isEmpty {
             await Task.sleep(50 * 1_000_000) // 50ms
         }
+
+        let lastValue = cb_last_value.removeFirst()
+        let rawResponse = lastValue.1
+        guard
+            let resJsonData = lastValue.0.data(using: .utf8)
+        else {
+            logger.logError("could not see callback response, got cb_last_value: \(String(describing: lastValue))")
+            throw CoreError.format("JavaScript callback response not available")
+        }
+
+        let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
+        if let error = error {
+            let errMsg = "------ js err -------\nCore \(endpoint):\n\(error.error.message)\n\(error.error.stack ?? "no stack")\n------- end js err -----"
+            logger.logError(errMsg)
+            throw CoreError(coreError: error)
+        }
+
+        return RawRes(json: resJsonData, data: Data(rawResponse))
     }
 
     private struct RawRes {

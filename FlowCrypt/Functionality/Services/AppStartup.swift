@@ -26,7 +26,7 @@ struct AppStartup {
 
         Task {
             do {
-                try awaitPromise(setupCore())
+                await setupCore()
                 try setupMigrationIfNeeded()
                 try setupSession()
                 try await getUserOrgRulesIfNeeded()
@@ -37,13 +37,9 @@ struct AppStartup {
         }
     }
 
-    private func setupCore() -> Promise<Void> {
-        Promise { resolve, _ in
-            logger.logInfo("Setup Core")
-            Core.shared.startInBackgroundIfNotAlreadyRunning {
-                resolve(())
-            }
-        }
+    private func setupCore() async {
+        logger.logInfo("Setup Core")
+        await Core.shared.startInBackgroundIfNotAlreadyRunning()
     }
 
     private func setupMigrationIfNeeded() throws {

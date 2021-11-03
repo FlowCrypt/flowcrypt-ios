@@ -15,7 +15,8 @@ final class FlowCryptCoreTests: XCTestCase {
 
     override func setUp() {
         let expectation = XCTestExpectation()
-        core.startInBackgroundIfNotAlreadyRunning {
+        Task {
+            await core.startInBackgroundIfNotAlreadyRunning()
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 20)
@@ -387,9 +388,6 @@ final class FlowCryptCoreTests: XCTestCase {
         }
     }
 
-    // this test is only meaningful on a real device
-    // it passes on simulator even if implementation is broken
-    // maybe there's a way to run simulator with more cores? (on a mac that has them) which would simulate real device better
     func testCoreResponseCorrectnessUnderConcurrency() async throws {
         // given: a bunch of keys
         let pp = "this particular pass phrase is long enough"
