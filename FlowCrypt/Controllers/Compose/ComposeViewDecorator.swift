@@ -241,7 +241,7 @@ extension AttachmentNode.Input {
         self.init(
             name: composeAttachment.name
                 .attributed(.regular(18), color: .mainTextColor, alignment: .left),
-            size: "\(composeAttachment.size)"
+            size: composeAttachment.humanReadableSizeString
                 .attributed(.medium(12), color: .mainTextColor, alignment: .left)
         )
     }
