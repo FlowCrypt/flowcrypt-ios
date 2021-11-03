@@ -10,7 +10,8 @@ import FlowCryptCommon
 import Foundation
 
 protocol KeyMethodsType {
-    func filterByPassPhraseMatch(keys: [KeyDetails], passPhrase: String) -> [KeyDetails]
+    func filterByPassPhraseMatch(keys: [KeyDetails], passPhrase: String) async throws -> [KeyDetails]
+    func filterByPassPhraseMatch(keys: [PrvKeyInfo], passPhrase: String) async throws -> [PrvKeyInfo]
 }
 
 final class KeyMethods: KeyMethodsType {
@@ -21,27 +22,38 @@ final class KeyMethods: KeyMethodsType {
         self.decrypter = decrypter
     }
 
-    func filterByPassPhraseMatch(keys: [KeyDetails], passPhrase: String) -> [KeyDetails] {
+    // todo - join these two methods into one
+    func filterByPassPhraseMatch(keys: [PrvKeyInfo], passPhrase: String) async throws -> [PrvKeyInfo] {
         let logger = Logger.nested(in: Self.self, with: .core)
-
-        guard keys.isNotEmpty else {
-            logger.logInfo("Keys are empty")
-            return []
-        }
-
-        return keys.compactMap { key -> KeyDetails? in
-            guard let privateKey = key.private else {
-                logger.logInfo("Filtered not private key")
-                return nil
-            }
-
+        var matching: [PrvKeyInfo] = []
+        for key in keys {
             do {
-                _ = try self.decrypter.decryptKey(armoredPrv: privateKey, passphrase: passPhrase)
-                return key
+                _ = try await self.decrypter.decryptKey(armoredPrv: key.private, passphrase: passPhrase)
+                matching.append(key)
+                logger.logInfo("pass phrase matches for key: \(key.fingerprints.first ?? "missing fingerprint")")
             } catch {
-                logger.logInfo("Filtered not decrypted key")
-                return nil
+                logger.logInfo("pass phrase does not match for key: \(key.fingerprints.first ?? "missing fingerprint")")
             }
         }
+        return matching
+    }
+
+    // todo - join these two methods into one. Maybe drop this one and keep the PrvKeyInfo method?
+    func filterByPassPhraseMatch(keys: [KeyDetails], passPhrase: String) async throws -> [KeyDetails] {
+        let logger = Logger.nested(in: Self.self, with: .core)
+        var matching: [KeyDetails] = []
+        for key in keys {
+            guard let privateKey = key.private else {
+                throw KeyServiceError.expectedPrivateGotPublic
+            }
+            do {
+                _ = try await self.decrypter.decryptKey(armoredPrv: privateKey, passphrase: passPhrase)
+                matching.append(key)
+                logger.logInfo("pass phrase matches for key: \(key.primaryFingerprint)")
+            } catch {
+                logger.logInfo("pass phrase does not match for key: \(key.primaryFingerprint)")
+            }
+        }
+        return matching
     }
 }

@@ -61,14 +61,17 @@ final class MessageViewController: TableNodeViewController {
     private var input: MessageViewController.Input
     private let decorator: MessageViewDecorator
     private let messageService: MessageService
+    private let messageProvider: MessageProvider
     private let messageOperationsProvider: MessageOperationsProvider
     private let trashFolderProvider: TrashFolderProviderType
     private let filesManager: FilesManagerType
+    private let serviceActor: ServiceActor
     private var processedMessage: ProcessedMessage = .empty
 
     init(
         messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
+        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         filesManager: FilesManagerType = FilesManager(),
@@ -82,6 +85,11 @@ final class MessageViewController: TableNodeViewController {
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
         self.filesManager = filesManager
+        self.messageProvider = messageProvider
+        self.serviceActor = ServiceActor(
+            messageService: messageService,
+            messageProvider: messageProvider
+        )
 
         super.init(node: TableNode())
     }
@@ -140,26 +148,38 @@ final class MessageViewController: TableNodeViewController {
 }
 
 // MARK: - Message
-
 extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
         handleFetchProgress(state: .fetch)
 
-        Promise { [weak self] in
-            guard let self = self else { return }
-            let promise = self.messageService.getAndProcessMessage(
-                with: self.input.objMessage,
-                folder: self.input.path,
-                progressHandler: self.handleFetchProgress
-            )
-            let message = try awaitPromise(promise)
-            self.processedMessage = message
+        Task {
+            do {
+                processedMessage = try await serviceActor.fetchDecryptAndRenderMsg(message: input.objMessage,
+                                                                                   path: input.path,
+                                                                                   progressHandler: { [weak self] state in
+                                                                                        self?.handleFetchProgress(state: state)
+                                                                                   })
+                handleReceivedMessage()
+            } catch {
+                handleError(error)
+            }
         }
-        .then(on: .main) { [weak self] in
-            self?.handleReceivedMessage()
-        }
-        .catch(on: .main) { [weak self] error in
-            self?.handleError(error)
+    }
+
+    private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String) {
+        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        Task {
+            do {
+                let matched = try await serviceActor.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+                if matched {
+                    processedMessage = try await serviceActor.decryptAndProcessMessage(mime: rawMimeData)
+                    handleReceivedMessage()
+                } else {
+                    handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+                }
+            } catch {
+                handleError(error)
+            }
         }
     }
 
@@ -172,19 +192,6 @@ extension MessageViewController {
         case .decrypt:
             updateSpinner(label: "decrypting_title".localized)
         }
-    }
-
-    private func validateMessage(rawMimeData: Data, with passPhrase: String) {
-        handleFetchProgress(state: .decrypt)
-
-        messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
-            .then(on: .main) { [weak self] message in
-                self?.processedMessage = message
-                self?.handleReceivedMessage()
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handleError(error)
-            }
     }
 
     private func handleReceivedMessage() {
@@ -222,8 +229,8 @@ extension MessageViewController {
         hideSpinner()
 
         switch error as? MessageServiceError {
-        case let .missedPassPhrase(rawMimeData):
-            handleMissedPassPhrase(for: rawMimeData)
+        case let .missingPassPhrase(rawMimeData):
+            handleMissingPassPhrase(for: rawMimeData)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
             handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
         case let .keyMismatch(rawMimeData):
@@ -243,13 +250,13 @@ extension MessageViewController {
         }
     }
 
-    private func handleMissedPassPhrase(for rawMimeData: Data) {
+    private func handleMissingPassPhrase(for rawMimeData: Data) {
         let alert = AlertsFactory.makePassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase)
             })
 
         present(alert, animated: true, completion: nil)
@@ -261,7 +268,7 @@ extension MessageViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase)
             })
         present(alert, animated: true, completion: nil)
     }
@@ -533,5 +540,34 @@ extension MessageViewController: UIDocumentPickerDelegate {
         alert.addAction(open)
 
         present(alert, animated: true)
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let messageService: MessageService
+    private let messageProvider: MessageProvider
+
+    init(messageService: MessageService,
+         messageProvider: MessageProvider) {
+        self.messageService = messageService
+        self.messageProvider = messageProvider
+    }
+
+    func fetchDecryptAndRenderMsg(message: Message, path: String,
+                                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> ProcessedMessage {
+        let rawMimeData = try awaitPromise(messageProvider.fetchMsg(message: message,
+                                                                    folder: path,
+                                                                    progressHandler: progressHandler))
+        progressHandler?(.decrypt)
+        return try await messageService.decryptAndProcessMessage(mime: rawMimeData)
+    }
+
+    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
+        return try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+    }
+
+    func decryptAndProcessMessage(mime: Data) async throws -> ProcessedMessage {
+        return try await messageService.decryptAndProcessMessage(mime: mime)
     }
 }

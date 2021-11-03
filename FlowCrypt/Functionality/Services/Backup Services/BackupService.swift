@@ -31,9 +31,8 @@ final class BackupService {
 extension BackupService: BackupServiceType {
     func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
         let backupData = try await self.backupProvider.searchBackups(for: userId.email)
-
         do {
-            let parsed = try core.parseKeys(armoredOrBinary: backupData)
+            let parsed = try await core.parseKeys(armoredOrBinary: backupData)
             let keys = parsed.keyDetails.filter { $0.private != nil }
             return keys
         } catch {
