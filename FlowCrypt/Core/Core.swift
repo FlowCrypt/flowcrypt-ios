@@ -63,8 +63,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     private var vm = JSVirtualMachine()!
     private var context: JSContext?
 
-    private var cb_last_value = [CallbackResult]()
-    private var started = false
+    private var callbackResults = [CallbackResult]()
     private var ready = false
 
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
@@ -193,26 +192,22 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     func startInBackgroundIfNotAlreadyRunning() async {
         guard !ready else { return }
 
-        if !started {
-            started = true
-
-            let trace = Trace(id: "Start in background")
-            let jsFile = Bundle(for: Self.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil)!
-            let jsFileSrc = try? String(contentsOfFile: jsFile)
-            context = JSContext(virtualMachine: vm)!
-            context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
-            context!.exceptionHandler = { _, exception in
-                guard let exception = exception else { return }
-                let logger = Logger.nested(in: Self.self, with: "Js")
-                logger.logWarning("\(exception)")
-            }
-            context!.evaluateScript("const APP_VERSION = 'iOS 0.2';")
-            context!.evaluateScript(jsFileSrc)
-            jsEndpointListener = context!.objectForKeyedSubscript("handleRequestFromHost")
-            cb_catcher = context!.objectForKeyedSubscript("engine_host_cb_value_formatter")
-            ready = true
-            logger.logInfo("JsContext took \(trace.finish()) to start")
+        let trace = Trace(id: "Start in background")
+        let jsFile = Bundle(for: Self.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil)!
+        let jsFileSrc = try? String(contentsOfFile: jsFile)
+        context = JSContext(virtualMachine: vm)!
+        context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
+        context!.exceptionHandler = { _, exception in
+            guard let exception = exception else { return }
+            let logger = Logger.nested(in: Self.self, with: "Js")
+            logger.logWarning("\(exception)")
         }
+        context!.evaluateScript("const APP_VERSION = 'iOS 0.2';")
+        context!.evaluateScript(jsFileSrc)
+        jsEndpointListener = context!.objectForKeyedSubscript("handleRequestFromHost")
+        cb_catcher = context!.objectForKeyedSubscript("engine_host_cb_value_formatter")
+        ready = true
+        logger.logInfo("JsContext took \(trace.finish()) to start")
     }
 
     func gmailBackupSearch(for email: String) async throws -> String {
@@ -222,7 +217,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     func handleCallbackResult(json: String, data: [UInt8]) {
-        cb_last_value.append((json, data))
+        callbackResults.append((json, data))
     }
 
     // MARK: Private calls
@@ -237,16 +232,16 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     private func call(_ endpoint: String, jsonData: Data, data: Data) async throws -> RawRes {
         jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, Array<UInt8>(data), cb_catcher!])
 
-        while cb_last_value.isEmpty {
+        while callbackResults.isEmpty {
             await Task.sleep(50 * 1_000_000) // 50ms
         }
 
-        let lastValue = cb_last_value.removeFirst()
-        let rawResponse = lastValue.1
+        let result = callbackResults.removeFirst()
+        let rawResponse = result.1
         guard
-            let resJsonData = lastValue.0.data(using: .utf8)
+            let resJsonData = result.0.data(using: .utf8)
         else {
-            logger.logError("could not see callback response, got cb_last_value: \(String(describing: lastValue))")
+            logger.logError("could not see callback response, got cb_last_value: \(String(describing: result))")
             throw CoreError.format("JavaScript callback response not available")
         }
 
