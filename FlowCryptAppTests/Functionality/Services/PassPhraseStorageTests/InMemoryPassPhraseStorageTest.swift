@@ -24,7 +24,7 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     }
 
     func testSavePassPhraseUpdatesDate() {
-        let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
+        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.save(passPhrase: pass)
         passPhraseProvider.passPhrases.forEach {
             XCTAssertNotNil($0.date)
@@ -32,7 +32,7 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     }
 
     func testUpdatePassPhraseUpdatesDate() {
-        let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
+        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.update(passPhrase: pass)
         passPhraseProvider.passPhrases.forEach {
             XCTAssertNotNil($0.date)
@@ -40,7 +40,7 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     }
 
     func testRemovePassPhrase() {
-        let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
+        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.save(passPhrase: pass)
         sut.remove(passPhrase: pass)
         XCTAssertTrue(passPhraseProvider.passPhrases.isEmpty)
@@ -49,17 +49,17 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     func testGetPassPhrases() {
         XCTAssertTrue(sut.getPassPhrases().isEmpty)
 
-        let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
+        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.save(passPhrase: pass)
         XCTAssertTrue(sut.getPassPhrases().count == 1)
-        XCTAssertTrue(sut.getPassPhrases().contains(where: { $0.primaryFingerprint == "11" }))
+        XCTAssertTrue(sut.getPassPhrases().contains(where: { $0.primaryFingerprintOfAssociatedKey == "11" }))
         XCTAssertTrue(sut.getPassPhrases().filter { $0.date == nil }.isEmpty)
     }
 
     func testExpiredPassPhrases() {
         XCTAssertTrue(sut.getPassPhrases().isEmpty)
 
-        let pass = PassPhrase(value: "A", fingerprints: ["11","12"])
+        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.save(passPhrase: pass)
         sleep(3)
         XCTAssertTrue(sut.getPassPhrases().isEmpty)

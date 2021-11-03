@@ -7,6 +7,7 @@ import Combine
 import FlowCryptCommon
 import FlowCryptUI
 import Foundation
+import UIKit
 
 /**
  * View controller to compose the message and send it
@@ -21,6 +22,7 @@ private struct ComposedDraft: Equatable {
     let contextToSend: ComposeMessageContext
 }
 
+@MainActor
 final class ComposeViewController: TableNodeViewController {
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
@@ -46,6 +48,7 @@ final class ComposeViewController: TableNodeViewController {
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyService: KeyServiceType
+    private let keyMethods: KeyMethodsType
     private let service: ServiceActor
     private let passPhraseService: PassPhraseService
 
@@ -75,7 +78,8 @@ final class ComposeViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyService: KeyServiceType = KeyService(),
-        passPhraseService: PassPhraseService = PassPhraseService()
+        passPhraseService: PassPhraseService = PassPhraseService(),
+        keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
@@ -87,6 +91,7 @@ final class ComposeViewController: TableNodeViewController {
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.keyService = keyService
+        self.keyMethods = keyMethods
         self.service = ServiceActor(
             composeMessageService: composeMessageService,
             contactsService: contactsService,
@@ -153,55 +158,52 @@ final class ComposeViewController: TableNodeViewController {
 // MARK: - Drafts
 extension ComposeViewController {
     @objc private func startTimer() {
-        DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            self.saveDraftTimer = Timer.scheduledTimer(
-                timeInterval: 1,
-                target: self,
-                selector: #selector(self.saveDraftIfNeeded),
-                userInfo: nil,
-                repeats: true)
-            self.saveDraftTimer?.fire()
+        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.saveDraftIfNeeded()
         }
+        saveDraftTimer?.fire()
     }
 
     @objc private func stopTimer() {
         saveDraftTimer?.invalidate()
         saveDraftTimer = nil
-
+        
         saveDraftIfNeeded()
     }
 
     private func shouldSaveDraft() -> Bool {
+        // todo - that draft should only be saved when one of the fields are dirty (edited by user). Right now, a draft may get saved right after rendering compose (or reply), which is annoying.
         let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
-
         guard let oldDraft = composedLatestDraft else {
             composedLatestDraft = newDraft
             return true
         }
-
         let result = newDraft != oldDraft
         composedLatestDraft = newDraft
         return result
     }
 
-    @objc private func saveDraftIfNeeded() {
+    private func saveDraftIfNeeded() {
+        guard shouldSaveDraft() else { return }
         Task {
-            guard shouldSaveDraft() else { return }
             do {
                 let signingPrv = try await prepareSigningKey()
-                let messagevalidationResult = composeMessageService.validateMessage(
+                let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
                     input: input,
                     contextToSend: contextToSend,
                     email: email,
                     includeAttachments: false,
                     signingPrv: signingPrv
                 )
-                guard case let .success(message) = messagevalidationResult else {
-                    return
+                try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
+            } catch {
+                if !(error is MessageValidationError) {
+                    // no need to save or notify user if validation error
+                    // for other errors show toast
+                    // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?
+                    showToast("Error saving draft: \(error.localizedDescription)")
                 }
-                try await composeMessageService.encryptAndSaveDraft(message: message, threadId: input.threadId)
-            } catch {}
+            }
         }
     }
 }
@@ -328,8 +330,10 @@ extension ComposeViewController {
         Task {
             do {
                 let key = try await prepareSigningKey()
-                sendMessage(key)
-            } catch {}
+                try await sendMessage(key)
+            } catch {
+                handle(error: error)
+            }
         }
     }
 }
@@ -337,41 +341,65 @@ extension ComposeViewController {
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    private func prepareSigningKey() async throws -> PrvKeyInfo {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<PrvKeyInfo, Error>) in
-            guard let signingKey = try? keyService.getSigningKey() else {
-                let message = "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key."
-                showAlert(message: message)
-                continuation.resume(throwing: MessageServiceError.unknown)
-                return
-            }
+    @MainActor private func prepareSigningKey() async throws -> PrvKeyInfo {
+        guard let signingKey = try await keyService.getSigningKey() else {
+            throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
+        }
 
-            guard let passphrase = signingKey.passphrase else {
-                let alert = AlertsFactory.makePassPhraseAlert(
-                    onCancel: { [weak self] in
-                        self?.showAlert(message: "Passphrase is required for message signing")
-                        continuation.resume(throwing: MessageServiceError.unknown)
-                    },
-                    onCompletion: { [weak self] passPhrase in
-                        // save passphrase
-                        let keyInfo = signingKey.copy(with: passPhrase)
-                        self?.savePassPhrases(value: passPhrase, with: [keyInfo])
-                        continuation.resume(returning: keyInfo)
-                    })
-                present(alert, animated: true, completion: nil)
-                return
-            }
-            continuation.resume(returning: signingKey.copy(with: passphrase))
+        guard let existingPassPhrase = signingKey.passphrase else {
+            return signingKey.copy(with: try await self.requestMissingPassPhraseWithModal(for: signingKey))
+        }
+
+        return signingKey.copy(with: existingPassPhrase)
+    }
+
+    private func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo) async throws -> String {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+            let alert = AlertsFactory.makePassPhraseAlert(
+                onCancel: {
+                    continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
+                },
+                onCompletion: { [weak self] passPhrase in
+                    guard let self = self else {
+                        continuation.resume(throwing: AppErr.nilSelf)
+                        return
+                    }
+                    Task {
+                        do {
+                            let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
+                            if matched {
+                                continuation.resume(returning: passPhrase)
+                            } else {
+                                throw AppErr.user("This pass phrase did not match your signing private key")
+                            }
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    }
+                }
+            )
+            present(alert, animated: true, completion: nil)
         }
     }
 
-    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
-        privateKeys
-            .map { PassPhrase(value: passPhrase, fingerprints: $0.fingerprints) }
-            .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
+    private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
+        // since pass phrase was entered (an inconvenient thing for user to do),
+        //  let's find all keys that match and save the pass phrase for all
+        let allKeys = try await self.keyService.getPrvKeyInfo()
+        guard allKeys.isNotEmpty else {
+            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
+            //   I copied it from another usage, but has to be changed
+            throw KeyServiceError.retrieve
+        }
+        let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
+        // save passphrase for all matching keys
+        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        // now figure out if the pass phrase also matched the signing prv itself
+        let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
+        return matched != nil// true if the pass phrase matched signing key
     }
 
-    private func sendMessage(_ signingKey: PrvKeyInfo) {
+    private func sendMessage(_ signingKey: PrvKeyInfo) async throws {
         view.endEditing(true)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
@@ -379,56 +407,41 @@ extension ComposeViewController {
         showSpinner(spinnerTitle.localized)
 
         let selectedRecipients = contextToSend.recipients.filter(\.state.isSelected)
-        selectedRecipients.forEach(evaluate)
+        for selectedRecipient in selectedRecipients {
+            evaluate(recipient: selectedRecipient)
+        }
 
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            guard let self = self else { return }
-            let result = self.composeMessageService.validateMessage(
-                input: self.input,
-                contextToSend: self.contextToSend,
-                email: self.email,
-                signingPrv: signingKey
-            )
-            switch result {
-            case .success(let message):
-                self.encryptAndSend(message)
-            case .failure(let error):
-                self.handle(error: error)
+        try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
+        let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
+            input: self.input,
+            contextToSend: self.contextToSend,
+            email: self.email,
+            signingPrv: signingKey
+        )
+        UIApplication.shared.isIdleTimerDisabled = true
+        try await service.encryptAndSend(
+            message: sendableMsg,
+            threadId: input.threadId,
+            progressHandler: { [weak self] progress in
+                self?.updateSpinner(progress: progress, systemImageName: "checkmark.circle")
             }
-        }
+        )
+        handleSuccessfullySentMessage()
     }
 
-    private func encryptAndSend(_ message: SendableMsg) {
-        Task {
-            do {
-                try await service.encryptAndSend(message: message,
-                                                 threadId: input.threadId,
-                                                 progressHandler: { [weak self] progress in
-                    self?.updateSpinner(progress: progress)
-                })
-                handleSuccessfullySentMessage()
-            } catch {
-                if let error = error as? ComposeMessageError {
-                    handle(error: error)
-                }
-            }
-        }
-    }
-
-    private func handle(error: ComposeMessageError) {
+    private func handle(error: Error) {
+        UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-
-        let message = "compose_error".localized
-            + "\n\n"
-            + error.description
-
-        showAlert(message: message)
+        let err = error as? ComposeMessageError
+        let description = err?.description ?? error.localizedDescription
+        showAlert(message: "compose_error".localized + "\n\n" + description)
     }
 
     private func handleSuccessfullySentMessage() {
+        UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
         showToast(input.successfullySentToast)
@@ -489,7 +502,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
             default:
                 return ASCellNode()
-                
             }
         }
     }
@@ -809,11 +821,7 @@ extension ComposeViewController {
         let index: Int? = {
             switch context {
             case let .left(recipient):
-                guard let index = recipients.firstIndex(where: { $0.email == recipient.email }) else {
-                    assertionFailure()
-                    return nil
-                }
-                return index
+                return recipients.firstIndex(where: { $0.email == recipient.email })
             case let .right(index):
                 return index.row
             }

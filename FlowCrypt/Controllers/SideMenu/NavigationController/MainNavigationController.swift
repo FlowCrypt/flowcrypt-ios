@@ -59,6 +59,7 @@ extension MainNavigationController: UINavigationControllerDelegate {
 
 extension UINavigationController {
     func setup() {
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
         navigationItem.backBarButtonItem = UIBarButtonItem()
             .then { $0.title = "" }
         navigationBar.backItem?.title = ""
