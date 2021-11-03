@@ -155,14 +155,7 @@ final class ComposeMessageService {
             throw ComposeMessageError.gatewayError(error)
         }
     }
-
-    func getDraft(with identifier: String) {
-        Task {
-            // tom - unsure what this does? the result is unused
-            let draft = try await draftGateway?.getDraft(with: identifier)
-        }
-    }
-
+    
     // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
         do {
