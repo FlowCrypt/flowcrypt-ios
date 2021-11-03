@@ -39,7 +39,7 @@ struct AppStartup {
 
     private func setupCore() async {
         logger.logInfo("Setup Core")
-        await Core.shared.startInBackgroundIfNotAlreadyRunning()
+        await Core.shared.startIfNotAlreadyRunning()
     }
 
     private func setupMigrationIfNeeded() throws {

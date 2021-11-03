@@ -11,17 +11,17 @@ declare const global: any;
 
 const endpoints = new Endpoints();
 
-global.handleRequestFromHost = (endpointName: string, request: string, data: Uint8Array, cb: (response: EndpointRes) => void): void => {
+global.handleRequestFromHost = (endpointName: string, endpointKey: string, request: string, data: Uint8Array, cb: (key: string, response: EndpointRes) => void): void => {
   try {
     const handler = endpoints[endpointName];
     if (!handler) {
-      cb(fmtErr(new Error(`Unknown endpoint: ${endpointName}`)));
+      cb(endpointKey, fmtErr(new Error(`Unknown endpoint: ${endpointName}`)));
     } else {
       handler(JSON.parse(request), [data])
-        .then(res => cb(res))
-        .catch(err => cb(fmtErr(err)));
+        .then(res => cb(endpointKey, res))
+        .catch(err => cb(endpointKey, fmtErr(err)));
     }
   } catch (err) {
-    cb(fmtErr(err));
+    cb(endpointKey, fmtErr(err));
   }
 };

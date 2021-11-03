@@ -16,7 +16,7 @@ final class KeyServiceTests: XCTestCase {
 
         let expectation = XCTestExpectation()
         Task {
-            await Core.shared.startInBackgroundIfNotAlreadyRunning()
+            await Core.shared.startIfNotAlreadyRunning()
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 10)

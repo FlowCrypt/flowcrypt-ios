@@ -63,11 +63,10 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     private var vm = JSVirtualMachine()!
     private var context: JSContext?
 
-    private var callbackResults = [CallbackResult]()
+    private var callbackResults: [String: CallbackResult] = [:]
     private var ready = false
 
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
-    private lazy var resultSemaphore = DispatchSemaphore(value: 0)
 
     private init() {}
 
@@ -189,7 +188,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
-    func startInBackgroundIfNotAlreadyRunning() async {
+    func startIfNotAlreadyRunning() async {
         guard !ready else { return }
 
         let trace = Trace(id: "Start in background")
@@ -216,8 +215,8 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return result.query
     }
 
-    func handleCallbackResult(json: String, data: [UInt8]) {
-        callbackResults.append((json, data))
+    func handleCallbackResult(endpointKey: String, json: String, data: [UInt8]) {
+        callbackResults[endpointKey] = (json, data)
     }
 
     // MARK: Private calls
@@ -230,18 +229,26 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     private func call(_ endpoint: String, jsonData: Data, data: Data) async throws -> RawRes {
-        jsEndpointListener!.call(withArguments: [endpoint, String(data: jsonData, encoding: .utf8)!, Array<UInt8>(data), cb_catcher!])
-
-        while callbackResults.isEmpty {
-            await Task.sleep(50 * 1_000_000) // 50ms
+        guard ready else {
+            throw CoreError.exception("Core is not ready yet. Most likeyly startIfNotAlreadyRunning wasn't called first")
         }
 
-        let result = callbackResults.removeFirst()
-        let rawResponse = result.1
+        let endpointKey = NSUUID().uuidString
+        jsEndpointListener!.call(withArguments: [
+            endpoint,
+            endpointKey,
+            String(data: jsonData, encoding: .utf8)!,
+            Array<UInt8>(data), cb_catcher!
+        ])
+
+        while callbackResults[endpointKey] == nil {
+            await Task.sleep(1_000_000) // 1ms
+        }
+
         guard
+            let result = callbackResults.removeValue(forKey: endpointKey),
             let resJsonData = result.0.data(using: .utf8)
         else {
-            logger.logError("could not see callback response, got cb_last_value: \(String(describing: result))")
             throw CoreError.format("JavaScript callback response not available")
         }
 
@@ -252,13 +259,13 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             throw CoreError(coreError: error)
         }
 
-        return RawRes(json: resJsonData, data: Data(rawResponse))
+        return RawRes(json: resJsonData, data: Data(result.1))
     }
+}
 
-    private struct RawRes {
-        let json: Data
-        let data: Data
-    }
+private struct RawRes {
+    let json: Data
+    let data: Data
 }
 
 private struct GmailBackupSearchResponse: Decodable {
