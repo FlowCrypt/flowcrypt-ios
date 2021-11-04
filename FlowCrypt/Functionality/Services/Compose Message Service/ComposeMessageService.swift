@@ -9,24 +9,8 @@
 import Combine
 import FlowCryptUI
 import Foundation
-//import GoogleAPIClientForREST_Gmail
+import GoogleAPIClientForREST_Gmail
 import FlowCryptCommon
-
-struct ComposeMessageContext: Equatable {
-    var message: String?
-    var recipients: [ComposeMessageRecipient] = []
-    var subject: String?
-    var attachments: [ComposeMessageAttachment] = []
-}
-
-struct ComposeMessageRecipient: Equatable {
-    let email: String
-    var state: RecipientState
-
-    static func == (lhs: ComposeMessageRecipient, rhs: ComposeMessageRecipient) -> Bool {
-        return lhs.email == rhs.email
-    }
-}
 
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail

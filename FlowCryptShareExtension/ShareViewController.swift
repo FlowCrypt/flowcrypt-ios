@@ -9,12 +9,11 @@
 
 import UIKit
 import Social
+import MBProgressHUD
+import MailCore
+import GoogleAPIClientForREST_Gmail
 
 class ShareViewController: SLComposeServiceViewController {
-
-    func some() {
-
-    }
 
     override func isContentValid() -> Bool {
         // Do validation of contentText and/or NSExtensionContext attachments here

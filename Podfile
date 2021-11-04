@@ -30,12 +30,12 @@ target 'FlowCryptUI' do
   ui_pods
 end
 
-target 'FlowCryptUIApplication' do
+target 'FlowCryptShareExtension' do
   ui_pods
 end
 
-target 'FlowCryptShareExtension' do
-  extension_pods
+target 'FlowCryptUIApplication' do
+  ui_pods
 end
 
 
