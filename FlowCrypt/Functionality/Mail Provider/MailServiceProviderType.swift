@@ -24,9 +24,11 @@ enum MailServiceProviderType {
 // MessageSearchProvider - search messages in folder
 // BackupProvider - Search for backups
 
+// MARK: Optionally
+// MessagesThreadProvider - Fetch user threads
+
 protocol MailServiceProvider: MessageGateway,
     RemoteFoldersProviderType,
-    MessagesListProvider,
     MessageProvider,
     MessageOperationsProvider,
     MessageSearchProvider,

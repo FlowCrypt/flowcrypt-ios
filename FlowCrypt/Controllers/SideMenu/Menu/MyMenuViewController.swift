@@ -128,7 +128,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self, let section = Sections(rawValue: indexPath.section) else {
                 return ASCellNode()
             }
@@ -136,12 +136,15 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
         }
     }
 
-    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard let sections = Sections(rawValue: indexPath.section) else { return }
 
         switch (sections, state) {
         case (.header, _):
-            handleHeaderTap()
+            guard let header = tableNode.nodeForRow(at: indexPath) as? TextImageNode else {
+                return
+            }
+            handleTapOn(header: header)
         case (.main, .folders):
             guard let item = folders[safe: indexPath.row] else { return }
             handleFolderTap(with: item)
@@ -216,22 +219,6 @@ extension MyMenuViewController {
 
         router.switchActive(user: account)
     }
-
-    private func animateImage(_ completion: (() -> Void)?) {
-        guard let header = tableNode.visibleNodes.compactMap({ $0 as? HeaderNode }).first else {
-            return
-        }
-
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                header.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
-            },
-            completion: { _ in
-                completion?()
-            }
-        )
-    }
 }
 
 // MARK: - UI
@@ -259,8 +246,8 @@ extension MyMenuViewController {
                 for: dataService.currentUser,
                 image: state.arrowImage
             )
-            return HeaderNode(input: headerInput) { [weak self] in
-                self?.handleHeaderTap()
+            return TextImageNode(input: headerInput) { [weak self] node in
+                self?.handleTapOn(header: node)
             }
         case (.main, .accountAdding):
             return InfoCellNode(input: decorator.nodeForAccount(for: accounts[row]))
@@ -291,7 +278,8 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let viewController = InboxViewController(input)
+            let viewController = InboxViewControllerFactory.make(with: input)
+
             if let topController = topController(controllerType: InboxViewController.self),
                topController.path == folder.path {
                 sideMenuController()?.sideMenu?.hideSideMenu()
@@ -310,16 +298,20 @@ extension MyMenuViewController {
         }
     }
 
-    private func handleHeaderTap() {
-        animateImage { [weak self] in
-            guard let self = self else {
-                return
+    private func handleTapOn(header: TextImageNode) {
+        UIView.animate(
+            withDuration: 0.3,
+            animations: {
+                header.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
+            },
+            completion: { [weak self] _ in
+                switch self?.state {
+                case .accountAdding: self?.state = .folders
+                case .folders: self?.state = .accountAdding
+                case .none: break
+                }
             }
-            switch self.state {
-            case .accountAdding: self.state = .folders
-            case .folders: self.state = .accountAdding
-            }
-        }
+        )
     }
 
     private func topController<T: UIViewController>(

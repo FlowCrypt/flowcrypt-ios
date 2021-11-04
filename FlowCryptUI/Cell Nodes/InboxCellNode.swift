@@ -12,12 +12,12 @@ public final class InboxCellNode: CellNode {
     public struct Input {
         public let emailText: NSAttributedString
         public let dateText: NSAttributedString
-        public let messageText: NSAttributedString
+        public let messageText: NSAttributedString?
 
         public init(
             emailText: NSAttributedString,
             dateText: NSAttributedString,
-            messageText: NSAttributedString
+            messageText: NSAttributedString?
         ) {
             self.emailText = emailText
             self.dateText = dateText
@@ -27,22 +27,23 @@ public final class InboxCellNode: CellNode {
 
     private let emailNode = ASTextNode2()
     private let dateNode = ASTextNode2()
-    private let messageNode = ASTextNode2()
+    private lazy var messageNode: ASTextNode2? = ASTextNode2()
     private let separatorNode = ASDisplayNode()
 
-    public init(message: Input) {
+    public init(input: Input) {
         super.init()
-        emailNode.attributedText = message.emailText
-        dateNode.attributedText = message.dateText
-        messageNode.attributedText = message.messageText
+        emailNode.attributedText = input.emailText
+        dateNode.attributedText = input.dateText
+
+        if let message = input.messageText {
+            messageNode?.attributedText = message
+            messageNode?.maximumNumberOfLines = 1
+            messageNode?.truncationMode = .byTruncatingTail
+        }
 
         emailNode.maximumNumberOfLines = 1
         dateNode.maximumNumberOfLines = 1
-        messageNode.maximumNumberOfLines = 1
-
         emailNode.truncationMode = .byTruncatingTail
-        messageNode.truncationMode = .byTruncatingTail
-
         separatorNode.backgroundColor = .lightGray
     }
 
@@ -54,7 +55,12 @@ public final class InboxCellNode: CellNode {
         separatorNode.style.flexGrow = 1.0
         separatorNode.style.preferredSize.height = 1.0
 
-        nameLocationStack.children = [emailNode, messageNode]
+
+        if let messageNode = messageNode {
+            nameLocationStack.children = [emailNode, messageNode]
+        } else {
+            nameLocationStack.children = [emailNode]
+        }
 
         let headerStackSpec = ASStackLayoutSpec(
             direction: .horizontal,

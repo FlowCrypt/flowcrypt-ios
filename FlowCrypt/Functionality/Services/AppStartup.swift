@@ -67,7 +67,8 @@ struct AppStartup {
 
         switch entryPoint {
         case .mainFlow:
-            viewController = SideMenuNavigationController()
+            let contentViewController = InboxViewContainerController()
+            viewController = SideMenuNavigationController(contentViewController: contentViewController)
         case .signIn:
             viewController = MainNavigationController(rootViewController: SignInViewController())
         case .setupFlow(let userId):
@@ -79,10 +80,11 @@ struct AppStartup {
     }
 
     private func entryPointForUser(session: SessionType?) -> EntryPoint {
-        if !DataService.shared.isLoggedIn {
+        let dataService = DataService.shared
+        if !dataService.isLoggedIn {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
-        } else if DataService.shared.isSetupFinished {
+        } else if dataService.isSetupFinished {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
         } else if let session = session, let userId = makeUserIdForSetup(session: session) {

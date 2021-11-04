@@ -8,11 +8,12 @@
 
 import Foundation
 import Promises
+import FlowCryptCommon
 
 protocol MessageOperationsProvider {
-    func markAsRead(message: Message, folder: String) -> Promise<Void>
-    func markAsUnread(message: Message, folder: String) -> Promise<Void>
-    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void>
-    func delete(message: Message, form folderPath: String?) -> Promise<Void>
-    func archiveMessage(message: Message, folderPath: String) -> Promise<Void>
+    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws
+    func delete(message: Message, form folderPath: String?) async throws
+    func archiveMessage(message: Message, folderPath: String) async throws
+    func markAsUnread(message: Message, folder: String) async throws
+    func markAsRead(message: Message, folder: String) async throws
 }
