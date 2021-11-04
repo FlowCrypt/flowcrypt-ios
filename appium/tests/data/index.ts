@@ -1,7 +1,7 @@
 export const CommonData = {
     account: {
         email: 'e2e.enterprise.test@flowcrypt.com',
-        password: process.env.PASSWORD,
+        password: process.env.ACCOUNT_PASSWORD,
         passPhrase: 'London is the capital of Great Britain'
     },
     sender: {
