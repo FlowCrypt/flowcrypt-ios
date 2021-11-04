@@ -14,6 +14,9 @@ struct ComposeMessageAttachment: Equatable {
     let size: Int
     let data: Data
     let type: String
+    var humanReadableSizeString: String {
+        return ByteCountFormatter().string(fromByteCount: Int64(self.size))
+    }
 }
 
 extension ComposeMessageAttachment {
