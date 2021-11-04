@@ -8,12 +8,6 @@ import FlowCryptCommon
 import FlowCryptUI
 import Foundation
 
-/**
- * View controller to compose the message and send it
- * - User can be redirected here from *InboxViewController* by tapping on *+*
- * - Or from *MessageViewController* controller by tapping on *reply*
- **/
-
 // swiftlint:disable file_length
 private struct ComposedDraft: Equatable {
     let email: String
@@ -21,6 +15,12 @@ private struct ComposedDraft: Equatable {
     let contextToSend: ComposeMessageContext
 }
 
+/**
+ * View controller to compose the message and send it
+ * - User can be redirected here from *InboxViewController* by tapping on *+*
+ * - Or from *MessageViewController* controller by tapping on *reply*
+ **/
+@MainActor
 final class ComposeViewController: TableNodeViewController {
     private lazy var logger = Logger.nested(Self.self)
 
@@ -186,7 +186,7 @@ extension ComposeViewController {
         return result
     }
 
-    @objc private func saveDraftIfNeeded() {
+    private func saveDraftIfNeeded() {
         guard shouldSaveDraft() else { return }
         Task {
             do {
@@ -344,7 +344,7 @@ extension ComposeViewController {
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    @MainActor private func prepareSigningKey() async throws -> PrvKeyInfo {
+    private func prepareSigningKey() async throws -> PrvKeyInfo {
         guard let signingKey = try await keyService.getSigningKey() else {
             throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
@@ -824,11 +824,7 @@ extension ComposeViewController {
         let index: Int? = {
             switch context {
             case let .left(recipient):
-                guard let index = recipients.firstIndex(where: { $0.email == recipient.email }) else {
-                    assertionFailure()
-                    return nil
-                }
-                return index
+                return recipients.firstIndex(where: { $0.email == recipient.email })
             case let .right(index):
                 return index.row
             }

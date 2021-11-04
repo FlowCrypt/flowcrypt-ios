@@ -1,5 +1,5 @@
 //
-//  MessageHandlerViewConroller.swift
+//  MsgListViewController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23/12/2019.
@@ -30,9 +30,11 @@ extension MsgListViewController where Self: UIViewController {
     private func openDraft(with message: Message) {
         guard let email = DataService.shared.email else { return }
 
-        let controller = ComposeViewController(email: email)
-        controller.updateWithMessage(message: message)
-        navigationController?.pushViewController(controller, animated: true)
+        Task {
+            let controller = await ComposeViewController(email: email)
+            await controller.updateWithMessage(message: message)
+            await navigationController?.pushViewController(controller, animated: true)
+        }
     }
 
     private func openMsgElseShowToast(with message: Message, path: String) {
@@ -56,7 +58,7 @@ extension MsgListViewController where Self: UIViewController {
             showToast("Messages larger than 5MB are not supported yet")
             return
         }
-        
+
         guard let threadOperationsProvider = MailProvider.shared.threadOperationsProvider else {
             assertionFailure("Internal error. Provider should conform to MessagesThreadOperationsProvider")
             return
