@@ -16,6 +16,7 @@ private extension GoogleScope {
         case .userInfo: return "User Info"
         case .mail: return "Gmail"
         case .contacts: return "Contacts"
+        case .otherContacts: return "Other Contacts"
         }
     }
 }
