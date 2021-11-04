@@ -5,7 +5,11 @@ export const CommonData = {
         passPhrase: process.env.PASS_PHRASE
     },
     sender: {
-        email: 'dmitry@flowcrypt.com'
+        email: process.env.SENDER_EMAIL,
+    },
+    contact: {
+        email: 'dmitry@flowcrypt.com',
+        name: 'Dima'
     },
     bundleId: {
         id: process.env.BUNDLE_ID

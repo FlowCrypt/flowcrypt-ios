@@ -10,6 +10,9 @@
 
 final class PassPhraseServiceMock: PassPhraseServiceType {
 
+    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) {
+    }
+
     var passPhrases: [PassPhrase] = []
 
     func getPassPhrases() -> [PassPhrase] {

@@ -7,17 +7,16 @@
 //
 
 import Foundation
-import Promises
 import RealmSwift
 
 protocol LocalContactsProviderType: PublicKeyProvider {
     func updateLastUsedDate(for email: String)
-    func searchRecipient(with email: String) -> RecipientWithSortedPubKeys?
+    func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys?
     func searchEmails(query: String) -> [String]
     func save(recipient: RecipientWithSortedPubKeys)
     func remove(recipient: RecipientWithSortedPubKeys)
     func updateKeys(for recipient: RecipientWithSortedPubKeys)
-    func getAllRecipients() -> [RecipientWithSortedPubKeys]
+    func getAllRecipients() async throws -> [RecipientWithSortedPubKeys]
 }
 
 struct LocalContactsProvider {
@@ -74,9 +73,10 @@ extension LocalContactsProvider: LocalContactsProviderType {
             }
     }
 
-    func searchRecipient(with email: String) -> RecipientWithSortedPubKeys? {
+    func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? {
         guard let recipientObject = find(with: email) else { return nil }
-        return parseRecipient(from: recipientObject)
+        // TODO temporary fix for Realm thread problem
+        return try await parseRecipient(from: recipientObject.freeze())
     }
 
     func searchEmails(query: String) -> [String] {
@@ -86,11 +86,13 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .map(\.email)
     }
 
-    func getAllRecipients() -> [RecipientWithSortedPubKeys] {
-        localContactsCache.realm
-            .objects(RecipientObject.self)
-            .map(parseRecipient)
-            .sorted(by: { $0.email > $1.email })
+    func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] {
+        let objects = localContactsCache.realm.objects(RecipientObject.self)
+        var recipients: [RecipientWithSortedPubKeys] = []
+        for object in objects {
+            recipients.append(try await parseRecipient(from: object))
+        }
+        return recipients.sorted(by: { $0.email > $1.email })
     }
 
     func removePubKey(with fingerprint: String, for email: String) {
@@ -111,11 +113,12 @@ extension LocalContactsProvider {
                                         forPrimaryKey: email)
     }
 
-    private func parseRecipient(from object: RecipientObject) -> RecipientWithSortedPubKeys {
-        let keyDetails = object.pubKeys
-                            .compactMap { try? core.parseKeys(armoredOrBinary: $0.armored.data()).keyDetails }
-                            .flatMap { $0 }
-        return RecipientWithSortedPubKeys(object, keyDetails: Array(keyDetails))
+    private func parseRecipient(from object: RecipientObject) async throws -> RecipientWithSortedPubKeys {
+        let armoredToParse = object.pubKeys
+            .map { $0.armored }
+            .joined(separator: "\n")
+        let parsed = try await core.parseKeys(armoredOrBinary: armoredToParse.data())
+        return RecipientWithSortedPubKeys(object, keyDetails: parsed.keyDetails)
     }
 
     private func add(pubKey: PubKey, to recipient: RecipientObject) {

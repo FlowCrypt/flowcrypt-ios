@@ -5,7 +5,6 @@
 import AsyncDisplayKit
 import ENSwiftSideMenu
 import FlowCryptUI
-import Promises
 
 /**
  * Menu view controller

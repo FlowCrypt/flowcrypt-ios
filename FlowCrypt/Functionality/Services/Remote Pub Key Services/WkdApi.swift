@@ -20,7 +20,7 @@ class WkdApi: WkdApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 4
-        static let endpointName = "WkdApi"
+        static let apiName = "WkdApi"
     }
 
     private let urlConstructor: WkdUrlConstructorType
@@ -47,25 +47,21 @@ class WkdApi: WkdApiType {
         else {
             return nil
         }
-
         var response: (hasPolicy: Bool, key: Data?)?
         response = try await urlLookup(advancedUrl)
         if response?.hasPolicy == true && response?.key == nil {
             return nil
         }
-
         if response?.key == nil {
             response = try await urlLookup(directUrl)
             if response?.key == nil {
                 return nil
             }
         }
-
         guard let binaryKeysData = response?.key else {
             return nil
         }
-
-        return try? core.parseKeys(armoredOrBinary: binaryKeysData)
+        return try await core.parseKeys(armoredOrBinary: binaryKeysData)
     }
 }
 
@@ -73,24 +69,24 @@ extension WkdApi {
 
     private func urlLookup(_ urls: WkdUrls) async throws -> (hasPolicy: Bool, key: Data?) {
         do {
-            let endpoint = ApiCall.Endpoint(
-                name: Constants.endpointName,
+            let request = ApiCall.Request(
+                apiName: Constants.apiName,
                 url: urls.policy,
                 timeout: Constants.lookupEmailRequestTimeout
             )
-            _ = try await ApiCall.asyncCall(endpoint)
+            _ = try await ApiCall.asyncCall(request)
         } catch {
             Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
             return (hasPolicy: false, key: nil)
         }
 
-        let endpoint = ApiCall.Endpoint(
-            name: Constants.endpointName,
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
             url: urls.pubKeys,
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
-        let pubKeyResponse = try await ApiCall.asyncCall(endpoint)
+        let pubKeyResponse = try await ApiCall.asyncCall(request)
         if !pubKeyResponse.data.toStr().isEmpty {
             Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(urls.pubKeys) and will try to extract Public Keys")
         }

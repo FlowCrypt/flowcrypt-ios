@@ -3,6 +3,12 @@ const { config } = require('./wdio.shared.conf');
 const pathWdioConfig = require('path');
 require('dotenv').config({ path: pathWdioConfig.resolve(__dirname, '../.env') });
 
+process.on('unhandledRejection', (reason, promise) => {
+    // without this, after lib update to v7, whole test suite may pass even if no tests ran successfully
+    console.error('Force-quitting node process because unhandled rejection at:', promise, 'reason:', reason);
+    process.exit(1);
+});
+
 config.suites = {
     all: [
         './tests/specs/**/*.spec.ts'

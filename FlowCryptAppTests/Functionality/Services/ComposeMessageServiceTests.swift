@@ -37,292 +37,289 @@ class ComposeMessageServiceTests: XCTestCase {
             core: core
         )
 
-        core.parseKeysResult = { _ in
-            CoreRes.ParseKeys(format: .armored, keyDetails: [self.validKeyDetails])
+        core.parseKeysResult = { data in
+            guard !data.isEmpty else {
+                return CoreRes.ParseKeys(format: .unknown, keyDetails: [])
+            }
+            return CoreRes.ParseKeys(format: .armored, keyDetails: [self.validKeyDetails])
         }
     }
 
-    func testValidateMessageInputWithEmptyRecipients() {
-        let result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "",
-                recipients: [],
-                subject: nil
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        var thrownError: Error?
-        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-
-        let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.emptyRecipient))
+    func testValidateMessageInputWithEmptyRecipients() async throws {
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "",
+                    recipients: [],
+                    subject: nil
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptyRecipient)
+        }
     }
 
-    func testValidateMessageInputWithWhitespaceRecipients() {
+    func testValidateMessageInputWithWhitespaceRecipients() async {
         let recipients: [ComposeMessageRecipient] = [
             ComposeMessageRecipient(email: "   ", state: recipientIdleState),
             ComposeMessageRecipient(email: " ", state: recipientIdleState),
             ComposeMessageRecipient(email: "sdfff", state: recipientIdleState)
         ]
-        let result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "",
-                recipients: recipients,
-                subject: nil
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        var thrownError: Error?
-        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-
-        let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.emptyRecipient))
-    }
-
-    func testValidateMessageInputWithEmptySubject() {
-        func test() {
-            var thrownError: Error?
-            XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-
-            let error = expectComposeMessageError(for: thrownError)
-            XCTAssertEqual(error, .validationError(.emptySubject))
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "",
+                    recipients: recipients,
+                    subject: nil
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptyRecipient)
         }
-
-        var result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "",
-                recipients: recipients,
-                subject: nil
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        test()
-
-        result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "",
-                recipients: recipients,
-                subject: ""
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        test()
-
-        result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "",
-                recipients: recipients,
-                subject: "     "
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
     }
 
-    func testValidateMessageInputWithEmptyMessage() {
-        func test() {
-            var thrownError: Error?
-            XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-            let error = expectComposeMessageError(for: thrownError)
-            XCTAssertEqual(error, .validationError(.emptyMessage))
+    func testValidateMessageInputWithEmptySubject() async {
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "",
+                    recipients: recipients,
+                    subject: nil
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptySubject)
         }
-
-        var result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: nil,
-                recipients: recipients,
-                subject: "Some subject"
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        test()
-
-        result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "",
-                recipients: recipients,
-                subject: "Some subject"
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        test()
-
-        result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "                  ",
-                recipients: recipients,
-                subject: "Some subject"
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        test()
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "",
+                    recipients: recipients,
+                    subject: ""
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptySubject)
+        }
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "",
+                    recipients: recipients,
+                    subject: "     "
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptySubject)
+        }
     }
 
-    func testValidateMessageInputWithEmptyPublicKey() {
+    func testValidateMessageInputWithEmptyMessage() async {
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: nil,
+                    recipients: recipients,
+                    subject: "Some subject"
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptyMessage)
+        }
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "",
+                    recipients: recipients,
+                    subject: "Some subject"
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptyMessage)
+        }
+        do {
+            try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "                  ",
+                    recipients: recipients,
+                    subject: "Some subject"
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptyMessage)
+        }
+    }
+
+    func testValidateMessageInputWithEmptyPublicKey() async {
         keyStorage.publicKeyResult = {
             nil
         }
-
-        let result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "some message",
-                recipients: recipients,
-                subject: "Some subject"
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        var thrownError: Error?
-        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-        let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.missedPublicKey))
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "some message",
+                    recipients: recipients,
+                    subject: "Some subject"
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.missedPublicKey)
+        }
     }
 
-    func testValidateMessageInputWithAllEmptyRecipientPubKeys() {
+    func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
         keyStorage.publicKeyResult = {
             "public key"
         }
-
         recipients.forEach { recipient in
             contactsService.retrievePubKeysResult = { _ in
                 []
             }
         }
-
-        let result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "some message",
-                recipients: recipients,
-                subject: "Some subject"
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        var thrownError: Error?
-        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-        let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.noPubRecipients))
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "some message",
+                    recipients: recipients,
+                    subject: "Some subject"
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.noPubRecipients)
+        }
     }
 
-    func testValidateMessageInputWithExpiredRecipientPubKey() {
+    func testValidateMessageInputWithExpiredRecipientPubKey() async {
         core.parseKeysResult = { _ in
             let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: Int(Date().timeIntervalSince1970 - 60))
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
-
         keyStorage.publicKeyResult = {
             "public key"
         }
-
         recipients.forEach { recipient in
             contactsService.retrievePubKeysResult = { _ in
                 ["pubKey"]
             }
         }
-
-        let result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "some message",
-                recipients: recipients,
-                subject: "Some subject"
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        var thrownError: Error?
-        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-        let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.expiredKeyRecipients))
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "some message",
+                    recipients: recipients,
+                    subject: "Some subject"
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.expiredKeyRecipients)
+        }
     }
 
-    func testValidateMessageInputWithRevokedRecipientPubKey() {
+    func testValidateMessageInputWithRevokedRecipientPubKey() async {
         core.parseKeysResult = { _ in
             let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: nil, revoked: true)
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
-
         keyStorage.publicKeyResult = {
             "public key"
         }
-
         recipients.forEach { recipient in
             contactsService.retrievePubKeysResult = { _ in
                 ["pubKey"]
             }
         }
-
-        let result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "some message",
-                recipients: recipients,
-                subject: "Some subject"
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        var thrownError: Error?
-        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-        let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.revokedKeyRecipients))
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "some message",
+                    recipients: recipients,
+                    subject: "Some subject"
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.revokedKeyRecipients)
+        }
     }
 
-    func testValidateMessageInputWithValidAndInvalidRecipientPubKeys() {
+    func testValidateMessageInputWithValidAndInvalidRecipientPubKeys() async throws {
         core.parseKeysResult = { data in
-            let pubKey = data.toStr()
-            let isRevoked = pubKey == "revoked"
-            let expiration: Int? = pubKey == "expired" ? Int(Date().timeIntervalSince1970 - 60) : nil
-            let keyDetails = KeyStorageMock.createFakeKeyDetails(pub: pubKey,
-                                                                 expiration: expiration,
-                                                                 revoked: isRevoked)
-            return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
+            var allKeyDetails: [KeyDetails] = []
+            let pubKeys = data.toStr()
+                .split(separator: "\n")
+                .map { String($0) }
+            for pubKey in pubKeys {
+                let isRevoked = pubKey == "revoked"
+                let expiration: Int? = pubKey == "expired" ? Int(Date().timeIntervalSince1970 - 60) : nil
+                allKeyDetails.append(KeyStorageMock.createFakeKeyDetails(
+                    pub: pubKey,
+                    expiration: expiration,
+                    revoked: isRevoked
+                ))
+            }
+            return CoreRes.ParseKeys(format: .armored, keyDetails: allKeyDetails)
         }
-
         keyStorage.publicKeyResult = {
             "public key"
         }
-
         recipients.forEach { recipient in
             contactsService.retrievePubKeysResult = { _ in
                 ["revoked", "expired", "valid"]
             }
         }
-
         let message = "some message"
         let subject = "Some subject"
         let email = "some@gmail.com"
         let input = ComposeMessageInput(type: .idle)
 
-        let result = try? sut.validateMessage(
+        let result = try await sut.validateAndProduceSendableMsg(
             input: input,
             contextToSend: ComposeMessageContext(
                 message: message,
@@ -331,7 +328,7 @@ class ComposeMessageServiceTests: XCTestCase {
             ),
             email: email,
             signingPrv: nil
-        ).get()
+        )
 
         let expected = SendableMsg(
             text: message,
@@ -343,18 +340,18 @@ class ComposeMessageServiceTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: [
+                "public key",
                 "valid",
                 "valid",
-                "valid",
-                "public key"
+                "valid"
             ],
             signingPrv: nil)
 
         XCTAssertNotNil(result)
-        XCTAssertEqual(result!, expected)
+        XCTAssertEqual(result, expected)
     }
 
-    func testValidateMessageInputWithoutOneRecipientPubKey() {
+    func testValidateMessageInputWithoutOneRecipientPubKey() async throws {
         keyStorage.publicKeyResult = {
             "public key"
         }
@@ -369,40 +366,38 @@ class ComposeMessageServiceTests: XCTestCase {
             }
         }
 
-        let result = sut.validateMessage(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: "some message",
-                recipients: recipients,
-                subject: "Some subject"
-            ),
-            email: "some@gmail.com",
-            signingPrv: nil
-        )
-
-        var thrownError: Error?
-        XCTAssertThrowsError(try result.get()) { thrownError = $0 }
-        let error = expectComposeMessageError(for: thrownError)
-        XCTAssertEqual(error, .validationError(.noPubRecipients))
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: "some message",
+                    recipients: recipients,
+                    subject: "Some subject"
+                ),
+                email: "some@gmail.com",
+                signingPrv: nil
+            )
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.noPubRecipients)
+        }
     }
 
-    func testSuccessfulMessageValidation() {
+    func testSuccessfulMessageValidation() async throws {
         keyStorage.publicKeyResult = {
             "public key"
         }
-
         recipients.enumerated().forEach { element, index in
             contactsService.retrievePubKeysResult = { recipient in
                 ["pubKey"]
             }
         }
-
         let message = "some message"
         let subject = "Some subject"
         let email = "some@gmail.com"
         let input = ComposeMessageInput(type: .idle)
 
-        let result = try? sut.validateMessage(
+        let result = try await sut.validateAndProduceSendableMsg(
             input: input,
             contextToSend: ComposeMessageContext(
                 message: message,
@@ -411,7 +406,7 @@ class ComposeMessageServiceTests: XCTestCase {
             ),
             email: email,
             signingPrv: nil
-        ).get()
+        )
 
         let expected = SendableMsg(
             text: message,
@@ -423,22 +418,14 @@ class ComposeMessageServiceTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: [
+                "public key",
                 "pubKey",
                 "pubKey",
-                "pubKey",
-                "public key"
+                "pubKey"
             ],
             signingPrv: nil)
 
         XCTAssertNotNil(result)
-        XCTAssertEqual(result!, expected)
-    }
-
-    private func expectComposeMessageError(for thrownError: Error?) -> ComposeMessageError {
-        if let thrownError = thrownError as? ComposeMessageError { return thrownError
-        } else {
-            XCTFail()
-            return ComposeMessageError.validationError(.internalError(""))
-        }
+        XCTAssertEqual(result, expected)
     }
 }

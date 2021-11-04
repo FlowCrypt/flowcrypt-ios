@@ -10,6 +10,7 @@ import Combine
 import FlowCryptUI
 import Foundation
 import GoogleAPIClientForREST_Gmail
+import FlowCryptCommon
 
 struct ComposeMessageContext: Equatable {
     var message: String?
@@ -37,6 +38,7 @@ final class ComposeMessageService {
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
+    private let logger: Logger
 
     init(
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
@@ -50,38 +52,38 @@ final class ComposeMessageService {
         self.dataService = dataService
         self.contactsService = contactsService
         self.core = core
+        self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
-    // MARK: - Validation
-    func validateMessage(
+    func validateAndProduceSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
         email: String,
         includeAttachments: Bool = true,
         signingPrv: PrvKeyInfo?
-    ) -> Result<SendableMsg, ComposeMessageError> {
+    ) async throws -> SendableMsg {
         let recipients = contextToSend.recipients
         guard recipients.isNotEmpty else {
-            return .failure(.validationError(.emptyRecipient))
+            throw MessageValidationError.emptyRecipient
         }
 
         let emails = recipients.map(\.email)
         let emptyEmails = emails.filter { !$0.hasContent }
 
         guard emails.isNotEmpty, emptyEmails.isEmpty else {
-            return .failure(.validationError(.emptyRecipient))
+            throw MessageValidationError.emptyRecipient
         }
 
         guard emails.filter({ !$0.isValidEmail }).isEmpty else {
-            return .failure(.validationError(.invalidEmailRecipient))
+            throw MessageValidationError.invalidEmailRecipient
         }
 
         guard input.isReply || contextToSend.subject?.hasContent ?? false else {
-            return .failure(.validationError(.emptySubject))
+            throw MessageValidationError.emptySubject
         }
 
         guard let text = contextToSend.message, text.hasContent else {
-            return .failure(.validationError(.emptyMessage))
+            throw MessageValidationError.emptyMessage
         }
 
         let subject = input.subjectReplyTitle
@@ -89,60 +91,56 @@ final class ComposeMessageService {
             ?? "(no subject)"
 
         guard let myPubKey = self.dataService.publicKey() else {
-            return .failure(.validationError(.missedPublicKey))
+            throw MessageValidationError.missedPublicKey
         }
 
-        let sendableAttachments: [SendableMsg.Attachment] = contextToSend.attachments
-            .map { composeAttachment in
-                return SendableMsg.Attachment(
-                    name: composeAttachment.name,
-                    type: composeAttachment.type,
-                    base64: composeAttachment.data.base64EncodedString()
-                )
-            }
+        let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
+                ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
+                : []
 
-        return getPubKeys(for: recipients)
-            .mapError { ComposeMessageError.validationError($0) }
-            .map { allRecipientPubs in
-                let replyToMimeMsg = input.replyToMime
-                    .flatMap { String(data: $0, encoding: .utf8) }
-
-                return SendableMsg(
-                    text: text,
-                    to: recipients.map(\.email),
-                    cc: [],
-                    bcc: [],
-                    from: email,
-                    subject: subject,
-                    replyToMimeMsg: replyToMimeMsg,
-                    atts: sendableAttachments,
-                    pubKeys: allRecipientPubs + [myPubKey],
-                    signingPrv: signingPrv
-                )
-            }
+        let allRecipientPubs = try await getPubKeys(for: recipients)
+        let replyToMimeMsg = input.replyToMime
+            .flatMap { String(data: $0, encoding: .utf8) }
+        return SendableMsg(
+            text: text,
+            to: recipients.map(\.email),
+            cc: [],
+            bcc: [],
+            from: email,
+            subject: subject,
+            replyToMimeMsg: replyToMimeMsg,
+            atts: sendableAttachments,
+            pubKeys: [myPubKey] + allRecipientPubs,
+            signingPrv: signingPrv
+        )
     }
 
-    private func getPubKeys(for recipients: [ComposeMessageRecipient]) -> Result<[String], MessageValidationError> {
-        let recipientsWithKeys = recipients.map { recipient -> RecipientWithSortedPubKeys in
-            let keyDetails = contactsService.retrievePubKeys(for: recipient.email)
-                .compactMap { try? self.core.parseKeys(armoredOrBinary: $0.data()) }
-                .flatMap { $0.keyDetails }
-            return RecipientWithSortedPubKeys(email: recipient.email, keyDetails: keyDetails)
+    private func getPubKeys(for recipients: [ComposeMessageRecipient]) async throws -> [String] {
+        var recipientsWithKeys: [RecipientWithSortedPubKeys] = []
+        for recipient in recipients {
+            let armoredPubkeys = contactsService.retrievePubKeys(for: recipient.email).joined(separator: "\n")
+            let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
+            recipientsWithKeys.append(RecipientWithSortedPubKeys(email: recipient.email, keyDetails: parsed.keyDetails))
         }
-
-        return validate(recipients: recipientsWithKeys)
+        return try validate(recipients: recipientsWithKeys)
     }
 
-    private func validate(recipients: [RecipientWithSortedPubKeys]) -> Result<[String], MessageValidationError> {
+    private func validate(recipients: [RecipientWithSortedPubKeys]) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.first(where: { $0.keyState == keyState }) != nil
         }
-
-        guard !contains(keyState: .empty) else { return .failure(.noPubRecipients) }
-        guard !contains(keyState: .expired) else { return .failure(.expiredKeyRecipients) }
-        guard !contains(keyState: .revoked) else { return .failure(.revokedKeyRecipients) }
-
-        return .success(recipients.flatMap(\.activePubKeys).map(\.armored))
+        logger.logDebug("validate recipients: \(recipients)")
+        logger.logDebug("validate recipient keyStates: \(recipients.map { $0.keyState })")
+        guard !contains(keyState: .empty) else {
+            throw MessageValidationError.noPubRecipients
+        }
+        guard !contains(keyState: .expired) else {
+            throw MessageValidationError.expiredKeyRecipients
+        }
+        guard !contains(keyState: .revoked) else {
+            throw MessageValidationError.revokedKeyRecipients
+        }
+        return recipients.flatMap(\.activePubKeys).map(\.armored)
     }
 
     private var draft: GTLRGmail_Draft?
@@ -157,13 +155,7 @@ final class ComposeMessageService {
             throw ComposeMessageError.gatewayError(error)
         }
     }
-
-    func getDraft(with identifier: String) {
-        Task {
-            let draft = try await draftGateway?.getDraft(with: identifier)
-        }
-    }
-
+    
     // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
         do {
