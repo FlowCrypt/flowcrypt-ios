@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Promises
 import FlowCryptCommon
 import Foundation
 import UIKit
@@ -138,20 +137,16 @@ extension ThreadDetailsViewController {
 
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
 
-        Promise<ProcessedMessage> { [weak self] (resolve, _) in
-            guard let self = self else { return }
-            let promise = self.messageService.getAndProcessMessage(
-                with: message,
-                folder: self.thread.path
-            )
-            let processedMessage = try awaitPromise(promise)
-            resolve(processedMessage)
-        }
-        .then(on: .main) { [weak self] message in
-            self?.handleReceived(message: message, at: indexPath)
-        }
-        .catch(on: .main) { [weak self] error in
-            self?.handleError(error, at: indexPath)
+        Task {
+            do {
+                let processedMessage = try await messageService.getAndProcessMessage(
+                    with: message,
+                    folder: thread.path
+                )
+                handleReceived(message: processedMessage, at: indexPath)
+            } catch {
+                handleError(error, at: indexPath)
+            }
         }
     }
 
@@ -177,7 +172,7 @@ extension ThreadDetailsViewController {
         hideSpinner()
 
         switch error as? MessageServiceError {
-        case let .missedPassPhrase(rawMimeData):
+        case let .missingPassPhrase(rawMimeData):
             handleMissedPassPhrase(for: rawMimeData, at: indexPath)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
             handleWrongPathPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
@@ -221,13 +216,14 @@ extension ThreadDetailsViewController {
     private func validateMessage(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
 
-        messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
-            .then(on: .main) { [weak self] message in
-                self?.handleReceived(message: message, at: indexPath)
+        Task {
+            do {
+                let message = try await messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+                handleReceived(message: message, at: indexPath)
+            } catch {
+                handleError(error, at: indexPath)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleError(error, at: indexPath)
-            }
+        }
     }
 }
 

@@ -84,25 +84,54 @@ final class MessageService {
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
-        let keys = try await self.keyService.getPrvKeyInfo()
+        let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
         let keysWithoutPassPhrases = keys.filter { $0.passphrase == nil }
-        let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(
+        let matchingKeys = try await keyMethods.filterByPassPhraseMatch(
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
-        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         return matchingKeys.isNotEmpty
     }
-
-    func decryptAndProcessMessage(mime rawMimeData: Data) async throws -> ProcessedMessage {
-        let keys = try await self.keyService.getPrvKeyInfo()
+    
+    func validateMessage(rawMimeData: Data, with passPhrase: String) async throws -> ProcessedMessage {
+        let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
-        let decrypted = try await self.core.parseDecryptMsg(
+
+        let keysWithFilledPassPhrase = keys.map { $0.copy(with: passPhrase) }
+        let keysToSave = keys.filter { $0.passphrase == passPhrase }
+
+        savePassPhrases(value: passPhrase, with: keysToSave)
+
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: rawMimeData,
+            keys: keysWithFilledPassPhrase,
+            msgPwd: nil,
+            isEmail: true
+        )
+        guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
+            throw MessageServiceError.missingPassPhrase(rawMimeData)
+        }
+
+        return try await processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+    }
+
+    func getAndProcessMessage(with input: Message, folder: String) async throws -> ProcessedMessage {
+        let rawMimeData = try await messageProvider.fetchMsg(message: input, folder: folder, progressHandler: nil)
+        return try await decryptAndProcessMessage(mime: rawMimeData)
+    }
+
+    func decryptAndProcessMessage(mime rawMimeData: Data) async throws -> ProcessedMessage {
+        let keys = try await keyService.getPrvKeyInfo()
+        guard keys.isNotEmpty else {
+            throw MessageServiceError.emptyKeys
+        }
+        let decrypted = try await core.parseDecryptMsg(
             encrypted: rawMimeData,
             keys: keys,
             msgPwd: nil,
@@ -112,7 +141,7 @@ final class MessageService {
             throw MessageServiceError.missingPassPhrase(rawMimeData)
         }
 
-        let processedMessage = try await self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+        let processedMessage = try await processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
         switch processedMessage.messageType {
         case .error(let errorType):
             switch errorType {
@@ -175,6 +204,12 @@ final class MessageService {
         }
         logger.logInfo("missing pass phrase for one of longids \(decryptErr.longids)")
         return true
+    }
+
+    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
+        privateKeys
+            .map { PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints) }
+            .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
     }
 }
 
