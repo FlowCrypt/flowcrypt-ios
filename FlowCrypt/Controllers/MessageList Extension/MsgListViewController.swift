@@ -20,7 +20,7 @@ extension MsgListViewController where Self: UIViewController {
     func open(with message: InboxRenderable, path: String) {
         switch message.wrappedType {
         case .message(let message):
-            openMsgElseShowToast(with: message, path: path)
+            openMsg(with: message, path: path)
         case .thread(let thread):
             openThread(with: thread)
         }
@@ -37,28 +37,20 @@ extension MsgListViewController where Self: UIViewController {
         }
     }
 
-    private func openMsgElseShowToast(with message: Message, path: String) {
-        if message.size ?? 0 > GeneralConstants.Global.messageSizeLimit {
-            showToast("Messages larger than 5MB are not supported yet")
-        } else {
-            let messageInput = MessageViewController.Input(
-                objMessage: message,
-                bodyMessage: nil,
-                path: path
-            )
-            let msgVc = MessageViewController(input: messageInput) { [weak self] (action, message) in
-                self?.handleMessageOperation(with: message, action: action)
-            }
-            navigationController?.pushViewController(msgVc, animated: true)
+    private func openMsg(with message: Message, path: String) {
+        let messageInput = MessageViewController.Input(
+            objMessage: message,
+            bodyMessage: nil,
+            path: path
+        )
+        let msgVc = MessageViewController(input: messageInput) { [weak self] (action, message) in
+            self?.handleMessageOperation(with: message, action: action)
         }
+        navigationController?.pushViewController(msgVc, animated: true)
     }
 
     private func openThread(with thread: MessageThread) {
-        guard !thread.messages.contains(where: { ($0.size ?? 0) > GeneralConstants.Global.messageSizeLimit }) else {
-            showToast("Messages larger than 5MB are not supported yet")
-            return
-        }
-
+        // TODO https://github.com/FlowCrypt/flowcrypt-ios/issues/908
         guard let threadOperationsProvider = MailProvider.shared.threadOperationsProvider else {
             assertionFailure("Internal error. Provider should conform to MessagesThreadOperationsProvider")
             return

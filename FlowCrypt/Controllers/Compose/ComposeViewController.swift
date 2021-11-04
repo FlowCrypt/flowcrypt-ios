@@ -167,12 +167,10 @@ extension ComposeViewController {
     @objc private func stopTimer() {
         saveDraftTimer?.invalidate()
         saveDraftTimer = nil
-
         saveDraftIfNeeded()
     }
 
     private func shouldSaveDraft() -> Bool {
-        logger.logInfo("Draft. Should save draft check")
         let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
 
         guard let oldDraft = composedLatestDraft else {
@@ -182,7 +180,6 @@ extension ComposeViewController {
 
         let result = newDraft != oldDraft
         composedLatestDraft = newDraft
-        logger.logInfo("Draft. Should save draft \(result)")
         return result
     }
 

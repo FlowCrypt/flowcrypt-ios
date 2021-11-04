@@ -196,7 +196,7 @@ extension ThreadDetailsViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
+                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
             })
 
         present(alert, animated: true, completion: nil)
@@ -208,9 +208,32 @@ extension ThreadDetailsViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
+                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
             })
         present(alert, animated: true, completion: nil)
+    }
+
+    private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
+        let message = input[indexPath.section].rawMessage
+
+        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+
+        Task {
+            do {
+                let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+                if matched {
+                    let processedMessage = try await messageService.getAndProcessMessage(
+                        with: message,
+                        folder: thread.path
+                    )
+                    handleReceived(message: processedMessage, at: indexPath)
+                } else {
+                    handleWrongPathPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+                }
+            } catch {
+                handleError(error, at: indexPath)
+            }
+        }
     }
 
     private func validateMessage(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
