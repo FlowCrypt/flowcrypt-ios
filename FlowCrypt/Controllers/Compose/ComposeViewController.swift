@@ -435,9 +435,7 @@ extension ComposeViewController {
         UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-        let err = error as? ComposeMessageError
-        let description = err?.description ?? error.localizedDescription
-        showAlert(message: "compose_error".localized + "\n\n" + description)
+        showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
     }
 
     private func handleSuccessfullySentMessage() {
