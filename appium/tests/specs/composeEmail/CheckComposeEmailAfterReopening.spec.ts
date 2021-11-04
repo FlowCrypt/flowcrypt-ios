@@ -11,9 +11,9 @@ describe('COMPOSE EMAIL: ', () => {
 
     it('check filled compose email after reopening app', () => {
 
-        const recipientEmail = 'dmitry@flowcrypt.com';
-        const emailSubject = 'TestSubject';
-        const emailText = 'Test email';
+        const recipientEmail = CommonData.contact.email;
+        const emailSubject = CommonData.simpleEmail.subject;
+        const emailText = CommonData.simpleEmail.message;
 
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();

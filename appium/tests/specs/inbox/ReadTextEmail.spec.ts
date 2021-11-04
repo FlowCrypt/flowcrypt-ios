@@ -12,8 +12,8 @@ describe('INBOX: ', () => {
     it('user is able to view text email', () => {
 
         const senderEmail = CommonData.sender.email;
-        const emailSubject = 'Test 1';
-        const emailText = 'Test email';
+        const emailSubject = CommonData.simpleEmail.subject;
+        const emailText = CommonData.simpleEmail.message;
 
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();

@@ -7,6 +7,7 @@ import NewMessageScreen from './new-message.screen';
 import SettingsScreen from './settings.screen';
 import KeysScreen from './keys.screen';
 import PublicKeyScreen from './public_key.screen';
+import AttachmentScreen from './attachment.screen';
 
 export {
     SplashScreen,
@@ -17,5 +18,6 @@ export {
     NewMessageScreen,
     SettingsScreen,
     KeysScreen,
-    PublicKeyScreen
+    PublicKeyScreen,
+    AttachmentScreen
 };

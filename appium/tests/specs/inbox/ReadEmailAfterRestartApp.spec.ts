@@ -12,8 +12,8 @@ describe('INBOX: ', () => {
     it('user is able to see plain email without setting pass phrase after restart app', () => {
 
         const senderEmail = CommonData.sender.email;
-        const emailSubject = 'Test 1';
-        const emailText = 'Test email';
+        const emailSubject = CommonData.simpleEmail.subject;
+        const emailText = CommonData.simpleEmail.message;
 
         const bundleId = CommonData.bundleId.id;
 
