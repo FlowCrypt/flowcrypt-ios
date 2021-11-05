@@ -5,7 +5,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
 import Foundation
 
 final class InboxViewController: ASDKViewController<ASDisplayNode> {

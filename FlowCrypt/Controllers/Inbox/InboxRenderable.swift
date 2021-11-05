@@ -16,6 +16,7 @@ struct InboxRenderable {
     }
 
     let title: String
+    let messageCount: Int
     let subtitle: String
     let dateString: String
     var isRead: Bool
@@ -43,6 +44,7 @@ extension InboxRenderable {
 extension InboxRenderable {
     init(message: Message) {
         self.title = message.sender ?? "message_unknown_sender".localized
+        self.messageCount = 1
         self.subtitle = message.subject ?? "message_missed_subject".localized
         self.dateString = DateFormatter().formatDate(message.date)
         self.isRead = message.isMessageRead
@@ -55,12 +57,9 @@ extension InboxRenderable {
             .compactMap { $0.components(separatedBy: "@").first ?? "" }
             .unique()
             .joined(separator: ",")
-        let messagesCount = thread.messages.count
-        let amount = messagesCount == 1
-            ? ""
-            : " (\(messagesCount))"
 
-        self.title = sender + amount
+        self.title = sender
+        self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missed_subject".localized
 
         if let date = thread.messages.first?.date {
