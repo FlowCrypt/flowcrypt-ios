@@ -201,7 +201,7 @@ extension ComposeViewController {
                     // no need to save or notify user if validation error
                     // for other errors show toast
                     // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?
-                    showToast("Error saving draft: \(error.localizedDescription)")
+                    showToast("Error saving draft: \(error.errorMessage)")
                 }
             }
         }
