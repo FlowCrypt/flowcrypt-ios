@@ -5,8 +5,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
-import Combine
 
 /**
  * View controller to render an email message (sender, subject, message body, attachments)
@@ -33,8 +31,6 @@ final class MessageViewController: TableNodeViewController {
 
     private let onCompletion: MessageActionCompletion
 
-    private var cancellable = Set<AnyCancellable>()
-
     private var input: MessageViewController.Input
     private let decorator: MessageViewDecorator
     private let messageService: MessageService
@@ -48,6 +44,11 @@ final class MessageViewController: TableNodeViewController {
     var currentFolderPath: String {
         input.path
     }
+
+    private lazy var attachmentManager = AttachmentManager(
+        controller: self,
+        filesManager: filesManager
+    )
 
     init(
         messageService: MessageService = MessageService(),
@@ -400,55 +401,13 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func attachmentNode(for index: Int) -> ASCellNode {
-        AttachmentNode(
+        let attachment = processedMessage.attachments[index]
+        return AttachmentNode(
             input: .init(
-                msgAttachment: processedMessage.attachments[index]
+                msgAttachment: attachment
             ),
-            onDownloadTap: { [weak self] in
-                guard let self = self else { return }
-                self.filesManager.saveToFilesApp(file: self.processedMessage.attachments[index], from: self)
-                    .sinkFuture(
-                        receiveValue: {},
-                        receiveError: { error in
-                            self.showToast(
-                                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
-                            )
-                        }
-                    )
-                    .store(in: &self.cancellable)
-            }
+            onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
         )
-    }
-}
-
-// MARK: - UIDocumentPickerDelegate
-
-extension MessageViewController: UIDocumentPickerDelegate {
-    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-
-        guard let savedUrl = urls.first,
-              let sharedDocumentUrl = savedUrl.sharedDocumentURL else {
-            return
-        }
-        showFileSharedAlert(with: sharedDocumentUrl)
-    }
-
-    private func showFileSharedAlert(with url: URL) {
-        let alert = UIAlertController(
-            title: "message_attachment_saved_successfully_title".localized,
-            message: "message_attachment_saved_successfully_message".localized,
-            preferredStyle: .alert
-        )
-
-        let cancel = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in }
-        let open = UIAlertAction(title: "open".localized, style: .default) { _ in
-            UIApplication.shared.open(url)
-        }
-
-        alert.addAction(cancel)
-        alert.addAction(open)
-
-        present(alert, animated: true)
     }
 }
 

@@ -5,7 +5,6 @@
 //  Created by Anton Kharchevskyi on 11.10.2021
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
 import Foundation
 
