@@ -15,6 +15,7 @@ public final class MessageSubjectNode: CellNode {
     public init(_ subject: NSAttributedString?) {
         super.init()
         subjectNode.attributedText = subject
+        subjectNode.maximumLinesToDisplay = 5
         DispatchQueue.main.async {
             self.subjectNode.textView.isSelectable = true
             self.subjectNode.textView.isEditable = false
