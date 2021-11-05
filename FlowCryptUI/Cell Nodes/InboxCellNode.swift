@@ -83,7 +83,7 @@ public final class InboxCellNode: CellNode {
             direction: .horizontal,
             spacing: 8,
             justifyContent: .start,
-            alignItems: .baselineFirst,
+            alignItems: .start,
             children: [nameLocationStack, dateNode]
         )
 
