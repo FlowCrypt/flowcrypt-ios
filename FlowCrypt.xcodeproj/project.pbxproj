@@ -39,6 +39,7 @@
 		2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */; };
 		2C2A3B4D2719EF7300B7F27B /* PassPhraseServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */; };
 		2C60AB0C272564D40040D7F2 /* InvalidStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */; };
+		2CC12C3F273571B80021DDDF /* AttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC12C3E273571B80021DDDF /* AttachmentManager.swift */; };
 		32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4B11D4531B3B04D01D1 /* AppErr.swift */; };
 		32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC732B988D9704658812 /* CoreTypes.swift */; };
 		32DCA1414EEA727B86C337D5 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
@@ -448,6 +449,7 @@
 		2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceTests.swift; sourceTree = "<group>"; };
 		2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseServiceMock.swift; sourceTree = "<group>"; };
 		2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidStorageViewController.swift; sourceTree = "<group>"; };
+		2CC12C3E273571B80021DDDF /* AttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManager.swift; sourceTree = "<group>"; };
 		32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
@@ -1504,9 +1506,10 @@
 		9FD22A1D230FEEC8005067A6 /* Common UI */ = {
 			isa = PBXGroup;
 			children = (
-				5A5C234923A0422C0015E705 /* View Controllers */,
+				2CC12C3E273571B80021DDDF /* AttachmentManager.swift */,
 				9F4163E5266520B600106194 /* CommonNodesInputs.swift */,
 				2155E9EE26E3628C008FB033 /* Refreshable.swift */,
+				5A5C234923A0422C0015E705 /* View Controllers */,
 			);
 			path = "Common UI";
 			sourceTree = "<group>";
@@ -2593,6 +2596,7 @@
 				9FB22CDD25715CF50026EE64 /* GmailServiceError.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
 				9F416428266575DC00106194 /* BackupServiceType.swift in Sources */,
+				2CC12C3F273571B80021DDDF /* AttachmentManager.swift in Sources */,
 				5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */,
 				9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,

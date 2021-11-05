@@ -1039,6 +1039,8 @@ extension ComposeViewController {
     }
 }
 
+extension ComposeViewController: FilesManagerPresenter {}
+
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
     private let composeMessageService: ComposeMessageService
