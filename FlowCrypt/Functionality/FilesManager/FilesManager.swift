@@ -15,12 +15,16 @@ protocol FileType {
     var data: Data { get }
 }
 
+protocol FilesManagerPresenter {
+    func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?)
+}
+
 protocol FilesManagerType {
     func save(file: FileType) -> Future<URL, Error>
-    func saveToFilesApp(file: FileType, from viewController: UIViewController & UIDocumentPickerDelegate) -> AnyPublisher<Void, Error>
+    func saveToFilesApp(file: FileType, from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> AnyPublisher<Void, Error>
 
     @discardableResult
-    func selectFromFilesApp(from viewController: UIViewController & UIDocumentPickerDelegate) -> Future<Void, Error>
+    func selectFromFilesApp(from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> Future<Void, Error>
 }
 
 class FilesManager: FilesManagerType {
@@ -54,7 +58,7 @@ class FilesManager: FilesManagerType {
 
     func saveToFilesApp(
         file: FileType,
-        from viewController: UIViewController & UIDocumentPickerDelegate
+        from viewController: FilesManagerPresenter & UIDocumentPickerDelegate
     ) -> AnyPublisher<Void, Error> {
         return self.save(file: file)
             .flatMap { url in
@@ -62,7 +66,7 @@ class FilesManager: FilesManagerType {
                     DispatchQueue.main.async {
                         let documentController = UIDocumentPickerViewController(forExporting: [url])
                         documentController.delegate = viewController
-                        viewController.present(documentController, animated: true)
+                        viewController.present(documentController, animated: true, completion: nil)
                         promise(.success(()))
                     }
                 }
@@ -72,7 +76,7 @@ class FilesManager: FilesManagerType {
 
     @discardableResult
     func selectFromFilesApp(
-        from viewController: UIViewController & UIDocumentPickerDelegate
+        from viewController: FilesManagerPresenter & UIDocumentPickerDelegate
     ) -> Future<Void, Error> {
         Future<Void, Error> { promise in
             DispatchQueue.main.async {
@@ -80,7 +84,7 @@ class FilesManager: FilesManagerType {
                     documentTypes: ["public.data"], in: .import
                 )
                 documentController.delegate = viewController
-                viewController.present(documentController, animated: true)
+                viewController.present(documentController, animated: true, completion: nil)
                 promise(.success(()))
             }
         }

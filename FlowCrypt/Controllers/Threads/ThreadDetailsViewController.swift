@@ -34,6 +34,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
     private let thread: MessageThread
+    private let filesManager: FilesManagerType
     private var input: [ThreadDetailsViewController.Input]
 
     let trashFolderProvider: TrashFolderProviderType
@@ -42,12 +43,18 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
     private let onComplete: MessageActionCompletion
 
+    private lazy var attachmentManager = AttachmentManager(
+        controller: self,
+        filesManager: filesManager
+    )
+
     init(
         messageService: MessageService = MessageService(),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         threadOperationsProvider: MessagesThreadOperationsProvider,
         thread: MessageThread,
+        filesManager: FilesManagerType = FilesManager(),
         completion: @escaping MessageActionCompletion
     ) {
         self.threadOperationsProvider = threadOperationsProvider
@@ -55,6 +62,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.messageOperationsProvider = messageOperationsProvider
         self.trashFolderProvider = trashFolderProvider
         self.thread = thread
+        self.filesManager = filesManager
         self.onComplete = completion
         self.input = thread.messages
             .sorted(by: { $0 > $1 })
@@ -332,31 +340,44 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        input[section].isExpanded
-            ? Parts.allCases.count
-            : [Parts.message].count
+        if input[section].isExpanded {
+            let count = input[section].processedMessage?.attachments.count ?? 0
+            return Parts.allCases.count + count
+        } else {
+            return 1
+        }
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else {
-                return ASCellNode()
-            }
+            guard let self = self else { return ASCellNode() }
 
-            switch part {
-            case .thread:
+            let section = self.input[indexPath.section]
+
+            if indexPath.row == 0 {
                 return TextImageNode(
-                    input: .init(threadMessage: self.input[indexPath.section]),
+                    input: .init(threadMessage: section),
                     onTap: { [weak self] _ in
                         self?.handleTap(at: indexPath)
                     }
                 )
-            case .message:
-                guard let processedMessage = self.input[indexPath.section].processedMessage else {
-                    return ASCellNode()
-                }
-                return MessageTextSubjectNode(processedMessage.attributedMessage)
             }
+
+            if indexPath.row == 1, let message = section.processedMessage {
+                return MessageTextSubjectNode(message.attributedMessage)
+            }
+
+            if indexPath.row > 1, let message = section.processedMessage {
+                let attachment = message.attachments[indexPath.row - 2]
+                return AttachmentNode(
+                    input: .init(
+                        msgAttachment: attachment
+                    ),
+                    onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
+                )
+            }
+
+            return ASCellNode()
         }
     }
 
