@@ -104,11 +104,10 @@ extension MessageViewController {
 
         Task {
             do {
-                processedMessage = try await serviceActor.fetchDecryptAndRenderMsg(message: input.objMessage,
-                                                                                   path: input.path,
-                                                                                   progressHandler: { [weak self] state in
-                                                                                        self?.handleFetchProgress(state: state)
-                                                                                   })
+                processedMessage = try await serviceActor.fetchDecryptAndRenderMsg(
+                    message: input.objMessage,
+                    path: input.path,
+                    progressHandler: { [weak self] in self?.handleFetchProgress(state: $0)})
                 handleReceivedMessage()
             } catch {
                 handleError(error)
@@ -117,11 +116,11 @@ extension MessageViewController {
     }
 
     private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String) {
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
         Task {
             do {
                 let matched = try await serviceActor.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
+                    handleFetchProgress(state: .decrypt)
                     processedMessage = try await serviceActor.decryptAndProcessMessage(mime: rawMimeData)
                     handleReceivedMessage()
                 } else {
@@ -427,7 +426,6 @@ private actor ServiceActor {
         let rawMimeData = try await messageProvider.fetchMsg(message: message,
                                                              folder: path,
                                                              progressHandler: progressHandler)
-        progressHandler?(.decrypt)
         return try await messageService.decryptAndProcessMessage(mime: rawMimeData)
     }
 

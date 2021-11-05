@@ -223,7 +223,7 @@ extension ThreadDetailsViewController {
     }
 
     private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        handleFetchProgress(state: .decrypt)
 
         Task {
             do {
@@ -234,19 +234,6 @@ extension ThreadDetailsViewController {
                 } else {
                     handleWrongPathPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
                 }
-            } catch {
-                handleError(error, at: indexPath)
-            }
-        }
-    }
-
-    private func validateMessage(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
-
-        Task {
-            do {
-                let message = try await messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
-                handleReceived(message: message, at: indexPath)
             } catch {
                 handleError(error, at: indexPath)
             }
@@ -342,7 +329,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         guard section > 0, input[section-1].isExpanded else { return 1 }
 
-        let count = input[section].processedMessage?.attachments.count ?? 0
+        let count = input[section-1].processedMessage?.attachments.count ?? 0
         return Parts.allCases.count + count
     }
 
