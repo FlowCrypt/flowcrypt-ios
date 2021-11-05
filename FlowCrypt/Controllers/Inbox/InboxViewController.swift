@@ -309,10 +309,8 @@ extension InboxViewController {
         refreshControl.endRefreshing()
         let appError = AppErr(error)
         switch appError {
-        case .connection:
-            state = .error(appError.userMessage)
-        case .general(let errorMessage):
-            state = .error(errorMessage)
+        case .connection, .general:
+            state = .error(appError.errorMessage)
         default:
             showAlert(error: error, message: "message_failed_load".localized)
         }

@@ -5,7 +5,7 @@
 import MailCore
 import UIKit
 
-enum AppErr: Error {
+enum AppErr: Error, CustomStringConvertible {
     // network
     case authentication
     case connection
@@ -22,9 +22,11 @@ enum AppErr: Error {
     case noCurrentUser
     case general(String)
 
-    var userMessage: String {
+    var description: String {
         switch self {
         case .connection: return "error_app_connection".localized
+        case .general(let message), .user(let message), .unexpected(let message):
+            return message
         default: return "" // TODO: - provide description for error if needed
         }
     }
