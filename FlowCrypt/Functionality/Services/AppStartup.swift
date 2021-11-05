@@ -27,7 +27,7 @@ struct AppStartup {
         Task {
             do {
                 await setupCore()
-                try setupMigrationIfNeeded()
+                try await DataService.shared.performMigrationIfNeeded()
                 try setupSession()
                 try await getUserOrgRulesIfNeeded()
                 await chooseView(for: window, session: session)
@@ -40,11 +40,6 @@ struct AppStartup {
     private func setupCore() async {
         logger.logInfo("Setup Core")
         await Core.shared.startIfNotAlreadyRunning()
-    }
-
-    private func setupMigrationIfNeeded() throws {
-        logger.logInfo("Setup Migration")
-        try awaitPromise(DataService.shared.performMigrationIfNeeded())
     }
 
     private func setupSession() throws {
