@@ -135,13 +135,14 @@ extension ThreadDetailsViewController {
         let message = input[indexPath.section].rawMessage
         logger.logInfo("Start loading message")
 
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        handleFetchProgress(state: .fetch)
 
         Task {
             do {
                 let processedMessage = try await messageService.getAndProcessMessage(
                     with: message,
-                    folder: thread.path
+                    folder: thread.path,
+                    progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {
@@ -214,18 +215,13 @@ extension ThreadDetailsViewController {
     }
 
     private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
-        let message = input[indexPath.section].rawMessage
-
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
 
         Task {
             do {
                 let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
-                    let processedMessage = try await messageService.getAndProcessMessage(
-                        with: message,
-                        folder: thread.path
-                    )
+                    let processedMessage = try await messageService.decryptAndProcessMessage(mime: rawMimeData)
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
                     handleWrongPathPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
@@ -246,6 +242,17 @@ extension ThreadDetailsViewController {
             } catch {
                 handleError(error, at: indexPath)
             }
+        }
+    }
+
+    private func handleFetchProgress(state: MessageFetchState) {
+        switch state {
+        case .fetch:
+            showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        case .download(let progress):
+            updateSpinner(label: "downloading_title".localized, progress: progress)
+        case .decrypt:
+            updateSpinner(label: "decrypting_title".localized)
         }
     }
 }

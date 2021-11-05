@@ -30,6 +30,11 @@ extension InboxCellNode.Input {
 
         self.init(
             emailText: NSAttributedString.text(from: email, style: style, color: textColor),
+            countText: {
+                guard element.messageCount > 1 else { return nil }
+                let count = element.messageCount > 99 ? "99+" : String(element.messageCount)
+                return NSAttributedString.text(from: "(\(count))", style: style, color: textColor)
+            }(),
             dateText: NSAttributedString.text(from: date, style: style, color: dateColor),
             messageText: NSAttributedString.text(from: msg, style: style, color: textColor)
         )

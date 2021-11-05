@@ -96,7 +96,7 @@ final class MessageService {
         passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         return matchingKeys.isNotEmpty
     }
-    
+
     func validateMessage(rawMimeData: Data, with passPhrase: String) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
@@ -121,8 +121,16 @@ final class MessageService {
         return try await processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
     }
 
-    func getAndProcessMessage(with input: Message, folder: String) async throws -> ProcessedMessage {
-        let rawMimeData = try await messageProvider.fetchMsg(message: input, folder: folder, progressHandler: nil)
+    func getAndProcessMessage(
+        with input: Message,
+        folder: String,
+        progressHandler: ((MessageFetchState) -> Void)?
+    ) async throws -> ProcessedMessage {
+        let rawMimeData = try await messageProvider.fetchMsg(
+            message: input,
+            folder: folder,
+            progressHandler: progressHandler
+        )
         return try await decryptAndProcessMessage(mime: rawMimeData)
     }
 
