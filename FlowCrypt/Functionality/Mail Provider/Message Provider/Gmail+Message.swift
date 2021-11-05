@@ -41,6 +41,8 @@ extension GmailService: MessageProvider {
                         return
                     }
 
+                    progressHandler?(.decrypt)
+
                     guard let data = GTLRDecodeWebSafeBase64(raw) else {
                         continuation.resume(throwing: GmailServiceError.missedMessageInfo("data"))
                         return

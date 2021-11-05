@@ -52,9 +52,9 @@ private struct ComposedErrorHandler: ErrorHandler {
 // TODO: - ERROR HANDLING
 // https://github.com/FlowCrypt/flowcrypt-ios/issues/140
 
-//protocol AppError {
+// protocol AppError {
 //    var localizedDescription: String { get }
-//}
+// }
 
 // In case Errors should be handled differently for some cases
 // func handle(error: Error, for viewController: UIViewController) -> Bool

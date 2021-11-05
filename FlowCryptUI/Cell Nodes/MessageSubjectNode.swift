@@ -1,38 +1,32 @@
 //
 //  MessageSubjectNode.swift
-//  FlowCrypt
+//  FlowCryptUI
 //
-//  Created by Anton Kharchevskyi on 06.11.2019.
+//  Created by Roma Sosnovsky on 05/11/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
+    
 
 import AsyncDisplayKit
 
 public final class MessageSubjectNode: CellNode {
-    private let textNode = ASEditableTextNode()
-    private let timeNode = ASTextNode2()
+    private let subjectNode = ASEditableTextNode()
 
-    public init(_ text: NSAttributedString?, time: NSAttributedString?) {
+    public init(_ subject: NSAttributedString?) {
         super.init()
-        textNode.attributedText = text
+        subjectNode.attributedText = subject
+        subjectNode.maximumLinesToDisplay = 5
         DispatchQueue.main.async {
-            self.textNode.textView.isSelectable = true
-            self.textNode.textView.isEditable = false
+            self.subjectNode.textView.isSelectable = true
+            self.subjectNode.textView.isEditable = false
         }
-        timeNode.attributedText = time
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        textNode.style.flexGrow = 1.0
+        subjectNode.style.flexGrow = 1.0
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8),
-            child: ASStackLayoutSpec(
-                direction: .horizontal,
-                spacing: 8,
-                justifyContent: .start,
-                alignItems: .center,
-                children: [textNode, timeNode]
-            )
+            insets: UIEdgeInsets(top: 16, left: 8, bottom: 4, right: 8),
+            child: subjectNode
         )
     }
 }
