@@ -14,7 +14,7 @@ protocol AttachmentManagerType {
 }
 
 final class AttachmentManager: NSObject {
-    private let controller: UIViewController
+    private weak var controller: UIViewController?
     private let filesManager: FilesManagerType
     private var cancellable = Set<AnyCancellable>()
 
@@ -39,7 +39,7 @@ final class AttachmentManager: NSObject {
         alert.addAction(cancel)
         alert.addAction(open)
 
-        controller.present(alert, animated: true)
+        controller?.present(alert, animated: true)
     }
 }
 
@@ -48,8 +48,8 @@ extension AttachmentManager: AttachmentManagerType {
         filesManager.saveToFilesApp(file: attachment, from: self)
             .sinkFuture(
                 receiveValue: {},
-                receiveError: { error in
-                    self.controller.showToast(
+                receiveError: { [weak self] error in
+                    self?.controller?.showToast(
                         "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
                     )
                 }
@@ -62,7 +62,7 @@ extension AttachmentManager: AttachmentManagerType {
 
 extension AttachmentManager: FilesManagerPresenter {
     func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?) {
-        controller.present(viewControllerToPresent, animated: flag, completion: completion)
+        controller?.present(viewControllerToPresent, animated: flag, completion: completion)
     }
 }
 
