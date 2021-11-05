@@ -393,7 +393,7 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
                 self?.handleReplyTap()
             }
         case .subject:
-            return MessageSubjectNode(subject, time: time)
+            return MessageSubjectAndTimeNode(subject, time: time)
         case .text:
             return MessageTextSubjectNode(self.processedMessage.attributedMessage)
         }

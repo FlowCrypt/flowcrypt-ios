@@ -144,7 +144,7 @@ private actor Service {
                            for: user.email)
 
         if storageMethod == .memory {
-            let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey:  encryptedPrv.key.fingerprints)
+            let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints)
             passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 

@@ -72,7 +72,6 @@ final class ThreadDetailsViewController: TableNodeViewController {
         super.viewDidLoad()
         node.delegate = self
         node.dataSource = self
-        title = thread.subject
 
         setupNavigationBar()
         expandThreadMessage()
@@ -82,7 +81,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 extension ThreadDetailsViewController {
     private func expandThreadMessage() {
         let indexOfSectionToExpand = thread.messages.firstIndex(where: { $0.isMessageRead == false }) ?? input.count - 1
-        let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand)
+        let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand + 1)
         handleTap(at: indexPath)
     }
 
@@ -102,7 +101,7 @@ extension ThreadDetailsViewController {
                     return
                 }
 
-                if let processedMessage = self.input[indexPath.section].processedMessage {
+                if let processedMessage = self.input[indexPath.section-1].processedMessage {
                     self.handleReceived(message: processedMessage, at: indexPath)
                 } else {
                     self.fetchDecryptAndRenderMsg(at: indexPath)
@@ -132,7 +131,7 @@ extension ThreadDetailsViewController {
 
 extension ThreadDetailsViewController {
     private func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
-        let message = input[indexPath.section].rawMessage
+        let message = input[indexPath.section-1].rawMessage
         logger.logInfo("Start loading message")
 
         handleFetchProgress(state: .fetch)
@@ -154,9 +153,10 @@ extension ThreadDetailsViewController {
     private func handleReceived(message processedMessage: ProcessedMessage, at indexPath: IndexPath) {
         hideSpinner()
 
-        input[indexPath.section].processedMessage = processedMessage
-        input[indexPath.section].isExpanded = !input[indexPath.section].isExpanded
-        markAsRead(at: indexPath.section)
+        let messageIndex = indexPath.section - 1
+        input[messageIndex].processedMessage = processedMessage
+        input[messageIndex].isExpanded = !input[messageIndex].isExpanded
+        markAsRead(at: messageIndex)
 
         UIView.animate(
             withDuration: 0.2,
@@ -328,31 +328,41 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
 extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in tableNode: ASTableNode) -> Int {
-        input.count
+        input.count + 1
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        input[section].isExpanded
-            ? Parts.allCases.count
-            : [Parts.message].count
+        guard section > 0 else { return 1 }
+        return input[section-1].isExpanded
+                ? Parts.allCases.count
+                : [Parts.message].count
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else {
+            guard let self = self else { return ASCellNode() }
+
+            guard indexPath.section > 0 else {
+                let subject = self.thread.subject ?? "no subject"
+                return MessageSubjectNode(subject.attributed(.medium(18)))
+            }
+
+            guard let part = Parts(rawValue: indexPath.row) else {
                 return ASCellNode()
             }
+
+            let input = self.input[indexPath.section-1]
 
             switch part {
             case .thread:
                 return TextImageNode(
-                    input: .init(threadMessage: self.input[indexPath.section]),
+                    input: .init(threadMessage: input),
                     onTap: { [weak self] _ in
                         self?.handleTap(at: indexPath)
                     }
                 )
             case .message:
-                guard let processedMessage = self.input[indexPath.section].processedMessage else {
+                guard let processedMessage = input.processedMessage else {
                     return ASCellNode()
                 }
                 return MessageTextSubjectNode(processedMessage.attributedMessage)
