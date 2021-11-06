@@ -184,7 +184,7 @@ extension ThreadDetailsViewController {
         case let .missingPassPhrase(rawMimeData):
             handleMissedPassPhrase(for: rawMimeData, at: indexPath)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
-            handleWrongPathPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+            handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
         default:
             // TODO: - Ticket - Improve error handling for MessageViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -211,7 +211,7 @@ extension ThreadDetailsViewController {
         present(alert, animated: true, completion: nil)
     }
 
-    private func handleWrongPathPhrase(for rawMimeData: Data, with phrase: String, at indexPath: IndexPath) {
+    private func handleWrongPassPhrase(for rawMimeData: Data, with phrase: String, at indexPath: IndexPath) {
         let alert = AlertsFactory.makeWrongPassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
@@ -232,7 +232,7 @@ extension ThreadDetailsViewController {
                     let processedMessage = try await messageService.decryptAndProcessMessage(mime: rawMimeData)
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
-                    handleWrongPathPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+                    handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
                 }
             } catch {
                 handleError(error, at: indexPath)

@@ -33,8 +33,6 @@ final class MessageViewController: TableNodeViewController {
 
     private var input: MessageViewController.Input
     private let decorator: MessageViewDecorator
-    private let messageService: MessageService
-    private let messageProvider: MessageProvider
     private let messageOperationsProvider: MessageOperationsProvider
     private let filesManager: FilesManagerType
     private let serviceActor: ServiceActor
@@ -60,14 +58,12 @@ final class MessageViewController: TableNodeViewController {
         input: MessageViewController.Input,
         completion: @escaping MessageActionCompletion
     ) {
-        self.messageService = messageService
         self.messageOperationsProvider = messageOperationsProvider
         self.input = input
         self.decorator = decorator
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
         self.filesManager = filesManager
-        self.messageProvider = messageProvider
         self.serviceActor = ServiceActor(
             messageService: messageService,
             messageProvider: messageProvider
@@ -124,7 +120,7 @@ extension MessageViewController {
                     processedMessage = try await serviceActor.decryptAndProcessMessage(mime: rawMimeData)
                     handleReceivedMessage()
                 } else {
-                    handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+                    handleWrongPassPhrase(for: rawMimeData, with: passPhrase)
                 }
             } catch {
                 handleError(error)
@@ -181,7 +177,7 @@ extension MessageViewController {
         case let .missingPassPhrase(rawMimeData):
             handleMissingPassPhrase(for: rawMimeData)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
-            handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+            handleWrongPassPhrase(for: rawMimeData, with: passPhrase)
         case let .keyMismatch(rawMimeData):
             handleKeyMismatch(for: rawMimeData)
 
@@ -211,7 +207,7 @@ extension MessageViewController {
         present(alert, animated: true, completion: nil)
     }
 
-    private func handleWrongPathPhrase(for rawMimeData: Data, with phrase: String) {
+    private func handleWrongPassPhrase(for rawMimeData: Data, with phrase: String) {
         let alert = AlertsFactory.makeWrongPassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
