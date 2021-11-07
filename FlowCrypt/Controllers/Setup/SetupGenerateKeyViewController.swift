@@ -160,7 +160,8 @@ private actor Service {
             viewController: viewController
         )
 
-        _ = try await attester.testWelcome(
+        // sending welcome email is not crucial, so we don't handle errors
+        _ = try? await attester.testWelcome(
             email: userId.email,
             pubkey: encryptedPrv.key.public
         )
