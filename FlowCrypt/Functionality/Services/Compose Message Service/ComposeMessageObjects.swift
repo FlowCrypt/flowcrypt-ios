@@ -9,6 +9,9 @@
 
 import Foundation
 
+protocol CoreComposeMessageType {
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
+}
 
 struct ComposeMessageContext: Equatable {
     var message: String?

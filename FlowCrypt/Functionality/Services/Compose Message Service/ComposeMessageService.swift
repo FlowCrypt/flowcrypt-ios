@@ -12,10 +12,6 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 import FlowCryptCommon
 
-protocol CoreComposeMessageType {
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
-}
-
 final class ComposeMessageService {
     private let messageGateway: MessageGateway
     private let dataService: KeyStorageType
