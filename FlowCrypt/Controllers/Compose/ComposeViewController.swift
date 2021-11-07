@@ -7,6 +7,7 @@ import Combine
 import FlowCryptCommon
 import FlowCryptUI
 import Foundation
+import PhotosUI
 
 // swiftlint:disable file_length
 private struct ComposedDraft: Equatable {
@@ -897,6 +898,29 @@ extension ComposeViewController: UIDocumentPickerDelegate {
     }
 }
 
+// MARK: - PHPickerViewControllerDelegate
+extension ComposeViewController: PHPickerViewControllerDelegate {
+    nonisolated func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        Task {
+            await picker.dismiss(animated: true)
+            let itemProvider = results.first?.itemProvider
+            itemProvider?.loadFileRepresentation(
+                forTypeIdentifier: "public.item",
+                completionHandler: { [weak self] url, _ in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        if let url = url, let composeMessageAttachment = ComposeMessageAttachment(fileURL: url) {
+                            self.appendAttachmentIfAllowed(composeMessageAttachment)
+                            self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
+                        } else {
+                            self.showAlert(message: "files_picking_photos_error_message".localized)
+                        }
+                    }
+                })
+        }
+    }
+}
+
 // MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
 extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(
@@ -909,8 +933,6 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
         switch picker.sourceType {
         case .camera:
             composeMessageAttachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
-        case .photoLibrary:
-            composeMessageAttachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
         guard let attachment = composeMessageAttachment else {

@@ -10,10 +10,12 @@ import Foundation
 import UIKit
 import Photos
 import Combine
+import PhotosUI
 
 typealias PhotoViewController = UIViewController
 & UIImagePickerControllerDelegate
 & UINavigationControllerDelegate
+& PHPickerViewControllerDelegate
 
 protocol PhotosManagerType {
     func selectPhoto(
@@ -28,21 +30,19 @@ enum PhotosManagerError: Error {
 
 class PhotosManager: PhotosManagerType {
 
-    enum MediaType {
-        static let image = "public.image"
-    }
-
     func selectPhoto(
         source: UIImagePickerController.SourceType,
-        from viewController: UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
+        from viewController: PhotoViewController
     ) -> Future<Void, Error> {
         Future<Void, Error> { promise in
             DispatchQueue.main.async {
-                let imagePicker = UIImagePickerController()
-                imagePicker.delegate = viewController
-                imagePicker.sourceType = source
-                imagePicker.mediaTypes = [MediaType.image]
-                viewController.present(imagePicker, animated: true, completion: nil)
+                var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+                config.selectionLimit = 1
+                config.filter = PHPickerFilter.any(of: [.images, .videos])
+
+                let pickerViewController = PHPickerViewController(configuration: config)
+                pickerViewController.delegate = viewController
+                viewController.present(pickerViewController, animated: true, completion: nil)
                 promise(.success(()))
             }
         }
