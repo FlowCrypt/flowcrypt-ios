@@ -119,7 +119,6 @@ extension ThreadDetailsViewController {
     }
 
     private func markAsRead(at index: Int) {
-        logger.logInfo("Mark message as read at \(index)")
         guard let message = input[safe: index]?.rawMessage else {
             return
         }

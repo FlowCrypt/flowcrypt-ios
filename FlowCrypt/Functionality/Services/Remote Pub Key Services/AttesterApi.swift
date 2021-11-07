@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import Promises
 
 struct PubkeySearchResult {
     let email: String
@@ -12,9 +11,9 @@ struct PubkeySearchResult {
 
 protocol AttesterApiType {
     func lookupEmail(email: String) async throws -> [KeyDetails]
-    func updateKey(email: String, pubkey: String, token: String?) -> Promise<String>
-    func replaceKey(email: String, pubkey: String) -> Promise<String>
-    func testWelcome(email: String, pubkey: String) -> Promise<Void>
+    func updateKey(email: String, pubkey: String, token: String?) async throws -> String
+    func replaceKey(email: String, pubkey: String) async throws -> String
+    func testWelcome(email: String, pubkey: String) async throws
 }
 
 /// Public key server run by us that is shared across customers
@@ -68,11 +67,14 @@ extension AttesterApi {
             return []
         }
 
-        throw AppErr.unexpected("programing error - should have been caught above - unexpected status \(res.status) when looking up pubkey for \(email)")
+        throw AppErr.unexpected(
+            "programing error - should have been caught above" +
+            " - unexpected status \(res.status) when looking up pubkey for \(email)"
+        )
     }
 
     @discardableResult
-    func updateKey(email: String, pubkey: String, token: String?) -> Promise<String> {
+    func updateKey(email: String, pubkey: String, token: String?) async throws -> String {
         let httpMethod: HTTPMetod
         let headers: [URLHeader]
 
@@ -91,28 +93,23 @@ extension AttesterApi {
             body: pubkey.data(),
             headers: headers
         )
-        return Promise { () -> String in
-            let res = try awaitPromise(ApiCall.call(request))
-            return res.data.toStr()
-        }
+        let res = try await ApiCall.asyncCall(request)
+        return res.data.toStr()
     }
 
     @discardableResult
-    func replaceKey(email: String, pubkey: String) -> Promise<String> {
+    func replaceKey(email: String, pubkey: String) async throws -> String {
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: urlPub(emailOrLongid: email),
             method: .post,
             body: pubkey.data()
         )
-        return Promise { () -> String in
-            let res = try awaitPromise(ApiCall.call(request))
-            return res.data.toStr()
-        }
+        let res = try await ApiCall.asyncCall(request)
+        return res.data.toStr()
     }
 
-    @discardableResult
-    func testWelcome(email: String, pubkey: String) -> Promise<Void> {
+    func testWelcome(email: String, pubkey: String) async throws {
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: Constants.baseURL + "test/welcome",
@@ -120,8 +117,6 @@ extension AttesterApi {
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
-        return Promise { () -> Void in
-            _ = try awaitPromise(ApiCall.call(request)) // will throw on non-200
-        }
+        _ = try await ApiCall.asyncCall(request) // will throw on non-200
     }
 }
