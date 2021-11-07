@@ -383,6 +383,10 @@
 		F8CBC03627331ACA00ECD0B3 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8CBC03527331ACA00ECD0B3 /* ShareViewController.swift */; };
 		F8CBC03927331ACA00ECD0B3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8CBC03727331ACA00ECD0B3 /* MainInterface.storyboard */; };
 		F8CBC03E27331ACA00ECD0B3 /* FlowCryptShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F8CBC03327331ACA00ECD0B3 /* FlowCryptShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F8CC9BCA273806F700A93644 /* MessageGateway.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF0670F25520D7100FCC9E6 /* MessageGateway.swift */; };
+		F8CC9BCB2738075E00A93644 /* EncryptedStorageProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EB75266EB67B00F3BF5D /* EncryptedStorageProtocols.swift */; };
+		F8CC9BCC2738081800A93644 /* PubKeyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD52721AB07001C4359 /* PubKeyState.swift */; };
+		F8CC9BCD273808F100A93644 /* PubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE5227144E590001F33B /* PubKey.swift */; };
 		F8DEF40027332B35001CE3B7 /* GoogleAPIClientForREST_Gmail in Frameworks */ = {isa = PBXBuildFile; productRef = F8DEF3FF27332B35001CE3B7 /* GoogleAPIClientForREST_Gmail */; };
 		F8DEF40227333583001CE3B7 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F8DEF40127333583001CE3B7 /* MBProgressHUD */; };
 		F8DEF4062733360A001CE3B7 /* MailCore in Frameworks */ = {isa = PBXBuildFile; productRef = F8DEF4052733360A001CE3B7 /* MailCore */; };
@@ -2916,13 +2920,16 @@
 				F84C4126273493BA0007FB2B /* ComposeMessageObjects.swift in Sources */,
 				F84C411C27348AC50007FB2B /* ConnectionType.swift in Sources */,
 				F84C4114273485D60007FB2B /* RecipientEmailNode.swift in Sources */,
+				F8CC9BCB2738075E00A93644 /* EncryptedStorageProtocols.swift in Sources */,
 				F84C40FA273477270007FB2B /* PhotosManager.swift in Sources */,
 				F84C4117273488350007FB2B /* KeyAlgo.swift in Sources */,
 				F8CBC03627331ACA00ECD0B3 /* ShareViewController.swift in Sources */,
+				F8CC9BCA273806F700A93644 /* MessageGateway.swift in Sources */,
 				F84C4110273482DF0007FB2B /* RecipientEmailsCellNode.swift in Sources */,
 				F84C412227348EEA0007FB2B /* ComposeViewControllerInput.swift in Sources */,
 				F84C411A27348AAF0007FB2B /* UserObject.swift in Sources */,
 				F84C411E27348B940007FB2B /* CoreTypes.swift in Sources */,
+				F8CC9BCC2738081800A93644 /* PubKeyState.swift in Sources */,
 				F84C411B27348ABA0007FB2B /* SessionObject.swift in Sources */,
 				F84C4112273485B30007FB2B /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				F84C411F27348D110007FB2B /* ComposeMessageAttachment.swift in Sources */,
@@ -2930,6 +2937,7 @@
 				F84C4113273485BE0007FB2B /* RecipientEmailsCellNodeInput.swift in Sources */,
 				F84C412027348E110007FB2B /* TextViewCellNode.swift in Sources */,
 				F84C412127348EB90007FB2B /* ComposeViewDecorator.swift in Sources */,
+				F8CC9BCD273808F100A93644 /* PubKey.swift in Sources */,
 				F84C411D27348AF50007FB2B /* User.swift in Sources */,
 				F84C411927348AA10007FB2B /* KeyInfo.swift in Sources */,
 				F84C410F2734828B0007FB2B /* UIColorExtensions.swift in Sources */,
