@@ -154,14 +154,19 @@ private actor Service {
             passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 
-        await updateKeyAndWelcome(
+        await submitKeyToAttesterAndShowAlertOnFailure(
             email: userId.email,
             publicKey: encryptedPrv.key.public,
             viewController: viewController
         )
+
+        _ = try await attester.testWelcome(
+            email: userId.email,
+            pubkey: encryptedPrv.key.public
+        )
     }
 
-    private func updateKeyAndWelcome(
+    private func submitKeyToAttesterAndShowAlertOnFailure(
         email: String,
         publicKey: String,
         viewController: ViewController
@@ -172,35 +177,8 @@ private actor Service {
                 pubkey: publicKey,
                 token: storage.token
             )
-
-            await self.testWelcome(
-                email: email,
-                publicKey: publicKey,
-                viewController: viewController
-            )
         } catch {
             let message = "Failed to submit Public Key"
-            await viewController.showAlert(error: error, message: message) { [weak self] in
-                guard let self = self else { return }
-                Task {
-                    await self.testWelcome(
-                        email: email,
-                        publicKey: publicKey,
-                        viewController: viewController
-                    )
-                }
-            }
-        }
-    }
-
-    private func testWelcome(email: String, publicKey: String, viewController: ViewController) async {
-        do {
-            _ = try await attester.testWelcome(
-                email: email,
-                pubkey: publicKey
-            )
-        } catch {
-            let message = "Failed to send you welcome email"
             await viewController.showAlert(error: error, message: message)
         }
     }

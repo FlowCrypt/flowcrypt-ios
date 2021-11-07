@@ -12,6 +12,7 @@ struct PubkeySearchResult {
 protocol AttesterApiType {
     func lookupEmail(email: String) async throws -> [KeyDetails]
     func updateKey(email: String, pubkey: String, token: String?) async throws -> String
+    func replaceKey(email: String, pubkey: String) async throws -> String
     func testWelcome(email: String, pubkey: String) async throws
 }
 
@@ -91,6 +92,18 @@ extension AttesterApi {
             method: httpMethod,
             body: pubkey.data(),
             headers: headers
+        )
+        let res = try await ApiCall.asyncCall(request)
+        return res.data.toStr()
+    }
+
+    @discardableResult
+    func replaceKey(email: String, pubkey: String) async throws -> String {
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: urlPub(emailOrLongid: email),
+            method: .post,
+            body: pubkey.data()
         )
         let res = try await ApiCall.asyncCall(request)
         return res.data.toStr()
