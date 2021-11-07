@@ -46,13 +46,7 @@ final class KeySettingsViewController: TableNodeViewController {
         node.dataSource = self
         node.reloadData()
         setupNavigationBar()
-        Task {
-            do {
-                try await loadKeysFromStorageAndRender()
-            } catch {
-                handleCommon(error: error)
-            }
-        }
+        loadKeys()
     }
 
     private func setupNavigationBar() {
@@ -62,6 +56,16 @@ final class KeySettingsViewController: TableNodeViewController {
                 target: self,
                 action: #selector(handleAddButtonTap)
             )
+        }
+    }
+
+    private func loadKeys() {
+        Task {
+            do {
+                try await loadKeysFromStorageAndRender()
+            } catch {
+                handleCommon(error: error)
+            }
         }
     }
 }

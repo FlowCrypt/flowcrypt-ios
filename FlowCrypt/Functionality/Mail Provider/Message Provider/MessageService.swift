@@ -165,25 +165,17 @@ final class MessageService {
         }
     }
 
-    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg, keys: [PrvKeyInfo]) async throws -> ProcessedMessage {
+    private func processMessage(
+        rawMimeData: Data,
+        with decrypted: CoreRes.ParseDecryptMsg,
+        keys: [PrvKeyInfo]
+    ) async throws -> ProcessedMessage {
         let decryptErrBlocks = decrypted.blocks
             .filter { $0.decryptErr != nil }
-        let attachmentBlocks = decrypted.blocks
-            .filter(\.isAttachmentBlock)
-        var attachments: [MessageAttachment] = []
-        for block in attachmentBlocks {
-            guard let meta = block.attMeta else { continue }
-            var name = meta.name
-            var data = meta.data
-            var size = meta.length
-            if block.type == .encryptedAtt { // decrypt
-                let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
-                data = decrypted.content
-                name = decrypted.name
-                size = decrypted.content.count
-            }
-            attachments.append(MessageAttachment(name: name, size: size, data: data))
-        }
+        let attachments: [MessageAttachment] = try await getAttachments(
+            blocks: decrypted.blocks,
+            keys: keys
+        )
         let messageType: ProcessedMessage.MessageType
         let text: String
 
@@ -203,6 +195,30 @@ final class MessageService {
             attachments: attachments,
             messageType: messageType
         )
+    }
+
+    private func getAttachments(
+        blocks: [MsgBlock],
+        keys: [PrvKeyInfo]
+    ) async throws -> [MessageAttachment] {
+        let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
+        var result: [MessageAttachment] = []
+        for block in attachmentBlocks {
+            guard let meta = block.attMeta else { continue }
+
+            var name = meta.name
+            var data = meta.data
+            var size = meta.length
+            if block.type == .encryptedAtt { // decrypt
+                let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
+                data = decrypted.content
+                name = decrypted.name
+                size = decrypted.content.count
+            }
+
+            result.append(MessageAttachment(name: name, size: size, data: data))
+        }
+        return result
     }
 
     private func hasMsgBlockThatNeedsPassPhrase(_ msg: CoreRes.ParseDecryptMsg) -> Bool {
