@@ -9,15 +9,11 @@
 import FlowCryptUI
 import UIKit
 
-extension TextImageNode.Input {
+extension ThreadMessageSenderCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
         let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
         let isMessageRead = threadMessage.rawMessage.isMessageRead
-
-        let collapseImage = #imageLiteral(resourceName: "arrow_up").tinted(.white)
-        let expandImage = #imageLiteral(resourceName: "arrow_down").tinted(.white)
-        let image = threadMessage.isExpanded ? expandImage : collapseImage
 
         let style: NSAttributedString.Style = isMessageRead
             ? .regular(17)
@@ -32,12 +28,16 @@ extension TextImageNode.Input {
             : .mainTextUnreadColor
 
         self.init(
-            title: NSAttributedString.text(from: sender, style: style, color: textColor),
-            subtitle: NSAttributedString.text(from: date, style: style, color: dateColor),
-            image: image,
-            imageSize: CGSize(width: 16, height: 16),
-            nodeInsets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
-            backgroundColor: .backgroundColor
+            sender: NSAttributedString.text(from: sender, style: style, color: textColor),
+            date: NSAttributedString.text(from: date, style: style, color: dateColor),
+            isExpanded: threadMessage.isExpanded,
+            buttonColor: .messageButtonColor
         )
+    }
+}
+
+extension UIColor {
+    static var messageButtonColor: UIColor {
+        .colorFor(darkStyle: .white, lightStyle: .main)
     }
 }
