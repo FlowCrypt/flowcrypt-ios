@@ -11,19 +11,3 @@ import Promises
 protocol UsersMailSessionProvider {
     func renewSession() -> Promise<Void>
 }
-
-// MARK: - GmailService
-extension GmailService: UsersMailSessionProvider {
-    @discardableResult
-    func renewSession() -> Promise<Void> {
-        userService.renewSession()
-    }
-}
-
-// MARK: - Imap
-extension Imap: UsersMailSessionProvider {
-    @discardableResult
-    func renewSession() -> Promise<Void> {
-        Promise(self.setupSession())
-    }
-}

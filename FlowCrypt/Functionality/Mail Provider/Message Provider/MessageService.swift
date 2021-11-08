@@ -19,11 +19,6 @@ struct MessageAttachment: FileType {
     }
 }
 
-// MARK: - MessageFetchState
-enum MessageFetchState {
-    case fetch, download(Float), decrypt
-}
-
 // MARK: - ProcessedMessage
 struct ProcessedMessage {
     enum MessageType {
