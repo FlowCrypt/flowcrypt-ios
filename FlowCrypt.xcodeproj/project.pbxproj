@@ -429,6 +429,13 @@
 		F8F7CEE72739C098006E2C45 /* PubKeyObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* PubKeyObject.swift */; };
 		F8F7CEE82739C20E006E2C45 /* RecipientObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911C24EFE806002DF0A1 /* RecipientObject.swift */; };
 		F8F7CEE92739C22A006E2C45 /* RecipientWithSortedPubKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911E24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift */; };
+		F8F7CEEF2739C8C7006E2C45 /* WkdUrlConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */; };
+		F8F7CEF12739CBBB006E2C45 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
+		F8F7CEF22739CC47006E2C45 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF0A266C0E3600C44800 /* Configuration.swift */; };
+		F8F7CEF52739CD15006E2C45 /* ApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C124DB32728809100A2EFA6 /* ApiCall.swift */; };
+		F8F7CEF62739CD36006E2C45 /* URLSessionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA7E0AFE19FACB0F233ED /* URLSessionExtension.swift */; };
+		F8F7CEF72739CD6D006E2C45 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
+		F8F7CEF82739CE26006E2C45 /* WkdApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EFF61E265A5C6700AB0B71 /* WkdApi.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3003,6 +3010,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F84C41152734881E0007FB2B /* KeyDetails.swift in Sources */,
+				F8F7CEF52739CD15006E2C45 /* ApiCall.swift in Sources */,
 				F84C41162734882C0007FB2B /* KeyId.swift in Sources */,
 				F8F7CEC327399112006E2C45 /* KeyChainService.swift in Sources */,
 				F8F7CEBB27383B83006E2C45 /* CoreHost.swift in Sources */,
@@ -3012,6 +3020,7 @@
 				F8F7CEE72739C098006E2C45 /* PubKeyObject.swift in Sources */,
 				F8F7CED327399F19006E2C45 /* DataService.swift in Sources */,
 				F84C4126273493BA0007FB2B /* ComposeMessageObjects.swift in Sources */,
+				F8F7CEF22739CC47006E2C45 /* Configuration.swift in Sources */,
 				F8F7CECD27399552006E2C45 /* StorageMethod.swift in Sources */,
 				F84C411C27348AC50007FB2B /* ConnectionType.swift in Sources */,
 				F8F7CEBF2738446A006E2C45 /* BigIntExtension.swift in Sources */,
@@ -3020,6 +3029,7 @@
 				F8CC9BCB2738075E00A93644 /* EncryptedStorageProtocols.swift in Sources */,
 				F8F7CEB72738380D006E2C45 /* String+Extension.swift in Sources */,
 				F84C40FA273477270007FB2B /* PhotosManager.swift in Sources */,
+				F8F7CEF62739CD36006E2C45 /* URLSessionExtension.swift in Sources */,
 				F8F7CECB2739945F006E2C45 /* EncryptedStorage.swift in Sources */,
 				F8F7CEC427399135006E2C45 /* AppErr.swift in Sources */,
 				F84C4117273488350007FB2B /* KeyAlgo.swift in Sources */,
@@ -3037,6 +3047,7 @@
 				F8CC9BCC2738081800A93644 /* PubKeyState.swift in Sources */,
 				F84C411B27348ABA0007FB2B /* SessionObject.swift in Sources */,
 				F84C4112273485B30007FB2B /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
+				F8F7CEF72739CD6D006E2C45 /* GeneralConstants.swift in Sources */,
 				F8F7CEC8273993AB006E2C45 /* ClientConfigurationObject.swift in Sources */,
 				F84C411F27348D110007FB2B /* ComposeMessageAttachment.swift in Sources */,
 				F8F7CECE2739956E006E2C45 /* InMemoryPassPhraseStorage.swift in Sources */,
@@ -3044,8 +3055,10 @@
 				F8F7CED427399F38006E2C45 /* SMTPSession.swift in Sources */,
 				F84C4113273485BE0007FB2B /* RecipientEmailsCellNodeInput.swift in Sources */,
 				F8F7CEC727399386006E2C45 /* LogOutHandler.swift in Sources */,
+				F8F7CEF12739CBBB006E2C45 /* Core.swift in Sources */,
 				F8F7CEE22739BBE3006E2C45 /* KeyDataStorage.swift in Sources */,
 				F84C412027348E110007FB2B /* TextViewCellNode.swift in Sources */,
+				F8F7CEF82739CE26006E2C45 /* WkdApi.swift in Sources */,
 				F8F7CEB627382FDB006E2C45 /* ComposeMessageError.swift in Sources */,
 				F8F7CEE02739B7B2006E2C45 /* LocalStorage.swift in Sources */,
 				F84C412127348EB90007FB2B /* ComposeViewDecorator.swift in Sources */,
@@ -3053,6 +3066,7 @@
 				F84C411D27348AF50007FB2B /* User.swift in Sources */,
 				F84C411927348AA10007FB2B /* KeyInfo.swift in Sources */,
 				F8F7CEBE2738424A006E2C45 /* CoreError.swift in Sources */,
+				F8F7CEEF2739C8C7006E2C45 /* WkdUrlConstructor.swift in Sources */,
 				F84C410F2734828B0007FB2B /* UIColorExtensions.swift in Sources */,
 				F84C4111273485AB0007FB2B /* CellNode.swift in Sources */,
 				F8F7CEC527399154006E2C45 /* GmailServiceError.swift in Sources */,
