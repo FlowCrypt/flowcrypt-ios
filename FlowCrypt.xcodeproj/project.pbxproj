@@ -426,6 +426,9 @@
 		F8F7CEE02739B7B2006E2C45 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
 		F8F7CEE12739B886006E2C45 /* IMAPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1322433753100DB4065 /* IMAPSession.swift */; };
 		F8F7CEE22739BBE3006E2C45 /* KeyDataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79229326696B9300DA3D80 /* KeyDataStorage.swift */; };
+		F8F7CEE72739C098006E2C45 /* PubKeyObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* PubKeyObject.swift */; };
+		F8F7CEE82739C20E006E2C45 /* RecipientObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911C24EFE806002DF0A1 /* RecipientObject.swift */; };
+		F8F7CEE92739C22A006E2C45 /* RecipientWithSortedPubKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911E24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3004,7 +3007,9 @@
 				F8F7CEC327399112006E2C45 /* KeyChainService.swift in Sources */,
 				F8F7CEBB27383B83006E2C45 /* CoreHost.swift in Sources */,
 				F8F7CEDD2739ADA6006E2C45 /* DBMigrationService.swift in Sources */,
+				F8F7CEE92739C22A006E2C45 /* RecipientWithSortedPubKeys.swift in Sources */,
 				F84C411827348A6F0007FB2B /* PrvKeyInfo.swift in Sources */,
+				F8F7CEE72739C098006E2C45 /* PubKeyObject.swift in Sources */,
 				F8F7CED327399F19006E2C45 /* DataService.swift in Sources */,
 				F84C4126273493BA0007FB2B /* ComposeMessageObjects.swift in Sources */,
 				F8F7CECD27399552006E2C45 /* StorageMethod.swift in Sources */,
@@ -3028,6 +3033,7 @@
 				F8F7CEC9273993F5006E2C45 /* EncryptedCacheService.swift in Sources */,
 				F8F7CED227399EE7006E2C45 /* RawClientConfiguration.swift in Sources */,
 				F84C411E27348B940007FB2B /* CoreTypes.swift in Sources */,
+				F8F7CEE82739C20E006E2C45 /* RecipientObject.swift in Sources */,
 				F8CC9BCC2738081800A93644 /* PubKeyState.swift in Sources */,
 				F84C411B27348ABA0007FB2B /* SessionObject.swift in Sources */,
 				F84C4112273485B30007FB2B /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
