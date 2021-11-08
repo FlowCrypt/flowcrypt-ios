@@ -26,12 +26,23 @@ public final class ThreadMessageSenderCellNode: CellNode {
             self.buttonColor = buttonColor
         }
 
-        var expandImageName: String { isExpanded ? "chevron.up" : "chevron.down" }
+        var replyImage: UIImage? {
+            return createButtonImage(systemName: "arrowshape.turn.up.left")
+        }
+        var expandImage: UIImage? {
+            let systemName = isExpanded ? "chevron.up" : "chevron.down"
+            return createButtonImage(systemName: systemName)
+        }
+
+        private func createButtonImage(systemName: String, pointSize: CGFloat = 18) -> UIImage? {
+            let configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
+            return UIImage(systemName: systemName, withConfiguration: configuration)
+        }
     }
 
     private let senderNode = ASTextNode2()
     private let dateNode = ASTextNode2()
-    public private(set) var replyNode = ASImageNode()
+    public private(set) var replyNode = ASButtonNode()
     public private(set) var expandNode = ASImageNode()
 
     private let input: ThreadMessageSenderCellNode.Input
@@ -52,19 +63,17 @@ public final class ThreadMessageSenderCellNode: CellNode {
     }
 
     private func setupReplyNode() {
-        replyNode.image = UIImage(systemName: "arrowshape.turn.up.left",
-                                  withConfiguration: UIImage.SymbolConfiguration(pointSize: 28))
+        replyNode.setImage(input.replyImage, for: .normal)
+        replyNode.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
         replyNode.contentMode = .center
-        replyNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
         replyNode.alpha = input.isExpanded ? 1 : 0
         replyNode.addTarget(self, action: #selector(onReplyNodeTap), forControlEvents: .touchUpInside)
     }
 
     private func setupExpandNode() {
-        expandNode.image = UIImage(systemName: input.expandImageName,
-                                   withConfiguration: UIImage.SymbolConfiguration(pointSize: 18, weight: .light))
-        expandNode.contentMode = .right
+        expandNode.image = input.expandImage
         expandNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
+        expandNode.contentMode = .right
     }
 
     @objc private func onReplyNodeTap() {
