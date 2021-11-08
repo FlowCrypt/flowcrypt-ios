@@ -6,7 +6,9 @@ import EmailScreen from './email.screen';
 import NewMessageScreen from './new-message.screen';
 import SettingsScreen from './settings.screen';
 import KeysScreen from './keys.screen';
-import PublicKeyScreen from './public_key.screen';
+import PublicKeyScreen from './public-key.screen';
+import ContactScreen from './contacts.screen';
+import ContactPublicKeyScreen from './contact-public-key.screen'
 
 export {
     SplashScreen,
@@ -17,5 +19,7 @@ export {
     NewMessageScreen,
     SettingsScreen,
     KeysScreen,
-    PublicKeyScreen
+    PublicKeyScreen,
+    ContactScreen,
+    ContactPublicKeyScreen
 };
