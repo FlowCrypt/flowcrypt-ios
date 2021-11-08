@@ -436,6 +436,11 @@
 		F8F7CEF62739CD36006E2C45 /* URLSessionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA7E0AFE19FACB0F233ED /* URLSessionExtension.swift */; };
 		F8F7CEF72739CD6D006E2C45 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
 		F8F7CEF82739CE26006E2C45 /* WkdApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EFF61E265A5C6700AB0B71 /* WkdApi.swift */; };
+		F8F7CEFA2739CF94006E2C45 /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* ClientConfiguration.swift */; };
+		F8F7CEFC2739CFF5006E2C45 /* ClientConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7F267CC39E00BDE4AC /* ClientConfigurationService.swift */; };
+		F8F7CEFD2739D026006E2C45 /* EnterpriseServerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */; };
+		F8F7CEFE2739D046006E2C45 /* LocalClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* LocalClientConfiguration.swift */; };
+		F8F7CEFF2739D0BB006E2C45 /* AttesterApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3015,11 +3020,13 @@
 				F8F7CEC327399112006E2C45 /* KeyChainService.swift in Sources */,
 				F8F7CEBB27383B83006E2C45 /* CoreHost.swift in Sources */,
 				F8F7CEDD2739ADA6006E2C45 /* DBMigrationService.swift in Sources */,
+				F8F7CEFC2739CFF5006E2C45 /* ClientConfigurationService.swift in Sources */,
 				F8F7CEE92739C22A006E2C45 /* RecipientWithSortedPubKeys.swift in Sources */,
 				F84C411827348A6F0007FB2B /* PrvKeyInfo.swift in Sources */,
 				F8F7CEE72739C098006E2C45 /* PubKeyObject.swift in Sources */,
 				F8F7CED327399F19006E2C45 /* DataService.swift in Sources */,
 				F84C4126273493BA0007FB2B /* ComposeMessageObjects.swift in Sources */,
+				F8F7CEFF2739D0BB006E2C45 /* AttesterApi.swift in Sources */,
 				F8F7CEF22739CC47006E2C45 /* Configuration.swift in Sources */,
 				F8F7CECD27399552006E2C45 /* StorageMethod.swift in Sources */,
 				F84C411C27348AC50007FB2B /* ConnectionType.swift in Sources */,
@@ -3028,6 +3035,7 @@
 				F84C4114273485D60007FB2B /* RecipientEmailNode.swift in Sources */,
 				F8CC9BCB2738075E00A93644 /* EncryptedStorageProtocols.swift in Sources */,
 				F8F7CEB72738380D006E2C45 /* String+Extension.swift in Sources */,
+				F8F7CEFD2739D026006E2C45 /* EnterpriseServerApi.swift in Sources */,
 				F84C40FA273477270007FB2B /* PhotosManager.swift in Sources */,
 				F8F7CEF62739CD36006E2C45 /* URLSessionExtension.swift in Sources */,
 				F8F7CECB2739945F006E2C45 /* EncryptedStorage.swift in Sources */,
@@ -3036,6 +3044,7 @@
 				F8CBC03627331ACA00ECD0B3 /* ShareViewController.swift in Sources */,
 				F8CC9BCA273806F700A93644 /* MessageGateway.swift in Sources */,
 				F8F7CED127399616006E2C45 /* EmailProviderType.swift in Sources */,
+				F8F7CEFE2739D046006E2C45 /* LocalClientConfiguration.swift in Sources */,
 				F84C4110273482DF0007FB2B /* RecipientEmailsCellNode.swift in Sources */,
 				F84C412227348EEA0007FB2B /* ComposeViewControllerInput.swift in Sources */,
 				F84C411A27348AAF0007FB2B /* UserObject.swift in Sources */,
@@ -3060,6 +3069,7 @@
 				F84C412027348E110007FB2B /* TextViewCellNode.swift in Sources */,
 				F8F7CEF82739CE26006E2C45 /* WkdApi.swift in Sources */,
 				F8F7CEB627382FDB006E2C45 /* ComposeMessageError.swift in Sources */,
+				F8F7CEFA2739CF94006E2C45 /* ClientConfiguration.swift in Sources */,
 				F8F7CEE02739B7B2006E2C45 /* LocalStorage.swift in Sources */,
 				F84C412127348EB90007FB2B /* ComposeViewDecorator.swift in Sources */,
 				F8CC9BCD273808F100A93644 /* PubKey.swift in Sources */,
