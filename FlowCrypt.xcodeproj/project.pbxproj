@@ -459,6 +459,7 @@
 		F8F7CF1E2739DD71006E2C45 /* UsersMailSessionProvider+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF1D2739DD71006E2C45 /* UsersMailSessionProvider+Extensions.swift */; };
 		F8F7CF1F2739DDBC006E2C45 /* MailServiceProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC4114B25961CEA001180A8 /* MailServiceProviderType.swift */; };
 		F8F7CF202739DDDA006E2C45 /* UserMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */; };
+		F8F7CF222739DF2E006E2C45 /* DraftsListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E95352720B6640093F243 /* DraftsListProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3111,6 +3112,7 @@
 				F8F7CEC727399386006E2C45 /* LogOutHandler.swift in Sources */,
 				F8F7CEF12739CBBB006E2C45 /* Core.swift in Sources */,
 				F8F7CEE22739BBE3006E2C45 /* KeyDataStorage.swift in Sources */,
+				F8F7CF222739DF2E006E2C45 /* DraftsListProvider.swift in Sources */,
 				F84C412027348E110007FB2B /* TextViewCellNode.swift in Sources */,
 				F8F7CEF82739CE26006E2C45 /* WkdApi.swift in Sources */,
 				F8F7CEB627382FDB006E2C45 /* ComposeMessageError.swift in Sources */,
