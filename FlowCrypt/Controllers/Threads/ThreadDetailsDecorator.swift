@@ -30,7 +30,14 @@ extension ThreadMessageSenderCellNode.Input {
         self.init(
             sender: NSAttributedString.text(from: sender, style: style, color: textColor),
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
-            isExpanded: threadMessage.isExpanded
+            isExpanded: threadMessage.isExpanded,
+            buttonColor: .messageButtonColor
         )
+    }
+}
+
+extension UIColor {
+    static var messageButtonColor: UIColor {
+        .colorFor(darkStyle: .white, lightStyle: .main)
     }
 }

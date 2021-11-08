@@ -14,11 +14,16 @@ public final class ThreadMessageSenderCellNode: CellNode {
         public let sender: NSAttributedString
         public let date: NSAttributedString?
         public let isExpanded: Bool
+        public let buttonColor: UIColor
 
-        public init(sender: NSAttributedString, date: NSAttributedString, isExpanded: Bool) {
+        public init(sender: NSAttributedString,
+                    date: NSAttributedString,
+                    isExpanded: Bool,
+                    buttonColor: UIColor) {
             self.sender = sender
             self.date = date
             self.isExpanded = isExpanded
+            self.buttonColor = buttonColor
         }
 
         var expandImageName: String { isExpanded ? "chevron.up" : "chevron.down" }
@@ -42,17 +47,24 @@ public final class ThreadMessageSenderCellNode: CellNode {
         senderNode.attributedText = input.sender
         dateNode.attributedText = input.date
 
+        setupReplyNode()
+        setupExpandNode()
+    }
+
+    private func setupReplyNode() {
         replyNode.image = UIImage(systemName: "arrowshape.turn.up.left",
                                   withConfiguration: UIImage.SymbolConfiguration(pointSize: 28))
         replyNode.contentMode = .center
-        replyNode.tintColor = .textColor
+        replyNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
         replyNode.alpha = input.isExpanded ? 1 : 0
+        replyNode.addTarget(self, action: #selector(onReplyNodeTap), forControlEvents: .touchUpInside)
+    }
+
+    private func setupExpandNode() {
         expandNode.image = UIImage(systemName: input.expandImageName,
                                    withConfiguration: UIImage.SymbolConfiguration(pointSize: 18, weight: .light))
         expandNode.contentMode = .right
-        expandNode.tintColor = .textColor
-
-        replyNode.addTarget(self, action: #selector(onReplyNodeTap), forControlEvents: .touchUpInside)
+        expandNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
     }
 
     @objc private func onReplyNodeTap() {

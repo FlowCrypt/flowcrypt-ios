@@ -103,7 +103,6 @@ extension ThreadDetailsViewController {
             withDuration: 0.3,
             animations: {
                 threadNode.replyNode.view.alpha = self.input[indexPath.section-1].isExpanded ? 0 : 1
-                threadNode.expandNode.view.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
                 threadNode.expandNode.view.transform = CGAffineTransform(rotationAngle: .pi)
             },
             completion: { [weak self] _ in
@@ -368,7 +367,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             if indexPath.row == 0 {
                 return ThreadMessageSenderCellNode(
                     input: .init(threadMessage: section),
-                    onReplyTap: { [weak self] _ in self?.handleExpandTap(at: indexPath) }
+                    onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) }
                 )
             }
 
