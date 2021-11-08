@@ -18,7 +18,8 @@ def ui_pods
 end
 
 def extension_pods
-  pod 'GoogleAPIClientForREST'
+  pod 'Texture'
+  pod 'SwiftyRSA'
 end
 
 ############################ Targets ############################
@@ -31,7 +32,7 @@ target 'FlowCryptUI' do
 end
 
 target 'FlowCryptShareExtension' do
-  ui_pods
+  extension_pods
 end
 
 target 'FlowCryptUIApplication' do

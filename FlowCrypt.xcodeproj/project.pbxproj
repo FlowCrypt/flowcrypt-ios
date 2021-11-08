@@ -396,6 +396,12 @@
 		F8F7CEB127382C17006E2C45 /* FlowCryptUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F8F7CEB627382FDB006E2C45 /* ComposeMessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BED26ADF5DE005BD9C6 /* ComposeMessageError.swift */; };
 		F8F7CEB72738380D006E2C45 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B0C7702729861C00124663 /* String+Extension.swift */; };
+		F8F7CEBA27383AAC006E2C45 /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = F8F7CEB927383AAC006E2C45 /* BigInt */; };
+		F8F7CEBB27383B83006E2C45 /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
+		F8F7CEBD2738424A006E2C45 /* CoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CEBC2738424A006E2C45 /* CoreError.swift */; };
+		F8F7CEBE2738424A006E2C45 /* CoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CEBC2738424A006E2C45 /* CoreError.swift */; };
+		F8F7CEBF2738446A006E2C45 /* BigIntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtension.swift */; };
+		F8F7CEC1273845D7006E2C45 /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = F8F7CEC0273845D7006E2C45 /* IDZSwiftCommonCrypto */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -843,6 +849,7 @@
 		F8CBC03527331ACA00ECD0B3 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		F8CBC03827331ACA00ECD0B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		F8CBC03A27331ACA00ECD0B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F8F7CEBC2738424A006E2C45 /* CoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -909,7 +916,9 @@
 				F84C40F82734716B0007FB2B /* RealmSwift in Frameworks */,
 				F8DEF40227333583001CE3B7 /* MBProgressHUD in Frameworks */,
 				F8DEF4062733360A001CE3B7 /* MailCore in Frameworks */,
+				F8F7CEBA27383AAC006E2C45 /* BigInt in Frameworks */,
 				F81F5A6027333DDF0081F4E9 /* GoogleAPIClientForRESTCore in Frameworks */,
+				F8F7CEC1273845D7006E2C45 /* IDZSwiftCommonCrypto in Frameworks */,
 				F8DEF40027332B35001CE3B7 /* GoogleAPIClientForREST_Gmail in Frameworks */,
 				F84C40F62734716B0007FB2B /* Realm in Frameworks */,
 				D9BB24CE78F64410CEC2BE8F /* Pods_FlowCryptShareExtension.framework in Frameworks */,
@@ -1064,6 +1073,7 @@
 				32DCAC732B988D9704658812 /* CoreTypes.swift */,
 				32DCA0C3D34A69851A238E87 /* Core.swift */,
 				32DCACB22E895C2500A99350 /* CoreHost.swift */,
+				F8F7CEBC2738424A006E2C45 /* CoreError.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2307,6 +2317,8 @@
 				F81F5A5F27333DDF0081F4E9 /* GoogleAPIClientForRESTCore */,
 				F84C40F52734716B0007FB2B /* Realm */,
 				F84C40F72734716B0007FB2B /* RealmSwift */,
+				F8F7CEB927383AAC006E2C45 /* BigInt */,
+				F8F7CEC0273845D7006E2C45 /* IDZSwiftCommonCrypto */,
 			);
 			productName = FlowCryptShareExtension;
 			productReference = F8CBC03327331ACA00ECD0B3 /* FlowCryptShareExtension.appex */;
@@ -2732,6 +2744,7 @@
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				9FB22CDD25715CF50026EE64 /* GmailServiceError.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
+				F8F7CEBD2738424A006E2C45 /* CoreError.swift in Sources */,
 				9F416428266575DC00106194 /* BackupServiceType.swift in Sources */,
 				5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */,
 				9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */,
@@ -2953,9 +2966,11 @@
 			files = (
 				F84C41152734881E0007FB2B /* KeyDetails.swift in Sources */,
 				F84C41162734882C0007FB2B /* KeyId.swift in Sources */,
+				F8F7CEBB27383B83006E2C45 /* CoreHost.swift in Sources */,
 				F84C411827348A6F0007FB2B /* PrvKeyInfo.swift in Sources */,
 				F84C4126273493BA0007FB2B /* ComposeMessageObjects.swift in Sources */,
 				F84C411C27348AC50007FB2B /* ConnectionType.swift in Sources */,
+				F8F7CEBF2738446A006E2C45 /* BigIntExtension.swift in Sources */,
 				F84C4114273485D60007FB2B /* RecipientEmailNode.swift in Sources */,
 				F8CC9BCB2738075E00A93644 /* EncryptedStorageProtocols.swift in Sources */,
 				F8F7CEB72738380D006E2C45 /* String+Extension.swift in Sources */,
@@ -2979,6 +2994,7 @@
 				F8CC9BCD273808F100A93644 /* PubKey.swift in Sources */,
 				F84C411D27348AF50007FB2B /* User.swift in Sources */,
 				F84C411927348AA10007FB2B /* KeyInfo.swift in Sources */,
+				F8F7CEBE2738424A006E2C45 /* CoreError.swift in Sources */,
 				F84C410F2734828B0007FB2B /* UIColorExtensions.swift in Sources */,
 				F84C4111273485AB0007FB2B /* CellNode.swift in Sources */,
 			);
@@ -4208,6 +4224,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */;
 			productName = MailCore;
+		};
+		F8F7CEB927383AAC006E2C45 /* BigInt */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E13F13270F92F100F287CA /* XCRemoteSwiftPackageReference "BigInt" */;
+			productName = BigInt;
+		};
+		F8F7CEC0273845D7006E2C45 /* IDZSwiftCommonCrypto */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */;
+			productName = IDZSwiftCommonCrypto;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
