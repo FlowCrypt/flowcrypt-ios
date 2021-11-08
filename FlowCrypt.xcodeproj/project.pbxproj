@@ -441,6 +441,9 @@
 		F8F7CEFD2739D026006E2C45 /* EnterpriseServerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */; };
 		F8F7CEFE2739D046006E2C45 /* LocalClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* LocalClientConfiguration.swift */; };
 		F8F7CEFF2739D0BB006E2C45 /* AttesterApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */; };
+		F8F7CF002739D161006E2C45 /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
+		F8F7CF032739D220006E2C45 /* ContactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FC1C0524D82C9F003B949D /* ContactsService.swift */; };
+		F8F7CF042739D239006E2C45 /* LocalContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3045,6 +3048,7 @@
 				F8CC9BCA273806F700A93644 /* MessageGateway.swift in Sources */,
 				F8F7CED127399616006E2C45 /* EmailProviderType.swift in Sources */,
 				F8F7CEFE2739D046006E2C45 /* LocalClientConfiguration.swift in Sources */,
+				F8F7CF042739D239006E2C45 /* LocalContactsProvider.swift in Sources */,
 				F84C4110273482DF0007FB2B /* RecipientEmailsCellNode.swift in Sources */,
 				F84C412227348EEA0007FB2B /* ComposeViewControllerInput.swift in Sources */,
 				F84C411A27348AAF0007FB2B /* UserObject.swift in Sources */,
@@ -3061,6 +3065,7 @@
 				F84C411F27348D110007FB2B /* ComposeMessageAttachment.swift in Sources */,
 				F8F7CECE2739956E006E2C45 /* InMemoryPassPhraseStorage.swift in Sources */,
 				F84C4128273494150007FB2B /* UIColorExtension.swift in Sources */,
+				F8F7CF032739D220006E2C45 /* ContactsService.swift in Sources */,
 				F8F7CED427399F38006E2C45 /* SMTPSession.swift in Sources */,
 				F84C4113273485BE0007FB2B /* RecipientEmailsCellNodeInput.swift in Sources */,
 				F8F7CEC727399386006E2C45 /* LogOutHandler.swift in Sources */,
@@ -3069,6 +3074,7 @@
 				F84C412027348E110007FB2B /* TextViewCellNode.swift in Sources */,
 				F8F7CEF82739CE26006E2C45 /* WkdApi.swift in Sources */,
 				F8F7CEB627382FDB006E2C45 /* ComposeMessageError.swift in Sources */,
+				F8F7CF002739D161006E2C45 /* PubLookup.swift in Sources */,
 				F8F7CEFA2739CF94006E2C45 /* ClientConfiguration.swift in Sources */,
 				F8F7CEE02739B7B2006E2C45 /* LocalStorage.swift in Sources */,
 				F84C412127348EB90007FB2B /* ComposeViewDecorator.swift in Sources */,
