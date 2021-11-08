@@ -402,6 +402,30 @@
 		F8F7CEBE2738424A006E2C45 /* CoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CEBC2738424A006E2C45 /* CoreError.swift */; };
 		F8F7CEBF2738446A006E2C45 /* BigIntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtension.swift */; };
 		F8F7CEC1273845D7006E2C45 /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = F8F7CEC0273845D7006E2C45 /* IDZSwiftCommonCrypto */; };
+		F8F7CEC327399112006E2C45 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F14238C8249007FD759 /* KeyChainService.swift */; };
+		F8F7CEC427399135006E2C45 /* AppErr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA4B11D4531B3B04D01D1 /* AppErr.swift */; };
+		F8F7CEC527399154006E2C45 /* GmailServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CDC25715CF50026EE64 /* GmailServiceError.swift */; };
+		F8F7CEC727399386006E2C45 /* LogOutHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003DB525EA92BC00EB38C0 /* LogOutHandler.swift */; };
+		F8F7CEC8273993AB006E2C45 /* ClientConfigurationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B79267CB4DF00BDE4AC /* ClientConfigurationObject.swift */; };
+		F8F7CEC9273993F5006E2C45 /* EncryptedCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724024F97C5C006BA6EF /* EncryptedCacheService.swift */; };
+		F8F7CECB2739945F006E2C45 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
+		F8F7CECC273994A0006E2C45 /* PassPhraseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79228726696B0200DA3D80 /* PassPhraseService.swift */; };
+		F8F7CECD27399552006E2C45 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
+		F8F7CECE2739956E006E2C45 /* InMemoryPassPhraseStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EBA9266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift */; };
+		F8F7CED027399616006E2C45 /* EmailProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CECF27399616006E2C45 /* EmailProviderType.swift */; };
+		F8F7CED127399616006E2C45 /* EmailProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CECF27399616006E2C45 /* EmailProviderType.swift */; };
+		F8F7CED227399EE7006E2C45 /* RawClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7B267CBA0E00BDE4AC /* RawClientConfiguration.swift */; };
+		F8F7CED327399F19006E2C45 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C112316DDA500299985 /* DataService.swift */; };
+		F8F7CED427399F38006E2C45 /* SMTPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1342433753B00DB4065 /* SMTPSession.swift */; };
+		F8F7CED62739ACBF006E2C45 /* FBLPromises in Frameworks */ = {isa = PBXBuildFile; productRef = F8F7CED52739ACBF006E2C45 /* FBLPromises */; };
+		F8F7CED82739ACC0006E2C45 /* FBLPromisesTestHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = F8F7CED72739ACC0006E2C45 /* FBLPromisesTestHelpers */; };
+		F8F7CEDA2739ACC0006E2C45 /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = F8F7CED92739ACC0006E2C45 /* Promises */; };
+		F8F7CEDC2739ACC0006E2C45 /* PromisesTestHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = F8F7CEDB2739ACC0006E2C45 /* PromisesTestHelpers */; };
+		F8F7CEDD2739ADA6006E2C45 /* DBMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAF3025DFB8E1009E98D4 /* DBMigrationService.swift */; };
+		F8F7CEDE2739B698006E2C45 /* FolderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D274724324FD1932006BA6EF /* FolderObject.swift */; };
+		F8F7CEE02739B7B2006E2C45 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
+		F8F7CEE12739B886006E2C45 /* IMAPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1322433753100DB4065 /* IMAPSession.swift */; };
+		F8F7CEE22739BBE3006E2C45 /* KeyDataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79229326696B9300DA3D80 /* KeyDataStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -850,6 +874,7 @@
 		F8CBC03827331ACA00ECD0B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		F8CBC03A27331ACA00ECD0B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F8F7CEBC2738424A006E2C45 /* CoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreError.swift; sourceTree = "<group>"; };
+		F8F7CECF27399616006E2C45 /* EmailProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -913,13 +938,17 @@
 			files = (
 				F8F7CEB027382C17006E2C45 /* FlowCryptUI.framework in Frameworks */,
 				F8F7CEAC27382C17006E2C45 /* FlowCryptCommon.framework in Frameworks */,
+				F8F7CEDA2739ACC0006E2C45 /* Promises in Frameworks */,
+				F8F7CEDC2739ACC0006E2C45 /* PromisesTestHelpers in Frameworks */,
 				F84C40F82734716B0007FB2B /* RealmSwift in Frameworks */,
 				F8DEF40227333583001CE3B7 /* MBProgressHUD in Frameworks */,
 				F8DEF4062733360A001CE3B7 /* MailCore in Frameworks */,
 				F8F7CEBA27383AAC006E2C45 /* BigInt in Frameworks */,
 				F81F5A6027333DDF0081F4E9 /* GoogleAPIClientForRESTCore in Frameworks */,
 				F8F7CEC1273845D7006E2C45 /* IDZSwiftCommonCrypto in Frameworks */,
+				F8F7CED82739ACC0006E2C45 /* FBLPromisesTestHelpers in Frameworks */,
 				F8DEF40027332B35001CE3B7 /* GoogleAPIClientForREST_Gmail in Frameworks */,
+				F8F7CED62739ACBF006E2C45 /* FBLPromises in Frameworks */,
 				F84C40F62734716B0007FB2B /* Realm in Frameworks */,
 				D9BB24CE78F64410CEC2BE8F /* Pods_FlowCryptShareExtension.framework in Frameworks */,
 			);
@@ -1996,6 +2025,7 @@
 			isa = PBXGroup;
 			children = (
 				9F0C3C112316DDA500299985 /* DataService.swift */,
+				F8F7CECF27399616006E2C45 /* EmailProviderType.swift */,
 				9F589F1A238C85B0007FD759 /* Encrypted Storage */,
 				9F589F19238C82A1007FD759 /* Local Storage */,
 				9F003D6C25EA8F3200EB38C0 /* UserAccountService.swift */,
@@ -2319,6 +2349,10 @@
 				F84C40F72734716B0007FB2B /* RealmSwift */,
 				F8F7CEB927383AAC006E2C45 /* BigInt */,
 				F8F7CEC0273845D7006E2C45 /* IDZSwiftCommonCrypto */,
+				F8F7CED52739ACBF006E2C45 /* FBLPromises */,
+				F8F7CED72739ACC0006E2C45 /* FBLPromisesTestHelpers */,
+				F8F7CED92739ACC0006E2C45 /* Promises */,
+				F8F7CEDB2739ACC0006E2C45 /* PromisesTestHelpers */,
 			);
 			productName = FlowCryptShareExtension;
 			productReference = F8CBC03327331ACA00ECD0B3 /* FlowCryptShareExtension.appex */;
@@ -2755,6 +2789,7 @@
 				211392A5266511E6009202EC /* PubLookup.swift in Sources */,
 				D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */,
 				D2E26F6324F1698100612AF1 /* ContactsListViewController.swift in Sources */,
+				F8F7CED027399616006E2C45 /* EmailProviderType.swift in Sources */,
 				9F53CB7B2555E1E300C0157A /* GmailService+folders.swift in Sources */,
 				9F79228826696B0200DA3D80 /* PassPhraseService.swift in Sources */,
 				D2E26F6624F169B400612AF1 /* ContactsListDecorator.swift in Sources */,
@@ -2966,30 +3001,47 @@
 			files = (
 				F84C41152734881E0007FB2B /* KeyDetails.swift in Sources */,
 				F84C41162734882C0007FB2B /* KeyId.swift in Sources */,
+				F8F7CEC327399112006E2C45 /* KeyChainService.swift in Sources */,
 				F8F7CEBB27383B83006E2C45 /* CoreHost.swift in Sources */,
+				F8F7CEDD2739ADA6006E2C45 /* DBMigrationService.swift in Sources */,
 				F84C411827348A6F0007FB2B /* PrvKeyInfo.swift in Sources */,
+				F8F7CED327399F19006E2C45 /* DataService.swift in Sources */,
 				F84C4126273493BA0007FB2B /* ComposeMessageObjects.swift in Sources */,
+				F8F7CECD27399552006E2C45 /* StorageMethod.swift in Sources */,
 				F84C411C27348AC50007FB2B /* ConnectionType.swift in Sources */,
 				F8F7CEBF2738446A006E2C45 /* BigIntExtension.swift in Sources */,
+				F8F7CECC273994A0006E2C45 /* PassPhraseService.swift in Sources */,
 				F84C4114273485D60007FB2B /* RecipientEmailNode.swift in Sources */,
 				F8CC9BCB2738075E00A93644 /* EncryptedStorageProtocols.swift in Sources */,
 				F8F7CEB72738380D006E2C45 /* String+Extension.swift in Sources */,
 				F84C40FA273477270007FB2B /* PhotosManager.swift in Sources */,
+				F8F7CECB2739945F006E2C45 /* EncryptedStorage.swift in Sources */,
+				F8F7CEC427399135006E2C45 /* AppErr.swift in Sources */,
 				F84C4117273488350007FB2B /* KeyAlgo.swift in Sources */,
 				F8CBC03627331ACA00ECD0B3 /* ShareViewController.swift in Sources */,
 				F8CC9BCA273806F700A93644 /* MessageGateway.swift in Sources */,
+				F8F7CED127399616006E2C45 /* EmailProviderType.swift in Sources */,
 				F84C4110273482DF0007FB2B /* RecipientEmailsCellNode.swift in Sources */,
 				F84C412227348EEA0007FB2B /* ComposeViewControllerInput.swift in Sources */,
 				F84C411A27348AAF0007FB2B /* UserObject.swift in Sources */,
+				F8F7CEDE2739B698006E2C45 /* FolderObject.swift in Sources */,
+				F8F7CEC9273993F5006E2C45 /* EncryptedCacheService.swift in Sources */,
+				F8F7CED227399EE7006E2C45 /* RawClientConfiguration.swift in Sources */,
 				F84C411E27348B940007FB2B /* CoreTypes.swift in Sources */,
 				F8CC9BCC2738081800A93644 /* PubKeyState.swift in Sources */,
 				F84C411B27348ABA0007FB2B /* SessionObject.swift in Sources */,
 				F84C4112273485B30007FB2B /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
+				F8F7CEC8273993AB006E2C45 /* ClientConfigurationObject.swift in Sources */,
 				F84C411F27348D110007FB2B /* ComposeMessageAttachment.swift in Sources */,
+				F8F7CECE2739956E006E2C45 /* InMemoryPassPhraseStorage.swift in Sources */,
 				F84C4128273494150007FB2B /* UIColorExtension.swift in Sources */,
+				F8F7CED427399F38006E2C45 /* SMTPSession.swift in Sources */,
 				F84C4113273485BE0007FB2B /* RecipientEmailsCellNodeInput.swift in Sources */,
+				F8F7CEC727399386006E2C45 /* LogOutHandler.swift in Sources */,
+				F8F7CEE22739BBE3006E2C45 /* KeyDataStorage.swift in Sources */,
 				F84C412027348E110007FB2B /* TextViewCellNode.swift in Sources */,
 				F8F7CEB627382FDB006E2C45 /* ComposeMessageError.swift in Sources */,
+				F8F7CEE02739B7B2006E2C45 /* LocalStorage.swift in Sources */,
 				F84C412127348EB90007FB2B /* ComposeViewDecorator.swift in Sources */,
 				F8CC9BCD273808F100A93644 /* PubKey.swift in Sources */,
 				F84C411D27348AF50007FB2B /* User.swift in Sources */,
@@ -2997,6 +3049,8 @@
 				F8F7CEBE2738424A006E2C45 /* CoreError.swift in Sources */,
 				F84C410F2734828B0007FB2B /* UIColorExtensions.swift in Sources */,
 				F84C4111273485AB0007FB2B /* CellNode.swift in Sources */,
+				F8F7CEC527399154006E2C45 /* GmailServiceError.swift in Sources */,
+				F8F7CEE12739B886006E2C45 /* IMAPSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4234,6 +4288,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */;
 			productName = IDZSwiftCommonCrypto;
+		};
+		F8F7CED52739ACBF006E2C45 /* FBLPromises */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */;
+			productName = FBLPromises;
+		};
+		F8F7CED72739ACC0006E2C45 /* FBLPromisesTestHelpers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */;
+			productName = FBLPromisesTestHelpers;
+		};
+		F8F7CED92739ACC0006E2C45 /* Promises */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */;
+			productName = Promises;
+		};
+		F8F7CEDB2739ACC0006E2C45 /* PromisesTestHelpers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */;
+			productName = PromisesTestHelpers;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

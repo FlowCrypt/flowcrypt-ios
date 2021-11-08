@@ -13,7 +13,9 @@ final class FolderObject: Object {
     @objc dynamic var name: String = ""
     @objc dynamic var path: String = ""
     @objc dynamic var image: Data?
-    @objc dynamic var itemType: String = FolderViewModel.ItemType.folder.rawValue
+    // TODO: Fix ME, folder
+//    @objc dynamic var itemType: String = FolderViewModel.ItemType.folder.rawValue
+    @objc dynamic var itemType: String = "FIX ME"
     @objc dynamic var user: UserObject!
 
     convenience init(

@@ -10,10 +10,6 @@ import Foundation
 import Promises
 import RealmSwift
 
-protocol EmailProviderType {
-    var email: String? { get }
-}
-
 protocol DataServiceType: EmailProviderType {
     // data
     var email: String? { get }
@@ -111,7 +107,9 @@ extension DataService: DataServiceType {
     var token: String? {
         switch currentAuthType {
         case .oAuthGmail:
-            return GoogleUserService().userToken
+            // TODO: FIX ME, user token
+            return ""
+//            return GoogleUserService().userToken
         default:
             return nil
         }
