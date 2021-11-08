@@ -52,9 +52,9 @@ describe('COMPOSE EMAIL: ', () => {
         ContactScreen.checkContact(contactEmail);
         ContactScreen.clickOnContact(contactEmail);
 
-        ContactPublicKeyScreen.checkUser(contactEmail);
-        ContactPublicKeyScreen.checkContactPublicKey();
+        ContactPublicKeyScreen.checkPgpUserId(contactEmail);
+        ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
         ContactPublicKeyScreen.clickOnFingerPrint();
-        ContactPublicKeyScreen.checkPublicKey();
+        ContactPublicKeyScreen.checkPublicKeyNotEmpty();
     });
 });

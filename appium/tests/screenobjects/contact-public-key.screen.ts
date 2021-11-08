@@ -11,8 +11,8 @@ const SELECTORS = {
     FINGERPRINT_LABEL: '~Fingerprint:',
     CREATED_LABEL: '~Created:',
     EXPIRES_LABEL: '~Expires:',
-    USER_LABEL: '~User:',
-    USER_EMAIL: '-ios class chain:**/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
+    PGD_USER_ID_LABEL: '~User:',
+    PGD_USER_ID_EMAIL: '-ios class chain:**/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
     TRASH_BUTTON: '~trash'
 };
 
@@ -37,7 +37,7 @@ class ContactPublicKeyScreen extends BaseScreen {
         return $(SELECTORS.PUBLIC_KEY);
     }
 
-    get fingerPrint() {
+    get fingerPrintLabel() {
         return $(SELECTORS.FINGERPRINT_LABEL);
     }
 
@@ -45,7 +45,7 @@ class ContactPublicKeyScreen extends BaseScreen {
         return $(SELECTORS.FINGERPRINT_VALUE);
     }
 
-    get created() {
+    get createdLabel() {
         return $(SELECTORS.CREATED_LABEL);
     }
 
@@ -53,7 +53,7 @@ class ContactPublicKeyScreen extends BaseScreen {
         return $(SELECTORS.CREATED_VALUE);
     }
 
-    get expires() {
+    get expiresLabel() {
         return $(SELECTORS.EXPIRES_LABEL);
     }
 
@@ -61,39 +61,39 @@ class ContactPublicKeyScreen extends BaseScreen {
         return $(SELECTORS.EXPIRES_VALUE);
     }
 
-    get user() {
-        return $(SELECTORS.USER_LABEL);
+    get pgpUserIdLabel() {
+        return $(SELECTORS.PGD_USER_ID_LABEL);
     }
 
-    get userEmail() {
-        return $(SELECTORS.USER_EMAIL);
+    get pgpUserIdEmailValue() {
+        return $(SELECTORS.PGD_USER_ID_EMAIL);
     }
 
-    checkPublicKey() {
+    checkPublicKeyNotEmpty() {
         this.backButton.waitForDisplayed();
         this.key.waitForDisplayed();
         this.publicKey.waitForExist();
         expect(this.publicKey.getAttribute('value')).not.toEqual(null);
     }
 
-    checkContactPublicKey () {
+    checkPublicKeyDetailsNotEmpty () {
         this.backButton.waitForDisplayed();
-        this.fingerPrint.waitForDisplayed();
+        this.fingerPrintLabel.waitForDisplayed();
         expect(this.fingerPrintValue.getAttribute('value')).not.toEqual(null);
-        this.created.waitForDisplayed();
+        this.createdLabel.waitForDisplayed();
         expect(this.createdValue.getAttribute('value')).not.toEqual(null);
-        this.expires.waitForDisplayed();
+        this.expiresLabel.waitForDisplayed();
         expect(this.expiresValue.getAttribute('value')).not.toEqual(null);
     }
 
-    checkUser(email) {
+    checkPgpUserId(email) {
         this.trashButton.waitForDisplayed();
-        this.user.waitForDisplayed();
-        expect(this.userEmail.getAttribute('value')).toContain(email);
+        this.pgpUserIdLabel.waitForDisplayed();
+        expect(this.pgpUserIdEmailValue.getAttribute('value')).toContain(email);
     }
 
     clickOnFingerPrint() {
-        ElementHelper.waitAndClick(this.fingerPrint);
+        ElementHelper.waitAndClick(this.fingerPrintValue);
     }
 
 }
