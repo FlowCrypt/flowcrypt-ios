@@ -14,7 +14,7 @@ describe('INBOX: ', () => {
         const senderEmail = CommonData.sender.email;
         const emailSubject = CommonData.encryptedEmail.subject;
         const emailText = CommonData.encryptedEmail.message;
-        const wrongPassPhrase = CommonData.account.wrongPassPhrase;
+        const wrongPassPhrase = 'wrong';
 
         const correctPassPhrase = CommonData.account.passPhrase;
 

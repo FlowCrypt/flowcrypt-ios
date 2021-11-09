@@ -12,7 +12,7 @@ export const CommonData = {
         name: 'Dima'
     },
     bundleId: {
-        idd: 'com.flowcrypt.as.ios.debug',
+        id: 'com.flowcrypt.as.ios.debug',
     },
     encryptedEmail: {
         subject: 'encrypted email',

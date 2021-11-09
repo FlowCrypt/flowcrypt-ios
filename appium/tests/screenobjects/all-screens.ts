@@ -7,8 +7,8 @@ import NewMessageScreen from './new-message.screen';
 import SettingsScreen from './settings.screen';
 import KeysScreen from './keys.screen';
 import ContactScreen from './contacts.screen';
-import ContactPublicKeyScreen from './contact-public-key.screen'
-import PublicKeyScreen from './public_key.screen';
+import ContactPublicKeyScreen from './contact-public-key.screen';
+import PublicKeyScreen from './public-key.screen';
 import AttachmentScreen from './attachment.screen';
 
 export {
@@ -20,7 +20,7 @@ export {
     NewMessageScreen,
     SettingsScreen,
     KeysScreen,
-    AttachmentScreen
+    AttachmentScreen,
     PublicKeyScreen,
     ContactScreen,
     ContactPublicKeyScreen

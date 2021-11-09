@@ -17,7 +17,7 @@ describe('INBOX: ', () => {
         const emailText = CommonData.encryptedEmailWithAttachment.message;
         const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
 
-        const wrongPassPhrase = CommonData.account.wrongPassPhrase;
+        const wrongPassPhrase = 'wrong';
         const correctPassPhrase = CommonData.account.passPhrase;
         const bundleId = CommonData.bundleId.id;
 
@@ -26,7 +26,7 @@ describe('INBOX: ', () => {
 
         InboxScreen.clickOnEmailBySubject(emailSubject);
         EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-        EmailScreen.checkAttachment(attachmentName);
+        EmailScreen.checkAttachment(attachmentName); //disabled due to
 
         driver.terminateApp(bundleId);
 
