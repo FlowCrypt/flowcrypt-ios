@@ -16,10 +16,3 @@ extension GmailService: UsersMailSessionProvider {
     }
 }
 
-// MARK: - Imap
-extension Imap: UsersMailSessionProvider {
-    @discardableResult
-    func renewSession() -> Promise<Void> {
-        Promise(self.setupSession())
-    }
-}

@@ -456,10 +456,27 @@
 		F8F7CF192739DB5B006E2C45 /* MessageSearchProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411202595EA12001180A8 /* MessageSearchProvider.swift */; };
 		F8F7CF1A2739DCB5006E2C45 /* MessageOperationsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A7D257E64D500DE9B4B /* MessageOperationsProvider.swift */; };
 		F8F7CF1B2739DCF1006E2C45 /* BackupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE1542597399D0059BA51 /* BackupProvider.swift */; };
-		F8F7CF1E2739DD71006E2C45 /* UsersMailSessionProvider+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF1D2739DD71006E2C45 /* UsersMailSessionProvider+Extensions.swift */; };
+		F8F7CF1E2739DD71006E2C45 /* Gmail+UsersMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF1D2739DD71006E2C45 /* Gmail+UsersMailSessionProvider.swift */; };
 		F8F7CF1F2739DDBC006E2C45 /* MailServiceProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC4114B25961CEA001180A8 /* MailServiceProviderType.swift */; };
 		F8F7CF202739DDDA006E2C45 /* UserMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */; };
 		F8F7CF222739DF2E006E2C45 /* DraftsListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E95352720B6640093F243 /* DraftsListProvider.swift */; };
+		F8F7CF24273AD38C006E2C45 /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
+		F8F7CF25273AD59D006E2C45 /* MessageKindProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProviderType.swift */; };
+		F8F7CF26273AD667006E2C45 /* Imap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA377D22F4D67A8FA05EB /* Imap.swift */; };
+		F8F7CF28273AD6AC006E2C45 /* Imap+UserMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF27273AD6AC006E2C45 /* Imap+UserMailSessionProvider.swift */; };
+		F8F7CF29273AD6CB006E2C45 /* Imap+UserMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF27273AD6AC006E2C45 /* Imap+UserMailSessionProvider.swift */; };
+		F8F7CF2A273AD9CC006E2C45 /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
+		F8F7CF2B273ADC5D006E2C45 /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
+		F8F7CF2C273ADCF5006E2C45 /* ImapError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */; };
+		F8F7CF2D273ADD73006E2C45 /* Imap+send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAF8424D0185FAA9401A7 /* Imap+send.swift */; };
+		F8F7CF2E273ADE17006E2C45 /* Imap+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+Backup.swift */; };
+		F8F7CF2F273ADE65006E2C45 /* Imap+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC411342595EA94001180A8 /* Imap+Search.swift */; };
+		F8F7CF30273ADE87006E2C45 /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
+		F8F7CF31273ADECE006E2C45 /* Imap+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB862555E7F300C0157A /* Imap+Other.swift */; };
+		F8F7CF32273ADF98006E2C45 /* Imap+Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9362182573D10E0009912F /* Imap+Message.swift */; };
+		F8F7CF33273ADFFD006E2C45 /* Imap+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A91257E94DF00DE9B4B /* Imap+MessageOperations.swift */; };
+		F8F7CF34273AE037006E2C45 /* Imap+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */; };
+		F8F7CF35273AE0B7006E2C45 /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -911,7 +928,8 @@
 		F8F7CECF27399616006E2C45 /* EmailProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderType.swift; sourceTree = "<group>"; };
 		F8F7CF092739D613006E2C45 /* MailProvider+Base.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MailProvider+Base.swift"; sourceTree = "<group>"; };
 		F8F7CF122739DA93006E2C45 /* MessageFetchState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFetchState.swift; sourceTree = "<group>"; };
-		F8F7CF1D2739DD71006E2C45 /* UsersMailSessionProvider+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsersMailSessionProvider+Extensions.swift"; sourceTree = "<group>"; };
+		F8F7CF1D2739DD71006E2C45 /* Gmail+UsersMailSessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+UsersMailSessionProvider.swift"; sourceTree = "<group>"; };
+		F8F7CF27273AD6AC006E2C45 /* Imap+UserMailSessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+UserMailSessionProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1588,7 +1606,8 @@
 			isa = PBXGroup;
 			children = (
 				9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */,
-				F8F7CF1D2739DD71006E2C45 /* UsersMailSessionProvider+Extensions.swift */,
+				F8F7CF1D2739DD71006E2C45 /* Gmail+UsersMailSessionProvider.swift */,
+				F8F7CF27273AD6AC006E2C45 /* Imap+UserMailSessionProvider.swift */,
 			);
 			path = "UsersMailSession Provider";
 			sourceTree = "<group>";
@@ -2806,6 +2825,7 @@
 				9F9361A52573CE260009912F /* MessageProvider.swift in Sources */,
 				32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */,
 				D274724424FD1932006BA6EF /* FolderObject.swift in Sources */,
+				F8F7CF28273AD6AC006E2C45 /* Imap+UserMailSessionProvider.swift in Sources */,
 				9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */,
 				32DCA1B95DDC04D671F662F8 /* URLSessionExtension.swift in Sources */,
 				214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */,
@@ -2849,7 +2869,7 @@
 				9F23EA50237217140017DFED /* ComposeViewDecorator.swift in Sources */,
 				D21574B724376852006B094F /* ConnectionType.swift in Sources */,
 				9F7920F52667CEF100DA3D80 /* PassPhraseSaveable.swift in Sources */,
-				F8F7CF1E2739DD71006E2C45 /* UsersMailSessionProvider+Extensions.swift in Sources */,
+				F8F7CF1E2739DD71006E2C45 /* Gmail+UsersMailSessionProvider.swift in Sources */,
 				9F6F3BEF26ADF5DE005BD9C6 /* ComposeMessageError.swift in Sources */,
 				5ADEDCAF23A3EA9E00EC495E /* KeySettingsViewDecorator.swift in Sources */,
 				9F3EF33123B1785600FA0CEF /* MsgListViewConroller.swift in Sources */,
@@ -3053,11 +3073,13 @@
 				F8F7CF1B2739DCF1006E2C45 /* BackupProvider.swift in Sources */,
 				F8F7CF0C2739D833006E2C45 /* RemoteFoldersProvider.swift in Sources */,
 				F84C41152734881E0007FB2B /* KeyDetails.swift in Sources */,
+				F8F7CF35273AE0B7006E2C45 /* Imap+session.swift in Sources */,
 				F8F7CEF52739CD15006E2C45 /* ApiCall.swift in Sources */,
 				F8F7CF1A2739DCB5006E2C45 /* MessageOperationsProvider.swift in Sources */,
 				F84C41162734882C0007FB2B /* KeyId.swift in Sources */,
 				F8F7CEC327399112006E2C45 /* KeyChainService.swift in Sources */,
 				F8F7CEBB27383B83006E2C45 /* CoreHost.swift in Sources */,
+				F8F7CF2E273ADE17006E2C45 /* Imap+Backup.swift in Sources */,
 				F8F7CEDD2739ADA6006E2C45 /* DBMigrationService.swift in Sources */,
 				F8F7CEFC2739CFF5006E2C45 /* ClientConfigurationService.swift in Sources */,
 				F8F7CEE92739C22A006E2C45 /* RecipientWithSortedPubKeys.swift in Sources */,
@@ -3076,15 +3098,21 @@
 				F8CC9BCB2738075E00A93644 /* EncryptedStorageProtocols.swift in Sources */,
 				F8F7CEB72738380D006E2C45 /* String+Extension.swift in Sources */,
 				F8F7CEFD2739D026006E2C45 /* EnterpriseServerApi.swift in Sources */,
+				F8F7CF25273AD59D006E2C45 /* MessageKindProviderType.swift in Sources */,
 				F84C40FA273477270007FB2B /* PhotosManager.swift in Sources */,
 				F8F7CEF62739CD36006E2C45 /* URLSessionExtension.swift in Sources */,
 				F8F7CECB2739945F006E2C45 /* EncryptedStorage.swift in Sources */,
+				F8F7CF2D273ADD73006E2C45 /* Imap+send.swift in Sources */,
 				F8F7CEC427399135006E2C45 /* AppErr.swift in Sources */,
 				F84C4117273488350007FB2B /* KeyAlgo.swift in Sources */,
 				F8CBC03627331ACA00ECD0B3 /* ShareViewController.swift in Sources */,
+				F8F7CF2C273ADCF5006E2C45 /* ImapError.swift in Sources */,
+				F8F7CF32273ADF98006E2C45 /* Imap+Message.swift in Sources */,
 				F8CC9BCA273806F700A93644 /* MessageGateway.swift in Sources */,
+				F8F7CF26273AD667006E2C45 /* Imap.swift in Sources */,
 				F8F7CED127399616006E2C45 /* EmailProviderType.swift in Sources */,
 				F8F7CEFE2739D046006E2C45 /* LocalClientConfiguration.swift in Sources */,
+				F8F7CF30273ADE87006E2C45 /* Imap+messages.swift in Sources */,
 				F8F7CF042739D239006E2C45 /* LocalContactsProvider.swift in Sources */,
 				F84C4110273482DF0007FB2B /* RecipientEmailsCellNode.swift in Sources */,
 				F8F7CF0E2739D979006E2C45 /* MessageContext.swift in Sources */,
@@ -3102,10 +3130,15 @@
 				F8F7CEF72739CD6D006E2C45 /* GeneralConstants.swift in Sources */,
 				F8F7CEC8273993AB006E2C45 /* ClientConfigurationObject.swift in Sources */,
 				F84C411F27348D110007FB2B /* ComposeMessageAttachment.swift in Sources */,
+				F8F7CF2A273AD9CC006E2C45 /* Imap+folders.swift in Sources */,
+				F8F7CF34273AE037006E2C45 /* Imap+MessagesList.swift in Sources */,
 				F8F7CF142739DA93006E2C45 /* MessageFetchState.swift in Sources */,
 				F8F7CECE2739956E006E2C45 /* InMemoryPassPhraseStorage.swift in Sources */,
 				F84C4128273494150007FB2B /* UIColorExtension.swift in Sources */,
+				F8F7CF29273AD6CB006E2C45 /* Imap+UserMailSessionProvider.swift in Sources */,
+				F8F7CF33273ADFFD006E2C45 /* Imap+MessageOperations.swift in Sources */,
 				F8F7CF202739DDDA006E2C45 /* UserMailSessionProvider.swift in Sources */,
+				F8F7CF24273AD38C006E2C45 /* ImapHelper.swift in Sources */,
 				F8F7CF032739D220006E2C45 /* ContactsService.swift in Sources */,
 				F8F7CED427399F38006E2C45 /* SMTPSession.swift in Sources */,
 				F84C4113273485BE0007FB2B /* RecipientEmailsCellNodeInput.swift in Sources */,
@@ -3127,12 +3160,15 @@
 				F8F7CEBE2738424A006E2C45 /* CoreError.swift in Sources */,
 				F8F7CEEF2739C8C7006E2C45 /* WkdUrlConstructor.swift in Sources */,
 				F84C410F2734828B0007FB2B /* UIColorExtensions.swift in Sources */,
+				F8F7CF2B273ADC5D006E2C45 /* Imap+retry.swift in Sources */,
 				F8F7CF152739DAA2006E2C45 /* MessageProvider.swift in Sources */,
 				F84C4111273485AB0007FB2B /* CellNode.swift in Sources */,
 				F8F7CEC527399154006E2C45 /* GmailServiceError.swift in Sources */,
 				F8F7CF192739DB5B006E2C45 /* MessageSearchProvider.swift in Sources */,
 				F8F7CEE12739B886006E2C45 /* IMAPSession.swift in Sources */,
+				F8F7CF2F273ADE65006E2C45 /* Imap+Search.swift in Sources */,
 				F8F7CF1F2739DDBC006E2C45 /* MailServiceProviderType.swift in Sources */,
+				F8F7CF31273ADECE006E2C45 /* Imap+Other.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
