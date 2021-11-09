@@ -10,7 +10,7 @@ import Foundation
 final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private lazy var logger = Logger.nested(Self.self)
 
-    private let numberOfMessagesToLoad: Int
+    private let numberOfInboxRenderablesToLoad: Int
 
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
@@ -32,15 +32,15 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel,
-        numberOfMessagesToLoad: Int = 50,
+        numberOfInboxRenderablesToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = MailProvider.shared.draftsProvider,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
         self.viewModel = viewModel
-        self.numberOfMessagesToLoad = numberOfMessagesToLoad
+        self.numberOfInboxRenderablesToLoad = numberOfInboxRenderablesToLoad
 
-        self.service = ServiceActor(messageProvider: provider)
+        self.service = ServiceActor(inboxDataProvider: provider)
         self.draftsListProvider = draftsListProvider
         self.decorator = decorator
         self.tableNode = TableNode()
@@ -123,15 +123,15 @@ extension InboxViewController {
     private func messagesToLoad() -> Int {
         switch state {
         case .fetched(.byNextPage):
-            return numberOfMessagesToLoad
+            return numberOfInboxRenderablesToLoad
         case .fetched(.byNumber(let totalNumberOfMessages)):
             guard let total = totalNumberOfMessages else {
-                return numberOfMessagesToLoad
+                return numberOfInboxRenderablesToLoad
             }
             let from = inboxInput.count
-            return min(numberOfMessagesToLoad, total - from)
+            return min(numberOfInboxRenderablesToLoad, total - from)
         default:
-            return numberOfMessagesToLoad
+            return numberOfInboxRenderablesToLoad
         }
     }
 }
@@ -152,7 +152,7 @@ extension InboxViewController {
                 let context = try await draftsProvider.fetchDrafts(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
-                        count: numberOfMessagesToLoad,
+                        count: numberOfInboxRenderablesToLoad,
                         pagination: currentMessagesListPagination()
                     )
                 )
@@ -170,10 +170,10 @@ extension InboxViewController {
     private func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
         Task {
             do {
-                let context = try await service.fetchMessages(
+                let context = try await service.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
-                        count: numberOfMessagesToLoad,
+                        count: numberOfInboxRenderablesToLoad,
                         pagination: currentMessagesListPagination()
                     )
                 )
@@ -192,7 +192,7 @@ extension InboxViewController {
 
         Task {
             do {
-                let context = try await service.fetchMessages(
+                let context = try await service.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
@@ -276,7 +276,7 @@ extension InboxViewController {
         if input.data.isEmpty {
             state = .empty
         } else {
-            inboxInput = input.data.sorted()
+            inboxInput = input.data
             state = .fetched(input.pagination)
         }
         refreshControl.endRefreshing()
@@ -461,13 +461,13 @@ extension InboxViewController: MsgListViewController {
 
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
-    private let messageProvider: InboxDataProvider
+    private let inboxDataProvider: InboxDataProvider
 
-    init(messageProvider: InboxDataProvider) {
-        self.messageProvider = messageProvider
+    init(inboxDataProvider: InboxDataProvider) {
+        self.inboxDataProvider = inboxDataProvider
     }
 
-    func fetchMessages(using context: FetchMessageContext) async throws -> InboxContext {
-        return try await messageProvider.fetchMessages(using: context)
+    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
+        return try await inboxDataProvider.fetchInboxItems(using: context)
     }
 }
