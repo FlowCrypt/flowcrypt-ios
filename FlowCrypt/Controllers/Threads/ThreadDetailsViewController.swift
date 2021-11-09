@@ -30,6 +30,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         case thread, message
     }
 
+    private let contactsService: ContactsServiceType
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
@@ -49,6 +50,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     )
 
     init(
+        contactsService: ContactsServiceType = ContactsService(),
         messageService: MessageService = MessageService(),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
@@ -57,15 +59,16 @@ final class ThreadDetailsViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         completion: @escaping MessageActionCompletion
     ) {
-        self.threadOperationsProvider = threadOperationsProvider
+        self.contactsService = contactsService
         self.messageService = messageService
+        self.threadOperationsProvider = threadOperationsProvider
         self.messageOperationsProvider = messageOperationsProvider
         self.trashFolderProvider = trashFolderProvider
         self.thread = thread
         self.filesManager = filesManager
         self.onComplete = completion
         self.input = thread.messages
-            .sorted(by: { $0 > $1 })
+            .sorted(by: >)
             .map { Input(message: $0, isExpanded: false) }
 
         super.init(node: TableNode())
@@ -160,6 +163,7 @@ extension ThreadDetailsViewController {
 extension ThreadDetailsViewController {
     private func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
         let message = input[indexPath.section-1].rawMessage
+        let verificationPubKeys = fetchVerificationPubKeys(for: message.sender)
         logger.logInfo("Start loading message")
 
         handleFetchProgress(state: .fetch)
@@ -169,6 +173,7 @@ extension ThreadDetailsViewController {
                 let processedMessage = try await messageService.getAndProcessMessage(
                     with: message,
                     folder: thread.path,
+                    verificationPubKeys: verificationPubKeys,
                     progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
                 handleReceived(message: processedMessage, at: indexPath)
@@ -249,7 +254,9 @@ extension ThreadDetailsViewController {
             do {
                 let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
-                    let processedMessage = try await messageService.decryptAndProcessMessage(mime: rawMimeData)
+                    let verificationPubKeys = fetchVerificationPubKeys(for: input[indexPath.section-1].rawMessage.sender)
+                    let processedMessage = try await messageService.decryptAndProcessMessage(mime: rawMimeData,
+                                                                                             verificationPubKeys: verificationPubKeys)
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
                     handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
@@ -268,6 +275,14 @@ extension ThreadDetailsViewController {
             updateSpinner(label: "downloading_title".localized, progress: progress)
         case .decrypt:
             updateSpinner(label: "decrypting_title".localized)
+        }
+    }
+
+    private func fetchVerificationPubKeys(for sender: String?) -> [String] {
+        if let sender = sender {
+            return contactsService.retrievePubKeys(for: sender)
+        } else {
+            return []
         }
     }
 }

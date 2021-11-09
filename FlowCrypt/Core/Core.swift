@@ -127,11 +127,16 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return CoreRes.EncryptFile(encryptedFile: encrypted.data)
     }
 
-    func parseDecryptMsg(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?, isEmail: Bool) async throws -> CoreRes.ParseDecryptMsg {
+    func parseDecryptMsg(encrypted: Data,
+                         keys: [PrvKeyInfo],
+                         msgPwd: String?,
+                         isEmail: Bool,
+                         verificationPubKeys: [String]) async throws -> CoreRes.ParseDecryptMsg {
         let json: [String : Any?]? = [
             "keys": try keys.map { try $0.toJsonEncodedDict() },
             "isEmail": isEmail,
-            "msgPwd": msgPwd
+            "msgPwd": msgPwd,
+            "verificationPubkeys": verificationPubKeys
         ]
         let parsed = try await call(
             "parseDecryptMsg",

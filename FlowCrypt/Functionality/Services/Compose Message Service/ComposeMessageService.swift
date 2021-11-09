@@ -155,7 +155,7 @@ final class ComposeMessageService {
             throw ComposeMessageError.gatewayError(error)
         }
     }
-    
+
     // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
         do {

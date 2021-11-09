@@ -11,7 +11,7 @@ import Foundation
 import RealmSwift
 
 protocol DBMigration {
-    func performMigrationIfNeeded() async throws -> Void
+    func performMigrationIfNeeded() async throws
 }
 
 struct DBMigrationService {
@@ -29,7 +29,7 @@ struct DBMigrationService {
 
 // MARK: - DBMigration
 extension DBMigrationService: DBMigration {
-    func performMigrationIfNeeded() async throws -> Void {
+    func performMigrationIfNeeded() async throws {
         // self.performGmailApiMigration()
     }
 }

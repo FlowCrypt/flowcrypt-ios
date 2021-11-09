@@ -34,7 +34,7 @@ extension GmailService: DraftGateway {
     }
 
     func deleteDraft(with identifier: String) async {
-        await withCheckedContinuation{ (continuation: CheckedContinuation<Void, Never>) in
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             let query = GTLRGmailQuery_UsersDraftsDelete.query(withUserId: .me, identifier: identifier)
             gmailService.executeQuery(query) { _, _, _ in
                 continuation.resume()

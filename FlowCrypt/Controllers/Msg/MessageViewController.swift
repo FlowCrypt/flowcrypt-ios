@@ -52,6 +52,7 @@ final class MessageViewController: TableNodeViewController {
         messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
+        contactsService: ContactsServiceType = ContactsService(),
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         filesManager: FilesManagerType = FilesManager(),
@@ -66,7 +67,8 @@ final class MessageViewController: TableNodeViewController {
         self.filesManager = filesManager
         self.serviceActor = ServiceActor(
             messageService: messageService,
-            messageProvider: messageProvider
+            messageProvider: messageProvider,
+            contactsService: contactsService
         )
 
         super.init(node: TableNode())
@@ -117,7 +119,7 @@ extension MessageViewController {
                 let matched = try await serviceActor.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
                     handleFetchProgress(state: .decrypt)
-                    processedMessage = try await serviceActor.decryptAndProcessMessage(mime: rawMimeData)
+                    processedMessage = try await serviceActor.decryptAndProcessMessage(mime: rawMimeData, sender: input.objMessage.sender)
                     handleReceivedMessage()
                 } else {
                     handleWrongPassPhrase(for: rawMimeData, with: passPhrase)
@@ -410,11 +412,14 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
 private actor ServiceActor {
     private let messageService: MessageService
     private let messageProvider: MessageProvider
+    private let contactsService: ContactsServiceType
 
     init(messageService: MessageService,
-         messageProvider: MessageProvider) {
+         messageProvider: MessageProvider,
+         contactsService: ContactsServiceType) {
         self.messageService = messageService
         self.messageProvider = messageProvider
+        self.contactsService = contactsService
     }
 
     func fetchDecryptAndRenderMsg(message: Message, path: String,
@@ -422,14 +427,24 @@ private actor ServiceActor {
         let rawMimeData = try await messageProvider.fetchMsg(message: message,
                                                              folder: path,
                                                              progressHandler: progressHandler)
-        return try await messageService.decryptAndProcessMessage(mime: rawMimeData)
+
+        progressHandler?(.decrypt)
+
+        return try await decryptAndProcessMessage(mime: rawMimeData, sender: message.sender)
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
         try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
     }
 
-    func decryptAndProcessMessage(mime: Data) async throws -> ProcessedMessage {
-        try await messageService.decryptAndProcessMessage(mime: mime)
+    func decryptAndProcessMessage(mime: Data, sender: String?) async throws -> ProcessedMessage {
+        let pubKeys: [String]
+        if let sender = sender {
+            pubKeys = contactsService.retrievePubKeys(for: sender)
+        } else {
+            pubKeys = []
+        }
+
+        return try await messageService.decryptAndProcessMessage(mime: mime, verificationPubKeys: pubKeys)
     }
 }

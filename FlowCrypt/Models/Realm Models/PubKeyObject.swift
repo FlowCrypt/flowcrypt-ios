@@ -31,7 +31,7 @@ final class PubKeyObject: Object {
                      fingerprints: [String] = [],
                      created: Date? = nil) throws {
         self.init()
-        
+
         self.armored = armored
         self.lastSig = lastSig
         self.lastChecked = lastChecked

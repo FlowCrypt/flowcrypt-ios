@@ -97,33 +97,10 @@ final class MessageService {
         return matchingKeys.isNotEmpty
     }
 
-    func validateMessage(rawMimeData: Data, with passPhrase: String) async throws -> ProcessedMessage {
-        let keys = try await keyService.getPrvKeyInfo()
-        guard keys.isNotEmpty else {
-            throw MessageServiceError.emptyKeys
-        }
-
-        let keysWithFilledPassPhrase = keys.map { $0.copy(with: passPhrase) }
-        let keysToSave = keys.filter { $0.passphrase == passPhrase }
-
-        savePassPhrases(value: passPhrase, with: keysToSave)
-
-        let decrypted = try await core.parseDecryptMsg(
-            encrypted: rawMimeData,
-            keys: keysWithFilledPassPhrase,
-            msgPwd: nil,
-            isEmail: true
-        )
-        guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-            throw MessageServiceError.missingPassPhrase(rawMimeData)
-        }
-
-        return try await processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
-    }
-
     func getAndProcessMessage(
         with input: Message,
         folder: String,
+        verificationPubKeys: [String],
         progressHandler: ((MessageFetchState) -> Void)?
     ) async throws -> ProcessedMessage {
         let rawMimeData = try await messageProvider.fetchMsg(
@@ -131,10 +108,10 @@ final class MessageService {
             folder: folder,
             progressHandler: progressHandler
         )
-        return try await decryptAndProcessMessage(mime: rawMimeData)
+        return try await decryptAndProcessMessage(mime: rawMimeData, verificationPubKeys: verificationPubKeys)
     }
 
-    func decryptAndProcessMessage(mime rawMimeData: Data) async throws -> ProcessedMessage {
+    func decryptAndProcessMessage(mime rawMimeData: Data, verificationPubKeys: [String]) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
@@ -143,7 +120,8 @@ final class MessageService {
             encrypted: rawMimeData,
             keys: keys,
             msgPwd: nil,
-            isEmail: true
+            isEmail: true,
+            verificationPubKeys: verificationPubKeys
         )
         guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
             throw MessageServiceError.missingPassPhrase(rawMimeData)
