@@ -363,7 +363,7 @@ extension ComposeViewController {
                     guard let self = self else {
                         return continuation.resume(throwing: AppErr.nilSelf)
                     }
-                    Task {
+                    Task<Void, Never> {
                         do {
                             let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
                             if matched {
