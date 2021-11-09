@@ -60,7 +60,11 @@ struct Message: Hashable {
     }
 }
 
-extension Message: Equatable {
+extension Message: Equatable, Comparable {
+    static func < (lhs: Message, rhs: Message) -> Bool {
+        lhs.date > rhs.date
+    }
+
     static func == (lhs: Message, rhs: Message) -> Bool {
         lhs.identifier == rhs.identifier
     }

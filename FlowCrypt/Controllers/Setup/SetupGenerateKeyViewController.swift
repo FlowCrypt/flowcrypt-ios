@@ -9,7 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
 
 enum CreateKeyError: Error {
     case weakPassPhrase(_ strength: CoreRes.ZxcvbnStrengthBar)
@@ -29,7 +28,7 @@ enum CreateKeyError: Error {
  * - Here user can enter a pass phrase (can be saved in memory or in encrypted storage) and generate a key
  * - After key is generated, user will be redirected to **main flow** (inbox view)
  */
-
+@MainActor
 final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewController {
 
     private let backupService: BackupServiceType
@@ -135,7 +134,11 @@ private actor Service {
 
         try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
-        let encryptedPrv = try await core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
+        let encryptedPrv = try await core.generateKey(
+            passphrase: passPhrase,
+            variant: .curve25519,
+            userIds: [userId]
+        )
         try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
 
         keyStorage.addKeys(keyDetails: [encryptedPrv.key],
@@ -144,25 +147,41 @@ private actor Service {
                            for: user.email)
 
         if storageMethod == .memory {
-            let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey:  encryptedPrv.key.fingerprints)
+            let passPhrase = PassPhrase(
+                value: passPhrase,
+                fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints
+            )
             passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 
-        let updateKey = attester.updateKey(
+        await submitKeyToAttesterAndShowAlertOnFailure(
             email: userId.email,
-            pubkey: encryptedPrv.key.public,
-            token: storage.token
+            publicKey: encryptedPrv.key.public,
+            viewController: viewController
         )
 
-        try awaitPromise(await viewController.alertAndSkipOnRejection(
-            updateKey,
-            fail: "Failed to submit Public Key")
+        // sending welcome email is not crucial, so we don't handle errors
+        _ = try? await attester.testWelcome(
+            email: userId.email,
+            pubkey: encryptedPrv.key.public
         )
-        let testWelcome = attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
-        try awaitPromise(await viewController.alertAndSkipOnRejection(
-            testWelcome,
-            fail: "Failed to send you welcome email")
-        )
+    }
+
+    private func submitKeyToAttesterAndShowAlertOnFailure(
+        email: String,
+        publicKey: String,
+        viewController: ViewController
+    ) async {
+        do {
+            _ = try await attester.updateKey(
+                email: email,
+                pubkey: publicKey,
+                token: storage.token
+            )
+        } catch {
+            let message = "Failed to submit Public Key"
+            await viewController.showAlert(error: error, message: message)
+        }
     }
 
     private func getUserId() throws -> UserId {

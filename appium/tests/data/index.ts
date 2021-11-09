@@ -1,19 +1,18 @@
 export const CommonData = {
     account: {
-        email: process.env.ACCOUNT_EMAIL,
+        email: 'e2e.enterprise.test@flowcrypt.com',
         password: process.env.ACCOUNT_PASSWORD,
-        passPhrase: process.env.PASS_PHRASE,
-        wrongPassPhrase: 'user is not able to see email'
+        passPhrase: 'London is the capital of Great Britain'
     },
     sender: {
-        email: process.env.SENDER_EMAIL,
+        email: 'dmitry@flowcrypt.com',
     },
     contact: {
         email: 'dmitry@flowcrypt.com',
         name: 'Dima'
     },
     bundleId: {
-        id: process.env.BUNDLE_ID
+        idd: 'com.flowcrypt.as.ios.debug',
     },
     encryptedEmail: {
         subject: 'encrypted email',

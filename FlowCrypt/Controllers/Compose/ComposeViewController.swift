@@ -7,13 +7,6 @@ import Combine
 import FlowCryptCommon
 import FlowCryptUI
 import Foundation
-import UIKit
-
-/**
- * View controller to compose the message and send it
- * - User can be redirected here from *InboxViewController* by tapping on *+*
- * - Or from *MessageViewController* controller by tapping on *reply*
- **/
 
 // swiftlint:disable file_length
 private struct ComposedDraft: Equatable {
@@ -22,8 +15,15 @@ private struct ComposedDraft: Equatable {
     let contextToSend: ComposeMessageContext
 }
 
+/**
+ * View controller to compose the message and send it
+ * - User can be redirected here from *InboxViewController* by tapping on *+*
+ * - Or from *MessageViewController* controller by tapping on *reply*
+ **/
 @MainActor
 final class ComposeViewController: TableNodeViewController {
+    private lazy var logger = Logger.nested(Self.self)
+
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
         static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
@@ -167,17 +167,17 @@ extension ComposeViewController {
     @objc private func stopTimer() {
         saveDraftTimer?.invalidate()
         saveDraftTimer = nil
-        
         saveDraftIfNeeded()
     }
 
     private func shouldSaveDraft() -> Bool {
-        // todo - that draft should only be saved when one of the fields are dirty (edited by user). Right now, a draft may get saved right after rendering compose (or reply), which is annoying.
         let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
+
         guard let oldDraft = composedLatestDraft else {
             composedLatestDraft = newDraft
             return true
         }
+
         let result = newDraft != oldDraft
         composedLatestDraft = newDraft
         return result
@@ -201,7 +201,7 @@ extension ComposeViewController {
                     // no need to save or notify user if validation error
                     // for other errors show toast
                     // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?
-                    showToast("Error saving draft: \(error.localizedDescription)")
+                    showToast("Error saving draft: \(error.errorMessage)")
                 }
             }
         }
@@ -341,7 +341,7 @@ extension ComposeViewController {
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    @MainActor private func prepareSigningKey() async throws -> PrvKeyInfo {
+    private func prepareSigningKey() async throws -> PrvKeyInfo {
         guard let signingKey = try await keyService.getSigningKey() else {
             throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
@@ -435,9 +435,7 @@ extension ComposeViewController {
         UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-        let err = error as? ComposeMessageError
-        let description = err?.description ?? error.localizedDescription
-        showAlert(message: "compose_error".localized + "\n\n" + description)
+        showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
     }
 
     private func handleSuccessfullySentMessage() {
@@ -1040,6 +1038,8 @@ extension ComposeViewController {
         false
     }
 }
+
+extension ComposeViewController: FilesManagerPresenter {}
 
 // TODO temporary solution for background execution problem
 private actor ServiceActor {

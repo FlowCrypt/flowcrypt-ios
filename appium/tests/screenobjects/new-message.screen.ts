@@ -9,24 +9,33 @@ const SELECTORS = {
         '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
         '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
         '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText',//it works only with this selector
-    RETURN_BUTTON: '~Return'
+    RETURN_BUTTON: '~Return',
+    BACK_BUTTON: '~arrow left c',
 };
 
 class NewMessageScreen extends BaseScreen {
     constructor () {
         super(SELECTORS.ADD_RECIPIENT_FIELD);
     }
+
     get addRecipientField () {
         return $(SELECTORS.ADD_RECIPIENT_FIELD);
     }
+
     get subjectField () {
         return $(SELECTORS.SUBJECT_FIELD);
     }
+
     get composeSecurityMesage () {
         return $(SELECTORS.COMPOSE_SECURITY_MESSAGE)
     }
+
     get addedRecipientEmail () {
         return $(SELECTORS.ADDED_RECIPIENT);
+    }
+
+    get backButton () {
+        return $(SELECTORS.BACK_BUTTON);
     }
 
     setAddRecipient(recipient) {
@@ -69,6 +78,10 @@ class NewMessageScreen extends BaseScreen {
 
     checkAddedRecipient(recipient)  {
         expect(this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
+    }
+
+    clickBackButton () {
+        ElementHelper.waitAndClick(this.backButton);
     }
 }
 

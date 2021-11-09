@@ -8,11 +8,10 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 import RealmSwift
 
 protocol DBMigration {
-    func performMigrationIfNeeded() -> Promise<Void>
+    func performMigrationIfNeeded() async throws -> Void
 }
 
 struct DBMigrationService {
@@ -30,10 +29,8 @@ struct DBMigrationService {
 
 // MARK: - DBMigration
 extension DBMigrationService: DBMigration {
-    func performMigrationIfNeeded() -> Promise<Void> {
-        Promise<Void> {
-            // self.performGmailApiMigration()
-        }
+    func performMigrationIfNeeded() async throws -> Void {
+        // self.performGmailApiMigration()
     }
 }
 

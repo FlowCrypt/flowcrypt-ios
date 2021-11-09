@@ -31,7 +31,7 @@ class GmailService: MailServiceProvider {
         service.authorizer = userService.authorization
         return service
     }
-    
+
     var progressHandler: ((Float) -> Void)?
 
     init(

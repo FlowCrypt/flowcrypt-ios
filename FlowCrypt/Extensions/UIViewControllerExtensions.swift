@@ -99,20 +99,6 @@ extension UIViewController {
         }
     }
 
-    func alertAndSkipOnRejection<T>(_ promise: Promise<T>, fail msg: String) -> Promise<Void> {
-        Promise<Void> { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            do {
-                _ = try awaitPromise(promise)
-                resolve(())
-            } catch {
-                DispatchQueue.main.async {
-                    self.showAlert(error: error, message: msg, onOk: { resolve(()) })
-                }
-            }
-        }
-    }
-
     func keyboardHeight(from notification: Notification) -> CGFloat {
         (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
     }

@@ -18,30 +18,45 @@ public final class NavigationBarItemsView: UIBarButtonItem {
 
     public struct Input {
         let image: UIImage?
+        @available(*, deprecated, message: "Use onTap closure instead")
         let action: TargetAction?
         let accessibilityLabel: String?
+        let onTap: (() -> Void)?
 
-        public init(image: UIImage?, action: (target: Any?, selector: Selector)?, accessibilityLabel: String? = nil) {
+        public init(
+            image: UIImage?,
+            action: (target: Any?, selector: Selector)? = nil,
+            accessibilityLabel: String? = nil,
+            onTap: (() -> Void)? = nil
+        ) {
             self.image = image
             self.action = action
             self.accessibilityLabel = accessibilityLabel
+            self.onTap = onTap
         }
     }
 
+    private let input: [Input]
+
     public init(with input: [Input]) {
+        self.input = input
         super.init()
 
-        let buttons = input.map { (input: Input) -> UIButton in
-            UIButton(type: .system).then {
-                $0.frame.size = Constants.buttonSize
-                $0.imageView?.frame.size = Constants.buttonSize
-                $0.setImage(input.image, for: .normal)
-                $0.accessibilityLabel = self.accessibilityLabel
-                if let action = input.action {
-                    $0.addTarget(action.target, action: action.selector, for: .touchUpInside)
+        let buttons = input.enumerated()
+            .map { value -> UIButton in
+                UIButton(type: .system).then {
+                    $0.tag = value.offset
+                    $0.frame.size = Constants.buttonSize
+                    $0.imageView?.frame.size = Constants.buttonSize
+                    $0.setImage(value.element.image, for: .normal)
+                    $0.accessibilityLabel = self.accessibilityLabel
+                    if let action = value.element.action {
+                        $0.addTarget(action.target, action: action.selector, for: .touchUpInside)
+                    } else if value.element.onTap != nil {
+                        $0.addTarget(self, action: #selector(self.handleTap(with:)), for: .touchUpInside)
+                    }
                 }
             }
-        }
 
         customView = UIStackView(arrangedSubviews: buttons)
             .with {
@@ -61,5 +76,9 @@ public final class NavigationBarItemsView: UIBarButtonItem {
         didSet {
             customView?.alpha = isEnabled ? 1 : 0.5
         }
+    }
+
+    @objc private func handleTap(with button: UIButton) {
+        input[button.tag].onTap?()
     }
 }
