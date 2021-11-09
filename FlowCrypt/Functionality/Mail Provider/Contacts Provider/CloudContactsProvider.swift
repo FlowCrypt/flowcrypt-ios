@@ -94,18 +94,15 @@ extension UserContactsProvider {
         try await withCheckedThrowingContinuation { continuation in
             self.peopleService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    continuation.resume(throwing: CloudContactsProviderError.providerError(error))
-                    return
+                    return continuation.resume(throwing: CloudContactsProviderError.providerError(error))
                 }
 
                 guard let response = data as? GTLRPeopleService_SearchResponse else {
-                    continuation.resume(throwing: AppErr.cast("GTLRPeopleService_SearchResponse"))
-                    return
+                    return continuation.resume(throwing: AppErr.cast("GTLRPeopleService_SearchResponse"))
                 }
 
                 guard let contacts = response.results else {
-                    continuation.resume(throwing: CloudContactsProviderError.failedToParseData(data))
-                    return
+                    return continuation.resume(throwing: CloudContactsProviderError.failedToParseData(data))
                 }
 
                 let emails = contacts
@@ -113,7 +110,7 @@ extension UserContactsProvider {
                     .flatMap { $0 }
                     .compactMap { $0.value }
 
-                continuation.resume(returning: emails)
+                return continuation.resume(returning: emails)
             }
         }
     }

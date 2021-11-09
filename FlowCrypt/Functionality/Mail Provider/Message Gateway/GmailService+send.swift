@@ -13,8 +13,7 @@ extension GmailService: MessageGateway {
     func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let raw = GTLREncodeBase64(input.mime) else {
-                continuation.resume(throwing: GmailServiceError.messageEncode)
-                return
+                return continuation.resume(throwing: GmailServiceError.messageEncode)
             }
 
             self.progressHandler = progressHandler
@@ -32,10 +31,9 @@ extension GmailService: MessageGateway {
             gmailService.executeQuery(querySend) { [weak self] _, _, error in
                 self?.progressHandler = nil
                 if let error = error {
-                    continuation.resume(throwing: GmailServiceError.providerError(error))
-                } else {
-                    continuation.resume(returning: ())
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
+                return continuation.resume(returning: ())
             }
         }
     }

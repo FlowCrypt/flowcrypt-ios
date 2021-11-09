@@ -80,16 +80,13 @@ extension GmailService: DraftsListProvider {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListDraftsResponse, Error>) in
             gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    continuation.resume(throwing: GmailServiceError.providerError(error))
-                    return
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
                 guard let messageList = data as? GTLRGmail_ListDraftsResponse else {
-                    continuation.resume(throwing: AppErr.cast("GTLRGmail_ListDraftsResponse"))
-                    return
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListDraftsResponse"))
                 }
-
-                continuation.resume(returning: messageList)
+                return continuation.resume(returning: messageList)
             }
         }
     }
@@ -119,16 +116,14 @@ extension GmailService {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListMessagesResponse, Error>) in
             gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    continuation.resume(throwing: GmailServiceError.providerError(error))
-                    return
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
                 guard let messageList = data as? GTLRGmail_ListMessagesResponse else {
-                    continuation.resume(throwing: AppErr.cast("GTLRGmail_ListMessagesResponse"))
-                    return
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListMessagesResponse"))
                 }
 
-                continuation.resume(returning: messageList)
+                return continuation.resume(returning: messageList)
             }
         }
     }
@@ -139,19 +134,17 @@ extension GmailService {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Message, Error>) in
             gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    continuation.resume(throwing: GmailServiceError.providerError(error))
-                    return
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
                 guard let gmailMessage = data as? GTLRGmail_Message else {
-                    continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
-                    return
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
                 }
 
                 do {
-                    continuation.resume(returning: try Message(gmailMessage, draftIdentifier: draftIdentifier))
+                    return continuation.resume(returning: try Message(gmailMessage, draftIdentifier: draftIdentifier))
                 } catch {
-                    continuation.resume(throwing: error)
+                    return continuation.resume(throwing: error)
                 }
             }
         }

@@ -357,23 +357,22 @@ extension ComposeViewController {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
                 onCancel: {
-                    continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
+                    return continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
                 },
                 onCompletion: { [weak self] passPhrase in
                     guard let self = self else {
-                        continuation.resume(throwing: AppErr.nilSelf)
-                        return
+                        return continuation.resume(throwing: AppErr.nilSelf)
                     }
                     Task {
                         do {
                             let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
                             if matched {
-                                continuation.resume(returning: passPhrase)
+                                return continuation.resume(returning: passPhrase)
                             } else {
                                 throw AppErr.user("This pass phrase did not match your signing private key")
                             }
                         } catch {
-                            continuation.resume(throwing: error)
+                            return continuation.resume(throwing: error)
                         }
                     }
                 }

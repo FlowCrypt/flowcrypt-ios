@@ -28,9 +28,9 @@ extension Imap: MessageOperationsProvider {
                 )
                 .start { error in
                     if let error = error {
-                        continuation.resume(throwing: ImapError.providerError(error))
+                        return continuation.resume(throwing: ImapError.providerError(error))
                     } else {
-                        continuation.resume(returning: ())
+                        return continuation.resume(returning: ())
                     }
                 }
         }
@@ -63,9 +63,9 @@ extension Imap: MessageOperationsProvider {
                 )
                 .start { error in
                     if let error = error {
-                        continuation.resume(throwing: ImapError.providerError(error))
+                        return continuation.resume(throwing: ImapError.providerError(error))
                     } else {
-                        continuation.resume(returning: ())
+                        return continuation.resume(returning: ())
                     }
                 }
         }
@@ -93,9 +93,9 @@ extension Imap: MessageOperationsProvider {
                 .copyMessagesOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(id)), destFolder: destFolder)
                 .start { (error, _)in
                     if let error = error {
-                        continuation.resume(throwing: ImapError.providerError(error))
+                        return continuation.resume(throwing: ImapError.providerError(error))
                     } else {
-                        continuation.resume(returning: ())
+                        return continuation.resume(returning: ())
                     }
                 }
         }
@@ -130,9 +130,9 @@ extension Imap: MessageOperationsProvider {
                 )
                 .start { error in
                     if let error = error {
-                        continuation.resume(throwing: ImapError.providerError(error))
+                        return continuation.resume(throwing: ImapError.providerError(error))
                     } else {
-                        continuation.resume(returning: ())
+                        return continuation.resume(returning: ())
                     }
                 }
         }
@@ -148,9 +148,9 @@ extension Imap: MessageOperationsProvider {
                 .expungeOperation(folder)
                 .start { error in
                     if let error = error {
-                        continuation.resume(throwing: ImapError.providerError(error))
+                        return continuation.resume(throwing: ImapError.providerError(error))
                     } else {
-                        continuation.resume(returning: ())
+                        return continuation.resume(returning: ())
                     }
                 }
         }

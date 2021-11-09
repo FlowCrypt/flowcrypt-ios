@@ -15,8 +15,7 @@ extension GmailService: MessageProvider {
                   progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
             guard let identifier = message.identifier.stringId else {
-                continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
-                return
+                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
             }
 
             Task {
@@ -29,26 +28,23 @@ extension GmailService: MessageProvider {
                 }
                 fetcher.beginFetch { data, error in
                     if let error = error {
-                        continuation.resume(throwing: GmailServiceError.providerError(error))
-                        return
+                        return continuation.resume(throwing: GmailServiceError.providerError(error))
                     }
 
                     guard let data = data,
                           let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                           let raw = dictionary["raw"] as? String
                     else {
-                        continuation.resume(throwing: GmailServiceError.missedMessageInfo("raw"))
-                        return
+                        return continuation.resume(throwing: GmailServiceError.missedMessageInfo("raw"))
                     }
 
                     progressHandler?(.decrypt)
 
                     guard let data = GTLRDecodeWebSafeBase64(raw) else {
-                        continuation.resume(throwing: GmailServiceError.missedMessageInfo("data"))
-                        return
+                        return continuation.resume(throwing: GmailServiceError.missedMessageInfo("data"))
                     }
 
-                    continuation.resume(returning: data)
+                    return continuation.resume(returning: data)
                 }
             }
         }
@@ -59,23 +55,20 @@ extension GmailService: MessageProvider {
             let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatMetadata)
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    continuation.resume(throwing: GmailServiceError.providerError(error))
-                    return
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
                 guard let gmailMessage = data as? GTLRGmail_Message else {
-                    continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
-                    return
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
                 }
 
                 guard let sizeEstimate = gmailMessage.sizeEstimate?.floatValue else {
-                    continuation.resume(throwing: GmailServiceError.missedMessageInfo("sizeEstimate"))
-                    return
+                    return continuation.resume(throwing: GmailServiceError.missedMessageInfo("sizeEstimate"))
                 }
 
                 // google returns smaller estimated size
                 let totalSize = sizeEstimate * Float(1.3)
-                continuation.resume(with: .success(totalSize))
+                return continuation.resume(with: .success(totalSize))
             }
         }
     }
