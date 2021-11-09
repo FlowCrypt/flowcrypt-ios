@@ -10,7 +10,7 @@ import Foundation
 final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private lazy var logger = Logger.nested(Self.self)
 
-    private let numberOfInboxRenderablesToLoad: Int
+    private let numberOfInboxItemsToLoad: Int
 
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
@@ -32,13 +32,13 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         _ viewModel: InboxViewModel,
-        numberOfInboxRenderablesToLoad: Int = 50,
+        numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = MailProvider.shared.draftsProvider,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
         self.viewModel = viewModel
-        self.numberOfInboxRenderablesToLoad = numberOfInboxRenderablesToLoad
+        self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
 
         self.service = ServiceActor(inboxDataProvider: provider)
         self.draftsListProvider = draftsListProvider
@@ -123,15 +123,15 @@ extension InboxViewController {
     private func messagesToLoad() -> Int {
         switch state {
         case .fetched(.byNextPage):
-            return numberOfInboxRenderablesToLoad
+            return numberOfInboxItemsToLoad
         case .fetched(.byNumber(let totalNumberOfMessages)):
             guard let total = totalNumberOfMessages else {
-                return numberOfInboxRenderablesToLoad
+                return numberOfInboxItemsToLoad
             }
             let from = inboxInput.count
-            return min(numberOfInboxRenderablesToLoad, total - from)
+            return min(numberOfInboxItemsToLoad, total - from)
         default:
-            return numberOfInboxRenderablesToLoad
+            return numberOfInboxItemsToLoad
         }
     }
 }
@@ -152,7 +152,7 @@ extension InboxViewController {
                 let context = try await draftsProvider.fetchDrafts(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
-                        count: numberOfInboxRenderablesToLoad,
+                        count: numberOfInboxItemsToLoad,
                         pagination: currentMessagesListPagination()
                     )
                 )
@@ -173,7 +173,7 @@ extension InboxViewController {
                 let context = try await service.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
-                        count: numberOfInboxRenderablesToLoad,
+                        count: numberOfInboxItemsToLoad,
                         pagination: currentMessagesListPagination()
                     )
                 )

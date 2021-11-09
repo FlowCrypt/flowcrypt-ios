@@ -24,7 +24,7 @@ class InboxViewControllerFactory {
 
             return InboxViewController(
                 viewModel,
-                numberOfInboxRenderablesToLoad: 20, // else timeouts happen
+                numberOfInboxItemsToLoad: 20, // else timeouts happen
                 provider: InboxMessageThreadsProvider(provider: threadsProvider)
             )
         case .password:
@@ -33,7 +33,7 @@ class InboxViewControllerFactory {
 
             return InboxViewController(
                 viewModel,
-                numberOfInboxRenderablesToLoad: 50, // safe to load 50, single call on IMAP
+                numberOfInboxItemsToLoad: 50, // safe to load 50, single call on IMAP
                 provider: provider
             )
         }
