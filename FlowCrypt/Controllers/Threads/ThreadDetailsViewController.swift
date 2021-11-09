@@ -62,7 +62,6 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.messageOperationsProvider = messageOperationsProvider
         self.trashFolderProvider = trashFolderProvider
         self.thread = thread
-        print("thread.messages: \(thread.messages)")
         self.filesManager = filesManager
         self.onComplete = completion
         self.input = thread.messages
