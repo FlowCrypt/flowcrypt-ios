@@ -14,11 +14,12 @@ struct InboxContext {
 }
 
 class InboxDataProvider {
-    func fetchMessages(using context: FetchMessageContext) async throws -> InboxContext {
+    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         fatalError("Should be implemented")
     }
 }
 
+// used when displaying conversations (threads) in inbox (Gmail API default)
 class InboxMessageThreadsProvider: InboxDataProvider {
     let provider: MessagesThreadProvider
 
@@ -26,7 +27,7 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchMessages(using context: FetchMessageContext) async throws -> InboxContext {
+    override func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
         let inboxData = result.threads.map(InboxRenderable.init)
         let inboxContext = InboxContext(
@@ -37,6 +38,7 @@ class InboxMessageThreadsProvider: InboxDataProvider {
     }
 }
 
+// used when displaying individual messages in inbox (IMAP)
 class InboxMessageListProvider: InboxDataProvider {
     let provider: MessagesListProvider
 
@@ -44,7 +46,7 @@ class InboxMessageListProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchMessages(using context: FetchMessageContext) async throws -> InboxContext {
+    override func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
         let inboxData = result.messages.map(InboxRenderable.init)
         let inboxContext = InboxContext(
