@@ -91,9 +91,9 @@ extension GmailService: MessagesThreadOperationsProvider {
 
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error = error {
-                    continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                continuation.resume(returning: ())
+                return continuation.resume(returning: ())
             }
         }
     }

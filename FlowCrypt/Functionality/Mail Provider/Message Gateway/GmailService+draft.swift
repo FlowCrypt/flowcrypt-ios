@@ -13,8 +13,7 @@ extension GmailService: DraftGateway {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_Draft, Error>) in
 
             guard let raw = GTLREncodeBase64(input.mime) else {
-                continuation.resume(throwing: GmailServiceError.messageEncode)
-                return
+                return continuation.resume(throwing: GmailServiceError.messageEncode)
             }
             let draftQuery = createQueryForDraftAction(
                 raw: raw,
@@ -23,11 +22,11 @@ extension GmailService: DraftGateway {
 
             gmailService.executeQuery(draftQuery) { _, object, error in
                 if let error = error {
-                    continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 } else if let draft = object as? GTLRGmail_Draft {
-                    continuation.resume(returning: (draft))
+                    return continuation.resume(returning: (draft))
                 } else {
-                    continuation.resume(throwing: GmailServiceError.failedToParseData(nil))
+                    return continuation.resume(throwing: GmailServiceError.failedToParseData(nil))
                 }
             }
         }
@@ -37,7 +36,7 @@ extension GmailService: DraftGateway {
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             let query = GTLRGmailQuery_UsersDraftsDelete.query(withUserId: .me, identifier: identifier)
             gmailService.executeQuery(query) { _, _, _ in
-                continuation.resume()
+                return continuation.resume()
             }
         }
     }

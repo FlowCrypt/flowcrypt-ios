@@ -16,12 +16,8 @@ extension Imap: MessageProvider {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
             guard let identifier = message.identifier.intId else {
                 assertionFailure()
-                continuation.resume(throwing: AppErr.unexpected("Missed message identifier"))
-                return
+                return continuation.resume(throwing: AppErr.unexpected("Missed message identifier"))
             }
-
-            let resolve = { continuation.resume(returning: $0) }
-            let reject = { continuation.resume(throwing: $0) }
             let retry = { Promise<Data> { resolve, reject in
                 Task {
                     do {
@@ -35,7 +31,12 @@ extension Imap: MessageProvider {
 
             self.imapSess?
                 .fetchMessageOperation(withFolder: folder, uid: UInt32(identifier))
-                .start(self.finalize("fetchMsg", resolve, reject, retry: retry))
+                .start(self.finalize(
+                    "fetchMsg",
+                    { return continuation.resume(returning: $0) },
+                    { return continuation.resume(throwing: $0) },
+                    retry: retry
+                ))
         }
     }
 }
