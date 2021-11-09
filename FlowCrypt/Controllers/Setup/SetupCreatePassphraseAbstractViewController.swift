@@ -165,10 +165,10 @@ extension SetupCreatePassphraseAbstractViewController {
                 }
 
                 alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
-                    continuation.resume(returning: nil)
+                    return continuation.resume(returning: nil)
                 })
                 alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
-                    continuation.resume(returning: alert?.textFields?[0].text)
+                    return continuation.resume(returning: alert?.textFields?[0].text)
                 })
 
                 self.present(alert, animated: true, completion: nil)

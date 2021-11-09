@@ -55,7 +55,7 @@ extension GmailService: MessagesThreadProvider {
                 guard let threadsResponse = data as? GTLRGmail_ListThreadsResponse else {
                     return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListThreadsResponse"))
                 }
-                continuation.resume(returning: threadsResponse)
+                return continuation.resume(returning: threadsResponse)
             }
         }
     }
@@ -91,7 +91,7 @@ extension GmailService: MessagesThreadProvider {
                     path: path,
                     messages: messages
                 )
-                continuation.resume(returning: result)
+                return continuation.resume(returning: result)
             }
         }
     }
