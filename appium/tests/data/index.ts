@@ -13,5 +13,18 @@ export const CommonData = {
     },
     bundleId: {
         id: 'com.flowcrypt.as.ios.debug',
-    }
+    },
+    encryptedEmail: {
+        subject: 'encrypted email',
+        message: 'test test',
+    },
+    encryptedEmailWithAttachment: {
+        subject: 'email with attachment',
+        message:'this email contains attachment',
+        attachmentName: 'image.png'
+    },
+    simpleEmail: {
+        subject: 'Test 1',
+        message: 'Test email',
+    },
 };
