@@ -17,9 +17,11 @@ describe('COMPOSE EMAIL: ', () => {
 
         const firstContactEmail = CommonData.contact.email;
         const firstContactName = CommonData.contact.name;
+        const firstContactItemName = 'Dmitry at FlowCrypt';
 
         const secondContactEmail = CommonData.secondContact.email;
         const secondContactName = CommonData.secondContact.name;
+        const secondContactItemName = 'Demo key 2';
 
         SplashScreen.login();
         CreateKeyScreen.setPassPhrase();
@@ -62,9 +64,11 @@ describe('COMPOSE EMAIL: ', () => {
         SettingsScreen.clickOnSettingItem('Contacts');
 
         ContactScreen.checkContactScreen();
-        ContactScreen.checkContact(firstContactEmail);
-        ContactScreen.checkContact(secondContactEmail);
-        ContactScreen.clickOnContact(firstContactEmail);
+        ContactScreen.checkContact(firstContactItemName);
+        ContactScreen.checkContact(secondContactItemName);
+
+        // Go to Contact screen
+        ContactScreen.clickOnContact(firstContactItemName);
 
         ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
         ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
