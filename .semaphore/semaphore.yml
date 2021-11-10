@@ -15,7 +15,7 @@ blocks:
     run: # don't run if the only thing that changed is Core deps
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json']})"
 
-  execution_time_limit:
+    execution_time_limit:
       minutes: 55
     task:
       secrets:
