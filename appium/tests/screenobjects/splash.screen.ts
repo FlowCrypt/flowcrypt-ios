@@ -147,7 +147,7 @@ class SplashScreen extends BaseScreen {
         this.changeLanguage();
         this.gmailLogin(email, password);
         // browser.pause(10000); // STABILITY FIX UNTIL WE WLL FIGURE OUT WITH ISSUE
-        this.signInAsGoogleAccounLabel.waitForDisplayed({timeout: 7000, reverse: true});
+        this.signInAsGoogleAccounLabel.waitForDisplayed({reverse: true});
     }
 }
 
