@@ -11,16 +11,44 @@ import MailCore
 
 extension Imap {
 
-    struct Null { }
+    func executeVoid(
+        _ op: String,
+        _ voidExecutor: @escaping (MCOIMAPSession, @escaping (Error?) -> Void) -> Void
+    ) async throws {
+        guard let imapSess = self.imapSess else {
+            throw ImapError.noSession
+        }
+        do {
+            try await asAsync(imapSess, voidExecutor)
+            // todo - log time
+            return
+        } catch {
+            // todo - log error + time
+            if try await shouldRetryOnce(op, AppErr(error)) == false {
+                throw error
+            } else {
+                do {
+                    try await asAsync(imapSess, voidExecutor)
+                    // todo - log time
+                    return
+                } catch {
+                    // log this error + time
+                    throw error
+                }
+            }
+        }
+    }
 
-    func execute<T_RES>(_ op: String, _ @escaping executor: (MCOIMAPSession, (Error?, T_RES?) -> Void) -> Void) async throws -> T_RES {
+    func execute<RES>(
+        _ op: String,
+        _ executor: @escaping (MCOIMAPSession, @escaping (Error?, RES?) -> Void) -> Void
+    ) async throws -> RES {
 //        let start = DispatchTime.now()
         guard let imapSess = self.imapSess else {
             throw ImapError.noSession
         }
         do {
             let result = try await asAsync(imapSess, executor)
-            lastErr.removeValue(forKey: op)
             // todo - log result + time
             return result
         } catch {
@@ -40,23 +68,42 @@ extension Imap {
         }
     }
 
-    private func asAsync<T_RES>(_ imapSess: MCOIMAPSession, _ executor: (MCOIMAPSession, (Error?, T_RES?) -> Void) -> Void) async throws -> T_RES {
+    private func asAsync<RES>(
+        _ imapSess: MCOIMAPSession,
+        _ executor: @escaping (MCOIMAPSession, @escaping (Error?, RES?) -> Void) -> Void
+    ) async throws -> RES {
         return try await withCheckedThrowingContinuation { continuation in
             executor(imapSess) { error, value in
                 if let error = error {
                     return continuation.resume(throwing: error)
                 } else if let value = value {
                     return continuation.resume(returning: value)
-                } else if let null = Null() as? T_RES {
-                    return continuation.resume(returning: null)
                 } else {
-                    return continuation.resume(throwing: AppErr.cast("Received nil from IMAP operation but was not cast as Null"))
+                    return continuation.resume(throwing: AppErr.cast("Received nil from IMAP operation"))
                 }
             }
         }
     }
 
-    func shouldRetryOnce(_ op: String,_ appErr: AppErr) async throws -> Bool {
+    private func asAsync(
+        _ imapSess: MCOIMAPSession,
+        _ executor: @escaping (MCOIMAPSession, @escaping (Error?) -> Void) -> Void
+    ) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            executor(imapSess) { error in
+                if let error = error {
+                    return continuation.resume(throwing: error)
+                } else {
+                    return continuation.resume()
+                }
+            }
+        }
+    }
+
+    func shouldRetryOnce(
+        _ op: String,
+        _ appErr: AppErr
+    ) async throws -> Bool {
         switch appErr {
         case .authentication:
             try await renewSession() // todo - log time

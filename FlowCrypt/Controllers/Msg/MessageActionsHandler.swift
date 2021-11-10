@@ -30,10 +30,17 @@ extension MessageActionsHandler where Self: UIViewController {
     }
 
     func setupNavigationBar() {
-        trashFolderProvider.getTrashFolderPath()
-            .then(on: .main) { [weak self] path in
-                self?.setupNavigationBarItems(with: path)
+        Task {
+            do {
+                let path = try await trashFolderProvider.getTrashFolderPath()
+                DispatchQueue.main.async {
+                    self.setupNavigationBarItems(with: path)
+                }
+            } catch {
+                // todo - handle?
+                logger.logError("setupNavigationBar: \(error)")
             }
+        }
     }
 
     private func setupNavigationBarItems(with trashFolderPath: String?) {
@@ -85,23 +92,27 @@ extension MessageActionsHandler where Self: UIViewController {
     }
 
     func handleTrashTap() {
-        trashFolderProvider.getTrashFolderPath()
-            .then(on: .main) { [weak self] trashPath in
-                guard let self = self, let trashPath = trashPath else {
-                    return
-                }
-
-                if self.currentFolderPath.caseInsensitiveCompare(trashPath) == .orderedSame {
-                    self.awaitUserConfirmation { [weak self] in
-                        self?.permanentlyDelete()
+        Task {
+            do {
+                let trashPath = try await trashFolderProvider.getTrashFolderPath()
+                DispatchQueue.main.async {
+                    guard let trashPath = trashPath else {
+                        return
                     }
-                } else {
-                    self.moveToTrash(with: trashPath)
+                    if self.currentFolderPath.caseInsensitiveCompare(trashPath) == .orderedSame {
+                        self.awaitUserConfirmation { [weak self] in
+                            self?.permanentlyDelete()
+                        }
+                    } else {
+                        self.moveToTrash(with: trashPath)
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.showToast(error.localizedDescription)
                 }
             }
-            .catch(on: .main) { error in
-                self.showToast(error.localizedDescription)
-            }
+        }
     }
 
     func awaitUserConfirmation(_ completion: @escaping () -> Void) {

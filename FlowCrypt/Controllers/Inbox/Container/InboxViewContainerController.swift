@@ -58,13 +58,18 @@ final class InboxViewContainerController: TableNodeViewController {
     }
 
     private func fetchInboxFolder() {
-        folderService.fetchFolders(isForceReload: true)
-            .then(on: .main) { [weak self] folders in
-                self?.handleFetched(folders: folders)
+        Task {
+            do {
+                let folders = try await folderService.fetchFolders(isForceReload: true)
+                DispatchQueue.main.async {
+                    self.handleFetched(folders: folders)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.state = .error(error)
+                }
             }
-            .catch(on: .main) { [weak self] error in
-                self?.state = .error(error)
-            }
+        }
     }
 
     private func handleFetched(folders: [FolderViewModel]) {

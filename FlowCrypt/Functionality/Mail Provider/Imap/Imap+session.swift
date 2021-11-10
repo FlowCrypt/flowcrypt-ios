@@ -25,7 +25,7 @@ extension Imap {
         smtpSess = newSmtpSession.log()
     }
 
-    func connectSmtp(session: SMTPSession) async throws -> Void {
+    func connectSmtp(session: SMTPSession) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             MCOSMTPSession(session: session)
                 .log()
@@ -40,7 +40,7 @@ extension Imap {
         }
     }
 
-    func connectImap(session: IMAPConnectionParameters) async throws -> Void {
+    func connectImap(session: IMAPSession) async throws -> Void {
         return try await withCheckedThrowingContinuation { continuation in
             MCOIMAPSession(session: session)
                 .log()

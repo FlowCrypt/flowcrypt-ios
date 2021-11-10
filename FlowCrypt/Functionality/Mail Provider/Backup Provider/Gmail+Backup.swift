@@ -16,7 +16,7 @@ extension GmailService: BackupProvider {
             let backupMessages = try await searchExpression(using: MessageSearchContext(expression: query))
             logger.logVerbose("searching done, found \(backupMessages.count) backup messages")
             let uniqueMessages = Set(backupMessages)
-            let attachments = uniqueMessages
+            let attachmentContexts = uniqueMessages
                 .compactMap { message -> [(String, String)]? in
                     logger.logVerbose("processing backup '\(message.subject ?? "-")' with \(message.attachmentIds.count) attachments")
                     guard let identifier = message.identifier.stringId else {
@@ -26,9 +26,13 @@ extension GmailService: BackupProvider {
                     return message.attachmentIds.map { (identifier, $0) }
                 }
                 .flatMap { $0 }
-                .map(findAttachment)
+            var attachments: [Data] = []
+            for attachmentContext in attachmentContexts {
+                // todo - parallelize withTaskGroup
+                attachments.append(try await findAttachment(attachmentContext))
+            }
             logger.logVerbose("downloading \(attachments.count) attachments with possible backups in them")
-            let data = (try await attachments).joined
+            let data = attachments.joined
             logger.logVerbose("downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
             return data
         } catch {

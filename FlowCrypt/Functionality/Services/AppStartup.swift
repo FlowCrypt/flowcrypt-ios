@@ -45,7 +45,7 @@ struct AppStartup {
         try await renewSessionIfValid()
     }
 
-    private func renewSessionIfValid() async throws -> Void {
+    private func renewSessionIfValid() async throws {
         guard DataService.shared.currentAuthType != nil else {
             return
         }

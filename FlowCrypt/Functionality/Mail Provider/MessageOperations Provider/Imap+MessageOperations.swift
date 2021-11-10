@@ -15,13 +15,13 @@ extension Imap: MessageOperationsProvider {
         guard let identifier = message.identifier.intId else {
             throw ImapError.missedMessageInfo("intId")
         }
-        try await execute("markAsUnread", { sess, respond in
+        try await executeVoid("markAsUnread", { sess, respond in
             sess.storeFlagsOperation(
                 withFolder: folder,
                 uids: MCOIndexSet(index: UInt64(identifier)),
                 kind: MCOIMAPStoreFlagsRequestKind.remove,
                 flags: [MCOMessageFlag.seen]
-            ).start { error, value in respond(error, value) }
+            ).start { error in respond(error) }
         })
     }
 
@@ -37,13 +37,13 @@ extension Imap: MessageOperationsProvider {
         }
         // add seen flag
         flags.insert(MCOMessageFlag.seen)
-        try await execute("markAsRead", { sess, respond in
+        try await executeVoid("markAsRead", { sess, respond in
             sess.storeFlagsOperation(
                 withFolder: folder,
                 uids: MCOIndexSet(index: UInt64(identifier)),
                 kind: MCOIMAPStoreFlagsRequestKind.add,
                 flags: flags
-            ).start { error, value in respond(error, value) }
+            ).start { error in respond(error) }
         })
     }
 
@@ -58,12 +58,12 @@ extension Imap: MessageOperationsProvider {
     }
 
     private func moveMsg(with id: Int, folder: String, destFolder: String) async throws {
-        try await execute("moveMsg", { sess, respond in
+        try await executeVoid("moveMsg", { sess, respond in
             sess.copyMessagesOperation(
                 withFolder: folder,
                 uids: MCOIndexSet(index: UInt64(id)),
                 destFolder: destFolder
-            ).start { error, value in respond(error, value) }
+            ).start { error, _ in respond(error) }
         })
     }
 
@@ -79,21 +79,21 @@ extension Imap: MessageOperationsProvider {
     }
 
     private func pushUpdatedMsgFlags(with identifier: Int, folder: String, flags: MCOMessageFlag) async throws {
-        try await execute("pushUpdatedMsgFlags", { sess, respond in
+        try await executeVoid("pushUpdatedMsgFlags", { sess, respond in
             sess.storeFlagsOperation(
                 withFolder: folder,
                 uids: MCOIndexSet(index: UInt64(identifier)),
                 kind: MCOIMAPStoreFlagsRequestKind.set,
                 flags: flags
-            ).start { error, value in respond(error, value) }
+            ).start { error in respond(error) }
         })
     }
 
     private func expungeMsgs(folder: String) async throws {
-        try await execute("expungeMsgs", { sess, respond in
+        try await executeVoid("expungeMsgs", { sess, respond in
             sess.expungeOperation(
                 folder
-            ).start { error, value in respond(error, value) }
+            ).start { error in respond(error) }
         })
     }
 

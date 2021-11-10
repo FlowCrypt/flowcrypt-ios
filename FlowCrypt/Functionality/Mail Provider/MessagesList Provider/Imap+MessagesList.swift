@@ -39,7 +39,7 @@ extension Imap: MessagesListProvider {
         return try await execute("folderInfo", { sess, respond in
             sess.folderInfoOperation(
                 path
-            ).start { error, msgs, _ in respond(error, msgs) }
+            ).start { error, info in respond(error, info) }
         })
     }
 }

@@ -23,7 +23,7 @@ class GmailServiceTest: XCTestCase {
     }
 
     func testSearchBackupsWhenErrorInQuery() async {
-        backupSearchQueryProvider.makeBackupQueryResult = .failure(.some)
+        backupSearchQueryProvider.makeBackupQueryResult = .failure(MockError())
 
         do {
             _ = try await sut.searchBackups(for: "james.bond@gmail.com")

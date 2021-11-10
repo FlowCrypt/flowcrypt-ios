@@ -15,7 +15,7 @@ import RealmSwift
 protocol UserServiceType {
     func signOut(user email: String)
     func signIn(in viewController: UIViewController) async throws -> SessionType
-    func renewSession() async throws -> Void
+    func renewSession() async throws
 }
 
 enum GoogleUserServiceError: Error {
@@ -70,14 +70,14 @@ extension GoogleUserService: UserServiceType {
         UIApplication.shared.delegate as? AppDelegate
     }
 
-    func renewSession() async throws -> Void {
+    func renewSession() async throws {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
     }
 
     func signIn(in viewController: UIViewController) async throws -> SessionType {
         return try await withCheckedThrowingContinuation { continuation in
             let request = self.makeAuthorizationRequest()
-            self.appDelegate?.googleAuthSession = OIDAuthState.authState(
+            let googleAuthSession = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
             ) { authState, error in
@@ -109,11 +109,16 @@ extension GoogleUserService: UserServiceType {
                     fatalError("Shouldn't happe because covered received non nil error and non nil authState")
                 }
             }
+            DispatchQueue.main.sync { // because of MainActor. Wrong?
+                appDelegate?.googleAuthSession = googleAuthSession
+            }
         }
     }
 
     func signOut(user email: String) {
-        appDelegate?.googleAuthSession = nil
+        DispatchQueue.main.sync { // because of MainActor. Wrong?
+            appDelegate?.googleAuthSession = nil
+        }
         GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
     }
 }

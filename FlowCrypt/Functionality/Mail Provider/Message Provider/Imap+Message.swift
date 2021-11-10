@@ -21,7 +21,7 @@ extension Imap: MessageProvider {
             sess.fetchMessageOperation(
                 withFolder: folder,
                 uid: UInt32(identifier)
-            ).start { error, msgs, _ in respond(error, msgs) }
+            ).start { error, data in respond(error, data) }
         })
     }
 }

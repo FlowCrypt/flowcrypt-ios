@@ -45,7 +45,6 @@ extension Imap: BackupProvider {
             throw BackupError.missedUIDS
         }
 
-
         var messageContexts: [MsgContext] = []
         for uidsContext in uidsForFolders {
             // parallelize? but it's just one IMAP connection anyway?
