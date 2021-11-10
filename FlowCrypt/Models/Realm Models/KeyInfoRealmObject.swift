@@ -19,7 +19,7 @@ enum KeyInfoError: Error {
     case missingPrimaryFingerprint
 }
 
-final class KeyInfo: Object {
+final class KeyInfoRealmObject: Object {
     var primaryLongid: String {
         allLongids[0]
     }
@@ -33,9 +33,9 @@ final class KeyInfo: Object {
     @objc dynamic var primaryFingerprint = ""
     @objc dynamic var passphrase: String?
     @objc dynamic var source: String = ""
-    @objc dynamic var user: UserObject!
+    @objc dynamic var user: UserRealmObject!
 
-    convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserObject) throws {
+    convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
 
         guard let privateKey = keyDetails.private else {
@@ -72,7 +72,7 @@ final class KeyInfo: Object {
     }
 }
 
-extension KeyInfo {
+extension KeyInfoRealmObject {
     /// associated user email
     var account: String {
         user.email

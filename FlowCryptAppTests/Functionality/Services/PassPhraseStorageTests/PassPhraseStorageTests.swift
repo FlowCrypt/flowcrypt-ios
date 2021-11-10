@@ -159,14 +159,14 @@ class PassPhraseStorageTests: XCTestCase {
     }
 }
 
-extension KeyInfo {
+extension KeyInfoRealmObject {
     // extend with more parameters if needed
     static func mock(
         with publicValue: String,
         account: String = "",
         longid: String
-    ) -> KeyInfo {
-        try! KeyInfo(
+    ) -> KeyInfoRealmObject {
+        try! KeyInfoRealmObject(
             KeyDetails(
                 public: publicValue,
                 private: "private",
@@ -184,7 +184,7 @@ extension KeyInfo {
             ),
             passphrase: nil,
             source: .backup,
-            user: UserObject(
+            user: UserRealmObject(
                 name: "name",
                 email: "email@gmail.com",
                 imap: nil,

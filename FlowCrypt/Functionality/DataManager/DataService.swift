@@ -34,7 +34,7 @@ protocol ImapSessionProvider {
 
 enum SessionType: CustomStringConvertible {
     case google(_ email: String, name: String, token: String)
-    case session(_ userObject: UserObject)
+    case session(_ userObject: UserRealmObject)
 
     var description: String {
         switch self {
@@ -90,7 +90,7 @@ extension DataService: DataServiceType {
     }
 
     // helper to get current user object from DB
-    private var currentUserObject: UserObject? {
+    private var currentUserObject: UserRealmObject? {
         encryptedStorage.activeUser
     }
 
@@ -127,7 +127,7 @@ extension DataService: DataServiceType {
 // MARK: - Migration
 extension DataService: DBMigration {
     /// Perform all kind of migrations
-    func performMigrationIfNeeded() async throws -> Void {
+    func performMigrationIfNeeded() async throws {
         try await migrationService.performMigrationIfNeeded()
     }
 }

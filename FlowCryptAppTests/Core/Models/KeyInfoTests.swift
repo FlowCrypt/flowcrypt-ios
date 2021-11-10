@@ -11,7 +11,7 @@ import XCTest
 
 class KeyInfoTests: XCTestCase {
 
-    let user = UserObject(name: "name", email: "email", imap: nil, smtp: nil)
+    let user = UserRealmObject(name: "name", email: "email", imap: nil, smtp: nil)
 
     func testKeyInfoInitWithEmptyPrivateThrowsError() {
         let keyDetail = KeyDetails(
@@ -31,7 +31,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfoRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
 
@@ -56,7 +56,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfoRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
 
@@ -79,7 +79,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeyInfoRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
 
@@ -105,7 +105,7 @@ class KeyInfoTests: XCTestCase {
             revoked: false
         )
 
-        let key = try KeyInfo(keyDetail, passphrase: "123", source: .backup, user: user)
+        let key = try KeyInfoRealmObject(keyDetail, passphrase: "123", source: .backup, user: user)
 
         XCTAssertTrue(key.private == "private")
         XCTAssertTrue(key.public == "public")
@@ -117,7 +117,7 @@ class KeyInfoTests: XCTestCase {
         XCTAssertTrue(key.primaryFingerprint == "f1")
         XCTAssertTrue(key.primaryLongid == "l1")
 
-        XCTAssertTrue(KeyInfo.primaryKey() == "primaryFingerprint")
+        XCTAssertTrue(KeyInfoRealmObject.primaryKey() == "primaryFingerprint")
         XCTAssertTrue(key.account == "email")
     }
 }

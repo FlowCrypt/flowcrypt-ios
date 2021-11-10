@@ -21,8 +21,8 @@ class KeyStorageMock: KeyStorageType {
         publicKeyResult()
     }
 
-    var keysInfoResult: (() -> ([KeyInfo]))!
-    func keysInfo() -> [KeyInfo] {
+    var keysInfoResult: (() -> ([KeyInfoRealmObject]))!
+    func keysInfo() -> [KeyInfoRealmObject] {
         keysInfoResult()
     }
 }

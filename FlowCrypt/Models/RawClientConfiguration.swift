@@ -71,7 +71,7 @@ extension RawClientConfiguration {
 
 // MARK: - Map from realm model
 extension RawClientConfiguration {
-    init?(_ object: ClientConfigurationObject?) {
+    init?(_ object: ClientConfigurationRealmObject?) {
         guard let unwrappedObject = object else {
             return nil
         }

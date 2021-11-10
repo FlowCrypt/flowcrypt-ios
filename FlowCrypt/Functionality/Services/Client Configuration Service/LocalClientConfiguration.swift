@@ -17,7 +17,7 @@ protocol LocalClientConfigurationType {
 }
 
 struct LocalClientConfiguration {
-    let cache: EncryptedCacheService<ClientConfigurationObject>
+    let cache: EncryptedCacheService<ClientConfigurationRealmObject>
     init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
         self.cache = EncryptedCacheService(encryptedStorage: encryptedStorage)
     }
@@ -41,6 +41,6 @@ extension LocalClientConfiguration: LocalClientConfigurationType {
         guard let user = cache.encryptedStorage.activeUser else {
             fatalError("Internal inconsistency, no active user when saving client configuration")
         }
-        cache.save(ClientConfigurationObject(raw, user: user))
+        cache.save(ClientConfigurationRealmObject(raw, user: user))
     }
 }

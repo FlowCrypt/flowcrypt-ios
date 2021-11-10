@@ -1,5 +1,5 @@
 //
-//  FolderObject.swift
+//  FolderPubKeyRealmObject.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 31/08/2020.
@@ -9,18 +9,18 @@
 import Foundation
 import RealmSwift
 
-final class FolderObject: Object {
+final class FolderRealmObject: Object {
     @objc dynamic var name: String = ""
     @objc dynamic var path: String = ""
     @objc dynamic var image: Data?
     @objc dynamic var itemType: String = FolderViewModel.ItemType.folder.rawValue
-    @objc dynamic var user: UserObject!
+    @objc dynamic var user: UserRealmObject!
 
     convenience init(
         name: String,
         path: String,
         image: Data?,
-        user: UserObject
+        user: UserRealmObject
     ) {
         self.init()
         self.name = name
@@ -34,8 +34,8 @@ final class FolderObject: Object {
     }
 }
 
-extension FolderObject: CachedObject {
+extension FolderRealmObject: CachedRealmObject {
     var identifier: String { name }
 
-    var activeUser: UserObject? { user }
+    var activeUser: UserRealmObject? { user }
 }
