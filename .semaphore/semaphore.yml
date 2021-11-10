@@ -68,3 +68,4 @@ blocks:
           commands:
             - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
             - bundle exec fastlane test
+
