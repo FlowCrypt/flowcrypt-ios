@@ -24,8 +24,8 @@ class ContactsScreen extends BaseScreen {
         return $(SELECTORS.EMPTY_CONTACTS_LIST);
     }
 
-    contactEmail(email) {
-        return $(`~${email}`)
+    contactName(name) {
+        return $(`~${name}`)
     }
 
     checkContactScreen() {
@@ -41,12 +41,12 @@ class ContactsScreen extends BaseScreen {
         ElementHelper.waitAndClick(this.backButton);
     }
 
-    checkContact(email) {
-        this.contactEmail(email).waitForDisplayed();
+    checkContact(name) {
+        this.contactName(name).waitForDisplayed();
     }
 
-    clickOnContact(email) {
-        ElementHelper.waitAndClick(this.contactEmail(email));
+    clickOnContact(name) {
+        ElementHelper.waitAndClick(this.contactName(name));
     }
 }
 
