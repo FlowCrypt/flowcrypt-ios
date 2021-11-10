@@ -15,9 +15,5 @@ class DraftGatewayMock: DraftGateway {
         return GTLRGmail_Draft()
     }
 
-    func getDraft(with identifier: String) async throws -> GTLRGmail_Draft {
-        return GTLRGmail_Draft()
-    }
-
     func deleteDraft(with identifier: String) async {}
 }

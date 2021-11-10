@@ -12,9 +12,9 @@ describe('INBOX: ', () => {
     it('user is able to see encrypted email with pass phrase after restart app', () => {
 
         const senderEmail = CommonData.sender.email;
-        const emailSubject = 'encrypted email';
-        const emailText = 'test test';
-        const wrongPassPhrase = 'user is not able to see email';
+        const emailSubject = CommonData.encryptedEmail.subject;
+        const emailText = CommonData.encryptedEmail.message;
+        const wrongPassPhrase = 'wrong';
 
         const correctPassPhrase = CommonData.account.passPhrase;
 

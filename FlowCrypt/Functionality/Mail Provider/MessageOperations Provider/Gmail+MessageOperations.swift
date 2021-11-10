@@ -8,25 +8,24 @@
 
 import Foundation
 import GoogleAPIClientForREST_Gmail
-import Promises
 
 extension GmailService: MessageOperationsProvider {
-    func markAsRead(message: Message, folder: String) -> Promise<Void> {
-        update(message: message, labelsToAdd: [], labelsToRemove: [.unread])
+    func markAsUnread(message: Message, folder: String) async throws {
+        try await update(message: message, labelsToAdd: [.unread])
     }
 
-    func markAsUnread(message: Message, folder: String) -> Promise<Void> {
-        update(message: message, labelsToAdd: [.unread], labelsToRemove: [])
+    func markAsRead(message: Message, folder: String) async throws {
+        try await update(message: message, labelsToRemove: [.unread])
     }
 
-    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void> {
-        update(message: message, labelsToAdd: [.trash])
+    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
+        try await update(message: message, labelsToAdd: [.trash])
     }
 
-    func delete(message: Message, form folderPath: String?) -> Promise<Void> {
-        Promise { resolve, reject in
+    func delete(message: Message, form folderPath: String?) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = message.identifier.stringId else {
-                return reject(GmailServiceError.missedMessageInfo("id"))
+                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
             }
 
             let query = GTLRGmailQuery_UsersMessagesDelete.query(
@@ -36,15 +35,15 @@ extension GmailService: MessageOperationsProvider {
 
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                resolve(())
+                return continuation.resume(returning: ())
             }
         }
     }
 
-    func archiveMessage(message: Message, folderPath: String) -> Promise<Void> {
-        update(
+    func archiveMessage(message: Message, folderPath: String) async throws {
+        try await update(
             message: message,
             labelsToRemove: message.labels
                 .filter(\.isLabel)
@@ -52,10 +51,14 @@ extension GmailService: MessageOperationsProvider {
         )
     }
 
-    private func update(message: Message, labelsToAdd: [MessageLabelType] = [], labelsToRemove: [MessageLabelType] = []) -> Promise<Void> {
-        Promise { resolve, reject in
+    private func update(
+        message: Message,
+        labelsToAdd: [MessageLabelType] = [],
+        labelsToRemove: [MessageLabelType] = []
+    ) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = message.identifier.stringId else {
-                return reject(GmailServiceError.missedMessageInfo("id"))
+                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
             }
             let request = GTLRGmail_ModifyMessageRequest()
             request.addLabelIds = labelsToAdd.map(\.value)
@@ -68,9 +71,9 @@ extension GmailService: MessageOperationsProvider {
 
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                resolve(())
+                return continuation.resume(returning: ())
             }
         }
     }

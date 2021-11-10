@@ -26,6 +26,8 @@ struct PubKey {
     let algo: KeyAlgo?
     /// is key revoked
     let isRevoked: Bool
+    /// user emails
+    let emails: [String]
 }
 
 extension PubKey {
@@ -59,7 +61,8 @@ extension PubKey {
                   fingerprints: fingerprints,
                   created: Date(timeIntervalSince1970: Double(keyDetails.created)),
                   algo: keyDetails.algo,
-                  isRevoked: keyDetails.revoked)
+                  isRevoked: keyDetails.revoked,
+                  emails: keyDetails.pgpUserEmails)
     }
 }
 

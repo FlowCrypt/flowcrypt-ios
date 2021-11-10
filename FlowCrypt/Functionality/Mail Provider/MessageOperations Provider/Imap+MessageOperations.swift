@@ -8,17 +8,41 @@
 
 import Foundation
 import MailCore
-import Promises
 
 extension Imap: MessageOperationsProvider {
-
-    // MARK: - read
-    func markAsRead(message: Message, folder: String) -> Promise<Void> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
+    func markAsUnread(message: Message, folder: String) async throws {
+        try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<Void, Error>) in
+            guard let self = self else {
+                return continuation.resume(throwing: AppErr.nilSelf)
+            }
 
             guard let identifier = message.identifier.intId else {
-                return reject(ImapError.missedMessageInfo("intId"))
+                return continuation.resume(throwing: ImapError.missedMessageInfo("intId"))
+            }
+            self.imapSess?
+                .storeFlagsOperation(
+                    withFolder: folder,
+                    uids: MCOIndexSet(index: UInt64(identifier)),
+                    kind: MCOIMAPStoreFlagsRequestKind.remove,
+                    flags: [.seen]
+                )
+                .start { error in
+                    if let error = error {
+                        return continuation.resume(throwing: ImapError.providerError(error))
+                    } else {
+                        return continuation.resume(returning: ())
+                    }
+                }
+        }
+    }
+
+    func markAsRead(message: Message, folder: String) async throws {
+        try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<Void, Error>) in
+            guard let self = self else {
+                return continuation.resume(throwing: AppErr.nilSelf)
+            }
+            guard let identifier = message.identifier.intId else {
+                return continuation.resume(throwing: ImapError.missedMessageInfo("intId"))
             }
 
             var flags: MCOMessageFlag = []
@@ -37,86 +61,66 @@ extension Imap: MessageOperationsProvider {
                     kind: MCOIMAPStoreFlagsRequestKind.add,
                     flags: flags
                 )
-                .start(self.finalizeVoid("markAsRead", resolve, reject, retry: { self.markAsRead(message: message, folder: folder) }))
+                .start { error in
+                    if let error = error {
+                        return continuation.resume(throwing: ImapError.providerError(error))
+                    } else {
+                        return continuation.resume(returning: ())
+                    }
+                }
         }
     }
 
-    // MARK: - unread
-    func markAsUnread(message: Message, folder: String) -> Promise<Void> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
+    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
+        guard let identifier = message.identifier.intId else {
+            throw ImapError.missedMessageInfo("intId")
+        }
 
-            guard let identifier = message.identifier.intId else {
-                return reject(ImapError.missedMessageInfo("intId"))
+        guard let trashPath = trashPath else {
+            throw ImapError.missedMessageInfo("trashPath")
+        }
+
+        try await moveMsg(with: identifier, folder: folder, destFolder: trashPath)
+    }
+
+    private func moveMsg(with id: Int, folder: String, destFolder: String) async throws {
+        try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<Void, Error>) in
+            guard let self = self else {
+                return continuation.resume(throwing: AppErr.nilSelf)
             }
-
-            var flagsToRemove: MCOMessageFlag = []
-            
-            // add seen flag
-            flagsToRemove.insert(MCOMessageFlag.seen)
 
             self.imapSess?
-                .storeFlagsOperation(
-                    withFolder: folder,
-                    uids: MCOIndexSet(index: UInt64(identifier)),
-                    kind: MCOIMAPStoreFlagsRequestKind.remove,
-                    flags: flagsToRemove
-                )
-                .start(self.finalizeVoid("markAsUnread", resolve, reject, retry: { self.markAsUnread(message: message, folder: folder) }))
+                .copyMessagesOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(id)), destFolder: destFolder)
+                .start { (error, _)in
+                    if let error = error {
+                        return continuation.resume(throwing: ImapError.providerError(error))
+                    } else {
+                        return continuation.resume(returning: ())
+                    }
+                }
         }
     }
 
-    // MARK: - trash
-    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) -> Promise<Void> {
-        Promise<Void> { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            guard let identifier = message.identifier.intId else {
-                return reject(ImapError.missedMessageInfo("intId"))
-            }
-
-            guard let trashPath = trashPath else {
-                return reject(ImapError.missedMessageInfo("trashPath"))
-            }
-
-            try awaitPromise(self.moveMsg(with: identifier, folder: folder, destFolder: trashPath))
-            resolve(())
+    func delete(message: Message, form folderPath: String?) async throws {
+        guard let identifier = message.identifier.intId else {
+            throw ImapError.missedMessageInfo("intId")
         }
+
+        guard let folderPath = folderPath else {
+            throw ImapError.missedMessageInfo("folderPath")
+        }
+
+        try await pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted)
+        try await expungeMsgs(folder: folderPath)
+
     }
 
-    private func moveMsg(with identifier: Int, folder: String, destFolder: String) -> Promise<Void> {
-        Promise<Void> { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.imapSess?
-                .copyMessagesOperation(withFolder: folder, uids: MCOIndexSet(index: UInt64(identifier)), destFolder: destFolder)
-                .start(self.finalizeAsVoid("moveMsg", resolve, reject, retry: { self.moveMsg(with: identifier, folder: folder, destFolder: destFolder) }))
-        }
-    }
-
-    // MARK: - delete
-    func delete(message: Message, form folderPath: String?) -> Promise<Void> {
-        Promise<Void> { [weak self] _, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            guard let identifier = message.identifier.intId else {
-                return reject(ImapError.missedMessageInfo("intId"))
+    private func pushUpdatedMsgFlags(with identifier: Int, folder: String, flags: MCOMessageFlag) async throws {
+        try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<Void, Error>) in
+            guard let self = self else {
+                return continuation.resume(throwing: AppErr.nilSelf)
             }
 
-            guard let folderPath = folderPath else {
-                return reject(ImapError.missedMessageInfo("folderPath"))
-            }
-
-            try awaitPromise(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
-            try awaitPromise(self.expungeMsgs(folder: folderPath))
-        }
-    }
-
-    private func pushUpdatedMsgFlags(with identifier: Int, folder: String, flags: MCOMessageFlag) -> Promise<Void> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            let retry = self.pushUpdatedMsgFlags(with: identifier, folder: folder, flags: flags)
             self.imapSess?
                 .storeFlagsOperation(
                     withFolder: folder,
@@ -124,30 +128,39 @@ extension Imap: MessageOperationsProvider {
                     kind: MCOIMAPStoreFlagsRequestKind.set,
                     flags: flags
                 )
-                .start(self.finalizeVoid("updateMsgFlags", resolve, reject, retry: { retry }))
+                .start { error in
+                    if let error = error {
+                        return continuation.resume(throwing: ImapError.providerError(error))
+                    } else {
+                        return continuation.resume(returning: ())
+                    }
+                }
         }
     }
 
-    private func expungeMsgs(folder: String) -> Promise<Void> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
+    private func expungeMsgs(folder: String) async throws {
+        try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<Void, Error>) in
+            guard let self = self else {
+                return continuation.resume(throwing: AppErr.nilSelf)
+            }
 
             self.imapSess?
                 .expungeOperation(folder)
-                .start(self.finalizeVoid("expungeMsgs", resolve, reject, retry: { self.expungeMsgs(folder: folder) }))
+                .start { error in
+                    if let error = error {
+                        return continuation.resume(throwing: ImapError.providerError(error))
+                    } else {
+                        return continuation.resume(returning: ())
+                    }
+                }
         }
     }
 
-    // MARK: - archive
-    func archiveMessage(message: Message, folderPath: String) -> Promise<Void> {
-        Promise<Void> { [weak self] _, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            guard let identifier = message.identifier.intId else {
-                return reject(ImapError.missedMessageInfo("intId"))
-            }
-
-            try awaitPromise(self.pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted))
+    func archiveMessage(message: Message, folderPath: String) async throws {
+        guard let identifier = message.identifier.intId else {
+            throw ImapError.missedMessageInfo("intId")
         }
+
+        try await pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted)
     }
 }

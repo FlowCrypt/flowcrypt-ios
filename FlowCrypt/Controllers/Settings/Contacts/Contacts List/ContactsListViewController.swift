@@ -62,7 +62,15 @@ extension ContactsListViewController {
     }
 
     private func fetchContacts() {
-        recipients = contactsProvider.getAllRecipients()
+        Task {
+            do {
+                self.recipients = try await contactsProvider.getAllRecipients()
+                await self.node.reloadData()
+            } catch {
+                self.showToast("Failed to load recipients: \(error.localizedDescription)")
+            }
+        }
+
     }
 }
 

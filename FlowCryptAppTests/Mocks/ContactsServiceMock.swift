@@ -8,7 +8,6 @@
 
 @testable import FlowCrypt
 import Foundation
-import Promises
 
 final class ContactsServiceMock: ContactsServiceType {
     var retrievePubKeysResult: ((String) -> ([String]))!

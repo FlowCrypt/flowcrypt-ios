@@ -13,7 +13,6 @@ enum GeneralConstants {
 
     enum Global {
         static let generalError = -1
-        static let messageSizeLimit: Int = 5_000_000
         static let attachmentSizeLimit: Int = 10_000_000
     }
 
@@ -29,13 +28,14 @@ enum GeneralConstants {
 }
 
 enum GoogleScope: CaseIterable {
-    case userInfo, mail, contacts
+    case userInfo, mail, contacts, otherContacts
 
     var value: String {
         switch self {
         case .userInfo: return "https://www.googleapis.com/auth/userinfo.profile"
         case .mail: return "https://mail.google.com/"
         case .contacts: return "https://www.googleapis.com/auth/contacts"
+        case .otherContacts: return "https://www.googleapis.com/auth/contacts.other.readonly"
         }
     }
 }

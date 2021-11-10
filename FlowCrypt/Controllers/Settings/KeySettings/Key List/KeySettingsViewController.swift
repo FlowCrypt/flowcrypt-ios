@@ -15,6 +15,7 @@ import FlowCryptUI
  * - User can proceed to importing keys *SetupManuallyImportKeyViewController*
  * - User can see detail information for the key in *KeyDetailViewController*
  */
+@MainActor
 final class KeySettingsViewController: TableNodeViewController {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
@@ -44,9 +45,8 @@ final class KeySettingsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
         node.reloadData()
-
-        loadKeysFromStorageAndRender()
         setupNavigationBar()
+        loadKeys()
     }
 
     private func setupNavigationBar() {
@@ -58,17 +58,22 @@ final class KeySettingsViewController: TableNodeViewController {
             )
         }
     }
+
+    private func loadKeys() {
+        Task {
+            do {
+                try await loadKeysFromStorageAndRender()
+            } catch {
+                handleCommon(error: error)
+            }
+        }
+    }
 }
 
 extension KeySettingsViewController {
-    private func loadKeysFromStorageAndRender() {
-        switch keyService.getPrvKeyDetails() {
-        case let .failure(error):
-            handleCommon(error: error)
-        case let .success(keys):
-            self.keys = keys
-            node.reloadData()
-        }
+    private func loadKeysFromStorageAndRender() async throws {
+        self.keys = try await keyService.getPrvKeyDetails()
+        await node.reloadData()
     }
 }
 

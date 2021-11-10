@@ -97,8 +97,8 @@ final class InboxViewContainerController: TableNodeViewController {
                 state = .error(InboxViewControllerContainerError.internalError)
                 return
             }
-
-            let inboxViewController = InboxViewController(InboxViewModel(inbox))
+            let input = InboxViewModel(inbox)
+            let inboxViewController = InboxViewControllerFactory.make(with: input)
             navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }
@@ -150,9 +150,7 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
 
             switch self.state {
             case .loading:
-                return TextCellNode(
-                    input: .loading(with: size)
-                )
+                return TextCellNode.loading
             case .error(let error):
                 return TextCellNode(
                     input: self.decorator.errorInput(with: descriptionSize, error: error)

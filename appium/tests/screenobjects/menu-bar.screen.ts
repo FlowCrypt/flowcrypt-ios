@@ -6,7 +6,8 @@ const SELECTORS = {
     MENU_ICON: '~menu icn',
     LOGOUT_BTN: '~Log out',
     SETTINGS_BTN: '~Settings',
-    DRAFT_BUTTON: '~Draft'
+    DRAFT_BUTTON: '~Draft',
+    INBOX_BTN: '~Inbox'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -23,7 +24,11 @@ class MenuBarScreen extends BaseScreen {
     }
 
     get settingsButton () {
-        return $(SELECTORS.SETTINGS_BTN)
+        return $(SELECTORS.SETTINGS_BTN);
+    }
+
+    get inboxButton () {
+        return $(SELECTORS.INBOX_BTN);
     }
 
     get draftButton () {
@@ -54,6 +59,10 @@ class MenuBarScreen extends BaseScreen {
 
     clickDraftButton () {
         ElementHelper.waitAndClick(this.draftButton);
+    }
+
+    clickInboxButton () {
+        ElementHelper.waitAndClick(this.inboxButton);
     }
 }
 

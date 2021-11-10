@@ -39,7 +39,7 @@ extension KeyStorageMock {
             created: 1,
             lastModified: nil,
             expiration: expiration,
-            users: [],
+            users: ["Test User <test@flowcrypt.com>"],
             algo: nil,
             revoked: revoked
         )

@@ -16,6 +16,7 @@ import UIKit
  * - User can be redirected here from *InboxViewController* by tapping on search icon
  */
 final class SearchViewController: TableNodeViewController {
+    private lazy var logger = Logger.nested(Self.self)
     private enum Constants {
         // TODO: - Ticket - Add pagination for SearchViewController
         static let messageCount = 100
@@ -37,6 +38,7 @@ final class SearchViewController: TableNodeViewController {
         didSet { updateState() }
     }
 
+    // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads
     private let service: ServiceActor
     private var searchTask: DispatchWorkItem?
 
@@ -105,24 +107,32 @@ extension SearchViewController {
 }
 
 // MARK: - MessageHandlerViewConroller
-extension SearchViewController: MsgListViewConroller {
-    func msgListGetIndex(message: Message) -> Int? {
-        state.messages.firstIndex(of: message)
+extension SearchViewController: MsgListViewController {
+    // TODO: - ANTON - check
+    func getUpdatedIndex(for message: InboxRenderable) -> Int? {
+        guard let message = message.wrappedMessage else {
+            return nil
+        }
+        return state.messages.firstIndex(of: message)
     }
 
-    func msgListRenderAsRemoved(message _: Message, at index: Int) {
+    func updateMessage(isRead: Bool, at index: Int) {
+        guard let messageToUpdate = state.messages[safe: index] else {
+            return
+        }
+        logger.logInfo("Mark as read \(isRead) at \(index)")
+        var updatedMessages = state.messages
+        updatedMessages[safe: index] = messageToUpdate.markAsRead(isRead)
+        state = .fetched(updatedMessages, .added(index))
+    }
+
+    func removeMessage(at index: Int) {
         var updatedMessages = state.messages
         guard updatedMessages[safe: index] != nil else { return }
         updatedMessages.remove(at: index)
         state = updatedMessages.isEmpty
             ? .empty
             : .fetched(updatedMessages, .removed(index))
-    }
-
-    func msgListUpdateReadFlag(message: Message, at index: Int) {
-        var updatedMessages = state.messages
-        updatedMessages[safe: index] = message
-        state = .fetched(updatedMessages, .added(index))
     }
 }
 
@@ -177,7 +187,9 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
                     )
                 )
             case .fetched:
-                return InboxCellNode(message: InboxCellNode.Input(self.state.messages[indexPath.row]))
+                return InboxCellNode(
+                    input: .init((InboxRenderable(message: self.state.messages[indexPath.row])))
+                )
                     .then { $0.backgroundColor = .backgroundColor }
             case let .error(message):
                 return TextCellNode(
@@ -196,7 +208,8 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         tableNode.deselectRow(at: indexPath, animated: false)
         guard let message = state.messages[safe: indexPath.row] else { return }
 
-        msgListOpenMsgElseShowToast(with: message, path: folderPath)
+        // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
+        open(with: .init(message: message), path: folderPath)
     }
 }
 

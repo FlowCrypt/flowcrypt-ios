@@ -7,35 +7,81 @@
 //
 
 import GoogleAPIClientForREST_Gmail
-import Promises
+import GTMSessionFetcherCore
 
 extension GmailService: MessageProvider {
-    func fetchMsg(message: Message, folder: String) -> Promise<Data> {
-        Promise { resolve, reject in
+    func fetchMsg(message: Message,
+                  folder: String,
+                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
             guard let identifier = message.identifier.stringId else {
-                return reject(GmailServiceError.missedMessageInfo("id"))
+                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
             }
 
-            let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
-            query.format = kGTLRGmailFormatRaw
+            Task {
+                let messageSize = try await self.fetchMessageSize(identifier: identifier)
 
-            self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
+                let fetcher = self.createMessageFetcher(identifier: identifier)
+                fetcher.receivedProgressBlock = { _, received in
+                    let progress = min(Float(received)/messageSize, 1)
+                    progressHandler?(.download(progress))
                 }
-                guard let gmailMessage = data as? GTLRGmail_Message else {
-                    return reject(AppErr.cast("GTLRGmail_Message"))
-                }
-                guard let raw = gmailMessage.raw else {
-                    return reject(GmailServiceError.missedMessageInfo("raw"))
-                }
+                fetcher.beginFetch { data, error in
+                    if let error = error {
+                        return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    }
 
-                guard let data = GTLRDecodeWebSafeBase64(raw) else {
-                    return reject(GmailServiceError.missedMessageInfo("data"))
+                    guard let data = data,
+                          let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                          let raw = dictionary["raw"] as? String
+                    else {
+                        return continuation.resume(throwing: GmailServiceError.missedMessageInfo("raw"))
+                    }
+
+                    progressHandler?(.decrypt)
+
+                    guard let data = GTLRDecodeWebSafeBase64(raw) else {
+                        return continuation.resume(throwing: GmailServiceError.missedMessageInfo("data"))
+                    }
+
+                    return continuation.resume(returning: data)
                 }
-                resolve(data)
             }
         }
+    }
+
+    private func fetchMessageSize(identifier: String) async throws -> Float {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Float, Error>) in
+            let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatMetadata)
+            self.gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+
+                guard let gmailMessage = data as? GTLRGmail_Message else {
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
+                }
+
+                guard let sizeEstimate = gmailMessage.sizeEstimate?.floatValue else {
+                    return continuation.resume(throwing: GmailServiceError.missedMessageInfo("sizeEstimate"))
+                }
+
+                // google returns smaller estimated size
+                let totalSize = sizeEstimate * Float(1.3)
+                return continuation.resume(with: .success(totalSize))
+            }
+        }
+    }
+
+    private func createMessageFetcher(identifier: String) -> GTMSessionFetcher {
+        let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatRaw)
+        let request = gmailService.request(for: query) as URLRequest
+        return gmailService.fetcherService.fetcher(with: request)
+    }
+
+    private func createMessageQuery(identifier: String, format: String) -> GTLRGmailQuery_UsersMessagesGet {
+        let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
+        query.format = format
+        return query
     }
 }

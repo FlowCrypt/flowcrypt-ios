@@ -234,7 +234,7 @@ extension SetupInitialViewController {
                 )
             )
         default:
-            return TextCellNode(input: .loading(with: CGSize(width: 40, height: 40)))
+            return TextCellNode.loading
         }
     }
 
@@ -321,7 +321,7 @@ extension SetupInitialViewController {
         let viewController = SetupGenerateKeyViewController(user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
-    private func proceedToSetupWithEKMKeys(keys: [CoreRes.ParseKeys]) {
+    private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {
         let viewController = SetupEKMKeyViewController(user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }

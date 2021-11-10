@@ -10,25 +10,30 @@ const SELECTORS = {
         '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
         '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText',//it works only with this selector
     RETURN_BUTTON: '~Return',
-    BACK_BUTTON: '~arrow left c'
+    BACK_BUTTON: '~arrow left c',
 };
 
 class NewMessageScreen extends BaseScreen {
     constructor () {
         super(SELECTORS.ADD_RECIPIENT_FIELD);
     }
+
     get addRecipientField () {
         return $(SELECTORS.ADD_RECIPIENT_FIELD);
     }
+
     get subjectField () {
         return $(SELECTORS.SUBJECT_FIELD);
     }
+
     get composeSecurityMesage () {
         return $(SELECTORS.COMPOSE_SECURITY_MESSAGE)
     }
+
     get addedRecipientEmail () {
         return $(SELECTORS.ADDED_RECIPIENT);
     }
+
     get backButton () {
         return $(SELECTORS.BACK_BUTTON);
     }

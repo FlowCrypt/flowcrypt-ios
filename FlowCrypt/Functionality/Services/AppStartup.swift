@@ -26,8 +26,8 @@ struct AppStartup {
 
         Task {
             do {
-                try awaitPromise(setupCore())
-                try setupMigrationIfNeeded()
+                await setupCore()
+                try await DataService.shared.performMigrationIfNeeded()
                 try setupSession()
                 try await getUserOrgRulesIfNeeded()
                 await chooseView(for: window, session: session)
@@ -37,18 +37,9 @@ struct AppStartup {
         }
     }
 
-    private func setupCore() -> Promise<Void> {
-        Promise { resolve, _ in
-            logger.logInfo("Setup Core")
-            Core.shared.startInBackgroundIfNotAlreadyRunning {
-                resolve(())
-            }
-        }
-    }
-
-    private func setupMigrationIfNeeded() throws {
-        logger.logInfo("Setup Migration")
-        try awaitPromise(DataService.shared.performMigrationIfNeeded())
+    private func setupCore() async {
+        logger.logInfo("Setup Core")
+        await Core.shared.startIfNotAlreadyRunning()
     }
 
     private func setupSession() throws {
@@ -71,7 +62,8 @@ struct AppStartup {
 
         switch entryPoint {
         case .mainFlow:
-            viewController = SideMenuNavigationController()
+            let contentViewController = InboxViewContainerController()
+            viewController = SideMenuNavigationController(contentViewController: contentViewController)
         case .signIn:
             viewController = MainNavigationController(rootViewController: SignInViewController())
         case .setupFlow(let userId):
@@ -83,10 +75,11 @@ struct AppStartup {
     }
 
     private func entryPointForUser(session: SessionType?) -> EntryPoint {
-        if !DataService.shared.isLoggedIn {
+        let dataService = DataService.shared
+        if !dataService.isLoggedIn {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
-        } else if DataService.shared.isSetupFinished {
+        } else if dataService.isSetupFinished {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
         } else if let session = session, let userId = makeUserIdForSetup(session: session) {
