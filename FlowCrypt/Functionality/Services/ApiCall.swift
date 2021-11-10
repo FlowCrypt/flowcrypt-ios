@@ -41,7 +41,7 @@ extension ApiCall {
         urlRequest.timeoutInterval = request.timeout
 
         do {
-            let result = try await URLSession.shared.asyncCall(
+            let result = try await URLSession.shared.call(
                 urlRequest,
                 tolerateStatus: request.tolerateStatus
             )
