@@ -11,6 +11,7 @@ import UIKit
 
 extension ThreadMessageSenderCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
+        let signature = threadMessage.processedMessage?.signature.message ?? ""
         let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
         let isMessageRead = threadMessage.rawMessage.isMessageRead
@@ -28,6 +29,9 @@ extension ThreadMessageSenderCellNode.Input {
             : .mainTextUnreadColor
 
         self.init(
+            signature: NSAttributedString.text(from: signature, style: .regular(12), color: .white),
+            signatureColor: threadMessage.processedMessage?.signature.color,
+            signatureIcon: threadMessage.processedMessage?.signature.icon,
             sender: NSAttributedString.text(from: sender, style: style, color: textColor),
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,

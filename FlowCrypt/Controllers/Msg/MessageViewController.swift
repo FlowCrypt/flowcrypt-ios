@@ -241,9 +241,10 @@ extension MessageViewController {
                 handler: { [weak self] _ in
                     guard let self = self else { return }
                     self.processedMessage = ProcessedMessage(rawMimeData: rawMimeData,
-                                                              text: String(data: rawMimeData, encoding: .utf8) ?? "",
-                                                              attachments: [],
-                                                              messageType: .encrypted)
+                                                             text: String(data: rawMimeData, encoding: .utf8) ?? "",
+                                                             attachments: [],
+                                                             messageType: .encrypted,
+                                                             signature: .unknown)
                     self.handleReceivedMessage()
                 }
             )

@@ -49,6 +49,10 @@ extension RecipientWithSortedPubKeys {
     var keyState: PubKeyState { pubKeys.first?.keyState ?? .empty }
     var activePubKeys: [PubKey] { pubKeys.filter { $0.keyState == .active } }
 
+    func isValid(longid: String) -> Bool {
+        activePubKeys.contains(where: { $0.longids.contains(longid) })
+    }
+
     private var sortedPubKeys: [PubKey] {
         _pubKeys
             .sorted(by: { key1, key2 in
@@ -64,6 +68,7 @@ extension RecipientWithSortedPubKeys {
                 return expire1 > expire2
             })
     }
+    
 }
 
 extension RecipientWithSortedPubKeys: Equatable {

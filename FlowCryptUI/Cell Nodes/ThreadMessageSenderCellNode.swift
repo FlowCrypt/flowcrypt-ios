@@ -11,15 +11,25 @@ import UIKit
 
 public final class ThreadMessageSenderCellNode: CellNode {
     public struct Input {
+        public let signature: NSAttributedString?
+        public let signatureColor: UIColor?
+        public let signatureIcon: String?
+
         public let sender: NSAttributedString
         public let date: NSAttributedString?
         public let isExpanded: Bool
         public let buttonColor: UIColor
 
-        public init(sender: NSAttributedString,
+        public init(signature: NSAttributedString,
+                    signatureColor: UIColor?,
+                    signatureIcon: String?,
+                    sender: NSAttributedString,
                     date: NSAttributedString,
                     isExpanded: Bool,
                     buttonColor: UIColor) {
+            self.signature = signature
+            self.signatureColor = signatureColor
+            self.signatureIcon = signatureIcon
             self.sender = sender
             self.date = date
             self.isExpanded = isExpanded
@@ -40,8 +50,18 @@ public final class ThreadMessageSenderCellNode: CellNode {
         }
     }
 
+    private lazy var signatureNode: ThreadMessageSignatureNode = {
+        let input = ThreadMessageSignatureNode.Input(
+            signature: input.signature,
+            color: input.signatureColor,
+            icon: input.signatureIcon
+        )
+        return ThreadMessageSignatureNode(input: input)
+    }()
+
     private let senderNode = ASTextNode2()
     private let dateNode = ASTextNode2()
+
     public private(set) var replyNode = ASButtonNode()
     public private(set) var expandNode = ASImageNode()
 
@@ -84,27 +104,89 @@ public final class ThreadMessageSenderCellNode: CellNode {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
         expandNode.style.preferredSize = CGSize(width: 18, height: 44)
 
+        let spacer = ASLayoutSpec()
+        spacer.style.flexGrow = 1.0
+
         let infoNode = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 4,
-            justifyContent: .start,
+            justifyContent: .spaceBetween,
             alignItems: .start,
             children: [senderNode, dateNode]
         )
 
-        infoNode.style.flexGrow = 1
-        infoNode.style.flexShrink = 1
-
-        let contentSpec = ASStackLayoutSpec(
+        let senderSpec = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 4,
             justifyContent: .spaceBetween,
-            alignItems: .center,
-            children: [infoNode, replyNode, expandNode]
+            alignItems: .start,
+            children: [infoNode, spacer, replyNode, expandNode]
+        )
+
+        let contentSpec = ASStackLayoutSpec(
+            direction: .vertical,
+            spacing: 4,
+            justifyContent: .spaceBetween,
+            alignItems: .start,
+            children: [signatureNode, senderSpec]
         )
 
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 12),
+            child: contentSpec
+        )
+    }
+}
+
+private final class ThreadMessageSignatureNode: ASDisplayNode {
+    public struct Input {
+        public let signature: NSAttributedString?
+        public let color: UIColor?
+        public let icon: String?
+
+        public init(signature: NSAttributedString?,
+                    color: UIColor?,
+                    icon: String?) {
+            self.signature = signature
+            self.color = color
+            self.icon = icon
+        }
+    }
+
+    private lazy var iconNode: ASImageNode? = {
+        guard let icon = input.icon else { return nil }
+        let imageNode = ASImageNode()
+        let configuration = UIImage.SymbolConfiguration(pointSize: 10, weight: .medium)
+        imageNode.image = UIImage(systemName: icon, withConfiguration: configuration)
+        imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.white)
+        return imageNode
+    }()
+
+    private let signatureNode = ASTextNode2()
+    private let input: ThreadMessageSignatureNode.Input
+
+    init(input: ThreadMessageSignatureNode.Input) {
+        self.input = input
+        super.init()
+
+        automaticallyManagesSubnodes = true
+
+        signatureNode.attributedText = input.signature
+        backgroundColor = input.color
+        cornerRadius = 4
+    }
+
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+        let contentSpec = ASStackLayoutSpec(
+            direction: .horizontal,
+            spacing: 2,
+            justifyContent: .spaceBetween,
+            alignItems: .center,
+            children: [iconNode, signatureNode].compactMap { $0 }
+        )
+
+        return ASInsetLayoutSpec(
+            insets: UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4),
             child: contentSpec
         )
     }

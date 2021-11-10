@@ -196,8 +196,8 @@ extension ThreadDetailsViewController {
             animations: {
                 self.node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
             },
-            completion: { _ in
-                self.node.scrollToRow(at: indexPath, at: .middle, animated: true)
+            completion: { [weak self] _ in
+                self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
             })
     }
 

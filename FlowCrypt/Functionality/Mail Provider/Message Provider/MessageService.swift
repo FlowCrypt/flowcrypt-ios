@@ -8,6 +8,7 @@
 
 import Foundation
 import FlowCryptCommon
+import UIKit
 
 // MARK: - MessageAttachment
 struct MessageAttachment: FileType {
@@ -30,10 +31,48 @@ struct ProcessedMessage {
         case error(MsgBlock.DecryptErr.ErrorType), encrypted, plain
     }
 
+    enum MessageSignature {
+        case valid(String), invalid, unknown
+
+        var message: String {
+            switch self {
+            case .valid(let email):
+                return "Signed by \(email)"
+            case .invalid:
+                return "Bad signature - cannot trust authenticity of this message"
+            case .unknown:
+                return "Signature not verified - unknown sender public key"
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .valid:
+                return "lock"
+            case .invalid:
+                return "exclamationmark.triangle"
+            case .unknown:
+                return "xmark"
+            }
+        }
+
+        var color: UIColor {
+            switch self {
+            case .valid:
+                return .main
+            case .invalid:
+                return .warningColor
+            case .unknown:
+                return .errorColor
+            }
+        }
+    }
+
     let rawMimeData: Data
     let text: String
     let attachments: [MessageAttachment]
     let messageType: MessageType
+    let signature: MessageSignature
 }
 
 extension ProcessedMessage {
@@ -42,7 +81,8 @@ extension ProcessedMessage {
         rawMimeData: Data(),
         text: "loading_title".localized + "...",
         attachments: [],
-        messageType: .plain
+        messageType: .plain,
+        signature: .unknown
     )
 }
 
@@ -65,6 +105,7 @@ final class MessageService {
     private let keyService: KeyServiceType
     private let keyMethods: KeyMethodsType
     private let passPhraseService: PassPhraseServiceType
+    private let contactsService: ContactsServiceType
     private let core: Core
     private let logger: Logger
 
@@ -73,7 +114,8 @@ final class MessageService {
         keyService: KeyServiceType = KeyService(),
         core: Core = Core.shared,
         passPhraseService: PassPhraseServiceType = PassPhraseService(),
-        keyMethods: KeyMethodsType = KeyMethods()
+        keyMethods: KeyMethodsType = KeyMethods(),
+        contactsService: ContactsServiceType = ContactsService()
     ) {
         self.messageProvider = messageProvider
         self.keyService = keyService
@@ -81,6 +123,7 @@ final class MessageService {
         self.passPhraseService = passPhraseService
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
         self.keyMethods = keyMethods
+        self.contactsService = contactsService
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
@@ -128,6 +171,7 @@ final class MessageService {
         }
 
         let processedMessage = try await processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+
         switch processedMessage.messageType {
         case .error(let errorType):
             switch errorType {
@@ -156,13 +200,21 @@ final class MessageService {
         )
         let messageType: ProcessedMessage.MessageType
         let text: String
+        let signature: ProcessedMessage.MessageSignature
 
         if let decryptErrBlock = decryptErrBlocks.first {
             let rawMsg = decryptErrBlock.content
             let err = decryptErrBlock.decryptErr?.error
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
+            signature = .unknown
         } else {
+            if let longid = decrypted.blocks.first?.verifyRes?.signer,
+               let contact = await contactsService.findBy(longId: longid) {
+                signature = contact.isValid(longid: longid) ? .valid(contact.email) : .invalid
+            } else {
+                signature = .unknown
+            }
             text = decrypted.text
             messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
         }
@@ -171,7 +223,8 @@ final class MessageService {
             rawMimeData: rawMimeData,
             text: text,
             attachments: attachments,
-            messageType: messageType
+            messageType: messageType,
+            signature: signature
         )
     }
 

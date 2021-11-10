@@ -53,6 +53,12 @@ extension RecipientObject {
     }
 }
 
+extension RecipientObject {
+    func contains(longid: String) -> Bool {
+        pubKeys.first(where: { $0.contains(longid: longid) }) != nil
+    }
+}
+
 extension RecipientObject: CachedObject {
     // Contacts can be shared between accounts
     // https://github.com/FlowCrypt/flowcrypt-ios/issues/269
