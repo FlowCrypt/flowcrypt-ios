@@ -82,7 +82,7 @@ final class KeyService: KeyServiceType {
         // get keys associated with this account, freeze them to pass across threads
         let keysInfo = storage.keysInfo().filter { $0.account == email }.map { object -> KeyInfoRealmObject in
             guard object.realm != nil else { return object }
-            return object.freeze()
+            return object.detached()
         }
         guard let foundKey = try await findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
             return nil
