@@ -13,7 +13,7 @@ import MailCore
 // MARK: - RemoteFoldersProviderType
 extension Imap: RemoteFoldersProviderType {
     func fetchFolders() async throws -> [Folder] {
-        try await execute("fetchMsgAttachment", { sess, respond in
+        try await execute("fetchFolders", { sess, respond in
             sess.fetchAllFoldersOperation()
                 .start { error, value in respond(error, value?.map(Folder.init))}
         })
