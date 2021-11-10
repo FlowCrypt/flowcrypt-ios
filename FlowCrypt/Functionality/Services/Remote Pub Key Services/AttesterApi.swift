@@ -57,7 +57,7 @@ extension AttesterApi {
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
-        let res = try await ApiCall.asyncCall(request)
+        let res = try await ApiCall.call(request)
 
         if res.status >= 200, res.status <= 299 {
             return try await core.parseKeys(armoredOrBinary: res.data).keyDetails
@@ -93,7 +93,7 @@ extension AttesterApi {
             body: pubkey.data(),
             headers: headers
         )
-        let res = try await ApiCall.asyncCall(request)
+        let res = try await ApiCall.call(request)
         return res.data.toStr()
     }
 
@@ -105,7 +105,7 @@ extension AttesterApi {
             method: .post,
             body: pubkey.data()
         )
-        let res = try await ApiCall.asyncCall(request)
+        let res = try await ApiCall.call(request)
         return res.data.toStr()
     }
 
@@ -117,6 +117,6 @@ extension AttesterApi {
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
-        _ = try await ApiCall.asyncCall(request) // will throw on non-200
+        _ = try await ApiCall.call(request) // will throw on non-200
     }
 }
