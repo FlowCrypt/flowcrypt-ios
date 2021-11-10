@@ -74,7 +74,7 @@ extension WkdApi {
                 url: urls.policy,
                 timeout: Constants.lookupEmailRequestTimeout
             )
-            _ = try await ApiCall.asyncCall(request)
+            _ = try await ApiCall.call(request)
         } catch {
             Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
             return (hasPolicy: false, key: nil)
@@ -86,7 +86,7 @@ extension WkdApi {
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
-        let pubKeyResponse = try await ApiCall.asyncCall(request)
+        let pubKeyResponse = try await ApiCall.call(request)
         if !pubKeyResponse.data.toStr().isEmpty {
             Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(urls.pubKeys) and will try to extract Public Keys")
         }
