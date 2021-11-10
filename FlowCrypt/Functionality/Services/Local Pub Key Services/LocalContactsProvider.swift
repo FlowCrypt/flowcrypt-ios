@@ -75,8 +75,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? {
         guard let recipientObject = find(with: email) else { return nil }
-        // TODO temporary fix for Realm thread problem
-        return try await parseRecipient(from: recipientObject.freeze())
+        return try await parseRecipient(from: recipientObject.detached())
     }
 
     func searchEmails(query: String) -> [String] {
@@ -87,10 +86,10 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] {
-        let objects = Array(localContactsCache.realm.objects(RecipientObject.self))
+        let objects = localContactsCache.realm.objects(RecipientObject.self).detached
         var recipients: [RecipientWithSortedPubKeys] = []
         for object in objects {
-            recipients.append(try await parseRecipient(from: object.freeze()))
+            recipients.append(try await parseRecipient(from: object))
         }
         return recipients.sorted(by: { $0.email > $1.email })
     }
