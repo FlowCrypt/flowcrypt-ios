@@ -444,7 +444,6 @@
 		F8F7CF002739D161006E2C45 /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
 		F8F7CF032739D220006E2C45 /* ContactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FC1C0524D82C9F003B949D /* ContactsService.swift */; };
 		F8F7CF042739D239006E2C45 /* LocalContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */; };
-		F8F7CF0A2739D613006E2C45 /* MailProvider+Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF092739D613006E2C45 /* MailProvider+Base.swift */; };
 		F8F7CF0C2739D833006E2C45 /* RemoteFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */; };
 		F8F7CF0D2739D971006E2C45 /* MessagesListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */; };
 		F8F7CF0E2739D979006E2C45 /* MessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */; };
@@ -477,6 +476,22 @@
 		F8F7CF33273ADFFD006E2C45 /* Imap+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A91257E94DF00DE9B4B /* Imap+MessageOperations.swift */; };
 		F8F7CF34273AE037006E2C45 /* Imap+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */; };
 		F8F7CF35273AE0B7006E2C45 /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
+		F8F7CF42273B054A006E2C45 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = F8F7CF41273B054A006E2C45 /* GoogleSignIn */; };
+		F8F7CF45273C4FE8006E2C45 /* GoogleAuthStateHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF44273C4FE8006E2C45 /* GoogleAuthStateHandlerProtocol.swift */; };
+		F8F7CF47273C6265006E2C45 /* GoogleAuthStateHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF44273C4FE8006E2C45 /* GoogleAuthStateHandlerProtocol.swift */; };
+		F8F7CF48273C63A2006E2C45 /* GmailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF0670725520CF800FCC9E6 /* GmailService.swift */; };
+		F8F7CF49273C647C006E2C45 /* GmailSearchExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2AC5B0267BDED100F6149B /* GmailSearchExpressionGenerator.swift */; };
+		F8F7CF4A273C6733006E2C45 /* Gmail+UsersMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7CF1D2739DD71006E2C45 /* Gmail+UsersMailSessionProvider.swift */; };
+		F8F7CF4B273C673B006E2C45 /* GmailService+send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF0673225520DE400FCC9E6 /* GmailService+send.swift */; };
+		F8F7CF4C273C673F006E2C45 /* GmailService+draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678DCB2722143300BB1710 /* GmailService+draft.swift */; };
+		F8F7CF4D273C6744006E2C45 /* Gmail+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9362052573D0C80009912F /* Gmail+MessagesList.swift */; };
+		F8F7CF4E273C6749006E2C45 /* Gmail+Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93623E2573D16F0009912F /* Gmail+Message.swift */; };
+		F8F7CF4F273C674D006E2C45 /* Gmail+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */; };
+		F8F7CF50273C6750006E2C45 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
+		F8F7CF51273C6752006E2C45 /* Gmail+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC4112D2595EA8B001180A8 /* Gmail+Search.swift */; };
+		F8F7CF52273C6754006E2C45 /* GmailService+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB7A2555E1E300C0157A /* GmailService+folders.swift */; };
+		F8F7CF53273C6899006E2C45 /* MailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF0671B25520D9D00FCC9E6 /* MailProvider.swift */; };
+		F8F7CF54273C7381006E2C45 /* ComposeMessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -926,10 +941,10 @@
 		F8CBC03A27331ACA00ECD0B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F8F7CEBC2738424A006E2C45 /* CoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreError.swift; sourceTree = "<group>"; };
 		F8F7CECF27399616006E2C45 /* EmailProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProviderType.swift; sourceTree = "<group>"; };
-		F8F7CF092739D613006E2C45 /* MailProvider+Base.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MailProvider+Base.swift"; sourceTree = "<group>"; };
 		F8F7CF122739DA93006E2C45 /* MessageFetchState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFetchState.swift; sourceTree = "<group>"; };
 		F8F7CF1D2739DD71006E2C45 /* Gmail+UsersMailSessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+UsersMailSessionProvider.swift"; sourceTree = "<group>"; };
 		F8F7CF27273AD6AC006E2C45 /* Imap+UserMailSessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+UserMailSessionProvider.swift"; sourceTree = "<group>"; };
+		F8F7CF44273C4FE8006E2C45 /* GoogleAuthStateHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuthStateHandlerProtocol.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -992,6 +1007,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8F7CEB027382C17006E2C45 /* FlowCryptUI.framework in Frameworks */,
+				F8F7CF42273B054A006E2C45 /* GoogleSignIn in Frameworks */,
 				F8F7CEAC27382C17006E2C45 /* FlowCryptCommon.framework in Frameworks */,
 				F8F7CEDA2739ACC0006E2C45 /* Promises in Frameworks */,
 				F8F7CEDC2739ACC0006E2C45 /* PromisesTestHelpers in Frameworks */,
@@ -1296,6 +1312,7 @@
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
+				F8F7CF44273C4FE8006E2C45 /* GoogleAuthStateHandlerProtocol.swift */,
 				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
 				D27B911724EFE787002DF0A1 /* Local Pub Key Services */,
 				A381F24F271C1CA300A3D13C /* Remote Private Key Services */,
@@ -1636,7 +1653,6 @@
 			children = (
 				F80E95342720B64A0093F243 /* DraftsListProvider */,
 				9FF0671B25520D9D00FCC9E6 /* MailProvider.swift */,
-				F8F7CF092739D613006E2C45 /* MailProvider+Base.swift */,
 				9FC4114B25961CEA001180A8 /* MailServiceProviderType.swift */,
 				9FF0670E25520D4B00FCC9E6 /* Gmail */,
 				9F31AB8F232993AC00CF87EA /* Imap */,
@@ -2420,6 +2436,7 @@
 				F8F7CED72739ACC0006E2C45 /* FBLPromisesTestHelpers */,
 				F8F7CED92739ACC0006E2C45 /* Promises */,
 				F8F7CEDB2739ACC0006E2C45 /* PromisesTestHelpers */,
+				F8F7CF41273B054A006E2C45 /* GoogleSignIn */,
 			);
 			productName = FlowCryptShareExtension;
 			productReference = F8CBC03327331ACA00ECD0B3 /* FlowCryptShareExtension.appex */;
@@ -2888,6 +2905,7 @@
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
 				5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */,
+				F8F7CF45273C4FE8006E2C45 /* GoogleAuthStateHandlerProtocol.swift in Sources */,
 				D274724124F97C5C006BA6EF /* EncryptedCacheService.swift in Sources */,
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
@@ -2948,7 +2966,6 @@
 				D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */,
 				9FDF3656235A22DA00614596 /* AppReset.swift in Sources */,
 				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
-				F8F7CF0A2739D613006E2C45 /* MailProvider+Base.swift in Sources */,
 				21489B7A267CB4DF00BDE4AC /* ClientConfigurationObject.swift in Sources */,
 				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,
 				601EEE31272B19D200FE445B /* CheckAuthScopesViewController.swift in Sources */,
@@ -3072,7 +3089,9 @@
 			files = (
 				F8F7CF1B2739DCF1006E2C45 /* BackupProvider.swift in Sources */,
 				F8F7CF0C2739D833006E2C45 /* RemoteFoldersProvider.swift in Sources */,
+				F8F7CF52273C6754006E2C45 /* GmailService+folders.swift in Sources */,
 				F84C41152734881E0007FB2B /* KeyDetails.swift in Sources */,
+				F8F7CF4A273C6733006E2C45 /* Gmail+UsersMailSessionProvider.swift in Sources */,
 				F8F7CF35273AE0B7006E2C45 /* Imap+session.swift in Sources */,
 				F8F7CEF52739CD15006E2C45 /* ApiCall.swift in Sources */,
 				F8F7CF1A2739DCB5006E2C45 /* MessageOperationsProvider.swift in Sources */,
@@ -3080,10 +3099,14 @@
 				F8F7CEC327399112006E2C45 /* KeyChainService.swift in Sources */,
 				F8F7CEBB27383B83006E2C45 /* CoreHost.swift in Sources */,
 				F8F7CF2E273ADE17006E2C45 /* Imap+Backup.swift in Sources */,
+				F8F7CF50273C6750006E2C45 /* Gmail+Backup.swift in Sources */,
+				F8F7CF49273C647C006E2C45 /* GmailSearchExpressionGenerator.swift in Sources */,
 				F8F7CEDD2739ADA6006E2C45 /* DBMigrationService.swift in Sources */,
 				F8F7CEFC2739CFF5006E2C45 /* ClientConfigurationService.swift in Sources */,
+				F8F7CF4F273C674D006E2C45 /* Gmail+MessageOperations.swift in Sources */,
 				F8F7CEE92739C22A006E2C45 /* RecipientWithSortedPubKeys.swift in Sources */,
 				F84C411827348A6F0007FB2B /* PrvKeyInfo.swift in Sources */,
+				F8F7CF51273C6752006E2C45 /* Gmail+Search.swift in Sources */,
 				F8F7CEE72739C098006E2C45 /* PubKeyObject.swift in Sources */,
 				F8F7CED327399F19006E2C45 /* DataService.swift in Sources */,
 				F84C4126273493BA0007FB2B /* ComposeMessageObjects.swift in Sources */,
@@ -3116,8 +3139,10 @@
 				F8F7CF042739D239006E2C45 /* LocalContactsProvider.swift in Sources */,
 				F84C4110273482DF0007FB2B /* RecipientEmailsCellNode.swift in Sources */,
 				F8F7CF0E2739D979006E2C45 /* MessageContext.swift in Sources */,
+				F8F7CF4E273C6749006E2C45 /* Gmail+Message.swift in Sources */,
 				F84C412227348EEA0007FB2B /* ComposeViewControllerInput.swift in Sources */,
 				F8F7CF102739D9E7006E2C45 /* MessageLabel.swift in Sources */,
+				F8F7CF4B273C673B006E2C45 /* GmailService+send.swift in Sources */,
 				F84C411A27348AAF0007FB2B /* UserObject.swift in Sources */,
 				F8F7CEDE2739B698006E2C45 /* FolderObject.swift in Sources */,
 				F8F7CEC9273993F5006E2C45 /* EncryptedCacheService.swift in Sources */,
@@ -3127,6 +3152,7 @@
 				F8CC9BCC2738081800A93644 /* PubKeyState.swift in Sources */,
 				F84C411B27348ABA0007FB2B /* SessionObject.swift in Sources */,
 				F84C4112273485B30007FB2B /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
+				F8F7CF54273C7381006E2C45 /* ComposeMessageService.swift in Sources */,
 				F8F7CEF72739CD6D006E2C45 /* GeneralConstants.swift in Sources */,
 				F8F7CEC8273993AB006E2C45 /* ClientConfigurationObject.swift in Sources */,
 				F84C411F27348D110007FB2B /* ComposeMessageAttachment.swift in Sources */,
@@ -3143,6 +3169,8 @@
 				F8F7CED427399F38006E2C45 /* SMTPSession.swift in Sources */,
 				F84C4113273485BE0007FB2B /* RecipientEmailsCellNodeInput.swift in Sources */,
 				F8F7CEC727399386006E2C45 /* LogOutHandler.swift in Sources */,
+				F8F7CF48273C63A2006E2C45 /* GmailService.swift in Sources */,
+				F8F7CF4C273C673F006E2C45 /* GmailService+draft.swift in Sources */,
 				F8F7CEF12739CBBB006E2C45 /* Core.swift in Sources */,
 				F8F7CEE22739BBE3006E2C45 /* KeyDataStorage.swift in Sources */,
 				F8F7CF222739DF2E006E2C45 /* DraftsListProvider.swift in Sources */,
@@ -3151,10 +3179,12 @@
 				F8F7CEB627382FDB006E2C45 /* ComposeMessageError.swift in Sources */,
 				F8F7CF002739D161006E2C45 /* PubLookup.swift in Sources */,
 				F8F7CEFA2739CF94006E2C45 /* ClientConfiguration.swift in Sources */,
+				F8F7CF53273C6899006E2C45 /* MailProvider.swift in Sources */,
 				F8F7CEE02739B7B2006E2C45 /* LocalStorage.swift in Sources */,
 				F84C412127348EB90007FB2B /* ComposeViewDecorator.swift in Sources */,
 				F8CC9BCD273808F100A93644 /* PubKey.swift in Sources */,
 				F8F7CF0F2739D9BA006E2C45 /* Message.swift in Sources */,
+				F8F7CF4D273C6744006E2C45 /* Gmail+MessagesList.swift in Sources */,
 				F84C411D27348AF50007FB2B /* User.swift in Sources */,
 				F84C411927348AA10007FB2B /* KeyInfo.swift in Sources */,
 				F8F7CEBE2738424A006E2C45 /* CoreError.swift in Sources */,
@@ -3169,6 +3199,7 @@
 				F8F7CF2F273ADE65006E2C45 /* Imap+Search.swift in Sources */,
 				F8F7CF1F2739DDBC006E2C45 /* MailServiceProviderType.swift in Sources */,
 				F8F7CF31273ADECE006E2C45 /* Imap+Other.swift in Sources */,
+				F8F7CF47273C6265006E2C45 /* GoogleAuthStateHandlerProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4426,6 +4457,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */;
 			productName = PromisesTestHelpers;
+		};
+		F8F7CF41273B054A006E2C45 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

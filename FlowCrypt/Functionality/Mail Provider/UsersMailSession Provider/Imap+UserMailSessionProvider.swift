@@ -16,4 +16,3 @@ extension Imap: UsersMailSessionProvider {
         Promise(self.setupSession())
     }
 }
-

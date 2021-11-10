@@ -33,49 +33,13 @@ struct GoogleUser: Codable {
     let picture: URL?
 }
 
-protocol GoogleUserServiceType {
-    var authorization: GTMAppAuthFetcherAuthorization? { get }
-    func renewSession() -> Promise<Void>
-}
-
-final class GoogleUserService: NSObject, GoogleUserServiceType {
-    private enum Constants {
-        static let index = "GTMAppAuthAuthorizerIndex"
-    }
-    private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
-
-    var userToken: String? {
-        authorization?.authState
-            .lastTokenResponse?
-            .accessToken
-    }
-
-    var idToken: String? {
-        authorization?.authState
-            .lastTokenResponse?
-            .idToken
-    }
-
-    var authorization: GTMAppAuthFetcherAuthorization? {
-        getAuthorizationForCurrentUser()
-    }
-
-    private var currentUserEmail: String? {
-        DataService.shared.email
-    }
+private enum Constants {
+    static let index = "GTMAppAuthAuthorizerIndex"
 }
 
 extension GoogleUserService: UserServiceType {
     private var appDelegate: AppDelegate? {
         UIApplication.shared.delegate as? AppDelegate
-    }
-
-    func renewSession() -> Promise<Void> {
-        // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
-        Promise<Void> { [weak self] resolve, _ in
-            self?.logger.logInfo("Renew session for google user")
-            resolve(())
-        }
     }
 
     func signIn(in viewController: UIViewController) -> Promise<SessionType> {
@@ -153,15 +117,6 @@ extension GoogleUserService {
         state.stateChangeDelegate = self
         let authorization: GTMAppAuthFetcherAuthorization = GTMAppAuthFetcherAuthorization(authState: state)
         GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.index + email)
-    }
-
-    private func getAuthorizationForCurrentUser() -> GTMAppAuthFetcherAuthorization? {
-        // get active user
-        guard let email = currentUserEmail else {
-            return nil
-        }
-        // get authorization from keychain
-        return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
     }
 
     private func fetchGoogleUser(
