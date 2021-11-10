@@ -8,7 +8,6 @@
 
 @testable import FlowCrypt
 import GTMAppAuth
-import Promises
 import XCTest
 
 class GmailServiceTest: XCTestCase {
@@ -42,10 +41,8 @@ class GmailServiceTest: XCTestCase {
 // MARK: - Mock
 class GoogleUserServiceMock: GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization?
-
-    var renewSessionResult: Result<Void, Error> = .success(())
-    func renewSession() -> Promise<Void> {
-        Promise<Void>.resolveAfter(timeout: 1, with: renewSessionResult)
+    func renewSession() async throws {
+        await Task.sleep(1_000_000_000)
     }
 }
 

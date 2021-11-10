@@ -6,8 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Promises
-
 struct TrashFolderProvider {
     private let localStorage: LocalStorageType
     private let folderProvider: FoldersServiceType
@@ -22,15 +20,12 @@ struct TrashFolderProvider {
 }
 
 extension TrashFolderProvider: TrashFolderProviderType {
-    func getTrashFolderPath() -> Promise<String?> {
+    func getTrashFolderPath() async throws -> String? {
         if let path = localStorage.trashFolderPath {
-            return Promise(path)
+            return path
         } else {
-            return Promise { resolve, _ in
-                // will get all folders
-                _ = try awaitPromise(folderProvider.fetchFolders(isForceReload: true))
-                resolve(localStorage.trashFolderPath)
-            }
+            _ = try await folderProvider.fetchFolders(isForceReload: true)
+            return localStorage.trashFolderPath
         }
     }
 }

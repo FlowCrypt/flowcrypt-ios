@@ -7,7 +7,6 @@
 //
 
 import GoogleAPIClientForREST_Gmail
-import Promises
 
 extension GmailService: BackupProvider {
     func searchBackups(for email: String) async throws -> Data {
@@ -29,7 +28,7 @@ extension GmailService: BackupProvider {
                 .flatMap { $0 }
                 .map(findAttachment)
             logger.logVerbose("downloading \(attachments.count) attachments with possible backups in them")
-            let data = try awaitPromise(all(attachments)).joined
+            let data = (try await attachments).joined
             logger.logVerbose("downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
             return data
         } catch {
@@ -37,27 +36,24 @@ extension GmailService: BackupProvider {
         }
     }
 
-    func findAttachment(_ context: (messageId: String, attachmentId: String)) -> Promise<Data> {
+    func findAttachment(_ context: (messageId: String, attachmentId: String)) async throws -> Data {
         let query = GTLRGmailQuery_UsersMessagesAttachmentsGet.query(
             withUserId: .me,
             messageId: context.messageId,
             identifier: context.attachmentId
         )
-        return Promise { resolve, reject in
+        return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 guard let attachmentPart = data as? GTLRGmail_MessagePartBody else {
-                    return reject(GmailServiceError.missedMessageInfo("findAttachment data"))
+                    return continuation.resume(throwing: GmailServiceError.missedMessageInfo("findAttachment data"))
                 }
-
                 guard let data = GTLRDecodeBase64(attachmentPart.data) else {
-                    return reject(GmailServiceError.messageEncode)
+                    return continuation.resume(throwing: GmailServiceError.messageEncode)
                 }
-
-                resolve(data)
+                return continuation.resume(returning: data)
             }
         }
     }

@@ -15,9 +15,9 @@ enum AppErr: Error, CustomStringConvertible {
 
     /// something as? Something is unexpectedly nil
     case cast(Any)
-    /// user error, useful to throw from Promises
+    /// user error (user did something wrong?)
     case user(String)
-    /// useful in Promises when you want to cancel execution without showing any error (eg after user clicks cancel button)
+    /// when you want to cancel execution without showing any error (eg after user clicks cancel button)
     case silentAbort
     case noCurrentUser
     case general(String)

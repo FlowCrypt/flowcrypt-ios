@@ -8,7 +8,6 @@
 
 import Foundation
 import MailCore
-import Promises
 
 // MARK: - MessageSearchProvider
 extension Imap: MessageSearchProvider {

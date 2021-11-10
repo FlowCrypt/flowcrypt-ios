@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Promises
 
 /**
  * Controller that gives a possibility for the user to enter information about his email provider like, account, imap/smtp information
