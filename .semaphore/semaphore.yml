@@ -12,9 +12,10 @@ auto_cancel:
 blocks:
   - name: Appium UI tests
     dependencies: []
-    run:
-      when: 'change_in(''/'', {exclude: [''/Core/package.json'', ''/Core/package-lock.json'']})'
-    execution_time_limit:
+    run: # don't run if the only thing that changed is Core deps
+      when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json']})"
+
+  execution_time_limit:
       minutes: 55
     task:
       secrets:
@@ -48,8 +49,8 @@ blocks:
             - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
   - name: TypeScript + Swift tests
     dependencies: []
-    run:
-      when: 'change_in(''/'', {exclude: [''/appium/package.json'', ''/appium/package-lock.json'']})'
+    run: # don't run if the only thing that changed is Appium test deps
+      when: "change_in('/', {exclude: ['/appium/package.json', '/appium/package-lock.json']})"
     execution_time_limit:
       minutes: 55
     task:
