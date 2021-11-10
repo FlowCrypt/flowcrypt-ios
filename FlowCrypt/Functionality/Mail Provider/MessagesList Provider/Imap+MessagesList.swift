@@ -8,7 +8,6 @@
 
 import Foundation
 import MailCore
-import Promises
 
 extension Imap: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
@@ -19,7 +18,7 @@ extension Imap: MessagesListProvider {
             fatalError("Folder path should not be nil for IMAP")
         }
 
-        let folderInfo = try awaitPromise(folderInfo(for: folderPath))
+        let folderInfo = try await folderInfo(for: folderPath)
         let totalCount = Int(folderInfo.messageCount)
         if totalCount == 0 {
             return MessageContext(messages: [], pagination: .byNumber(total: totalCount))
@@ -30,22 +29,18 @@ extension Imap: MessagesListProvider {
             from: from ?? 0
         )
         let kind = messageKindProvider.imapMessagesRequestKind
-        let messages = try awaitPromise(fetchMsgsByNumber(for: folderPath, kind: kind, set: set))
+        let messages = try await fetchMsgsByNumber(for: folderPath, kind: kind, set: set)
             .map(Message.init)
 
         return MessageContext(messages: messages, pagination: .byNumber(total: totalCount))
     }
 
-    private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.imapSess?
-                .folderInfoOperation(path)
-                .start(self.finalize("folderInfo", resolve, reject, retry: {
-                    self.folderInfo(for: path)
-                }))
-        }
+    private func folderInfo(for path: String) async throws -> MCOIMAPFolderInfo {
+        return try await execute("folderInfo", { sess, respond in
+            sess.folderInfoOperation(
+                path
+            ).start { error, msgs, _ in respond(error, msgs) }
+        })
     }
 }
 

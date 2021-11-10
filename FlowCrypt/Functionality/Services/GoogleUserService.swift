@@ -10,13 +10,12 @@ import AppAuth
 import FlowCryptCommon
 import Foundation
 import GTMAppAuth
-import Promises
 import RealmSwift
 
 protocol UserServiceType {
     func signOut(user email: String)
-    func signIn(in viewController: UIViewController) -> Promise<SessionType>
-    func renewSession() -> Promise<Void>
+    func signIn(in viewController: UIViewController) async throws -> SessionType
+    func renewSession() async throws -> Void
 }
 
 enum GoogleUserServiceError: Error {
@@ -35,10 +34,11 @@ struct GoogleUser: Codable {
 
 protocol GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
-    func renewSession() -> Promise<Void>
+    func renewSession() async throws -> Void
 }
 
 final class GoogleUserService: NSObject, GoogleUserServiceType {
+
     private enum Constants {
         static let index = "GTMAppAuthAuthorizerIndex"
     }
@@ -70,61 +70,45 @@ extension GoogleUserService: UserServiceType {
         UIApplication.shared.delegate as? AppDelegate
     }
 
-    func renewSession() -> Promise<Void> {
+    func renewSession() async throws -> Void {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
-        Promise<Void> { [weak self] resolve, _ in
-            self?.logger.logInfo("Renew session for google user")
-            resolve(())
-        }
     }
 
-    func signIn(in viewController: UIViewController) -> Promise<SessionType> {
-        Promise(on: .main) { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
-
+    func signIn(in viewController: UIViewController) async throws -> SessionType {
+        return try await withCheckedThrowingContinuation { continuation in
             let request = self.makeAuthorizationRequest()
-
-            let googleAuthSession = OIDAuthState.authState(
+            self.appDelegate?.googleAuthSession = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
             ) { authState, error in
                 if let authState = authState {
                     let missingScopes = self.checkMissingScopes(authState.scope)
                     if !missingScopes.isEmpty {
-                        reject(GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes))
-                        return
+                        return continuation.resume(throwing: GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes))
                     }
-
                     let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
                     guard let email = authorization.userEmail else {
-                        reject(GoogleUserServiceError.inconsistentState("Missed email"))
-                        return
+                        return continuation.resume(throwing: GoogleUserServiceError.inconsistentState("Missed email"))
                     }
-
                     self.saveAuth(state: authState, for: email)
-
                     guard let token = authState.lastTokenResponse?.accessToken else {
-                        reject(GoogleUserServiceError.inconsistentState("Missed token"))
-                        return
+                        return continuation.resume(throwing: GoogleUserServiceError.inconsistentState("Missed token"))
                     }
-
                     self.fetchGoogleUser(with: authorization) { result in
                         switch result {
                         case .success(let user):
-                            resolve(SessionType.google(email, name: user.name, token: token))
+                            return continuation.resume(returning: SessionType.google(email, name: user.name, token: token))
                         case .failure(let error):
                             self.handleUserInfo(error: error)
-                            reject(error)
+                            return continuation.resume(throwing: error)
                         }
                     }
                 } else if let error = error {
-                    reject(error)
+                    continuation.resume(throwing: error)
                 } else {
                     fatalError("Shouldn't happe because covered received non nil error and non nil authState")
                 }
             }
-
-            self.appDelegate?.googleAuthSession = googleAuthSession
         }
     }
 

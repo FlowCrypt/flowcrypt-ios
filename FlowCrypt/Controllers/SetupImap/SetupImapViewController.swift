@@ -506,16 +506,18 @@ extension SetupImapViewController {
         else {
             fatalError("Should be able to create session at this momment")
         }
-
-        Promise<Void> {
-            try awaitPromise(self.imap.connectImap(session: imapSessionToCheck))
-            try awaitPromise(self.imap.connectSmtp(session: smtpSession))
-        }
-        .then(on: .main) { [weak self] in
-            self?.handleSuccessfulConnection()
-        }
-        .catch(on: .main) { [weak self] error in
-            self?.handleConnection(error: error)
+        Task {
+            do {
+                try await self.imap.connectImap(session: imapSessionToCheck)
+                try await self.imap.connectSmtp(session: smtpSession)
+                DispatchQueue.main.async {
+                    self.handleSuccessfulConnection()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.handleConnection(error: error)
+                }
+            }
         }
     }
 

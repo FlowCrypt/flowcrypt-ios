@@ -22,39 +22,21 @@ extension Imap: MessageSearchProvider {
         guard let expression = searchExpressions else {
             return []
         }
-
         let kind = self.messageKindProvider.imapMessagesRequestKind
         let path = searchContext.folderPath ?? "INBOX"
-        let indexes = try awaitPromise(self.fetchUids(folder: path, expr: expression))
-
-        let messages = try awaitPromise(
-            self.fetchMessagesByUIDOperation(
-                for: path,
-                kind: kind,
-                set: indexes
-            )
-        )
-        .map(Message.init)
-
-        return messages
+        let indexes = try await self.fetchUids(folder: path, expr: expression)
+        return try await self.fetchMessagesByUIDOperation(for: path, kind: kind, set: indexes).map(Message.init)
     }
 }
 
 extension Imap {
-    func fetchUids(folder: String, expr: MCOIMAPSearchExpression) -> Promise<MCOIndexSet> {
-        Promise<MCOIndexSet> { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.imapSess?
-                .searchExpressionOperation(withFolder: folder, expression: expr)
-                .start(self.finalize(
-                    "searchExpression", resolve, reject,
-                    retry: {
-                        self.fetchUids(folder: folder, expr: expr)
-                    }
-                )
-                )
-        }
+    func fetchUids(folder: String, expr: MCOIMAPSearchExpression) async throws -> MCOIndexSet {
+        return try await execute("searchExpression", { sess, respond in
+            sess.searchExpressionOperation(
+                withFolder: folder,
+                expression: expr
+            ).start { error, value in respond(error, value) }
+        })
     }
 }
 

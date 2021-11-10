@@ -28,7 +28,7 @@ protocol DataServiceType: EmailProviderType {
 }
 
 protocol ImapSessionProvider {
-    func imapSession() -> IMAPSession?
+    func imapSession() -> IMAPConnectionParameters?
     func smtpSession() -> SMTPSession?
 }
 
@@ -134,13 +134,13 @@ extension DataService: DBMigration {
 
 // MARK: - SessionProvider
 extension DataService: ImapSessionProvider {
-    func imapSession() -> IMAPSession? {
+    func imapSession() -> IMAPConnectionParameters? {
         guard let user = currentUserObject else {
             assertionFailure("Can't get IMAP Session without user data")
             return nil
         }
 
-        guard let imapSession = IMAPSession(userObject: user) else {
+        guard let imapSession = IMAPConnectionParameters(userObject: user) else {
             assertionFailure("couldn't create IMAP Session with this parameters")
             return nil
         }
