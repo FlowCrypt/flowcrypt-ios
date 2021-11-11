@@ -31,6 +31,11 @@ class CreateKeyScreen extends BaseScreen {
     }
 
     setPassPhrase(text: string = CommonData.account.passPhrase) {
+        let count = 0;
+        do {
+            browser.pause(1000);
+            count++;
+        } while(this.enterPassPhraseField.isDisplayed() !== true && count <= 15);
         this.fillPassPhrase(text);
         this.clickSetPassPhraseBtn();
         this.confirmPassPhrase(text);
