@@ -32,37 +32,41 @@ struct ProcessedMessage {
     }
 
     enum MessageSignature {
-        case valid(String), invalid, unknown
+        case good, unsigned, error(String), missingPubkey(String), bad
 
         var message: String {
             switch self {
-            case .valid(let email):
-                return "Signed by \(email)"
-            case .invalid:
-                return "Bad signature - cannot trust authenticity of this message"
-            case .unknown:
-                return "Signature not verified - unknown sender public key"
+            case .good:
+                return "signed"
+            case .unsigned:
+                return "not signed"
+            case .error(let message):
+                return "cannot verify signature: \(message)"
+            case .missingPubkey(let longid):
+                return "cannot verify signature: no Public Key \(longid)"
+            case .bad:
+                return "bad signature"
             }
         }
 
         var icon: String {
             switch self {
-            case .valid:
+            case .good:
                 return "lock"
-            case .invalid:
+            case .error, .missingPubkey:
                 return "exclamationmark.triangle"
-            case .unknown:
+            case .unsigned, .bad:
                 return "xmark"
             }
         }
 
         var color: UIColor {
             switch self {
-            case .valid:
+            case .good:
                 return .main
-            case .invalid:
+            case .error, .missingPubkey:
                 return .warningColor
-            case .unknown:
+            case .unsigned, .bad:
                 return .errorColor
             }
         }
@@ -82,7 +86,7 @@ extension ProcessedMessage {
         text: "loading_title".localized + "...",
         attachments: [],
         messageType: .plain,
-        signature: .unknown
+        signature: .unsigned
     )
 }
 
@@ -143,7 +147,6 @@ final class MessageService {
     func getAndProcessMessage(
         with input: Message,
         folder: String,
-        verificationPubKeys: [String],
         progressHandler: ((MessageFetchState) -> Void)?
     ) async throws -> ProcessedMessage {
         let rawMimeData = try await messageProvider.fetchMsg(
@@ -152,17 +155,16 @@ final class MessageService {
             progressHandler: progressHandler
         )
         return try await decryptAndProcessMessage(mime: rawMimeData,
-                                                  sender: input.sender,
-                                                  verificationPubKeys: verificationPubKeys)
+                                                  sender: input.sender)
     }
 
     func decryptAndProcessMessage(mime rawMimeData: Data,
-                                  sender: String?,
-                                  verificationPubKeys: [String]) async throws -> ProcessedMessage {
+                                  sender: String?) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
+        let verificationPubKeys = fetchVerificationPubKeys(for: sender)
         let decrypted = try await core.parseDecryptMsg(
             encrypted: rawMimeData,
             keys: keys,
@@ -215,12 +217,14 @@ final class MessageService {
             let err = decryptErrBlock.decryptErr?.error
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
-            signature = .unknown
+            signature = .error(rawMsg)
         } else {
             text = decrypted.text
             messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
-            signature = await verifySignature(longid: decrypted.blocks.first?.verifyRes?.signer,
-                                              email: sender)
+            signature = await evaluateSignatureVerificationResult(
+                signature: decrypted.blocks.first?.verifyRes,
+                sender: sender
+            )
         }
 
         return ProcessedMessage(
@@ -230,22 +234,6 @@ final class MessageService {
             messageType: messageType,
             signature: signature
         )
-    }
-
-    private func verifySignature(longid: String?, email: String?) async -> ProcessedMessage.MessageSignature {
-        guard let longid = longid else { return .unknown }
-
-        if let contact = await contactsService.findBy(longId: longid) {
-            return check(longid: longid, for: contact)
-        } else if let email = email, let contact = try? await contactsService.searchContact(with: email) {
-            return check(longid: longid, for: contact)
-        }
-
-        return .unknown
-    }
-
-    private func check(longid: String, for recipient: RecipientWithSortedPubKeys) -> ProcessedMessage.MessageSignature {
-        recipient.isValid(longid: longid) ? .valid(recipient.email) : .invalid
     }
 
     private func getAttachments(
@@ -285,6 +273,44 @@ final class MessageService {
         privateKeys
             .map { PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints) }
             .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
+    }
+}
+
+// MARK: - Message verification
+extension MessageService {
+    private func fetchVerificationPubKeys(for sender: String?) -> [String] {
+        if let sender = sender {
+            return contactsService.retrievePubKeys(for: sender)
+        } else {
+            return []
+        }
+    }
+
+    private func evaluateSignatureVerificationResult(
+        signature: MsgBlock.VerifyRes?,
+        sender: String?
+    ) async -> ProcessedMessage.MessageSignature {
+        guard let signature = signature else { return .unsigned }
+
+        if let error = signature.error {
+            return .error(error)
+        }
+
+        guard let signer = signature.signer else { return .unsigned }
+
+        var pubKey: PubKey?
+
+        if let contact = await contactsService.findBy(longId: signer) {
+            pubKey = contact.pubKey(with: signer)
+        } else if let email = sender, let contact = try? await contactsService.searchContact(with: email) {
+            pubKey = contact.pubKey(with: signer)
+        }
+
+        guard pubKey != nil && signature.match != nil else { return .missingPubkey(signer) }
+
+        guard signature.match == true else { return .bad }
+
+        return .good
     }
 }
 

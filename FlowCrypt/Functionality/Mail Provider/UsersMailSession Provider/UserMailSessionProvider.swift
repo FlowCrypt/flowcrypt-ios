@@ -7,13 +7,13 @@
 //
 
 protocol UsersMailSessionProvider {
-    func renewSession() async throws -> Void
+    func renewSession() async throws
 }
 
 // MARK: - GmailService
 extension GmailService: UsersMailSessionProvider {
     @discardableResult
-    func renewSession() async throws -> Void {
+    func renewSession() async throws {
         try await userService.renewSession()
     }
 }
@@ -21,7 +21,7 @@ extension GmailService: UsersMailSessionProvider {
 // MARK: - Imap
 extension Imap: UsersMailSessionProvider {
     @discardableResult
-    func renewSession() async throws -> Void {
+    func renewSession() async throws {
         try await self.setupSession()
     }
 }

@@ -52,7 +52,6 @@ final class MessageViewController: TableNodeViewController {
         messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
-        contactsService: ContactsServiceType = ContactsService(),
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         filesManager: FilesManagerType = FilesManager(),
@@ -67,8 +66,7 @@ final class MessageViewController: TableNodeViewController {
         self.filesManager = filesManager
         self.serviceActor = ServiceActor(
             messageService: messageService,
-            messageProvider: messageProvider,
-            contactsService: contactsService
+            messageProvider: messageProvider
         )
 
         super.init(node: TableNode())
@@ -244,7 +242,7 @@ extension MessageViewController {
                                                              text: String(data: rawMimeData, encoding: .utf8) ?? "",
                                                              attachments: [],
                                                              messageType: .encrypted,
-                                                             signature: .unknown)
+                                                             signature: .missingPubkey("error_key_mismatch".localized))
                     self.handleReceivedMessage()
                 }
             )
@@ -413,14 +411,11 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
 private actor ServiceActor {
     private let messageService: MessageService
     private let messageProvider: MessageProvider
-    private let contactsService: ContactsServiceType
 
     init(messageService: MessageService,
-         messageProvider: MessageProvider,
-         contactsService: ContactsServiceType) {
+         messageProvider: MessageProvider) {
         self.messageService = messageService
         self.messageProvider = messageProvider
-        self.contactsService = contactsService
     }
 
     func fetchDecryptAndRenderMsg(message: Message, path: String,
@@ -439,15 +434,7 @@ private actor ServiceActor {
     }
 
     func decryptAndProcessMessage(mime: Data, sender: String?) async throws -> ProcessedMessage {
-        let pubKeys: [String]
-        if let sender = sender {
-            pubKeys = contactsService.retrievePubKeys(for: sender)
-        } else {
-            pubKeys = []
-        }
-
-        return try await messageService.decryptAndProcessMessage(mime: mime,
-                                                                 sender: sender,
-                                                                 verificationPubKeys: pubKeys)
+        try await messageService.decryptAndProcessMessage(mime: mime,
+                                                          sender: sender)
     }
 }

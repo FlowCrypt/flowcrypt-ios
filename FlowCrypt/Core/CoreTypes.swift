@@ -195,6 +195,7 @@ struct MsgBlock: Decodable {
     struct VerifyRes: Decodable {
         let match: Bool?
         let signer: String?
+        let error: String?
     }
 
     enum BlockType: String, Decodable {
