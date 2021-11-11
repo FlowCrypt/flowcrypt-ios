@@ -217,19 +217,10 @@ final class MessageService {
             messageType = .error(err?.type ?? .other)
             signature = .unknown
         } else {
-            if let longid = decrypted.blocks.first?.verifyRes?.signer {
-               if let contact = await contactsService.findBy(longId: longid) {
-                   signature = contact.isValid(longid: longid) ? .valid(contact.email) : .invalid
-               } else if let email = sender, let contact = try? await contactsService.searchContact(with: email) {
-                   signature = contact.isValid(longid: longid) ? .valid(contact.email) : .invalid
-               } else {
-                   signature = .unknown
-               }
-            } else {
-                signature = .unknown
-            }
             text = decrypted.text
             messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
+            signature = await verifySignature(longid: decrypted.blocks.first?.verifyRes?.signer,
+                                              email: sender)
         }
 
         return ProcessedMessage(
@@ -239,6 +230,22 @@ final class MessageService {
             messageType: messageType,
             signature: signature
         )
+    }
+
+    private func verifySignature(longid: String?, email: String?) async -> ProcessedMessage.MessageSignature {
+        guard let longid = longid else { return .unknown }
+
+        if let contact = await contactsService.findBy(longId: longid) {
+            return check(longid: longid, for: contact)
+        } else if let email = email, let contact = try? await contactsService.searchContact(with: email) {
+            return check(longid: longid, for: contact)
+        }
+
+        return .unknown
+    }
+
+    private func check(longid: String, for recipient: RecipientWithSortedPubKeys) -> ProcessedMessage.MessageSignature {
+        recipient.isValid(longid: longid) ? .valid(recipient.email) : .invalid
     }
 
     private func getAttachments(
