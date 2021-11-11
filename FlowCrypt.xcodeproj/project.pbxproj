@@ -67,7 +67,6 @@
 		518389CA2726D8F700131B2C /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518389C92726D8F700131B2C /* UIApplicationExtension.swift */; };
 		51B0C7712729861C00124663 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B0C7702729861C00124663 /* String+Extension.swift */; };
 		51B0C774272AB61000124663 /* StringTestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B0C773272AB61000124663 /* StringTestExtension.swift */; };
-		51B4AE4F27137CB70001F33B /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = 51B4AE4E27137CB70001F33B /* Promises */; };
 		51B4AE51271444580001F33B /* PubKeyObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* PubKeyObject.swift */; };
 		51B4AE5327144E590001F33B /* PubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE5227144E590001F33B /* PubKey.swift */; };
 		51C0C1EF271982A1000C9738 /* MailCore in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1EE271982A1000C9738 /* MailCore */; };
@@ -799,7 +798,6 @@
 				51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */,
 				5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
-				51B4AE4F27137CB70001F33B /* Promises in Frameworks */,
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
 				51C0C1F2271987DB000C9738 /* Toast in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
@@ -2146,7 +2144,6 @@
 				51E13F14270F92F200F287CA /* BigInt */,
 				51E13F17270F934C00F287CA /* MBProgressHUD */,
 				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
-				51B4AE4E27137CB70001F33B /* Promises */,
 				51C0C1EE271982A1000C9738 /* MailCore */,
 				51C0C1F1271987DB000C9738 /* Toast */,
 			);
@@ -2258,7 +2255,6 @@
 				51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */,
 				51E13F13270F92F100F287CA /* XCRemoteSwiftPackageReference "BigInt" */,
 				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
-				51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */,
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 			);
@@ -3718,14 +3714,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/promises";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
 		51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FlowCrypt/mailcore2";
@@ -3797,11 +3785,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
 			productName = GoogleAPIClientForREST_PeopleService;
-		};
-		51B4AE4E27137CB70001F33B /* Promises */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51B4AE4D27137CB70001F33B /* XCRemoteSwiftPackageReference "promises" */;
-			productName = Promises;
 		};
 		51C0C1EE271982A1000C9738 /* MailCore */ = {
 			isa = XCSwiftPackageProductDependency;
