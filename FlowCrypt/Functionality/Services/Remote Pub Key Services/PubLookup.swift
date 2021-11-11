@@ -53,7 +53,7 @@ class PubLookup: PubLookupType {
             throw AppErr.unexpected("expecting to find attesterResult")
         }
         if !wkdResult.keys.isEmpty {
-            // WKD keys are preferred. The trust leve is higher because the recipient
+            // WKD keys are preferred. The trust level is higher because the recipient
             //  controls the distribution of the keys themselves on their own domain
             return RecipientWithSortedPubKeys(email: email, keyDetails: wkdResult.keys)
         }
