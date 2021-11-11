@@ -10,7 +10,7 @@ struct PubkeySearchResult {
 }
 
 protocol AttesterApiType {
-    func lookupEmail(email: String) async throws -> [KeyDetails]
+    func lookupEmail(_ email: String) async throws -> [KeyDetails]
     func updateKey(email: String, pubkey: String, token: String?) async throws -> String
     func replaceKey(email: String, pubkey: String) async throws -> String
     func testWelcome(email: String, pubkey: String) async throws
