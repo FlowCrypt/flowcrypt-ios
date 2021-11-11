@@ -109,7 +109,7 @@ extension GoogleUserService: UserServiceType {
         }
     }
 
-    private func handleGoogleAuthStateResult(_ authState:  OIDAuthState) async throws -> SessionType {
+    private func handleGoogleAuthStateResult(_ authState: OIDAuthState) async throws -> SessionType {
         let missingScopes = self.checkMissingScopes(authState.scope)
         if !missingScopes.isEmpty {
             throw GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes)
