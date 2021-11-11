@@ -46,7 +46,7 @@ final class AttesterApi: AttesterApiType {
 }
 
 extension AttesterApi {
-    func lookupEmail(email: String) async throws -> [KeyDetails] {
+    func lookupEmail(_ email: String) async throws -> [KeyDetails] {
         if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
             return []
         }
