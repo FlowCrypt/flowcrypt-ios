@@ -254,8 +254,10 @@ extension ThreadDetailsViewController {
             do {
                 let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
-                    let verificationPubKeys = fetchVerificationPubKeys(for: input[indexPath.section-1].rawMessage.sender)
+                    let sender = input[indexPath.section-1].rawMessage.sender
+                    let verificationPubKeys = fetchVerificationPubKeys(for: sender)
                     let processedMessage = try await messageService.decryptAndProcessMessage(mime: rawMimeData,
+                                                                                             sender: sender,
                                                                                              verificationPubKeys: verificationPubKeys)
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {

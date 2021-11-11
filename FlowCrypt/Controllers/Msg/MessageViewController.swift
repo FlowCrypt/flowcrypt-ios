@@ -446,6 +446,8 @@ private actor ServiceActor {
             pubKeys = []
         }
 
-        return try await messageService.decryptAndProcessMessage(mime: mime, verificationPubKeys: pubKeys)
+        return try await messageService.decryptAndProcessMessage(mime: mime,
+                                                                 sender: sender,
+                                                                 verificationPubKeys: pubKeys)
     }
 }

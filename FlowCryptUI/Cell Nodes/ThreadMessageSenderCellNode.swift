@@ -19,14 +19,16 @@ public final class ThreadMessageSenderCellNode: CellNode {
         public let date: NSAttributedString?
         public let isExpanded: Bool
         public let buttonColor: UIColor
+        public let nodeInsets: UIEdgeInsets
 
-        public init(signature: NSAttributedString,
+        public init(signature: NSAttributedString?,
                     signatureColor: UIColor?,
                     signatureIcon: String?,
                     sender: NSAttributedString,
                     date: NSAttributedString,
                     isExpanded: Bool,
-                    buttonColor: UIColor) {
+                    buttonColor: UIColor,
+                    nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 12)) {
             self.signature = signature
             self.signatureColor = signatureColor
             self.signatureIcon = signatureIcon
@@ -34,6 +36,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
             self.date = date
             self.isExpanded = isExpanded
             self.buttonColor = buttonColor
+            self.nodeInsets = nodeInsets
         }
 
         var replyImage: UIImage? {
@@ -43,6 +46,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
             let systemName = isExpanded ? "chevron.up" : "chevron.down"
             return createButtonImage(systemName: systemName)
         }
+        var shouldShowSignature: Bool { signature != nil }
 
         private func createButtonImage(systemName: String, pointSize: CGFloat = 18) -> UIImage? {
             let configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
@@ -104,9 +108,6 @@ public final class ThreadMessageSenderCellNode: CellNode {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
         expandNode.style.preferredSize = CGSize(width: 18, height: 44)
 
-        let spacer = ASLayoutSpec()
-        spacer.style.flexGrow = 1.0
-
         let infoNode = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 4,
@@ -114,25 +115,43 @@ public final class ThreadMessageSenderCellNode: CellNode {
             alignItems: .start,
             children: [senderNode, dateNode]
         )
+        infoNode.style.flexGrow = 1
+        infoNode.style.flexShrink = 1
 
         let senderSpec = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 4,
             justifyContent: .spaceBetween,
             alignItems: .start,
-            children: [infoNode, spacer, replyNode, expandNode]
+            children: [infoNode, replyNode, expandNode]
         )
 
-        let contentSpec = ASStackLayoutSpec(
-            direction: .vertical,
-            spacing: 4,
-            justifyContent: .spaceBetween,
-            alignItems: .start,
-            children: [signatureNode, senderSpec]
-        )
+        let contentSpec: ASStackLayoutSpec
+        if input.shouldShowSignature {
+            let spacer = ASLayoutSpec()
+            spacer.style.flexGrow = 1.0
+
+            let signatureSpec = ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 4,
+                justifyContent: .spaceBetween,
+                alignItems: .start,
+                children: [signatureNode, spacer]
+            )
+
+            contentSpec = ASStackLayoutSpec(
+                direction: .vertical,
+                spacing: 4,
+                justifyContent: .spaceBetween,
+                alignItems: .stretch,
+                children: [signatureSpec, senderSpec]
+            )
+        } else {
+            contentSpec = senderSpec
+        }
 
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 12),
+            insets: input.nodeInsets,
             child: contentSpec
         )
     }

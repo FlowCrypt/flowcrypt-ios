@@ -27,7 +27,7 @@ enum MessageFetchState {
 
 // MARK: - ProcessedMessage
 struct ProcessedMessage {
-    enum MessageType {
+    enum MessageType: Hashable {
         case error(MsgBlock.DecryptErr.ErrorType), encrypted, plain
     }
 
@@ -151,10 +151,14 @@ final class MessageService {
             folder: folder,
             progressHandler: progressHandler
         )
-        return try await decryptAndProcessMessage(mime: rawMimeData, verificationPubKeys: verificationPubKeys)
+        return try await decryptAndProcessMessage(mime: rawMimeData,
+                                                  sender: input.sender,
+                                                  verificationPubKeys: verificationPubKeys)
     }
 
-    func decryptAndProcessMessage(mime rawMimeData: Data, verificationPubKeys: [String]) async throws -> ProcessedMessage {
+    func decryptAndProcessMessage(mime rawMimeData: Data,
+                                  sender: String?,
+                                  verificationPubKeys: [String]) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
@@ -170,7 +174,10 @@ final class MessageService {
             throw MessageServiceError.missingPassPhrase(rawMimeData)
         }
 
-        let processedMessage = try await processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+        let processedMessage = try await processMessage(rawMimeData: rawMimeData,
+                                                        sender: sender,
+                                                        with: decrypted,
+                                                        keys: keys)
 
         switch processedMessage.messageType {
         case .error(let errorType):
@@ -189,6 +196,7 @@ final class MessageService {
 
     private func processMessage(
         rawMimeData: Data,
+        sender: String?,
         with decrypted: CoreRes.ParseDecryptMsg,
         keys: [PrvKeyInfo]
     ) async throws -> ProcessedMessage {
@@ -209,9 +217,14 @@ final class MessageService {
             messageType = .error(err?.type ?? .other)
             signature = .unknown
         } else {
-            if let longid = decrypted.blocks.first?.verifyRes?.signer,
-               let contact = await contactsService.findBy(longId: longid) {
-                signature = contact.isValid(longid: longid) ? .valid(contact.email) : .invalid
+            if let longid = decrypted.blocks.first?.verifyRes?.signer {
+               if let contact = await contactsService.findBy(longId: longid) {
+                   signature = contact.isValid(longid: longid) ? .valid(contact.email) : .invalid
+               } else if let email = sender, let contact = try? await contactsService.searchContact(with: email) {
+                   signature = contact.isValid(longid: longid) ? .valid(contact.email) : .invalid
+               } else {
+                   signature = .unknown
+               }
             } else {
                 signature = .unknown
             }
