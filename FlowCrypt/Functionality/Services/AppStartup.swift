@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Promises
 import UIKit
 
 private let logger = Logger.nested("AppStart")
@@ -20,7 +19,6 @@ struct AppStartup {
     func initializeApp(window: UIWindow, session: SessionType?) {
         logger.logInfo("Initialize application with session \(session.debugDescription)")
 
-        DispatchQueue.promises = .global()
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
 
@@ -28,7 +26,7 @@ struct AppStartup {
             do {
                 await setupCore()
                 try await DataService.shared.performMigrationIfNeeded()
-                try setupSession()
+                try await setupSession()
                 try await getUserOrgRulesIfNeeded()
                 await chooseView(for: window, session: session)
             } catch {
@@ -42,16 +40,16 @@ struct AppStartup {
         await Core.shared.startIfNotAlreadyRunning()
     }
 
-    private func setupSession() throws {
+    private func setupSession() async throws {
         logger.logInfo("Setup Session")
-        try awaitPromise(renewSessionIfValid())
+        try await renewSessionIfValid()
     }
 
-    private func renewSessionIfValid() -> Promise<Void> {
+    private func renewSessionIfValid() async throws {
         guard DataService.shared.currentAuthType != nil else {
-            return Promise(())
+            return
         }
-        return MailProvider.shared.sessionProvider.renewSession()
+        return try await MailProvider.shared.sessionProvider.renewSession()
     }
 
     @MainActor

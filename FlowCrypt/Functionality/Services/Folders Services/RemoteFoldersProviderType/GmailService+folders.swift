@@ -8,31 +8,25 @@
 
 import Foundation
 import GoogleAPIClientForREST_Gmail
-import Promises
 
 extension GmailService: RemoteFoldersProviderType {
     enum Constants {
         static let allMailFolder = Folder(name: "All Mail", path: "", image: nil)
     }
 
-    func fetchFolders() -> Promise<[Folder]> {
-        Promise { resolve, reject in
-            let query = GTLRGmailQuery_UsersLabelsList.query(withUserId: .me)
-
+    func fetchFolders() async throws -> [Folder] {
+        let query = GTLRGmailQuery_UsersLabelsList.query(withUserId: .me)
+        return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    reject(GmailServiceError.providerError(error))
-                    return
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-
                 guard let listLabels = data as? GTLRGmail_ListLabelsResponse else {
-                    return reject(AppErr.cast("GTLRGmail_ListLabelsResponse"))
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListLabelsResponse"))
                 }
-
                 guard let labels = listLabels.labels else {
-                    return reject(GmailServiceError.failedToParseData(data))
+                    return continuation.resume(throwing: GmailServiceError.failedToParseData(data))
                 }
-
                 let folders = labels
                     .compactMap { [weak self] label -> GTLRGmail_Label? in
                         guard let identifier = label.identifier, identifier.isNotEmpty else {
@@ -47,7 +41,7 @@ extension GmailService: RemoteFoldersProviderType {
                     }
                     .compactMap(Folder.init)
 
-                resolve(folders + [Constants.allMailFolder])
+                return continuation.resume(returning: folders + [Constants.allMailFolder])
             }
         }
     }

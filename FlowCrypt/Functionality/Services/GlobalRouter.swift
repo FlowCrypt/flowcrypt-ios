@@ -106,13 +106,17 @@ extension GlobalRouter {
 
         switch route {
         case .gmailLogin(let viewController):
-            googleService.signIn(in: viewController)
-                .then(on: .main) { [weak self] session in
-                    self?.userAccountService.startSessionFor(user: session)
-                    self?.proceed(with: session)
-                }.catch { [weak self] error in
-                    self?.handleGmailError(error)
+            Task {
+                do {
+                    let session = try await googleService.signIn(in: viewController)
+                    DispatchQueue.main.async {
+                        self.userAccountService.startSessionFor(user: session)
+                        self.proceed(with: session)
+                    }
+                } catch {
+                    self.handleGmailError(error)
                 }
+            }
         case .other(let session):
             userAccountService.startSessionFor(user: session)
             proceed(with: session)

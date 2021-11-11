@@ -70,7 +70,7 @@ class KeyMethodsTest: XCTestCase {
     }
 
     func testCantDecryptKey() async throws {
-        decrypter.result = .failure(.some)
+        decrypter.result = .failure(MockError())
         let result = try await sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
         XCTAssertTrue(result.isEmpty)
     }

@@ -9,7 +9,6 @@
 import FlowCryptCommon
 import Foundation
 import MailCore
-import Promises
 
 extension Imap {
 
@@ -18,52 +17,40 @@ extension Imap {
             let imapSession = dataService.imapSession(),
             let smtpSession = dataService.smtpSession()
         else { return }
-        logger.logInfo("Create new imap and smtp session")
-
-        createNewConnection(
-            imapSession: imapSession,
-            smtpSession: smtpSession
-        )
+        logger.logInfo("Creating a new IMAP session")
+        let newImapSession = MCOIMAPSession(session: imapSession)
+        imapSess = newImapSession.log()
+        logger.logInfo("Creating a new SMTP session")
+        let newSmtpSession = MCOSMTPSession(session: smtpSession)
+        smtpSess = newSmtpSession.log()
     }
 
-    private func createNewConnection(imapSession: IMAPSession?, smtpSession: SMTPSession?) {
-        if let imap = imapSession {
-            logger.logInfo("Creating a new IMAP session")
-            let newImapSession = MCOIMAPSession(session: imap)
-            imapSess = newImapSession
-                .log()
-        }
-
-        if let smtp = smtpSession {
-            logger.logInfo("Creating a new SMTP session")
-            let newSmtpSession = MCOSMTPSession(session: smtp)
-            smtpSess = newSmtpSession
-                .log()
-        }
-    }
-
-    func connectSmtp(session: SMTPSession) -> Promise<Void> {
-        Promise { resolve, reject in
+    func connectSmtp(session: SMTPSession) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
             MCOSMTPSession(session: session)
                 .log()
                 .loginOperation()?
                 .start { error in
-                    guard let error = error else { resolve(()); return }
-                    reject(AppErr.unexpected("Can't establish SMTP Connection.\n\(error.localizedDescription)"))
+                    if let error = error {
+                        return continuation.resume(throwing: error)
+                    } else {
+                        return continuation.resume()
+                    }
                 }
         }
     }
 
-    func connectImap(session: IMAPSession) -> Promise<Void> {
-         Promise { resolve, reject in
+    func connectImap(session: IMAPSession) async throws -> Void {
+        return try await withCheckedThrowingContinuation { continuation in
             MCOIMAPSession(session: session)
                 .log()
                 .connectOperation()?
-                .start { [weak self] error in
-                    guard let error = error else { resolve(()); return }
-                    let message = "Can't establish IMAP Connection.\n\(error.localizedDescription)"
-                    self?.logger.logError(message)
-                    reject(AppErr.unexpected(message))
+                .start { error in
+                    if let error = error {
+                        return continuation.resume(throwing: error)
+                    } else {
+                        return continuation.resume()
+                    }
                 }
         }
     }

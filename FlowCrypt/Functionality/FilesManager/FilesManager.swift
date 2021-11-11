@@ -37,9 +37,9 @@ class FilesManager: FilesManagerType {
     private let queue: DispatchQueue = DispatchQueue.global(qos: .background)
 
     func save(file: FileType) -> Future<URL, Error> {
-        Future<URL, Error> { [weak self] promise in
+        Future<URL, Error> { [weak self] future in
             guard let self = self else {
-                promise(.failure(AppErr.nilSelf))
+                future(.failure(AppErr.nilSelf))
                 return
             }
 
@@ -48,9 +48,9 @@ class FilesManager: FilesManagerType {
 
                 do {
                     try file.data.write(to: url)
-                    promise(.success(url))
+                    future(.success(url))
                 } catch {
-                    promise(.failure(error))
+                    future(.failure(error))
                 }
             }
         }
@@ -62,12 +62,12 @@ class FilesManager: FilesManagerType {
     ) -> AnyPublisher<Void, Error> {
         return self.save(file: file)
             .flatMap { url in
-                Future<Void, Error> { promise in
+                Future<Void, Error> { future in
                     DispatchQueue.main.async {
                         let documentController = UIDocumentPickerViewController(forExporting: [url])
                         documentController.delegate = viewController
                         viewController.present(documentController, animated: true, completion: nil)
-                        promise(.success(()))
+                        future(.success(()))
                     }
                 }
             }
@@ -78,14 +78,14 @@ class FilesManager: FilesManagerType {
     func selectFromFilesApp(
         from viewController: FilesManagerPresenter & UIDocumentPickerDelegate
     ) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
+        Future<Void, Error> { future in
             DispatchQueue.main.async {
                 let documentController = UIDocumentPickerViewController(
                     documentTypes: ["public.data"], in: .import
                 )
                 documentController.delegate = viewController
                 viewController.present(documentController, animated: true, completion: nil)
-                promise(.success(()))
+                future(.success(()))
             }
         }
     }
