@@ -95,9 +95,7 @@ extension GoogleUserService: UserServiceType {
                     }
                     return continuation.resume(throwing: error ?? AppErr.unexpected("Shouldn't happen because covered received non nil error and non nil authState"))
                 }
-                DispatchQueue.main.async {
-                    self.appDelegate?.googleAuthSession = googleAuthSession
-                }
+                self.appDelegate?.googleAuthSession = googleAuthSession
             }
         }
     }
@@ -173,7 +171,8 @@ extension GoogleUserService {
             let isTokenErr = (error as NSError).isEqual(OIDOAuthTokenErrorDomain)
             if isTokenErr, let email = self.currentUserEmail {
                 self.logger.logError("Authorization error during token refresh, clearing state. \(error)")
-                // todo - what exactly does this do and why?
+                // removes any authorisation information which was stored in Keychain, the same happens on logout.
+                // if any error happens during token refresh then user will be signed out automatically.
                 GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
             }
             throw error

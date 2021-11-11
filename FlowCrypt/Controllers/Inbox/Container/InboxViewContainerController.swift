@@ -32,7 +32,7 @@ final class InboxViewContainerController: TableNodeViewController {
     let folderService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
 
-    private var state: State = .loading {
+    @MainActor private var state: State = .loading {
         didSet { handleNewState() }
     }
 
@@ -61,18 +61,14 @@ final class InboxViewContainerController: TableNodeViewController {
         Task {
             do {
                 let folders = try await folderService.fetchFolders(isForceReload: true)
-                DispatchQueue.main.async {
-                    self.handleFetched(folders: folders)
-                }
+                self.handleFetched(folders: folders)
             } catch {
-                DispatchQueue.main.async {
-                    self.state = .error(error)
-                }
+                self.state = .error(error)
             }
         }
     }
 
-    private func handleFetched(folders: [FolderViewModel]) {
+    @MainActor private func handleFetched(folders: [FolderViewModel]) {
         guard folders.isNotEmpty else {
             state = .empty
             return

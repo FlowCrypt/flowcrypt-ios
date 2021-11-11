@@ -21,15 +21,15 @@ extension Imap {
             // attempting to fetch an empty set of uids would cause IMAP error
             return []
         }
-        return try await fetchMessage(in: folder, kind: kind, uids: uids)
+        return try await fetchMessages(in: folder, kind: kind, uids: uids)
     }
 
-    func fetchMessage(
+    func fetchMessages(
         in folder: String,
         kind: MCOIMAPMessagesRequestKind,
         uids: MCOIndexSet
     ) async throws -> [MCOIMAPMessage] {
-        return try await execute("fetchMessage", { sess, respond in
+        return try await execute("fetchMessages", { sess, respond in
             sess.fetchMessagesOperation(
                 withFolder: folder,
                 requestKind: kind,
