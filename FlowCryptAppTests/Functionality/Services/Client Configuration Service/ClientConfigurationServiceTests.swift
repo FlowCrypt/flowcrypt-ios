@@ -27,8 +27,6 @@ final class ClientConfigurationServiceTests: XCTestCase {
             local: localClientConfigurationProvider,
             getCurrentUserEmail: self.isCurrentUserExistMock.currentUserEmail()
         )
-
-        DispatchQueue.promises = .global()
     }
 
     func testGetSavedOrganisationalRulesForCurrentUser() {
@@ -77,7 +75,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
         let expectedClientConfiguration = RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")
 
         enterpriseServerApi.getClientConfigurationCall = { email in
-            throw MockError.some
+            throw MockError()
         }
 
         isCurrentUserExistMock.currentUserEmailCall = {

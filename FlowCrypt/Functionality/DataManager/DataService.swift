@@ -127,7 +127,7 @@ extension DataService: DataServiceType {
 // MARK: - Migration
 extension DataService: DBMigration {
     /// Perform all kind of migrations
-    func performMigrationIfNeeded() async throws -> Void {
+    func performMigrationIfNeeded() async throws {
         try await migrationService.performMigrationIfNeeded()
     }
 }

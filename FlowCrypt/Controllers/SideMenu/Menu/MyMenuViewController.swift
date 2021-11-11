@@ -171,13 +171,18 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
 extension MyMenuViewController {
     private func fetchFolders() {
         showSpinner()
-        foldersProvider.fetchFolders(isForceReload: false)
-            .then(on: .main) { [weak self] folders in
-                self?.handleNewFolders(with: folders)
+        Task {
+            do {
+                let folders = try await foldersProvider.fetchFolders(isForceReload: true)
+                DispatchQueue.main.async {
+                    self.handleNewFolders(with: folders)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.handleError(with: error)
+                }
             }
-            .catch { [weak self] error in
-                self?.handleError(with: error)
-            }
+        }
     }
 
     private func handleNewFolders(with folders: [FolderViewModel]) {
