@@ -6,7 +6,7 @@ const SELECTORS = {
     MENU_ICON: '~menu icn',
     LOGOUT_BTN: '~Log out',
     SETTINGS_BTN: '~Settings',
-    INBOX_BTN: '~Inbox'
+    INBOX_BTN: '~INBOX'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -31,7 +31,7 @@ class MenuBarScreen extends BaseScreen {
     }
 
     clickMenuIcon () {
-        ElementHelper.waitAndClick(this.menuIcon);
+        ElementHelper.waitAndClick(this.menuIcon, 200);
     }
 
     checkUserEmail (email: string = CommonData.account.email) {
