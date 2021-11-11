@@ -75,7 +75,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 timeout: Constants.getActiveFesTimeout,
                 tolerateStatus: Constants.getToleratedHTTPStatuses
             )
-            let response = try await ApiCall.asyncCall(request)
+            let response = try await ApiCall.call(request)
 
             if Constants.getToleratedHTTPStatuses.contains(response.status) {
                 return nil
@@ -114,7 +114,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             apiName: Constants.apiName,
             url: "https://fes.\(userDomain)/api/v1/client-configuration?domain=\(userDomain)"
         )
-        let safeReponse = try await ApiCall.asyncCall(request)
+        let safeReponse = try await ApiCall.call(request)
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
