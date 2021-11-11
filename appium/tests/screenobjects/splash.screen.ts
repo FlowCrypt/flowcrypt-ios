@@ -156,7 +156,7 @@ class SplashScreen extends BaseScreen {
         this.clickContinueBtn();
         this.changeLanguage();
         this.gmailLogin(email, password);
-        this.signInAsGoogleAccounLabel.waitForDisplayed({timeout: 15000, reverse: true});
+        ElementHelper.waitElementInvisible(this.signInAsGoogleAccounLabel);
     }
 }
 
