@@ -19,6 +19,7 @@ enum WkdMethod {
 struct WkdUrls {
     let policy: String
     let pubKeys: String
+    let method: WkdMethod
 }
 
 protocol WkdUrlConstructorType {
@@ -39,6 +40,6 @@ class WkdUrlConstructor: WkdUrlConstructorType {
         let base = method == .direct
             ? "https://\(domain)/.well-known/openpgpkey/"
             : "https://openpgpkey.\(domain)/.well-known/openpgpkey/\(domain)/"
-        return WkdUrls(policy: "\(base)policy", pubKeys: "\(base)\(userPart)")
+        return WkdUrls(policy: "\(base)policy", pubKeys: "\(base)\(userPart)", method: method)
     }
 }

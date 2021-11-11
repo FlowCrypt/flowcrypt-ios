@@ -23,6 +23,12 @@ class WkdApi: WkdApiType {
         static let apiName = "WkdApi"
     }
 
+    private struct InternalResult {
+        let hasPolicy: Bool
+        let key: Data?
+        let method: WkdMethod
+    }
+
     private let urlConstructor: WkdUrlConstructorType
     private let core: Core
 
@@ -47,18 +53,28 @@ class WkdApi: WkdApiType {
         else {
             return nil
         }
-        var response: (hasPolicy: Bool, key: Data?)?
-        response = try await urlLookup(advancedUrl)
-        if response?.hasPolicy == true && response?.key == nil {
-            return nil
+        let results: [InternalResult] = try await withThrowingTaskGroup(of: InternalResult.self) { tg in
+            var results: [InternalResult] = []
+            tg.addTask { try await self.urlLookup(advancedUrl, method: .advanced) }
+            tg.addTask { try await self.urlLookup(directUrl, method: .direct) }
+            for try await result in tg {
+                results.append(result)
+            }
+            return results
         }
-        if response?.key == nil {
-            response = try await urlLookup(directUrl)
-            if response?.key == nil {
+        guard let advancedResult = results.first(where: { $0.method == .advanced }) else {
+            throw AppErr.unexpected("missing expected lookup method .advanced")
+        }
+        guard let directResult = results.first(where: { $0.method == .direct }) else {
+            throw AppErr.unexpected("missing expected lookup method .direct")
+        }
+        if advancedResult.hasPolicy { // hasPolicy means the WKD server is running
+            guard let binaryKeysData = advancedResult.key else {
                 return nil
             }
+            return try await core.parseKeys(armoredOrBinary: binaryKeysData)
         }
-        guard let binaryKeysData = response?.key else {
+        guard directResult.hasPolicy, let binaryKeysData = directResult.key else {
             return nil
         }
         return try await core.parseKeys(armoredOrBinary: binaryKeysData)
@@ -67,7 +83,7 @@ class WkdApi: WkdApiType {
 
 extension WkdApi {
 
-    private func urlLookup(_ urls: WkdUrls) async throws -> (hasPolicy: Bool, key: Data?) {
+    private func urlLookup(_ urls: WkdUrls, method: WkdMethod) async throws -> InternalResult {
         do {
             let request = ApiCall.Request(
                 apiName: Constants.apiName,
@@ -77,7 +93,7 @@ extension WkdApi {
             _ = try await ApiCall.call(request)
         } catch {
             Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
-            return (hasPolicy: false, key: nil)
+            return InternalResult(hasPolicy: false, key: nil, method: method)
         }
 
         let request = ApiCall.Request(
@@ -92,9 +108,9 @@ extension WkdApi {
         }
 
         if pubKeyResponse.status == 404 {
-            return (hasPolicy: true, key: nil)
+            return InternalResult(hasPolicy: true, key: nil, method: method)
         }
 
-        return (true, pubKeyResponse.data)
+        return InternalResult(hasPolicy: true, key: pubKeyResponse.data, method: method)
     }
 }
