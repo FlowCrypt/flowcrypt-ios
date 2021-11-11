@@ -11,7 +11,7 @@ import Foundation
 
 final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
 
-    var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError.some)
+    var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError())
     func fetchForCurrentUser() async throws -> ClientConfiguration {
         switch fetchOrganisationalRulesForCurrentUserResult {
         case .success(let result):
@@ -22,7 +22,7 @@ final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
     }
 
     var fetchOrganisationalRulesForEmail: (String) throws -> ClientConfiguration = { _ in
-        throw MockError.some
+        throw MockError()
     }
     func fetchOrganisationalRules(for email: String) async throws -> ClientConfiguration {
         return try fetchOrganisationalRulesForEmail(email)

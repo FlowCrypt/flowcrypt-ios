@@ -11,9 +11,9 @@ import Foundation
 
 extension Future {
     static func resolveAfter<T, E: Error>(timeout: TimeInterval = 5, with result: Result<T, E>) -> Future<T, E> {
-        Future<T, E> { promise in
+        Future<T, E> { future in
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
-                promise(result)
+                future(result)
             }
         }
     }

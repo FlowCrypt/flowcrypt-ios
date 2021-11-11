@@ -59,7 +59,7 @@ private struct ComposedErrorHandler: ErrorHandler {
 // In case Errors should be handled differently for some cases
 // func handle(error: Error, for viewController: UIViewController) -> Bool
 // should be improved to use Presenter instead of UIViewController
-// and Promise<Bool> as return type instead of Bool in case of callback or async handling
+// as return type instead of Bool in case of callback or async handling
 
 // ADD FALLBACK TO ERROR HANDLING
 

@@ -4,16 +4,14 @@
 
 import Foundation
 import MailCore
-import Promises
 
 extension Imap {
-    func fetchMsg(message: MCOIMAPMessage, folder: String) -> Promise<Data> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.imapSess?
-                .fetchMessageOperation(withFolder: folder, uid: message.uid)
-                .start(self.finalize("fetchMsg", resolve, reject, retry: { self.fetchMsg(message: message, folder: folder) }))
-        }
+    func fetchMsg(message: MCOIMAPMessage, folder: String) async throws -> Data {
+        return try await execute("fetchMsg", { sess, respond in
+            sess.fetchMessageOperation(
+                withFolder: folder,
+                uid: message.uid
+            ).start { error, value in respond(error, value) }
+        })
     }
 }
