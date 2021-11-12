@@ -164,7 +164,7 @@ final class MessageService {
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
-        let verificationPubKeys = fetchVerificationPubKeys(for: sender)
+        let verificationPubKeys = try await fetchVerificationPubKeys(for: sender)
         let decrypted = try await core.parseDecryptMsg(
             encrypted: rawMimeData,
             keys: keys,
@@ -217,13 +217,12 @@ final class MessageService {
             let err = decryptErrBlock.decryptErr?.error
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
-            signature = .error(rawMsg)
+            signature = .error("processing error")
         } else {
             text = decrypted.text
             messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
             signature = await evaluateSignatureVerificationResult(
-                signature: decrypted.blocks.first?.verifyRes,
-                sender: sender
+                signature: decrypted.blocks.first?.verifyRes
             )
         }
 
@@ -278,35 +277,28 @@ final class MessageService {
 
 // MARK: - Message verification
 extension MessageService {
-    private func fetchVerificationPubKeys(for sender: String?) -> [String] {
-        if let sender = sender {
-            return contactsService.retrievePubKeys(for: sender)
-        } else {
-            return []
-        }
+    private func fetchVerificationPubKeys(for sender: String?) async throws -> [String] {
+        guard let sender = sender else { return [] }
+
+        let pubKeys = contactsService.retrievePubKeys(for: sender)
+        if pubKeys.isNotEmpty { return pubKeys }
+
+        guard let contact = try? await contactsService.searchContact(with: sender)
+        else { return [] }
+
+        return contact.activePubKeys.map(\.armored)
     }
 
     private func evaluateSignatureVerificationResult(
-        signature: MsgBlock.VerifyRes?,
-        sender: String?
+        signature: MsgBlock.VerifyRes?
     ) async -> ProcessedMessage.MessageSignature {
         guard let signature = signature else { return .unsigned }
 
-        if let error = signature.error {
-            return .error(error)
-        }
+        if let error = signature.error { return .error(error) }
 
         guard let signer = signature.signer else { return .unsigned }
 
-        var pubKey: PubKey?
-
-        if let contact = await contactsService.findBy(longId: signer) {
-            pubKey = contact.pubKey(with: signer)
-        } else if let email = sender, let contact = try? await contactsService.searchContact(with: email) {
-            pubKey = contact.pubKey(with: signer)
-        }
-
-        guard pubKey != nil && signature.match != nil else { return .missingPubkey(signer) }
+        guard signature.match != nil else { return .missingPubkey(signer) }
 
         guard signature.match == true else { return .bad }
 

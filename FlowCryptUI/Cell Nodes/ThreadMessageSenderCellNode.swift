@@ -127,7 +127,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
         )
 
         let contentSpec: ASStackLayoutSpec
-        if input.shouldShowSignature {
+        if input.isExpanded && input.shouldShowSignature {
             let spacer = ASLayoutSpec()
             spacer.style.flexGrow = 1.0
 
@@ -144,7 +144,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
                 spacing: 4,
                 justifyContent: .spaceBetween,
                 alignItems: .stretch,
-                children: [signatureSpec, senderSpec]
+                children: [senderSpec, signatureSpec]
             )
         } else {
             contentSpec = senderSpec

@@ -43,8 +43,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func retrievePubKeys(for email: String) -> [String] {
-        find(with: email)?.pubKeys
-            .map { $0.armored } ?? []
+        find(with: email)?.pubKeys.map(\.armored) ?? []
     }
 
     func findBy(longid: String) async -> RecipientWithSortedPubKeys? {
