@@ -15,7 +15,7 @@ class PubLookupTest: XCTestCase {
         // tests https://github.com/FlowCrypt/flowcrypt-ios/issues/809
         // fetches https://flowcrypt.com/attester/pub/different.uid@recipient.test
         // if this test starts failing, ensure the right pubkey is still on prod Attester
-        let r = try await PubLookup().lookup(with: "different.uid@recipient.test")
+        let r = try await PubLookup().lookup(email: "different.uid@recipient.test")
         XCTAssertTrue(r.pubKeys.isNotEmpty, "expected pubkeys not empty")
         XCTAssertEqual(r.pubKeys.first?.longid, "0C9C2E6A4D273C6F")
     }
