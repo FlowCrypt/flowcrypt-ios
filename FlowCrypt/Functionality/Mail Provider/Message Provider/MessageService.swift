@@ -287,7 +287,7 @@ extension MessageService {
         guard let contact = try? await contactsService.searchContact(with: sender)
         else { return [] }
 
-        return contact.activePubKeys.map(\.armored)
+        return contact.pubKeys.map(\.armored)
     }
 
     private func evaluateSignatureVerificationResult(

@@ -49,10 +49,6 @@ extension RecipientWithSortedPubKeys {
     var keyState: PubKeyState { pubKeys.first?.keyState ?? .empty }
     var activePubKeys: [PubKey] { pubKeys.filter { $0.keyState == .active } }
 
-    func pubKey(with longid: String) -> PubKey? {
-        activePubKeys.first(where: { $0.longids.contains(longid) })
-    }
-
     private var sortedPubKeys: [PubKey] {
         _pubKeys
             .sorted(by: { key1, key2 in

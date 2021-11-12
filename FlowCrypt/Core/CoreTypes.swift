@@ -196,6 +196,8 @@ struct MsgBlock: Decodable {
         let match: Bool?
         let signer: String?
         let error: String?
+        let mixed: Bool?
+        let partial: Bool?
     }
 
     enum BlockType: String, Decodable {
