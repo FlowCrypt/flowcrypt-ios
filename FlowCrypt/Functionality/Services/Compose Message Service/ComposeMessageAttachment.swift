@@ -9,11 +9,14 @@
 import UIKit
 import Photos
 
-struct ComposeMessageAttachment {
+struct ComposeMessageAttachment: Equatable {
     let name: String
     let size: Int
     let data: Data
     let type: String
+    var humanReadableSizeString: String {
+        return ByteCountFormatter().string(fromByteCount: Int64(self.size))
+    }
 }
 
 extension ComposeMessageAttachment {
@@ -26,8 +29,6 @@ extension ComposeMessageAttachment {
         switch mediaType {
         case PhotosManager.MediaType.image:
             urlKey = .imageURL
-        case PhotosManager.MediaType.video:
-            urlKey = .mediaURL
         default: return nil
         }
 
@@ -65,5 +66,9 @@ extension ComposeMessageAttachment {
         self.data = data
         self.size = data.count
         self.type = fileURL.mimeType
+    }
+
+    func toSendableMsgAttachment() -> SendableMsg.Attachment {
+        return SendableMsg.Attachment( name: self.name, type: self.type, base64: self.data.base64EncodedString())
     }
 }

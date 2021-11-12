@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MailCore
 
 protocol MessageKindProviderType {
     var messagesRequestKind: Int { get }

@@ -7,11 +7,10 @@
 //
 
 import FlowCryptCommon
-import Promises
 import GoogleAPIClientForREST_PeopleService
 
 protocol CloudContactsProvider {
-    func searchContacts(query: String) -> Promise<[String]>
+    func searchContacts(query: String) async throws -> [String]
 }
 
 enum CloudContactsProviderError: Error {
@@ -35,32 +34,75 @@ final class UserContactsProvider {
         return service
     }
 
+    private enum QueryType {
+        case contacts, other
+
+        func query(searchString: String) -> GTLRPeopleServiceQuery {
+            switch self {
+            case .contacts:
+                let query = GTLRPeopleServiceQuery_PeopleSearchContacts.query()
+                query.readMask = readMask
+                query.query = searchString
+                return query
+            case .other:
+                let query = GTLRPeopleServiceQuery_OtherContactsSearch.query()
+                query.readMask = readMask
+                query.query = searchString
+                return query
+            }
+        }
+
+        var readMask: String {
+            switch self {
+            case .contacts, .other: return "emailAddresses"
+            }
+        }
+    }
+
     init(userService: GoogleUserServiceType = GoogleUserService()) {
         self.userService = userService
-        
-        // Warmup query for contacts cache
-        _ = self.searchContacts(query: "")
+
+        runWarmupQuery()
+    }
+
+    private func runWarmupQuery() {
+        Task {
+            // Warmup query for google contacts cache
+            _ = await searchContacts(query: "")
+        }
     }
 }
 
 extension UserContactsProvider: CloudContactsProvider {
-    func searchContacts(query: String) -> Promise<[String]> {
-        let searchQuery = GTLRPeopleServiceQuery_PeopleSearchContacts.query()
-        searchQuery.readMask = "names,emailAddresses"
-        searchQuery.query = query
+    func searchContacts(query: String) async -> [String] {
+        let contacts = await searchUserContacts(query: query, type: .contacts)
+        let otherContacts = await searchUserContacts(query: query, type: .other)
+        let emails = Set(contacts + otherContacts)
+        return Array(emails).sorted(by: >)
+    }
+}
 
-        return Promise<[String]> { resolve, reject in
-            self.peopleService.executeQuery(searchQuery) { _, data, error in
+extension UserContactsProvider {
+    private func searchUserContacts(query: String, type: QueryType) async -> [String] {
+        let query = type.query(searchString: query)
+
+        guard let emails = try? await perform(query: query) else { return [] }
+        return emails
+    }
+
+    private func perform(query: GTLRPeopleServiceQuery) async throws -> [String] {
+        try await withCheckedThrowingContinuation { continuation in
+            self.peopleService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    return reject(CloudContactsProviderError.providerError(error))
+                    return continuation.resume(throwing: CloudContactsProviderError.providerError(error))
                 }
 
                 guard let response = data as? GTLRPeopleService_SearchResponse else {
-                    return reject(AppErr.cast("GTLRPeopleService_SearchResponse"))
+                    return continuation.resume(throwing: AppErr.cast("GTLRPeopleService_SearchResponse"))
                 }
 
                 guard let contacts = response.results else {
-                    return reject(CloudContactsProviderError.failedToParseData(data))
+                    return continuation.resume(throwing: CloudContactsProviderError.failedToParseData(data))
                 }
 
                 let emails = contacts
@@ -68,7 +110,7 @@ extension UserContactsProvider: CloudContactsProvider {
                     .flatMap { $0 }
                     .compactMap { $0.value }
 
-                resolve(emails)
+                return continuation.resume(returning: emails)
             }
         }
     }

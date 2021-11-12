@@ -19,6 +19,8 @@ struct KeyServiceErrorHandler: ErrorHandler {
             errorMessage = "keyServiceError_retrieve_parse"
         case .unexpected:
             errorMessage = "keyServiceError_retrieve_unexpected"
+        case .missingCurrentUserEmail:
+            errorMessage = "keyServiceError_missing_current_email"
         default:
             errorMessage = nil
         }

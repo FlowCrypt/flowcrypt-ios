@@ -32,7 +32,7 @@ final class InboxViewContainerController: TableNodeViewController {
     let folderService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
 
-    private var state: State = .loading {
+    @MainActor private var state: State = .loading {
         didSet { handleNewState() }
     }
 
@@ -58,16 +58,17 @@ final class InboxViewContainerController: TableNodeViewController {
     }
 
     private func fetchInboxFolder() {
-        folderService.fetchFolders(isForceReload: true)
-            .then(on: .main) { [weak self] folders in
-                self?.handleFetched(folders: folders)
+        Task {
+            do {
+                let folders = try await folderService.fetchFolders(isForceReload: true)
+                self.handleFetched(folders: folders)
+            } catch {
+                self.state = .error(error)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.state = .error(error)
-            }
+        }
     }
 
-    private func handleFetched(folders: [FolderViewModel]) {
+    @MainActor private func handleFetched(folders: [FolderViewModel]) {
         guard folders.isNotEmpty else {
             state = .empty
             return
@@ -97,8 +98,8 @@ final class InboxViewContainerController: TableNodeViewController {
                 state = .error(InboxViewControllerContainerError.internalError)
                 return
             }
-
-            let inboxViewController = InboxViewController(InboxViewModel(inbox))
+            let input = InboxViewModel(inbox)
+            let inboxViewController = InboxViewControllerFactory.make(with: input)
             navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }
@@ -150,9 +151,7 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
 
             switch self.state {
             case .loading:
-                return TextCellNode(
-                    input: .loading(with: size)
-                )
+                return TextCellNode.loading
             case .error(let error):
                 return TextCellNode(
                     input: self.decorator.errorInput(with: descriptionSize, error: error)

@@ -44,6 +44,18 @@ class ElementHelper {
         this.waitElementVisible(element);
         element.doubleClick();
     }
+
+    static waitAndClick(element, delayMs = 10) {
+        element.waitForDisplayed();
+        // stability fix to make sure element is ready for interaction
+        browser.pause(delayMs)
+        element.click();
+    }
+
+    static waitClickAndType(element, text: string) {
+        this.waitAndClick(element)
+        element.setValue(text);
+    }
 }
 
 export default ElementHelper;

@@ -1,0 +1,32 @@
+Delivered-To: flowcrypt.compatibility@gmail.com
+Return-Path: <flowcrypt.compatibility@gmail.com>
+Openpgp: id=E76853E128A0D376CAE47C143A30F4CC0A9A8F10
+From: flowcrypt.compatibility@gmail.com
+MIME-Version: 1.0
+Date: Thu, 2 Nov 2017 17:54:14 -0700
+Message-ID: <CANzaQHU9A@mail.gmail.com>
+Subject: mime email plain signed
+To: flowcrypt.compatibility@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+some
+汉
+txt
+-----BEGIN PGP SIGNATURE-----
+Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+wsBcBAEBCAAGBQJhY1x0AAoJEDow9MwKmo8QMR0H/iHkHFr1doJhqIVsSXyQ
+bBwYpoaIRHEZlF3RQa3sbkLqXSTzHf81ySb7/oXgd+z5RYYw2vD9bebaInb3
+Ca9FuBrM4ZlnmVVnNpv/nntZZdln+AVq+rEOaLDcHC4nFTC3Z7QwulZn31Hm
+b0JcsGAuIDfUZ1mFfFpyCq7KB+XGbV3bc+bUBO0pjKfbsEISBqJxuCzJIr+0
+pIwMSdluQXxtyyqT3aXnoH9jl75dBDDvMEPR3c/I2+k9SWWoYslwhn2TqB94
+RFgwWpw/SH8+1b3lI1AWnkVpkkm8JOnteViHCz85ALd9xkACjq8UavPGLy0v
+J6XRgsV1E2RTmydFB6vv/9w=
+=quFc
+-----END PGP SIGNATURE-----
+

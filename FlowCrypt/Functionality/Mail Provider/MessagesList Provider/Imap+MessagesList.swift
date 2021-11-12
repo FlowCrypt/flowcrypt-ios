@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import Promises
+import MailCore
 
 extension Imap: MessagesListProvider {
-    func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext> {
+    func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
         guard case let .byNumber(from) = context.pagination else {
             fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
         }
@@ -18,37 +18,29 @@ extension Imap: MessagesListProvider {
             fatalError("Folder path should not be nil for IMAP")
         }
 
-        return Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            let folderInfo = try awaitPromise(self.folderInfo(for: folderPath))
-            let totalCount = Int(folderInfo.messageCount)
-            if totalCount == 0 {
-                resolve(MessageContext(messages: [], pagination: .byNumber(total: totalCount)))
-            }
-            let set = self.helper.createSet(
-                for: context.count ?? 10,
-                total: totalCount,
-                from: from ?? 0
-            )
-            let kind = self.messageKindProvider.imapMessagesRequestKind
-            let messages = try awaitPromise(self.fetchMsgsByNumber(for: folderPath, kind: kind, set: set))
-                .map(Message.init)
-
-            resolve(MessageContext(messages: messages, pagination: .byNumber(total: totalCount)))
+        let folderInfo = try await folderInfo(for: folderPath)
+        let totalCount = Int(folderInfo.messageCount)
+        if totalCount == 0 {
+            return MessageContext(messages: [], pagination: .byNumber(total: totalCount))
         }
+        let set = helper.createSet(
+            for: context.count ?? 10,
+            total: totalCount,
+            from: from ?? 0
+        )
+        let kind = messageKindProvider.imapMessagesRequestKind
+        let messages = try await fetchMsgsByNumber(for: folderPath, kind: kind, set: set)
+            .map(Message.init)
+
+        return MessageContext(messages: messages, pagination: .byNumber(total: totalCount))
     }
 
-    private func folderInfo(for path: String) -> Promise<MCOIMAPFolderInfo> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.imapSess?
-                .folderInfoOperation(path)
-                .start(self.finalize("folderInfo", resolve, reject, retry: {
-                    self.folderInfo(for: path)
-                }))
-        }
+    private func folderInfo(for path: String) async throws -> MCOIMAPFolderInfo {
+        return try await execute("folderInfo", { sess, respond in
+            sess.folderInfoOperation(
+                path
+            ).start { error, info in respond(error, info) }
+        })
     }
 }
 

@@ -4,7 +4,6 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 struct HttpRes {
     let status: Int
@@ -17,41 +16,43 @@ struct HttpErr: Error {
     let error: Error?
 }
 
-private let logger = Logger.nested("URLSession")
+private func toString(_ trace: Trace) -> String {
+    let result = trace.result()
+    if result < 1.0 {
+        return "ms:\(Int(1000 * result))"
+    }
+    return "s:\(Int(result))"
+}
 
 extension URLSession {
-    func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
-        Promise { resolve, reject in
-            let trace = Trace(id: "call")
-            self.dataTask(with: urlRequest) { data, response, error in
-                let res = response as? HTTPURLResponse
-                let status = res?.statusCode ?? GeneralConstants.Global.generalError
-                let urlMethod = urlRequest.httpMethod ?? "GET"
-                let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
-                let headers = urlRequest.headersWithFilteredTokens
-                let message = "URLSession.call status:\(status) ms:\(trace.finish()) \(urlMethod) \(urlString), headers: \(headers)"
-                Logger.nested("URLSession").logInfo(message)
+    func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
+        let trace = Trace(id: "call")
 
-                let validStatusCode = 200 ... 299
-                let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
-                let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes
-                let isValidResponse = error == nil && isCodeValid
-                if let data = data, isValidResponse {
-                    resolve(HttpRes(status: status, data: data))
-                } else {
-                    reject(HttpErr(status: status, data: data, error: error))
-                }
-            }.resume()
+        var data: Data?
+        var response: URLResponse?
+        var requestError: Error?
+        do {
+            (data, response) = try await self.data(for: urlRequest)
+        } catch {
+            requestError = error
         }
-    }
 
-    func call(_ urlStr: String, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
-        Promise { () -> HttpRes in
-            let url = URL(string: urlStr)
-            guard url != nil else {
-                throw HttpErr(status: -2, data: Data(), error: AppErr.unexpected("Invalid url: \(urlStr)"))
-            }
-            return try awaitPromise(self.call(URLRequest(url: url!), tolerateStatus: tolerateStatus))
+        let res = response as? HTTPURLResponse
+        let status = res?.statusCode ?? GeneralConstants.Global.generalError
+        let urlMethod = urlRequest.httpMethod ?? "GET"
+        let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
+        let headers = urlRequest.headersWithFilteredTokens
+        let message = "URLSession.call status:\(status) \(toString(trace)) \(urlMethod) \(urlString), headers: \(headers)"
+        Logger.nested("URLSession").logInfo(message)
+
+        let validStatusCode = 200 ... 299
+        let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
+        let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes
+        let isValidResponse = requestError == nil && isCodeValid
+        if let data = data, isValidResponse {
+            return HttpRes(status: status, data: data)
+        } else {
+            throw (HttpErr(status: status, data: data, error: requestError))
         }
     }
 }
@@ -69,14 +70,11 @@ struct URLHeader {
 
 extension URLRequest {
     static func urlRequest(
-        with urlString: String,
+        with url: URL,
         method: HTTPMetod = .get,
         body: Data? = nil,
         headers: [URLHeader] = []
     ) -> URLRequest {
-        guard let url = URL(string: urlString) else {
-            fatalError("can't create URL")
-        }
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.httpBody = body

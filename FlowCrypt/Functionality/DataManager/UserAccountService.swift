@@ -8,7 +8,6 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 protocol UserAccountServiceType {
     func startSessionFor(user type: SessionType)
@@ -146,7 +145,7 @@ extension UserAccountService: UserAccountServiceType {
     }
 
     private func logOut(user email: String) {
-        logger.logInfo("Log out user with \(email)")
+        logger.logInfo("Logging out user \(email)")
 
         switch dataService.currentAuthType {
         case .oAuthGmail:

@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Promises
 import UIKit
 
 protocol GlobalRouterType {
@@ -56,8 +55,26 @@ final class GlobalRouter: GlobalRouterType {
 extension GlobalRouter {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        userAccountService.cleanupSessions()
-        proceed(with: nil)
+        validateEncryptedStorage {
+            userAccountService.cleanupSessions()
+            proceed(with: nil)
+        }
+    }
+
+    private func validateEncryptedStorage(_ completion: () -> Void) {
+        let storage = EncryptedStorage()
+        do {
+            try storage.validate()
+            completion()
+        } catch {
+            let controller = InvalidStorageViewController(
+                error: error,
+                encryptedStorage: storage,
+                router: self
+            )
+            keyWindow.rootViewController = UINavigationController(rootViewController: controller)
+            keyWindow.makeKeyAndVisible()
+        }
     }
 
     private func proceed(with session: SessionType?) {
@@ -66,6 +83,18 @@ extension GlobalRouter {
         let window = keyWindow
         DispatchQueue.main.async {
             AppStartup().initializeApp(window: window, session: session)
+        }
+    }
+
+    private func handleGmailError(_ error: Error) {
+        logger.logInfo("gmail login failed with error \(error.localizedDescription)")
+        if let gmailUserError = error as? GoogleUserServiceError,
+           case .userNotAllowedAllNeededScopes(let missingScopes) = gmailUserError {
+            DispatchQueue.main.async {
+                let topNavigation = (self.keyWindow.rootViewController as? UINavigationController)
+                let checkAuthViewControlelr = CheckAuthScopesViewController(missingScopes: missingScopes)
+                topNavigation?.pushViewController(checkAuthViewControlelr, animated: true)
+            }
         }
     }
 }
@@ -77,11 +106,17 @@ extension GlobalRouter {
 
         switch route {
         case .gmailLogin(let viewController):
-            googleService.signIn(in: viewController)
-                .then(on: .main) { [weak self] session in
-                    self?.userAccountService.startSessionFor(user: session)
-                    self?.proceed(with: session)
+            Task {
+                do {
+                    let session = try await googleService.signIn(in: viewController)
+                    DispatchQueue.main.async {
+                        self.userAccountService.startSessionFor(user: session)
+                        self.proceed(with: session)
+                    }
+                } catch {
+                    self.handleGmailError(error)
                 }
+            }
         case .other(let session):
             userAccountService.startSessionFor(user: session)
             proceed(with: session)

@@ -5,7 +5,8 @@ import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
     MENU_ICON: '~menu icn',
     LOGOUT_BTN: '~Log out',
-    SETTINGS_BTN: '~Settings'
+    SETTINGS_BTN: '~Settings',
+    INBOX_BTN: '~INBOX'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -22,11 +23,15 @@ class MenuBarScreen extends BaseScreen {
     }
 
     get settingsButton () {
-        return $(SELECTORS.SETTINGS_BTN)
+        return $(SELECTORS.SETTINGS_BTN);
+    }
+
+    get inboxButton () {
+        return $(SELECTORS.INBOX_BTN);
     }
 
     clickMenuIcon () {
-        this.menuIcon.click();
+        ElementHelper.waitAndClick(this.menuIcon, 200);
     }
 
     checkUserEmail (email: string = CommonData.account.email) {
@@ -40,7 +45,15 @@ class MenuBarScreen extends BaseScreen {
     }
 
     clickLogout () {
-        this.logoutButton.click();
+        ElementHelper.waitAndClick(this.logoutButton);
+    }
+
+    clickSettingsButton () {
+        ElementHelper.waitAndClick(this.settingsButton);
+    }
+
+    clickInboxButton () {
+        ElementHelper.waitAndClick(this.inboxButton);
     }
 }
 

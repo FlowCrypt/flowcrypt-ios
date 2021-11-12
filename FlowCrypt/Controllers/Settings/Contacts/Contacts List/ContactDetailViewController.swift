@@ -7,30 +7,38 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptCommon
 import FlowCryptUI
 
 /**
- * View controller which shows details about a contact and the public key recorded for it
+ * View controller which shows details about a contact and lists public keys recorded for it
  * - User can be redirected here from settings *ContactsListViewController* by tapping on a particular contact
  */
 final class ContactDetailViewController: TableNodeViewController {
     typealias ContactDetailAction = (Action) -> Void
 
     enum Action {
-        case delete(_ contact: Contact)
+        case delete(_ recipient: RecipientWithSortedPubKeys)
+    }
+
+    private enum Section: Int, CaseIterable {
+        case header = 0, keys
     }
 
     private let decorator: ContactDetailDecoratorType
-    private let contact: Contact
+    private let contactsProvider: LocalContactsProviderType
+    private var recipient: RecipientWithSortedPubKeys
     private let action: ContactDetailAction?
 
     init(
         decorator: ContactDetailDecoratorType = ContactDetailDecorator(),
-        contact: Contact,
+        contactsProvider: LocalContactsProviderType = LocalContactsProvider(),
+        recipient: RecipientWithSortedPubKeys,
         action: ContactDetailAction?
     ) {
         self.decorator = decorator
-        self.contact = contact
+        self.contactsProvider = contactsProvider
+        self.recipient = recipient
         self.action = action
         super.init(node: TableNode())
     }
@@ -51,45 +59,97 @@ final class ContactDetailViewController: TableNodeViewController {
     private func setupNavigationBarItems() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                .init(image: UIImage(named: "share"), action: (self, #selector(handleSaveAction))),
-                .init(image: UIImage(named: "copy"), action: (self, #selector(handleCopyAction))),
-                .init(image: UIImage(named: "trash"), action: (self, #selector(handleRemoveAction)))
+                .init(image: UIImage(systemName: "trash"), action: (self, #selector(handleRemoveAction)))
             ]
         )
     }
 }
 
 extension ContactDetailViewController {
-    @objc private final func handleSaveAction() {
-        let vc = UIActivityViewController(
-            activityItems: [contact.pubKey],
-            applicationActivities: nil
-        )
-        present(vc, animated: true, completion: nil)
-    }
-
-    @objc private final func handleCopyAction() {
-        UIPasteboard.general.string = contact.pubKey
-        showToast("contact_detail_copy".localized)
-    }
-
     @objc private final func handleRemoveAction() {
         navigationController?.popViewController(animated: true) { [weak self] in
             guard let self = self else { return }
-            self.action?(.delete(self.contact))
+            self.action?(.delete(self.recipient))
         }
+    }
+
+    private func delete(with context: Either<PubKey, IndexPath>) {
+        let keyToRemove: PubKey
+        let indexPathToRemove: IndexPath
+        switch context {
+        case .left(let key):
+            keyToRemove = key
+            guard let index = recipient.pubKeys.firstIndex(where: { $0 == key }) else {
+                assertionFailure("Can't find index of the contact")
+                return
+            }
+            indexPathToRemove = IndexPath(row: index, section: 1)
+        case .right(let indexPath):
+            indexPathToRemove = indexPath
+            keyToRemove = recipient.pubKeys[indexPath.row]
+        }
+
+        recipient.remove(pubKey: keyToRemove)
+        if let fingerprint = keyToRemove.fingerprint, fingerprint.isNotEmpty {
+            contactsProvider.removePubKey(with: fingerprint, for: recipient.email)
+        }
+        node.deleteRows(at: [indexPathToRemove], with: .left)
     }
 }
 
 extension ContactDetailViewController: ASTableDelegate, ASTableDataSource {
-    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        1
+    func numberOfSections(in tableNode: ASTableNode) -> Int {
+        Section.allCases.count
+    }
+
+    func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
+        guard let section = Section(rawValue: section) else { return 0 }
+
+        switch section {
+        case .header: return 1
+        case .keys: return recipient.pubKeys.count
+        }
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
-            guard let self = self else { return ASCellNode() }
-            return ContactDetailNode(input: self.decorator.nodeInput(with: self.contact))
+            guard let self = self, let section = Section(rawValue: indexPath.section)
+            else { return ASCellNode() }
+            return self.node(for: section, row: indexPath.row)
+        }
+    }
+
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard let section = Section(rawValue: indexPath.section) else { return }
+
+        switch section {
+        case .header:
+            return
+        case .keys:
+            let pubKey = recipient.pubKeys[indexPath.row]
+            let contactKeyDetailViewController = ContactKeyDetailViewController(pubKey: pubKey) { [weak self] action in
+                guard case let .delete(key) = action else {
+                    assertionFailure("Action is not implemented")
+                    return
+                }
+                self?.delete(with: .left(key))
+            }
+
+            navigationController?.pushViewController(contactKeyDetailViewController, animated: true)
+        }
+    }
+}
+
+// MARK: - UI
+extension ContactDetailViewController {
+    private func node(for section: Section, row: Int) -> ASCellNode {
+        switch section {
+        case .header:
+            return ContactUserCellNode(input: self.decorator.userNodeInput(with: self.recipient))
+        case .keys:
+            return ContactKeyCellNode(
+                input: self.decorator.keyNodeInput(with: self.recipient.pubKeys[row])
+            )
         }
     }
 }

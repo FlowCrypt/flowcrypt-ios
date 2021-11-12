@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class GeneralConstantsTest: XCTestCase {
     func testGeneralGlobalConstants() {
@@ -29,12 +29,13 @@ class GeneralConstantsTest: XCTestCase {
         let expectedScope = Set([
             "https://www.googleapis.com/auth/userinfo.profile",
             "https://mail.google.com/",
-            "https://www.googleapis.com/auth/contacts.readonly"
+            "https://www.googleapis.com/auth/contacts",
+            "https://www.googleapis.com/auth/contacts.other.readonly"
         ])
         XCTAssert(currentScope == expectedScope)
 
         // Client Id
         let clientId = GeneralConstants.Gmail.clientID
-        XCTAssertTrue(clientId == "679326713487-8f07eqt1hvjvopgcjeie4dbtni4ig0rc.apps.googleusercontent.com")
+        XCTAssertTrue(clientId == "679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc.apps.googleusercontent.com")
     }
 }

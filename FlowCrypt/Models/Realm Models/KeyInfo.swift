@@ -2,6 +2,7 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
+import Foundation
 import RealmSwift
 
 enum KeySource: String {
@@ -55,7 +56,7 @@ final class KeyInfo: Object {
         guard let primaryFingerprint = self.allFingerprints.first else {
             throw KeyInfoError.missingPrimaryFingerprint
         }
-        
+
         self.primaryFingerprint = primaryFingerprint
         self.passphrase = passphrase
         self.source = source.rawValue

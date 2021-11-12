@@ -30,21 +30,20 @@ class PhotosManager: PhotosManagerType {
 
     enum MediaType {
         static let image = "public.image"
-        static let video = "public.movie"
     }
-    
+
     func selectPhoto(
         source: UIImagePickerController.SourceType,
         from viewController: UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
     ) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
+        Future<Void, Error> { future in
             DispatchQueue.main.async {
                 let imagePicker = UIImagePickerController()
                 imagePicker.delegate = viewController
                 imagePicker.sourceType = source
-                imagePicker.mediaTypes = [MediaType.image, MediaType.video]
+                imagePicker.mediaTypes = [MediaType.image]
                 viewController.present(imagePicker, animated: true, completion: nil)
-                promise(.success(()))
+                future(.success(()))
             }
         }
     }

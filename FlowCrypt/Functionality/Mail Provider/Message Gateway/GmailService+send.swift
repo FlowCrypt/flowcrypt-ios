@@ -6,16 +6,17 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Combine
 import Foundation
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: MessageGateway {
-    func sendMail(input: MessageGatewayInput) -> Future<Void, Error> {
-        Future { promise in
+    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let raw = GTLREncodeBase64(input.mime) else {
-                return promise(.failure(GmailServiceError.messageEncode))
+                return continuation.resume(throwing: GmailServiceError.messageEncode)
             }
+
+            self.progressHandler = progressHandler
 
             let gtlMessage = GTLRGmail_Message()
             gtlMessage.raw = raw
@@ -27,11 +28,12 @@ extension GmailService: MessageGateway {
                 uploadParameters: nil
             )
 
-            self.gmailService.executeQuery(querySend) { _, _, error in
+            gmailService.executeQuery(querySend) { [weak self] _, _, error in
+                self?.progressHandler = nil
                 if let error = error {
-                    return promise(.failure(GmailServiceError.providerError(error)))
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                promise(.success(()))
+                return continuation.resume(returning: ())
             }
         }
     }

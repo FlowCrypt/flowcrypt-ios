@@ -5,8 +5,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
-import Combine
 
 /**
  * View controller to render an email message (sender, subject, message body, attachments)
@@ -31,57 +29,45 @@ final class MessageViewController: TableNodeViewController {
         }
     }
 
-    enum MessageAction {
-        case moveToTrash, archive, changeReadFlag, permanentlyDelete
-
-        var text: String? {
-            switch self {
-            case .moveToTrash: return "email_removed".localized
-            case .archive: return "email_archived".localized
-            case .permanentlyDelete: return "email_deleted".localized
-            case .changeReadFlag: return nil
-            }
-        }
-
-        var error: String? {
-            switch self {
-            case .moveToTrash: return "error_move_trash".localized
-            case .archive: return "error_archive".localized
-            case .permanentlyDelete: return "error_permanently_delete".localized
-            case .changeReadFlag: return nil
-            }
-        }
-    }
-
-    typealias MsgViewControllerCompletion = (MessageAction, Message) -> Void
-    private let onCompletion: MsgViewControllerCompletion?
-
-    private var cancellable = Set<AnyCancellable>()
+    private let onCompletion: MessageActionCompletion
 
     private var input: MessageViewController.Input
     private let decorator: MessageViewDecorator
-    private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
-    private let trashFolderProvider: TrashFolderProviderType
     private let filesManager: FilesManagerType
+    private let serviceActor: ServiceActor
     private var processedMessage: ProcessedMessage = .empty
+
+    let trashFolderProvider: TrashFolderProviderType
+    var currentFolderPath: String {
+        input.path
+    }
+
+    private lazy var attachmentManager = AttachmentManager(
+        controller: self,
+        filesManager: filesManager
+    )
 
     init(
         messageService: MessageService = MessageService(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
+        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
         decorator: MessageViewDecorator = MessageViewDecorator(dateFormatter: DateFormatter()),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         filesManager: FilesManagerType = FilesManager(),
         input: MessageViewController.Input,
-        completion: MsgViewControllerCompletion?
+        completion: @escaping MessageActionCompletion
     ) {
-        self.messageService = messageService
         self.messageOperationsProvider = messageOperationsProvider
         self.input = input
         self.decorator = decorator
         self.trashFolderProvider = trashFolderProvider
         self.onCompletion = completion
         self.filesManager = filesManager
+        self.serviceActor = ServiceActor(
+            messageService: messageService,
+            messageProvider: messageProvider
+        )
 
         super.init(node: TableNode())
     }
@@ -105,74 +91,52 @@ final class MessageViewController: TableNodeViewController {
             $0.view.keyboardDismissMode = .interactive
         }
     }
-
-    private func setupNavigationBar() {
-        trashFolderProvider.getTrashFolderPath()
-            .then(on: .main) { [weak self] path in
-                self?.setupNavigationBarItems(with: path)
-            }
-    }
-
-    private func setupNavigationBarItems(with trashFolderPath: String?) {
-        let helpButton = NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap)))
-        let archiveButton = NavigationBarItemsView.Input(image: UIImage(named: "archive"), action: (self, #selector(handleArchiveTap)))
-        let trashButton = NavigationBarItemsView.Input(image: UIImage(named: "trash"), action: (self, #selector(handleTrashTap)))
-        let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail"), action: (self, #selector(handleMarkUnreadTap)))
-
-        let items: [NavigationBarItemsView.Input]
-        switch input.path.lowercased() {
-        case trashFolderPath?.lowercased():
-            // in case we are in trash folder ([Gmail]/Trash or Deleted for Outlook, etc)
-            // we need to have only help and trash buttons
-            items = [helpButton, trashButton]
-
-        // TODO: - Ticket - Check if this should be fixed
-        case "inbox":
-            // for Gmail inbox we also need to have archive and unread buttons
-            items = [helpButton, archiveButton, trashButton, unreadButton]
-        default:
-            // in any other folders
-            items = [helpButton, trashButton, unreadButton]
-        }
-
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
-    }
 }
 
 // MARK: - Message
-
 extension MessageViewController {
     private func fetchDecryptAndRenderMsg() {
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        handleFetchProgress(state: .fetch)
 
-        Promise { [weak self] in
-            guard let self = self else { return }
-            let promise = self.messageService.getAndProcessMessage(
-                with: self.input.objMessage,
-                folder: self.input.path
-            )
-            let message = try awaitPromise(promise)
-            self.processedMessage = message
-        }
-        .then(on: .main) { [weak self] in
-            self?.handleReceivedMessage()
-        }
-        .catch(on: .main) { [weak self] error in
-            self?.handleError(error)
+        Task {
+            do {
+                processedMessage = try await serviceActor.fetchDecryptAndRenderMsg(
+                    message: input.objMessage,
+                    path: input.path,
+                    progressHandler: { [weak self] in self?.handleFetchProgress(state: $0)})
+                handleReceivedMessage()
+            } catch {
+                handleError(error)
+            }
         }
     }
 
-    private func validateMessage(rawMimeData: Data, with passPhrase: String) {
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+    private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String) {
+        Task {
+            do {
+                let matched = try await serviceActor.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+                if matched {
+                    handleFetchProgress(state: .decrypt)
+                    processedMessage = try await serviceActor.decryptAndProcessMessage(mime: rawMimeData)
+                    handleReceivedMessage()
+                } else {
+                    handleWrongPassPhrase(for: rawMimeData, with: passPhrase)
+                }
+            } catch {
+                handleError(error)
+            }
+        }
+    }
 
-        messageService.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
-            .then(on: .main) { [weak self] message in
-                self?.processedMessage = message
-                self?.handleReceivedMessage()
-            }
-            .catch(on: .main) { [weak self] error in
-                self?.handleError(error)
-            }
+    private func handleFetchProgress(state: MessageFetchState) {
+        switch state {
+        case .fetch:
+            showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        case .download(let progress):
+            updateSpinner(label: "downloading_title".localized, progress: progress)
+        case .decrypt:
+            updateSpinner(label: "decrypting_title".localized)
+        }
     }
 
     private func handleReceivedMessage() {
@@ -182,14 +146,14 @@ extension MessageViewController {
     }
 
     private func asyncMarkAsReadIfNotAlreadyMarked() {
-        messageOperationsProvider.markAsRead(message: input.objMessage, folder: input.path)
-            .then(on: .main) { [weak self] in
-                guard let self = self else { return }
-                self.input.objMessage = self.input.objMessage.markAsRead(true)
+        Task {
+            do {
+                try await messageOperationsProvider.markAsRead(message: input.objMessage, folder: input.path)
+                input.objMessage = self.input.objMessage.markAsRead(true)
+            } catch {
+                showToast("Could not mark message as read: \(error)")
             }
-            .catch(on: .main) { [weak self] error in
-                self?.showToast("Could not mark message as read: \(error)")
-            }
+        }
     }
 
     private func handleOpSuccess(operation: MessageAction) {
@@ -198,7 +162,7 @@ extension MessageViewController {
 
         navigationController?.popViewController(animated: true) { [weak self] in
             guard let self = self else { return }
-            self.onCompletion?(operation, self.input.objMessage)
+            self.onCompletion(operation, .init(message: self.input.objMessage))
         }
     }
 }
@@ -210,10 +174,13 @@ extension MessageViewController {
         hideSpinner()
 
         switch error as? MessageServiceError {
-        case let .missedPassPhrase(rawMimeData):
-            handleMissedPassPhrase(for: rawMimeData)
+        case let .missingPassPhrase(rawMimeData):
+            handleMissingPassPhrase(for: rawMimeData)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
-            handleWrongPathPhrase(for: rawMimeData, with: passPhrase)
+            handleWrongPassPhrase(for: rawMimeData, with: passPhrase)
+        case let .keyMismatch(rawMimeData):
+            handleKeyMismatch(for: rawMimeData)
+
         default:
             // TODO: - Ticket - Improve error handling for MessageViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -228,26 +195,57 @@ extension MessageViewController {
         }
     }
 
-    private func handleMissedPassPhrase(for rawMimeData: Data) {
+    private func handleMissingPassPhrase(for rawMimeData: Data) {
         let alert = AlertsFactory.makePassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase)
             })
 
         present(alert, animated: true, completion: nil)
     }
 
-    private func handleWrongPathPhrase(for rawMimeData: Data, with phrase: String) {
+    private func handleWrongPassPhrase(for rawMimeData: Data, with phrase: String) {
         let alert = AlertsFactory.makeWrongPassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.validateMessage(rawMimeData: rawMimeData, with: passPhrase)
+                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase)
             })
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func handleKeyMismatch(for rawMimeData: Data) {
+        let alert = UIAlertController(
+            title: "error_key_mismatch".localized,
+            message: nil, preferredStyle: .alert
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "go_back".localized,
+                style: .cancel,
+                handler: { [weak self] _ in
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "message_open_anyway".localized,
+                style: .default,
+                handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.processedMessage = ProcessedMessage(rawMimeData: rawMimeData,
+                                                              text: String(data: rawMimeData, encoding: .utf8) ?? "",
+                                                              attachments: [],
+                                                              messageType: .encrypted)
+                    self.handleReceivedMessage()
+                }
+            )
+        )
         present(alert, animated: true, completion: nil)
     }
 
@@ -259,95 +257,56 @@ extension MessageViewController {
 
 // MARK: - Handle Actions
 
-extension MessageViewController {
-    @objc private func handleInfoTap() {
-        showToast("Email us at human@flowcrypt.com")
-    }
+extension MessageViewController: MessageActionsHandler {
 
-    @objc private func handleMarkUnreadTap() {
-        messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
-            .then(on: .main) { [weak self] in
-                guard let self = self else { return }
-                self.input.objMessage = self.input.objMessage.markAsRead(false)
-                self.onCompletion?(MessageAction.changeReadFlag, self.input.objMessage)
-                self.navigationController?.popViewController(animated: true)
+    func handleMarkUnreadTap() {
+        Task {
+            do {
+                try await messageOperationsProvider.markAsUnread(message: input.objMessage, folder: input.path)
+                onCompletion(MessageAction.markAsRead(false), .init(message: self.input.objMessage))
+                navigationController?.popViewController(animated: true)
+            } catch {
+                showToast("Could not mark message as unread: \(error)")
             }
-            .catch(on: .main) { [weak self] error in
-                self?.showToast("Could not mark message as unread: \(error)")
-            }
-    }
-
-    @objc private func handleAttachmentTap() {
-        showToast("Downloading attachments is not implemented yet")
-    }
-
-    @objc private func handleTrashTap() {
-        showSpinner()
-
-        trashFolderProvider.getTrashFolderPath()
-            .then { [weak self] trashPath in
-                guard let strongSelf = self, let path = trashPath else {
-                    self?.permanentlyDelete()
-                    return
-                }
-
-                strongSelf.input.path == trashPath
-                    ? strongSelf.permanentlyDelete()
-                    : strongSelf.moveToTrash(with: path)
-            }
-            .catch(on: .main) { error in
-                self.showToast(error.localizedDescription)
-            }
-    }
-
-    private func permanentlyDelete() {
-        Promise<Bool> { [weak self] () -> Bool in
-            guard let self = self else { throw AppErr.nilSelf }
-            guard try awaitPromise(self.awaitUserConfirmation(title: "You're about to permanently delete a message")) else { return false }
-            try awaitPromise(self.messageOperationsProvider.delete(message: self.input.objMessage, form: self.input.path))
-            return true
-        }
-        .then(on: .main) { [weak self] didPerformOp in
-            guard didPerformOp else { self?.hideSpinner(); return }
-            self?.handleOpSuccess(operation: .permanentlyDelete)
-        }.catch(on: .main) { [weak self] _ in
-            self?.handleOpErr(operation: .permanentlyDelete)
         }
     }
 
-    private func awaitUserConfirmation(title: String) -> Promise<Bool> {
-        Promise<Bool>(on: .main) { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let alert = UIAlertController(title: "Are you sure?", message: title, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in resolve(false) }))
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in resolve(true) }))
-            self.present(alert, animated: true, completion: nil)
+    func handleArchiveTap() {
+        Task {
+            do {
+                showSpinner()
+                try await messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
+                handleOpSuccess(operation: .archive)
+            } catch {
+                handleOpErr(operation: .archive)
+            }
         }
     }
 
-    private func moveToTrash(with trashPath: String) {
-        messageOperationsProvider.moveMessageToTrash(
-            message: input.objMessage,
-            trashPath: trashPath,
-            from: input.path
-        )
-        .then(on: .main) { [weak self] in
-            self?.handleOpSuccess(operation: .moveToTrash)
-        }
-        .catch(on: .main) { [weak self] _ in
-            self?.handleOpErr(operation: .moveToTrash)
+    func permanentlyDelete() {
+        Task {
+            do {
+                try await messageOperationsProvider.delete(message: self.input.objMessage, form: self.input.path)
+                handleOpSuccess(operation: .permanentlyDelete)
+            } catch {
+                handleOpErr(operation: .archive)
+            }
         }
     }
 
-    @objc private func handleArchiveTap() {
-        showSpinner()
-        messageOperationsProvider.archiveMessage(message: input.objMessage, folderPath: input.path)
-            .then(on: .main) { [weak self] _ in
-                self?.handleOpSuccess(operation: .archive)
+    func moveToTrash(with trashPath: String) {
+        Task {
+            do {
+                try await messageOperationsProvider.moveMessageToTrash(
+                    message: input.objMessage,
+                    trashPath: trashPath,
+                    from: input.path
+                )
+                handleOpSuccess(operation: .moveToTrash)
+            } catch {
+                handleOpErr(operation: .moveToTrash)
             }
-            .catch(on: .main) { [weak self] _ in // todo - specific error should be toasted or shown
-                self?.handleOpErr(operation: .archive)
-            }
+        }
     }
 
     private func handleReplyTap() {
@@ -374,7 +333,7 @@ extension MessageViewController {
 
 extension MessageViewController: NavigationChildController {
     func handleBackButtonTap() {
-        onCompletion?(MessageAction.changeReadFlag, input.objMessage)
+        onCompletion(MessageAction.markAsRead(true), .init(message: input.objMessage))
         navigationController?.popViewController(animated: true)
     }
 }
@@ -430,62 +389,47 @@ extension MessageViewController: ASTableDelegate, ASTableDataSource {
                 self?.handleReplyTap()
             }
         case .subject:
-            return MessageSubjectNode(subject, time: time)
+            return MessageSubjectAndTimeNode(subject, time: time)
         case .text:
-            let messageInput = self.decorator.attributedMessage(from: self.processedMessage)
-            return MessageTextSubjectNode(messageInput)
+            return MessageTextSubjectNode(self.processedMessage.attributedMessage)
         }
     }
 
     private func attachmentNode(for index: Int) -> ASCellNode {
-        AttachmentNode(
+        let attachment = processedMessage.attachments[index]
+        return AttachmentNode(
             input: .init(
-                msgAttachment: processedMessage.attachments[index]
+                msgAttachment: attachment
             ),
-            onDownloadTap: { [weak self] in
-                guard let self = self else { return }
-                self.filesManager.saveToFilesApp(file: self.processedMessage.attachments[index], from: self)
-                    .sinkFuture(
-                        receiveValue: {},
-                        receiveError: { error in
-                            self.showToast(
-                                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
-                            )
-                        }
-                    )
-                    .store(in: &self.cancellable)
-            }
+            onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
         )
     }
 }
 
-// MARK: - UIDocumentPickerDelegate
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let messageService: MessageService
+    private let messageProvider: MessageProvider
 
-extension MessageViewController: UIDocumentPickerDelegate {
-    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-
-        guard let savedUrl = urls.first,
-              let sharedDocumentUrl = savedUrl.sharedDocumentURL else {
-            return
-        }
-        showFileSharedAlert(with: sharedDocumentUrl)
+    init(messageService: MessageService,
+         messageProvider: MessageProvider) {
+        self.messageService = messageService
+        self.messageProvider = messageProvider
     }
 
-    private func showFileSharedAlert(with url: URL) {
-        let alert = UIAlertController(
-            title: "message_attachment_saved_successfully_title".localized,
-            message: "message_attachment_saved_successfully_message".localized,
-            preferredStyle: .alert
-        )
+    func fetchDecryptAndRenderMsg(message: Message, path: String,
+                                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> ProcessedMessage {
+        let rawMimeData = try await messageProvider.fetchMsg(message: message,
+                                                             folder: path,
+                                                             progressHandler: progressHandler)
+        return try await messageService.decryptAndProcessMessage(mime: rawMimeData)
+    }
 
-        let cancel = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in }
-        let open = UIAlertAction(title: "open".localized, style: .default) { _ in
-            UIApplication.shared.open(url)
-        }
+    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
+        try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+    }
 
-        alert.addAction(cancel)
-        alert.addAction(open)
-
-        present(alert, animated: true)
+    func decryptAndProcessMessage(mime: Data) async throws -> ProcessedMessage {
+        try await messageService.decryptAndProcessMessage(mime: mime)
     }
 }

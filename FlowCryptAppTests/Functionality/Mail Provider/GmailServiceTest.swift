@@ -6,10 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
-import Promises
-import GTMAppAuth
 @testable import FlowCrypt
+import GTMAppAuth
+import XCTest
 
 class GmailServiceTest: XCTestCase {
 
@@ -22,36 +21,28 @@ class GmailServiceTest: XCTestCase {
         backupSearchQueryProvider = GmailBackupSearchQueryProviderMock()
         sut = GmailService(userService: userService, backupSearchQueryProvider: backupSearchQueryProvider)
     }
-    
-    func testSearchBackupsWhenErrorInQuery() {
-        backupSearchQueryProvider.makeBackupQueryResult = .failure(.some)
-        let expectation = XCTestExpectation()
-        
-        sut.searchBackups(for: "james.bond@gmail.com")
-            .then(on: .main) { data in
-                
+
+    func testSearchBackupsWhenErrorInQuery() async {
+        backupSearchQueryProvider.makeBackupQueryResult = .failure(MockError())
+
+        do {
+            _ = try await sut.searchBackups(for: "james.bond@gmail.com")
+        } catch {
+            switch error as? GmailServiceError {
+            case .missedBackupQuery(let underliningError):
+                XCTAssertTrue(underliningError is MockError)
+            default:
+                XCTFail()
             }
-            .catch(on: .main) { error in
-                switch error as? GmailServiceError {
-                case .missedBackupQuery(let underliningError):
-                    if underliningError is MockError {
-                        expectation.fulfill()
-                    }
-                default:
-                    break
-                }
-            }
-        wait(for: [expectation], timeout: 3, enforceOrder: true)
+        }
     }
 }
 
 // MARK: - Mock
 class GoogleUserServiceMock: GoogleUserServiceType {
-    var authorization: GTMAppAuthFetcherAuthorization? = nil
-    
-    var renewSessionResult: Result<Void, Error> = .success(())
-    func renewSession() -> Promise<Void> {
-        Promise<Void>.resolveAfter(timeout: 1, with: renewSessionResult)
+    var authorization: GTMAppAuthFetcherAuthorization?
+    func renewSession() async throws {
+        await Task.sleep(1_000_000_000)
     }
 }
 

@@ -9,6 +9,21 @@
 import FlowCryptUI
 import UIKit
 
+extension ProcessedMessage {
+    var attributedMessage: NSAttributedString {
+        let textColor: UIColor
+        switch messageType {
+        case .encrypted:
+            textColor = .main
+        case .error:
+            textColor = .red
+        case .plain:
+            textColor = .mainTextColor
+        }
+        return text.attributed(color: textColor)
+    }
+}
+
 struct MessageViewDecorator {
     let dateFormatter: DateFormatter
 
@@ -29,19 +44,6 @@ struct MessageViewDecorator {
 
     func attributed(text: String?, color: UIColor) -> NSAttributedString {
         (text ?? "").attributed(.regular(17), color: color)
-    }
-
-    func attributedMessage(from processedMessage: ProcessedMessage) -> NSAttributedString {
-        let textColor: UIColor
-        switch processedMessage.messageType {
-        case .encrypted:
-            textColor = .main
-        case .error:
-            textColor = .red
-        case .plain:
-            textColor = .mainTextColor
-        }
-        return processedMessage.text.attributed(color: textColor)
     }
 }
 

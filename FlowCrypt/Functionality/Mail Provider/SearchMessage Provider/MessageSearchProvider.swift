@@ -6,8 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Promises
-
 enum MessageSearchDestinations: CaseIterable {
     case subject, from, to, recipient, content, body
 }
@@ -35,5 +33,5 @@ struct MessageSearchContext {
 }
 
 protocol MessageSearchProvider {
-    func searchExpression(using context: MessageSearchContext) -> Promise<[Message]>
+    func searchExpression(using context: MessageSearchContext) async throws -> [Message]
 }

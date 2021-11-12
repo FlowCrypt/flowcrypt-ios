@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 import RealmSwift
 
 protocol EmailProviderType {
@@ -128,8 +127,8 @@ extension DataService: DataServiceType {
 // MARK: - Migration
 extension DataService: DBMigration {
     /// Perform all kind of migrations
-    func performMigrationIfNeeded() -> Promise<Void> {
-        migrationService.performMigrationIfNeeded()
+    func performMigrationIfNeeded() async throws {
+        try await migrationService.performMigrationIfNeeded()
     }
 }
 

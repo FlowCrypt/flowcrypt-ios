@@ -6,8 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import MailCore
+import XCTest
 
 class ImapHelperTest: XCTestCase {
     var sut: ImapHelperType!

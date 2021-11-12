@@ -6,17 +6,19 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 import Combine
 @testable import FlowCrypt
+import Foundation
 
-class CoreComposeMessageMock: CoreComposeMessageType {
-    
-    var composeEmailResult: ((SendableMsg, MsgFmt, [String]?) -> (CoreRes.ComposeEmail))!
-    func composeEmail(msg: SendableMsg, fmt: MsgFmt, pubKeys: [String]?) -> Future<CoreRes.ComposeEmail, Error> {
-        Future<CoreRes.ComposeEmail, Error> { [weak self] promise in
-            guard let self = self else { return }
-            promise(.success(self.composeEmailResult(msg, fmt, pubKeys)))
-        }
+class CoreComposeMessageMock: CoreComposeMessageType, KeyParser {
+
+    var composeEmailResult: ((SendableMsg, MsgFmt) -> (CoreRes.ComposeEmail))!
+    func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
+        return composeEmailResult(msg, fmt)
+    }
+
+    var parseKeysResult: ((Data) -> (CoreRes.ParseKeys))!
+    func parseKeys(armoredOrBinary: Data) throws -> CoreRes.ParseKeys {
+        return parseKeysResult(armoredOrBinary)
     }
 }

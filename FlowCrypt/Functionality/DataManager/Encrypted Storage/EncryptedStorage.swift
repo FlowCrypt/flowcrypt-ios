@@ -8,7 +8,6 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 import RealmSwift
 
 // swiftlint:disable force_try
@@ -20,6 +19,8 @@ protocol EncryptedStorageType: KeyStorageType {
     var activeUser: UserObject? { get }
     func doesAnyKeyExist(for email: String) -> Bool
 
+    func validate() throws
+    func reset() throws
     func cleanup()
 }
 
@@ -49,37 +50,19 @@ final class EncryptedStorage: EncryptedStorageType {
 
     private let keychainService: KeyChainServiceType
 
-    private var realmKey: Data {
-        keychainService.getStorageEncryptionKey()
-    }
-
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
     private let currentSchema: EncryptedStorageSchema = .initial
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
-    private var encryptedConfiguration: Realm.Configuration {
-        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        let latestSchemaVersion = currentSchema.version.dbSchemaVersion
-
-        return Realm.Configuration(
-            fileURL: URL(fileURLWithPath: path),
-            encryptionKey: realmKey,
-            schemaVersion: latestSchemaVersion,
-            migrationBlock: { [weak self] migration, oldSchemaVersion in
-                self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
-            }
-        )
-    }
-
     var storage: Realm {
         do {
-            Realm.Configuration.defaultConfiguration = encryptedConfiguration
-            let realm = try Realm(configuration: encryptedConfiguration)
+            let configuration = try getConfiguration()
+            Realm.Configuration.defaultConfiguration = configuration
+            let realm = try Realm(configuration: configuration)
             return realm
         } catch {
-//             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
             fatalError("failed to initiate realm: \(error)")
         }
     }
@@ -93,6 +76,21 @@ final class EncryptedStorage: EncryptedStorageType {
             fatalError("No path direction for .documentDirectory")
         }
         return documentDirectory
+    }
+
+    private func getConfiguration() throws -> Realm.Configuration {
+        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let key = try keychainService.getStorageEncryptionKey()
+        let latestSchemaVersion = currentSchema.version.dbSchemaVersion
+
+        return Realm.Configuration(
+            fileURL: URL(fileURLWithPath: path),
+            encryptionKey: key,
+            schemaVersion: latestSchemaVersion,
+            migrationBlock: { [weak self] migration, oldSchemaVersion in
+                self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
+            }
+        )
     }
 }
 
@@ -215,15 +213,15 @@ extension EncryptedStorage {
 // MARK: - PassPhrase
 extension EncryptedStorage: PassPhraseStorageType {
     func save(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
+        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
     }
 
     func update(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
+        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
     }
 
     func remove(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: nil)
+        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
     }
 
     func getPassPhrases() -> [PassPhrase] {
@@ -254,6 +252,17 @@ extension EncryptedStorage {
 }
 
 extension EncryptedStorage {
+    func validate() throws {
+        let configuration = try getConfiguration()
+        Realm.Configuration.defaultConfiguration = configuration
+        _ = try Realm(configuration: configuration)
+    }
+
+    func reset() throws {
+        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        try FileManager.default.removeItem(atPath: path)
+    }
+
     func cleanup() {
         do {
             try storage.write {

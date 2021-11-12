@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Promises
 import UIKit
 
 private let logger = Logger.nested("AppStart")
@@ -20,48 +19,40 @@ struct AppStartup {
     func initializeApp(window: UIWindow, session: SessionType?) {
         logger.logInfo("Initialize application with session \(session.debugDescription)")
 
-        DispatchQueue.promises = .global()
         window.rootViewController = BootstrapViewController()
         window.makeKeyAndVisible()
 
-        Promise<Void> {
-            try awaitPromise(self.setupCore())
-            try self.setupMigrationIfNeeded()
-            try self.setupSession()
-            try self.getUserOrgRulesIfNeeded()
-        }.then(on: .main) {
-            self.chooseView(for: window, session: session)
-        }.catch(on: .main) { error in
-            self.showErrorAlert(with: error, on: window, session: session)
-        }
-    }
-
-    private func setupCore() -> Promise<Void> {
-        Promise { resolve, _ in
-            logger.logInfo("Setup Core")
-            Core.shared.startInBackgroundIfNotAlreadyRunning {
-                resolve(())
+        Task {
+            do {
+                await setupCore()
+                try await DataService.shared.performMigrationIfNeeded()
+                try await setupSession()
+                try await getUserOrgRulesIfNeeded()
+                await chooseView(for: window, session: session)
+            } catch {
+                await showErrorAlert(with: error, on: window, session: session)
             }
         }
     }
 
-    private func setupMigrationIfNeeded() throws {
-        logger.logInfo("Setup Migration")
-        try awaitPromise(DataService.shared.performMigrationIfNeeded())
+    private func setupCore() async {
+        logger.logInfo("Setup Core")
+        await Core.shared.startIfNotAlreadyRunning()
     }
 
-    private func setupSession() throws {
+    private func setupSession() async throws {
         logger.logInfo("Setup Session")
-        try awaitPromise(renewSessionIfValid())
+        try await renewSessionIfValid()
     }
 
-    private func renewSessionIfValid() -> Promise<Void> {
+    private func renewSessionIfValid() async throws {
         guard DataService.shared.currentAuthType != nil else {
-            return Promise(())
+            return
         }
-        return MailProvider.shared.sessionProvider.renewSession()
+        return try await MailProvider.shared.sessionProvider.renewSession()
     }
 
+    @MainActor
     private func chooseView(for window: UIWindow, session: SessionType?) {
         let entryPoint = entryPointForUser(session: session)
 
@@ -69,7 +60,8 @@ struct AppStartup {
 
         switch entryPoint {
         case .mainFlow:
-            viewController = SideMenuNavigationController()
+            let contentViewController = InboxViewContainerController()
+            viewController = SideMenuNavigationController(contentViewController: contentViewController)
         case .signIn:
             viewController = MainNavigationController(rootViewController: SignInViewController())
         case .setupFlow(let userId):
@@ -81,10 +73,11 @@ struct AppStartup {
     }
 
     private func entryPointForUser(session: SessionType?) -> EntryPoint {
-        if !DataService.shared.isLoggedIn {
+        let dataService = DataService.shared
+        if !dataService.isLoggedIn {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
-        } else if DataService.shared.isSetupFinished {
+        } else if dataService.isSetupFinished {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
         } else if let session = session, let userId = makeUserIdForSetup(session: session) {
@@ -96,10 +89,9 @@ struct AppStartup {
         }
     }
 
-    private func getUserOrgRulesIfNeeded() throws {
+    private func getUserOrgRulesIfNeeded() async throws {
         if DataService.shared.isLoggedIn {
-            let service = OrganisationalRulesService()
-            _ = try awaitPromise(service.fetchOrganisationalRulesForCurrentUser())
+            _ = try await ClientConfigurationService().fetchForCurrentUser()
         }
     }
 
@@ -131,6 +123,7 @@ struct AppStartup {
         return userId
     }
 
+    @MainActor
     private func showErrorAlert(with error: Error, on window: UIWindow, session: SessionType?) {
         let alert = UIAlertController(title: "Startup Error", message: "\(error.localizedDescription)", preferredStyle: .alert)
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in

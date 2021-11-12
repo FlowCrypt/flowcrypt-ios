@@ -6,22 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import MBProgressHUD
-import Promises
 import Toast
 import UIKit
-
-enum ToastPosition: String {
-    case bottom, top, center
-
-    var value: String {
-        switch self {
-        case .bottom: return CSToastPositionBottom
-        case .center: return CSToastPositionCenter
-        case .top: return CSToastPositionTop
-        }
-    }
-}
 
 typealias ShowToastCompletion = (Bool) -> Void
 
@@ -52,23 +38,17 @@ extension UIViewController {
             view.makeToast(
                 message,
                 duration: duration,
-                position: position.value,
+                position: position,
                 title: title,
-                image: nil,
-                style: CSToastStyle(defaultStyle: ()),
                 completion: completion
             )
 
-            CSToastManager.setTapToDismissEnabled(true)
+            ToastManager.shared.isTapToDismissEnabled = true
         }
     }
 }
 
 extension UIViewController {
-    var statusBarHeight: CGFloat {
-        UIApplication.shared.statusBarFrame.height
-    }
-
     private func errorToUserFriendlyString(error: Error, title: String) -> String? {
         // todo - more intelligent handling of HttpErr
         do {
@@ -115,43 +95,6 @@ extension UIViewController {
             alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
             alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
             self.present(alert, animated: true, completion: nil)
-        }
-    }
-
-    func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
-        DispatchQueue.main.async {
-            guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
-                // hud is already shown
-                return
-            }
-            self.view.isUserInteractionEnabled = isUserInteractionEnabled
-
-            let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
-            spinner.label.text = message
-            spinner.isUserInteractionEnabled = isUserInteractionEnabled
-        }
-    }
-
-    func hideSpinner() {
-        DispatchQueue.main.async {
-            self.view.subviews
-                .compactMap { $0 as? MBProgressHUD }
-                .forEach { $0.hide(animated: true) }
-            self.view.isUserInteractionEnabled = true
-        }
-    }
-
-    func alertAndSkipOnRejection<T>(_ promise: Promise<T>, fail msg: String) -> Promise<Void> {
-        Promise<Void> { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            do {
-                _ = try awaitPromise(promise)
-                resolve(())
-            } catch {
-                DispatchQueue.main.async {
-                    self.showAlert(error: error, message: msg, onOk: { resolve(()) })
-                }
-            }
         }
     }
 

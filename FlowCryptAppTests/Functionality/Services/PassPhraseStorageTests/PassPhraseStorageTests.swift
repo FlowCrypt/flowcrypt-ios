@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class PassPhraseStorageTests: XCTestCase {
 
@@ -42,11 +42,11 @@ class PassPhraseStorageTests: XCTestCase {
     func testGetValidPassPhraseFromStorage() {
         let passPhrase1 = PassPhrase(
             value: "some",
-            fingerprints: ["11","12"]
+            fingerprintsOfAssociatedKey: ["11","12"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
-            fingerprints: ["21","22"]
+            fingerprintsOfAssociatedKey: ["21","22"]
         )
 
         encryptedStorage.getPassPhrasesResult = { [passPhrase1] }
@@ -72,7 +72,7 @@ class PassPhraseStorageTests: XCTestCase {
         let savedDate = Date()
         let localPassPhrase = PassPhrase(
             value: "value",
-            fingerprints: ["f1"],
+            fingerprintsOfAssociatedKey: ["f1"],
             date: savedDate
         )
         inMemoryStorage.getPassPhrasesResult = { [localPassPhrase] }
@@ -87,11 +87,11 @@ class PassPhraseStorageTests: XCTestCase {
     func testBothStorageContainsValidPassPhrase() {
         let passPhrase1 = PassPhrase(
             value: "some",
-            fingerprints: ["A123"]
+            fingerprintsOfAssociatedKey: ["A123"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
-            fingerprints: ["A123"]
+            fingerprintsOfAssociatedKey: ["A123"]
         )
         encryptedStorage.getPassPhrasesResult = {
             [passPhrase1, passPhrase2]
@@ -100,7 +100,7 @@ class PassPhraseStorageTests: XCTestCase {
         let savedDate = Date()
         let localPassPhrase = PassPhrase(
             value: "value",
-            fingerprints: ["123444"],
+            fingerprintsOfAssociatedKey: ["123444"],
             date: savedDate
         )
 
@@ -111,7 +111,7 @@ class PassPhraseStorageTests: XCTestCase {
     }
 
     func testSavePassPhraseInPersistenStorage() {
-        let passPhraseToSave = PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "123333"])
+        let passPhraseToSave = PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"])
 
         let expectation = XCTestExpectation()
         expectation.expectedFulfillmentCount = 1
@@ -120,14 +120,13 @@ class PassPhraseStorageTests: XCTestCase {
         // encrypted storage contains pass phrase which should be saved locally
         encryptedStorage.getPassPhrasesResult = {
             [
-                PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "adfnhjfg"])
+                PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "adfnhjfg"])
             ]
         }
 
-
         // encrypted storage should not contains pass phrase which user decide to save locally
         encryptedStorage.isRemovePassPhraseResult = { passPhraseToRemove in
-            if passPhraseToRemove.primaryFingerprint == "fingerprint 1" {
+            if passPhraseToRemove.primaryFingerprintOfAssociatedKey == "fingerprint 1" {
                 expectation.fulfill()
             }
         }
@@ -140,7 +139,7 @@ class PassPhraseStorageTests: XCTestCase {
     }
 
     func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() {
-        let passPhraseToSave = PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "123333"])
+        let passPhraseToSave = PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"])
 
         let expectation = XCTestExpectation()
         expectation.isInverted = true
@@ -158,7 +157,6 @@ class PassPhraseStorageTests: XCTestCase {
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
-
 }
 
 extension KeyInfo {
@@ -181,7 +179,8 @@ extension KeyInfo {
                 lastModified: nil,
                 expiration: nil,
                 users: [],
-                algo: nil
+                algo: nil,
+                revoked: false
             ),
             passphrase: nil,
             source: .backup,

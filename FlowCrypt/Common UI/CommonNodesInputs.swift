@@ -9,15 +9,15 @@
 import FlowCryptUI
 import UIKit
 
-extension TextCellNode.Input {
-    static func loading(with size: CGSize) -> TextCellNode.Input {
-        .init(
+extension TextCellNode {
+    static let loading: TextCellNode = .init(
+        input: .init(
             backgroundColor: .backgroundColor,
             title: "loading_title".localized + "...",
             withSpinner: true,
-            size: size
+            size: CGSize(width: 44, height: 44)
         )
-    }
+    )
 }
 
 extension ButtonCellNode.Input {

@@ -139,6 +139,7 @@ struct SendableMsg: Equatable {
     let replyToMimeMsg: String?
     let atts: [Attachment]
     let pubKeys: [String]?
+    let signingPrv: PrvKeyInfo?
 }
 
 struct MsgBlock: Decodable {
@@ -206,7 +207,6 @@ struct MsgBlock: Decodable {
     }
 }
 
-// TODO: - ANTON - tests
 extension MsgBlock {
     var isAttachmentBlock: Bool {
         type == .plainAtt || type == .encryptedAtt || type == .decryptedAtt

@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import {CommonData} from "../data";
+import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
     PRIVACY_TAB: '~privacy',
@@ -15,6 +16,8 @@ const SELECTORS = {
     PASSWORD_FIELD: '~Enter your password',
     DONE_BTN: '~Done',
     LANGUAGE_DROPDOWN: '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
+    SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]',
+    USE_ANOTHER_ACCOUNT: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Use another account"`]'
 };
 
 class SplashScreen extends BaseScreen {
@@ -74,6 +77,14 @@ class SplashScreen extends BaseScreen {
         return $(SELECTORS.LANGUAGE_DROPDOWN)
     }
 
+    get signInAsGoogleAccounLabel () {
+        return $(SELECTORS.SIGN_IN_WITH_GMAIL);
+    }
+
+    get useAnotherAcoount () {
+        return $(SELECTORS.USE_ANOTHER_ACCOUNT);
+    }
+
     checkLoginPage () {
         expect(this.privacyTab).toBeDisplayed();
         expect(this.termsTab).toBeDisplayed();
@@ -84,7 +95,7 @@ class SplashScreen extends BaseScreen {
     }
 
     clickContinueWithGmail () {
-        this.continueWithGmailBtn.click();
+        ElementHelper.waitAndClick(this.continueWithGmailBtn);
     }
 
     clickContinueBtn () {
@@ -94,32 +105,44 @@ class SplashScreen extends BaseScreen {
     }
 
     changeLanguage (language: string = '‪English (United States)‬') {
+        this.languageDropdown.waitForDisplayed();
+        browser.pause(500); // stability sleep
         this.languageDropdown.click();
         const selector = `~${language}`;
-        $(selector).waitForDisplayed();
-        $(selector).click();
+        ElementHelper.waitAndClick($(selector));
     }
 
     fillEmail (email: string) {
-        this.loginField.click();
-        this.loginField.setValue(email);
-        this.doneButton.click();
-    }
-
-    clickNextBtn () {
-        this.nextButton.click();
+        ElementHelper.waitClickAndType(this.loginField, email);
+        this.clickDoneBtn();
+        browser.pause(500); // stability sleep
     }
 
     fillPassword(password: string) {
-        this.passwordField.click();
-        this.passwordField.setValue(password);
-        this.doneButton.click();
+        ElementHelper.waitClickAndType(this.passwordField, password);
+        this.clickDoneBtn();
+        browser.pause(500); // stability sleep
+    }
+
+    clickNextBtn () {
+        ElementHelper.waitAndClick(this.nextButton);
+    }
+
+    clickDoneBtn () {
+        ElementHelper.waitAndClick(this.doneButton);
     }
 
     gmailLogin (email: string, password: string) {
         const emailSelector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
+        this.signInAsGoogleAccounLabel.waitForDisplayed();
+        browser.pause(1000); // stability sleep for language change
         if($(emailSelector).isDisplayed()) {
             $(emailSelector).click();
+            this.useAnotherAcoount.waitForDisplayed({timeout: 1000, reverse: true});
+            if(this.passwordField.isDisplayed()) {
+                this.fillPassword(password);
+                this.clickNextBtn();
+            }
         } else {
             this.fillEmail(email);
             this.clickNextBtn();
@@ -129,11 +152,11 @@ class SplashScreen extends BaseScreen {
     }
 
     login(email: string = CommonData.account.email, password: string = CommonData.account.password) {
-        driver.launchApp();
         this.clickContinueWithGmail();
         this.clickContinueBtn();
         this.changeLanguage();
         this.gmailLogin(email, password);
+        browser.pause(10000); // STABILITY FIX UNTIL WE WLL FIGURE OUT WITH ISSUE
     }
 }
 

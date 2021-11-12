@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <g id="logos/android-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="matrix(1, 0, 0, 1, 0, 15)">
+    <g id="Group">
+      <g id="logo/block--v2">
+        <g id="Mask"/>
+        <mask id="mask-4" fill="white">
+          <circle cx="96" cy="96" r="96" transform="matrix(1, 0, 0, 1, 0, 0)"/>
+        </mask>
+        <g id="Mask-Copy"/>
+        <g mask="url(#mask-4)" id="Group-13">
+          <g transform="translate(97.005645, 119.108313) rotate(42.500000) translate(-97.005645, -119.108313) translate(37.005645, 61.608313)">
+            <g transform="translate(60.223817, 57.520327) rotate(-359.000000) translate(-60.223817, -57.520327) translate(1.723817, 1.520327)">
+              <path d="M -8.733 69.047 L 24.587 69.047 L 24.587 94.367 C 24.587 98.785 21.005 102.367 16.587 102.367 L -4.733 102.367 C -6.942 102.367 -8.733 100.576 -8.733 98.367 L -8.733 69.047 Z" id="Rectangle-15" fill="#4F4F4F"/>
+              <path d="M -8.733 30.014 L 67.427 30.014 L 67.427 55.335 C 67.427 59.753 63.846 63.335 59.427 63.335 L -8.733 63.335 L -8.733 30.014 Z" id="Rectangle-15" fill="#31A217" opacity="0.900000036"/>
+              <path d="M -4.733 -9.018 L 103.476 -9.018 C 105.685 -9.018 107.476 -7.227 107.476 -5.018 L 107.476 16.302 C 107.476 20.721 103.895 24.302 99.476 24.302 L -8.733 24.302 L -8.733 -5.018 C -8.733 -7.227 -6.942 -9.018 -4.733 -9.018 Z" id="Rectangle-15" fill="#31A217"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

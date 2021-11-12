@@ -11,30 +11,40 @@ import Foundation
 
 protocol ContactDetailDecoratorType {
     var title: String { get }
-    func nodeInput(with contact: Contact) -> ContactDetailNode.Input
+    func userNodeInput(with contact: RecipientWithSortedPubKeys) -> ContactUserCellNode.Input
+    func keyNodeInput(with key: PubKey) -> ContactKeyCellNode.Input
 }
 
 struct ContactDetailDecorator: ContactDetailDecoratorType {
     let title = "contact_detail_screen_title".localized
 
-    func nodeInput(with contact: Contact) -> ContactDetailNode.Input {
-        let createdString: String = {
-            if let created = contact.pubkeyCreated {
-                let df = DateFormatter()
-                df.dateStyle = .medium
-                df.timeStyle = .medium
-                return df.string(from: created)
-            } else {
-                return "-"
-            }
+    func userNodeInput(with contact: RecipientWithSortedPubKeys) -> ContactUserCellNode.Input {
+        ContactUserCellNode.Input(
+            user: (contact.name ?? contact.email).attributed(.regular(16))
+        )
+    }
 
+    func keyNodeInput(with key: PubKey) -> ContactKeyCellNode.Input {
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        df.timeStyle = .medium
+
+        let fingerpringString = key.fingerprint ?? "-"
+
+        let createdString: String = {
+            guard let created = key.created else { return "-" }
+            return df.string(from: created)
         }()
-        return ContactDetailNode.Input(
-            user: (contact.name ?? contact.email).attributed(.regular(16)),
-            ids: contact.longids.joined(separator: ",\n").attributed(.regular(14)),
-            fingerprints: contact.fingerprints.joined(separator: ",\n").attributed(.regular(14)),
-            algoInfo: contact.algo?.algorithm.attributed(.regular(14)),
-            created: createdString.attributed(.regular(14))
+
+        let expiresString: String = {
+            guard let expires = key.expiresOn else { return "never" }
+            return df.string(from: expires)
+        }()
+
+        return ContactKeyCellNode.Input(
+            fingerprint: fingerpringString.attributed(.regular(13)),
+            createdAt: createdString.attributed(.regular(14)),
+            expires: expiresString.attributed(.regular(14))
         )
     }
 }
