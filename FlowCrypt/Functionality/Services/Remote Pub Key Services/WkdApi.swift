@@ -10,7 +10,7 @@ import CryptoKit
 import FlowCryptCommon
 
 protocol WkdApiType {
-    func lookupEmail(_ email: String) async throws -> [KeyDetails]
+    func lookup(email: String) async throws -> [KeyDetails]
 }
 
 /// Public key server - each org can run their own at a predictable url
@@ -25,7 +25,7 @@ class WkdApi: WkdApiType {
 
     private struct InternalResult {
         let hasPolicy: Bool
-        let key: Data?
+        let keys: Data?
         let method: WkdMethod
     }
 
@@ -40,18 +40,13 @@ class WkdApi: WkdApiType {
         self.core = core
     }
 
-    func lookupEmail(_ email: String) async throws -> [KeyDetails] {
-        return try await rawLookupEmail(email)?.keyDetails
-            .filter { !$0.users.filter { $0.contains(email) }.isEmpty } ?? []
-    }
-
-    func rawLookupEmail(_ email: String) async throws -> CoreRes.ParseKeys? {
+    func lookup(email: String) async throws -> [KeyDetails] {
         guard
             !Configuration.publicEmailProviderDomains.contains(email.recipientDomain ?? ""),
             let advancedUrl = urlConstructor.construct(from: email, method: .advanced),
             let directUrl = urlConstructor.construct(from: email, method: .direct)
         else {
-            return nil
+            return []
         }
         let results: [InternalResult] = try await withThrowingTaskGroup(of: InternalResult.self) { tg in
             var results: [InternalResult] = []
@@ -69,19 +64,21 @@ class WkdApi: WkdApiType {
             throw AppErr.unexpected("missing expected lookup method .direct")
         }
         if advancedResult.hasPolicy { // hasPolicy means the WKD server is running
-            guard let binaryKeysData = advancedResult.key else {
-                return nil
+            guard let binary = advancedResult.keys else {
+                return []
             }
-            return try await core.parseKeys(armoredOrBinary: binaryKeysData)
+            return try await parseAndFilter(keysData: binary, email: email)
         }
-        guard directResult.hasPolicy, let binaryKeysData = directResult.key else {
-            return nil
+        guard directResult.hasPolicy, let binary = directResult.keys else {
+            return []
         }
-        return try await core.parseKeys(armoredOrBinary: binaryKeysData)
+        return try await parseAndFilter(keysData: binary, email: email)
     }
-}
 
-extension WkdApi {
+    private func parseAndFilter(keysData: Data, email: String) async throws -> [KeyDetails] {
+        return try await core.parseKeys(armoredOrBinary: keysData).keyDetails
+            .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
+    }
 
     private func urlLookup(_ urls: WkdUrls, method: WkdMethod) async throws -> InternalResult {
         do {
@@ -93,7 +90,7 @@ extension WkdApi {
             _ = try await ApiCall.call(request)
         } catch {
             Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
-            return InternalResult(hasPolicy: false, key: nil, method: method)
+            return InternalResult(hasPolicy: false, keys: nil, method: method)
         }
 
         let request = ApiCall.Request(
@@ -108,9 +105,9 @@ extension WkdApi {
         }
 
         if pubKeyResponse.status == 404 {
-            return InternalResult(hasPolicy: true, key: nil, method: method)
+            return InternalResult(hasPolicy: true, keys: nil, method: method)
         }
 
-        return InternalResult(hasPolicy: true, key: pubKeyResponse.data, method: method)
+        return InternalResult(hasPolicy: true, keys: pubKeyResponse.data, method: method)
     }
 }

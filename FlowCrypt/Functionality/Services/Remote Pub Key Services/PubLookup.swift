@@ -7,21 +7,21 @@
 //
 
 protocol PubLookupType {
-    func lookup(with email: String) async throws -> RecipientWithSortedPubKeys
+    func lookup(email: String) async throws -> RecipientWithSortedPubKeys
 }
 
 class PubLookup: PubLookupType {
     private let wkd: WkdApiType
     private let attesterApi: AttesterApiType
 
-    private enum PubLookupSource {
+    private enum LookupSource {
         case attester
         case wkd
     }
 
-    private struct Result {
+    private struct LookupResult {
         let keys: [KeyDetails]
-        let source: PubLookupSource
+        let source: LookupSource
     }
 
     init(
@@ -32,14 +32,14 @@ class PubLookup: PubLookupType {
         self.attesterApi = attesterApi
     }
 
-    func lookup(with email: String) async throws -> RecipientWithSortedPubKeys {
-        let results: [Result] = try await withThrowingTaskGroup(of: Result.self) { tg in
-            var results: [Result] = []
+    func lookup(email: String) async throws -> RecipientWithSortedPubKeys {
+        let results: [LookupResult] = try await withThrowingTaskGroup(of: LookupResult.self) { tg in
+            var results: [LookupResult] = []
             tg.addTask {
-                Result(keys: try await self.wkd.lookupEmail(email), source: .wkd)
+                LookupResult(keys: try await self.wkd.lookup(email: email), source: .wkd)
             }
             tg.addTask {
-                Result(keys: try await self.attesterApi.lookupEmail(email), source: .attester)
+                LookupResult(keys: try await self.attesterApi.lookup(email: email), source: .attester)
             }
             for try await result in tg {
                 results.append(result)
