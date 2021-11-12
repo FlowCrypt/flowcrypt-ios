@@ -41,7 +41,7 @@ class CreateKeyScreen extends BaseScreen {
             browser.pause(1000);
             console.log(count);
             count++;
-        } while(this.enterPassPhraseField.isDisplayed() !== true || count <= 15);
+        } while(this.enterPassPhraseField.isDisplayed() !== true && count <= 15);
         this.fillPassPhrase(text);
         this.clickSetPassPhraseBtn();
         this.confirmPassPhrase(text);
