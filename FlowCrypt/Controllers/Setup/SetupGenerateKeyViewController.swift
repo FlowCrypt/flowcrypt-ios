@@ -173,7 +173,7 @@ private actor Service {
         viewController: ViewController
     ) async {
         do {
-            _ = try await attester.updateKey(
+            _ = try await attester.update(
                 email: email,
                 pubkey: publicKey,
                 token: storage.token

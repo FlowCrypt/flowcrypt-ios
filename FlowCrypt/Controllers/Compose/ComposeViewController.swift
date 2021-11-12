@@ -318,7 +318,6 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     @objc private func handleInfoTap() {
-        #warning("ToDo")
         showToast("Please email us at human@flowcrypt.com for help")
     }
 
