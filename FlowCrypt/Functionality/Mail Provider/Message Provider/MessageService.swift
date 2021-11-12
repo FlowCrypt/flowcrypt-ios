@@ -37,15 +37,16 @@ struct ProcessedMessage {
         var message: String {
             switch self {
             case .good:
-                return "signed"
+                return "message_signed".localized
             case .unsigned:
-                return "not signed"
+                return "message_not_signed".localized
             case .error(let message):
-                return "cannot verify signature: \(message)"
+                return "message_signature_verify_error".localizeWithArguments(message)
             case .missingPubkey(let longid):
-                return "cannot verify signature: no Public Key \(longid)"
+                let message = "message_missing_pubkey".localizeWithArguments(longid)
+                return "message_signature_verify_error".localizeWithArguments(message)
             case .bad:
-                return "bad signature"
+                return "message_bad_signature".localized
             }
         }
 

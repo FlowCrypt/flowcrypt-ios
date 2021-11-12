@@ -18,6 +18,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
         public let sender: NSAttributedString
         public let date: NSAttributedString?
         public let isExpanded: Bool
+        public let isEncrypted: Bool
         public let buttonColor: UIColor
         public let nodeInsets: UIEdgeInsets
 
@@ -27,6 +28,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
                     sender: NSAttributedString,
                     date: NSAttributedString,
                     isExpanded: Bool,
+                    isEncrypted: Bool,
                     buttonColor: UIColor,
                     nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 12)) {
             self.signature = signature
@@ -35,6 +37,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
             self.sender = sender
             self.date = date
             self.isExpanded = isExpanded
+            self.isEncrypted = isEncrypted
             self.buttonColor = buttonColor
             self.nodeInsets = nodeInsets
         }
@@ -46,7 +49,6 @@ public final class ThreadMessageSenderCellNode: CellNode {
             let systemName = isExpanded ? "chevron.up" : "chevron.down"
             return createButtonImage(systemName: systemName)
         }
-        var shouldShowSignature: Bool { signature != nil }
 
         private func createButtonImage(systemName: String, pointSize: CGFloat = 18) -> UIImage? {
             let configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
@@ -54,13 +56,23 @@ public final class ThreadMessageSenderCellNode: CellNode {
         }
     }
 
-    private lazy var signatureNode: ThreadMessageSignatureNode = {
-        let input = ThreadMessageSignatureNode.Input(
-            signature: input.signature,
-            color: input.signatureColor,
-            icon: input.signatureIcon
+    private lazy var encryptionNode: BadgeNode = {
+        let text = input.isEncrypted ? "message_encrypted".localized : "message_not_encrypted".localized
+        let input = BadgeNode.Input(
+            icon: input.isEncrypted ? "lock" : "lock.open",
+            text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
+            color: input.isEncrypted ? .main : .warningColor
         )
-        return ThreadMessageSignatureNode(input: input)
+        return BadgeNode(input: input)
+    }()
+
+    private lazy var signatureNode: BadgeNode = {
+        let input = BadgeNode.Input(
+            icon: input.signatureIcon,
+            text: input.signature,
+            color: input.signatureColor
+        )
+        return BadgeNode(input: input)
     }()
 
     private let senderNode = ASTextNode2()
@@ -127,7 +139,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
         )
 
         let contentSpec: ASStackLayoutSpec
-        if input.isExpanded && input.shouldShowSignature {
+        if input.isExpanded {
             let spacer = ASLayoutSpec()
             spacer.style.flexGrow = 1.0
 
@@ -136,7 +148,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
                 spacing: 4,
                 justifyContent: .spaceBetween,
                 alignItems: .start,
-                children: [signatureNode, spacer]
+                children: [encryptionNode, signatureNode, spacer]
             )
 
             contentSpec = ASStackLayoutSpec(
@@ -152,60 +164,6 @@ public final class ThreadMessageSenderCellNode: CellNode {
 
         return ASInsetLayoutSpec(
             insets: input.nodeInsets,
-            child: contentSpec
-        )
-    }
-}
-
-private final class ThreadMessageSignatureNode: ASDisplayNode {
-    public struct Input {
-        public let signature: NSAttributedString?
-        public let color: UIColor?
-        public let icon: String?
-
-        public init(signature: NSAttributedString?,
-                    color: UIColor?,
-                    icon: String?) {
-            self.signature = signature
-            self.color = color
-            self.icon = icon
-        }
-    }
-
-    private lazy var iconNode: ASImageNode? = {
-        guard let icon = input.icon else { return nil }
-        let imageNode = ASImageNode()
-        let configuration = UIImage.SymbolConfiguration(pointSize: 10, weight: .medium)
-        imageNode.image = UIImage(systemName: icon, withConfiguration: configuration)
-        imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.white)
-        return imageNode
-    }()
-
-    private let signatureNode = ASTextNode2()
-    private let input: ThreadMessageSignatureNode.Input
-
-    init(input: ThreadMessageSignatureNode.Input) {
-        self.input = input
-        super.init()
-
-        automaticallyManagesSubnodes = true
-
-        signatureNode.attributedText = input.signature
-        backgroundColor = input.color
-        cornerRadius = 4
-    }
-
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        let contentSpec = ASStackLayoutSpec(
-            direction: .horizontal,
-            spacing: 2,
-            justifyContent: .spaceBetween,
-            alignItems: .center,
-            children: [iconNode, signatureNode].compactMap { $0 }
-        )
-
-        return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4),
             child: contentSpec
         )
     }

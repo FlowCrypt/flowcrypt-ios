@@ -11,11 +11,11 @@ import UIKit
 
 extension ThreadMessageSenderCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
-        let signature: NSAttributedString?
-        if let processedMessage = threadMessage.processedMessage, processedMessage.messageType != .plain {
-            signature = NSAttributedString.text(from: processedMessage.signature.message, style: .regular(12), color: .white)
+        let signature: String
+        if let processedMessage = threadMessage.processedMessage, processedMessage.messageType == .encrypted {
+            signature = processedMessage.signature.message
         } else {
-            signature = nil
+            signature = "message_not_signed".localized
         }
         let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
@@ -34,12 +34,13 @@ extension ThreadMessageSenderCellNode.Input {
             : .mainTextUnreadColor
 
         self.init(
-            signature: signature,
+            signature: NSAttributedString.text(from: signature, style: .regular(12), color: .white),
             signatureColor: threadMessage.processedMessage?.signature.color,
             signatureIcon: threadMessage.processedMessage?.signature.icon,
             sender: NSAttributedString.text(from: sender, style: style, color: textColor),
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,
+            isEncrypted: threadMessage.processedMessage?.messageType == .encrypted,
             buttonColor: .messageButtonColor
         )
     }
