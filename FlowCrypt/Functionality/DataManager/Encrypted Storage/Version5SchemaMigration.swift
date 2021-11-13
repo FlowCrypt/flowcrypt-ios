@@ -52,6 +52,20 @@ final class Version5SchemaMigration {
             }
         }
 
+        [
+            "ClientConfigurationObject",
+            "FolderObject",
+            "KeyInfo",
+            "UserObject",
+            "SessionObject",
+            "RecipientObject",
+            "PubKeyObject"
+        ].forEach {
+            if !migration.deleteData(forType: $0) {
+                logger.logWarning("fail to delete data for type \($0)")
+            }
+        }
+
         guard let error = lastError else {
             logger.logInfo("End version 5 migration")
             return
@@ -124,7 +138,9 @@ final class Version5SchemaMigration {
             "public",
             "primaryFingerprint",
             "passphrase",
-            "source"
+            "source",
+            "allFingerprints",
+            "allLongids"
         ]
         primitiveProperties.forEach {
             newObject[$0] = oldObject[$0]

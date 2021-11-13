@@ -26,13 +26,12 @@ final class KeyInfoRealmObject: Object {
     @Persisted var passphrase: String?
     @Persisted var source: String = ""
     @Persisted var user: UserRealmObject!
+    @Persisted var allFingerprints: List<String>
+    @Persisted var allLongids: List<String>
 
     var primaryLongid: String {
         allLongids[0]
     }
-
-    let allFingerprints = List<String>()
-    let allLongids = List<String>()
 
     convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
