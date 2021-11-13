@@ -12,27 +12,49 @@ import Photos
 import Combine
 import PhotosUI
 
-typealias PhotoViewController = UIViewController
-& UIImagePickerControllerDelegate
-& UINavigationControllerDelegate
-& PHPickerViewControllerDelegate
+typealias PhotoPickerViewController = UIViewController & PHPickerViewControllerDelegate
+typealias TakePhotoViewController = UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
 
 protocol PhotosManagerType {
+    func takePhoto(
+        from viewController: TakePhotoViewController
+    ) -> Future<Void, Error>
+
     func selectPhoto(
-        source: UIImagePickerController.SourceType,
-        from viewController: PhotoViewController
+        from viewController: PhotoPickerViewController
     ) -> Future<Void, Error>
 }
 
 enum PhotosManagerError: Error {
-    case noAccessToLibrary
+    case noAccessToCamera
+    case cantFetchMovie
+    case cantFetchImage
 }
 
 class PhotosManager: PhotosManagerType {
+    
+    func takePhoto(
+        from viewController: TakePhotoViewController
+    ) -> Future<Void, Error> {
+        Future<Void, Error> { promise in
+            DispatchQueue.main.async {
+                let status = AVCaptureDevice.authorizationStatus(for: .video)
+                let imagePicker = UIImagePickerController()
+                imagePicker.delegate = viewController
+                imagePicker.sourceType = .camera
+                switch status {
+                case .authorized, .notDetermined:
+                    viewController.present(imagePicker, animated: true, completion: nil)
+                    promise(.success(()))
+                default:
+                    promise(.failure(PhotosManagerError.noAccessToCamera))
+                }
+            }
+        }
+    }
 
     func selectPhoto(
-        source: UIImagePickerController.SourceType,
-        from viewController: PhotoViewController
+        from viewController: PhotoPickerViewController
     ) -> Future<Void, Error> {
         Future<Void, Error> { promise in
             DispatchQueue.main.async {
