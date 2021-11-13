@@ -166,11 +166,18 @@ extension ThreadDetailsViewController {
 
         Task {
             do {
-                let processedMessage = try await messageService.getAndProcessMessage(
+                var processedMessage = try await messageService.getAndProcessMessage(
                     with: message,
                     folder: thread.path,
+                    onlyLocalKeys: true,
                     progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
+                if processedMessage.signature != .good {
+                    processedMessage.signature = .pending
+                    tryToFetchSenderPubKeys(message: message,
+                                            folder: thread.path,
+                                            indexPath: indexPath)
+                }
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {
                 handleError(error, at: indexPath)
@@ -250,8 +257,10 @@ extension ThreadDetailsViewController {
                 let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
                     let sender = input[indexPath.section-1].rawMessage.sender
-                    let processedMessage = try await messageService.decryptAndProcessMessage(mime: rawMimeData,
-                                                                                             sender: sender)
+                    let processedMessage = try await messageService.decryptAndProcessMessage(
+                        mime: rawMimeData,
+                        sender: sender,
+                        onlyLocalKeys: false)
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
                     handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
@@ -259,6 +268,18 @@ extension ThreadDetailsViewController {
             } catch {
                 handleError(error, at: indexPath)
             }
+        }
+    }
+
+    private func tryToFetchSenderPubKeys(message: Message, folder: String, indexPath: IndexPath) {
+        Task {
+            let processedMessage = try await messageService.getAndProcessMessage(
+                with: message,
+                folder: thread.path,
+                onlyLocalKeys: false,
+                progressHandler: { _ in }
+            )
+            handleReceived(message: processedMessage, at: indexPath)
         }
     }
 

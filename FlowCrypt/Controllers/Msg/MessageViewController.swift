@@ -434,7 +434,9 @@ private actor ServiceActor {
     }
 
     func decryptAndProcessMessage(mime: Data, sender: String?) async throws -> ProcessedMessage {
-        try await messageService.decryptAndProcessMessage(mime: mime,
-                                                          sender: sender)
+        let message = try await messageService.decryptAndProcessMessage(mime: mime,
+                                                                        sender: sender,
+                                                                        onlyLocalKeys: true)
+        return message
     }
 }

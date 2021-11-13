@@ -31,8 +31,8 @@ struct ProcessedMessage {
         case error(MsgBlock.DecryptErr.ErrorType), encrypted, plain
     }
 
-    enum MessageSignature {
-        case good, unsigned, error(String), missingPubkey(String), bad
+    enum MessageSignature: Hashable {
+        case good, unsigned, error(String), missingPubkey(String), bad, pending
 
         var message: String {
             switch self {
@@ -47,6 +47,8 @@ struct ProcessedMessage {
                 return "message_signature_verify_error".localizeWithArguments(message)
             case .bad:
                 return "message_bad_signature".localized
+            case .pending:
+                return "message_signature_pending".localized
             }
         }
 
@@ -58,6 +60,8 @@ struct ProcessedMessage {
                 return "exclamationmark.triangle"
             case .unsigned, .bad:
                 return "xmark"
+            case .pending:
+                return "clock"
             }
         }
 
@@ -69,6 +73,8 @@ struct ProcessedMessage {
                 return .warningColor
             case .unsigned, .bad:
                 return .errorColor
+            case .pending:
+                return .lightGray
             }
         }
     }
@@ -77,7 +83,7 @@ struct ProcessedMessage {
     let text: String
     let attachments: [MessageAttachment]
     let messageType: MessageType
-    let signature: MessageSignature
+    var signature: MessageSignature
 }
 
 extension ProcessedMessage {
@@ -148,6 +154,7 @@ final class MessageService {
     func getAndProcessMessage(
         with input: Message,
         folder: String,
+        onlyLocalKeys: Bool,
         progressHandler: ((MessageFetchState) -> Void)?
     ) async throws -> ProcessedMessage {
         let rawMimeData = try await messageProvider.fetchMsg(
@@ -156,16 +163,18 @@ final class MessageService {
             progressHandler: progressHandler
         )
         return try await decryptAndProcessMessage(mime: rawMimeData,
-                                                  sender: input.sender)
+                                                  sender: input.sender,
+                                                  onlyLocalKeys: onlyLocalKeys)
     }
 
     func decryptAndProcessMessage(mime rawMimeData: Data,
-                                  sender: String?) async throws -> ProcessedMessage {
+                                  sender: String?,
+                                  onlyLocalKeys: Bool) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
-        let verificationPubKeys = try await fetchVerificationPubKeys(for: sender)
+        let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
         let decrypted = try await core.parseDecryptMsg(
             encrypted: rawMimeData,
             keys: keys,
@@ -278,11 +287,11 @@ final class MessageService {
 
 // MARK: - Message verification
 extension MessageService {
-    private func fetchVerificationPubKeys(for sender: String?) async throws -> [String] {
+    private func fetchVerificationPubKeys(for sender: String?, onlyLocal: Bool) async throws -> [String] {
         guard let sender = sender else { return [] }
 
         let pubKeys = contactsService.retrievePubKeys(for: sender)
-        if pubKeys.isNotEmpty { return pubKeys }
+        if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
         guard let contact = try? await contactsService.searchContact(with: sender)
         else { return [] }

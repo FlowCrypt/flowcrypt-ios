@@ -35,7 +35,8 @@
 "message_not_signed" = "not signed";
 "message_missing_pubkey" = "no public key %@";
 "message_signature_verify_error" = "cannot verify signature: %@";
-"message_bad_signature" = "bad_signature";
+"message_bad_signature" = "bad signature";
+"message_signature_pending" = "verifying signature...";
 
 // REPLY
 "reply_title" = "Your reply"; // not used
