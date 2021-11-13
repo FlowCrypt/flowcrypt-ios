@@ -4,7 +4,6 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 struct HttpRes {
     let status: Int
@@ -17,8 +16,6 @@ struct HttpErr: Error {
     let error: Error?
 }
 
-private let logger = Logger.nested("URLSession")
-
 private func toString(_ trace: Trace) -> String {
     let result = trace.result()
     if result < 1.0 {
@@ -28,35 +25,8 @@ private func toString(_ trace: Trace) -> String {
 }
 
 extension URLSession {
-    func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) -> Promise<HttpRes> {
-        Promise { resolve, reject in
-            let trace = Trace(id: "call")
-            self.dataTask(with: urlRequest) { data, response, error in
-                let res = response as? HTTPURLResponse
-                let status = res?.statusCode ?? GeneralConstants.Global.generalError
-                let urlMethod = urlRequest.httpMethod ?? "GET"
-                let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
-                let headers = urlRequest.headersWithFilteredTokens
-                let message = "URLSession.call status:\(status) \(toString(trace)) \(urlMethod) \(urlString), headers: \(headers)"
-                Logger.nested("URLSession").logInfo(message)
-
-                let validStatusCode = 200 ... 299
-                let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
-                let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes
-                let isValidResponse = error == nil && isCodeValid
-                if let data = data, isValidResponse {
-                    resolve(HttpRes(status: status, data: data))
-                } else {
-                    reject(HttpErr(status: status, data: data, error: error))
-                }
-            }.resume()
-        }
-    }
-}
-
-extension URLSession {
-    func asyncCall(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
-        let trace = Trace(id: "asyncCall")
+    func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
+        let trace = Trace(id: "call")
 
         var data: Data?
         var response: URLResponse?
@@ -72,7 +42,7 @@ extension URLSession {
         let urlMethod = urlRequest.httpMethod ?? "GET"
         let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
         let headers = urlRequest.headersWithFilteredTokens
-        let message = "URLSession.asyncCall status:\(status) \(toString(trace)) \(urlMethod) \(urlString), headers: \(headers)"
+        let message = "URLSession.call status:\(status) \(toString(trace)) \(urlMethod) \(urlString), headers: \(headers)"
         Logger.nested("URLSession").logInfo(message)
 
         let validStatusCode = 200 ... 299

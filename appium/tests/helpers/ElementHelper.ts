@@ -45,8 +45,10 @@ class ElementHelper {
         element.doubleClick();
     }
 
-    static waitAndClick(element) {
+    static waitAndClick(element, delayMs = 10) {
         element.waitForDisplayed();
+        // stability fix to make sure element is ready for interaction
+        browser.pause(delayMs)
         element.click();
     }
 

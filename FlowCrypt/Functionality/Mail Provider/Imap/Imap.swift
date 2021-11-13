@@ -20,7 +20,6 @@ final class Imap: MailServiceProvider {
     typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
 
-    var lastErr: [String: AppErr] = [:]
     let dataService: Injection
 
     lazy var logger = Logger.nested(Self.self)

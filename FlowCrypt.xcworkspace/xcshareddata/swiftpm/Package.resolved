@@ -83,15 +83,6 @@
         }
       },
       {
-        "package": "Promises",
-        "repositoryURL": "https://github.com/google/promises",
-        "state": {
-          "branch": null,
-          "revision": "611337c330350c9c1823ad6d671e7f936af5ee13",
-          "version": "2.0.0"
-        }
-      },
-      {
         "package": "Realm",
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {

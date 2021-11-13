@@ -8,50 +8,33 @@
 
 import Foundation
 import MailCore
-import Promises
 
 extension Imap {
     func fetchMsgsByNumber(
         for folder: String,
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet
-    ) -> Promise<[MCOIMAPMessage]> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.imapSess?
-                .fetchMessagesByNumberOperation(
-                    withFolder: folder,
-                    requestKind: kind,
-                    numbers: set
-                )
-                .start { error, messages, _ in // original method sig has 3 args, finalize expects 2 args
-                    self.finalize("fetchMsgsByNumber", resolve, reject, retry: {
-                        self.fetchMsgsByNumber(for: folder, kind: kind, set: set)
-                    })(error, messages)
-                }
-        }
+    ) async throws -> [MCOIMAPMessage] {
+        return try await execute("fetchMsgsByNumber", { sess, respond in
+            sess.fetchMessagesByNumberOperation(
+                withFolder: folder,
+                requestKind: kind,
+                numbers: set
+            ).start { error, value, _ in respond(error, value) }
+        })
     }
 
     func fetchMessagesByUIDOperation(
         for folder: String,
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet
-    ) -> Promise<[MCOIMAPMessage]> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return reject(AppErr.nilSelf) }
-
-            self.imapSess?
-                .fetchMessagesByUIDOperation(
-                    withFolder: folder,
-                    requestKind: kind,
-                    uids: set
-                )
-                .start { error, messages, _ in // original method sig has 3 args, finalize expects 2 args
-                    self.finalize("fetchMessagesByUIDOperation", resolve, reject, retry: {
-                        self.fetchMessagesByUIDOperation(for: folder, kind: kind, set: set)
-                    })(error, messages)
-                }
-        }
+    ) async throws -> [MCOIMAPMessage] {
+        return try await execute("fetchMessagesByUIDOperation", { sess, respond in
+            sess.fetchMessagesByUIDOperation(
+                withFolder: folder,
+                requestKind: kind,
+                uids: set
+            ).start { error, value, _ in respond(error, value) }
+        })
     }
 }
