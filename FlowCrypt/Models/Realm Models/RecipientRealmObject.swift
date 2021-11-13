@@ -9,18 +9,8 @@
 import Foundation
 import RealmSwift
 
-final class LongIdRealmObject: Object {
-    @Persisted var value: String = ""
-
-    convenience init(value: String) {
-        self.init()
-        self.value = value
-    }
-}
-
 final class RecipientRealmObject: Object {
     @Persisted(primaryKey: true) var email: String = ""
-
     @Persisted var name: String?
     @Persisted var lastUsed: Date?
     @Persisted var pubKeys = List<PubKeyRealmObject>()

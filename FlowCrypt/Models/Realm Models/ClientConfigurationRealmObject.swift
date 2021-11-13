@@ -10,15 +10,14 @@ import Foundation
 import RealmSwift
 
 final class ClientConfigurationRealmObject: Object {
-
-    @objc dynamic var flags: Data?
-    @objc dynamic var customKeyserverUrl: String?
-    @objc dynamic var keyManagerUrl: String?
-    @objc dynamic var disallowAttesterSearchForDomains: Data?
-    @objc dynamic var enforceKeygenAlgo: String?
-    @objc dynamic var enforceKeygenExpireMonths: Int = -1
-    @objc dynamic var user: UserRealmObject!
-    @objc dynamic var userEmail: String!
+    @Persisted(primaryKey: true) var userEmail: String!
+    @Persisted var flags: Data?
+    @Persisted var customKeyserverUrl: String?
+    @Persisted var keyManagerUrl: String?
+    @Persisted var disallowAttesterSearchForDomains: Data?
+    @Persisted var enforceKeygenAlgo: String?
+    @Persisted var enforceKeygenExpireMonths: Int = -1
+    @Persisted var user: UserRealmObject!
 
     convenience init(
         flags: [String]?,
@@ -57,10 +56,6 @@ final class ClientConfigurationRealmObject: Object {
             enforceKeygenExpireMonths: clientConfiguration.enforceKeygenExpireMonths,
             user: user
         )
-    }
-
-    override class func primaryKey() -> String? {
-        "userEmail"
     }
 }
 

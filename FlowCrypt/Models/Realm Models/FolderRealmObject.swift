@@ -10,11 +10,11 @@ import Foundation
 import RealmSwift
 
 final class FolderRealmObject: Object {
-    @objc dynamic var name: String = ""
-    @objc dynamic var path: String = ""
-    @objc dynamic var image: Data?
-    @objc dynamic var itemType: String = FolderViewModel.ItemType.folder.rawValue
-    @objc dynamic var user: UserRealmObject!
+    @Persisted(primaryKey: true) var path: String = ""
+    @Persisted var name: String = ""
+    @Persisted var image: Data?
+    @Persisted var itemType: String = FolderViewModel.ItemType.folder.rawValue
+    @Persisted var user: UserRealmObject!
 
     convenience init(
         name: String,
@@ -27,10 +27,6 @@ final class FolderRealmObject: Object {
         self.path = path
         self.image = image
         self.user = user
-    }
-
-    override class func primaryKey() -> String? {
-        "path"
     }
 }
 

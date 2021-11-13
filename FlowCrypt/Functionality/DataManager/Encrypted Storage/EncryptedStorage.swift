@@ -35,11 +35,14 @@ final class EncryptedStorage: EncryptedStorageType {
     // new schema should be added as a new case
     private enum EncryptedStorageSchema: CaseIterable {
         case initial
+        case version5
 
         var version: SchemaVersion {
             switch self {
             case .initial:
                 return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 4)
+            case .version5:
+                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 5)
             }
         }
     }
@@ -53,7 +56,7 @@ final class EncryptedStorage: EncryptedStorageType {
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
-    private let currentSchema: EncryptedStorageSchema = .initial
+    private let currentSchema: EncryptedStorageSchema = .version5
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
     var storage: Realm {
@@ -141,14 +144,14 @@ extension EncryptedStorage {
             switch $0 {
             case .initial:
                 migrationLogger.logInfo("Schema migration not needed for initial schema")
-//            case .someNewSchema:
-//                performSomeNewSchema(migration: migration)
+            case .version5:
+                performVersion5Schema(migration: migration)
             }
         }
     }
 
-    private func performSomeNewSchema(migration: Migration) {
-        migrationLogger.logInfo("Start Multiple account migration")
+    private func performVersion5Schema(migration: Migration) {
+        Version5SchemaMigration(migration: migration).perform()
     }
 }
 

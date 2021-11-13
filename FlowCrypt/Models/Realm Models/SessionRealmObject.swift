@@ -10,13 +10,13 @@ import Foundation
 import RealmSwift
 
 final class SessionRealmObject: Object {
-    @objc dynamic var hostname: String = ""
-    @objc dynamic var port: Int = 0
-    @objc dynamic var username: String = ""
-    @objc dynamic var password: String?
-    @objc dynamic var oAuth2Token: String?
-    @objc dynamic var connectionType: String = ""
-    @objc dynamic var email: String?
+    @Persisted var hostname: String = ""
+    @Persisted var port: Int = 0
+    @Persisted var username: String = ""
+    @Persisted var password: String?
+    @Persisted var oAuth2Token: String?
+    @Persisted var connectionType: String = ""
+    @Persisted var email: String?
 
     convenience init(
         hostname: String,

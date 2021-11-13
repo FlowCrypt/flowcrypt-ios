@@ -20,20 +20,19 @@ enum KeyInfoError: Error {
 }
 
 final class KeyInfoRealmObject: Object {
+    @Persisted(primaryKey: true) var primaryFingerprint = ""
+    @Persisted var `private`: String = ""
+    @Persisted var `public`: String = ""
+    @Persisted var passphrase: String?
+    @Persisted var source: String = ""
+    @Persisted var user: UserRealmObject!
+
     var primaryLongid: String {
         allLongids[0]
     }
 
-    @objc dynamic var `private`: String = ""
-    @objc dynamic var `public`: String = ""
-
     let allFingerprints = List<String>()
     let allLongids = List<String>()
-
-    @objc dynamic var primaryFingerprint = ""
-    @objc dynamic var passphrase: String?
-    @objc dynamic var source: String = ""
-    @objc dynamic var user: UserRealmObject!
 
     convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
@@ -61,10 +60,6 @@ final class KeyInfoRealmObject: Object {
         self.passphrase = passphrase
         self.source = source.rawValue
         self.user = user
-    }
-
-    override class func primaryKey() -> String? {
-        "primaryFingerprint"
     }
 
     override var description: String {

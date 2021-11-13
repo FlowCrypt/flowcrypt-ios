@@ -10,16 +10,16 @@ import Foundation
 import RealmSwift
 
 final class UserRealmObject: Object {
-    @objc dynamic var isActive = true
-    @objc dynamic var name: String = "" {
+    @Persisted(primaryKey: true) var email: String = ""
+    @Persisted var isActive = true
+    @Persisted var name: String = "" {
         didSet {
             imap?.username = name
             smtp?.username = name
         }
     }
-    @objc dynamic var email: String = ""
-    @objc dynamic var imap: SessionRealmObject?
-    @objc dynamic var smtp: SessionRealmObject?
+    @Persisted var imap: SessionRealmObject?
+    @Persisted var smtp: SessionRealmObject?
 
     var password: String? {
         imap?.password
@@ -36,10 +36,6 @@ final class UserRealmObject: Object {
         self.email = email
         self.imap = imap
         self.smtp = smtp
-    }
-
-    override class func primaryKey() -> String? {
-        "email"
     }
 
     override var description: String {
