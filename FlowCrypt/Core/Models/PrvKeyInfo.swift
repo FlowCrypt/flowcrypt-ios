@@ -16,7 +16,7 @@ struct PrvKeyInfo: Encodable, Equatable {
 }
 
 extension PrvKeyInfo {
-    init(keyInfo: KeyInfo, passphrase: String?) {
+    init(keyInfo: KeyInfoRealmObject, passphrase: String?) {
         self.private = keyInfo.private
         self.longid = keyInfo.primaryLongid
         self.passphrase = keyInfo.passphrase ?? passphrase

@@ -80,7 +80,7 @@ final class KeyService: KeyServiceType {
             throw AppErr.noCurrentUser
         }
         // get keys associated with this account, freeze them to pass across threads
-        let keysInfo = storage.keysInfo().filter { $0.account == email }.map { object -> KeyInfo in
+        let keysInfo = storage.keysInfo().filter { $0.account == email }.map { object -> KeyInfoRealmObject in
             guard object.realm != nil else { return object }
             return object.detached()
         }
@@ -97,10 +97,10 @@ final class KeyService: KeyServiceType {
         return PrvKeyInfo(keyInfo: foundKey, passphrase: passphrase)
     }
 
-    private func findKeyByUserEmail(keysInfo: [KeyInfo], email: String) async throws -> KeyInfo? {
+    private func findKeyByUserEmail(keysInfo: [KeyInfoRealmObject], email: String) async throws -> KeyInfoRealmObject? {
         // todo - should be refactored with https://github.com/FlowCrypt/flowcrypt-ios/issues/812
         logger.logDebug("findKeyByUserEmail: found \(keysInfo.count) candidate prvs in storage, searching by:\(email)")
-        var keys: [(KeyInfo, KeyDetails)] = []
+        var keys: [(KeyInfoRealmObject, KeyDetails)] = []
         for keyInfo in keysInfo {
             let parsedKeys = try await coreService.parseKeys(
                 armoredOrBinary: keyInfo.`private`.data()

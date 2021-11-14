@@ -11,7 +11,7 @@ import Foundation
 import RealmSwift
 
 protocol DBMigration {
-    func performMigrationIfNeeded() async throws -> Void
+    func performMigrationIfNeeded() async throws
 }
 
 struct DBMigrationService {
@@ -29,7 +29,7 @@ struct DBMigrationService {
 
 // MARK: - DBMigration
 extension DBMigrationService: DBMigration {
-    func performMigrationIfNeeded() async throws -> Void {
+    func performMigrationIfNeeded() async throws {
         // self.performGmailApiMigration()
     }
 }
@@ -45,7 +45,7 @@ extension DBMigrationService {
             return
         }
         UserDefaults.standard.set(true, forKey: key)
-        let folders = storage.objects(FolderObject.self)
+        let folders = storage.objects(FolderRealmObject.self)
 
         do {
             try storage.write {

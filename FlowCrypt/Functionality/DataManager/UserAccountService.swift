@@ -56,7 +56,7 @@ extension UserAccountService: UserAccountServiceType {
         switch type {
         case let .google(email, name, token):
             // save new user data
-            let user = UserObject.googleUser(
+            let user = UserRealmObject.googleUser(
                 name: name,
                 email: email,
                 token: token
@@ -117,7 +117,7 @@ extension UserAccountService: UserAccountServiceType {
     }
 
     @discardableResult
-    private func switchActiveSession(for userObject: UserObject) -> SessionType? {
+    private func switchActiveSession(for userObject: UserRealmObject) -> SessionType? {
         logger.logInfo("Try to switch session for \(userObject.email)")
 
         let sessionType: SessionType

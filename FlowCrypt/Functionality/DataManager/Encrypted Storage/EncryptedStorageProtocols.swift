@@ -12,5 +12,5 @@ protocol KeyStorageType {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
     func publicKey() -> String?
-    func keysInfo() -> [KeyInfo]
+    func keysInfo() -> [KeyInfoRealmObject]
 }

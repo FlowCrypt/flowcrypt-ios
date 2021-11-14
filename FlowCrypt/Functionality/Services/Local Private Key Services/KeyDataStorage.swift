@@ -30,7 +30,7 @@ extension KeyDataStorage: KeyStorageType {
         encryptedStorage.publicKey()
     }
 
-    func keysInfo() -> [KeyInfo] {
+    func keysInfo() -> [KeyInfoRealmObject] {
         encryptedStorage.keysInfo()
     }
 

@@ -18,7 +18,7 @@ struct SMTPSession {
 }
 
 extension SMTPSession {
-    init?(userObject user: UserObject) {
+    init?(userObject user: UserRealmObject) {
         guard let smtp = user.smtp else {
             assertionFailure("Can't get SMTP Session without user data")
             return nil

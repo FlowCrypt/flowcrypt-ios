@@ -9,15 +9,15 @@
 import Foundation
 import RealmSwift
 
-// MARK: - CachedObject
-protocol CachedObject: Object {
+// MARK: - CachedRealmObject
+protocol CachedRealmObject: Object {
     associatedtype Identifier: Equatable
     var identifier: Identifier { get }
-    var activeUser: UserObject? { get }
+    var activeUser: UserRealmObject? { get }
 }
 
 // MARK: - Cache
-final class EncryptedCacheService<T: CachedObject> {
+final class EncryptedCacheService<T: CachedRealmObject> {
     let encryptedStorage: EncryptedStorageType
     var realm: Realm { encryptedStorage.storage }
 
@@ -63,7 +63,7 @@ final class EncryptedCacheService<T: CachedObject> {
 
     func getAllForActiveUser() -> [T]? {
         let currentUser = realm
-            .objects(UserObject.self)
+            .objects(UserRealmObject.self)
             .first(where: \.isActive)
 
         return Array(realm.objects(T.self))
