@@ -32,7 +32,7 @@ enum PhotosManagerError: Error {
 }
 
 class PhotosManager: PhotosManagerType {
-    
+
     func takePhoto(
         from viewController: TakePhotoViewController
     ) -> Future<Void, Error> {
@@ -56,7 +56,7 @@ class PhotosManager: PhotosManagerType {
     func selectPhoto(
         from viewController: PhotoPickerViewController
     ) -> Future<Void, Error> {
-        Future<Void, Error> { future in
+        Future<Void, Error> { promise in
             DispatchQueue.main.async {
                 var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
                 config.selectionLimit = 1
