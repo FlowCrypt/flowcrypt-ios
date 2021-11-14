@@ -38,50 +38,51 @@ class NewMessageScreen extends BaseScreen {
         return $(SELECTORS.BACK_BUTTON);
     }
 
-    setAddRecipient(recipient) {
-        this.addRecipientField.setValue(recipient);
-        browser.pause(1000);
-        $(SELECTORS.RETURN_BUTTON).click()
+    setAddRecipient = async (recipient: string) => {
+        await this.addRecipientField.setValue(recipient);
+        await browser.pause(1000);
+        await $(SELECTORS.RETURN_BUTTON).click()
     }
 
-    setSubject(subject) {
-        ElementHelper.waitClickAndType(this.subjectField, subject);
+    setSubject = async (subject: string) => {
+        await ElementHelper.waitClickAndType(await this.subjectField, subject);
     }
 
-    setComposeSecurityMessage(message) {
-        this.composeSecurityMesage.setValue(message);
+    setComposeSecurityMessage = async (message: string) => {
+        await this.composeSecurityMesage.setValue(message);
     }
 
-    filledSubject(subject) {
+    filledSubject = async (subject: string) => {
         const selector = `**/XCUIElementTypeTextField[\`value == "${subject}"\`]`;
-        return $(`-ios class chain:${selector}`);
+        return await $(`-ios class chain:${selector}`);
     }
 
-    composeEmail(recipient, subject, message) {
-        this.setAddRecipient(recipient);
-        this.setSubject(subject);
-        this.setComposeSecurityMessage(message);
+    composeEmail = async (recipient: string, subject: string, message: string) => {
+        await this.setAddRecipient(recipient);
+        await this.setSubject(subject);
+        await this.setComposeSecurityMessage(message);
     }
 
-    setAddRecipientByName(name, email) {
-        this.addRecipientField.setValue(name);
+    setAddRecipientByName = async (name: string, email: string) => {
+        await this.addRecipientField.setValue(name);
         const selector = `~${email}`;
-        $(selector).waitForDisplayed();
-        $(selector).click();
+        await $(selector).waitForDisplayed();
+        await $(selector).click();
     }
 
-    checkFilledComposeEmailInfo(recipient, subject, message) {
+    checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string) => {
         expect(this.composeSecurityMesage).toHaveText(message);
-        this.filledSubject(subject).waitForDisplayed();
-        this.checkAddedRecipient(recipient);
+        const element = await this.filledSubject(subject);
+        await element.waitForDisplayed();
+        await this.checkAddedRecipient(recipient);
     }
 
-    checkAddedRecipient(recipient)  {
-        expect(this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
+    checkAddedRecipient = async (recipient: string) => {
+        expect(await this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
     }
 
-    clickBackButton () {
-        ElementHelper.waitAndClick(this.backButton);
+    clickBackButton = async () => {
+        await ElementHelper.waitAndClick(await this.backButton);
     }
 }
 

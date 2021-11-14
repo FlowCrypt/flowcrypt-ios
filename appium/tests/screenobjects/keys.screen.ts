@@ -59,32 +59,32 @@ class KeysScreen extends BaseScreen {
         return $(SELECTORS.COPY_TO_CLIPBOARD_BUTTON);
     }
 
-    checkKeysScreen() {
+    checkKeysScreen = async () => {
         //will add value verification for key later, need to create Api request for get key value
-        this.keysHeader.waitForDisplayed();
-        this.addButton.waitForDisplayed({reverse: true});
-        this.nameAndEmail.waitForExist();
-        this.dateCreated.waitForExist();
-        this.fingerPrint.waitForExist();
-        expect(this.nameAndEmail.getAttribute('value')).not.toEqual(null);
-        expect(this.dateCreated.getAttribute('value')).not.toEqual(null);
-        expect(this.fingerPrint.getAttribute('value')).not.toEqual(null);
+        await this.keysHeader.waitForDisplayed();
+        await this.addButton.waitForDisplayed({reverse: true});
+        await this.nameAndEmail.waitForExist();
+        await this.dateCreated.waitForExist();
+        await this.fingerPrint.waitForExist();
+        expect(await this.nameAndEmail.getAttribute('value')).toBeTruthy();
+        expect(await this.dateCreated.getAttribute('value')).toBeTruthy();
+        expect(await this.fingerPrint.getAttribute('value')).toBeTruthy();
     }
 
-    clickOnKey() {
-        ElementHelper.waitAndClick(this.nameAndEmail);
+    clickOnKey = async () => {
+        await ElementHelper.waitAndClick(await this.nameAndEmail);
     }
 
-    checkSelectedKeyScreen() {
-        this.showPublicKeyButton.waitForDisplayed();
-        this.showPrivateKeyButton.waitForDisplayed({reverse: true});
-        this.showKeyDetailsButton.waitForDisplayed();
-        this.shareButton.waitForDisplayed();
-        this.copyToClipboardButton.waitForDisplayed();
+    checkSelectedKeyScreen = async () => {
+        await this.showPublicKeyButton.waitForDisplayed();
+        await this.showPrivateKeyButton.waitForDisplayed({reverse: true});
+        await this.showKeyDetailsButton.waitForDisplayed();
+        await this.shareButton.waitForDisplayed();
+        await this.copyToClipboardButton.waitForDisplayed();
     }
 
-    clickOnShowPublicKey() {
-        ElementHelper.waitAndClick(this.showPublicKeyButton);
+    clickOnShowPublicKey = async () => {
+        await ElementHelper.waitAndClick(await this.showPublicKeyButton);
     }
 }
 

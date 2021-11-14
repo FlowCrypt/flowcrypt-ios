@@ -30,30 +30,30 @@ class MenuBarScreen extends BaseScreen {
         return $(SELECTORS.INBOX_BTN);
     }
 
-    clickMenuIcon () {
-        ElementHelper.waitAndClick(this.menuIcon, 200);
+    clickMenuIcon = async () => {
+        await ElementHelper.waitAndClick(await this.menuIcon, 200);
     }
 
-    checkUserEmail (email: string = CommonData.account.email) {
+    checkUserEmail = async (email: string = CommonData.account.email) => {
         const selector = `~${email}`;
-        $(selector).waitForDisplayed();
+        await $(selector).waitForDisplayed();
     }
 
-    checkMenuBar () {
-        expect(this.logoutButton).toBeDisplayed();
-        expect(this.settingsButton).toBeDisplayed();
+    checkMenuBar = async () => {
+        expect(await this.logoutButton).toBeDisplayed();
+        expect(await this.settingsButton).toBeDisplayed();
     }
 
-    clickLogout () {
-        ElementHelper.waitAndClick(this.logoutButton);
+    clickLogout = async () => {
+        await ElementHelper.waitAndClick(await this.logoutButton);
     }
 
-    clickSettingsButton () {
-        ElementHelper.waitAndClick(this.settingsButton);
+    clickSettingsButton = async () => {
+        await ElementHelper.waitAndClick(await this.settingsButton);
     }
 
-    clickInboxButton () {
-        ElementHelper.waitAndClick(this.inboxButton);
+    clickInboxButton = async () => {
+        await ElementHelper.waitAndClick(await this.inboxButton);
     }
 }
 
