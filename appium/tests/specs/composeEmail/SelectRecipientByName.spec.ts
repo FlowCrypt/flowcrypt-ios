@@ -11,7 +11,7 @@ import {
 
 import { CommonData } from '../../data';
 
-describe('COMPOSE EMAIL: ', async () => {
+describe('COMPOSE EMAIL: ', () => {
 
   it('user is able to select recipient from contact list using contact name', async () => {
 

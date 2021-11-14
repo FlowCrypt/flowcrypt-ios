@@ -7,7 +7,7 @@ import {
 
 import { CommonData } from '../../data';
 
-describe('INBOX: ', async () => {
+describe('INBOX: ', () => {
 
   it('user is able to see encrypted email with pass phrase after restart app', async () => {
 
