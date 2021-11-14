@@ -21,7 +21,7 @@ export const getMockAttesterEndpoints = (
     '/attester/pub/?': async ({ body }, req) => {
       const email = req.url!.split('/').pop()!.toLowerCase().trim();
       if (isGet(req)) {
-        const pubkey = attesterConfig.servedPubkeys[email];
+        const pubkey = (attesterConfig.servedPubkeys || {})[email];
         if (pubkey) {
           return pubkey;
         }

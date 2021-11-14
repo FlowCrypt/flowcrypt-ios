@@ -45,9 +45,9 @@ export class Api<REQ, RES> {
     useHttps: boolean = true
   ) {
     this.apiName = apiName;
-    if(useHttps) {
+    if (useHttps) {
       this.server = https.createServer({
-        key: readFileSync('./api-mocks/mock-ssl-cert/key.pem.mock'), 
+        key: readFileSync('./api-mocks/mock-ssl-cert/key.pem.mock'),
         cert: readFileSync('./api-mocks/mock-ssl-cert/cert.pem.mock')
       }, this.serverRequestListener);
     } else {
@@ -171,6 +171,7 @@ export class Api<REQ, RES> {
         return handlers[handlerPathDefinition];
       }
     }
+    return undefined;
   }
 
   protected fmtErr = (e: any): Buffer => {
