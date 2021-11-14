@@ -66,9 +66,9 @@ class KeysScreen extends BaseScreen {
     await (await this.nameAndEmail).waitForExist();
     await (await this.dateCreated).waitForExist();
     await (await this.fingerPrint).waitForExist();
-    expect(await this.nameAndEmail.getAttribute('value')).toBeTruthy();
-    expect(await this.dateCreated.getAttribute('value')).toBeTruthy();
-    expect(await this.fingerPrint.getAttribute('value')).toBeTruthy();
+    expect(await (await this.nameAndEmail).getAttribute('value')).toBeTruthy();
+    expect(await (await this.dateCreated).getAttribute('value')).toBeTruthy();
+    expect(await (await this.fingerPrint).getAttribute('value')).toBeTruthy();
   }
 
   clickOnKey = async () => {
