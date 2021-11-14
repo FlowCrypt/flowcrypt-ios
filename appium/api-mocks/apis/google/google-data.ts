@@ -1,9 +1,8 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 import { AddressObject, ParsedMail, StructuredHeader } from 'mailparser';
-
-import { Util } from '../../util/index';
 import { readFile, readdir } from 'fs';
+import { lousyRandom } from '../../lib/mock-util';
 
 type GmailMsg$header = { name: string, value: string };
 type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
@@ -172,7 +171,7 @@ export class GoogleData {
   public storeSentMessage = (parsedMail: ParsedMail, base64Msg: string): string => {
     let bodyContentAtt: { data: string; size: number; filename?: string; id: string } | undefined;
     for (const attachment of parsedMail.attachments || []) {
-      const attId = Util.lousyRandom();
+      const attId = lousyRandom();
       const gmailAtt = { data: attachment.content.toString('base64'), size: attachment.size, filename: attachment.filename, id: attId };
       DATA[this.acct].attachments[attId] = gmailAtt;
       if (attachment.filename === 'encrypted.asc') {
@@ -189,7 +188,7 @@ export class GoogleData {
       throw new Error('MOCK storeSentMessage: no parsedMail body, no appropriate bodyContentAtt');
     }
     const barebonesGmailMsg: GmailMsg = { // todo - could be improved - very barebones
-      id: `msg_id_${Util.lousyRandom()}`,
+      id: `msg_id_${lousyRandom()}`,
       threadId: null, // tslint:disable-line:no-null-keyword
       historyId: '',
       labelIds: ['SENT' as GmailMsg$labelId],

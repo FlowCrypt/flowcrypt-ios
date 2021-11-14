@@ -2,6 +2,7 @@
 
 import { IncomingMessage } from 'http';
 import { HttpClientErr } from './api';
+import * as request from 'request';
 
 export const isGet = (r: IncomingMessage) => r.method === 'GET' || r.method === 'HEAD';
 export const isPost = (r: IncomingMessage) => r.method === 'POST';
@@ -19,4 +20,26 @@ export const throwIfNotGetMethod = (req: IncomingMessage) => {
   if (req.method !== 'GET') {
     throw new HttpClientErr('Unsupported method');
   }
+}
+
+export const lousyRandom = () => Math.random().toString(36).substring(2);
+
+
+
+
+
+export class RequestsError extends Error {
+  public reason: any;
+  constructor(reason: any) {
+    super();
+    this.reason = reason;
+  }
+}
+
+export class Requests {
+  public static get = (
+    options: (request.UriOptions & request.CoreOptions) | (request.UrlOptions & request.CoreOptions)
+  ): Promise<request.Response> => new Promise((resolve, reject) => {
+    request.get(options, (e, resp, body) => e ? reject(new RequestsError(e)) : resolve(resp));
+  });
 }

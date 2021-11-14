@@ -40,7 +40,7 @@ export class Api<REQ, RES> {
 
   constructor(
     apiName: string,
-    protected handlerGetters: [() => Handlers<REQ, RES>],
+    protected handlerGetters: (() => Handlers<REQ, RES>)[],
     protected urlPrefix = ''
   ) {
     this.apiName = apiName;

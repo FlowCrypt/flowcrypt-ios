@@ -8,7 +8,7 @@ import { AttesterConfig, MockConfig } from '../../lib/configuration-types';
 
 export const MOCK_ATTESTER_LAST_INSERTED_PUB: { [email: string]: string } = {};
 
-export const getMockFesEndpoints = (
+export const getMockAttesterEndpoints = (
   mockConfig: MockConfig,
   attesterConfig: AttesterConfig | undefined
 ): HandlersDefinition => {

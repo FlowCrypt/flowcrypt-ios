@@ -20,6 +20,8 @@ type Fes$ClientConfiguration = {
   enforce_keygen_expire_months?: number,
 };
 
-export type FesConfig = { clientConfiguration: Fes$ClientConfiguration }
-
+export type FesConfig = { clientConfiguration: Fes$ClientConfiguration };
 export type AttesterConfig = { enableSubmittingPubkeys?: boolean, servedPubkeys?: Dict<string> };
+export type GoogleConfig = { allowedRecipients: [string] };
+export type WkdConfig = {};
+export type EkmConfig = {};

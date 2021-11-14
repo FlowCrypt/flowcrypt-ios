@@ -4,12 +4,12 @@
 
 import { Api } from './lib/api';
 import * as http from 'http';
-// import { mockAttesterEndpoints } from './apis/attester/attester-endpoints';
-// import { mockGoogleEndpoints } from './apis/google/google-endpoints';
-// import { mockKeyManagerEndpoints } from './apis/key-manager/key-manager-endpoints';
-// import { mockWkdEndpoints } from './apis/wkd/wkd-endpoints';
+import { getMockAttesterEndpoints } from './apis/attester/attester-endpoints';
+import { getMockGoogleEndpoints } from './apis/google/google-endpoints';
+import { getMockEkmEndpoints } from './apis/key-manager/key-manager-endpoints';
+import { getMockWkdEndpoints } from './apis/wkd/wkd-endpoints';
 import { getMockFesEndpoints } from './apis/fes/fes-endpoints';
-import { FesConfig, Logger, MockConfig } from './lib/configuration-types';
+import { AttesterConfig, EkmConfig, FesConfig, GoogleConfig, Logger, MockConfig, WkdConfig } from './lib/configuration-types';
 
 /**
  * const mockApi = new MockApi();
@@ -32,9 +32,16 @@ import { FesConfig, Logger, MockConfig } from './lib/configuration-types';
  */
 export class MockApi {
 
-  public fesConfig: FesConfig | undefined = undefined;
   private port = 8001;
   private logger: Logger = console.log // change here to log to a file instead
+
+  public mockConfig: MockConfig = { serverUrl: `http://127.0.0.1:${this.port}` };
+
+  public fesConfig: FesConfig | undefined = undefined;
+  public googleConfig: GoogleConfig | undefined = undefined;
+  public wkdConfig: WkdConfig | undefined = undefined;
+  public ekmConfig: EkmConfig | undefined = undefined;
+  public attesterConfig: AttesterConfig | undefined = undefined;
 
   public withMockedApis = async (testRunner: () => Promise<void>) => {
     const logger = this.logger;
@@ -45,13 +52,12 @@ export class MockApi {
         logger(`${ms}ms | ${res.statusCode} ${req.method} ${req.url} | ${errRes ? errRes : ''}`);
       }
     }
-    const mockConfig: MockConfig = { serverUrl: `http://127.0.0.1:${this.port}` };
     const api = new LoggedApi<{ query: { [k: string]: string }, body?: unknown }, unknown>('api-mock', [
-      () => getMockFesEndpoints(mockConfig, this.fesConfig),
-      // () => getMockAttesterEndpoints(mockConfig, this.attesterConfig),
-      // () => getMockGoogleEndpoints(mockConfig, this.googleConfig),
-      // () => getMockKeyManagerEndpoints(mockConfig, this.ekmConfig),
-      // () => getMockWkdEndpoints(mockConfig, this.wkdConfig),
+      () => getMockFesEndpoints(this.mockConfig, this.fesConfig),
+      () => getMockAttesterEndpoints(this.mockConfig, this.attesterConfig),
+      () => getMockGoogleEndpoints(this.mockConfig, this.googleConfig),
+      () => getMockEkmEndpoints(this.mockConfig, this.ekmConfig),
+      () => getMockWkdEndpoints(this.mockConfig, this.wkdConfig),
     ]);
     await api.listen(this.port);
     try {
