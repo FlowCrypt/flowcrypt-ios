@@ -13,10 +13,10 @@ import { MockConfig, WkdConfig } from '../../lib/configuration-types';
 */
 export const getMockWkdEndpoints = (
   mockConfig: MockConfig,
-  googleConfig: WkdConfig | undefined
+  wkdConfig: WkdConfig | undefined
 ): HandlersDefinition => {
 
-  if (!googleConfig) {
+  if (!wkdConfig) {
     return {};
   }
 

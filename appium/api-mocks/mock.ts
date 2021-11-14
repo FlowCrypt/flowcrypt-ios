@@ -6,7 +6,7 @@ import { Api } from './lib/api';
 import * as http from 'http';
 import { getMockAttesterEndpoints } from './apis/attester/attester-endpoints';
 import { getMockGoogleEndpoints } from './apis/google/google-endpoints';
-import { getMockEkmEndpoints } from './apis/key-manager/key-manager-endpoints';
+import { getMockEkmEndpoints } from './apis/ekm/ekm-endpoints';
 import { getMockWkdEndpoints } from './apis/wkd/wkd-endpoints';
 import { getMockFesEndpoints } from './apis/fes/fes-endpoints';
 import { AttesterConfig, EkmConfig, FesConfig, GoogleConfig, Logger, MockConfig, WkdConfig } from './lib/configuration-types';

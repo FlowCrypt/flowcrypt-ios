@@ -22,10 +22,10 @@ export const MOCK_KM_LAST_INSERTED_KEY: { [acct: string]: { decryptedPrivateKey:
  */
 export const getMockEkmEndpoints = (
   mockConfig: MockConfig,
-  googleConfig: EkmConfig | undefined
+  ekmConfig: EkmConfig | undefined
 ): HandlersDefinition => {
 
-  if (!googleConfig) {
+  if (!ekmConfig) {
     return {};
   }
 
