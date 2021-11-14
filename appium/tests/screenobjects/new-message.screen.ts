@@ -41,7 +41,7 @@ class NewMessageScreen extends BaseScreen {
   setAddRecipient = async (recipient: string) => {
     await this.addRecipientField.setValue(recipient);
     await browser.pause(1000);
-    await $(SELECTORS.RETURN_BUTTON).click()
+    await (await $(SELECTORS.RETURN_BUTTON)).click()
   }
 
   setSubject = async (subject: string) => {
@@ -65,9 +65,7 @@ class NewMessageScreen extends BaseScreen {
 
   setAddRecipientByName = async (name: string, email: string) => {
     await this.addRecipientField.setValue(name);
-    const selector = `~${email}`;
-    await $(selector).waitForDisplayed();
-    await $(selector).click();
+    await ElementHelper.waitAndClick(await $(`~${email}`));
   }
 
   checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string) => {

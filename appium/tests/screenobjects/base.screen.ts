@@ -14,7 +14,7 @@ export default class BaseScreen {
    * @return {boolean}
    */
   waitForScreen = async (isShown: boolean = true) => {
-    return await $(this.locator).waitForDisplayed({
+    return await (await $(this.locator)).waitForDisplayed({
       timeout: DEFAULT_TIMEOUT,
       reverse: !isShown,
     });

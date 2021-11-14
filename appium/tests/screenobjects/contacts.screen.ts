@@ -29,12 +29,12 @@ class ContactsScreen extends BaseScreen {
   }
 
   checkContactScreen = async () => {
-    await this.contactsHeader.waitForDisplayed();
-    await this.backButton.waitForDisplayed();
+    await (await this.contactsHeader).waitForDisplayed();
+    await (await this.backButton).waitForDisplayed();
   }
 
   checkEmptyList = async () => {
-    await this.emptyContactsList.waitForDisplayed();
+    await (await this.emptyContactsList).waitForDisplayed();
   }
 
   clickBackButton = async () => {

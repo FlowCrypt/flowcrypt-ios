@@ -70,26 +70,27 @@ class ContactPublicKeyScreen extends BaseScreen {
   }
 
   checkPublicKeyNotEmpty = async () => {
-    await this.backButton.waitForDisplayed();
-    await this.key.waitForDisplayed();
-    await this.publicKey.waitForExist();
-    expect(await this.publicKey.getAttribute('value')).toBeTruthy();
+    await (await this.backButton).waitForDisplayed();
+    await (await this.key).waitForDisplayed();
+    const pubkeyEl = await this.publicKey;
+    await pubkeyEl.waitForExist();
+    expect(await pubkeyEl.getAttribute('value')).toBeTruthy();
   }
 
   checkPublicKeyDetailsNotEmpty = async () => {
-    await this.backButton.waitForDisplayed();
-    await this.fingerPrintLabel.waitForDisplayed();
-    expect(await this.fingerPrintValue.getAttribute('value')).toBeTruthy();
-    await this.createdLabel.waitForDisplayed();
-    expect(await this.createdValue.getAttribute('value')).toBeTruthy();
-    await this.expiresLabel.waitForDisplayed();
-    expect(await this.expiresValue.getAttribute('value')).toBeTruthy();
+    await (await this.backButton).waitForDisplayed();
+    await (await this.fingerPrintLabel).waitForDisplayed();
+    expect(await (await this.fingerPrintValue).getAttribute('value')).toBeTruthy();
+    await (await this.createdLabel).waitForDisplayed();
+    expect(await (await this.createdValue).getAttribute('value')).toBeTruthy();
+    await (await this.expiresLabel).waitForDisplayed();
+    expect(await (await this.expiresValue).getAttribute('value')).toBeTruthy();
   }
 
   checkPgpUserId = async (email: string) => {
-    await this.trashButton.waitForDisplayed();
-    await this.pgpUserIdLabel.waitForDisplayed();
-    expect(await this.pgpUserIdEmailValue.getAttribute('value')).toContain(email);
+    await (await this.trashButton).waitForDisplayed();
+    await (await this.pgpUserIdLabel).waitForDisplayed();
+    expect(await (await this.pgpUserIdEmailValue).getAttribute('value')).toContain(email);
   }
 
   clickOnFingerPrint = async () => {

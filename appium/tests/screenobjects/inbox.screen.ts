@@ -18,16 +18,13 @@ class InboxScreen extends BaseScreen {
   }
 
   clickOnUserEmail = async (email: string) => {
-    this.createEmailButton.waitForDisplayed();
-    const selector = `~${email}`;
-    $(selector).click();
+    await (await this.createEmailButton).waitForDisplayed();
+    await $(`~${email}`).click();
   }
 
   clickOnEmailBySubject = async (subject: string) => {
-    this.createEmailButton.waitForDisplayed();
-    browser.pause(500); // stability fix
-    const selector = `~${subject}`;
-    await ElementHelper.waitAndClick(await $(selector));
+    await (await this.createEmailButton).waitForDisplayed();
+    await ElementHelper.waitAndClick(await $(`~${subject}`), 500);
   }
 
   clickCreateEmail = async () => {

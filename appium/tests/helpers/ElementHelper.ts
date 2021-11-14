@@ -36,9 +36,7 @@ class ElementHelper {
   }
 
   static clickStaticText = async (label: string) => {
-    await this.waitElementVisible(await this.staticText(label));
-    const element = await this.staticText(label);
-    await element.click();
+    await ElementHelper.waitAndClick(await this.staticText(label));
   }
 
   static doubleClick = async (element: WebdriverIO.Element) => {

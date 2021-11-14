@@ -15,7 +15,7 @@ class AttachmentScreen extends BaseScreen {
   }
 
   checkDownloadPopUp = async (name: string) => {
-    await this.cancelButton.waitForDisplayed();
+    await (await this.cancelButton).waitForDisplayed();
     const attachment = `-ios class chain:**/XCUIElementTypeNavigationBar[\`name == "com_apple_DocumentManager_Service.DOCServiceTargetSelectionBrowserView"\`]/XCUIElementTypeButton/XCUIElementTypeStaticText`;//it works only with this selector
     expect(await $(attachment)).toHaveAttribute('value', `${name}`);
   }

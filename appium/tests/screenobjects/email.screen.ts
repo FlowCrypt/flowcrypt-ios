@@ -43,21 +43,21 @@ class EmailScreen extends BaseScreen {
 
   checkEmailAddress = async (email: string) => {
     const selector = `~${email}`;
-    await $(selector).waitForDisplayed();
+    await (await $(selector)).waitForDisplayed();
   }
 
   checkEmailSubject = async (subject: string) => {
     const selector = `~${subject}`;
-    await $(selector).waitForDisplayed();
+    await (await $(selector)).waitForDisplayed();
   }
 
   checkEmailText = async (text: string) => {
     const selector = `~${text}`;
-    await $(selector).waitForDisplayed();
+    await (await $(selector)).waitForDisplayed();
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
-    await this.backButton.waitForDisplayed();
+    await (await this.backButton).waitForDisplayed();
     await this.checkEmailAddress(email);
     await this.checkEmailSubject(subject);
     await this.checkEmailText(text);
@@ -76,7 +76,7 @@ class EmailScreen extends BaseScreen {
   };
 
   checkWrongPassPhraseErrorMessage = async () => {
-    await this.wrongPassPhraseMessage.waitForDisplayed();
+    await (await this.wrongPassPhraseMessage).waitForDisplayed();
   }
 
   clickSaveButton = async () => {
@@ -89,7 +89,7 @@ class EmailScreen extends BaseScreen {
   }
 
   checkAttachment = async (name: string) => {
-    this.downloadAttachmentButton.waitForDisplayed();
+    await (this.downloadAttachmentButton).waitForDisplayed();
     const element = await this.attachmentName(name);
     await element.waitForDisplayed();
   }

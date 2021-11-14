@@ -61,11 +61,11 @@ class KeysScreen extends BaseScreen {
 
   checkKeysScreen = async () => {
     //will add value verification for key later, need to create Api request for get key value
-    await this.keysHeader.waitForDisplayed();
-    await this.addButton.waitForDisplayed({ reverse: true });
-    await this.nameAndEmail.waitForExist();
-    await this.dateCreated.waitForExist();
-    await this.fingerPrint.waitForExist();
+    await (await this.keysHeader).waitForDisplayed();
+    await (await this.addButton).waitForDisplayed({ reverse: true });
+    await (await this.nameAndEmail).waitForExist();
+    await (await this.dateCreated).waitForExist();
+    await (await this.fingerPrint).waitForExist();
     expect(await this.nameAndEmail.getAttribute('value')).toBeTruthy();
     expect(await this.dateCreated.getAttribute('value')).toBeTruthy();
     expect(await this.fingerPrint.getAttribute('value')).toBeTruthy();
@@ -76,11 +76,11 @@ class KeysScreen extends BaseScreen {
   }
 
   checkSelectedKeyScreen = async () => {
-    await this.showPublicKeyButton.waitForDisplayed();
-    await this.showPrivateKeyButton.waitForDisplayed({ reverse: true });
-    await this.showKeyDetailsButton.waitForDisplayed();
-    await this.shareButton.waitForDisplayed();
-    await this.copyToClipboardButton.waitForDisplayed();
+    await (await this.showPublicKeyButton).waitForDisplayed();
+    await (await this.showPrivateKeyButton).waitForDisplayed({ reverse: true });
+    await (await this.showKeyDetailsButton).waitForDisplayed();
+    await (await this.shareButton).waitForDisplayed();
+    await (await this.copyToClipboardButton).waitForDisplayed();
   }
 
   clickOnShowPublicKey = async () => {

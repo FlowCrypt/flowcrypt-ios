@@ -35,8 +35,8 @@ class MenuBarScreen extends BaseScreen {
   }
 
   checkUserEmail = async (email: string = CommonData.account.email) => {
-    const selector = `~${email}`;
-    await $(selector).waitForDisplayed();
+    const el = await $(`~${email}`);
+    await el.waitForDisplayed();
   }
 
   checkMenuBar = async () => {
