@@ -40,7 +40,7 @@ class CreateKeyScreen extends BaseScreen {
     do {
       await browser.pause(1000);
       count++;
-    } while (await this.enterPassPhraseField.isDisplayed() !== true && count <= 15);
+    } while (await (await this.enterPassPhraseField).isDisplayed() !== true && count <= 15);
     await this.fillPassPhrase(text);
     await this.clickSetPassPhraseBtn();
     await this.confirmPassPhrase(text);

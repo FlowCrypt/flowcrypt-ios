@@ -137,7 +137,7 @@ class SplashScreen extends BaseScreen {
     if (await (await $(emailSelector)).isDisplayed()) {
       await ElementHelper.waitAndClick(await $(emailSelector));
       await (await this.useAnotherAcoount).waitForDisplayed({ timeout: 1000, reverse: true });
-      if (await this.passwordField.isDisplayed()) {
+      if (await (await this.passwordField).isDisplayed()) {
         await this.fillPassword(password);
         await this.clickNextBtn();
       }
