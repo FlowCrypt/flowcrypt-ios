@@ -1,50 +1,49 @@
 import {
-    SplashScreen,
-    CreateKeyScreen,
-    InboxScreen,
-    EmailScreen
+  SplashScreen,
+  CreateKeyScreen,
+  InboxScreen,
+  EmailScreen
 } from '../../screenobjects/all-screens';
 
-import {CommonData} from '../../data';
+import { CommonData } from '../../data';
 
-describe('INBOX: ', () => {
+describe('INBOX: ', async () => {
 
-    it('user is able to see encrypted email with pass phrase after restart app', () => {
+  it('user is able to see encrypted email with pass phrase after restart app', async () => {
 
-        const senderEmail = CommonData.sender.email;
-        const emailSubject = CommonData.encryptedEmail.subject;
-        const emailText = CommonData.encryptedEmail.message;
-        const wrongPassPhrase = 'wrong';
+    const senderEmail = CommonData.sender.email;
+    const emailSubject = CommonData.encryptedEmail.subject;
+    const emailText = CommonData.encryptedEmail.message;
+    const wrongPassPhrase = 'wrong';
 
-        const correctPassPhrase = CommonData.account.passPhrase;
+    const correctPassPhrase = CommonData.account.passPhrase;
 
-        const bundleId = CommonData.bundleId.id;
+    const bundleId = CommonData.bundleId.id;
 
-        SplashScreen.login();
-        CreateKeyScreen.setPassPhrase();
+    await SplashScreen.login();
+    await CreateKeyScreen.setPassPhrase();
 
-        InboxScreen.clickOnEmailBySubject(emailSubject);
-        EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
-        driver.terminateApp(bundleId);
+    await driver.terminateApp(bundleId);
+    await driver.activateApp(bundleId);
 
-        driver.activateApp(bundleId);
+    await InboxScreen.clickOnEmailBySubject(emailSubject);
 
-        InboxScreen.clickOnEmailBySubject(emailSubject);
+    //try to see encrypted message with wrong pass phrase
+    await EmailScreen.enterPassPhrase(wrongPassPhrase);
+    await EmailScreen.clickOkButton();
+    await EmailScreen.checkWrongPassPhraseErrorMessage();
 
-        //try to see encrypted message with wrong pass phrase
-        EmailScreen.enterPassPhrase(wrongPassPhrase);
-        EmailScreen.clickOkButton();
-        EmailScreen.checkWrongPassPhraseErrorMessage();
+    //check email after setting correct pass phrase
+    await EmailScreen.enterPassPhrase(correctPassPhrase);
+    await EmailScreen.clickSaveButton();
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
-        //check email after setting correct pass phrase
-        EmailScreen.enterPassPhrase(correctPassPhrase);
-        EmailScreen.clickSaveButton();
-        EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-
-        //reopen email without pass phrase
-        EmailScreen.clickBackButton();
-        InboxScreen.clickOnEmailBySubject(emailSubject);
-        EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    });
+    //reopen email without pass phrase
+    await EmailScreen.clickBackButton();
+    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+  });
 });

@@ -2,52 +2,53 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-    CONTACTS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Contacts"`]',
-    BACK_BUTTON: '~arrow left c',
-    EMPTY_CONTACTS_LIST: '~Empty list',
+  CONTACTS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Contacts"`]',
+  BACK_BUTTON: '~arrow left c',
+  EMPTY_CONTACTS_LIST: '~Empty list',
 };
 
 class ContactsScreen extends BaseScreen {
-    constructor () {
-        super(SELECTORS.CONTACTS_HEADER);
-    }
+  constructor() {
+    super(SELECTORS.CONTACTS_HEADER);
+  }
 
-    get contactsHeader() {
-        return $(SELECTORS.CONTACTS_HEADER);
-    }
+  get contactsHeader() {
+    return $(SELECTORS.CONTACTS_HEADER);
+  }
 
-    get backButton() {
-        return $(SELECTORS.BACK_BUTTON);
-    }
+  get backButton() {
+    return $(SELECTORS.BACK_BUTTON);
+  }
 
-    get emptyContactsList() {
-        return $(SELECTORS.EMPTY_CONTACTS_LIST);
-    }
+  get emptyContactsList() {
+    return $(SELECTORS.EMPTY_CONTACTS_LIST);
+  }
 
-    contactName(name) {
-        return $(`~${name}`)
-    }
+  contactName = async (name: string) => {
+    return await $(`~${name}`)
+  }
 
-    checkContactScreen() {
-        this.contactsHeader.waitForDisplayed();
-        this.backButton.waitForDisplayed();
-    }
+  checkContactScreen = async () => {
+    await this.contactsHeader.waitForDisplayed();
+    await this.backButton.waitForDisplayed();
+  }
 
-    checkEmptyList() {
-        this.emptyContactsList.waitForDisplayed();
-    }
+  checkEmptyList = async () => {
+    await this.emptyContactsList.waitForDisplayed();
+  }
 
-    clickBackButton () {
-        ElementHelper.waitAndClick(this.backButton);
-    }
+  clickBackButton = async () => {
+    await ElementHelper.waitAndClick(await this.backButton);
+  }
 
-    checkContact(name) {
-        this.contactName(name).waitForDisplayed();
-    }
+  checkContact = async (name: string) => {
+    const element = await this.contactName(name);
+    await element.waitForDisplayed();
+  }
 
-    clickOnContact(name) {
-        ElementHelper.waitAndClick(this.contactName(name));
-    }
+  clickOnContact = async (name: string) => {
+    await ElementHelper.waitAndClick(await this.contactName(name));
+  }
 }
 
 export default new ContactsScreen();

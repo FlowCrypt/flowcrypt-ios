@@ -1,163 +1,163 @@
 import BaseScreen from './base.screen';
-import {CommonData} from "../data";
+import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-    PRIVACY_TAB: '~privacy',
-    TERMS_TAB: '~terms',
-    SECURITY_TAB: '~security',
-    CONTINUE_WITH_GOOGLE_BTN: '~Continue with Gmail',
-    CONTINUE_WITH_OUTLOOK_BTN: '~Continue with Outlook',
-    OTHER_EMAIL_PROVIDER_BTN: '~Other email provider',
-    CONTINUE_BTN: '~Continue',
-    CANCEL_BTN: '~Cancel',
-    LOGIN_FIELD: '~Email or phone',
-    NEXT_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Next"`][1]',
-    PASSWORD_FIELD: '~Enter your password',
-    DONE_BTN: '~Done',
-    LANGUAGE_DROPDOWN: '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
-    SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]',
-    USE_ANOTHER_ACCOUNT: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Use another account"`]'
+  PRIVACY_TAB: '~privacy',
+  TERMS_TAB: '~terms',
+  SECURITY_TAB: '~security',
+  CONTINUE_WITH_GOOGLE_BTN: '~Continue with Gmail',
+  CONTINUE_WITH_OUTLOOK_BTN: '~Continue with Outlook',
+  OTHER_EMAIL_PROVIDER_BTN: '~Other email provider',
+  CONTINUE_BTN: '~Continue',
+  CANCEL_BTN: '~Cancel',
+  LOGIN_FIELD: '~Email or phone',
+  NEXT_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Next"`][1]',
+  PASSWORD_FIELD: '~Enter your password',
+  DONE_BTN: '~Done',
+  LANGUAGE_DROPDOWN: '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
+  SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]',
+  USE_ANOTHER_ACCOUNT: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Use another account"`]'
 };
 
 class SplashScreen extends BaseScreen {
-    constructor () {
-        super(SELECTORS.PRIVACY_TAB);
-    }
+  constructor() {
+    super(SELECTORS.PRIVACY_TAB);
+  }
 
-    get privacyTab () {
-        return $(SELECTORS.PRIVACY_TAB);
-    }
+  get privacyTab() {
+    return $(SELECTORS.PRIVACY_TAB);
+  }
 
-    get termsTab () {
-        return $(SELECTORS.TERMS_TAB);
-    }
+  get termsTab() {
+    return $(SELECTORS.TERMS_TAB);
+  }
 
-    get securityTab () {
-        return $(SELECTORS.SECURITY_TAB);
-    }
+  get securityTab() {
+    return $(SELECTORS.SECURITY_TAB);
+  }
 
-    get continueWithGmailBtn () {
-        return $(SELECTORS.CONTINUE_WITH_GOOGLE_BTN);
-    }
+  get continueWithGmailBtn() {
+    return $(SELECTORS.CONTINUE_WITH_GOOGLE_BTN);
+  }
 
-    get continueWithOutlookBtn () {
-        return $(SELECTORS.CONTINUE_WITH_OUTLOOK_BTN);
-    }
+  get continueWithOutlookBtn() {
+    return $(SELECTORS.CONTINUE_WITH_OUTLOOK_BTN);
+  }
 
-    get otherEmailProviderButton () {
-        return $(SELECTORS.OTHER_EMAIL_PROVIDER_BTN);
-    }
+  get otherEmailProviderButton() {
+    return $(SELECTORS.OTHER_EMAIL_PROVIDER_BTN);
+  }
 
-    get continueButton () {
-        return $(SELECTORS.CONTINUE_BTN);
-    }
+  get continueButton() {
+    return $(SELECTORS.CONTINUE_BTN);
+  }
 
-    get cancelButton () {
-        return $(SELECTORS.CANCEL_BTN);
-    }
+  get cancelButton() {
+    return $(SELECTORS.CANCEL_BTN);
+  }
 
-    get loginField () {
-        return $(SELECTORS.LOGIN_FIELD);
-    }
+  get loginField() {
+    return $(SELECTORS.LOGIN_FIELD);
+  }
 
-    get passwordField () {
-        return $(SELECTORS.PASSWORD_FIELD);
-    }
+  get passwordField() {
+    return $(SELECTORS.PASSWORD_FIELD);
+  }
 
-    get nextButton () {
-        return $(SELECTORS.NEXT_BTN);
-    }
+  get nextButton() {
+    return $(SELECTORS.NEXT_BTN);
+  }
 
-    get doneButton () {
-        return $(SELECTORS.DONE_BTN)
-    }
+  get doneButton() {
+    return $(SELECTORS.DONE_BTN)
+  }
 
-    get languageDropdown () {
-        return $(SELECTORS.LANGUAGE_DROPDOWN)
-    }
+  get languageDropdown() {
+    return $(SELECTORS.LANGUAGE_DROPDOWN)
+  }
 
-    get signInAsGoogleAccounLabel () {
-        return $(SELECTORS.SIGN_IN_WITH_GMAIL);
-    }
+  get signInAsGoogleAccounLabel() {
+    return $(SELECTORS.SIGN_IN_WITH_GMAIL);
+  }
 
-    get useAnotherAcoount () {
-        return $(SELECTORS.USE_ANOTHER_ACCOUNT);
-    }
+  get useAnotherAcoount() {
+    return $(SELECTORS.USE_ANOTHER_ACCOUNT);
+  }
 
-    checkLoginPage = async () => {
-        await expect(this.privacyTab).toBeDisplayed();
-        await expect(this.termsTab).toBeDisplayed();
-        await expect(this.securityTab).toBeDisplayed();
-        await expect(this.continueWithGmailBtn).toBeDisplayed();
-        await expect(this.continueWithOutlookBtn).toBeDisplayed();
-        await expect(this.otherEmailProviderButton).toBeDisplayed();
-    }
+  checkLoginPage = async () => {
+    await expect(this.privacyTab).toBeDisplayed();
+    await expect(this.termsTab).toBeDisplayed();
+    await expect(this.securityTab).toBeDisplayed();
+    await expect(this.continueWithGmailBtn).toBeDisplayed();
+    await expect(this.continueWithOutlookBtn).toBeDisplayed();
+    await expect(this.otherEmailProviderButton).toBeDisplayed();
+  }
 
-    clickContinueWithGmail = async () => {
-        await ElementHelper.waitAndClick(await this.continueWithGmailBtn);
-    }
+  clickContinueWithGmail = async () => {
+    await ElementHelper.waitAndClick(await this.continueWithGmailBtn);
+  }
 
-    clickContinueBtn () {
-        expect(this.continueButton).toBeDisplayed();
-        expect(this.cancelButton).toBeDisplayed();
-        this.continueButton.click();
-    }
+  clickContinueBtn() {
+    expect(this.continueButton).toBeDisplayed();
+    expect(this.cancelButton).toBeDisplayed();
+    this.continueButton.click();
+  }
 
-    changeLanguage = async (language: string = '‪English (United States)‬') => {
-        await this.languageDropdown.waitForDisplayed();
-        await browser.pause(500); // stability sleep
-        await this.languageDropdown.click();
-        const selector = `~${language}`;
-        await ElementHelper.waitAndClick(await $(selector));
-    }
+  changeLanguage = async (language: string = '‪English (United States)‬') => {
+    await this.languageDropdown.waitForDisplayed();
+    await browser.pause(500); // stability sleep
+    await this.languageDropdown.click();
+    const selector = `~${language}`;
+    await ElementHelper.waitAndClick(await $(selector));
+  }
 
-    fillEmail = async (email: string) => {
-        await ElementHelper.waitClickAndType(await this.loginField, email);
-        await this.clickDoneBtn();
-        await browser.pause(500); // stability sleep
-    }
+  fillEmail = async (email: string) => {
+    await ElementHelper.waitClickAndType(await this.loginField, email);
+    await this.clickDoneBtn();
+    await browser.pause(500); // stability sleep
+  }
 
-    fillPassword = async (password: string) => {
-        await ElementHelper.waitClickAndType(await this.passwordField, password);
-        await this.clickDoneBtn();
-        await browser.pause(500); // stability sleep
-    }
+  fillPassword = async (password: string) => {
+    await ElementHelper.waitClickAndType(await this.passwordField, password);
+    await this.clickDoneBtn();
+    await browser.pause(500); // stability sleep
+  }
 
-    clickNextBtn = async () => {
-        await ElementHelper.waitAndClick(await this.nextButton);
-    }
+  clickNextBtn = async () => {
+    await ElementHelper.waitAndClick(await this.nextButton);
+  }
 
-    clickDoneBtn = async () => {
-        await ElementHelper.waitAndClick(await this.doneButton);
-    }
+  clickDoneBtn = async () => {
+    await ElementHelper.waitAndClick(await this.doneButton);
+  }
 
-    gmailLogin = async (email: string, password: string) => {
-        const emailSelector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
-        await this.signInAsGoogleAccounLabel.waitForDisplayed();
-        await browser.pause(1000); // stability sleep for language change
-        if(await $(emailSelector).isDisplayed()) {
-            await $(emailSelector).click();
-            await this.useAnotherAcoount.waitForDisplayed({timeout: 1000, reverse: true});
-            if(await this.passwordField.isDisplayed()) {
-                this.fillPassword(password);
-                this.clickNextBtn();
-            }
-        } else {
-            this.fillEmail(email);
-            this.clickNextBtn();
-            this.fillPassword(password);
-            this.clickNextBtn();
-        }
+  gmailLogin = async (email: string, password: string) => {
+    const emailSelector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
+    await this.signInAsGoogleAccounLabel.waitForDisplayed();
+    await browser.pause(1000); // stability sleep for language change
+    if (await $(emailSelector).isDisplayed()) {
+      await $(emailSelector).click();
+      await this.useAnotherAcoount.waitForDisplayed({ timeout: 1000, reverse: true });
+      if (await this.passwordField.isDisplayed()) {
+        this.fillPassword(password);
+        this.clickNextBtn();
+      }
+    } else {
+      this.fillEmail(email);
+      this.clickNextBtn();
+      this.fillPassword(password);
+      this.clickNextBtn();
     }
+  }
 
-    login = async (email: string = CommonData.account.email, password: string = CommonData.account.password!) => {
-        await this.clickContinueWithGmail();
-        await this.clickContinueBtn();
-        await this.changeLanguage();
-        await this.gmailLogin(email, password);
-        await ElementHelper.waitElementInvisible(await this.signInAsGoogleAccounLabel);
-    }
+  login = async (email: string = CommonData.account.email, password: string = CommonData.account.password!) => {
+    await this.clickContinueWithGmail();
+    await this.clickContinueBtn();
+    await this.changeLanguage();
+    await this.gmailLogin(email, password);
+    await ElementHelper.waitElementInvisible(await this.signInAsGoogleAccounLabel);
+  }
 }
 
 export default new SplashScreen();

@@ -1,78 +1,78 @@
 import {
-    SplashScreen,
-    CreateKeyScreen,
-    InboxScreen,
-    NewMessageScreen,
-    ContactScreen,
-    ContactPublicKeyScreen,
-    SettingsScreen,
-    MenuBarScreen
+  SplashScreen,
+  CreateKeyScreen,
+  InboxScreen,
+  NewMessageScreen,
+  ContactScreen,
+  ContactPublicKeyScreen,
+  SettingsScreen,
+  MenuBarScreen
 } from '../../screenobjects/all-screens';
 
-import {CommonData} from '../../data';
+import { CommonData } from '../../data';
 
-describe('COMPOSE EMAIL: ', () => {
+describe('COMPOSE EMAIL: ', async () => {
 
-    it('user is able to select recipient from contact list using contact name', () => {
+  it('user is able to select recipient from contact list using contact name', async () => {
 
-        const firstContactEmail = CommonData.contact.email;
-        const firstContactName = CommonData.contact.name;
-        const firstContactItemName = 'Dmitry at FlowCrypt';
+    const firstContactEmail = CommonData.contact.email;
+    const firstContactName = CommonData.contact.name;
+    const firstContactItemName = 'Dmitry at FlowCrypt';
 
-        const secondContactEmail = CommonData.secondContact.email;
-        const secondContactName = CommonData.secondContact.name;
-        const secondContactItemName = 'Demo key 2';
+    const secondContactEmail = CommonData.secondContact.email;
+    const secondContactName = CommonData.secondContact.name;
+    const secondContactItemName = 'Demo key 2';
 
-        SplashScreen.login();
-        CreateKeyScreen.setPassPhrase();
+    await SplashScreen.login();
+    await CreateKeyScreen.setPassPhrase();
 
-        // Go to Contacts screen
-        MenuBarScreen.clickMenuIcon();
-        MenuBarScreen.checkUserEmail();
+    // Go to Contacts screen
+    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.checkUserEmail();
 
-        MenuBarScreen.clickSettingsButton();
-        SettingsScreen.checkSettingsScreen();
-        SettingsScreen.clickOnSettingItem('Contacts');
+    await MenuBarScreen.clickSettingsButton();
+    await SettingsScreen.checkSettingsScreen();
+    await SettingsScreen.clickOnSettingItem('Contacts');
 
-        ContactScreen.checkContactScreen();
-        ContactScreen.checkEmptyList();
-        ContactScreen.clickBackButton();
+    await ContactScreen.checkContactScreen();
+    await ContactScreen.checkEmptyList();
+    await ContactScreen.clickBackButton();
 
-        MenuBarScreen.clickMenuIcon();
-        MenuBarScreen.clickInboxButton();
+    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickInboxButton();
 
-        // Add first contact
-        InboxScreen.clickCreateEmail();
+    // Add first contact
+    await InboxScreen.clickCreateEmail();
 
-        NewMessageScreen.setAddRecipientByName(firstContactName, firstContactEmail);
-        NewMessageScreen.checkAddedRecipient(firstContactEmail);
-        NewMessageScreen.clickBackButton();
+    await NewMessageScreen.setAddRecipientByName(firstContactName, firstContactEmail);
+    await NewMessageScreen.checkAddedRecipient(firstContactEmail);
+    await NewMessageScreen.clickBackButton();
 
-        // Add second contact
-        InboxScreen.clickCreateEmail();
+    // Add second contact
+    await InboxScreen.clickCreateEmail();
 
-        NewMessageScreen.setAddRecipientByName(secondContactName, secondContactEmail);
-        NewMessageScreen.checkAddedRecipient(secondContactEmail);
-        NewMessageScreen.clickBackButton();        
+    await NewMessageScreen.setAddRecipientByName(secondContactName, secondContactEmail);
+    await NewMessageScreen.checkAddedRecipient(secondContactEmail);
+    await NewMessageScreen.clickBackButton();
 
-        // Go to Contacts screen
-        MenuBarScreen.clickMenuIcon();
-        MenuBarScreen.checkUserEmail();
+    // Go to Contacts screen
+    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.checkUserEmail();
 
-        MenuBarScreen.clickSettingsButton();
-        SettingsScreen.checkSettingsScreen();
-        SettingsScreen.clickOnSettingItem('Contacts');
+    await MenuBarScreen.clickSettingsButton();
+    await SettingsScreen.checkSettingsScreen();
+    await SettingsScreen.clickOnSettingItem('Contacts');
 
-        ContactScreen.checkContactScreen();
-        ContactScreen.checkContact(firstContactItemName);
-        ContactScreen.checkContact(secondContactItemName);
+    await ContactScreen.checkContactScreen();
+    await ContactScreen.checkContact(firstContactItemName);
+    await ContactScreen.checkContact(secondContactItemName);
 
-        // Go to Contact screen
-        ContactScreen.clickOnContact(firstContactItemName);
+    // Go to Contact screen
+    await ContactScreen.clickOnContact(firstContactItemName);
 
-        ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
-        ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
-        ContactPublicKeyScreen.clickOnFingerPrint();
-        ContactPublicKeyScreen.checkPublicKeyNotEmpty();
-    });
+    await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
+    await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
+    await ContactPublicKeyScreen.clickOnFingerPrint();
+    await ContactPublicKeyScreen.checkPublicKeyNotEmpty();
+  });
 });
