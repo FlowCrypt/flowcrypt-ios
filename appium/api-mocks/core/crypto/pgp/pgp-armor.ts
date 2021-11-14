@@ -75,7 +75,7 @@ export class PgpArmor {
         if (lines[i].match(/^[a-zA-Z0-9\-_. ]+: .+$/)) {
           continue; // skip comment lines, looking for first data line
         }
-        if (lines[i].match(/^[a-zA-Z0-9\/+]{32,77}$/)) { // insert empty line before first data line
+        if (lines[i].match(/^[a-zA-Z0-9/+]{32,77}$/)) { // insert empty line before first data line
           armored = `${lines.slice(0, i).join('\n')}\n\n${lines.slice(i).join('\n')}`;
           break;
         }

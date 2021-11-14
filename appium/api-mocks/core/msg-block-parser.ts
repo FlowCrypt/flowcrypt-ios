@@ -101,7 +101,7 @@ export class MsgBlockParser {
   }
 
   public static stripPublicKeys = (decryptedContent: string, foundPublicKeys: string[]) => {
-    let { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent);
+    const { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent);
     for (const block of blocks) {
       if (block.type === 'publicKey') {
         const armored = block.content.toString();
@@ -158,7 +158,7 @@ export class MsgBlockParser {
                 result.found.push(MsgBlock.fromContent('plainText', potentialTextBeforeBlockBegun));
               }
             }
-            let endIndex: number = -1;
+            let endIndex = -1;
             let foundBlockEndHeaderLength = 0;
             if (typeof blockHeaderDef.end === 'string') {
               endIndex = origText.indexOf(blockHeaderDef.end, begin + blockHeaderDef.begin.length);

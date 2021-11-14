@@ -42,7 +42,7 @@ export class Api<REQ, RES> {
     apiName: string,
     protected handlerGetters: (() => Handlers<REQ, RES>)[],
     protected urlPrefix = '',
-    useHttps: boolean = true
+    useHttps = true
   ) {
     this.apiName = apiName;
     if (useHttps) {

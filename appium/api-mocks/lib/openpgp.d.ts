@@ -6,6 +6,7 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 /* tslint:disable:only-arrow-functions variable-name max-line-length no-null-keyword ban-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 declare namespace OpenPGP {
 

@@ -104,7 +104,7 @@ class SplashScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.continueButton);
   }
 
-  changeLanguage = async (language: string = '‪English (United States)‬') => {
+  changeLanguage = async (language = '‪English (United States)‬') => {
     await ElementHelper.waitAndClick(await this.languageDropdown, 500);
     const selector = `~${language}`;
     await ElementHelper.waitAndClick(await $(selector));
@@ -135,17 +135,17 @@ class SplashScreen extends BaseScreen {
     await (await this.signInAsGoogleAccounLabel).waitForDisplayed();
     await browser.pause(1000); // stability sleep for language change
     if (await (await $(emailSelector)).isDisplayed()) {
-      ElementHelper.waitAndClick(await $(emailSelector));
+      await ElementHelper.waitAndClick(await $(emailSelector));
       await (await this.useAnotherAcoount).waitForDisplayed({ timeout: 1000, reverse: true });
       if (await this.passwordField.isDisplayed()) {
-        this.fillPassword(password);
-        this.clickNextBtn();
+        await this.fillPassword(password);
+        await this.clickNextBtn();
       }
     } else {
-      this.fillEmail(email);
-      this.clickNextBtn();
-      this.fillPassword(password);
-      this.clickNextBtn();
+      await this.fillEmail(email);
+      await this.clickNextBtn();
+      await this.fillPassword(password);
+      await this.clickNextBtn();
     }
   }
 

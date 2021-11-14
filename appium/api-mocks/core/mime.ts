@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';

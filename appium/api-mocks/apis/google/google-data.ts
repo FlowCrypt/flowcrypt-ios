@@ -50,7 +50,7 @@ export class GmailMsg {
     this.payload = {
       mimeType: contentTypeHeader.value,
       headers: [
-        { name: "Content-Type", value: `${contentTypeHeader.value}; boundary=\"${contentTypeHeader.params.boundary}\"` },
+        { name: "Content-Type", value: `${contentTypeHeader.value}; boundary="${contentTypeHeader.params.boundary}"` },
         { name: "Message-Id", value: messageIdHeader },
         { name: "Mime-Version", value: mimeVersionHeader }
       ],

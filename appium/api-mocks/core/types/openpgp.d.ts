@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Type definitions for openpgpjs
 // Project: http://openpgpjs.org/
 // Definitions by: Guillaume Lacasa <https://blog.lacasa.fr>
