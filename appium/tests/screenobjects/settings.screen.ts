@@ -9,23 +9,23 @@ class SettingsScreen extends BaseScreen {
         super(SELECTORS.MENU_ICON);
     }
 
-    settingsItem (setting) {
-        return $(`~${setting}`);
+    settingsItem = async (setting: string) => {
+        return await $(`~${setting}`);
     }
 
-    checkSettingsScreen() {
-        this.settingsItem('Security and Privacy').waitForDisplayed();
-        this.settingsItem('Contacts').waitForDisplayed();
-        this.settingsItem('Keys').waitForDisplayed();
-        this.settingsItem('Attester').waitForDisplayed();
-        this.settingsItem('Notifications').waitForDisplayed();
-        this.settingsItem('Legal').waitForDisplayed();
-        this.settingsItem('Experimental').waitForDisplayed();
-        this.settingsItem('Backups').waitForDisplayed({reverse: true});
+    checkSettingsScreen = async () => {
+        await (await this.settingsItem('Security and Privacy')).waitForDisplayed();
+        await (await this.settingsItem('Contacts')).waitForDisplayed();
+        await (await this.settingsItem('Keys')).waitForDisplayed();
+        await (await this.settingsItem('Attester')).waitForDisplayed();
+        await (await this.settingsItem('Notifications')).waitForDisplayed();
+        await (await this.settingsItem('Legal')).waitForDisplayed();
+        await (await this.settingsItem('Experimental')).waitForDisplayed();
+        await (await this.settingsItem('Backups')).waitForDisplayed({reverse: true});
     }
 
-    clickOnSettingItem(item) {
-        ElementHelper.waitAndClick(this.settingsItem(item));
+    clickOnSettingItem = async (item: string) => {
+        await ElementHelper.waitAndClick(await this.settingsItem(item));
     }
 }
 

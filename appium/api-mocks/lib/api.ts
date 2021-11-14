@@ -31,7 +31,7 @@ export type Handlers<REQ, RES> = { [request: string]: RequestHandler<REQ, RES> }
 
 export class Api<REQ, RES> {
 
-  public server: https.Server;
+  public server: https.Server | http.Server;
   protected apiName: string;
   protected maxRequestSizeMb = 0;
   protected maxRequestSizeBytes = 0;
@@ -41,45 +41,54 @@ export class Api<REQ, RES> {
   constructor(
     apiName: string,
     protected handlerGetters: (() => Handlers<REQ, RES>)[],
-    protected urlPrefix = ''
+    protected urlPrefix = '',
+    useHttps: boolean = true
   ) {
     this.apiName = apiName;
-    const opt = { key: readFileSync(`./test/mock_cert/key.pem.mock`), cert: readFileSync(`./test/mock_cert/cert.pem.mock`) };
-    this.server = https.createServer(opt, (request, response) => {
-      const start = Date.now();
-      this.handleReq(request, response).then(data => this.throttledResponse(response, data)).then(() => {
-        try {
-          this.log(Date.now() - start, request, response);
-        } catch (e) {
-          console.error(e);
-          process.exit(1);
-        }
-      }).catch((e) => {
-        if (e instanceof HttpAuthErr) {
-          response.statusCode = Status.UNAUTHORIZED;
-          response.setHeader('WWW-Authenticate', `Basic realm="${this.apiName}"`);
-          e.stack = undefined;
-        } else if (e instanceof HttpClientErr) {
-          response.statusCode = e.statusCode;
-          e.stack = undefined;
+    if(useHttps) {
+      this.server = https.createServer({
+        key: readFileSync('./api-mocks/mock-ssl-cert/key.pem.mock'), 
+        cert: readFileSync('./api-mocks/mock-ssl-cert/cert.pem.mock')
+      }, this.serverRequestListener);
+    } else {
+      this.server = http.createServer(this.serverRequestListener);
+    }
+  }
+
+  private serverRequestListener = (request: http.IncomingMessage, response: http.ServerResponse) => {
+    const start = Date.now();
+    this.handleReq(request, response).then(data => this.throttledResponse(response, data)).then(() => {
+      try {
+        this.log(Date.now() - start, request, response);
+      } catch (e) {
+        console.error(e);
+        process.exit(1);
+      }
+    }).catch((e) => {
+      if (e instanceof HttpAuthErr) {
+        response.statusCode = Status.UNAUTHORIZED;
+        response.setHeader('WWW-Authenticate', `Basic realm="${this.apiName}"`);
+        e.stack = undefined;
+      } else if (e instanceof HttpClientErr) {
+        response.statusCode = e.statusCode;
+        e.stack = undefined;
+      } else {
+        response.statusCode = Status.SERVER_ERROR;
+        if (e instanceof Error && e.message.toLowerCase().includes('intentional error')) {
+          // don't log this, intentional error
         } else {
-          response.statusCode = Status.SERVER_ERROR;
-          if (e instanceof Error && e.message.toLowerCase().includes('intentional error')) {
-            // don't log this, intentional error
-          } else {
-            console.error(`url:${request.method}:${request.url}`, e);
-          }
+          console.error(`url:${request.method}:${request.url}`, e);
         }
-        response.setHeader('Access-Control-Allow-Origin', '*');
-        response.setHeader('content-type', 'application/json');
-        const formattedErr = this.fmtErr(e);
-        response.end(formattedErr);
-        try {
-          this.log(Date.now() - start, request, response, formattedErr);
-        } catch (e) {
-          console.error('error logging req', e);
-        }
-      });
+      }
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('content-type', 'application/json');
+      const formattedErr = this.fmtErr(e);
+      response.end(formattedErr);
+      try {
+        this.log(Date.now() - start, request, response, formattedErr);
+      } catch (e) {
+        console.error('error logging req', e);
+      }
     });
   }
 

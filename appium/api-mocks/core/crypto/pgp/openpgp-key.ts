@@ -1,10 +1,10 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
-import { Key, PrvPacket, KeyAlgo, KeyUtil, UnexpectedKeyTypeError } from '../key.js';
-import { opgp } from './openpgpjs-custom.js';
-import { Catch } from '../../../platform/catch.js';
-import { Str } from '../../common.js';
-import { Buf } from '../../buf.js';
-import { PgpMsgMethod, MsgUtil } from './msg-util.js';
+import { Key, PrvPacket, KeyAlgo, KeyUtil, UnexpectedKeyTypeError } from '../key';
+import { opgp } from './openpgpjs-custom';
+import { Catch } from '../../../platform/catch';
+import { Str } from '../../common';
+import { Buf } from '../../buf';
+import { PgpMsgMethod, MsgUtil } from './msg-util';
 
 const internal = Symbol('internal openpgpjs library format key');
 

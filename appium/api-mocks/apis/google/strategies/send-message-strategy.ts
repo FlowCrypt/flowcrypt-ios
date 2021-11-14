@@ -2,7 +2,7 @@
 
 // import * as forge from 'node-forge';
 // import { AddressObject, ParsedMail, StructuredHeader } from 'mailparser';
-// import { ITestMsgStrategy, UnsuportableStrategyError } from './strategy-base.js';
+// import { ITestMsgStrategy, UnsuportableStrategyError } from './strategy-base';
 // import { Buf } from '../../../core/buf';
 // import { Config } from '../util';
 // import { expect } from 'chai';
@@ -10,11 +10,11 @@
 // import { HttpClientErr } from '../../lib/api';
 // import { MsgUtil } from '../../../core/crypto/pgp/msg-util';
 // import Parse from '../../../util/parse';
-// import { parsedMailAddressObjectAsArray } from '../google-endpoints.js';
-// import { Str } from '../../../core/common.js.js.js.js';
-// import { GMAIL_RECOVERY_EMAIL_SUBJECTS } from '../../../core/const.js.js.js.js';
-// import { ENVELOPED_DATA_OID, SIGNED_DATA_OID, SmimeKey } from '../../../core/crypto/smime/smime-key.js.js.js.js';
-// import { testConstants } from '../../../tests/tooling/consts.js.js.js.js';
+// import { parsedMailAddressObjectAsArray } from '../google-endpoints';
+// import { Str } from '../../../core/common';
+// import { GMAIL_RECOVERY_EMAIL_SUBJECTS } from '../../../core/const';
+// import { ENVELOPED_DATA_OID, SIGNED_DATA_OID, SmimeKey } from '../../../core/crypto/smime/smime-key';
+// import { testConstants } from '../../../tests/tooling/consts';
 
 // // TODO: Make a better structure of ITestMsgStrategy. Because this class doesn't test anything, it only saves message in the Mock
 // class SaveMessageInStorageStrategy implements ITestMsgStrategy {

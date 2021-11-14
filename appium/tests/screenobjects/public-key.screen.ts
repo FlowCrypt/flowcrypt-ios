@@ -18,10 +18,11 @@ class PublicKeyScreen extends BaseScreen {
         return $(SELECTORS.PUBLIC_KEY);
     }
 
-    checkPublicKey() {
-        this.backButton.waitForDisplayed();
-        this.publicKey.waitForExist();
-        expect(this.publicKey.getAttribute('value')).not.toEqual(null);
+    checkPublicKey = async () => {
+        await this.backButton.waitForDisplayed();
+        await this.publicKey.waitForExist();
+        const pubkeyValue = await this.publicKey.getAttribute('value');
+        expect(pubkeyValue).toBeExisting();
     }
 }
 

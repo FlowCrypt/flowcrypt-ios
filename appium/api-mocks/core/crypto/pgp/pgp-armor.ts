@@ -4,12 +4,12 @@
 
 // todo: move this file level up as it handles both S/MIME and OpenPGP?
 import * as forge from 'node-forge';
-import { Buf } from '../../buf.js';
-import { ReplaceableMsgBlockType } from '../../msg-block.js';
-import { Str } from '../../common.js';
-import { opgp } from './openpgpjs-custom.js';
-import { Stream } from '../../stream.js';
-import { SmimeKey, ENVELOPED_DATA_OID } from '../smime/smime-key.js';
+import { Buf } from '../../buf';
+import { ReplaceableMsgBlockType } from '../../msg-block';
+import { Str } from '../../common';
+import { opgp } from './openpgpjs-custom';
+import { Stream } from '../../stream';
+import { SmimeKey, ENVELOPED_DATA_OID } from '../smime/smime-key';
 
 export type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, isPkcs7: false, message: OpenPGP.cleartext.CleartextMessage | OpenPGP.message.Message }
   | { isArmored: boolean, isCleartext: false, isPkcs7: false, message: OpenPGP.message.Message }

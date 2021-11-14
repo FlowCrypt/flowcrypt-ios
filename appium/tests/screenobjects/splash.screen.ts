@@ -85,17 +85,17 @@ class SplashScreen extends BaseScreen {
         return $(SELECTORS.USE_ANOTHER_ACCOUNT);
     }
 
-    checkLoginPage () {
-        expect(this.privacyTab).toBeDisplayed();
-        expect(this.termsTab).toBeDisplayed();
-        expect(this.securityTab).toBeDisplayed();
-        expect(this.continueWithGmailBtn).toBeDisplayed();
-        expect(this.continueWithOutlookBtn).toBeDisplayed();
-        expect(this.otherEmailProviderButton).toBeDisplayed();
+    checkLoginPage = async () => {
+        await expect(this.privacyTab).toBeDisplayed();
+        await expect(this.termsTab).toBeDisplayed();
+        await expect(this.securityTab).toBeDisplayed();
+        await expect(this.continueWithGmailBtn).toBeDisplayed();
+        await expect(this.continueWithOutlookBtn).toBeDisplayed();
+        await expect(this.otherEmailProviderButton).toBeDisplayed();
     }
 
-    clickContinueWithGmail () {
-        ElementHelper.waitAndClick(this.continueWithGmailBtn);
+    clickContinueWithGmail = async () => {
+        await ElementHelper.waitAndClick(await this.continueWithGmailBtn);
     }
 
     clickContinueBtn () {
@@ -104,42 +104,42 @@ class SplashScreen extends BaseScreen {
         this.continueButton.click();
     }
 
-    changeLanguage (language: string = '‪English (United States)‬') {
-        this.languageDropdown.waitForDisplayed();
-        browser.pause(500); // stability sleep
-        this.languageDropdown.click();
+    changeLanguage = async (language: string = '‪English (United States)‬') => {
+        await this.languageDropdown.waitForDisplayed();
+        await browser.pause(500); // stability sleep
+        await this.languageDropdown.click();
         const selector = `~${language}`;
-        ElementHelper.waitAndClick($(selector));
+        await ElementHelper.waitAndClick(await $(selector));
     }
 
-    fillEmail (email: string) {
-        ElementHelper.waitClickAndType(this.loginField, email);
-        this.clickDoneBtn();
-        browser.pause(500); // stability sleep
+    fillEmail = async (email: string) => {
+        await ElementHelper.waitClickAndType(await this.loginField, email);
+        await this.clickDoneBtn();
+        await browser.pause(500); // stability sleep
     }
 
-    fillPassword(password: string) {
-        ElementHelper.waitClickAndType(this.passwordField, password);
-        this.clickDoneBtn();
-        browser.pause(500); // stability sleep
+    fillPassword = async (password: string) => {
+        await ElementHelper.waitClickAndType(await this.passwordField, password);
+        await this.clickDoneBtn();
+        await browser.pause(500); // stability sleep
     }
 
-    clickNextBtn () {
-        ElementHelper.waitAndClick(this.nextButton);
+    clickNextBtn = async () => {
+        await ElementHelper.waitAndClick(await this.nextButton);
     }
 
-    clickDoneBtn () {
-        ElementHelper.waitAndClick(this.doneButton);
+    clickDoneBtn = async () => {
+        await ElementHelper.waitAndClick(await this.doneButton);
     }
 
-    gmailLogin (email: string, password: string) {
+    gmailLogin = async (email: string, password: string) => {
         const emailSelector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
-        this.signInAsGoogleAccounLabel.waitForDisplayed();
-        browser.pause(1000); // stability sleep for language change
-        if($(emailSelector).isDisplayed()) {
-            $(emailSelector).click();
-            this.useAnotherAcoount.waitForDisplayed({timeout: 1000, reverse: true});
-            if(this.passwordField.isDisplayed()) {
+        await this.signInAsGoogleAccounLabel.waitForDisplayed();
+        await browser.pause(1000); // stability sleep for language change
+        if(await $(emailSelector).isDisplayed()) {
+            await $(emailSelector).click();
+            await this.useAnotherAcoount.waitForDisplayed({timeout: 1000, reverse: true});
+            if(await this.passwordField.isDisplayed()) {
                 this.fillPassword(password);
                 this.clickNextBtn();
             }
@@ -151,12 +151,12 @@ class SplashScreen extends BaseScreen {
         }
     }
 
-    login(email: string = CommonData.account.email, password: string = CommonData.account.password) {
-        this.clickContinueWithGmail();
-        this.clickContinueBtn();
-        this.changeLanguage();
-        this.gmailLogin(email, password);
-        ElementHelper.waitElementInvisible(this.signInAsGoogleAccounLabel);
+    login = async (email: string = CommonData.account.email, password: string = CommonData.account.password!) => {
+        await this.clickContinueWithGmail();
+        await this.clickContinueBtn();
+        await this.changeLanguage();
+        await this.gmailLogin(email, password);
+        await ElementHelper.waitElementInvisible(await this.signInAsGoogleAccounLabel);
     }
 }
 

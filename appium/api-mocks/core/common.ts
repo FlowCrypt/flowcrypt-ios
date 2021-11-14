@@ -2,8 +2,8 @@
 
 'use strict';
 
-import { base64decode, base64encode } from '../platform/util.js';
-import { Xss } from '../platform/xss.js';
+import { base64decode, base64encode } from '../platform/util';
+import { Xss } from '../platform/xss';
 
 export type Dict<T> = { [key: string]: T; };
 export type UrlParam = string | number | null | undefined | boolean | string[];

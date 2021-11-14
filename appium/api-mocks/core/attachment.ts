@@ -2,8 +2,8 @@
 
 'use strict';
 
-import { Buf } from './buf.js';
-import { Str } from './common.js';
+import { Buf } from './buf';
+import { Str } from './common';
 
 type Attachment$treatAs = "publicKey" | 'privateKey' | "encryptedMsg" | "hidden" | "signature" | "encryptedFile" | "plainFile";
 export type AttachmentMeta = {

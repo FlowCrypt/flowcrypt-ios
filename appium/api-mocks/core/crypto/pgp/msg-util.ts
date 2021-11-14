@@ -1,17 +1,17 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
-import { Contact, Key, KeyInfo, ExtendedKeyInfo, KeyUtil } from '../key.js';
-import { MsgBlockType, ReplaceableMsgBlockType } from '../../msg-block.js';
-import { Value } from '../../common.js';
-import { Buf } from '../../buf.js';
-import { Catch } from '../../../platform/catch.js';
-import { PgpArmor, PreparedForDecrypt } from './pgp-armor.js';
-import { opgp } from './openpgpjs-custom.js';
-import { KeyCache } from '../../../platform/key-cache.js';
-import { ContactStore } from '../../../platform/store/contact-store.js';
-import { SmimeKey, SmimeMsg } from '../smime/smime-key.js';
-import { OpenPGPKey } from './openpgp-key.js';
+import { Contact, Key, KeyInfo, ExtendedKeyInfo, KeyUtil } from '../key';
+import { MsgBlockType, ReplaceableMsgBlockType } from '../../msg-block';
+import { Value } from '../../common';
+import { Buf } from '../../buf';
+import { Catch } from '../../../platform/catch';
+import { PgpArmor, PreparedForDecrypt } from './pgp-armor';
+import { opgp } from './openpgpjs-custom';
+import { KeyCache } from '../../../platform/key-cache';
+import { ContactStore } from '../../../platform/store/contact-store';
+import { SmimeKey, SmimeMsg } from '../smime/smime-key';
+import { OpenPGPKey } from './openpgp-key';
 
 export class DecryptionError extends Error {
   public decryptError: DecryptError;
