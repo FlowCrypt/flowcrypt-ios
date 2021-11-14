@@ -31,7 +31,8 @@ final class Version5SchemaMigration {
             ("FolderObject", renameFolderObject),
             ("ClientConfigurationObject", renameClientConfigurationObject),
             ("KeyInfo", renameKeyInfo),
-            ("PubKeyObject", renamePubKeyObject)
+            ("PubKeyObject", renamePubKeyObject),
+            ("RecipientObject", renameRecipientObject)
         ]
         objects.forEach { object in
             migration.enumerateObjects(ofType: object.0) { oldObject, newObject in
@@ -52,19 +53,7 @@ final class Version5SchemaMigration {
             }
         }
 
-        [
-            "ClientConfigurationObject",
-            "FolderObject",
-            "KeyInfo",
-            "UserObject",
-            "SessionObject",
-            "RecipientObject",
-            "PubKeyObject"
-        ].forEach {
-            if !migration.deleteData(forType: $0) {
-                logger.logWarning("fail to delete data for type \($0)")
-            }
-        }
+        removeOldObjects()
 
         guard let error = lastError else {
             logger.logInfo("End version 5 migration")
@@ -176,6 +165,7 @@ final class Version5SchemaMigration {
         let newObject = migration.create(RecipientRealmObject.className())
 
         let primitiveProperties: [String] = [
+            "email",
             "name",
             "lastUsed"
         ]
@@ -183,7 +173,7 @@ final class Version5SchemaMigration {
             newObject[$0] = oldObject[$0]
         }
 
-        guard let oldPubKeys = oldObject["pubKeys"] as? List<Object> else {
+        guard let oldPubKeys = oldObject["pubKeys"] as? List<MigrationObject> else {
             throw AppErr.unexpected("Wrong RecipientObject pubKeys property")
         }
 
@@ -197,10 +187,30 @@ final class Version5SchemaMigration {
             return object
         })
 
-        guard let newPubKeys = newObject["pubKeys"] as? List<Object> else {
+        guard let newPubKeys = newObject["pubKeys"] as? List<MigrationObject> else {
             throw AppErr.unexpected("Wrong RecipientRealmObject pubKeys property")
         }
         newPubKeys.append(objectsIn: keys)
+    }
+
+    private func removeOldObjects() {
+        guard lastError == nil else {
+            return
+        }
+
+        [
+            "ClientConfigurationObject",
+            "FolderObject",
+            "KeyInfo",
+            "UserObject",
+            "SessionObject",
+            "RecipientObject",
+            "PubKeyObject"
+        ].forEach {
+            if !migration.deleteData(forType: $0) {
+                logger.logWarning("fail to delete data for type \($0)")
+            }
+        }
     }
 
     private func setSession(oldObject: MigrationObject, newObject: MigrationObject, propertyName: String) {

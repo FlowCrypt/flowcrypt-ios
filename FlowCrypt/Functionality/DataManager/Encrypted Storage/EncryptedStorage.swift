@@ -145,13 +145,9 @@ extension EncryptedStorage {
             case .initial:
                 migrationLogger.logInfo("Schema migration not needed for initial schema")
             case .version5:
-                performVersion5Schema(migration: migration)
+                Version5SchemaMigration(migration: migration).perform()
             }
         }
-    }
-
-    private func performVersion5Schema(migration: Migration) {
-        Version5SchemaMigration(migration: migration).perform()
     }
 }
 

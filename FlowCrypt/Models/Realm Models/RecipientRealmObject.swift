@@ -13,7 +13,7 @@ final class RecipientRealmObject: Object {
     @Persisted(primaryKey: true) var email: String = ""
     @Persisted var name: String?
     @Persisted var lastUsed: Date?
-    @Persisted var pubKeys = List<PubKeyRealmObject>()
+    @Persisted var pubKeys: List<PubKeyRealmObject>
 
     convenience init(
         email: String,
