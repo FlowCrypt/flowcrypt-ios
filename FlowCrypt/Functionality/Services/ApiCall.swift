@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 
 enum ApiCall {}
 
@@ -24,42 +23,7 @@ extension ApiCall {
 }
 
 extension ApiCall {
-    static func call(_ request: Request) -> Promise<HttpRes> {
-        Promise { () -> HttpRes in
-            guard let url = URL(string: request.url) else {
-                throw HttpErr(
-                    status: -2,
-                    data: Data(),
-                    error: AppErr.unexpected("Invalid url: \(request.url)")
-                )
-            }
-
-            var urlRequest = URLRequest.urlRequest(
-                with: url,
-                method: request.method,
-                body: request.body,
-                headers: request.headers
-            )
-            urlRequest.timeoutInterval = request.timeout
-
-            do {
-                let result = try awaitPromise(URLSession.shared.call(
-                    urlRequest,
-                    tolerateStatus: request.tolerateStatus)
-                )
-                return result
-            } catch {
-                guard let httpError = error as? HttpErr else {
-                    throw error
-                }
-                throw ApiError.create(from: httpError, request: request)
-            }
-        }
-    }
-}
-
-extension ApiCall {
-    static func asyncCall(_ request: Request) async throws -> HttpRes {
+    static func call(_ request: Request) async throws -> HttpRes {
         guard let url = URL(string: request.url) else {
             throw HttpErr(
                 status: -2,
@@ -77,7 +41,7 @@ extension ApiCall {
         urlRequest.timeoutInterval = request.timeout
 
         do {
-            let result = try await URLSession.shared.asyncCall(
+            let result = try await URLSession.shared.call(
                 urlRequest,
                 tolerateStatus: request.tolerateStatus
             )

@@ -121,7 +121,7 @@ final class ComposeViewController: TableNodeViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         node.view.endEditing(true)
-        stopTimer()
+        stopDraftTimer()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -129,7 +129,7 @@ final class ComposeViewController: TableNodeViewController {
         showScopeAlertIfNeeded()
         cancellable.forEach { $0.cancel() }
         setupSearch()
-        startTimer()
+        startDraftTimer()
 
         evaluateIfNeeded()
     }
@@ -158,30 +158,30 @@ final class ComposeViewController: TableNodeViewController {
 
 // MARK: - Drafts
 extension ComposeViewController {
-    @objc private func startTimer() {
-        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+    @objc private func startDraftTimer() {
+        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] _ in
             self?.saveDraftIfNeeded()
         }
         saveDraftTimer?.fire()
     }
 
-    @objc private func stopTimer() {
+    @objc private func stopDraftTimer() {
         saveDraftTimer?.invalidate()
         saveDraftTimer = nil
         saveDraftIfNeeded()
     }
 
     private func shouldSaveDraft() -> Bool {
-        let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
-
-        guard let oldDraft = composedLatestDraft else {
-            composedLatestDraft = newDraft
-            return true
-        }
-
-        let result = newDraft != oldDraft
-        composedLatestDraft = newDraft
-        return result
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/975
+        return false
+//        let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
+//        guard let oldDraft = composedLatestDraft else {
+//            composedLatestDraft = newDraft
+//            return true
+//        }
+//        let result = newDraft != oldDraft
+//        composedLatestDraft = newDraft
+//        return result
     }
 
     private func saveDraftIfNeeded() {
@@ -293,13 +293,13 @@ extension ComposeViewController {
     private func observerAppStates() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(startTimer),
+            selector: #selector(startDraftTimer),
             name: UIApplication.didBecomeActiveNotification,
             object: nil)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(stopTimer),
+            selector: #selector(stopDraftTimer),
             name: UIApplication.willResignActiveNotification,
             object: nil)
     }
@@ -319,7 +319,6 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     @objc private func handleInfoTap() {
-        #warning("ToDo")
         showToast("Please email us at human@flowcrypt.com for help")
     }
 
@@ -358,23 +357,22 @@ extension ComposeViewController {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
                 onCancel: {
-                    continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
+                    return continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
                 },
                 onCompletion: { [weak self] passPhrase in
                     guard let self = self else {
-                        continuation.resume(throwing: AppErr.nilSelf)
-                        return
+                        return continuation.resume(throwing: AppErr.nilSelf)
                     }
-                    Task {
+                    Task<Void, Never> {
                         do {
                             let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
                             if matched {
-                                continuation.resume(returning: passPhrase)
+                                return continuation.resume(returning: passPhrase)
                             } else {
                                 throw AppErr.user("This pass phrase did not match your signing private key")
                             }
                         } catch {
-                            continuation.resume(throwing: error)
+                            return continuation.resume(throwing: error)
                         }
                     }
                 }

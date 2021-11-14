@@ -25,12 +25,6 @@ struct InboxRenderable {
     let wrappedType: WrappedType
 }
 
-extension InboxRenderable: Comparable {
-    static func < (lhs: InboxRenderable, rhs: InboxRenderable) -> Bool {
-        lhs.date > rhs.date
-    }
-}
-
 extension InboxRenderable {
     var wrappedMessage: Message? {
         guard case .message(let message) = wrappedType else {
@@ -56,23 +50,19 @@ extension InboxRenderable {
             .compactMap { $0.components(separatedBy: "@").first ?? "" }
             .unique()
             .joined(separator: ",")
-
         self.title = sender
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missed_subject".localized
-
-        if let date = thread.messages.first?.date {
+        self.isRead = !thread.messages
+            .map(\.isMessageRead)
+            .contains(false)
+        let date = thread.messages.last?.date
+        if let date = date {
             self.dateString = DateFormatter().formatDate(date)
         } else {
             self.dateString = ""
         }
-
-        self.isRead = !thread.messages
-            .map(\.isMessageRead)
-            .contains(false)
-
-        self.date = thread.messages.first?.date ?? Date()
-
+        self.date = date ?? Date()
         self.wrappedType = .thread(thread)
     }
 }

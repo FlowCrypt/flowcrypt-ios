@@ -56,7 +56,7 @@ class PhotosManager: PhotosManagerType {
     func selectPhoto(
         from viewController: PhotoPickerViewController
     ) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
+        Future<Void, Error> { future in
             DispatchQueue.main.async {
                 var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
                 config.selectionLimit = 1

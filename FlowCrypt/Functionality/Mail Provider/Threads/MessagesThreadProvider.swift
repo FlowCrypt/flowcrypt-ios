@@ -15,8 +15,7 @@ protocol MessagesThreadProvider {
 
 extension GmailService: MessagesThreadProvider {
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext {
-        let threadsList = try await getThreadsList(using: context)
-
+        let threadsList = (try await getThreadsList(using: context))
         let requests = threadsList.threads?
             .compactMap { (thread) -> (String, String?)? in
                 guard let id = thread.identifier else {
@@ -25,20 +24,21 @@ extension GmailService: MessagesThreadProvider {
                 return (id, thread.snippet)
             }
         ?? []
-
         return try await withThrowingTaskGroup(of: MessageThread.self) { (taskGroup) in
-            var messages: [MessageThread] = []
+            var messageThreadsById: [String: MessageThread] = [:]
             for request in requests {
                 taskGroup.addTask {
                     try await self.getThread(with: request.0, snippet: request.1, path: context.folderPath ?? "")
                 }
             }
             for try await result in taskGroup {
-                messages.append(result)
+                if let id = result.identifier {
+                    messageThreadsById[id] = result
+                }
             }
-
+            let messageThreads = requests.compactMap { messageThreadsById[$0.0] }
             return MessageThreadContext(
-                threads: messages,
+                threads: messageThreads,
                 pagination: .byNextPage(token: threadsList.nextPageToken)
             )
         }
@@ -55,7 +55,7 @@ extension GmailService: MessagesThreadProvider {
                 guard let threadsResponse = data as? GTLRGmail_ListThreadsResponse else {
                     return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListThreadsResponse"))
                 }
-                continuation.resume(returning: threadsResponse)
+                return continuation.resume(returning: threadsResponse)
             }
         }
     }
@@ -91,7 +91,7 @@ extension GmailService: MessagesThreadProvider {
                     path: path,
                     messages: messages
                 )
-                continuation.resume(returning: result)
+                return continuation.resume(returning: result)
             }
         }
     }

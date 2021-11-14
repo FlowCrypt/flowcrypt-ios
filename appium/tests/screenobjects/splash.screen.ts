@@ -16,7 +16,8 @@ const SELECTORS = {
     PASSWORD_FIELD: '~Enter your password',
     DONE_BTN: '~Done',
     LANGUAGE_DROPDOWN: '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
-    SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]'
+    SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]',
+    USE_ANOTHER_ACCOUNT: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Use another account"`]'
 };
 
 class SplashScreen extends BaseScreen {
@@ -80,6 +81,10 @@ class SplashScreen extends BaseScreen {
         return $(SELECTORS.SIGN_IN_WITH_GMAIL);
     }
 
+    get useAnotherAcoount () {
+        return $(SELECTORS.USE_ANOTHER_ACCOUNT);
+    }
+
     checkLoginPage () {
         expect(this.privacyTab).toBeDisplayed();
         expect(this.termsTab).toBeDisplayed();
@@ -133,6 +138,11 @@ class SplashScreen extends BaseScreen {
         browser.pause(1000); // stability sleep for language change
         if($(emailSelector).isDisplayed()) {
             $(emailSelector).click();
+            this.useAnotherAcoount.waitForDisplayed({timeout: 1000, reverse: true});
+            if(this.passwordField.isDisplayed()) {
+                this.fillPassword(password);
+                this.clickNextBtn();
+            }
         } else {
             this.fillEmail(email);
             this.clickNextBtn();
@@ -146,7 +156,7 @@ class SplashScreen extends BaseScreen {
         this.clickContinueBtn();
         this.changeLanguage();
         this.gmailLogin(email, password);
-        browser.pause(10000); // STABILITY FIX UNTIL WE WLL FIGURE OUT WITH ISSUE
+        ElementHelper.waitElementInvisible(this.signInAsGoogleAccounLabel);
     }
 }
 

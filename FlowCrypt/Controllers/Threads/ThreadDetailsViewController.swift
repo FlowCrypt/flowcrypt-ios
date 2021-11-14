@@ -90,11 +90,11 @@ extension ThreadDetailsViewController {
     private func expandThreadMessage() {
         let indexOfSectionToExpand = thread.messages.firstIndex(where: { $0.isMessageRead == false }) ?? input.count - 1
         let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand + 1)
-        handleTap(at: indexPath)
+        handleExpandTap(at: indexPath)
     }
 
-    private func handleTap(at indexPath: IndexPath) {
-        guard let threadNode = node.nodeForRow(at: indexPath) as? TextImageNode else {
+    private func handleExpandTap(at indexPath: IndexPath) {
+        guard let threadNode = node.nodeForRow(at: indexPath) as? ThreadMessageSenderCellNode else {
             logger.logError("Fail to handle tap at \(indexPath)")
             return
         }
@@ -102,12 +102,11 @@ extension ThreadDetailsViewController {
         UIView.animate(
             withDuration: 0.3,
             animations: {
-                threadNode.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
+                threadNode.replyNode.view.alpha = self.input[indexPath.section-1].isExpanded ? 0 : 1
+                threadNode.expandNode.view.transform = CGAffineTransform(rotationAngle: .pi)
             },
             completion: { [weak self] _ in
-                guard let self = self else {
-                    return
-                }
+                guard let self = self else { return }
 
                 if let processedMessage = self.input[indexPath.section-1].processedMessage {
                     self.handleReceived(message: processedMessage, at: indexPath)
@@ -115,6 +114,28 @@ extension ThreadDetailsViewController {
                     self.fetchDecryptAndRenderMsg(at: indexPath)
                 }
             }
+        )
+    }
+
+    private func handleReplyTap(at indexPath: IndexPath) {
+        guard let email = DataService.shared.email,
+              let input = input[safe: indexPath.section-1],
+              let processedMessage = input.processedMessage
+        else { return }
+
+        let replyInfo = ComposeMessageInput.ReplyInfo(
+            recipient: input.rawMessage.sender,
+            subject: input.rawMessage.subject,
+            mime: processedMessage.rawMimeData,
+            sentDate: input.rawMessage.date,
+            message: processedMessage.text,
+            threadId: input.rawMessage.threadId
+        )
+
+        let composeInput = ComposeMessageInput(type: .reply(replyInfo))
+        navigationController?.pushViewController(
+            ComposeViewController(email: email, input: composeInput),
+            animated: true
         )
     }
 
@@ -344,11 +365,9 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             let section = self.input[indexPath.section-1]
 
             if indexPath.row == 0 {
-                return TextImageNode(
+                return ThreadMessageSenderCellNode(
                     input: .init(threadMessage: section),
-                    onTap: { [weak self] _ in
-                        self?.handleTap(at: indexPath)
-                    }
+                    onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) }
                 )
             }
 
@@ -371,10 +390,10 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard tableNode.nodeForRow(at: indexPath) is TextImageNode  else {
+        guard tableNode.nodeForRow(at: indexPath) is ThreadMessageSenderCellNode else {
             return
         }
-        handleTap(at: indexPath)
+        handleExpandTap(at: indexPath)
     }
 }
 

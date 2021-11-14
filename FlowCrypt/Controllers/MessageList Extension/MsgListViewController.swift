@@ -50,7 +50,6 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     private func openThread(with thread: MessageThread) {
-        // TODO https://github.com/FlowCrypt/flowcrypt-ios/issues/908
         guard let threadOperationsProvider = MailProvider.shared.threadOperationsProvider else {
             assertionFailure("Internal error. Provider should conform to MessagesThreadOperationsProvider")
             return

@@ -145,7 +145,7 @@ extension UserAccountService: UserAccountServiceType {
     }
 
     private func logOut(user email: String) {
-        logger.logInfo("Log out user with \(email)")
+        logger.logInfo("Logging out user \(email)")
 
         switch dataService.currentAuthType {
         case .oAuthGmail:

@@ -25,7 +25,7 @@ public final class MessageSubjectNode: CellNode {
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         subjectNode.style.flexGrow = 1.0
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 16, left: 8, bottom: 4, right: 8),
+            insets: UIEdgeInsets(top: 16, left: 16, bottom: 4, right: 16),
             child: subjectNode
         )
     }

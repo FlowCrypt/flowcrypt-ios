@@ -4,15 +4,10 @@
 
 import Foundation
 
-struct PubkeySearchResult {
-    let email: String
-    let armored: Data?
-}
-
 protocol AttesterApiType {
-    func lookupEmail(email: String) async throws -> [KeyDetails]
-    func updateKey(email: String, pubkey: String, token: String?) async throws -> String
-    func replaceKey(email: String, pubkey: String) async throws -> String
+    func lookup(email: String) async throws -> [KeyDetails]
+    func update(email: String, pubkey: String, token: String?) async throws -> String
+    func replace(email: String, pubkey: String) async throws -> String
     func testWelcome(email: String, pubkey: String) async throws
 }
 
@@ -46,7 +41,7 @@ final class AttesterApi: AttesterApiType {
 }
 
 extension AttesterApi {
-    func lookupEmail(email: String) async throws -> [KeyDetails] {
+    func lookup(email: String) async throws -> [KeyDetails] {
         if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
             return []
         }
@@ -57,7 +52,7 @@ extension AttesterApi {
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
-        let res = try await ApiCall.asyncCall(request)
+        let res = try await ApiCall.call(request)
 
         if res.status >= 200, res.status <= 299 {
             return try await core.parseKeys(armoredOrBinary: res.data).keyDetails
@@ -74,7 +69,7 @@ extension AttesterApi {
     }
 
     @discardableResult
-    func updateKey(email: String, pubkey: String, token: String?) async throws -> String {
+    func update(email: String, pubkey: String, token: String?) async throws -> String {
         let httpMethod: HTTPMetod
         let headers: [URLHeader]
 
@@ -93,19 +88,19 @@ extension AttesterApi {
             body: pubkey.data(),
             headers: headers
         )
-        let res = try await ApiCall.asyncCall(request)
+        let res = try await ApiCall.call(request)
         return res.data.toStr()
     }
 
     @discardableResult
-    func replaceKey(email: String, pubkey: String) async throws -> String {
+    func replace(email: String, pubkey: String) async throws -> String {
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: urlPub(emailOrLongid: email),
             method: .post,
             body: pubkey.data()
         )
-        let res = try await ApiCall.asyncCall(request)
+        let res = try await ApiCall.call(request)
         return res.data.toStr()
     }
 
@@ -117,6 +112,6 @@ extension AttesterApi {
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
-        _ = try await ApiCall.asyncCall(request) // will throw on non-200
+        _ = try await ApiCall.call(request) // will throw on non-200
     }
 }
