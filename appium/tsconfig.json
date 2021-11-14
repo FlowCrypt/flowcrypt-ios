@@ -3,11 +3,17 @@
     "outDir": "./.tsbuild/",
     "target": "es2016",
     "module": "commonjs",
-    "types": ["node", "@wdio/sync", "@wdio/jasmine-framework"],
+    "types": [
+      "node",
+      "@wdio/sync",
+      "@wdio/jasmine-framework"
+    ],
     "esModuleInterop": true,
     "baseUrl": "."
   },
   "include": [
-    "./tests/**/*.ts"
+    "./tests/**/*.ts",
+    "./api-mocks/mock.ts",
+    "./api-mocks/self-test.ts"
   ]
 }
