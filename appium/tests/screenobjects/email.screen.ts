@@ -89,7 +89,7 @@ class EmailScreen extends BaseScreen {
   }
 
   checkAttachment = async (name: string) => {
-    await (this.downloadAttachmentButton).waitForDisplayed();
+    await (await this.downloadAttachmentButton).waitForDisplayed();
     const element = await this.attachmentName(name);
     await element.waitForDisplayed();
   }

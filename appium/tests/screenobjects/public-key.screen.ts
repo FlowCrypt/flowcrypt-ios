@@ -20,8 +20,9 @@ class PublicKeyScreen extends BaseScreen {
 
   checkPublicKey = async () => {
     await (await this.backButton).waitForDisplayed();
-    await (await this.publicKey).waitForExist();
-    const pubkeyValue = await this.publicKey.getAttribute('value');
+    const publicKeyEl = await this.publicKey;
+    await publicKeyEl.waitForExist();
+    const pubkeyValue = await publicKeyEl.getAttribute('value');
     expect(pubkeyValue).toBeExisting();
   }
 }
