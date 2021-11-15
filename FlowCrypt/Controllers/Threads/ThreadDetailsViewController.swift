@@ -172,11 +172,11 @@ extension ThreadDetailsViewController {
                     onlyLocalKeys: true,
                     progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
-                if processedMessage.signature != .good {
+                if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
-                    tryToFetchSenderPubKeys(message: message,
-                                            folder: thread.path,
-                                            indexPath: indexPath)
+                    retryVerifyingSignatureWithRemotelyFetchedKeys(message: message,
+                                                                   folder: thread.path,
+                                                                   indexPath: indexPath)
                 }
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {
@@ -279,15 +279,22 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func tryToFetchSenderPubKeys(message: Message, folder: String, indexPath: IndexPath) {
+    private func retryVerifyingSignatureWithRemotelyFetchedKeys(message: Message,
+                                                                folder: String,
+                                                                indexPath: IndexPath) {
         Task {
-            let processedMessage = try await messageService.getAndProcessMessage(
-                with: message,
-                folder: thread.path,
-                onlyLocalKeys: false,
-                progressHandler: { _ in }
-            )
-            handleReceived(message: processedMessage, at: indexPath)
+            do {
+                let processedMessage = try await messageService.getAndProcessMessage(
+                    with: message,
+                    folder: thread.path,
+                    onlyLocalKeys: false,
+                    progressHandler: { _ in }
+                )
+                handleReceived(message: processedMessage, at: indexPath)
+            } catch {
+                let message = "Failed to verify signature due to: \(error)"
+                input[indexPath.section-1].processedMessage?.signature = .error(message)
+            }
         }
     }
 
