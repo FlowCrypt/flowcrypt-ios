@@ -3,10 +3,10 @@ import {
   CreateKeyScreen,
   InboxScreen,
   NewMessageScreen,
+  EmailScreen
 } from '../../screenobjects/all-screens';
 
 import { CommonData } from '../../data';
-import EmailScreen from "../../screenobjects/email.screen";
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -25,10 +25,10 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.composeEmail(noPublicKeyRecipient, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(noPublicKeyRecipient, emailSubject, emailText);
     await NewMessageScreen.clickSentButton();
+
     await EmailScreen.enterPassPhrase(passPhrase);
-
     await EmailScreen.clickOkButton();
-    await NewMessageScreen.checkError(noPublicKeyError);
 
+    await NewMessageScreen.checkError(noPublicKeyError);
   });
 });
