@@ -2,18 +2,18 @@
 
 'use strict';
 
-import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key.js';
-import { MsgBlock, MsgBlockType } from './msg-block.js';
-import { Str, Value } from './common.js';
+import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key';
+import { MsgBlock, MsgBlockType } from './msg-block';
+import { Str, Value } from './common';
 
-import { Buf } from './buf.js';
-import { Catch } from '../platform/catch.js';
-import { FcAttLinkData } from './att.js';
-import { MsgBlockParser } from './msg-block-parser.js';
-import { PgpArmor } from './pgp-armor.js';
-import { PgpHash } from './pgp-hash.js';
-import { Store } from '../platform/store.js';
-import { openpgp } from './pgp.js';
+import { Buf } from './buf';
+import { Catch } from '../platform/catch';
+import { FcAttLinkData } from './att';
+import { MsgBlockParser } from './msg-block-parser';
+import { PgpArmor } from './pgp-armor';
+import { PgpHash } from './pgp-hash';
+import { Store } from '../platform/store';
+import { openpgp } from './pgp';
 
 export namespace PgpMsgMethod {
   export namespace Arg {

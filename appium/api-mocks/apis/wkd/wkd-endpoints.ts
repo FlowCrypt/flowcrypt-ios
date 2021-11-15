@@ -3,9 +3,9 @@
 import { HandlersDefinition } from '../../lib/api';
 import { MockConfig, WkdConfig } from '../../lib/configuration-types';
 
-// import { KeyUtil } from '../../core/crypto/key.js.js.js.js';
-// import { PgpArmor } from '../../core/crypto/pgp/pgp-armor.js.js.js.js';
-// import { testConstants } from '../../tests/tooling/consts.js.js.js.js';
+// import { KeyUtil } from '../../core/crypto/key';
+// import { PgpArmor } from '../../core/crypto/pgp/pgp-armor';
+// import { testConstants } from '../../tests/tooling/consts';
 // import { HandlersDefinition } from '../all-apis-mock';
 
 /**

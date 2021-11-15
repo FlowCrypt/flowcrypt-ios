@@ -12,16 +12,16 @@ import PublicKeyScreen from './public-key.screen';
 import AttachmentScreen from './attachment.screen';
 
 export {
-    SplashScreen,
-    CreateKeyScreen,
-    InboxScreen,
-    MenuBarScreen,
-    EmailScreen,
-    NewMessageScreen,
-    SettingsScreen,
-    KeysScreen,
-    AttachmentScreen,
-    PublicKeyScreen,
-    ContactScreen,
-    ContactPublicKeyScreen
+  SplashScreen,
+  CreateKeyScreen,
+  InboxScreen,
+  MenuBarScreen,
+  EmailScreen,
+  NewMessageScreen,
+  SettingsScreen,
+  KeysScreen,
+  AttachmentScreen,
+  PublicKeyScreen,
+  ContactScreen,
+  ContactPublicKeyScreen
 };

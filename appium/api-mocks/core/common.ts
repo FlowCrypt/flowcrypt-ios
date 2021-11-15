@@ -2,8 +2,8 @@
 
 'use strict';
 
-import { base64decode, base64encode } from '../platform/util.js';
-import { Xss } from '../platform/xss.js';
+import { base64decode, base64encode } from '../platform/util';
+import { Xss } from '../platform/xss';
 
 export type Dict<T> = { [key: string]: T; };
 export type UrlParam = string | number | null | undefined | boolean | string[];
@@ -40,7 +40,7 @@ export class Str {
 
   public static rmSpecialCharsKeepUtf = (str: string, mode: 'ALLOW-SOME' | 'ALLOW-NONE'): string => {
     // not a whitelist because we still want utf chars
-    str = str.replace(/[@&#`();:'",<>\{\}\[\]\\\/\n\t\r]/gi, '');
+    str = str.replace(/[@&#`();:'",<>{}[\]\\/\n\t\r]/gi, '');
     if (mode === 'ALLOW-SOME') {
       return str;
     }
@@ -77,15 +77,15 @@ export class Str {
     }
     // for MOCK tests, we need emails like me@domain.com:8001 to pass
     // this then makes the extension call fes.domain.com:8001 which is where the appropriate mock runs
-    email = email.replace(/\:8001$/, '');
-    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(email);
+    email = email.replace(/:8001$/, '');
+    return /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(email);
   }
 
   public static monthName = (monthIndex: number) => {
     return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][monthIndex];
   }
 
-  public static sloppyRandom = (length: number = 5) => {
+  public static sloppyRandom = (length = 5) => {
     let id = '';
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     for (let i = 0; i < length; i++) {
@@ -123,11 +123,11 @@ export class Str {
     return string.trim().split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
   }
 
-  public static pluralize = (count: number, noun: string, suffix: string = 's'): string => {
+  public static pluralize = (count: number, noun: string, suffix = 's'): string => {
     return `${count} ${noun}${count > 1 ? suffix : ''}`;
   }
 
-  public static toUtcTimestamp = (datetimeStr: string, asStr: boolean = false) => {
+  public static toUtcTimestamp = (datetimeStr: string, asStr = false) => {
     return asStr ? String(Date.parse(datetimeStr)) : Date.parse(datetimeStr);
   }
 
@@ -150,7 +150,7 @@ export class Str {
     if (typeof str === 'undefined') {
       return str;
     }
-    return base64encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(parseInt(String(p1), 16))))
+    return base64encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(String(p1), 16))))
       .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 

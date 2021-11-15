@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { Buf } from './buf.js';
+import { Buf } from './buf';
 
 type Att$treatAs = "publicKey" | 'privateKey' | "encryptedMsg" | "hidden" | "signature" | "encryptedFile" | "plainFile";
 export type AttMeta = {

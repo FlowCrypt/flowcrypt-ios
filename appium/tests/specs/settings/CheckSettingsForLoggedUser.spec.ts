@@ -1,34 +1,34 @@
 import {
-    SplashScreen,
-    CreateKeyScreen,
-    MenuBarScreen,
-    SettingsScreen,
-    KeysScreen,
-    PublicKeyScreen
+  SplashScreen,
+  CreateKeyScreen,
+  MenuBarScreen,
+  SettingsScreen,
+  KeysScreen,
+  PublicKeyScreen
 } from '../../screenobjects/all-screens';
 
 
 describe('SETTINGS: ', () => {
 
-    it('user should see public key and should not see private key', () => {
+  it('user should see public key and should not see private key', async () => {
 
-        SplashScreen.login();
-        CreateKeyScreen.setPassPhrase();
+    await SplashScreen.login();
+    await CreateKeyScreen.setPassPhrase();
 
-        MenuBarScreen.clickMenuIcon();
-        MenuBarScreen.checkUserEmail();
-        MenuBarScreen.checkMenuBar();
+    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.checkUserEmail();
+    await MenuBarScreen.checkMenuBar();
 
-        MenuBarScreen.clickSettingsButton();
-        SettingsScreen.checkSettingsScreen();
-        SettingsScreen.clickOnSettingItem('Keys');
+    await MenuBarScreen.clickSettingsButton();
+    await SettingsScreen.checkSettingsScreen();
+    await SettingsScreen.clickOnSettingItem('Keys');
 
-        KeysScreen.checkKeysScreen();
-        KeysScreen.clickOnKey();
+    await KeysScreen.checkKeysScreen();
+    await KeysScreen.clickOnKey();
 
-        KeysScreen.checkSelectedKeyScreen();
+    await KeysScreen.checkSelectedKeyScreen();
 
-        KeysScreen.clickOnShowPublicKey();
-        PublicKeyScreen.checkPublicKey();
-    });
+    await KeysScreen.clickOnShowPublicKey();
+    await PublicKeyScreen.checkPublicKey();
+  });
 });

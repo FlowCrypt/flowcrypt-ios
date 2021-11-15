@@ -1,28 +1,30 @@
 import BaseScreen from './base.screen';
 
 const SELECTORS = {
-    BACK_BTN: '~arrow left c',
-    PUBLIC_KEY: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[1]',
+  BACK_BTN: '~arrow left c',
+  PUBLIC_KEY: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[1]',
 };
 
 class PublicKeyScreen extends BaseScreen {
-    constructor () {
-        super(SELECTORS.BACK_BTN);
-    }
+  constructor() {
+    super(SELECTORS.BACK_BTN);
+  }
 
-    get backButton() {
-        return $(SELECTORS.BACK_BTN);
-    }
+  get backButton() {
+    return $(SELECTORS.BACK_BTN);
+  }
 
-    get publicKey() {
-        return $(SELECTORS.PUBLIC_KEY);
-    }
+  get publicKey() {
+    return $(SELECTORS.PUBLIC_KEY);
+  }
 
-    checkPublicKey() {
-        this.backButton.waitForDisplayed();
-        this.publicKey.waitForExist();
-        expect(this.publicKey.getAttribute('value')).not.toEqual(null);
-    }
+  checkPublicKey = async () => {
+    await (await this.backButton).waitForDisplayed();
+    const publicKeyEl = await this.publicKey;
+    await publicKeyEl.waitForExist();
+    const pubkeyValue = await publicKeyEl.getAttribute('value');
+    expect(pubkeyValue).toContain("-----BEGIN PGP PUBLIC KEY BLOCK-----");
+  }
 }
 
 export default new PublicKeyScreen();
