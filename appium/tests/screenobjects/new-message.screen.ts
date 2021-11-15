@@ -8,7 +8,7 @@ const SELECTORS = {
   ADDED_RECIPIENT: '-ios class chain:**/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther' +
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
-    '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText',//it works only with this selector
+    '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
   RETURN_BUTTON: '~Return',
   BACK_BUTTON: '~arrow left c',
 };
@@ -76,7 +76,10 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkAddedRecipient = async (recipient: string) => {
-    expect(await this.addedRecipientEmail).toHaveAttribute('value', `  ${recipient}  `);
+    const addedRecipientEl = await this.addedRecipientEmail;
+    const value = await addedRecipientEl.getValue()
+    console.log(`addedRecipientEl value: ${value}`);
+    expect(value).toEqual(`  ${recipient}  `);
   }
 
   clickBackButton = async () => {
