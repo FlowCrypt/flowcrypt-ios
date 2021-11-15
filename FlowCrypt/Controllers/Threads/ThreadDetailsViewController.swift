@@ -189,12 +189,12 @@ extension ThreadDetailsViewController {
         hideSpinner()
 
         let messageIndex = indexPath.section - 1
-        let shouldAnimate = input[messageIndex].processedMessage == nil
+        let isAlreadyProcessed = input[messageIndex].processedMessage != nil
 
-        input[messageIndex].processedMessage = processedMessage
-
-        if shouldAnimate {
+        if !isAlreadyProcessed {
+            input[messageIndex].processedMessage = processedMessage
             input[messageIndex].isExpanded = true
+
             markAsRead(at: messageIndex)
 
             UIView.animate(
@@ -206,6 +206,7 @@ extension ThreadDetailsViewController {
                     self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
                 })
         } else {
+            input[messageIndex].processedMessage?.signature = processedMessage.signature
             node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
         }
     }
