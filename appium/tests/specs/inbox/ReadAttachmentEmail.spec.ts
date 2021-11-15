@@ -1,62 +1,61 @@
 import {
-    SplashScreen,
-    CreateKeyScreen,
-    InboxScreen,
-    EmailScreen,
-    AttachmentScreen
+  SplashScreen,
+  CreateKeyScreen,
+  InboxScreen,
+  EmailScreen,
+  AttachmentScreen
 } from '../../screenobjects/all-screens';
 
-import {CommonData} from '../../data';
+import { CommonData } from '../../data';
 
 describe('INBOX: ', () => {
 
-    it('user is able to view encrypted email with attachment', () => {
+  it('user is able to view encrypted email with attachment', async () => {
 
-        const senderEmail = CommonData.sender.email;
-        const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
-        const emailText = CommonData.encryptedEmailWithAttachment.message;
-        const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
+    const senderEmail = CommonData.sender.email;
+    const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
+    const emailText = CommonData.encryptedEmailWithAttachment.message;
+    const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
 
-        const wrongPassPhrase = 'wrong';
-        const correctPassPhrase = CommonData.account.passPhrase;
-        const bundleId = CommonData.bundleId.id;
+    const wrongPassPhrase = 'wrong';
+    const correctPassPhrase = CommonData.account.passPhrase;
+    const bundleId = CommonData.bundleId.id;
 
-        SplashScreen.login();
-        CreateKeyScreen.setPassPhrase();
+    await SplashScreen.login();
+    await CreateKeyScreen.setPassPhrase();
 
-        InboxScreen.clickOnEmailBySubject(emailSubject);
-        EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-        EmailScreen.checkAttachment(attachmentName); //disabled due to
+    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkAttachment(attachmentName); //disabled due to
 
-        driver.terminateApp(bundleId);
+    await driver.terminateApp(bundleId);
+    await driver.activateApp(bundleId);
 
-        driver.activateApp(bundleId);
+    await InboxScreen.clickOnEmailBySubject(emailSubject);
 
-        InboxScreen.clickOnEmailBySubject(emailSubject);
+    //try to see encrypted message with wrong pass phrase
+    await EmailScreen.enterPassPhrase(wrongPassPhrase);
+    await EmailScreen.clickOkButton();
+    await EmailScreen.checkWrongPassPhraseErrorMessage();
 
-        //try to see encrypted message with wrong pass phrase
-        EmailScreen.enterPassPhrase(wrongPassPhrase);
-        EmailScreen.clickOkButton();
-        EmailScreen.checkWrongPassPhraseErrorMessage();
+    //check attachment after setting correct pass phrase
+    await EmailScreen.enterPassPhrase(correctPassPhrase);
+    await EmailScreen.clickSaveButton();
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkAttachment(attachmentName);
+    await EmailScreen.clickOnDownloadButton();
 
-        //check attachment after setting correct pass phrase
-        EmailScreen.enterPassPhrase(correctPassPhrase);
-        EmailScreen.clickSaveButton();
-        EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-        EmailScreen.checkAttachment(attachmentName);
-        EmailScreen.clickOnDownloadButton();
+    await AttachmentScreen.checkDownloadPopUp(attachmentName);
+    await AttachmentScreen.clickOnCancelButton();
 
-        AttachmentScreen.checkDownloadPopUp(attachmentName);
-        AttachmentScreen.clickOnCancelButton();
+    await EmailScreen.checkAttachment(attachmentName);
+    await EmailScreen.clickBackButton();
 
-        EmailScreen.checkAttachment(attachmentName);
-        EmailScreen.clickBackButton();
+    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkAttachment(attachmentName);
+    await EmailScreen.clickOnDownloadButton();
 
-        InboxScreen.clickOnEmailBySubject(emailSubject);
-        EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-        EmailScreen.checkAttachment(attachmentName);
-        EmailScreen.clickOnDownloadButton();
-
-        AttachmentScreen.checkDownloadPopUp(attachmentName);
-    });
+    await AttachmentScreen.checkDownloadPopUp(attachmentName);
+  });
 });

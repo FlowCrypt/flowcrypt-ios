@@ -2,16 +2,16 @@
 
 'use strict';
 
-import { MsgBlock, ReplaceableMsgBlockType } from './msg-block.js';
-import { SanitizeImgHandling, Xss } from '../platform/xss.js';
+import { MsgBlock, ReplaceableMsgBlockType } from './msg-block';
+import { SanitizeImgHandling, Xss } from '../platform/xss';
 
-import { Buf } from './buf.js';
-import { Catch } from '../platform/catch.js';
-import { Mime } from './mime.js';
-import { PgpArmor } from './pgp-armor.js';
-import { PgpKey } from './pgp-key.js';
-import { PgpMsg, VerifyRes } from './pgp-msg.js';
-import { Str } from './common.js';
+import { Buf } from './buf';
+import { Catch } from '../platform/catch';
+import { Mime } from './mime';
+import { PgpArmor } from './pgp-armor';
+import { PgpKey } from './pgp-key';
+import { PgpMsg, VerifyRes } from './pgp-msg';
+import { Str } from './common';
 
 type SanitizedBlocks = { blocks: MsgBlock[], subject: string | undefined, isRichText: boolean };
 

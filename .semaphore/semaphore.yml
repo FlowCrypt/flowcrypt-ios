@@ -38,7 +38,8 @@ blocks:
           commands:
             - ios-sim start --devicetypeid com.apple.CoreSimulator.SimDeviceType.iPhone-13
             - bundle exec fastlane build && ls -la appium
-            - cd appium && npm run-script only.test.all
+            - cd appium && npm run-script lint
+            - npm run-script only.test.all
       epilogue:
         always:
           commands:

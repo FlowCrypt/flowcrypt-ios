@@ -10,7 +10,7 @@ export const isPut = (r: IncomingMessage) => r.method === 'PUT';
 export const isDelete = (r: IncomingMessage) => r.method === 'DELETE';
 export const parseResourceId = (url: string) => url.match(/\/([a-zA-Z0-9\-_]+)(\?|$)/)![1];
 
-export const expectContains = (haystack: any, needle: string) => {
+export const expectContains = (haystack: unknown, needle: string) => {
   if (!String(haystack).includes(needle)) {
     throw new Error(`MockApi expectations unmet: expected "${haystack}" to contain "${needle}"`);
   }
@@ -29,8 +29,8 @@ export const lousyRandom = () => Math.random().toString(36).substring(2);
 
 
 export class RequestsError extends Error {
-  public reason: any;
-  constructor(reason: any) {
+  public reason: unknown;
+  constructor(reason: unknown) {
     super();
     this.reason = reason;
   }
@@ -40,6 +40,6 @@ export class Requests {
   public static get = (
     options: (request.UriOptions & request.CoreOptions) | (request.UrlOptions & request.CoreOptions)
   ): Promise<request.Response> => new Promise((resolve, reject) => {
-    request.get(options, (e, resp, body) => e ? reject(new RequestsError(e)) : resolve(resp));
+    request.get(options, (e, resp) => e ? reject(new RequestsError(e)) : resolve(resp));
   });
 }

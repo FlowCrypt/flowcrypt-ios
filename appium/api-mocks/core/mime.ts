@@ -1,18 +1,19 @@
+/* eslint-disable no-useless-escape */
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
-import { Dict, Str } from './common.js';
-import { requireIso88592, requireMimeBuilder, requireMimeParser } from '../platform/require.js';
+import { Dict, Str } from './common';
+import { requireIso88592, requireMimeBuilder, requireMimeParser } from '../platform/require';
 
-import { Attachment } from './attachment.js';
-import { Buf } from './buf.js';
-import { Catch } from '../platform/catch.js';
+import { Attachment } from './attachment';
+import { Buf } from './buf';
+import { Catch } from '../platform/catch';
 import { MimeParserNode } from './types/emailjs';
-import { MsgBlock } from './msg-block.js';
-import { MsgBlockParser } from './msg-block-parser.js';
-import { PgpArmor } from './crypto/pgp/pgp-armor.js';
-import { iso2022jpToUtf } from '../platform/util.js';
+import { MsgBlock } from './msg-block';
+import { MsgBlockParser } from './msg-block-parser';
+import { PgpArmor } from './crypto/pgp/pgp-armor';
+import { iso2022jpToUtf } from '../platform/util';
 
 const MimeParser = requireMimeParser();  // tslint:disable-line:variable-name
 const MimeBuilder = requireMimeBuilder();  // tslint:disable-line:variable-name

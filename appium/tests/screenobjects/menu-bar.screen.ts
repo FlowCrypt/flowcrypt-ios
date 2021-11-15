@@ -1,60 +1,60 @@
 import BaseScreen from './base.screen';
-import {CommonData} from "../data";
+import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-    MENU_ICON: '~menu icn',
-    LOGOUT_BTN: '~Log out',
-    SETTINGS_BTN: '~Settings',
-    INBOX_BTN: '~INBOX'
+  MENU_ICON: '~menu icn',
+  LOGOUT_BTN: '~Log out',
+  SETTINGS_BTN: '~Settings',
+  INBOX_BTN: '~INBOX'
 };
 
 class MenuBarScreen extends BaseScreen {
-    constructor () {
-        super(SELECTORS.MENU_ICON);
-    }
+  constructor() {
+    super(SELECTORS.MENU_ICON);
+  }
 
-    get menuIcon () {
-        return $(SELECTORS.MENU_ICON);
-    }
+  get menuIcon() {
+    return $(SELECTORS.MENU_ICON);
+  }
 
-    get logoutButton () {
-        return $(SELECTORS.LOGOUT_BTN);
-    }
+  get logoutButton() {
+    return $(SELECTORS.LOGOUT_BTN);
+  }
 
-    get settingsButton () {
-        return $(SELECTORS.SETTINGS_BTN);
-    }
+  get settingsButton() {
+    return $(SELECTORS.SETTINGS_BTN);
+  }
 
-    get inboxButton () {
-        return $(SELECTORS.INBOX_BTN);
-    }
+  get inboxButton() {
+    return $(SELECTORS.INBOX_BTN);
+  }
 
-    clickMenuIcon () {
-        ElementHelper.waitAndClick(this.menuIcon, 200);
-    }
+  clickMenuIcon = async () => {
+    await ElementHelper.waitAndClick(await this.menuIcon, 500);
+  }
 
-    checkUserEmail (email: string = CommonData.account.email) {
-        const selector = `~${email}`;
-        $(selector).waitForDisplayed();
-    }
+  checkUserEmail = async (email: string = CommonData.account.email) => {
+    const el = await $(`~${email}`);
+    await el.waitForDisplayed();
+  }
 
-    checkMenuBar () {
-        expect(this.logoutButton).toBeDisplayed();
-        expect(this.settingsButton).toBeDisplayed();
-    }
+  checkMenuBar = async () => {
+    await ElementHelper.waitElementVisible(await this.logoutButton);
+    await ElementHelper.waitElementVisible(await this.settingsButton);
+  }
 
-    clickLogout () {
-        ElementHelper.waitAndClick(this.logoutButton);
-    }
+  clickLogout = async () => {
+    await ElementHelper.waitAndClick(await this.logoutButton);
+  }
 
-    clickSettingsButton () {
-        ElementHelper.waitAndClick(this.settingsButton);
-    }
+  clickSettingsButton = async () => {
+    await ElementHelper.waitAndClick(await this.settingsButton);
+  }
 
-    clickInboxButton () {
-        ElementHelper.waitAndClick(this.inboxButton);
-    }
+  clickInboxButton = async () => {
+    await ElementHelper.waitAndClick(await this.inboxButton);
+  }
 }
 
 export default new MenuBarScreen();

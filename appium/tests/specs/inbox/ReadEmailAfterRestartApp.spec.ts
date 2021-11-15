@@ -1,33 +1,30 @@
 import {
-    SplashScreen,
-    CreateKeyScreen,
-    InboxScreen,
-    EmailScreen
+  SplashScreen,
+  CreateKeyScreen,
+  InboxScreen,
+  EmailScreen
 } from '../../screenobjects/all-screens';
 
-import {CommonData} from '../../data';
+import { CommonData } from '../../data';
 
 describe('INBOX: ', () => {
 
-    it('user is able to see plain email without setting pass phrase after restart app', () => {
+  it('user is able to see plain email without setting pass phrase after restart app', async () => {
 
-        const senderEmail = CommonData.sender.email;
-        const emailSubject = CommonData.simpleEmail.subject;
-        const emailText = CommonData.simpleEmail.message;
+    const senderEmail = CommonData.sender.email;
+    const emailSubject = CommonData.simpleEmail.subject;
+    const emailText = CommonData.simpleEmail.message;
 
-        const bundleId = CommonData.bundleId.id;
+    await SplashScreen.login();
+    await CreateKeyScreen.setPassPhrase();
 
-        SplashScreen.login();
-        CreateKeyScreen.setPassPhrase();
+    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
-        InboxScreen.clickOnEmailBySubject(emailSubject);
-        EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await driver.terminateApp(CommonData.bundleId.id);
+    await driver.activateApp(CommonData.bundleId.id);
 
-        driver.terminateApp(bundleId);
-
-        driver.activateApp(bundleId);
-
-        InboxScreen.clickOnEmailBySubject(emailSubject);
-        EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    });
+    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+  });
 });

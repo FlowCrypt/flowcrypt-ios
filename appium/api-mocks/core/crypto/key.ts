@@ -2,15 +2,15 @@
 
 'use strict';
 
-import { Buf } from '../buf.js';
-import { Catch } from '../../platform/catch.js';
-import { MsgBlockParser } from '../msg-block-parser.js';
-import { PgpArmor } from './pgp/pgp-armor.js';
-import { opgp } from './pgp/openpgpjs-custom.js';
-import { OpenPGPKey } from './pgp/openpgp-key.js';
-import { SmimeKey } from './smime/smime-key.js';
-import { MsgBlock } from '../msg-block.js';
-import { PubkeyInfo } from '../../platform/store/contact-store.js';
+import { Buf } from '../buf';
+import { Catch } from '../../platform/catch';
+import { MsgBlockParser } from '../msg-block-parser';
+import { PgpArmor } from './pgp/pgp-armor';
+import { opgp } from './pgp/openpgpjs-custom';
+import { OpenPGPKey } from './pgp/openpgp-key';
+import { SmimeKey } from './smime/smime-key';
+import { MsgBlock } from '../msg-block';
+import { PubkeyInfo } from '../../platform/store/contact-store';
 
 /**
  * This is a common Key interface for both OpenPGP and X.509 keys.
