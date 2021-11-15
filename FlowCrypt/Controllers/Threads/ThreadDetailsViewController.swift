@@ -221,7 +221,7 @@ extension ThreadDetailsViewController {
         case let .wrongPassPhrase(rawMimeData, passPhrase):
             handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
         default:
-            // TODO: - Ticket - Improve error handling for MessageViewController
+            // TODO: - Ticket - Improve error handling for ThreadDetailsViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
                 // todo - the missing msg should be removed from the list in inbox view
                 // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox

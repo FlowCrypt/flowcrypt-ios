@@ -9,6 +9,7 @@ const SELECTORS = {
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
   SAVE_BUTTON: '~Save',
   DOWNLOAD_ATTACHMENT_BUTTON: '-ios class chain:**/XCUIElementTypeCell[4]/XCUIElementTypeOther/XCUIElementTypeButton',
+  REPLY_BUTTON: '-ios class chain:**/XCUIElementTypeCell[2]/XCUIElementTypeOther/XCUIElementTypeButton',
 };
 
 
@@ -39,6 +40,10 @@ class EmailScreen extends BaseScreen {
 
   get downloadAttachmentButton() {
     return $(SELECTORS.DOWNLOAD_ATTACHMENT_BUTTON);
+  }
+
+  get replyButton() {
+    return $(SELECTORS.REPLY_BUTTON);
   }
 
   checkEmailAddress = async (email: string) => {
@@ -96,6 +101,10 @@ class EmailScreen extends BaseScreen {
 
   clickOnDownloadButton = async () => {
     await ElementHelper.waitAndClick(await this.downloadAttachmentButton);
+  }
+
+  clickReplyButton = async () =>{
+    await ElementHelper.waitAndClick(await this.replyButton);
   }
 }
 

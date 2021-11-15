@@ -51,3 +51,29 @@ extension UIColor {
         .colorFor(darkStyle: .white, lightStyle: .main)
     }
 }
+
+extension ProcessedMessage {
+    var attributedMessage: NSAttributedString {
+        let textColor: UIColor
+        switch messageType {
+        case .encrypted:
+            textColor = .main
+        case .error:
+            textColor = .red
+        case .plain:
+            textColor = .mainTextColor
+        }
+        return text.attributed(color: textColor)
+    }
+}
+
+extension AttachmentNode.Input {
+    init(msgAttachment: MessageAttachment) {
+        self.init(
+            name: msgAttachment.name
+                .attributed(.regular(18), color: .textColor, alignment: .left),
+            size: msgAttachment.humanReadableSizeString
+                .attributed(.medium(12), color: .textColor, alignment: .left)
+        )
+    }
+}

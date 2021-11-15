@@ -18,55 +18,55 @@ const SELECTORS = {
 
 class ContactPublicKeyScreen extends BaseScreen {
   constructor() {
-    super(SELECTORS.BACK_BTN);
+      super(SELECTORS.BACK_BTN);
   }
 
   get trashButton() {
-    return $(SELECTORS.TRASH_BUTTON);
+      return $(SELECTORS.TRASH_BUTTON);
   }
 
   get backButton() {
-    return $(SELECTORS.BACK_BTN);
+      return $(SELECTORS.BACK_BTN);
   }
 
   get key() {
-    return $(SELECTORS.KEY);
+      return $(SELECTORS.KEY);
   }
 
   get publicKey() {
-    return $(SELECTORS.PUBLIC_KEY);
+      return $(SELECTORS.PUBLIC_KEY);
   }
 
   get fingerPrintLabel() {
-    return $(SELECTORS.FINGERPRINT_LABEL);
+      return $(SELECTORS.FINGERPRINT_LABEL);
   }
 
   get fingerPrintValue() {
-    return $(SELECTORS.FINGERPRINT_VALUE);
+      return $(SELECTORS.FINGERPRINT_VALUE);
   }
 
   get createdLabel() {
-    return $(SELECTORS.CREATED_LABEL);
+      return $(SELECTORS.CREATED_LABEL);
   }
 
   get createdValue() {
-    return $(SELECTORS.CREATED_VALUE);
+      return $(SELECTORS.CREATED_VALUE);
   }
 
   get expiresLabel() {
-    return $(SELECTORS.EXPIRES_LABEL);
+      return $(SELECTORS.EXPIRES_LABEL);
   }
 
   get expiresValue() {
-    return $(SELECTORS.EXPIRES_VALUE);
+      return $(SELECTORS.EXPIRES_VALUE);
   }
 
   get pgpUserIdLabel() {
-    return $(SELECTORS.PGD_USER_ID_LABEL);
+      return $(SELECTORS.PGD_USER_ID_LABEL);
   }
 
   get pgpUserIdEmailValue() {
-    return $(SELECTORS.PGD_USER_ID_EMAIL);
+      return $(SELECTORS.PGD_USER_ID_EMAIL);
   }
 
   checkPublicKeyNotEmpty = async () => {
@@ -96,7 +96,6 @@ class ContactPublicKeyScreen extends BaseScreen {
   clickOnFingerPrint = async () => {
     await ElementHelper.waitAndClick(await this.fingerPrintValue);
   }
-
 }
 
 export default new ContactPublicKeyScreen();
