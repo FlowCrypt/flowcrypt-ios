@@ -37,6 +37,7 @@
 "message_signature_verify_error" = "cannot verify signature: %@";
 "message_bad_signature" = "bad signature";
 "message_signature_pending" = "verifying signature...";
+"message_signature_fail_reason" = "Failed to verify signature due to: %@";
 
 // REPLY
 "reply_title" = "Your reply"; // not used

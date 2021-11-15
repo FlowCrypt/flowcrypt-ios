@@ -292,7 +292,7 @@ extension ThreadDetailsViewController {
                 )
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {
-                let message = "Failed to verify signature due to: \(error)"
+                let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
                 input[indexPath.section-1].processedMessage?.signature = .error(message)
             }
         }
