@@ -19,23 +19,21 @@ enum KeyInfoError: Error {
     case missingPrimaryFingerprint
 }
 
-final class KeyInfo: Object {
+final class KeyInfoRealmObject: Object {
+    @Persisted(primaryKey: true) var primaryFingerprint = ""
+    @Persisted var `private`: String = ""
+    @Persisted var `public`: String = ""
+    @Persisted var passphrase: String?
+    @Persisted var source: String = ""
+    @Persisted var user: UserRealmObject!
+    @Persisted var allFingerprints: List<String>
+    @Persisted var allLongids: List<String>
+
     var primaryLongid: String {
         allLongids[0]
     }
 
-    @objc dynamic var `private`: String = ""
-    @objc dynamic var `public`: String = ""
-
-    let allFingerprints = List<String>()
-    let allLongids = List<String>()
-
-    @objc dynamic var primaryFingerprint = ""
-    @objc dynamic var passphrase: String?
-    @objc dynamic var source: String = ""
-    @objc dynamic var user: UserObject!
-
-    convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserObject) throws {
+    convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
 
         guard let privateKey = keyDetails.private else {
@@ -63,16 +61,12 @@ final class KeyInfo: Object {
         self.user = user
     }
 
-    override class func primaryKey() -> String? {
-        "primaryFingerprint"
-    }
-
     override var description: String {
         "account = \(user?.email ?? "N/A") ####### longid = \(primaryLongid)"
     }
 }
 
-extension KeyInfo {
+extension KeyInfoRealmObject {
     /// associated user email
     var account: String {
         user.email

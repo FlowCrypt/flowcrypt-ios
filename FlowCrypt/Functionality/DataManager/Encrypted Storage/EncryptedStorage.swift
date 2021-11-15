@@ -14,9 +14,9 @@ import RealmSwift
 protocol EncryptedStorageType: KeyStorageType {
     var storage: Realm { get }
 
-    func getAllUsers() -> [UserObject]
-    func saveActiveUser(with user: UserObject)
-    var activeUser: UserObject? { get }
+    func getAllUsers() -> [UserRealmObject]
+    func saveActiveUser(with user: UserRealmObject)
+    var activeUser: UserRealmObject? { get }
     func doesAnyKeyExist(for email: String) -> Bool
 
     func validate() throws
@@ -35,11 +35,14 @@ final class EncryptedStorage: EncryptedStorageType {
     // new schema should be added as a new case
     private enum EncryptedStorageSchema: CaseIterable {
         case initial
+        case version5
 
         var version: SchemaVersion {
             switch self {
             case .initial:
                 return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 4)
+            case .version5:
+                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 5)
             }
         }
     }
@@ -53,7 +56,7 @@ final class EncryptedStorage: EncryptedStorageType {
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
-    private let currentSchema: EncryptedStorageSchema = .initial
+    private let currentSchema: EncryptedStorageSchema = .version5
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
     var storage: Realm {
@@ -97,7 +100,7 @@ final class EncryptedStorage: EncryptedStorageType {
 // MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
     func logOutUser(email: String) throws {
-        let users = storage.objects(UserObject.self)
+        let users = storage.objects(UserRealmObject.self)
 
         // in case there is only one user - just delete storage
         if users.count == 1, users.first?.email == email {
@@ -106,11 +109,11 @@ extension EncryptedStorage: LogOutHandler {
             // remove user and keys for this user
             let userToDelete = users
                 .filter { $0.email == email }
-            let keys = storage.objects(KeyInfo.self)
+            let keys = storage.objects(KeyInfoRealmObject.self)
                 .filter { $0.account == email }
-            let sessions = storage.objects(SessionObject.self)
+            let sessions = storage.objects(SessionRealmObject.self)
                 .filter { $0.email == email }
-            let clientConfigurations = storage.objects(ClientConfigurationObject.self)
+            let clientConfigurations = storage.objects(ClientConfigurationRealmObject.self)
                 .filter { $0.userEmail == email }
 
             try storage.write {
@@ -141,27 +144,23 @@ extension EncryptedStorage {
             switch $0 {
             case .initial:
                 migrationLogger.logInfo("Schema migration not needed for initial schema")
-//            case .someNewSchema:
-//                performSomeNewSchema(migration: migration)
+            case .version5:
+                Version5SchemaMigration(migration: migration).perform()
             }
         }
-    }
-
-    private func performSomeNewSchema(migration: Migration) {
-        migrationLogger.logInfo("Start Multiple account migration")
     }
 }
 
 // MARK: - Keys
 extension EncryptedStorage {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-        guard let user = storage.objects(UserObject.self).first(where: { $0.email == email }) else {
+        guard let user = storage.objects(UserRealmObject.self).first(where: { $0.email == email }) else {
             logger.logError("Can't find user with given email to add keys. User should be already saved")
             return
         }
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source, user: user))
+                storage.add(try! KeyInfoRealmObject(key, passphrase: passPhrase, source: source, user: user))
             }
         }
     }
@@ -173,7 +172,7 @@ extension EncryptedStorage {
         }
         try! storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source, user: user), update: .all)
+                storage.add(try! KeyInfoRealmObject(key, passphrase: passPhrase, source: source, user: user), update: .all)
             }
         }
     }
@@ -187,13 +186,13 @@ extension EncryptedStorage {
         }
     }
 
-    func keysInfo() -> [KeyInfo] {
-        let result = storage.objects(KeyInfo.self)
+    func keysInfo() -> [KeyInfoRealmObject] {
+        let result = storage.objects(KeyInfoRealmObject.self)
         return Array(result)
     }
 
     func publicKey() -> String? {
-        storage.objects(KeyInfo.self)
+        storage.objects(KeyInfoRealmObject.self)
             .map(\.public)
             .first
     }
@@ -205,8 +204,8 @@ extension EncryptedStorage {
             .contains(true)
     }
 
-    private func getUserObject(for email: String) -> UserObject? {
-        storage.objects(UserObject.self).first(where: { $0.email == email })
+    private func getUserObject(for email: String) -> UserRealmObject? {
+        storage.objects(UserRealmObject.self).first(where: { $0.email == email })
     }
 }
 
@@ -231,15 +230,15 @@ extension EncryptedStorage: PassPhraseStorageType {
 
 // MARK: - User
 extension EncryptedStorage {
-    var activeUser: UserObject? {
+    var activeUser: UserRealmObject? {
         getAllUsers().first(where: \.isActive)
     }
 
-    func getAllUsers() -> [UserObject] {
-        Array(storage.objects(UserObject.self))
+    func getAllUsers() -> [UserRealmObject] {
+        Array(storage.objects(UserRealmObject.self))
     }
 
-    func saveActiveUser(with user: UserObject) {
+    func saveActiveUser(with user: UserRealmObject) {
         try! storage.write {
             // Mark all users as inactive
             self.getAllUsers().forEach {

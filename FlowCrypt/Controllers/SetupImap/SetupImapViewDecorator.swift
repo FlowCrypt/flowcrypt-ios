@@ -149,7 +149,7 @@ struct SetupImapViewDecorator {
         )
     }
 
-    func stringFor(user: UserObject, for section: SetupImapViewController.Section) -> NSAttributedString? {
+    func stringFor(user: UserRealmObject, for section: SetupImapViewController.Section) -> NSAttributedString? {
         switch section {
         case let .account(part):
             switch part {
@@ -165,7 +165,7 @@ struct SetupImapViewDecorator {
         case let .imap(part):
             switch part {
             case .port:
-                guard let port = user.imap?.port, port != UserObject.empty.imap?.port else {
+                guard let port = user.imap?.port, port != UserRealmObject.empty.imap?.port else {
                     return nil
                 }
                 return "\(port)".attributed()
@@ -185,7 +185,7 @@ struct SetupImapViewDecorator {
         case let .smtp(part):
             switch part {
             case .port:
-                guard let port = user.smtp?.port, port != UserObject.empty.smtp?.port else {
+                guard let port = user.smtp?.port, port != UserRealmObject.empty.smtp?.port else {
                     return nil
                 }
                 return "\(port)".attributed()

@@ -30,7 +30,7 @@ final class SetupImapViewController: TableNodeViewController {
     private let decorator: SetupImapViewDecorator
     private let sessionCredentials: SessionCredentialsProvider
     private let imap: Imap
-    private var user = UserObject.empty
+    private var user = UserRealmObject.empty
 
     init(
         globalRouter: GlobalRouterType = GlobalRouter(),
@@ -360,7 +360,7 @@ extension SetupImapViewController {
 
     private func updateForEmailChanges(with text: String?) {
         guard let email = text, email.isNotEmpty else {
-            user = UserObject.empty
+            user = UserRealmObject.empty
             node.reloadData()
             return
         }
@@ -529,8 +529,8 @@ extension SetupImapViewController {
         globalRouter.signIn(with: .other(.session(user)))
     }
 
-    private func checkCurrentUser() -> Result<UserObject, UserError> {
-        guard user != UserObject.empty, user.email != UserObject.empty.email else {
+    private func checkCurrentUser() -> Result<UserRealmObject, UserError> {
+        guard user != UserRealmObject.empty, user.email != UserRealmObject.empty.email else {
             return .failure(.empty)
         }
 

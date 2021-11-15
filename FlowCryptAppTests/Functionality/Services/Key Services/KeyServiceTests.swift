@@ -24,7 +24,7 @@ final class KeyServiceTests: XCTestCase {
 
     func testGetSigningKeyFirstEmail() async throws {
         // arrange
-        let userObject = UserObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
+        let userObject = UserRealmObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
 
         guard let key1 = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
             XCTFail("key details expected")
@@ -35,8 +35,8 @@ final class KeyServiceTests: XCTestCase {
             return
         }
         let keys = [
-            try KeyInfo(key1, passphrase: nil, source: .generated, user: userObject),
-            try KeyInfo(key2, passphrase: nil, source: .generated, user: userObject),
+            try KeyInfoRealmObject(key1, passphrase: nil, source: .generated, user: userObject),
+            try KeyInfoRealmObject(key2, passphrase: nil, source: .generated, user: userObject),
         ]
 
         let keyStorage = KeyStorageMock()
@@ -67,14 +67,14 @@ final class KeyServiceTests: XCTestCase {
 
     func testGetSigningKeyNotFirstEmail() async throws {
         // arrange
-        let userObject = UserObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
+        let userObject = UserRealmObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
 
         guard let key = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
             XCTFail("key details expected")
             return
         }
         let keys = [
-            try KeyInfo(key, passphrase: nil, source: .generated, user: userObject)
+            try KeyInfoRealmObject(key, passphrase: nil, source: .generated, user: userObject)
         ]
 
         let keyStorage = KeyStorageMock()

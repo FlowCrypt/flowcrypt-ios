@@ -1,5 +1,5 @@
 //
-//  ClientConfigurationObject.swift
+//  ClientConfigurationRealmObject.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 18.06.2021.
@@ -9,16 +9,15 @@
 import Foundation
 import RealmSwift
 
-final class ClientConfigurationObject: Object {
-
-    @objc dynamic var flags: Data?
-    @objc dynamic var customKeyserverUrl: String?
-    @objc dynamic var keyManagerUrl: String?
-    @objc dynamic var disallowAttesterSearchForDomains: Data?
-    @objc dynamic var enforceKeygenAlgo: String?
-    @objc dynamic var enforceKeygenExpireMonths: Int = -1
-    @objc dynamic var user: UserObject!
-    @objc dynamic var userEmail: String!
+final class ClientConfigurationRealmObject: Object {
+    @Persisted(primaryKey: true) var userEmail: String!
+    @Persisted var flags: Data?
+    @Persisted var customKeyserverUrl: String?
+    @Persisted var keyManagerUrl: String?
+    @Persisted var disallowAttesterSearchForDomains: Data?
+    @Persisted var enforceKeygenAlgo: String?
+    @Persisted var enforceKeygenExpireMonths: Int = -1
+    @Persisted var user: UserRealmObject!
 
     convenience init(
         flags: [String]?,
@@ -27,7 +26,7 @@ final class ClientConfigurationObject: Object {
         disallowAttesterSearchForDomains: [String]?,
         enforceKeygenAlgo: String?,
         enforceKeygenExpireMonths: Int?,
-        user: UserObject
+        user: UserRealmObject
     ) {
         self.init()
         if let flags = flags {
@@ -46,7 +45,7 @@ final class ClientConfigurationObject: Object {
 
     convenience init(
         _ clientConfiguration: RawClientConfiguration,
-        user: UserObject
+        user: UserRealmObject
     ) {
         self.init(
             flags: clientConfiguration.flags?.map(\.rawValue),
@@ -58,14 +57,10 @@ final class ClientConfigurationObject: Object {
             user: user
         )
     }
-
-    override class func primaryKey() -> String? {
-        "userEmail"
-    }
 }
 
-extension ClientConfigurationObject: CachedObject {
+extension ClientConfigurationRealmObject: CachedRealmObject {
     var identifier: String { userEmail ?? "" }
 
-    var activeUser: UserObject? { user }
+    var activeUser: UserRealmObject? { user }
 }

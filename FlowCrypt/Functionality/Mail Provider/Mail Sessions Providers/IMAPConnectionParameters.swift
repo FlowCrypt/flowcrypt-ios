@@ -18,7 +18,7 @@ struct IMAPSession {
 }
 
 extension IMAPSession {
-    init?(userObject user: UserObject) {
+    init?(userObject user: UserRealmObject) {
         guard let imap = user.imap else {
             assertionFailure("Can't get IMAP Session without user data")
             return nil

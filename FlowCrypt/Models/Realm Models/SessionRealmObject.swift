@@ -1,5 +1,5 @@
 //
-//  SessionObject.swift
+//  SessionRealmObject.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 07/04/2020.
@@ -9,14 +9,14 @@
 import Foundation
 import RealmSwift
 
-final class SessionObject: Object {
-    @objc dynamic var hostname: String = ""
-    @objc dynamic var port: Int = 0
-    @objc dynamic var username: String = ""
-    @objc dynamic var password: String?
-    @objc dynamic var oAuth2Token: String?
-    @objc dynamic var connectionType: String = ""
-    @objc dynamic var email: String?
+final class SessionRealmObject: Object {
+    @Persisted var hostname: String = ""
+    @Persisted var port: Int = 0
+    @Persisted var username: String = ""
+    @Persisted var password: String?
+    @Persisted var oAuth2Token: String?
+    @Persisted var connectionType: String = ""
+    @Persisted var email: String?
 
     convenience init(
         hostname: String,
@@ -38,9 +38,9 @@ final class SessionObject: Object {
     }
 }
 
-extension SessionObject {
-    static func googleIMAP(with token: String, username: String, email: String) -> SessionObject {
-        SessionObject(
+extension SessionRealmObject {
+    static func googleIMAP(with token: String, username: String, email: String) -> SessionRealmObject {
+        SessionRealmObject(
             hostname: "imap.gmail.com",
             port: 993,
             username: username,
@@ -51,8 +51,8 @@ extension SessionObject {
         )
     }
 
-    static func googleSMTP(with token: String, username: String, email: String) -> SessionObject {
-        SessionObject(
+    static func googleSMTP(with token: String, username: String, email: String) -> SessionRealmObject {
+        SessionRealmObject(
             hostname: "smtp.gmail.com",
             port: 465,
             username: username,
@@ -64,9 +64,9 @@ extension SessionObject {
     }
 }
 
-extension SessionObject {
-    static var empty: SessionObject {
-        SessionObject(
+extension SessionRealmObject {
+    static var empty: SessionRealmObject {
+        SessionRealmObject(
             hostname: "",
             port: 0,
             username: "",

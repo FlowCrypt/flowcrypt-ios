@@ -1,5 +1,5 @@
 //
-//  RecipientObject.swift
+//  RecipientRealmObject.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 21/08/2020.
@@ -9,21 +9,11 @@
 import Foundation
 import RealmSwift
 
-final class LongId: Object {
-    @Persisted var value: String = ""
-
-    convenience init(value: String) {
-        self.init()
-        self.value = value
-    }
-}
-
-final class RecipientObject: Object {
+final class RecipientRealmObject: Object {
     @Persisted(primaryKey: true) var email: String = ""
-
     @Persisted var name: String?
     @Persisted var lastUsed: Date?
-    @Persisted var pubKeys = List<PubKeyObject>()
+    @Persisted var pubKeys: List<PubKeyRealmObject>
 
     convenience init(
         email: String,
@@ -37,12 +27,12 @@ final class RecipientObject: Object {
         self.lastUsed = lastUsed
 
         keys
-            .compactMap { try? PubKeyObject($0) }
+            .compactMap { try? PubKeyRealmObject($0) }
             .forEach { self.pubKeys.append($0) }
     }
 }
 
-extension RecipientObject {
+extension RecipientRealmObject {
     convenience init(_ recipient: RecipientWithSortedPubKeys) {
         self.init(
             email: recipient.email,
@@ -59,10 +49,10 @@ extension RecipientObject {
     }
 }
 
-extension RecipientObject: CachedObject {
+extension RecipientRealmObject: CachedRealmObject {
     // Contacts can be shared between accounts
     // https://github.com/FlowCrypt/flowcrypt-ios/issues/269
-    var activeUser: UserObject? { nil }
+    var activeUser: UserRealmObject? { nil }
 
     var identifier: String { email }
 }

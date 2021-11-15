@@ -1,5 +1,5 @@
 //
-//  PubKeyObject.swift
+//  PubKeyRealmObject.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 11/10/21
@@ -13,7 +13,7 @@ enum PubKeyObjectError: Error {
     case missingPrimaryFingerprint
 }
 
-final class PubKeyObject: Object {
+final class PubKeyRealmObject: Object {
     @Persisted(primaryKey: true) var primaryFingerprint: String = ""
     @Persisted var armored: String = ""
     @Persisted var lastSig: Date?
@@ -49,7 +49,7 @@ final class PubKeyObject: Object {
     }
 }
 
-extension PubKeyObject {
+extension PubKeyRealmObject {
     convenience init(_ key: PubKey) throws {
         try self.init(
             armored: key.armored,
@@ -63,7 +63,7 @@ extension PubKeyObject {
     }
 }
 
-extension PubKeyObject {
+extension PubKeyRealmObject {
     func update(from key: PubKey) {
         self.armored = key.armored
         self.lastSig = key.lastSig

@@ -16,7 +16,7 @@ protocol LocalFoldersProviderType {
 }
 
 struct LocalFoldersProvider: LocalFoldersProviderType {
-    private let folderCache: EncryptedCacheService<FolderObject>
+    private let folderCache: EncryptedCacheService<FolderRealmObject>
 
     init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
         self.folderCache = EncryptedCacheService(encryptedStorage: encryptedStorage)
@@ -33,7 +33,7 @@ struct LocalFoldersProvider: LocalFoldersProviderType {
             return
         }
 
-        folders.map { FolderObject(folder: $0, currentUser: currentUser) }
+        folders.map { FolderRealmObject(folder: $0, currentUser: currentUser) }
             .forEach(folderCache.save)
     }
 
@@ -42,8 +42,8 @@ struct LocalFoldersProvider: LocalFoldersProviderType {
     }
 }
 
-private extension FolderObject {
-    convenience init(folder: Folder, currentUser: UserObject) {
+private extension FolderRealmObject {
+    convenience init(folder: Folder, currentUser: UserRealmObject) {
         self.init(
             name: folder.name,
             path: folder.path,

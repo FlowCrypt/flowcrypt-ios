@@ -45,7 +45,7 @@ extension DBMigrationService {
             return
         }
         UserDefaults.standard.set(true, forKey: key)
-        let folders = storage.objects(FolderObject.self)
+        let folders = storage.objects(FolderRealmObject.self)
 
         do {
             try storage.write {
