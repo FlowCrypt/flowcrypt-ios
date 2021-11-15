@@ -23,7 +23,7 @@ class PublicKeyScreen extends BaseScreen {
     const publicKeyEl = await this.publicKey;
     await publicKeyEl.waitForExist();
     const pubkeyValue = await publicKeyEl.getAttribute('value');
-    expect(pubkeyValue).toBeExisting();
+    expect(pubkeyValue).toContain("-----BEGIN PGP PUBLIC KEY BLOCK-----");
   }
 }
 
