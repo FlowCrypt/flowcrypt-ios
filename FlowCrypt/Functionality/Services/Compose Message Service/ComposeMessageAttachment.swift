@@ -20,30 +20,6 @@ struct ComposeMessageAttachment: Equatable {
 }
 
 extension ComposeMessageAttachment {
-    init?(librarySourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
-        guard let mediaType = librarySourceMediaInfo[.mediaType] as? String else {
-             return nil
-        }
-
-        let urlKey: UIImagePickerController.InfoKey
-        switch mediaType {
-        case PhotosManager.MediaType.image:
-            urlKey = .imageURL
-        default: return nil
-        }
-
-        do {
-            guard let url = librarySourceMediaInfo[urlKey] as? URL else { return nil }
-            let data = try Data(contentsOf: url)
-
-            self.name = url.lastPathComponent
-            self.data = data
-            self.size = data.count
-            self.type = url.lastPathComponent.mimeType
-        } catch {
-            return nil
-        }
-    }
 
     init?(cameraSourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
         guard let image = cameraSourceMediaInfo[.originalImage] as? UIImage,

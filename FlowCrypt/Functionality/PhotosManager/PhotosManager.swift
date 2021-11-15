@@ -10,40 +10,62 @@ import Foundation
 import UIKit
 import Photos
 import Combine
+import PhotosUI
 
-typealias PhotoViewController = UIViewController
-& UIImagePickerControllerDelegate
-& UINavigationControllerDelegate
+typealias PhotoPickerViewController = UIViewController & PHPickerViewControllerDelegate
+typealias TakePhotoViewController = UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
 
 protocol PhotosManagerType {
+    func takePhoto(
+        from viewController: TakePhotoViewController
+    ) -> Future<Void, Error>
+
     func selectPhoto(
-        source: UIImagePickerController.SourceType,
-        from viewController: PhotoViewController
+        from viewController: PhotoPickerViewController
     ) -> Future<Void, Error>
 }
 
 enum PhotosManagerError: Error {
-    case noAccessToLibrary
+    case noAccessToCamera
+    case cantFetchMovie
+    case cantFetchImage
 }
 
 class PhotosManager: PhotosManagerType {
 
-    enum MediaType {
-        static let image = "public.image"
+    func takePhoto(
+        from viewController: TakePhotoViewController
+    ) -> Future<Void, Error> {
+        Future<Void, Error> { promise in
+            DispatchQueue.main.async {
+                let status = AVCaptureDevice.authorizationStatus(for: .video)
+                let imagePicker = UIImagePickerController()
+                imagePicker.delegate = viewController
+                imagePicker.sourceType = .camera
+                switch status {
+                case .authorized, .notDetermined:
+                    viewController.present(imagePicker, animated: true, completion: nil)
+                    promise(.success(()))
+                default:
+                    promise(.failure(PhotosManagerError.noAccessToCamera))
+                }
+            }
+        }
     }
 
     func selectPhoto(
-        source: UIImagePickerController.SourceType,
-        from viewController: UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
+        from viewController: PhotoPickerViewController
     ) -> Future<Void, Error> {
-        Future<Void, Error> { future in
+        Future<Void, Error> { promise in
             DispatchQueue.main.async {
-                let imagePicker = UIImagePickerController()
-                imagePicker.delegate = viewController
-                imagePicker.sourceType = source
-                imagePicker.mediaTypes = [MediaType.image]
-                viewController.present(imagePicker, animated: true, completion: nil)
-                future(.success(()))
+                var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+                config.selectionLimit = 1
+                config.filter = PHPickerFilter.any(of: [.images, .videos])
+
+                let pickerViewController = PHPickerViewController(configuration: config)
+                pickerViewController.delegate = viewController
+                viewController.present(pickerViewController, animated: true, completion: nil)
+                promise(.success(()))
             }
         }
     }

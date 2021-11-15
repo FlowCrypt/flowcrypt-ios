@@ -7,6 +7,7 @@ import Combine
 import FlowCryptCommon
 import FlowCryptUI
 import Foundation
+import PhotosUI
 
 // swiftlint:disable file_length
 private struct ComposedDraft: Equatable {
@@ -895,6 +896,46 @@ extension ComposeViewController: UIDocumentPickerDelegate {
     }
 }
 
+// MARK: - PHPickerViewControllerDelegate
+extension ComposeViewController: PHPickerViewControllerDelegate {
+    nonisolated func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        Task {
+            await picker.dismiss(animated: true)
+            let itemProvider = results.first?.itemProvider
+            if itemProvider?.hasItemConformingToTypeIdentifier("public.movie") == true {
+                itemProvider?.loadFileRepresentation(
+                    forTypeIdentifier: "public.movie",
+                    completionHandler: { [weak self] url, _ in
+                        guard let self = self else { return }
+                        DispatchQueue.main.async {
+                            if let url = url, let composeMessageAttachment = ComposeMessageAttachment(fileURL: url) {
+                                self.appendAttachmentIfAllowed(composeMessageAttachment)
+                                self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
+                            } else {
+                                self.showAlert(message: "files_picking_photos_error_message".localized)
+                            }
+                        }
+                    })
+            } else {
+                itemProvider?.loadFileRepresentation(
+                    forTypeIdentifier: "public.image",
+                    completionHandler: { [weak self] url, _ in
+                        guard let self = self else { return }
+                        DispatchQueue.main.async {
+                            if let url = url, let composeMessageAttachment = ComposeMessageAttachment(fileURL: url) {
+                                self.appendAttachmentIfAllowed(composeMessageAttachment)
+                                self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
+                            } else {
+                                self.showAlert(message: "files_picking_videos_error_message".localized)
+                            }
+                        }
+                    })
+            }
+        }
+        
+    }
+}
+
 // MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
 extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(
@@ -907,8 +948,6 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
         switch picker.sourceType {
         case .camera:
             composeMessageAttachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
-        case .photoLibrary:
-            composeMessageAttachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
         guard let attachment = composeMessageAttachment else {
@@ -942,11 +981,11 @@ extension ComposeViewController {
                 style: .default,
                 handler: { [weak self] _ in
                     guard let self = self else { return }
-                    self.photosManager.selectPhoto(source: .camera, from: self)
+                    self.photosManager.takePhoto(from: self)
                         .sinkFuture(
                             receiveValue: {},
                             receiveError: { _ in
-                                self.showNoAccessToPhotosAlert()
+                                self.showNoAccessToCameraAlert()
                             }
                         )
                         .store(in: &self.cancellable)
@@ -959,7 +998,7 @@ extension ComposeViewController {
                 style: .default,
                 handler: { [weak self] _ in
                     guard let self = self else { return }
-                    self.photosManager.selectPhoto(source: .photoLibrary, from: self)
+                    self.photosManager.selectPhoto(from: self)
                         .sinkFuture(
                             receiveValue: {},
                             receiveError: { _ in
@@ -988,6 +1027,28 @@ extension ComposeViewController {
         let alert = UIAlertController(
             title: "files_picking_no_library_access_error_title".localized,
             message: "files_picking_no_library_access_error_message".localized,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(
+            title: "OK",
+            style: .cancel
+        ) { _ in }
+        let settingsAction = UIAlertAction(
+            title: "settings".localized,
+            style: .default
+        ) { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        }
+        alert.addAction(okAction)
+        alert.addAction(settingsAction)
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func showNoAccessToCameraAlert() {
+        let alert = UIAlertController(
+            title: "files_picking_no_camera_access_error_title".localized,
+            message: "files_picking_no_camera_access_error_message".localized,
             preferredStyle: .alert
         )
         let okAction = UIAlertAction(
