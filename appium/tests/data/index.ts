@@ -31,4 +31,11 @@ export const CommonData = {
     subject: 'Test 1',
     message: 'Test email',
   },
+  recipientWithoutPublicKey: {
+    email: 'no.publickey@flowcrypt.com'
+  },
+  errors: {
+    noPublicKey: 'Could not compose message One or more of your recipients are missing a public key (marked in gray). ' +
+      'Please ask them to share it with you, or ask them to also set up FlowCrypt.'
+  }
 };

@@ -11,6 +11,9 @@ const SELECTORS = {
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
   RETURN_BUTTON: '~Return',
   BACK_BUTTON: '~arrow left c',
+  SENT_BUTTON: '~android send',
+  ERROR_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Error"`]',
+  OK_BUTTON: '~OK'
 };
 
 class NewMessageScreen extends BaseScreen {
@@ -27,7 +30,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   get composeSecurityMesage() {
-    return $(SELECTORS.COMPOSE_SECURITY_MESSAGE)
+    return $(SELECTORS.COMPOSE_SECURITY_MESSAGE);
   }
 
   get addedRecipientEmail() {
@@ -36,6 +39,18 @@ class NewMessageScreen extends BaseScreen {
 
   get backButton() {
     return $(SELECTORS.BACK_BUTTON);
+  }
+
+  get sentButton() {
+    return $(SELECTORS.SENT_BUTTON);
+  }
+
+  get errorHeader () {
+    return $(SELECTORS.ERROR_HEADER)
+  }
+
+  get okButton () {
+    return $(SELECTORS.OK_BUTTON);
   }
 
   setAddRecipient = async (recipient: string) => {
@@ -84,6 +99,18 @@ class NewMessageScreen extends BaseScreen {
 
   clickBackButton = async () => {
     await ElementHelper.waitAndClick(await this.backButton);
+  }
+
+  clickSentButton = async () => {
+    await ElementHelper.waitAndClick(await this.sentButton);
+  }
+
+  checkError = async (errorText: string) => {
+    const message = '-ios class chain:**/XCUIElementTypeAlert/XCUIElementTypeOther/XCUIElementTypeOther/' +
+        'XCUIElementTypeOther[2]/XCUIElementTypeScrollView[1]/XCUIElementTypeOther[1]/XCUIElementTypeStaticText[2]';//it works only with this selector
+    await expect(await this.errorHeader).toBeDisplayed();
+    await expect(await $(message)).toHaveAttribute('value', `${errorText}`);
+    await expect(await this.okButton).toBeDisplayed();
   }
 }
 
