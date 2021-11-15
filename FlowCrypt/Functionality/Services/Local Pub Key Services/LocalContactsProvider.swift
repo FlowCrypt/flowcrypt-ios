@@ -48,7 +48,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
     func findBy(longid: String) async -> RecipientWithSortedPubKeys? {
         if let object = localContactsCache.realm
-            .objects(RecipientObject.self)
+            .objects(RecipientRealmObject.self)
             .first(where: { $0.contains(longid: longid) }) {
             return try? await parseRecipient(from: object.freeze())
         }

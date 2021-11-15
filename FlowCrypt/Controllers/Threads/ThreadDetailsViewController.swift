@@ -189,18 +189,25 @@ extension ThreadDetailsViewController {
         hideSpinner()
 
         let messageIndex = indexPath.section - 1
-        input[messageIndex].processedMessage = processedMessage
-        input[messageIndex].isExpanded = !input[messageIndex].isExpanded
-        markAsRead(at: messageIndex)
+        let shouldAnimate = input[messageIndex].processedMessage == nil
 
-        UIView.animate(
-            withDuration: 0.2,
-            animations: {
-                self.node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
-            },
-            completion: { [weak self] _ in
-                self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
-            })
+        input[messageIndex].processedMessage = processedMessage
+
+        if shouldAnimate {
+            input[messageIndex].isExpanded = true
+            markAsRead(at: messageIndex)
+
+            UIView.animate(
+                withDuration: 0.2,
+                animations: {
+                    self.node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
+                },
+                completion: { [weak self] _ in
+                    self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
+                })
+        } else {
+            node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
+        }
     }
 
     private func handleError(_ error: Error, at indexPath: IndexPath) {
@@ -309,54 +316,44 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
     func permanentlyDelete() {
         logger.logInfo("permanently delete")
-        Task {
-            do {
-                showSpinner()
-                try await threadOperationsProvider.delete(thread: thread)
-                handleSuccessfulMessage(action: .permanentlyDelete)
-            } catch {
-                handleMessageAction(error: error)
-            }
-        }
+        handle(action: .permanentlyDelete)
     }
 
     func moveToTrash(with trashPath: String) {
         logger.logInfo("move to trash \(trashPath)")
-        Task {
-            do {
-                showSpinner()
-                try await threadOperationsProvider.moveThreadToTrash(thread: thread)
-                handleSuccessfulMessage(action: .moveToTrash)
-            } catch {
-                handleMessageAction(error: error)
-            }
-        }
+        handle(action: .moveToTrash)
     }
 
     func handleArchiveTap() {
-        Task {
-            do {
-                showSpinner()
-                try await threadOperationsProvider.archive(thread: thread, in: currentFolderPath)
-                handleSuccessfulMessage(action: .archive)
-            } catch {
-                handleMessageAction(error: error)
-            }
-        }
+        handle(action: .archive)
     }
 
     func handleMarkUnreadTap() {
         let messages = input.filter { $0.isExpanded }.map(\.rawMessage)
 
-        guard messages.isNotEmpty else {
-            return
-        }
+        guard messages.isNotEmpty else { return }
 
+        handle(action: .markAsRead(false))
+    }
+
+    func handle(action: MessageAction) {
         Task {
             do {
                 showSpinner()
-                try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
-                handleSuccessfulMessage(action: .markAsRead(false))
+
+                switch action {
+                case .archive:
+                    try await threadOperationsProvider.archive(thread: thread, in: currentFolderPath)
+                case .markAsRead(let isRead):
+                    guard !isRead else { return }
+                    try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
+                case .moveToTrash:
+                    try await threadOperationsProvider.moveThreadToTrash(thread: thread)
+                case .permanentlyDelete:
+                    try await threadOperationsProvider.delete(thread: thread)
+                }
+
+                handleSuccessfulMessage(action: action)
             } catch {
                 handleMessageAction(error: error)
             }
