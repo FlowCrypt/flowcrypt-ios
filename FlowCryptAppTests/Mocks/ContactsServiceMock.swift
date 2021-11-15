@@ -27,7 +27,6 @@ final class ContactsServiceMock: ContactsServiceType {
         }
     }
     func searchContacts(query: String) -> [String] { [] }
-    func findBy(longId: String) async -> RecipientWithSortedPubKeys? { nil }
 
     func removePubKey(with fingerprint: String, for email: String) {}
 }

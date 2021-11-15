@@ -13,7 +13,6 @@ protocol LocalContactsProviderType: PublicKeyProvider {
     func updateLastUsedDate(for email: String)
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys?
     func searchEmails(query: String) -> [String]
-    func findBy(longid: String) async -> RecipientWithSortedPubKeys?
     func save(recipient: RecipientWithSortedPubKeys)
     func remove(recipient: RecipientWithSortedPubKeys)
     func updateKeys(for recipient: RecipientWithSortedPubKeys)
@@ -44,16 +43,6 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
     func retrievePubKeys(for email: String) -> [String] {
         find(with: email)?.pubKeys.map(\.armored) ?? []
-    }
-
-    func findBy(longid: String) async -> RecipientWithSortedPubKeys? {
-        if let object = localContactsCache.realm
-            .objects(RecipientRealmObject.self)
-            .first(where: { $0.contains(longid: longid) }) {
-            return try? await parseRecipient(from: object.freeze())
-        }
-
-        return nil
     }
 
     func save(recipient: RecipientWithSortedPubKeys) {
