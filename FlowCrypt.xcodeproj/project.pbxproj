@@ -168,7 +168,6 @@
 		9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E903826A1AD7A0021C07F /* KeyDetailsTests.swift */; };
 		9F7ECCA7272C3FB4008A1770 /* TextImageNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ECCA6272C3FB4008A1770 /* TextImageNode.swift */; };
 		9F7ECCA9272C47DB008A1770 /* InboxRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ECCA8272C47DA008A1770 /* InboxRenderable.swift */; };
-		9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779723737E0900E19C07 /* MessageViewDecorator.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */; };
 		9F883912271F242900669B56 /* ThreadDetailsDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */; };
 		9F8839142721EB5000669B56 /* MessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8839132721EB5000669B56 /* MessageAction.swift */; };
@@ -362,7 +361,6 @@
 		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
 		D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
-		D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */; };
 		F191F621272511790053833E /* BlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F191F620272511790053833E /* BlurViewController.swift */; };
 		F80E95362720B6640093F243 /* DraftsListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E95352720B6640093F243 /* DraftsListProvider.swift */; };
 		F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678DCB2722143300BB1710 /* GmailService+draft.swift */; };
@@ -611,7 +609,6 @@
 		9F7ECCA8272C47DA008A1770 /* InboxRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxRenderable.swift; sourceTree = "<group>"; };
 		9F8220D426336626004B2009 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9F8277952373732000E19C07 /* UIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
-		9F82779723737E0900E19C07 /* MessageViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewDecorator.swift; sourceTree = "<group>"; };
 		9F82779923737E1900E19C07 /* MessageSenderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderNode.swift; sourceTree = "<group>"; };
 		9F82779B23737E2A00E19C07 /* MessageSubjectAndTimeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSubjectAndTimeNode.swift; sourceTree = "<group>"; };
 		9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextSubjectNode.swift; sourceTree = "<group>"; };
@@ -771,7 +768,6 @@
 		D2FF6965243115EC007182F0 /* SetupImapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewDecorator.swift; sourceTree = "<group>"; };
 		D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.release.xcconfig"; sourceTree = "<group>"; };
-		D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		F191F620272511790053833E /* BlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurViewController.swift; sourceTree = "<group>"; };
 		F80E95352720B6640093F243 /* DraftsListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftsListProvider.swift; sourceTree = "<group>"; };
 		F8678DCB2722143300BB1710 /* GmailService+draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GmailService+draft.swift"; sourceTree = "<group>"; };
@@ -1359,9 +1355,12 @@
 		9F778E7F271620AF001D4B21 /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */,
+				9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */,
+				9F8839132721EB5000669B56 /* MessageAction.swift */,
+				9F778E7D27162038001D4B21 /* MessageThread.swift */,
 				9F778E7B27161C06001D4B21 /* ThreadDetailsViewController.swift */,
 				9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */,
-				9F778E7D27162038001D4B21 /* MessageThread.swift */,
 			);
 			path = Threads;
 			sourceTree = "<group>";
@@ -1687,7 +1686,6 @@
 				D29AFFF12409301300C1387D /* Bootstrap */,
 				C132B9D71EC30E0B00763715 /* Inbox */,
 				04B4728F1ECE29F600B8266F /* Compose */,
-				D952B71B1ED0CB0100E5C02B /* Msg */,
 				D29AFFF02409300600C1387D /* Search */,
 				5A39F42E239EC32B001F4607 /* Settings */,
 				D29A0001240C137700C1387D /* MessageList Extension */,
@@ -2056,18 +2054,6 @@
 				D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */,
 			);
 			path = SetupImap;
-			sourceTree = "<group>";
-		};
-		D952B71B1ED0CB0100E5C02B /* Msg */ = {
-			isa = PBXGroup;
-			children = (
-				D952B71C1ED0CB2500E5C02B /* MessageViewController.swift */,
-				9F82779723737E0900E19C07 /* MessageViewDecorator.swift */,
-				9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */,
-				9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */,
-				9F8839132721EB5000669B56 /* MessageAction.swift */,
-			);
-			path = Msg;
 			sourceTree = "<group>";
 		};
 		F80E95342720B64A0093F243 /* DraftsListProvider */ = {
@@ -2522,7 +2508,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				518389C82726D7DD00131B2C /* UIViewController+Spinner.swift in Sources */,
-				9F82779823737E0900E19C07 /* MessageViewDecorator.swift in Sources */,
 				D2A9CA3D242619EC00E1D898 /* SignInViewDecorator.swift in Sources */,
 				9F4300CC2571045B00791CFB /* InboxViewControllerContainerDecorator.swift in Sources */,
 				9FB22CE425715D3E0026EE64 /* GmailServiceErrorHandler.swift in Sources */,
@@ -2566,7 +2551,6 @@
 				9F2F217326B3269D0044E144 /* CombineExtensions.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserRealmObject.swift in Sources */,
 				F80E95362720B6640093F243 /* DraftsListProvider.swift in Sources */,
-				D952B71D1ED0CB2500E5C02B /* MessageViewController.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
 				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
 				21489B80267CC39E00BDE4AC /* ClientConfigurationService.swift in Sources */,

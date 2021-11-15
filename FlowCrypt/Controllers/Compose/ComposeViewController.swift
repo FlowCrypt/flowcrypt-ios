@@ -19,7 +19,7 @@ private struct ComposedDraft: Equatable {
 /**
  * View controller to compose the message and send it
  * - User can be redirected here from *InboxViewController* by tapping on *+*
- * - Or from *MessageViewController* controller by tapping on *reply*
+ * - Or from *ThreadDetailsViewController* controller by tapping on *reply*
  **/
 @MainActor
 final class ComposeViewController: TableNodeViewController {

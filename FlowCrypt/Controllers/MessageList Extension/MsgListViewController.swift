@@ -38,15 +38,11 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     private func openMsg(with message: Message, path: String) {
-        let messageInput = MessageViewController.Input(
-            objMessage: message,
-            bodyMessage: nil,
-            path: path
-        )
-        let msgVc = MessageViewController(input: messageInput) { [weak self] (action, message) in
-            self?.handleMessageOperation(with: message, action: action)
-        }
-        navigationController?.pushViewController(msgVc, animated: true)
+        let thread = MessageThread(identifier: message.threadId,
+                                   snippet: nil,
+                                   path: path,
+                                   messages: [message])
+        openThread(with: thread)
     }
 
     private func openThread(with thread: MessageThread) {

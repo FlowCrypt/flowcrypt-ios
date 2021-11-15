@@ -37,7 +37,7 @@ struct ProcessedMessage {
 }
 
 extension ProcessedMessage {
-    // TODO: - Ticket - fix with empty state for MessageViewController
+    // TODO: - Ticket - fix with empty state for ThreadDetailsViewController
     static let empty = ProcessedMessage(
         rawMimeData: Data(),
         text: "loading_title".localized + "...",
