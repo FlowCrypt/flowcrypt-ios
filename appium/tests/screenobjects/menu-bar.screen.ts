@@ -40,8 +40,8 @@ class MenuBarScreen extends BaseScreen {
   }
 
   checkMenuBar = async () => {
-    expect(await this.logoutButton).toBeDisplayed();
-    expect(await this.settingsButton).toBeDisplayed();
+    await ElementHelper.waitElementVisible(await this.logoutButton);
+    await ElementHelper.waitElementVisible(await this.settingsButton);
   }
 
   clickLogout = async () => {
