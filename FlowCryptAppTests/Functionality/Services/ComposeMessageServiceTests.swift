@@ -166,7 +166,7 @@ class ComposeMessageServiceTests: XCTestCase {
             XCTAssertEqual(error as? MessageValidationError, MessageValidationError.emptyMessage)
         }
         do {
-            try await sut.validateAndProduceSendableMsg(
+            _ = try await sut.validateAndProduceSendableMsg(
                 input: ComposeMessageInput(type: .idle),
                 contextToSend: ComposeMessageContext(
                     message: "                  ",

@@ -8,6 +8,7 @@
 
 import Foundation
 import FlowCryptCommon
+import UIKit
 
 // MARK: - MessageAttachment
 struct MessageAttachment: FileType {
@@ -26,14 +27,63 @@ enum MessageFetchState {
 
 // MARK: - ProcessedMessage
 struct ProcessedMessage {
-    enum MessageType {
+    enum MessageType: Hashable {
         case error(MsgBlock.DecryptErr.ErrorType), encrypted, plain
+    }
+
+    enum MessageSignature: Hashable {
+        case good, unsigned, error(String), missingPubkey(String), bad, pending
+
+        var message: String {
+            switch self {
+            case .good:
+                return "message_signed".localized
+            case .unsigned:
+                return "message_not_signed".localized
+            case .error(let message):
+                return "message_signature_verify_error".localizeWithArguments(message)
+            case .missingPubkey(let longid):
+                let message = "message_missing_pubkey".localizeWithArguments(longid)
+                return "message_signature_verify_error".localizeWithArguments(message)
+            case .bad:
+                return "message_bad_signature".localized
+            case .pending:
+                return "message_signature_pending".localized
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .good:
+                return "lock"
+            case .error, .missingPubkey:
+                return "exclamationmark.triangle"
+            case .unsigned, .bad:
+                return "xmark"
+            case .pending:
+                return "clock"
+            }
+        }
+
+        var color: UIColor {
+            switch self {
+            case .good:
+                return .main
+            case .error, .missingPubkey:
+                return .warningColor
+            case .unsigned, .bad:
+                return .errorColor
+            case .pending:
+                return .lightGray
+            }
+        }
     }
 
     let rawMimeData: Data
     let text: String
     let attachments: [MessageAttachment]
     let messageType: MessageType
+    var signature: MessageSignature
 }
 
 extension ProcessedMessage {
@@ -42,7 +92,8 @@ extension ProcessedMessage {
         rawMimeData: Data(),
         text: "loading_title".localized + "...",
         attachments: [],
-        messageType: .plain
+        messageType: .plain,
+        signature: .unsigned
     )
 }
 
@@ -65,6 +116,7 @@ final class MessageService {
     private let keyService: KeyServiceType
     private let keyMethods: KeyMethodsType
     private let passPhraseService: PassPhraseServiceType
+    private let contactsService: ContactsServiceType
     private let core: Core
     private let logger: Logger
 
@@ -73,7 +125,8 @@ final class MessageService {
         keyService: KeyServiceType = KeyService(),
         core: Core = Core.shared,
         passPhraseService: PassPhraseServiceType = PassPhraseService(),
-        keyMethods: KeyMethodsType = KeyMethods()
+        keyMethods: KeyMethodsType = KeyMethods(),
+        contactsService: ContactsServiceType = ContactsService()
     ) {
         self.messageProvider = messageProvider
         self.keyService = keyService
@@ -81,6 +134,7 @@ final class MessageService {
         self.passPhraseService = passPhraseService
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
         self.keyMethods = keyMethods
+        self.contactsService = contactsService
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
@@ -97,33 +151,10 @@ final class MessageService {
         return matchingKeys.isNotEmpty
     }
 
-    func validateMessage(rawMimeData: Data, with passPhrase: String) async throws -> ProcessedMessage {
-        let keys = try await keyService.getPrvKeyInfo()
-        guard keys.isNotEmpty else {
-            throw MessageServiceError.emptyKeys
-        }
-
-        let keysWithFilledPassPhrase = keys.map { $0.copy(with: passPhrase) }
-        let keysToSave = keys.filter { $0.passphrase == passPhrase }
-
-        savePassPhrases(value: passPhrase, with: keysToSave)
-
-        let decrypted = try await core.parseDecryptMsg(
-            encrypted: rawMimeData,
-            keys: keysWithFilledPassPhrase,
-            msgPwd: nil,
-            isEmail: true
-        )
-        guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-            throw MessageServiceError.missingPassPhrase(rawMimeData)
-        }
-
-        return try await processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
-    }
-
     func getAndProcessMessage(
         with input: Message,
         folder: String,
+        onlyLocalKeys: Bool,
         progressHandler: ((MessageFetchState) -> Void)?
     ) async throws -> ProcessedMessage {
         let rawMimeData = try await messageProvider.fetchMsg(
@@ -131,25 +162,35 @@ final class MessageService {
             folder: folder,
             progressHandler: progressHandler
         )
-        return try await decryptAndProcessMessage(mime: rawMimeData)
+        return try await decryptAndProcessMessage(mime: rawMimeData,
+                                                  sender: input.sender,
+                                                  onlyLocalKeys: onlyLocalKeys)
     }
 
-    func decryptAndProcessMessage(mime rawMimeData: Data) async throws -> ProcessedMessage {
+    func decryptAndProcessMessage(mime rawMimeData: Data,
+                                  sender: String?,
+                                  onlyLocalKeys: Bool) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
+        let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
         let decrypted = try await core.parseDecryptMsg(
             encrypted: rawMimeData,
             keys: keys,
             msgPwd: nil,
-            isEmail: true
+            isEmail: true,
+            verificationPubKeys: verificationPubKeys
         )
         guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
             throw MessageServiceError.missingPassPhrase(rawMimeData)
         }
 
-        let processedMessage = try await processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
+        let processedMessage = try await processMessage(rawMimeData: rawMimeData,
+                                                        sender: sender,
+                                                        with: decrypted,
+                                                        keys: keys)
+
         switch processedMessage.messageType {
         case .error(let errorType):
             switch errorType {
@@ -167,6 +208,7 @@ final class MessageService {
 
     private func processMessage(
         rawMimeData: Data,
+        sender: String?,
         with decrypted: CoreRes.ParseDecryptMsg,
         keys: [PrvKeyInfo]
     ) async throws -> ProcessedMessage {
@@ -178,22 +220,28 @@ final class MessageService {
         )
         let messageType: ProcessedMessage.MessageType
         let text: String
+        let signature: ProcessedMessage.MessageSignature
 
         if let decryptErrBlock = decryptErrBlocks.first {
             let rawMsg = decryptErrBlock.content
             let err = decryptErrBlock.decryptErr?.error
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
+            signature = .error("processing error")
         } else {
             text = decrypted.text
             messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
+            signature = await evaluateSignatureVerificationResult(
+                signature: decrypted.blocks.first?.verifyRes
+            )
         }
 
         return ProcessedMessage(
             rawMimeData: rawMimeData,
             text: text,
             attachments: attachments,
-            messageType: messageType
+            messageType: messageType,
+            signature: signature
         )
     }
 
@@ -234,6 +282,37 @@ final class MessageService {
         privateKeys
             .map { PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints) }
             .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
+    }
+}
+
+// MARK: - Message verification
+extension MessageService {
+    private func fetchVerificationPubKeys(for sender: String?, onlyLocal: Bool) async throws -> [String] {
+        guard let sender = sender else { return [] }
+
+        let pubKeys = contactsService.retrievePubKeys(for: sender)
+        if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
+
+        guard let contact = try? await contactsService.searchContact(with: sender)
+        else { return [] }
+
+        return contact.pubKeys.map(\.armored)
+    }
+
+    private func evaluateSignatureVerificationResult(
+        signature: MsgBlock.VerifyRes?
+    ) async -> ProcessedMessage.MessageSignature {
+        guard let signature = signature else { return .unsigned }
+
+        if let error = signature.error { return .error(error) }
+
+        guard let signer = signature.signer else { return .unsigned }
+
+        guard signature.match != nil else { return .missingPubkey(signer) }
+
+        guard signature.match == true else { return .bad }
+
+        return .good
     }
 }
 

@@ -78,7 +78,7 @@ extension UIColor {
 }
 
 // Uncomment for FlowCryptUIApplication
-//extension UIColor {
+// extension UIColor {
 //    static var main: UIColor {
 //        .green
 //    }
@@ -110,4 +110,4 @@ extension UIColor {
 //    static var blueColor: UIColor {
 //        .blue
 //    }
-//}
+// }

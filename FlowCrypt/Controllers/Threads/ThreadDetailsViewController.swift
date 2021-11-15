@@ -57,15 +57,15 @@ final class ThreadDetailsViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         completion: @escaping MessageActionCompletion
     ) {
-        self.threadOperationsProvider = threadOperationsProvider
         self.messageService = messageService
+        self.threadOperationsProvider = threadOperationsProvider
         self.messageOperationsProvider = messageOperationsProvider
         self.trashFolderProvider = trashFolderProvider
         self.thread = thread
         self.filesManager = filesManager
         self.onComplete = completion
         self.input = thread.messages
-            .sorted(by: { $0 > $1 })
+            .sorted(by: >)
             .map { Input(message: $0, isExpanded: false) }
 
         super.init(node: TableNode())
@@ -166,11 +166,18 @@ extension ThreadDetailsViewController {
 
         Task {
             do {
-                let processedMessage = try await messageService.getAndProcessMessage(
+                var processedMessage = try await messageService.getAndProcessMessage(
                     with: message,
                     folder: thread.path,
+                    onlyLocalKeys: true,
                     progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
+                if case .missingPubkey = processedMessage.signature {
+                    processedMessage.signature = .pending
+                    retryVerifyingSignatureWithRemotelyFetchedKeys(message: message,
+                                                                   folder: thread.path,
+                                                                   indexPath: indexPath)
+                }
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {
                 handleError(error, at: indexPath)
@@ -182,18 +189,26 @@ extension ThreadDetailsViewController {
         hideSpinner()
 
         let messageIndex = indexPath.section - 1
-        input[messageIndex].processedMessage = processedMessage
-        input[messageIndex].isExpanded = !input[messageIndex].isExpanded
-        markAsRead(at: messageIndex)
+        let isAlreadyProcessed = input[messageIndex].processedMessage != nil
 
-        UIView.animate(
-            withDuration: 0.2,
-            animations: {
-                self.node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
-            },
-            completion: { _ in
-                self.node.scrollToRow(at: indexPath, at: .middle, animated: true)
-            })
+        if !isAlreadyProcessed {
+            input[messageIndex].processedMessage = processedMessage
+            input[messageIndex].isExpanded = true
+
+            markAsRead(at: messageIndex)
+
+            UIView.animate(
+                withDuration: 0.2,
+                animations: {
+                    self.node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
+                },
+                completion: { [weak self] _ in
+                    self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
+                })
+        } else {
+            input[messageIndex].processedMessage?.signature = processedMessage.signature
+            node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
+        }
     }
 
     private func handleError(_ error: Error, at indexPath: IndexPath) {
@@ -249,13 +264,36 @@ extension ThreadDetailsViewController {
             do {
                 let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
                 if matched {
-                    let processedMessage = try await messageService.decryptAndProcessMessage(mime: rawMimeData)
+                    let sender = input[indexPath.section-1].rawMessage.sender
+                    let processedMessage = try await messageService.decryptAndProcessMessage(
+                        mime: rawMimeData,
+                        sender: sender,
+                        onlyLocalKeys: false)
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
                     handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
                 }
             } catch {
                 handleError(error, at: indexPath)
+            }
+        }
+    }
+
+    private func retryVerifyingSignatureWithRemotelyFetchedKeys(message: Message,
+                                                                folder: String,
+                                                                indexPath: IndexPath) {
+        Task {
+            do {
+                let processedMessage = try await messageService.getAndProcessMessage(
+                    with: message,
+                    folder: thread.path,
+                    onlyLocalKeys: false,
+                    progressHandler: { _ in }
+                )
+                handleReceived(message: processedMessage, at: indexPath)
+            } catch {
+                let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
+                input[indexPath.section-1].processedMessage?.signature = .error(message)
             }
         }
     }
@@ -286,54 +324,44 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
     func permanentlyDelete() {
         logger.logInfo("permanently delete")
-        Task {
-            do {
-                showSpinner()
-                try await threadOperationsProvider.delete(thread: thread)
-                handleSuccessfulMessage(action: .permanentlyDelete)
-            } catch {
-                handleMessageAction(error: error)
-            }
-        }
+        handle(action: .permanentlyDelete)
     }
 
     func moveToTrash(with trashPath: String) {
         logger.logInfo("move to trash \(trashPath)")
-        Task {
-            do {
-                showSpinner()
-                try await threadOperationsProvider.moveThreadToTrash(thread: thread)
-                handleSuccessfulMessage(action: .moveToTrash)
-            } catch {
-                handleMessageAction(error: error)
-            }
-        }
+        handle(action: .moveToTrash)
     }
 
     func handleArchiveTap() {
-        Task {
-            do {
-                showSpinner()
-                try await threadOperationsProvider.archive(thread: thread, in: currentFolderPath)
-                handleSuccessfulMessage(action: .archive)
-            } catch {
-                handleMessageAction(error: error)
-            }
-        }
+        handle(action: .archive)
     }
 
     func handleMarkUnreadTap() {
         let messages = input.filter { $0.isExpanded }.map(\.rawMessage)
 
-        guard messages.isNotEmpty else {
-            return
-        }
+        guard messages.isNotEmpty else { return }
 
+        handle(action: .markAsRead(false))
+    }
+
+    func handle(action: MessageAction) {
         Task {
             do {
                 showSpinner()
-                try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
-                handleSuccessfulMessage(action: .markAsRead(false))
+
+                switch action {
+                case .archive:
+                    try await threadOperationsProvider.archive(thread: thread, in: currentFolderPath)
+                case .markAsRead(let isRead):
+                    guard !isRead else { return }
+                    try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
+                case .moveToTrash:
+                    try await threadOperationsProvider.moveThreadToTrash(thread: thread)
+                case .permanentlyDelete:
+                    try await threadOperationsProvider.delete(thread: thread)
+                }
+
+                handleSuccessfulMessage(action: action)
             } catch {
                 handleMessageAction(error: error)
             }

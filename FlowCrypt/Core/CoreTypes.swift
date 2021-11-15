@@ -144,7 +144,7 @@ struct SendableMsg: Equatable {
 
 struct MsgBlock: Decodable {
     static func blockParseErr(with content: String) -> MsgBlock {
-        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil, attMeta: nil)
+        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil, attMeta: nil, verifyRes: nil)
     }
 
     let type: BlockType
@@ -152,7 +152,7 @@ struct MsgBlock: Decodable {
     let decryptErr: DecryptErr? // always present in decryptErr BlockType
     let keyDetails: KeyDetails? // always present in publicKey BlockType
     let attMeta: AttMeta? // always present in plainAtt, encryptedAtt, decryptedAtt, encryptedAttLink
-    // let verifyRes: VerifyRes?,
+    let verifyRes: VerifyRes?
 
     // let signature: String? // possibly not neded in Swift
 
@@ -190,6 +190,14 @@ struct MsgBlock: Decodable {
         let name: String
         let data: Data
         let length: Int
+    }
+
+    struct VerifyRes: Decodable {
+        let match: Bool?
+        let signer: String?
+        let error: String?
+        let mixed: Bool?
+        let partial: Bool?
     }
 
     enum BlockType: String, Decodable {

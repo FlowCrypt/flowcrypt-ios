@@ -11,19 +11,35 @@ import UIKit
 
 public final class ThreadMessageSenderCellNode: CellNode {
     public struct Input {
+        public let signature: NSAttributedString?
+        public let signatureColor: UIColor?
+        public let signatureIcon: String?
+
         public let sender: NSAttributedString
         public let date: NSAttributedString?
         public let isExpanded: Bool
+        public let isEncrypted: Bool
         public let buttonColor: UIColor
+        public let nodeInsets: UIEdgeInsets
 
-        public init(sender: NSAttributedString,
+        public init(signature: NSAttributedString?,
+                    signatureColor: UIColor?,
+                    signatureIcon: String?,
+                    sender: NSAttributedString,
                     date: NSAttributedString,
                     isExpanded: Bool,
-                    buttonColor: UIColor) {
+                    isEncrypted: Bool,
+                    buttonColor: UIColor,
+                    nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 12)) {
+            self.signature = signature
+            self.signatureColor = signatureColor
+            self.signatureIcon = signatureIcon
             self.sender = sender
             self.date = date
             self.isExpanded = isExpanded
+            self.isEncrypted = isEncrypted
             self.buttonColor = buttonColor
+            self.nodeInsets = nodeInsets
         }
 
         var replyImage: UIImage? {
@@ -40,8 +56,28 @@ public final class ThreadMessageSenderCellNode: CellNode {
         }
     }
 
+    private lazy var encryptionNode: BadgeNode = {
+        let text = input.isEncrypted ? "message_encrypted".localized : "message_not_encrypted".localized
+        let input = BadgeNode.Input(
+            icon: input.isEncrypted ? "lock" : "lock.open",
+            text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
+            color: input.isEncrypted ? .main : .warningColor
+        )
+        return BadgeNode(input: input)
+    }()
+
+    private lazy var signatureNode: BadgeNode = {
+        let input = BadgeNode.Input(
+            icon: input.signatureIcon,
+            text: input.signature,
+            color: input.signatureColor
+        )
+        return BadgeNode(input: input)
+    }()
+
     private let senderNode = ASTextNode2()
     private let dateNode = ASTextNode2()
+
     public private(set) var replyNode = ASButtonNode()
     public private(set) var expandNode = ASImageNode()
 
@@ -87,24 +123,47 @@ public final class ThreadMessageSenderCellNode: CellNode {
         let infoNode = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 4,
-            justifyContent: .start,
+            justifyContent: .spaceBetween,
             alignItems: .start,
             children: [senderNode, dateNode]
         )
-
         infoNode.style.flexGrow = 1
         infoNode.style.flexShrink = 1
 
-        let contentSpec = ASStackLayoutSpec(
+        let senderSpec = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 4,
             justifyContent: .spaceBetween,
-            alignItems: .center,
+            alignItems: .start,
             children: [infoNode, replyNode, expandNode]
         )
 
+        let contentSpec: ASStackLayoutSpec
+        if input.isExpanded {
+            let spacer = ASLayoutSpec()
+            spacer.style.flexGrow = 1.0
+
+            let signatureSpec = ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 4,
+                justifyContent: .spaceBetween,
+                alignItems: .start,
+                children: [encryptionNode, signatureNode, spacer]
+            )
+
+            contentSpec = ASStackLayoutSpec(
+                direction: .vertical,
+                spacing: 4,
+                justifyContent: .spaceBetween,
+                alignItems: .stretch,
+                children: [senderSpec, signatureSpec]
+            )
+        } else {
+            contentSpec = senderSpec
+        }
+
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 12),
+            insets: input.nodeInsets,
             child: contentSpec
         )
     }

@@ -40,7 +40,7 @@ extension Imap {
         }
     }
 
-    func connectImap(session: IMAPSession) async throws -> Void {
+    func connectImap(session: IMAPSession) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             MCOIMAPSession(session: session)
                 .log()

@@ -43,6 +43,12 @@ extension RecipientRealmObject {
     }
 }
 
+extension RecipientRealmObject {
+    func contains(longid: String) -> Bool {
+        pubKeys.first(where: { $0.contains(longid: longid) }) != nil
+    }
+}
+
 extension RecipientRealmObject: CachedRealmObject {
     // Contacts can be shared between accounts
     // https://github.com/FlowCrypt/flowcrypt-ios/issues/269

@@ -29,6 +29,15 @@
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved.";
 "message_open_anyway" = "Open anyway";
+"message_encrypted" = "encrypted";
+"message_not_encrypted" = "not encrypted";
+"message_signed" = "signed";
+"message_not_signed" = "not signed";
+"message_missing_pubkey" = "no public key %@";
+"message_signature_verify_error" = "cannot verify signature: %@";
+"message_bad_signature" = "bad signature";
+"message_signature_pending" = "verifying signature...";
+"message_signature_fail_reason" = "Failed to verify signature due to: %@";
 
 // REPLY
 "reply_title" = "Your reply"; // not used

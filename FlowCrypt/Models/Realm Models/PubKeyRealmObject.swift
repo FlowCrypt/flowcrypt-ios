@@ -79,4 +79,8 @@ extension PubKeyRealmObject {
         fingerprints.append(objectsIn: key.fingerprints)
         self.fingerprints = fingerprints
     }
+
+    func contains(longid: String) -> Bool {
+        longids.contains(longid)
+    }
 }
