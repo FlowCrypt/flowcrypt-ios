@@ -31,7 +31,7 @@ class MenuBarScreen extends BaseScreen {
   }
 
   clickMenuIcon = async () => {
-    await ElementHelper.waitAndClick(await this.menuIcon, 200);
+    await ElementHelper.waitAndClick(await this.menuIcon, 500);
   }
 
   checkUserEmail = async (email: string = CommonData.account.email) => {
