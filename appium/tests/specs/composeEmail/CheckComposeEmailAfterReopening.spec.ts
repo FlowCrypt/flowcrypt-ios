@@ -26,5 +26,4 @@ describe('COMPOSE EMAIL: ', () => {
 
     await NewMessageScreen.checkFilledComposeEmailInfo(recipientEmail, emailSubject, emailText);
   });
-
 });
