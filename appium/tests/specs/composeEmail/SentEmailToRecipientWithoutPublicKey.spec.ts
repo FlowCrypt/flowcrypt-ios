@@ -12,7 +12,7 @@ describe('COMPOSE EMAIL: ', () => {
 
   it('user is able to select recipient from contact list using contact name', async () => {
 
-    const noPublicKeyRecipient = "no.publickey@flowcrypt.com";
+    const noPublicKeyRecipient = CommonData.recipientWithoutPublicKey.email;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const passPhrase = CommonData.account.passPhrase;
