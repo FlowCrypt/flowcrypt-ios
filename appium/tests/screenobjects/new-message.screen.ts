@@ -29,7 +29,7 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.SUBJECT_FIELD);
   }
 
-  get composeSecurityMesage() {
+  get composeSecurityMessage() {
     return $(SELECTORS.COMPOSE_SECURITY_MESSAGE);
   }
 
@@ -64,7 +64,7 @@ class NewMessageScreen extends BaseScreen {
   };
 
   setComposeSecurityMessage = async (message: string) => {
-    await (await this.composeSecurityMesage).setValue(message);
+    await (await this.composeSecurityMessage).setValue(message);
   };
 
   filledSubject = async (subject: string) => {
@@ -84,7 +84,7 @@ class NewMessageScreen extends BaseScreen {
   };
 
   checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string) => {
-    expect(this.composeSecurityMesage).toHaveText(message);
+    expect(this.composeSecurityMessage).toHaveText(message);
     const element = await this.filledSubject(subject);
     await element.waitForDisplayed();
     await this.checkAddedRecipient(recipient);
