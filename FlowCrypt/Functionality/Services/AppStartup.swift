@@ -16,21 +16,22 @@ struct AppStartup {
         case signIn, setupFlow(UserId), mainFlow
     }
 
+    @MainActor
     func initializeApp(window: UIWindow, session: SessionType?) {
         logger.logInfo("Initialize application with session \(session.debugDescription)")
 
-        window.rootViewController = BootstrapViewController()
-        window.makeKeyAndVisible()
-
         Task {
+            window.rootViewController = BootstrapViewController()
+            window.makeKeyAndVisible()
+
             do {
                 await setupCore()
                 try await DataService.shared.performMigrationIfNeeded()
                 try await setupSession()
                 try await getUserOrgRulesIfNeeded()
-                await chooseView(for: window, session: session)
+                chooseView(for: window, session: session)
             } catch {
-                await showErrorAlert(with: error, on: window, session: session)
+                showErrorAlert(with: error, on: window, session: session)
             }
         }
     }

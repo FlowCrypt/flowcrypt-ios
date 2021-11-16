@@ -29,8 +29,11 @@ public final class KeySettingCellNode: CellNode {
 
     public init(with input: KeySettingCellNode.Input) {
         titleNode.attributedText = input.title
+        titleNode.accessibilityIdentifier = "keyTitle"
         dateNode.attributedText = input.date
+        dateNode.accessibilityIdentifier = "keyDate"
         subTitleNode.attributedText = input.subtitle
+        subTitleNode.accessibilityIdentifier = "keySubtitle"
 
         titleNode.maximumNumberOfLines = 0
         dateNode.maximumNumberOfLines = 1

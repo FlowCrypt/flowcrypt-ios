@@ -104,6 +104,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
         replyNode.contentMode = .center
         replyNode.alpha = input.isExpanded ? 1 : 0
         replyNode.addTarget(self, action: #selector(onReplyNodeTap), forControlEvents: .touchUpInside)
+        replyNode.accessibilityIdentifier = "replyButton"
     }
 
     private func setupExpandNode() {

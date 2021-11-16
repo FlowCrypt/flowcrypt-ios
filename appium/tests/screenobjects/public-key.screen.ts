@@ -2,6 +2,7 @@ import BaseScreen from './base.screen';
 
 const SELECTORS = {
   BACK_BTN: '~arrow left c',
+  PUBLIC_KEY_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Public key"`]',
   PUBLIC_KEY: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[1]',
 };
 
@@ -18,12 +19,17 @@ class PublicKeyScreen extends BaseScreen {
     return $(SELECTORS.PUBLIC_KEY);
   }
 
+  get publicKeyHeader() {
+    return $(SELECTORS.PUBLIC_KEY_HEADER);
+  }
+
   checkPublicKey = async () => {
     await (await this.backButton).waitForDisplayed();
+    await (await this.publicKeyHeader).waitForDisplayed();
     const publicKeyEl = await this.publicKey;
     await publicKeyEl.waitForExist();
     const pubkeyValue = await publicKeyEl.getAttribute('value');
-    expect(pubkeyValue).toContain("-----BEGIN PGP PUBLIC KEY BLOCK-----");
+    await expect(pubkeyValue).toContain("-----BEGIN PGP PUBLIC KEY BLOCK-----");
   }
 }
 
