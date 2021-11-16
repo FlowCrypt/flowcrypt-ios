@@ -10,19 +10,7 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-private extension GoogleScope {
-    var title: String {
-        switch self {
-        case .userInfo: return "User Info"
-        case .mail: return "Gmail"
-        case .contacts: return "Contacts"
-        case .otherContacts: return "Other Contacts"
-        }
-    }
-}
-
 class CheckAuthScopesViewController: TableNodeViewController {
-
     private let missingScopes: [GoogleScope]
     private let globalRouter: GlobalRouterType
 
@@ -46,8 +34,7 @@ class CheckAuthScopesViewController: TableNodeViewController {
     }
 
     var errorMessage: String {
-        let scopesMessage = missingScopes.map { $0.title }.joined(separator: ", ")
-        return "gmail_service_no_access_to_account_message".localizeWithArguments(scopesMessage)
+        "gmail_service_no_access_to_account_message".localized
     }
 }
 

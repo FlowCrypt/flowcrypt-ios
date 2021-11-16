@@ -257,7 +257,7 @@
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
 "gmail_service_provider_error_error_message" = "Gmail provider error: %@";
 "gmail_service_missing_back_query_error_message" = "Missed backup query: %@";
-"gmail_service_no_access_to_account_message" = "Google login successful.\n Next, connect your inbox. Be sure to tick %@ permission on the next screen. The grant is stored locally on your device, never shared with anyone.";
+"gmail_service_no_access_to_account_message" = "Google login successful.\n Now connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
 // Files picking
 "files_picking_select_input_source_title" = "Please select input source";
