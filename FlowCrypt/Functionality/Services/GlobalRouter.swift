@@ -80,10 +80,9 @@ extension GlobalRouter {
 
     @MainActor private func proceed(with session: SessionType?) {
         logger.logInfo("proceed for session \(session.debugDescription)")
-        // make sure it runs on main thread
-        let window = keyWindow
-        DispatchQueue.main.async {
-            AppStartup().initializeApp(window: window, session: session)
+
+        Task {
+            AppStartup().initializeApp(window: keyWindow, session: session)
         }
     }
 
@@ -110,10 +109,8 @@ extension GlobalRouter {
             Task {
                 do {
                     let session = try await googleService.signIn(in: viewController)
-                    DispatchQueue.main.async {
-                        self.userAccountService.startSessionFor(user: session)
-                        self.proceed(with: session)
-                    }
+                    self.userAccountService.startSessionFor(user: session)
+                    self.proceed(with: session)
                 } catch {
                     self.handleGmailError(error)
                 }

@@ -185,7 +185,7 @@ extension SetupBackupsViewController {
         router.signOut()
     }
 
-    @MainActor private func moveToMainFlow() {
+    private func moveToMainFlow() {
         router.proceed()
     }
 }
