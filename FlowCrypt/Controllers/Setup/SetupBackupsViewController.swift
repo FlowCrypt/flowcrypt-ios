@@ -133,7 +133,7 @@ extension SetupBackupsViewController {
     }
 
     private func recoverAccount(with backups: [KeyDetails], and passPhrase: String) async throws {
-        logger.logInfo("Start recoverAccount with \(backups.count)")
+        logger.logInfo("Start recoverAccount with \(backups.count) keys")
         let matchingKeyBackups = Set(try await keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase))
         logger.logInfo("matchingKeyBackups = \(matchingKeyBackups.count)")
         guard matchingKeyBackups.isNotEmpty else {
@@ -141,20 +141,18 @@ extension SetupBackupsViewController {
             return
         }
         if storageMethod == .memory {
-            // save pass phrase
-            matchingKeyBackups
-                .map {
-                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
-                }
-                .forEach {
-                    passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
-                }
+            for backup in matchingKeyBackups {
+                let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: backup.fingerprints)
+                passPhraseService.savePassPhrase(with: pp, storageMethod: storageMethod)
+            }
         }
-        // save keys
-        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups),
-                           passPhrase: storageMethod == .persistent ? passPhrase : nil,
-                           source: .backup,
-                           for: user.email)
+        keyStorage.addKeys(
+            keyDetails: Array(matchingKeyBackups),
+            passPhrase: storageMethod == .persistent ? passPhrase : nil,
+            source: .backup,
+            for: user.email
+        )
+        moveToMainFlow()
     }
 
     private func handleButtonPressed() {
@@ -174,7 +172,6 @@ extension SetupBackupsViewController {
             do {
                 try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100 ms
                 try await self.recoverAccount(with: self.fetchedEncryptedKeys, and: passPhrase)
-                moveToMainFlow()
             } catch {
                 hideSpinner()
                 showAlert(error: error, message: "Failed to set up account", onOk: {
