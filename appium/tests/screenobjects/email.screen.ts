@@ -103,8 +103,13 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.downloadAttachmentButton);
   }
 
-  clickReplyButton = async () =>{
+  clickReplyButton = async () => {
     await ElementHelper.waitAndClick(await this.replyButton);
+  }
+
+  checkSentEmailMessage = async () => {
+      const selector = `~Sent`;
+      await (await $(selector)).waitForDisplayed();
   }
 }
 

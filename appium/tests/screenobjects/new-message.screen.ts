@@ -112,6 +112,10 @@ class NewMessageScreen extends BaseScreen {
     await expect(await $(message)).toHaveAttribute('value', `${errorText}`);
     await expect(await this.okButton).toBeDisplayed();
   }
+
+  clickOkButtonOnError = async () => {
+    await ElementHelper.waitAndClick(await this.okButton)
+  }
 }
 
 export default new NewMessageScreen();

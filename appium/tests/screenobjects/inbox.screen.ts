@@ -23,7 +23,6 @@ class InboxScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
-    await (await this.createEmailButton).waitForDisplayed();
     await ElementHelper.waitAndClick(await $(`~${subject}`), 500);
   }
 
