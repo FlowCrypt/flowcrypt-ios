@@ -13,6 +13,7 @@ protocol GlobalRouterType {
     @MainActor func proceed()
     @MainActor func signIn(with route: GlobalRoutingType)
     @MainActor func switchActive(user: User)
+    @MainActor func askForContactsPermission(for route: GlobalRoutingType)
     @MainActor func signOut()
 }
 
@@ -89,10 +90,10 @@ extension GlobalRouter {
     @MainActor private func handleGmailError(_ error: Error) {
         logger.logInfo("gmail login failed with error \(error.localizedDescription)")
         if let gmailUserError = error as? GoogleUserServiceError,
-           case .userNotAllowedAllNeededScopes(let missingScopes) = gmailUserError {
+           case .userNotAllowedAllNeededScopes = gmailUserError {
             DispatchQueue.main.async {
                 let topNavigation = (self.keyWindow.rootViewController as? UINavigationController)
-                let checkAuthViewControlelr = CheckAuthScopesViewController(missingScopes: missingScopes)
+                let checkAuthViewControlelr = CheckMailAuthViewController()
                 topNavigation?.pushViewController(checkAuthViewControlelr, animated: true)
             }
         }
@@ -108,7 +109,8 @@ extension GlobalRouter {
         case .gmailLogin(let viewController):
             Task {
                 do {
-                    let session = try await googleService.signIn(in: viewController)
+                    let scopes = GeneralConstants.Gmail.basicScope.map(\.value)
+                    let session = try await googleService.signIn(in: viewController, scopes: scopes)
                     self.userAccountService.startSessionFor(user: session)
                     self.proceed(with: session)
                 } catch {
@@ -129,6 +131,25 @@ extension GlobalRouter {
             logger.logInfo("Sign out")
             userAccountService.cleanup()
             proceed()
+        }
+    }
+
+    @MainActor func askForContactsPermission(for route: GlobalRoutingType) {
+        logger.logInfo("Ask for contacts permission with \(route)")
+
+        switch route {
+        case .gmailLogin(let viewController):
+            Task {
+                do {
+                    let scopes = GeneralConstants.Gmail.contactsScope.map(\.value)
+                    let session = try await googleService.signIn(in: viewController, scopes: scopes)
+                    self.userAccountService.startSessionFor(user: session)
+                } catch {
+                    logger.logInfo("Contacts scope failed with error \(error.errorMessage)")
+                }
+            }
+        case .other:
+            break
         }
     }
 

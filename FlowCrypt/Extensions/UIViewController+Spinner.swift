@@ -5,7 +5,7 @@
 //  Created by Roma Sosnovsky on 25/10/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
+
 import MBProgressHUD
 import UIKit
 

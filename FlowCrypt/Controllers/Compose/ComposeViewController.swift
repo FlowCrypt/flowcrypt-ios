@@ -27,7 +27,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
-        static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
+        static let didShowContactsScopeAlert = "didShowContactsScopeAlert"
     }
 
     enum State {
@@ -46,12 +46,14 @@ final class ComposeViewController: TableNodeViewController {
     private let notificationCenter: NotificationCenter
     private let decorator: ComposeViewDecorator
     private let contactsService: ContactsServiceType
+    private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyService: KeyServiceType
     private let keyMethods: KeyMethodsType
     private let service: ServiceActor
     private let passPhraseService: PassPhraseService
+    private let router: GlobalRouterType
 
     private let search = PassthroughSubject<String, Never>()
     private let userDefaults: UserDefaults
@@ -80,7 +82,8 @@ final class ComposeViewController: TableNodeViewController {
         photosManager: PhotosManagerType = PhotosManager(),
         keyService: KeyServiceType = KeyService(),
         passPhraseService: PassPhraseService = PassPhraseService(),
-        keyMethods: KeyMethodsType = KeyMethods()
+        keyMethods: KeyMethodsType = KeyMethods(),
+        router: GlobalRouterType = GlobalRouter()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
@@ -88,6 +91,7 @@ final class ComposeViewController: TableNodeViewController {
         self.decorator = decorator
         self.userDefaults = userDefaults
         self.contactsService = contactsService
+        self.cloudContactProvider = cloudContactProvider
         self.composeMessageService = composeMessageService
         self.filesManager = filesManager
         self.photosManager = photosManager
@@ -99,6 +103,7 @@ final class ComposeViewController: TableNodeViewController {
             cloudContactProvider: cloudContactProvider
         )
         self.passPhraseService = passPhraseService
+        self.router = router
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -110,7 +115,7 @@ final class ComposeViewController: TableNodeViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        userDefaults.removeObject(forKey: Constants.didShowContactsScopeAlert)
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
@@ -126,7 +131,6 @@ final class ComposeViewController: TableNodeViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        showScopeAlertIfNeeded()
         cancellable.forEach { $0.cancel() }
         setupSearch()
         startDraftTimer()
@@ -743,6 +747,7 @@ extension ComposeViewController {
     }
 
     private func handleDidBeginEditing() {
+        showNoAccessToContactsAlertIfNeeded()
         node.view.keyboardDismissMode = .none
     }
 }
@@ -932,7 +937,6 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
                     })
             }
         }
-        
     }
 }
 
@@ -1066,35 +1070,34 @@ extension ComposeViewController {
 
         present(alert, animated: true, completion: nil)
     }
-}
 
-extension ComposeViewController {
-    private func showScopeAlertIfNeeded() {
-        if shouldRenewToken(for: [.mail]),
-            !userDefaults.bool(forKey: Constants.shouldShowScopeAlertIndex) {
-            userDefaults.set(true, forKey: Constants.shouldShowScopeAlertIndex)
-            let alert = UIAlertController(
-                title: "",
-                message: "compose_enable_search".localized,
-                preferredStyle: .alert
-            )
-            let okAction = UIAlertAction(
-                title: "Log out",
-                style: .default
-            ) { _ in }
-            let cancelAction = UIAlertAction(
-                title: "cancel".localized,
-                style: .destructive
-            ) { _ in }
-            alert.addAction(okAction)
-            alert.addAction(cancelAction)
+    private func showNoAccessToContactsAlertIfNeeded() {
+        guard !cloudContactProvider.isContactsScopeEnabled,
+              !userDefaults.bool(forKey: Constants.didShowContactsScopeAlert)
+        else { return }
 
-            present(alert, animated: true, completion: nil)
+        userDefaults.set(true, forKey: Constants.didShowContactsScopeAlert)
+
+        let alert = UIAlertController(
+            title: "compose_contacts_search".localized,
+            message: "compose_enable_contacts_search".localized,
+            preferredStyle: .alert
+        )
+        let laterAction = UIAlertAction(
+            title: "later".localized,
+            style: .cancel
+        )
+        let allowAction = UIAlertAction(
+            title: "allow".localized,
+            style: .default
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            self.router.askForContactsPermission(for: .gmailLogin(self))
         }
-    }
+        alert.addAction(allowAction)
+        alert.addAction(laterAction)
 
-    private func shouldRenewToken(for newScope: [GoogleScope]) -> Bool {
-        false
+        present(alert, animated: true, completion: nil)
     }
 }
 

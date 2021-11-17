@@ -14,7 +14,7 @@ import RealmSwift
 
 protocol UserServiceType {
     func signOut(user email: String)
-    func signIn(in viewController: UIViewController) async throws -> SessionType
+    func signIn(in viewController: UIViewController, scopes: [String]) async throws -> SessionType
     func renewSession() async throws
 }
 
@@ -73,9 +73,9 @@ extension GoogleUserService: UserServiceType {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
     }
 
-    @MainActor func signIn(in viewController: UIViewController) async throws -> SessionType {
+    @MainActor func signIn(in viewController: UIViewController, scopes: [String]) async throws -> SessionType {
         return try await withCheckedThrowingContinuation { continuation in
-            let request = self.makeAuthorizationRequest()
+            let request = self.makeAuthorizationRequest(scopes: scopes)
             let googleAuthSession = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
@@ -125,11 +125,11 @@ extension GoogleUserService: UserServiceType {
 // MARK: - Convenience
 extension GoogleUserService {
 
-    private func makeAuthorizationRequest() -> OIDAuthorizationRequest {
+    private func makeAuthorizationRequest(scopes: [String]) -> OIDAuthorizationRequest {
         OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
-            scopes: GeneralConstants.Gmail.basicScope.map(\.value),
+            scopes: scopes,
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
             additionalParameters: nil
@@ -139,7 +139,7 @@ extension GoogleUserService {
     // save auth session to keychain
     private func saveAuth(state: OIDAuthState, for email: String) {
         state.stateChangeDelegate = self
-        let authorization: GTMAppAuthFetcherAuthorization = GTMAppAuthFetcherAuthorization(authState: state)
+        let authorization = GTMAppAuthFetcherAuthorization(authState: state)
         GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.index + email)
     }
 

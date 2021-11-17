@@ -1,5 +1,5 @@
 //
-//  CheckAuthScopesViewController.swift
+//  CheckMailAuthViewController.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 28.10.2021
@@ -10,15 +10,10 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-class CheckAuthScopesViewController: TableNodeViewController {
-    private let missingScopes: [GoogleScope]
+class CheckMailAuthViewController: TableNodeViewController {
     private let globalRouter: GlobalRouterType
 
-    init(
-        missingScopes: [GoogleScope],
-        globalRouter: GlobalRouterType = GlobalRouter()
-    ) {
-        self.missingScopes = missingScopes
+    init(globalRouter: GlobalRouterType = GlobalRouter()) {
         self.globalRouter = globalRouter
         super.init(node: TableNode())
     }
@@ -39,7 +34,7 @@ class CheckAuthScopesViewController: TableNodeViewController {
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
-extension CheckAuthScopesViewController: ASTableDelegate, ASTableDataSource {
+extension CheckMailAuthViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         return 3
     }
@@ -53,7 +48,7 @@ extension CheckAuthScopesViewController: ASTableDelegate, ASTableDataSource {
 }
 
 // MARK: - UI
-extension CheckAuthScopesViewController {
+extension CheckMailAuthViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self

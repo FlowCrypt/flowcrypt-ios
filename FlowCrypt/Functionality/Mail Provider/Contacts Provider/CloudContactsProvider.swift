@@ -10,6 +10,7 @@ import FlowCryptCommon
 import GoogleAPIClientForREST_PeopleService
 
 protocol CloudContactsProvider {
+    var isContactsScopeEnabled: Bool { get }
     func searchContacts(query: String) async throws -> [String]
 }
 
@@ -22,7 +23,7 @@ enum CloudContactsProviderError: Error {
 
 final class UserContactsProvider {
     private let logger = Logger.nested("UserContactsProvider")
-    private let userService: GoogleUserServiceType
+    private let userService: GoogleUserServiceType & UserServiceType
     private var peopleService: GTLRPeopleServiceService {
         let service = GTLRPeopleServiceService()
 
@@ -59,7 +60,14 @@ final class UserContactsProvider {
         }
     }
 
-    init(userService: GoogleUserServiceType = GoogleUserService()) {
+    var isContactsScopeEnabled: Bool {
+        guard let currentScopeString = userService.authorization?.authState.scope else { return false }
+        let currentScope = currentScopeString.split(separator: ",").map(String.init)
+        let contactsScope = GeneralConstants.Gmail.contactsScope.map(\.value)
+        return contactsScope.allSatisfy(currentScope.contains)
+    }
+
+    init(userService: GoogleUserServiceType & UserServiceType = GoogleUserService()) {
         self.userService = userService
 
         runWarmupQuery()
@@ -75,6 +83,7 @@ final class UserContactsProvider {
 
 extension UserContactsProvider: CloudContactsProvider {
     func searchContacts(query: String) async -> [String] {
+        guard isContactsScopeEnabled else { return [] }
         let contacts = await searchUserContacts(query: query, type: .contacts)
         let otherContacts = await searchUserContacts(query: query, type: .other)
         let emails = Set(contacts + otherContacts)

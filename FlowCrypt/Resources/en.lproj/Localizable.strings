@@ -12,6 +12,8 @@
 "settings" = "Settings";
 "go_back" = "Go back";
 "continue" = "Continue";
+"allow" = "Allow";
+"later" = "Later";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -83,6 +85,8 @@
 "compose_recipient" = "Add Recipient";
 "compose_subject" = "Subject";
 "compose_enable_search" = "To enable searching contacts, please Log out and set up FlowCrypt again";
+"compose_enable_contacts_search" = "To enable contacts search, please allow access to your Google contacts on the next screen";
+"compose_contacts_search" = "Contacts Search";
 "compose_uploading" = "Uploading";
 "compose_sent" = "Sent";
 

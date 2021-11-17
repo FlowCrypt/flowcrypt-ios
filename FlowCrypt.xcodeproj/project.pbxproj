@@ -1091,12 +1091,12 @@
 			path = "Key Details";
 			sourceTree = "<group>";
 		};
-		601EEE32272B1A5800FE445B /* CheckAuthScopes */ = {
+		601EEE32272B1A5800FE445B /* CheckMailAuth */ = {
 			isa = PBXGroup;
 			children = (
 				601EEE30272B19D200FE445B /* CheckAuthScopesViewController.swift */,
 			);
-			path = CheckAuthScopes;
+			path = CheckMailAuth;
 			sourceTree = "<group>";
 		};
 		9F0C3C1F23191F2000299985 /* Services */ = {
@@ -1680,7 +1680,7 @@
 		C132B9C51EC2DCAB00763715 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				601EEE32272B1A5800FE445B /* CheckAuthScopes */,
+				601EEE32272B1A5800FE445B /* CheckMailAuth */,
 				04B472911ECE29F600B8266F /* SideMenu */,
 				D2FF6969243115FE007182F0 /* SetupImap */,
 				32DCA8D5AF0A43354CC7F58B /* SignIn */,
