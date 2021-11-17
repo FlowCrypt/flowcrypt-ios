@@ -24,8 +24,8 @@ extension Imap: RemoteFoldersProviderType {
 private extension Folder {
     init(with folder: MCOIMAPFolder) {
         self.init(
-            name: folder.name ?? folder.path,
             path: folder.path,
+            name: folder.name ?? folder.path,
             image: nil
         )
     }

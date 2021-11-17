@@ -11,9 +11,3 @@ import Foundation
 protocol RemoteFoldersProviderType {
     func fetchFolders() async throws -> [Folder]
 }
-
-struct Folder {
-    let name: String
-    let path: String
-    let image: Data?
-}

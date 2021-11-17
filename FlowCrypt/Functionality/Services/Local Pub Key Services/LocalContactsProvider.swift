@@ -73,8 +73,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        guard let recipientObject = find(with: email) else { return nil }
-        return try await parseRecipient(from: recipientObject.detached())
+        guard let recipient = find(with: email).map(Recipient.init) else { return nil }
+        return try await parseRecipient(from: recipient)
     }
 
     func searchEmails(query: String) -> [String] {
@@ -85,7 +85,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] {
-        let objects = localContactsCache.realm.objects(RecipientRealmObject.self).detached
+        let objects = localContactsCache.realm.objects(RecipientRealmObject.self)
+            .map(Recipient.init)
         var recipients: [RecipientWithSortedPubKeys] = []
         for object in objects {
             recipients.append(try await parseRecipient(from: object))
@@ -107,16 +108,18 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
 extension LocalContactsProvider {
     private func find(with email: String) -> RecipientRealmObject? {
-        localContactsCache.realm.object(ofType: RecipientRealmObject.self,
-                                        forPrimaryKey: email)
+        localContactsCache.realm.object(
+            ofType: RecipientRealmObject.self,
+            forPrimaryKey: email
+        )
     }
 
-    private func parseRecipient(from object: RecipientRealmObject) async throws -> RecipientWithSortedPubKeys {
-        let armoredToParse = object.pubKeys
+    private func parseRecipient(from recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
+        let armoredToParse = recipient.pubKeys
             .map { $0.armored }
             .joined(separator: "\n")
         let parsed = try await core.parseKeys(armoredOrBinary: armoredToParse.data())
-        return RecipientWithSortedPubKeys(object, keyDetails: parsed.keyDetails)
+        return RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
     }
 
     private func add(pubKey: PubKey, to recipient: RecipientRealmObject) {

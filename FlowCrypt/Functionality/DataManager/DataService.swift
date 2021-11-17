@@ -34,7 +34,7 @@ protocol ImapSessionProvider {
 
 enum SessionType: CustomStringConvertible {
     case google(_ email: String, name: String, token: String)
-    case session(_ userObject: UserRealmObject)
+    case session(_ user: User)
 
     var description: String {
         switch self {
@@ -66,10 +66,6 @@ final class DataService {
 
 // MARK: - DataServiceType
 extension DataService: DataServiceType {
-    var storage: Realm {
-        encryptedStorage.storage
-    }
-
     var isSetupFinished: Bool {
         isLoggedIn && doesAnyKeyExistForCurrentUser
     }
@@ -90,21 +86,20 @@ extension DataService: DataServiceType {
     }
 
     // helper to get current user object from DB
-    private var currentUserObject: UserRealmObject? {
+    private var activeUser: User? {
         encryptedStorage.activeUser
     }
 
     var users: [User] {
         encryptedStorage.getAllUsers()
-            .map(User.init)
     }
 
     var currentUser: User? {
-        users.first(where: \.isActive)
+        encryptedStorage.getAllUsers().first(where: \.isActive)
     }
 
     var currentAuthType: AuthType? {
-        currentUserObject?.authType
+        activeUser?.authType
     }
 
     var token: String? {
@@ -120,7 +115,6 @@ extension DataService: DataServiceType {
         encryptedStorage.getAllUsers()
             .filter { encryptedStorage.doesAnyKeyExist(for: $0.email) }
             .filter { $0.email != currentUser?.email }
-            .map(User.init)
     }
 }
 
@@ -135,12 +129,12 @@ extension DataService: DBMigration {
 // MARK: - SessionProvider
 extension DataService: ImapSessionProvider {
     func imapSession() -> IMAPSession? {
-        guard let user = currentUserObject else {
+        guard let user = activeUser else {
             assertionFailure("Can't get IMAP Session without user data")
             return nil
         }
 
-        guard let imapSession = IMAPSession(userObject: user) else {
+        guard let imapSession = IMAPSession(user: user) else {
             assertionFailure("couldn't create IMAP Session with this parameters")
             return nil
         }
@@ -149,12 +143,12 @@ extension DataService: ImapSessionProvider {
     }
 
     func smtpSession() -> SMTPSession? {
-        guard let user = currentUserObject else {
+        guard let user = activeUser else {
             assertionFailure("Can't get SMTP Session without user data")
             return nil
         }
 
-        guard let smtpSession = SMTPSession(userObject: user) else {
+        guard let smtpSession = SMTPSession(user: user) else {
             assertionFailure("couldn't create SMTP Session with this parameters")
             return nil
         }

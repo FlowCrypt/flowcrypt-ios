@@ -25,7 +25,7 @@ final class KeyInfoRealmObject: Object {
     @Persisted var `public`: String = ""
     @Persisted var passphrase: String?
     @Persisted var source: String = ""
-    @Persisted var user: UserRealmObject!
+    @Persisted var user: UserRealmObject?
     @Persisted var allFingerprints: List<String>
     @Persisted var allLongids: List<String>
 
@@ -33,6 +33,12 @@ final class KeyInfoRealmObject: Object {
         allLongids[0]
     }
 
+    override var description: String {
+        "account = \(user?.email ?? "N/A") ####### longid = \(primaryLongid)"
+    }
+}
+
+extension KeyInfoRealmObject {
     convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
 
@@ -60,15 +66,11 @@ final class KeyInfoRealmObject: Object {
         self.source = source.rawValue
         self.user = user
     }
-
-    override var description: String {
-        "account = \(user?.email ?? "N/A") ####### longid = \(primaryLongid)"
-    }
 }
 
 extension KeyInfoRealmObject {
     /// associated user email
-    var account: String {
-        user.email
+    var account: String? {
+        user?.email
     }
 }
