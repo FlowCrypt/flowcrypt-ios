@@ -503,13 +503,19 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard case let .searchEmails(emails) = state,
-            indexPath.section == 1,
-            let selectedEmail = emails[safe: indexPath.row]
-        else { return }
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        if case let .searchEmails(emails) = state,
+           indexPath.section == 1,
+           let selectedEmail = emails[safe: indexPath.row] {
+            handleEndEditingAction(with: selectedEmail)
+        }
 
-        handleEndEditingAction(with: selectedEmail)
+        if tableNode.nodeForRow(at: indexPath) is AttachmentNode {
+            navigationController?.pushViewController(
+                AttachmentViewController(file: contextToSend.attachments[indexPath.row], shouldShowDownloadButton: false),
+                animated: true
+            )
+        }
     }
 }
 
@@ -932,7 +938,6 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
                     })
             }
         }
-        
     }
 }
 

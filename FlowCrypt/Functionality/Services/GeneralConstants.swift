@@ -13,7 +13,7 @@ enum GeneralConstants {
 
     enum Global {
         static let generalError = -1
-        static let attachmentSizeLimit: Int = 10_000_000
+        static let attachmentSizeLimit: Int = 10_485_760
     }
 
     enum EmailConstant {

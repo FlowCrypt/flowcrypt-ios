@@ -34,7 +34,6 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
     private let thread: MessageThread
-    private let filesManager: FilesManagerType
     private var input: [ThreadDetailsViewController.Input]
 
     let trashFolderProvider: TrashFolderProviderType
@@ -43,18 +42,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
     private let onComplete: MessageActionCompletion
 
-    private lazy var attachmentManager = AttachmentManager(
-        controller: self,
-        filesManager: filesManager
-    )
-
     init(
         messageService: MessageService = MessageService(),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         threadOperationsProvider: MessagesThreadOperationsProvider,
         thread: MessageThread,
-        filesManager: FilesManagerType = FilesManager(),
         completion: @escaping MessageActionCompletion
     ) {
         self.messageService = messageService
@@ -62,7 +55,6 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.messageOperationsProvider = messageOperationsProvider
         self.trashFolderProvider = trashFolderProvider
         self.thread = thread
-        self.filesManager = filesManager
         self.onComplete = completion
         self.input = thread.messages
             .sorted(by: >)
@@ -408,8 +400,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return AttachmentNode(
                     input: .init(
                         msgAttachment: attachment
-                    ),
-                    onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
+                    )
                 )
             }
 
@@ -418,10 +409,18 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard tableNode.nodeForRow(at: indexPath) is ThreadMessageSenderCellNode else {
-            return
+        switch tableNode.nodeForRow(at: indexPath) {
+        case is ThreadMessageSenderCellNode:
+            handleExpandTap(at: indexPath)
+        case is AttachmentNode:
+            let section = self.input[indexPath.section-1]
+            guard let attachment = section.processedMessage?.attachments[indexPath.row - 2] else { return }
+            navigationController?.pushViewController(
+                AttachmentViewController(file: attachment, shouldShowDownloadButton: true),
+                animated: true
+            )
+        default: return
         }
-        handleExpandTap(at: indexPath)
     }
 }
 

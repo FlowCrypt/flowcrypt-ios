@@ -19,19 +19,15 @@ public final class AttachmentNode: CellNode {
     private let titleNode = ASTextNode()
     private let subtitleNode = ASTextNode2()
     private let imageNode = ASImageNode()
-    private let buttonNode = ASButtonNode()
     private let borderNode = ASDisplayNode()
     private let deleteButtonNode = ASButtonNode()
 
-    private var onDownloadTap: (() -> Void)?
     private var onDeleteTap: (() -> Void)?
 
     public init(
         input: Input,
-        onDownloadTap: (() -> Void)? = nil,
         onDeleteTap: (() -> Void)? = nil
     ) {
-        self.onDownloadTap = onDownloadTap
         self.onDeleteTap = onDeleteTap
         super.init()
         automaticallyManagesSubnodes = true
@@ -41,22 +37,13 @@ public final class AttachmentNode: CellNode {
         borderNode.isUserInteractionEnabled = false
 
         imageNode.tintColor = .gray
-        buttonNode.tintColor = .gray
         deleteButtonNode.setImage(UIImage(named: "cancel")?.tinted(.gray), for: .normal)
         imageNode.image = UIImage(named: "paperclip")?.tinted(.gray)
-        buttonNode.setImage(UIImage(named: "download")?.tinted(.gray), for: .normal)
         titleNode.attributedText = input.name
         subtitleNode.attributedText = input.size
-
-        buttonNode.addTarget(self, action: #selector(onDownloadButtonTap), forControlEvents: .touchUpInside)
-        buttonNode.isHidden = onDownloadTap == nil
         
         deleteButtonNode.addTarget(self, action: #selector(onDeleteButtonTap), forControlEvents: .touchUpInside)
         deleteButtonNode.isHidden = onDeleteTap == nil
-    }
-
-    @objc private func onDownloadButtonTap() {
-        onDownloadTap?()
     }
     
     @objc private func onDeleteButtonTap() {
@@ -76,7 +63,7 @@ public final class AttachmentNode: CellNode {
             spacing: 10,
             justifyContent: .start,
             alignItems: .center,
-            children: [imageNode, verticalStack, buttonNode, deleteButtonNode]
+            children: [imageNode, verticalStack, deleteButtonNode]
         )
 
         let borderInset = UIEdgeInsets.side(8)

@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 protocol AttachmentManagerType {
-    func open(_ attachment: MessageAttachment)
+    func open(_ file: FileType)
 }
 
 final class AttachmentManager: NSObject {
@@ -44,8 +44,8 @@ final class AttachmentManager: NSObject {
 }
 
 extension AttachmentManager: AttachmentManagerType {
-    func open(_ attachment: MessageAttachment) {
-        filesManager.saveToFilesApp(file: attachment, from: self)
+    func open(_ file: FileType) {
+        filesManager.saveToFilesApp(file: file, from: self)
             .sinkFuture(
                 receiveValue: {},
                 receiveError: { [weak self] error in

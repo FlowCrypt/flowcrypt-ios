@@ -25,6 +25,9 @@ protocol FilesManagerType {
 
     @discardableResult
     func selectFromFilesApp(from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> Future<Void, Error>
+
+    func saveLocally(file: FileType) -> URL?
+    func remove(file: FileType)
 }
 
 class FilesManager: FilesManagerType {
@@ -88,5 +91,28 @@ class FilesManager: FilesManagerType {
                 future(.success(()))
             }
         }
+    }
+
+    func saveLocally(file: FileType) -> URL? {
+        let documentDirectory = try? FileManager.default.url(
+            for: .documentDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: true
+        )
+        guard let localPath = documentDirectory?.path.appending("/\(file.name)")
+        else { return nil }
+        let url = URL(fileURLWithPath: localPath)
+        try? file.data.write(to: url)
+        return url
+    }
+
+    func remove(file: FileType) {
+        let fileManager = FileManager.default
+        let documentDirectory = try? fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        guard let localPath = documentDirectory?.path.appending("/\(file.name)")
+        else { return }
+        let url = URL(fileURLWithPath: localPath)
+        try? fileManager.removeItem(at: url)
     }
 }
