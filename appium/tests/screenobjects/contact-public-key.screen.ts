@@ -5,14 +5,14 @@ const SELECTORS = {
   BACK_BTN: '~arrow left c',
   KEY: '~Key',
   PUBLIC_KEY: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
-  FINGERPRINT_VALUE: '-ios class chain:**/XCUIElementTypeCell[2]/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
-  CREATED_VALUE: '-ios class chain:**/XCUIElementTypeCell[2]/XCUIElementTypeOther/XCUIElementTypeStaticText[4]',
-  EXPIRES_VALUE: '-ios class chain:**/XCUIElementTypeCell[2]/XCUIElementTypeOther/XCUIElementTypeStaticText[6]',
+  FINGERPRINT_VALUE: '~fingerprintValue',
+  CREATED_VALUE: '~createdAtValue',
+  EXPIRES_VALUE: '~expiresValue',
   FINGERPRINT_LABEL: '~Fingerprint:',
   CREATED_LABEL: '~Created:',
   EXPIRES_LABEL: '~Expires:',
   PGD_USER_ID_LABEL: '~User:',
-  PGD_USER_ID_EMAIL: '-ios class chain:**/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
+  PGD_USER_ID_EMAIL: '~userEmail',
   TRASH_BUTTON: '~trash'
 };
 
