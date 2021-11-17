@@ -10,10 +10,10 @@ import FlowCryptCommon
 import UIKit
 
 protocol GlobalRouterType {
-    func proceed()
-    func signIn(with route: GlobalRoutingType)
-    func switchActive(user: User)
-    func signOut()
+    @MainActor func proceed()
+    @MainActor func signIn(with route: GlobalRoutingType)
+    @MainActor func switchActive(user: User)
+    @MainActor func signOut()
 }
 
 enum GlobalRoutingType {
@@ -29,7 +29,8 @@ enum GlobalRoutingError: Error {
 
 // MARK: - GlobalRouter
 final class GlobalRouter: GlobalRouterType {
-    private var keyWindow: UIWindow {
+
+    @MainActor private var keyWindow: UIWindow {
         let application = UIApplication.shared
         guard let delegate = (application.delegate as? AppDelegate) else {
             fatalError("missing AppDelegate in GlobalRouter.reset()")
@@ -54,14 +55,14 @@ final class GlobalRouter: GlobalRouterType {
 // MARK: - Proceed
 extension GlobalRouter {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
-    func proceed() {
+    @MainActor func proceed() {
         validateEncryptedStorage {
             userAccountService.cleanupSessions()
             proceed(with: nil)
         }
     }
 
-    private func validateEncryptedStorage(_ completion: () -> Void) {
+    @MainActor private func validateEncryptedStorage(_ completion: () -> Void) {
         let storage = EncryptedStorage()
         do {
             try storage.validate()
@@ -77,16 +78,15 @@ extension GlobalRouter {
         }
     }
 
-    private func proceed(with session: SessionType?) {
+    @MainActor private func proceed(with session: SessionType?) {
         logger.logInfo("proceed for session \(session.debugDescription)")
-        // make sure it runs on main thread
-        let window = keyWindow
-        DispatchQueue.main.async {
-            AppStartup().initializeApp(window: window, session: session)
+
+        Task {
+            AppStartup().initializeApp(window: keyWindow, session: session)
         }
     }
 
-    private func handleGmailError(_ error: Error) {
+    @MainActor private func handleGmailError(_ error: Error) {
         logger.logInfo("gmail login failed with error \(error.localizedDescription)")
         if let gmailUserError = error as? GoogleUserServiceError,
            case .userNotAllowedAllNeededScopes(let missingScopes) = gmailUserError {
@@ -101,7 +101,7 @@ extension GlobalRouter {
 
 // MARK: -
 extension GlobalRouter {
-    func signIn(with route: GlobalRoutingType) {
+    @MainActor func signIn(with route: GlobalRoutingType) {
         logger.logInfo("Sign in with \(route)")
 
         switch route {
@@ -109,10 +109,8 @@ extension GlobalRouter {
             Task {
                 do {
                     let session = try await googleService.signIn(in: viewController)
-                    DispatchQueue.main.async {
-                        self.userAccountService.startSessionFor(user: session)
-                        self.proceed(with: session)
-                    }
+                    self.userAccountService.startSessionFor(user: session)
+                    self.proceed(with: session)
                 } catch {
                     self.handleGmailError(error)
                 }
@@ -123,7 +121,7 @@ extension GlobalRouter {
         }
     }
 
-    func signOut() {
+    @MainActor func signOut() {
         if let session = userAccountService.startActiveSessionForNextUser() {
             logger.logInfo("Start session for another email user \(session)")
             proceed(with: session)
@@ -134,7 +132,7 @@ extension GlobalRouter {
         }
     }
 
-    func switchActive(user: User) {
+    @MainActor func switchActive(user: User) {
         logger.logInfo("Switching active user \(user)")
         guard let session = userAccountService.switchActiveSessionFor(user: user) else {
             logger.logWarning("Can't switch active user with \(user.email)")

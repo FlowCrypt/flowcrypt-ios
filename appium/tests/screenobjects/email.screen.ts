@@ -8,8 +8,8 @@ const SELECTORS = {
   OK_BUTTON: '~Ok',
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
   SAVE_BUTTON: '~Save',
-  DOWNLOAD_ATTACHMENT_BUTTON: '-ios class chain:**/XCUIElementTypeCell[4]/XCUIElementTypeOther/XCUIElementTypeButton',
-  REPLY_BUTTON: '-ios class chain:**/XCUIElementTypeCell[2]/XCUIElementTypeOther/XCUIElementTypeButton',
+  DOWNLOAD_ATTACHMENT_BUTTON: '~downloadButton',
+  REPLY_BUTTON: '~replyButton',
 };
 
 
