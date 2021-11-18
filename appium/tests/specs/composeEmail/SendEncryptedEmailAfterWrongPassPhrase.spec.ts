@@ -1,6 +1,6 @@
 import {
   SplashScreen,
-  CreateKeyScreen,
+  SetupKeyScreen,
   InboxScreen,
   NewMessageScreen,
   EmailScreen,
@@ -23,7 +23,7 @@ describe('COMPOSE EMAIL: ', () => {
     const senderEmail = CommonData.account.email;
 
     await SplashScreen.login();
-    await CreateKeyScreen.setPassPhrase();
+    await SetupKeyScreen.setPassPhrase();
 
     await InboxScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(contactEmail, emailSubject, emailText);
