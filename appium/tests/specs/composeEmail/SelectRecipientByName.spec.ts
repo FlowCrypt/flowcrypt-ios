@@ -1,6 +1,6 @@
 import {
   SplashScreen,
-  CreateKeyScreen,
+  SetupKeyScreen,
   InboxScreen,
   NewMessageScreen,
   ContactScreen,
@@ -24,7 +24,7 @@ describe('COMPOSE EMAIL: ', () => {
     const secondContactItemName = 'Demo key 2';
 
     await SplashScreen.login();
-    await CreateKeyScreen.setPassPhrase();
+    await SetupKeyScreen.setPassPhrase();
 
     // Go to Contacts screen
     await MenuBarScreen.clickMenuIcon();
