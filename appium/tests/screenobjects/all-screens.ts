@@ -1,5 +1,5 @@
 import SplashScreen from './splash.screen';
-import CreateKeyScreen from './create-key.screen';
+import SetupKeyScreen from './setup-key.screen';
 import InboxScreen from './inbox.screen';
 import MenuBarScreen from './menu-bar.screen';
 import EmailScreen from './email.screen';
@@ -13,7 +13,7 @@ import AttachmentScreen from './attachment.screen';
 
 export {
   SplashScreen,
-  CreateKeyScreen,
+  SetupKeyScreen,
   InboxScreen,
   MenuBarScreen,
   EmailScreen,

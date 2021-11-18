@@ -6,7 +6,8 @@ const SELECTORS = {
   MENU_ICON: '~menu icn',
   LOGOUT_BTN: '~Log out',
   SETTINGS_BTN: '~Settings',
-  INBOX_BTN: '~INBOX'
+  INBOX_BTN: '~INBOX',
+  SENT_BTN: '~SENT'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -30,8 +31,12 @@ class MenuBarScreen extends BaseScreen {
     return $(SELECTORS.INBOX_BTN);
   }
 
+  get sentButton() {
+    return $(SELECTORS.SENT_BTN);
+  }
+
   clickMenuIcon = async () => {
-    await ElementHelper.waitAndClick(await this.menuIcon, 500);
+    await ElementHelper.waitAndClick(await this.menuIcon, 1000);
   }
 
   checkUserEmail = async (email: string = CommonData.account.email) => {
@@ -54,6 +59,10 @@ class MenuBarScreen extends BaseScreen {
 
   clickInboxButton = async () => {
     await ElementHelper.waitAndClick(await this.inboxButton);
+  }
+
+  clickSentButton = async () => {
+      await ElementHelper.waitAndClick(await this.sentButton);
   }
 }
 
