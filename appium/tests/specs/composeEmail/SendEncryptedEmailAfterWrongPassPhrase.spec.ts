@@ -12,7 +12,7 @@ import DataHelper from "../../helpers/DataHelper";
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('user is able to sent encrypted email after reseting pass phrase', async () => {
+  it('user is able to send encrypted email after resetting pass phrase', async () => {
 
     const contactEmail = CommonData.secondContact.email;
     const emailSubject = CommonData.simpleEmail.subject + DataHelper.uniqueValue();
@@ -21,7 +21,6 @@ describe('COMPOSE EMAIL: ', () => {
     const wrongPassPhraseError = CommonData.errors.wrongPassPhrase;
     const wrongPassPhrase = "wrong";
     const senderEmail = CommonData.account.email;
-
 
     await SplashScreen.login();
     await CreateKeyScreen.setPassPhrase();
@@ -46,6 +45,5 @@ describe('COMPOSE EMAIL: ', () => {
     //Check sent email
     await InboxScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-
   });
 });

@@ -1,10 +1,7 @@
-let faker = require('faker');
-
 class DataHelper {
-
-    static uniqueValue() {
-        return faker.random.uuid().split('-')[0];
-    }
+  static uniqueValue() {
+    return Math.random().toString(36).substring(2);
+  }
 }
 
 export default DataHelper;
