@@ -220,6 +220,8 @@ extension ThreadDetailsViewController {
             handleMissedPassPhrase(for: rawMimeData, at: indexPath)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
             handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+        case let .keyMismatch(rawMimeData):
+            handleKeyMismatch(for: rawMimeData, at: indexPath)
         default:
             // TODO: - Ticket - Improve error handling for ThreadDetailsViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -308,6 +310,43 @@ extension ThreadDetailsViewController {
             updateSpinner(label: "decrypting_title".localized)
         }
     }
+
+    private func handleKeyMismatch(for rawMimeData: Data, at indexPath: IndexPath) {
+        let alert = UIAlertController(
+            title: "error_key_mismatch".localized,
+            message: nil,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(
+            UIAlertAction(
+                title: "go_back".localized,
+                style: .cancel,
+                handler: { [weak self] _ in
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            )
+        )
+
+        alert.addAction(
+            UIAlertAction(
+                title: "message_open_anyway".localized,
+                style: .default,
+                handler: { [weak self] _ in
+                    let processedMessage = ProcessedMessage(
+                        rawMimeData: rawMimeData,
+                        text: String(data: rawMimeData, encoding: .utf8) ?? "",
+                        attachments: [],
+                        messageType: .encrypted,
+                        signature: .unsigned
+                    )
+                    self?.handleReceived(message: processedMessage, at: indexPath)
+                }
+            )
+        )
+
+        present(alert, animated: true, completion: nil)
+     }
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {

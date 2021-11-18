@@ -31,6 +31,10 @@ export const CommonData = {
     subject: 'Test 1',
     message: 'Test email',
   },
+  keyMismatchEmail: {
+    subject: 'Encrypted message with key mismatch',
+    message: 'MIME-Version: 1.0',
+  },  
   recipientWithoutPublicKey: {
     email: 'no.publickey@flowcrypt.com'
   },

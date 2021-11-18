@@ -10,6 +10,7 @@ const SELECTORS = {
   SAVE_BUTTON: '~Save',
   DOWNLOAD_ATTACHMENT_BUTTON: '~downloadButton',
   REPLY_BUTTON: '~replyButton',
+  OPEN_ANYWAY_BUTTON: '~Open anyway',
 };
 
 
@@ -46,6 +47,10 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.REPLY_BUTTON);
   }
 
+  get openAnywayButton() {
+    return $(SELECTORS.OPEN_ANYWAY_BUTTON);
+  }
+
   checkEmailAddress = async (email: string) => {
     const selector = `~${email}`;
     await (await $(selector)).waitForDisplayed();
@@ -78,7 +83,7 @@ class EmailScreen extends BaseScreen {
 
   enterPassPhrase = async (text: string = CommonData.account.passPhrase) => {
     await (await this.enterPassPhraseField).setValue(text);
-  };
+  }
 
   checkWrongPassPhraseErrorMessage = async () => {
     await (await this.wrongPassPhraseMessage).waitForDisplayed();
@@ -105,6 +110,10 @@ class EmailScreen extends BaseScreen {
 
   clickReplyButton = async () => {
     await ElementHelper.waitAndClick(await this.replyButton);
+  }
+
+  clickOpenAnyway = async () => {
+    await ElementHelper.waitAndClick(await this.openAnywayButton);
   }
 }
 
