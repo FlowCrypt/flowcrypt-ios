@@ -82,7 +82,7 @@ final class KeyService: KeyServiceType {
             logger.logError("no current user email")
             throw AppErr.noCurrentUser
         }
-        // get keys associated with this account, freeze them to pass across threads
+
         let keysInfo = storage.keysInfo().filter { $0.account == email }.map(KeyInfo.init)
         guard let foundKey = try await findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
             return nil

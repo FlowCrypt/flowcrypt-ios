@@ -14,7 +14,7 @@ struct Session: Codable, Equatable {
     var username: String
     var password: String?
     var oAuth2Token: String?
-    var connectionType: String = ""
+    var connectionType: String
     var email: String?
 }
 

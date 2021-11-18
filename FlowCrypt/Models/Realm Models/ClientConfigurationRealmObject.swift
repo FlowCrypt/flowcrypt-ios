@@ -16,7 +16,7 @@ final class ClientConfigurationRealmObject: Object {
     @Persisted var keyManagerUrl: String?
     @Persisted var disallowAttesterSearchForDomains: Data?
     @Persisted var enforceKeygenAlgo: String?
-    @Persisted var enforceKeygenExpireMonths: Int = -1
+    @Persisted var enforceKeygenExpireMonths: Int
     @Persisted var user: UserRealmObject?
 
     convenience init(

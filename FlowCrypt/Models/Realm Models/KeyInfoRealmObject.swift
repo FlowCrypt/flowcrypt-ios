@@ -20,11 +20,11 @@ enum KeyInfoError: Error {
 }
 
 final class KeyInfoRealmObject: Object {
-    @Persisted(primaryKey: true) var primaryFingerprint = ""
-    @Persisted var `private`: String = ""
-    @Persisted var `public`: String = ""
+    @Persisted(primaryKey: true) var primaryFingerprint: String
+    @Persisted var `private`: String
+    @Persisted var `public`: String
     @Persisted var passphrase: String?
-    @Persisted var source: String = ""
+    @Persisted var source: String
     @Persisted var user: UserRealmObject?
     @Persisted var allFingerprints: List<String>
     @Persisted var allLongids: List<String>

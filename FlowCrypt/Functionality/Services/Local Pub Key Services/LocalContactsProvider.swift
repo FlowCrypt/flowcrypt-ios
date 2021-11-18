@@ -85,7 +85,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] {
-        let objects = localContactsCache.realm.objects(RecipientRealmObject.self)
+        let objects: [Recipient] = localContactsCache.realm.objects(RecipientRealmObject.self)
             .map(Recipient.init)
         var recipients: [RecipientWithSortedPubKeys] = []
         for object in objects {
