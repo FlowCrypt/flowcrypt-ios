@@ -109,8 +109,10 @@ extension GlobalRouter {
         case .gmailLogin(let viewController):
             Task {
                 do {
-                    let scopes = GeneralConstants.Gmail.basicScope.map(\.value)
-                    let session = try await googleService.signIn(in: viewController, scopes: scopes)
+                    let session = try await googleService.signIn(
+                        in: viewController,
+                        scopes: GeneralConstants.Gmail.mailScope
+                    )
                     self.userAccountService.startSessionFor(user: session)
                     self.proceed(with: session)
                 } catch {
@@ -141,8 +143,10 @@ extension GlobalRouter {
         case .gmailLogin(let viewController):
             Task {
                 do {
-                    let scopes = GeneralConstants.Gmail.contactsScope.map(\.value)
-                    let session = try await googleService.signIn(in: viewController, scopes: scopes)
+                    let session = try await googleService.signIn(
+                        in: viewController,
+                        scopes: GeneralConstants.Gmail.contactsScope
+                    )
                     self.userAccountService.startSessionFor(user: session)
                 } catch {
                     logger.logInfo("Contacts scope failed with error \(error.errorMessage)")

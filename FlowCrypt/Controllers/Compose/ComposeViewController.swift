@@ -115,7 +115,7 @@ final class ComposeViewController: TableNodeViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()

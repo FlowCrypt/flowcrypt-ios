@@ -14,7 +14,7 @@ import RealmSwift
 
 protocol UserServiceType {
     func signOut(user email: String)
-    func signIn(in viewController: UIViewController, scopes: [String]) async throws -> SessionType
+    func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType
     func renewSession() async throws
 }
 
@@ -73,7 +73,7 @@ extension GoogleUserService: UserServiceType {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
     }
 
-    @MainActor func signIn(in viewController: UIViewController, scopes: [String]) async throws -> SessionType {
+    @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType {
         return try await withCheckedThrowingContinuation { continuation in
             let request = self.makeAuthorizationRequest(scopes: scopes)
             let googleAuthSession = OIDAuthState.authState(
@@ -87,7 +87,7 @@ extension GoogleUserService: UserServiceType {
 
                 Task<Void, Never> {
                     do {
-                        return continuation.resume(returning: try await self.handleGoogleAuthStateResult(authState))
+                        return continuation.resume(returning: try await self.handleGoogleAuthStateResult(authState, scopes: scopes))
                     } catch {
                         return continuation.resume(throwing: error)
                     }
@@ -104,8 +104,8 @@ extension GoogleUserService: UserServiceType {
         }
     }
 
-    private func handleGoogleAuthStateResult(_ authState: OIDAuthState) async throws -> SessionType {
-        let missingScopes = self.checkMissingScopes(authState.scope)
+    private func handleGoogleAuthStateResult(_ authState: OIDAuthState, scopes: [GoogleScope]) async throws -> SessionType {
+        let missingScopes = self.checkMissingScopes(authState.scope, from: scopes)
         if missingScopes.isNotEmpty {
             throw GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes)
         }
@@ -125,11 +125,11 @@ extension GoogleUserService: UserServiceType {
 // MARK: - Convenience
 extension GoogleUserService {
 
-    private func makeAuthorizationRequest(scopes: [String]) -> OIDAuthorizationRequest {
+    private func makeAuthorizationRequest(scopes: [GoogleScope]) -> OIDAuthorizationRequest {
         OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
-            scopes: scopes,
+            scopes: scopes.map(\.value),
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
             additionalParameters: nil
@@ -176,10 +176,9 @@ extension GoogleUserService {
         }
     }
 
-    private func checkMissingScopes(_ scope: String?) -> [GoogleScope] {
-        let authScope = GeneralConstants.Gmail.basicScope
-        guard let scope = scope else { return authScope }
-        return authScope.filter { !scope.contains($0.value) }
+    private func checkMissingScopes(_ scope: String?, from scopes: [GoogleScope]) -> [GoogleScope] {
+        guard let scope = scope else { return scopes }
+        return scopes.filter { !scope.contains($0.value) }
     }
 }
 

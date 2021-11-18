@@ -8,8 +8,8 @@ enum GeneralConstants {
     enum Gmail {
         static let clientID = "679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc.apps.googleusercontent.com"
         static let redirectURL = URL(string: "com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect")!
-        static let basicScope: [GoogleScope] = [.userInfo, .userEmail, .mail]
-        static let contactsScope: [GoogleScope] = [.contacts, .otherContacts]
+        static let mailScope: [GoogleScope] = [.userInfo, .userEmail, .mail]
+        static let contactsScope: [GoogleScope] = mailScope + [.contacts, .otherContacts]
     }
 
     enum Global {

@@ -62,7 +62,7 @@ final class UserContactsProvider {
 
     var isContactsScopeEnabled: Bool {
         guard let currentScopeString = userService.authorization?.authState.scope else { return false }
-        let currentScope = currentScopeString.split(separator: ",").map(String.init)
+        let currentScope = currentScopeString.split(separator: " ").map(String.init)
         let contactsScope = GeneralConstants.Gmail.contactsScope.map(\.value)
         return contactsScope.allSatisfy(currentScope.contains)
     }
