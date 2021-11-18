@@ -45,12 +45,10 @@ extension InboxRenderable {
         self.wrappedType = .message(message)
     }
 
-    init(thread: MessageThread) {
-        let sender = thread.messages.compactMap(\.sender)
-            .compactMap { $0.components(separatedBy: "@").first ?? "" }
-            .unique()
-            .joined(separator: ",")
-        self.title = sender
+    init(thread: MessageThread, folderPath: String) {
+
+        self.title = InboxRenderable.messageTitle(with: thread, and: folderPath)
+
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missed_subject".localized
         self.isRead = !thread.messages
@@ -64,5 +62,33 @@ extension InboxRenderable {
         }
         self.date = date ?? Date()
         self.wrappedType = .thread(thread)
+    }
+
+    private static func messageTitle(with thread: MessageThread, and folderPath: String) -> String {
+        guard let myEmail = DataService.shared.email else { return "" }
+
+        // for now its not exactly clear how titles on other folders should looks like
+        // so in scope of this PR we are applying this title presentation only for "sent" folder
+        if folderPath == MessageLabelType.sent.value {
+            var emails = thread.messages.compactMap(\.sender).unique()
+            // if we have only one email, it means that it could be "me" and we are not
+            // clearing our own email from that
+            if emails.count > 1 {
+                if let i = emails.firstIndex(of: myEmail) {
+                    emails.remove(at: i)
+                }
+            }
+            let recipients = emails
+                .compactMap { $0.components(separatedBy: "@").first }
+                .joined(separator: ",")
+            return "To: \(recipients)"
+
+        } else {
+            return thread.messages
+                .compactMap(\.sender)
+                .compactMap { $0.components(separatedBy: "@").first }
+                .unique()
+                .joined(separator: ",")
+        }
     }
 }
