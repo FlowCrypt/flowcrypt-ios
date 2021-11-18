@@ -1,6 +1,6 @@
 import {
   SplashScreen,
-  CreateKeyScreen,
+  SetupKeyScreen,
   InboxScreen,
   NewMessageScreen,
   EmailScreen
@@ -19,7 +19,7 @@ describe('COMPOSE EMAIL: ', () => {
     const noPublicKeyError = CommonData.errors.noPublicKey;
 
     await SplashScreen.login();
-    await CreateKeyScreen.setPassPhrase();
+    await SetupKeyScreen.setPassPhrase();
 
     await InboxScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(noPublicKeyRecipient, emailSubject, emailText);

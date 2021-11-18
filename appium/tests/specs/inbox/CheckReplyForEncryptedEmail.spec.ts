@@ -1,6 +1,6 @@
 import {
   SplashScreen,
-  CreateKeyScreen,
+  SetupKeyScreen,
   InboxScreen,
   EmailScreen,
   NewMessageScreen
@@ -20,7 +20,7 @@ describe('INBOX: ', () => {
     const replyText = `On 10/26/21 at 2:43 PM ${senderEmail} wrote:\n > ${emailText}`;
 
     await SplashScreen.login();
-    await CreateKeyScreen.setPassPhrase();
+    await SetupKeyScreen.setPassPhrase();
 
     await InboxScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);

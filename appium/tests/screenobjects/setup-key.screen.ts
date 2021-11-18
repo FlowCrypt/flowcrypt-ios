@@ -9,7 +9,7 @@ const SELECTORS = {
   CONFIRM_PASS_PHRASE_FIELD: '~textField',
 };
 
-class CreateKeyScreen extends BaseScreen {
+class SetupKeyScreen extends BaseScreen {
   constructor() {
     super(SELECTORS.SET_PASS_PHRASE_BUTTON);
   }
@@ -60,4 +60,4 @@ class CreateKeyScreen extends BaseScreen {
   }
 }
 
-export default new CreateKeyScreen();
+export default new SetupKeyScreen();
