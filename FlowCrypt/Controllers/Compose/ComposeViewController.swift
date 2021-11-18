@@ -115,7 +115,7 @@ final class ComposeViewController: TableNodeViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        userDefaults.removeObject(forKey: Constants.didShowContactsScopeAlert)
+        
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
@@ -468,7 +468,9 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (.searchEmails, 0):
             return RecipientParts.allCases.count
         case let (.searchEmails(emails), 1):
-            return emails.count
+            return emails.isNotEmpty ? emails.count : 1
+        case (.searchEmails, 2):
+            return cloudContactProvider.isContactsScopeEnabled ? 0 : 2
         default:
             return 0
         }
@@ -500,7 +502,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 }
                 return self.attachmentNode(for: indexPath.row)
             case let (.searchEmails(emails), 1):
+                guard emails.isNotEmpty else { return self.noSearchResultsNode() }
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
+            case (.searchEmails, 2):
+                return indexPath.row == 0 ? DividerCellNode() : self.enableGoogleContactsNode()
             default:
                 return ASCellNode()
             }
@@ -508,12 +513,17 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard case let .searchEmails(emails) = state,
-            indexPath.section == 1,
-            let selectedEmail = emails[safe: indexPath.row]
-        else { return }
+        guard case let .searchEmails(emails) = state else { return }
 
-        handleEndEditingAction(with: selectedEmail)
+        switch indexPath.section {
+        case 1:
+            let selectedEmail = emails[safe: indexPath.row]
+            handleEndEditingAction(with: selectedEmail)
+        case 2:
+            askForContactsPermission()
+        default:
+            break
+        }
     }
 }
 
@@ -614,6 +624,24 @@ extension ComposeViewController {
                 self?.contextToSend.attachments.safeRemove(at: index)
                 self?.node.reloadSections(IndexSet(integer: 2), with: .automatic)
             }
+        )
+    }
+
+    private func noSearchResultsNode() -> ASCellNode {
+        TextCellNode(input: .init(
+            backgroundColor: .clear,
+            title: "compose_no_contacts_found".localized,
+            withSpinner: false,
+            size: .zero,
+            insets: UIEdgeInsets(top: 16, left: 8, bottom: 16, right: 8),
+            itemsAlignment: .start)
+        )
+    }
+
+    private func enableGoogleContactsNode() -> ASCellNode {
+        TextWithIconNode(input: .init(
+            title: "compose_enable_google_contacts_search".localized.attributed(.regular(16)),
+            image: UIImage(named: "gmail_icn"))
         )
     }
 }
@@ -759,10 +787,7 @@ extension ComposeViewController {
             let localEmails = contactsService.searchContacts(query: query)
             let cloudEmails = try? await service.searchContacts(query: query)
             let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
-            let state: State = emails.isNotEmpty
-                ? .searchEmails(Array(emails))
-                : .main
-            updateState(with: state)
+            updateState(with: .searchEmails(Array(emails)))
         }
     }
 
@@ -876,7 +901,7 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
-        node.reloadSections([1], with: .automatic)
+        node.reloadSections([1, 2], with: .automatic)
 
         switch state {
         case .main:
@@ -1091,13 +1116,16 @@ extension ComposeViewController {
             title: "allow".localized,
             style: .default
         ) { [weak self] _ in
-            guard let self = self else { return }
-            self.router.askForContactsPermission(for: .gmailLogin(self))
+            self?.askForContactsPermission()
         }
         alert.addAction(allowAction)
         alert.addAction(laterAction)
 
         present(alert, animated: true, completion: nil)
+    }
+
+    private func askForContactsPermission() {
+        router.askForContactsPermission(for: .gmailLogin(self))
     }
 }
 

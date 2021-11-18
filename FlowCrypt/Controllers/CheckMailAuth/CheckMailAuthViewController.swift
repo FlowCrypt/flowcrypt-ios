@@ -81,7 +81,7 @@ extension CheckMailAuthViewController {
                     title: errorMessage,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200),
-                    alignment: .center
+                    textAlignment: .center
                 )
             )
         case 2:
