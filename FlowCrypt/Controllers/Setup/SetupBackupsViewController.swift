@@ -5,7 +5,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
 
 /**
  * Scene which is responsible for recovering user account with backups from inbox and entered pass phrase
@@ -133,33 +132,26 @@ extension SetupBackupsViewController {
             .becomeFirstResponder()
     }
 
-    private func recoverAccount(with backups: [KeyDetails], and passPhrase: String) {
-        logger.logInfo("Start recoverAccount with \(backups.count)")
-        let matchingKeyBackups = Set(keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase))
-
+    private func recoverAccount(with backups: [KeyDetails], and passPhrase: String) async throws {
+        logger.logInfo("Start recoverAccount with \(backups.count) keys")
+        let matchingKeyBackups = Set(try await keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase))
         logger.logInfo("matchingKeyBackups = \(matchingKeyBackups.count)")
         guard matchingKeyBackups.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-
         if storageMethod == .memory {
-            // save pass phrase
-            matchingKeyBackups
-                .map {
-                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
-                }
-                .forEach {
-                    passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
-                }
+            for backup in matchingKeyBackups {
+                let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: backup.fingerprints)
+                passPhraseService.savePassPhrase(with: pp, storageMethod: storageMethod)
+            }
         }
-
-        // save keys
-        keyStorage.addKeys(keyDetails: Array(matchingKeyBackups),
-                           passPhrase: storageMethod == .persistent ? passPhrase : nil,
-                           source: .backup,
-                           for: user.email)
-
+        keyStorage.addKeys(
+            keyDetails: Array(matchingKeyBackups),
+            passPhrase: storageMethod == .persistent ? passPhrase : nil,
+            source: .backup,
+            for: user.email
+        )
         moveToMainFlow()
     }
 
@@ -176,9 +168,16 @@ extension SetupBackupsViewController {
 
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            guard let self = self else { return }
-            self.recoverAccount(with: self.fetchedEncryptedKeys, and: passPhrase)
+        Task {
+            do {
+                try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100 ms
+                try await self.recoverAccount(with: self.fetchedEncryptedKeys, and: passPhrase)
+            } catch {
+                hideSpinner()
+                showAlert(error: error, message: "Failed to set up account", onOk: {
+                    // todo - what to do? maybe nothing, since they should now see the same button again that they can press again
+                })
+            }
         }
     }
 

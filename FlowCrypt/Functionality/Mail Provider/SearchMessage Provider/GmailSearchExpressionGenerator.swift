@@ -9,7 +9,7 @@
 import Foundation
 
 protocol GmailBackupSearchQueryProviderType {
-    func makeBackupQuery(for email: String) throws -> String
+    func makeBackupQuery(for email: String) async throws -> String
 }
 
 final class GmailBackupSearchQueryProvider: GmailBackupSearchQueryProviderType {
@@ -19,7 +19,7 @@ final class GmailBackupSearchQueryProvider: GmailBackupSearchQueryProviderType {
         self.core = core
     }
 
-    func makeBackupQuery(for email: String) throws -> String {
-        try core.gmailBackupSearch(for: email)
+    func makeBackupQuery(for email: String) async throws -> String {
+        return try await core.gmailBackupSearch(for: email)
     }
 }

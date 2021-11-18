@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Promises
 
 /**
  * Controller that gives a possibility for the user to enter information about his email provider like, account, imap/smtp information
@@ -31,7 +30,7 @@ final class SetupImapViewController: TableNodeViewController {
     private let decorator: SetupImapViewDecorator
     private let sessionCredentials: SessionCredentialsProvider
     private let imap: Imap
-    private var user = UserObject.empty
+    private var user = UserRealmObject.empty
 
     init(
         globalRouter: GlobalRouterType = GlobalRouter(),
@@ -361,7 +360,7 @@ extension SetupImapViewController {
 
     private func updateForEmailChanges(with text: String?) {
         guard let email = text, email.isNotEmpty else {
-            user = UserObject.empty
+            user = UserRealmObject.empty
             node.reloadData()
             return
         }
@@ -506,16 +505,18 @@ extension SetupImapViewController {
         else {
             fatalError("Should be able to create session at this momment")
         }
-
-        Promise<Void> {
-            try awaitPromise(self.imap.connectImap(session: imapSessionToCheck))
-            try awaitPromise(self.imap.connectSmtp(session: smtpSession))
-        }
-        .then(on: .main) { [weak self] in
-            self?.handleSuccessfulConnection()
-        }
-        .catch(on: .main) { [weak self] error in
-            self?.handleConnection(error: error)
+        Task {
+            do {
+                try await self.imap.connectImap(session: imapSessionToCheck)
+                try await self.imap.connectSmtp(session: smtpSession)
+                DispatchQueue.main.async {
+                    self.handleSuccessfulConnection()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.handleConnection(error: error)
+                }
+            }
         }
     }
 
@@ -528,8 +529,8 @@ extension SetupImapViewController {
         globalRouter.signIn(with: .other(.session(user)))
     }
 
-    private func checkCurrentUser() -> Result<UserObject, UserError> {
-        guard user != UserObject.empty, user.email != UserObject.empty.email else {
+    private func checkCurrentUser() -> Result<UserRealmObject, UserError> {
+        guard user != UserRealmObject.empty, user.email != UserRealmObject.empty.email else {
             return .failure(.empty)
         }
 

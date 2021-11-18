@@ -51,6 +51,7 @@ final class SetupInitialViewController: TableNodeViewController {
     }
 
     private let backupService: BackupServiceType
+    private let service: ServiceActor
     private let user: UserId
     private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
@@ -69,9 +70,10 @@ final class SetupInitialViewController: TableNodeViewController {
     ) {
         self.user = user
         self.backupService = backupService
+        self.service = ServiceActor(backupService: backupService)
         self.router = router
         self.decorator = decorator
-        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
+        self.clientConfiguration = clientConfigurationService.getSavedForCurrentUser()
         self.emailKeyManagerApi = emailKeyManagerApi
 
         super.init(node: TableNode())
@@ -122,13 +124,14 @@ extension SetupInitialViewController {
 
         logger.logInfo("Searching for backups in inbox")
 
-        backupService.fetchBackupsFromInbox(for: user)
-            .then(on: .main) { [weak self] keys in
-                self?.proceedToSetupWith(keys: keys)
+        Task {
+            do {
+                let keys = try await service.fetchBackupsFromInbox(for: user)
+                proceedToSetupWith(keys: keys)
+            } catch {
+                handle(error: error)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handle(error: error)
-            }
+        }
     }
 
     private func handleOtherAccount() {
@@ -154,35 +157,36 @@ extension SetupInitialViewController {
     }
 
     private func fetchKeysFromEKM() {
-        emailKeyManagerApi.getPrivateKeys()
-            .then(on: .main) { [weak self] result in
+        Task {
+            do {
+                let result = try await emailKeyManagerApi.getPrivateKeys()
                 switch result {
                 case .success(keys: let keys):
-                    self?.proceedToSetupWithEKMKeys(keys: keys)
+                    proceedToSetupWithEKMKeys(keys: keys)
                 case .noKeys:
-                    self?.showRetryAlert(
+                    showRetryAlert(
                         message: "organisational_rules_ekm_empty_private_keys_error".localized,
-                        onRetry: {
+                        onRetry: { [weak self] in
                             self?.state = .fetchingKeysFromEKM
                         },
-                        onOk: {
+                        onOk: { [weak self] in
                             self?.router.signOut()
                         }
                     )
                 case .keysAreNotDecrypted:
-                    self?.showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: {
+                    showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: { [weak self] in
                         self?.router.signOut()
                     })
                 }
-            }
-            .catch { [weak self] error in
+            } catch {
                 if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
                     return
                 }
-                self?.showAlert(message: error.localizedDescription, onOk: {
+                showAlert(message: error.localizedDescription, onOk: { [weak self] in
                     self?.state = .decidingIfEKMshouldBeUsed
                 })
             }
+        }
     }
 }
 
@@ -230,7 +234,7 @@ extension SetupInitialViewController {
                 )
             )
         default:
-            return TextCellNode(input: .loading(with: CGSize(width: 40, height: 40)))
+            return TextCellNode.loading
         }
     }
 
@@ -317,7 +321,7 @@ extension SetupInitialViewController {
         let viewController = SetupGenerateKeyViewController(user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
-    private func proceedToSetupWithEKMKeys(keys: [CoreRes.ParseKeys]) {
+    private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {
         let viewController = SetupEKMKeyViewController(user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }
@@ -333,5 +337,18 @@ extension SetupInitialViewController {
             let viewController = SetupBackupsViewController(fetchedEncryptedKeys: keys, user: user)
             navigationController?.pushViewController(viewController, animated: true)
         }
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let backupService: BackupServiceType
+
+    init(backupService: BackupServiceType) {
+        self.backupService = backupService
+    }
+
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        return try await backupService.fetchBackupsFromInbox(for: userId)
     }
 }

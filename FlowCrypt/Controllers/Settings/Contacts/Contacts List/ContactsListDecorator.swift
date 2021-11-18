@@ -11,13 +11,13 @@ import UIKit
 
 protocol ContactsListDecoratorType {
     var title: String { get }
-    func contactNodeInput(with recipient: RecipientWithPubKeys) -> ContactCellNode.Input
+    func contactNodeInput(with recipient: RecipientWithSortedPubKeys) -> ContactCellNode.Input
 }
 
 struct ContactsListDecorator: ContactsListDecoratorType {
     let title = "contacts_screen_title".localized
 
-    func contactNodeInput(with recipient: RecipientWithPubKeys) -> ContactCellNode.Input {
+    func contactNodeInput(with recipient: RecipientWithSortedPubKeys) -> ContactCellNode.Input {
         let name: String
 
         if let recipientName = recipient.name, recipientName.isNotEmpty {

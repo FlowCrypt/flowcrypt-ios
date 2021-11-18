@@ -1,29 +1,29 @@
 import {
-    SplashScreen,
-    CreateKeyScreen,
-    InboxScreen,
-    NewMessageScreen
+  SplashScreen,
+  SetupKeyScreen,
+  InboxScreen,
+  NewMessageScreen
 } from '../../screenobjects/all-screens';
 
-import {CommonData} from '../../data';
+import { CommonData } from '../../data';
 
 describe('COMPOSE EMAIL: ', () => {
 
-    it('check filled compose email after reopening app', () => {
+  it('check filled compose email after reopening app', async () => {
 
-        const senderEmail = CommonData.sender.email;
-        const emailSubject = 'TestSubject';
-        const emailText = 'Test email';
+    const recipientEmail = CommonData.contact.email;
+    const emailSubject = CommonData.simpleEmail.subject;
+    const emailText = CommonData.simpleEmail.message;
 
-        SplashScreen.login();
-        CreateKeyScreen.setPassPhrase();
+    await SplashScreen.login();
+    await SetupKeyScreen.setPassPhrase();
 
-        InboxScreen.clickCreateEmail();
-        NewMessageScreen.setComposeEmail(senderEmail, emailSubject, emailText);
-        NewMessageScreen.checkFilledComposeEmailInfo(senderEmail, emailSubject, emailText);
+    await InboxScreen.clickCreateEmail();
+    await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo(recipientEmail, emailSubject, emailText);
 
-        driver.background(3);
+    await driver.background(3);
 
-        NewMessageScreen.checkFilledComposeEmailInfo(senderEmail, emailSubject, emailText);
-    });
+    await NewMessageScreen.checkFilledComposeEmailInfo(recipientEmail, emailSubject, emailText);
+  });
 });

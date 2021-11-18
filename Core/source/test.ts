@@ -4,6 +4,8 @@
 
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_html_sanitize = require("sanitize-html");
+// @ts-ignore - this way we can test ISO-2201-JP encoding
+global.dereq_encoding_japanese = require("encoding-japanese");
 (global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder');
 (global as any)["emailjs-mime-parser"] = require('../../source/lib/emailjs/emailjs-mime-parser');
 (global as any)["iso88592"] = require('../../source/lib/iso-8859-2');
@@ -41,7 +43,7 @@ ava.default('generateKey', async t => {
   t.pass();
 });
 
-for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
+for (const keypairName of allKeypairNames.filter(name => name != 'expired' && name != 'revoked')) {
   ava.default(`encryptMsg -> parseDecryptMsg (${keypairName})`, async t => {
     const content = 'hello\nwrld';
     const { pubKeys, keys } = getKeypairs(keypairName);
@@ -96,6 +98,22 @@ orig message
   const mimeMsgReplyStr = mimeMsgReply.toString();
   expect(mimeMsgReplyStr).contains('In-Reply-To: <originalmsg@from.com>');
   expect(mimeMsgReplyStr).contains('References: <originalmsg@from.com>');
+  t.pass();
+});
+
+ava.default('composeEmail format:plain with attachment', async t => {
+  const content = 'hello\nwrld';
+  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64')}] };
+  const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
+  expectEmptyJson(composeEmailJson);
+  const plainMimeStr = plainMimeMsg.toString();
+  expect(plainMimeStr).contains('To: some@to.com');
+  expect(plainMimeStr).contains('From: some@from.com');
+  expect(plainMimeStr).contains('Subject: a subj');
+  expect(plainMimeStr).contains('Cc: some@cc.com');
+  expect(plainMimeStr).contains('Date: ');
+  expect(plainMimeStr).contains('MIME-Version: 1.0');
+  expect(plainMimeStr).contains('sometext.txt');
   t.pass();
 });
 
@@ -246,7 +264,21 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
   t.pass();
 });
 
-for (const keypairName of allKeypairNames.filter(name => name != 'expired')) {
+ava.default('composeEmail format:encrypt-inline with attachment', async t => {
+  const content = 'hello\nwrld';
+  const { pubKeys } = getKeypairs('rsa1');
+  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj', atts: [{name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
+  const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
+  expectEmptyJson(encryptJson);
+  const encryptedMimeStr = encryptedMimeMsg.toString();
+  expect(encryptedMimeStr).contains('To: encrypted@to.com');
+  expect(encryptedMimeStr).contains('MIME-Version: 1.0');
+  expect(encryptedMimeStr).contains('topsecret.txt.pgp');
+  expectData(encryptedMimeMsg, 'armoredMsg'); // armored msg block should be contained in the mime message
+  t.pass();
+});
+
+for (const keypairName of allKeypairNames.filter(name => name != 'expired' && name != 'revoked')) {
   ava.default(`encryptFile -> decryptFile ${keypairName}`, async t => {
     const { pubKeys, keys } = getKeypairs(keypairName);
     const name = 'myfile.txt';
@@ -310,7 +342,8 @@ ava.default('parseKeys', async t => {
           "algorithmId": 1
         },
         "created": 1543592161,
-        "lastModified": 1543592161
+        "lastModified": 1543592161,
+        "revoked": false
       }
     ]
   });
@@ -350,7 +383,29 @@ ava.default('parseKeys - expiration and date last updated', async t => {
         },
         "created": 1594847701,
         "expiration": 1594847702,
-        "lastModified": 1594847701
+        "lastModified": 1594847701,
+        "revoked": false
+      }
+    ]
+  });
+  expectNoData(data);
+  t.pass();
+});
+
+ava.default('parseKeys - revoked', async t => {
+  const { pubKeys: [pubkey] } = getKeypairs('revoked');
+  const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
+  expect(json).to.deep.equal({
+    "format": "armored",
+    "keyDetails": [
+      {
+        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\r\nVersion: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\r\nComment: Seamlessly send and receive encrypted email\r\n\r\nxjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7\r\nuXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK\r\nACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7\r\nEFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY\r\nDKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA\r\nBgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW\r\nRBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN\r\nFXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ\r\noXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS\r\nzZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==\r\n=bMwq\r\n-----END PGP PUBLIC KEY BLOCK-----\r\n",
+        "users": ["revoekd@flowcrypt.com", "revoked@flowcrypt.com"],
+        "ids": [{ "fingerprint": "3931B7413DBB2FA60CEF85CE5F15978910A1780A", "longid": "5F15978910A1780A", "shortid": "10A1780A", "keywords": "GALLERY PROTECT TIME CANDY BLEAK ACCESS" }],
+        "algo": { "algorithm": "eddsa", "curve": "ed25519", "algorithmId": 22 },
+        "created": 1634664782,
+        "lastModified": 1634664811,
+        "revoked": true
       }
     ]
   });
@@ -421,6 +476,24 @@ ava.default('parseDecryptMsg compat mime-email-plain', async t => {
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'plain', subject: 'mime email plain' });
+  t.pass();
+});
+
+ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
+  const { keys } = getKeypairs('rsa1');
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-iso-2201-jp')]));
+  const msg = 'Dear Tomas,\n    \nWe\'ve sent you a new message about your app, ' +
+    'Enterprise FlowCrypt, app Apple ID: 1591462989.    To view or reply to the ' +
+    'message, go to Resolution Center in App Store Connect.\n    \nBest regards,\n' +
+    '    App Store Review\n';
+  expect(decryptJson.text).to.contain(msg);
+  expect(decryptJson.subject).to.eq('New Message from App Store Review Regarding Enterprise FlowCrypt');
+  expect(decryptJson.replyType).to.eq('plain');
+  const html = '<p>Dear Tomas,</p> <p>We\'ve sent you a new message about your app, Enterprise FlowCrypt, app Apple ID: 1591462989. To view or reply to the message, go to <a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">Resolution Center</a> in App Store Connect.</p> <p>Best regards,<br /> App Store Review</p>';
+  const blocksObj = JSON.parse(blocks.toString().replace(/\\n/g, '').replace(/\s+/g, ' '));
+  expect(blocksObj.type).eq('plainHtml');
+  expect(blocksObj.complete).eq(true);
+  expect(blocksObj.content).contains(html);
   t.pass();
 });
 
@@ -517,7 +590,8 @@ ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
         ],
         "algo": { "algorithm": "rsa_encrypt_sign", "bits": 2048, "algorithmId": 1 },
         "created": 1543592161,
-        "lastModified": 1543592161
+        "lastModified": 1543592161,
+        "revoked": false
       }
     },
   ]);

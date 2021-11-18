@@ -10,21 +10,19 @@ import AppAuth
 import FlowCryptCommon
 import Foundation
 import GTMAppAuth
-import Promises
 import RealmSwift
 
 protocol UserServiceType {
     func signOut(user email: String)
-    func signIn(in viewController: UIViewController) -> Promise<SessionType>
-    func renewSession() -> Promise<Void>
+    func signIn(in viewController: UIViewController) async throws -> SessionType
+    func renewSession() async throws
 }
 
 enum GoogleUserServiceError: Error {
     case missedAuthorization
     case invalidUserEndpoint
-    case serviceError(Error)
-    case parsingError(Error)
     case inconsistentState(String)
+    case userNotAllowedAllNeededScopes(missingScopes: [GoogleScope])
 }
 
 struct GoogleUser: Codable {
@@ -34,12 +32,14 @@ struct GoogleUser: Codable {
 
 protocol GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
-    func renewSession() -> Promise<Void>
+    func renewSession() async throws
 }
 
 final class GoogleUserService: NSObject, GoogleUserServiceType {
+
     private enum Constants {
         static let index = "GTMAppAuthAuthorizerIndex"
+        static let userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo"
     }
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
@@ -69,61 +69,59 @@ extension GoogleUserService: UserServiceType {
         UIApplication.shared.delegate as? AppDelegate
     }
 
-    func renewSession() -> Promise<Void> {
+    func renewSession() async throws {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
-        Promise<Void> { [weak self] resolve, _ in
-            self?.logger.logInfo("Renew session for google user")
-            resolve(())
-        }
     }
 
-    func signIn(in viewController: UIViewController) -> Promise<SessionType> {
-        Promise(on: .main) { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            let request = self.makeAuthorizationRequest()
-
-            let googleAuthSession = OIDAuthState.authState(
-                byPresenting: request,
-                presenting: viewController
-            ) { authState, error in
-                if let authState = authState {
-                    let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
-                    guard let email = authorization.userEmail else {
-                        reject(GoogleUserServiceError.inconsistentState("Missed email"))
-                        return
-                    }
-
-                    self.saveAuth(state: authState, for: email)
-
-                    guard let token = authState.lastTokenResponse?.accessToken else {
-                        reject(GoogleUserServiceError.inconsistentState("Missed token"))
-                        return
-                    }
-
-                    self.fetchGoogleUser(with: authorization) { result in
-                        switch result {
-                        case .success(let user):
-                            resolve(SessionType.google(email, name: user.name, token: token))
-                        case .failure(let error):
-                            self.handleUserInfo(error: error)
-                            reject(error)
+    func signIn(in viewController: UIViewController) async throws -> SessionType {
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async {
+                // todo - should be fixed with MainActor instead?
+                // Google doesn't like to be called on non-main thread
+                let request = self.makeAuthorizationRequest()
+                let googleAuthSession = OIDAuthState.authState(
+                    byPresenting: request,
+                    presenting: viewController
+                ) { authState, error in
+                    if let authState = authState {
+                        Task<Void, Never> {
+                            do {
+                                return continuation.resume(returning: try await self.handleGoogleAuthStateResult(authState))
+                            } catch {
+                                return continuation.resume(throwing: error)
+                            }
                         }
+                        return
                     }
-                } else if let error = error {
-                    reject(error)
-                } else {
-                    fatalError("Shouldn't happe because covered received non nil error and non nil authState")
+                    return continuation.resume(throwing: error ?? AppErr.unexpected("Shouldn't happen because covered received non nil error and non nil authState"))
                 }
+                self.appDelegate?.googleAuthSession = googleAuthSession
             }
-
-            self.appDelegate?.googleAuthSession = googleAuthSession
         }
     }
 
     func signOut(user email: String) {
-        appDelegate?.googleAuthSession = nil
-        GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+        DispatchQueue.main.async {
+            self.appDelegate?.googleAuthSession = nil
+            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+        }
+    }
+
+    private func handleGoogleAuthStateResult(_ authState: OIDAuthState) async throws -> SessionType {
+        let missingScopes = self.checkMissingScopes(authState.scope)
+        if !missingScopes.isEmpty {
+            throw GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes)
+        }
+        let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
+        guard let email = authorization.userEmail else {
+            throw GoogleUserServiceError.inconsistentState("Missed email")
+        }
+        self.saveAuth(state: authState, for: email)
+        guard let token = authState.lastTokenResponse?.accessToken else {
+            throw GoogleUserServiceError.inconsistentState("Missed token")
+        }
+        let user = try await self.fetchGoogleUser(with: authorization)
+        return SessionType.google(email, name: user.name, token: token)
     }
 }
 
@@ -157,47 +155,35 @@ extension GoogleUserService {
         return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
     }
 
+    // todo - isn't this call supported by Google client library?
     private func fetchGoogleUser(
-        with authorization: GTMAppAuthFetcherAuthorization?,
-        completion: @escaping ((Result<GoogleUser, GoogleUserServiceError>) -> Void)
-    ) {
-        guard let authorization = authorization else {
-            fatalError("authorization should not be nil at this point")
+        with authorization: GTMAppAuthFetcherAuthorization
+    ) async throws -> GoogleUser {
+        guard let url = URL(string: Constants.userInfoUrl) else {
+            throw AppErr.unexpected("URL(Constants.userInfoUrl) nil")
         }
-
-        guard let userInfoEndpoint = URL(string: "https://www.googleapis.com/oauth2/v3/userinfo") else {
-            fatalError("userInfoEndpoint could not be nil because it's hardcoded string url")
-        }
-
         let fetcherService = GTMSessionFetcherService()
         fetcherService.authorizer = authorization
-
-        fetcherService.fetcher(with: userInfoEndpoint)
-            .beginFetch { data, error in
-                if let data = data {
-                    do {
-                        let user = try JSONDecoder().decode(GoogleUser.self, from: data)
-                        completion(.success(user))
-                    } catch {
-                        completion(.failure(.parsingError(error)))
-                    }
-                } else if let error = error {
-                    completion(.failure(.serviceError(error)))
-                } else {
-                    completion(.failure(.inconsistentState("Fetching user")))
-                }
-            }
-    }
-
-    private func handleUserInfo(error: Error) {
-        if (error as NSError).isEqual(OIDOAuthTokenErrorDomain) {
-            logger.logError("Authorization error during token refresh, clearing state. \(error)")
-            if let email = currentUserEmail {
+        do {
+            let data = try await fetcherService.fetcher(with: url).beginFetch()
+            return try JSONDecoder().decode(GoogleUser.self, from: data)
+        } catch {
+            let isTokenErr = (error as NSError).isEqual(OIDOAuthTokenErrorDomain)
+            if isTokenErr, let email = self.currentUserEmail {
+                self.logger.logError("Authorization error during token refresh, clearing state. \(error)")
+                // removes any authorisation information which was stored in Keychain, the same happens on logout.
+                // if any error happens during token refresh then user will be signed out automatically.
                 GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
             }
-        } else {
-            logger.logError("Authorization error during fetching user info")
+            throw error
         }
+    }
+
+    private func checkMissingScopes(_ scope: String?) -> [GoogleScope] {
+        guard let scope = scope else {
+            return GoogleScope.allCases
+        }
+        return GoogleScope.allCases.filter { !scope.contains($0.value) }
     }
 }
 

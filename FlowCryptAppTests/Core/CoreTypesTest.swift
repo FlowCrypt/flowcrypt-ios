@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class CoreTypesTest: XCTestCase {
 
@@ -27,7 +27,8 @@ class CoreTypesTest: XCTestCase {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
         let secondKeyDetail = KeyDetails(
             public: "public2",
@@ -44,7 +45,8 @@ class CoreTypesTest: XCTestCase {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
 
         let given: [KeyDetails] = [

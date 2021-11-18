@@ -8,7 +8,6 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 protocol UserAccountServiceType {
     func startSessionFor(user type: SessionType)
@@ -57,7 +56,7 @@ extension UserAccountService: UserAccountServiceType {
         switch type {
         case let .google(email, name, token):
             // save new user data
-            let user = UserObject.googleUser(
+            let user = UserRealmObject.googleUser(
                 name: name,
                 email: email,
                 token: token
@@ -118,7 +117,7 @@ extension UserAccountService: UserAccountServiceType {
     }
 
     @discardableResult
-    private func switchActiveSession(for userObject: UserObject) -> SessionType? {
+    private func switchActiveSession(for userObject: UserRealmObject) -> SessionType? {
         logger.logInfo("Try to switch session for \(userObject.email)")
 
         let sessionType: SessionType
@@ -146,7 +145,7 @@ extension UserAccountService: UserAccountServiceType {
     }
 
     private func logOut(user email: String) {
-        logger.logInfo("Log out user with \(email)")
+        logger.logInfo("Logging out user \(email)")
 
         switch dataService.currentAuthType {
         case .oAuthGmail:

@@ -3,18 +3,12 @@
 //
 
 import Foundation
-import Promises
-
-struct PubkeySearchResult {
-    let email: String
-    let armored: Data?
-}
 
 protocol AttesterApiType {
-    func lookupEmail(email: String) -> Promise<[KeyDetails]>
-    func updateKey(email: String, pubkey: String, token: String?) -> Promise<String>
-    func replaceKey(email: String, pubkey: String) -> Promise<String>
-    func testWelcome(email: String, pubkey: String) -> Promise<Void>
+    func lookup(email: String) async throws -> [KeyDetails]
+    func update(email: String, pubkey: String, token: String?) async throws -> String
+    func replace(email: String, pubkey: String) async throws -> String
+    func testWelcome(email: String, pubkey: String) async throws
 }
 
 /// Public key server run by us that is shared across customers
@@ -23,10 +17,8 @@ final class AttesterApi: AttesterApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 10
-    }
-
-    private enum Endpoint {
         static let baseURL = "https://flowcrypt.com/attester/"
+        static let apiName = "AttesterApi"
     }
 
     private let core: Core
@@ -37,45 +29,47 @@ final class AttesterApi: AttesterApiType {
         clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.core = core
-        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
+        self.clientConfiguration = clientConfigurationService.getSavedForCurrentUser()
     }
 
     private func urlPub(emailOrLongid: String) -> String {
         let normalizedEmail = emailOrLongid
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return "\(Endpoint.baseURL)pub/\(normalizedEmail)"
+        return "\(Constants.baseURL)pub/\(normalizedEmail)"
     }
 }
 
 extension AttesterApi {
-    func lookupEmail(email: String) -> Promise<[KeyDetails]> {
-        Promise { [weak self] () -> [KeyDetails] in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            if !(try self.clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
-                return []
-            }
-
-            let res = try awaitPromise(URLSession.shared.call(self.urlPub(emailOrLongid: email), tolerateStatus: [404]))
-
-            if res.status >= 200, res.status <= 299 {
-                let keys = try self.core.parseKeys(armoredOrBinary: res.data)
-                let pubKeys = keys.keyDetails
-                        .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
-                return pubKeys
-            }
-            if res.status == 404 {
-                return []
-            }
-            // programming error because should never happen
-            throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
+    func lookup(email: String) async throws -> [KeyDetails] {
+        if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
+            return []
         }
-        .timeout(Constants.lookupEmailRequestTimeout)
+
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: urlPub(emailOrLongid: email),
+            timeout: Constants.lookupEmailRequestTimeout,
+            tolerateStatus: [404]
+        )
+        let res = try await ApiCall.call(request)
+
+        if res.status >= 200, res.status <= 299 {
+            return try await core.parseKeys(armoredOrBinary: res.data).keyDetails
+        }
+
+        if res.status == 404 {
+            return []
+        }
+
+        throw AppErr.unexpected(
+            "programing error - should have been caught above" +
+            " - unexpected status \(res.status) when looking up pubkey for \(email)"
+        )
     }
 
     @discardableResult
-    func updateKey(email: String, pubkey: String, token: String?) -> Promise<String> {
+    func update(email: String, pubkey: String, token: String?) async throws -> String {
         let httpMethod: HTTPMetod
         let headers: [URLHeader]
 
@@ -87,41 +81,37 @@ extension AttesterApi {
             headers = []
         }
 
-        let request = URLRequest.urlRequest(
-            with: urlPub(emailOrLongid: email),
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: urlPub(emailOrLongid: email),
             method: httpMethod,
             body: pubkey.data(),
             headers: headers
         )
-        return Promise { () -> String in
-            let res = try awaitPromise(URLSession.shared.call(request))
-            return res.data.toStr()
-        }
+        let res = try await ApiCall.call(request)
+        return res.data.toStr()
     }
 
     @discardableResult
-    func replaceKey(email: String, pubkey: String) -> Promise<String> {
-        let request = URLRequest.urlRequest(
-            with: urlPub(emailOrLongid: email),
+    func replace(email: String, pubkey: String) async throws -> String {
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: urlPub(emailOrLongid: email),
             method: .post,
             body: pubkey.data()
         )
-        return Promise { () -> String in
-            let res = try awaitPromise(URLSession.shared.call(request))
-            return res.data.toStr()
-        }
+        let res = try await ApiCall.call(request)
+        return res.data.toStr()
     }
 
-    @discardableResult
-    func testWelcome(email: String, pubkey: String) -> Promise<Void> {
-        let request = URLRequest.urlRequest(
-            with: Endpoint.baseURL + "test/welcome",
+    func testWelcome(email: String, pubkey: String) async throws {
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: Constants.baseURL + "test/welcome",
             method: .post,
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
-        return Promise { () -> Void in
-            _ = try awaitPromise(URLSession.shared.call(request)) // will throw on non-200
-        }
+        _ = try await ApiCall.call(request) // will throw on non-200
     }
 }

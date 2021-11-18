@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 
 enum ContactsError: Error {
     case keyMissing
@@ -18,7 +17,8 @@ protocol ContactsServiceType: PublicKeyProvider, ContactsProviderType {
 }
 
 protocol ContactsProviderType {
-    func searchContact(with email: String) -> Promise<RecipientWithPubKeys>
+    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys
+    func searchContacts(query: String) -> [String]
 }
 
 protocol PublicKeyProvider {
@@ -42,19 +42,21 @@ struct ContactsService: ContactsServiceType {
 }
 
 extension ContactsService: ContactsProviderType {
-    func searchContact(with email: String) -> Promise<RecipientWithPubKeys> {
-        guard let contact = localContactsProvider.searchRecipient(with: email) else {
-            return searchRemote(for: email)
+    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
+        let contact = try await localContactsProvider.searchRecipient(with: email)
+        guard let contact = contact else {
+            let recipient = try await pubLookup.lookup(email: email)
+            localContactsProvider.save(recipient: recipient)
+            return recipient
         }
-        return Promise(contact)
+
+        let recipient = try await pubLookup.lookup(email: email)
+        localContactsProvider.updateKeys(for: recipient)
+        return contact
     }
 
-    private func searchRemote(for email: String) -> Promise<RecipientWithPubKeys> {
-        pubLookup
-            .lookup(with: email)
-            .then { recipient in
-                self.localContactsProvider.save(recipient: recipient)
-            }
+    func searchContacts(query: String) -> [String] {
+        localContactsProvider.searchEmails(query: query)
     }
 }
 

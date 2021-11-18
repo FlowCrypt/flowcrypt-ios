@@ -8,14 +8,13 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 protocol TrashFolderProviderType {
-    func getTrashFolderPath() -> Promise<String?>
+    func getTrashFolderPath() async throws -> String?
 }
 
 protocol FoldersServiceType {
-    func fetchFolders(isForceReload: Bool) -> Promise<[FolderViewModel]>
+    func fetchFolders(isForceReload: Bool) async throws -> [FolderViewModel]
 }
 
 final class FoldersService: FoldersServiceType {
@@ -34,28 +33,24 @@ final class FoldersService: FoldersServiceType {
         self.trashPathStorage = trashPathStorage
     }
 
-    func fetchFolders(isForceReload: Bool) -> Promise<[FolderViewModel]> {
+    func fetchFolders(isForceReload: Bool) async throws -> [FolderViewModel] {
         if isForceReload {
-            return getAndSaveFolders()
+            return try await getAndSaveFolders()
         }
-
         let localFolders = self.localFoldersProvider.fetchFolders()
-
         if localFolders.isEmpty {
-            return getAndSaveFolders()
+            return try await getAndSaveFolders()
         } else {
-            getAndSaveFolders()
-            return Promise(localFolders)
+            try await getAndSaveFolders()
+            return localFolders
         }
     }
 
     @discardableResult
-    private func getAndSaveFolders() -> Promise<[FolderViewModel]> {
-        Promise<[FolderViewModel]> { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            // fetch all folders
-            let fetchedFolders = try awaitPromise(self.remoteFoldersProvider.fetchFolders())
-
+    private func getAndSaveFolders() async throws -> [FolderViewModel] {
+        // fetch all folders
+        let fetchedFolders = try await self.remoteFoldersProvider.fetchFolders()
+        return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async {
                 // TODO: - Ticket? - instead of removing all folders remove only
                 // those folders which are in DB and not in remoteFolders
@@ -68,7 +63,7 @@ final class FoldersService: FoldersServiceType {
                 self.saveTrashFolderPath(with: fetchedFolders.map(\.path))
 
                 // return folders
-                resolve(fetchedFolders.map(FolderViewModel.init))
+                continuation.resume(returning: fetchedFolders.map(FolderViewModel.init))
             }
         }
     }

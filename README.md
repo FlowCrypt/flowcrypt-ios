@@ -4,9 +4,9 @@
 
 FlowCrypt iOS App, download from https://flowcrypt.com/download
 
-### Installation
+## Installation
 
-You will need to have Xcode *(version 12.4)* installed
+You will need to have Xcode - latest version - installed.
 
 ```sh
 # clone repo
@@ -21,33 +21,22 @@ make dependencies
 bundle exec pod install
 ```
 
-### Run UI Tests
+## Development
 
-To run UI tests, you will need a FlowCryptUITests/test-ci-secrets.json file. For this, please reach out to tom@flowcrypt.com to get an NDA signed, and the file will be shared with you. On SemaphoreCI the file is loaded as a secret. If you need to update this file on CI, communicate with Tom to get help. After the update, please email it encrypted to other iOS team members.
+Recommended to develop and run tests only using `Debug FlowCrypt` scheme
 
-Follow steps in installation above, and then:
- - from terminal: 
-    - `make ui_tests` - for all ui tests
-    - `make ui_tests_gmail` - for Gmail ui tests
-    - `make ui_tests_imap` - for Imap ui tests
- - from Xcode:  
-    1) Choose `FlowCryptUITests` run target on top and select a simulator 
-    2) select Tests in Navigators area (cmd+6) 
-    3) Scroll down to `FlowCryptUITests` in the navigator and run them all or run a particular one
+## UI Tests
 
-Before running tests, please make sure keyboard is visible in simulator. (cmd+shift+k)
+See [Appium README](./appium/README.md)
 
-### Useful links
+## Dependency docs
 
-UI - [Texture documentation](https://texturegroup.org/docs/getting-started.html)
+- UI - [Texture documentation](https://texturegroup.org/docs/getting-started.html)
+- Storage - [Realm](https://github.com/realm)
+- Async Operations - [PromiseKit](https://github.com/mxcl/PromiseKit)
+- IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
 
-Storage - [Realm](https://github.com/realm)
-
-Async Operations - [PromiseKit](https://github.com/mxcl/PromiseKit)
-
-IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
-
-### Admin - generating .ipa for penetration tester
+## Admin - generating .ipa for penetration tester
 
 1) get uuid of their device and input it into https://developer.apple.com/account/ -> Devices
 2) choose the right build (eg `FlowCrypt Enterprise`) and choose `Any iOS Device (arm64)`

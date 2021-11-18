@@ -6,12 +6,11 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Promises
 import UIKit
 
 protocol BackupServiceType {
     /// get all existed backups
-    func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]>
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails]
     /// backup keys to user inbox
     func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws
     /// show activity sheet to save keys as file

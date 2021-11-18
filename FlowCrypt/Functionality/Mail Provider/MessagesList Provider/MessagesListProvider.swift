@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 
 struct FetchMessageContext {
     /// Specify specific folder, or in all folders
@@ -37,5 +36,5 @@ enum MessagesListProviderError {
 }
 
 protocol MessagesListProvider {
-    func fetchMessages(using context: FetchMessageContext) -> Promise<MessageContext>
+    func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext
 }

@@ -72,7 +72,9 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
       const lastEmpty = renderedContentBlocks.pop(); // last one should be empty due to the splitting above
       expect(lastEmpty).to.equal('');
       for (const renderedContentBlock of renderedContentBlocks) {
-        const m = (renderedContentBlock as string).match(/<div class="MsgBlock ([a-z]+)" style="[^"]+">(.*)<\/div>/);
+        // (.*) doesn't work for some whitespaces, so use ([\s\S]+)
+        const m = (renderedContentBlock as string).match(
+          /<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/);
         if (m === null) {
           blocks.unshift({ error: "TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT", content: renderedContentBlock });
         } else {
@@ -131,12 +133,20 @@ const TEST_KEYS: { [name: string]: TestKey } = {
     decrypted: '',
     passphrase: '',
     longid: ''
+  },
+  'revoked': {
+    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\nVersion: FlowCrypt Email Encryption 8.1.5\nComment: Seamlessly send and receive encrypted email\n\nxjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7\nuXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK\nACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7\nEFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY\nDKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA\nBgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW\nRBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN\nFXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ\noXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS\nzZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==\n=bMwq\n-----END PGP PUBLIC KEY BLOCK-----\n',
+    // todo all in case needed
+    private: '',
+    decrypted: '',
+    passphrase: '',
+    longid: ''
   }
 }
 
-type KeypairName = 'rsa1' | 'rsa2' | 'ecc' | 'gpg-dummy' | 'expired';
+type KeypairName = 'rsa1' | 'rsa2' | 'ecc' | 'gpg-dummy' | 'expired' | 'revoked';
 
-export const allKeypairNames: KeypairName[] = ['rsa1', 'rsa2', 'ecc', 'gpg-dummy', 'expired'];
+export const allKeypairNames: KeypairName[] = ['rsa1', 'rsa2', 'ecc', 'gpg-dummy', 'expired',  'revoked'];
 
 export const getKeypairs = (...names: KeypairName[]) => {
   return {

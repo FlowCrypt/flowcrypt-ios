@@ -6,24 +6,22 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Promises
-
 protocol UsersMailSessionProvider {
-    func renewSession() -> Promise<Void>
+    func renewSession() async throws
 }
 
 // MARK: - GmailService
 extension GmailService: UsersMailSessionProvider {
     @discardableResult
-    func renewSession() -> Promise<Void> {
-        userService.renewSession()
+    func renewSession() async throws {
+        try await userService.renewSession()
     }
 }
 
 // MARK: - Imap
 extension Imap: UsersMailSessionProvider {
     @discardableResult
-    func renewSession() -> Promise<Void> {
-        Promise(self.setupSession())
+    func renewSession() async throws {
+        try await self.setupSession()
     }
 }

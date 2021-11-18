@@ -6,23 +6,22 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import CoreFoundation
-import Foundation
+import QuartzCore
 
 public final class Trace {
     private let id: String
-    private var startTime: CFAbsoluteTime?
+    private var startTime: TimeInterval?
 
     public init(id: String) {
         self.id = id
-        self.startTime = CFAbsoluteTimeGetCurrent()
+        self.startTime = CACurrentMediaTime()
     }
 
     public func result() -> TimeInterval {
         guard let startTime = startTime else {
             return 0
         }
-        let endTime = CFAbsoluteTimeGetCurrent()
+        let endTime = CACurrentMediaTime()
 
         return (endTime - startTime)
     }

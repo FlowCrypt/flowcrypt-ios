@@ -7,7 +7,6 @@
 //
 
 import Combine
-import Promises
 import UIKit
 
 final class BackupService {
@@ -29,19 +28,14 @@ final class BackupService {
 
 // MARK: - BackupServiceType
 extension BackupService: BackupServiceType {
-    func fetchBackupsFromInbox(for userId: UserId) -> Promise<[KeyDetails]> {
-        Promise<[KeyDetails]> { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            let backupData = try awaitPromise(self.backupProvider.searchBackups(for: userId.email))
-
-            do {
-                let parsed = try self.core.parseKeys(armoredOrBinary: backupData)
-                let keys = parsed.keyDetails.filter { $0.private != nil }
-                resolve(keys)
-            } catch {
-                reject(BackupServiceError.parse)
-            }
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        let backupData = try await self.backupProvider.searchBackups(for: userId.email)
+        do {
+            let parsed = try await core.parseKeys(armoredOrBinary: backupData)
+            let keys = parsed.keyDetails.filter { $0.private != nil }
+            return keys
+        } catch {
+            throw BackupServiceError.parse
         }
     }
 
@@ -73,7 +67,8 @@ extension BackupService: BackupServiceType {
             signingPrv: nil)
 
         let t = try await core.composeEmail(msg: message, fmt: .plain)
-        try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil))
+        try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil),
+                                         progressHandler: nil)
     }
 
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {

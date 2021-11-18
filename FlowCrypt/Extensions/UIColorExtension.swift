@@ -18,6 +18,14 @@ extension UIColor {
         UIColor(r: 57, g: 57, b: 57, alpha: 1)
     }
 
+    static var warningColor: UIColor {
+        UIColor(r: 194, g: 126, b: 35)
+    }
+
+    static var errorColor: UIColor {
+        UIColor(r: 209, g: 72, b: 54)
+    }
+
     static var mainTextColor: UIColor {
         UIColor.colorFor(
             darkStyle: .white,
@@ -59,7 +67,7 @@ extension UIColor {
 }
 
 extension UIColor {
-    convenience init(r: Int, g: Int, b: Int, alpha: CGFloat) {
+    convenience init(r: Int, g: Int, b: Int, alpha: CGFloat = 1) {
         self.init(
             red: CGFloat(r)/CGFloat(255.0),
             green: CGFloat(g)/CGFloat(255.0),
@@ -70,7 +78,7 @@ extension UIColor {
 }
 
 // Uncomment for FlowCryptUIApplication
-//extension UIColor {
+// extension UIColor {
 //    static var main: UIColor {
 //        .green
 //    }
@@ -102,4 +110,4 @@ extension UIColor {
 //    static var blueColor: UIColor {
 //        .blue
 //    }
-//}
+// }

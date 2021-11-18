@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import FlowCryptCommon
+import UIKit
 
 public final class TextCellNode: CellNode {
     public struct Input {
@@ -16,19 +17,22 @@ public final class TextCellNode: CellNode {
         let withSpinner: Bool
         let size: CGSize
         let insets: UIEdgeInsets
+        let alignment: NSTextAlignment?
 
         public init(
             backgroundColor: UIColor,
             title: String,
             withSpinner: Bool,
             size: CGSize,
-            insets: UIEdgeInsets = .zero
+            insets: UIEdgeInsets = .zero,
+            alignment: NSTextAlignment? = nil
         ) {
             self.backgroundColor = backgroundColor
             self.title = title
             self.withSpinner = withSpinner
             self.size = size
             self.insets = insets
+            self.alignment = alignment
         }
     }
 
@@ -44,7 +48,7 @@ public final class TextCellNode: CellNode {
         insets = input.insets
         super.init()
         addSubnode(textNode)
-        textNode.attributedText = NSAttributedString.text(from: input.title, style: .medium(16), color: .lightGray)
+        textNode.attributedText = NSAttributedString.text(from: input.title, style: .medium(16), color: .lightGray, alignment: input.alignment)
         if input.withSpinner {
             addSubnode(spinner)
         }

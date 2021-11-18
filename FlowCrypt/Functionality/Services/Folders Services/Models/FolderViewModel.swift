@@ -36,7 +36,7 @@ extension FolderViewModel {
 
 // MARK: - Map from realm model
 extension FolderViewModel {
-    init(_ object: FolderObject) {
+    init(_ object: FolderRealmObject) {
         self.init(
             name: object.name.capitalized,
             path: object.path,

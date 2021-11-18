@@ -21,6 +21,7 @@ struct MessageLabel: Equatable, Hashable {
 }
 
 enum MessageLabelType: Equatable, Hashable {
+    case inbox
     case seen
     case unread
     case starred
@@ -40,6 +41,7 @@ enum MessageLabelType: Equatable, Hashable {
         case .trash: return "TRASH"
         case .draft: return "DRAFT"
         case .important: return "IMPORTANT"
+        case .inbox: return "INBOX"
         // IMAP supports only
         case .seen: return "seen"
         case .none: return "none"

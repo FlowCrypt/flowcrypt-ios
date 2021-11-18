@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class LocalStorageTests: XCTestCase {
     var sut: LocalStorage!
@@ -15,7 +15,7 @@ class LocalStorageTests: XCTestCase {
     override func setUp() {
         sut = LocalStorage()
 
-        let passPhrase = PassPhrase(value: "123", fingerprints: ["123"], date: nil)
+        let passPhrase = PassPhrase(value: "123", fingerprintsOfAssociatedKey: ["123"], date: nil)
         sut.passPhraseStorage.save(passPhrase: passPhrase)
     }
 
@@ -34,7 +34,7 @@ class LocalStorageTests: XCTestCase {
 
         let user = "anton@gmail.com"
         try sut.logOutUser(email: user)
-        
+
         XCTAssertNil(UserDefaults.standard.string(forKey: trashKey))
         XCTAssertTrue(sut.passPhraseStorage.getPassPhrases().isEmpty)
     }

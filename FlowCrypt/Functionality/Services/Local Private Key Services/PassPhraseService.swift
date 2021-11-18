@@ -12,38 +12,41 @@ import UIKit
 // MARK: - Data Object
 struct PassPhrase: Codable, Hashable, Equatable {
     let value: String
-    let fingerprints: [String]
+    let fingerprintsOfAssociatedKey: [String]
     let date: Date?
 
-    var primaryFingerprint: String {
-        fingerprints[0]
+    var primaryFingerprintOfAssociatedKey: String {
+        fingerprintsOfAssociatedKey[0]
     }
 
-    init(value: String, fingerprints: [String], date: Date? = nil) {
+    init(value: String, fingerprintsOfAssociatedKey: [String], date: Date? = nil) {
         self.value = value
-        self.fingerprints = fingerprints
+        self.fingerprintsOfAssociatedKey = fingerprintsOfAssociatedKey
         self.date = date
     }
 
     func withUpdatedDate() -> PassPhrase {
-        PassPhrase(value: self.value, fingerprints: self.fingerprints, date: Date())
+        PassPhrase(value: self.value, fingerprintsOfAssociatedKey: self.fingerprintsOfAssociatedKey, date: Date())
     }
 
+    // (tom) todo - this is a confusing thing to do
+    // when comparing pass phrases to one another, you would expect that it's compared by the pass phrase string itself, and not by primary fingerprint of the associated key. I understand this is being used somewhere, but I suggest to refactor it to avoid defining this == overload.
     static func == (lhs: PassPhrase, rhs: PassPhrase) -> Bool {
-        lhs.primaryFingerprint == rhs.primaryFingerprint
+        lhs.primaryFingerprintOfAssociatedKey == rhs.primaryFingerprintOfAssociatedKey
     }
 
+    // similarly here
     func hash(into hasher: inout Hasher) {
-        hasher.combine(primaryFingerprint)
+        hasher.combine(primaryFingerprintOfAssociatedKey)
     }
 }
 
 extension PassPhrase {
-    init?(keyInfo: KeyInfo) {
+    init?(keyInfo: KeyInfoRealmObject) {
         guard let passphrase = keyInfo.passphrase else { return nil }
 
         self.init(value: passphrase,
-                  fingerprints: Array(keyInfo.allFingerprints))
+                  fingerprintsOfAssociatedKey: Array(keyInfo.allFingerprints))
     }
 }
 
@@ -61,6 +64,7 @@ protocol PassPhraseServiceType {
     func getPassPhrases() -> [PassPhrase]
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod)
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod)
+    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo])
 }
 
 final class PassPhraseService: PassPhraseServiceType {
@@ -81,24 +85,21 @@ final class PassPhraseService: PassPhraseServiceType {
     }
 
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {
+        logger.logInfo("\(storageMethod): saving passphrase for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
         switch storageMethod {
         case .persistent:
-            logger.logInfo("Save passphrase to storage")
             encryptedStorage.save(passPhrase: passPhrase)
         case .memory:
-            logger.logInfo("Save passphrase in memory")
-
-            inMemoryStorage.save(passPhrase: passPhrase)
-
-            let alreadySaved = encryptedStorage.getPassPhrases()
-
-            if alreadySaved.contains(where: { $0.primaryFingerprint == passPhrase.primaryFingerprint }) {
+            if encryptedStorage.getPassPhrases().contains(where: { $0.primaryFingerprintOfAssociatedKey == passPhrase.primaryFingerprintOfAssociatedKey }) {
+                logger.logInfo("\(StorageMethod.persistent): removing pass phrase from for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
                 encryptedStorage.remove(passPhrase: passPhrase)
             }
+            inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {
+        logger.logInfo("\(storageMethod): updating passphrase for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
         switch storageMethod {
         case .persistent:
             encryptedStorage.update(passPhrase: passPhrase)
@@ -110,4 +111,12 @@ final class PassPhraseService: PassPhraseServiceType {
     func getPassPhrases() -> [PassPhrase] {
         encryptedStorage.getPassPhrases() + inMemoryStorage.getPassPhrases()
     }
+
+    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) {
+        for privateKey in privateKeys {
+            let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: privateKey.fingerprints)
+            savePassPhrase(with: pp, storageMethod: StorageMethod.memory)
+        }
+    }
+
 }

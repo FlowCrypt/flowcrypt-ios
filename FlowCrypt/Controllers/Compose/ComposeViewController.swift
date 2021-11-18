@@ -6,13 +6,25 @@ import AsyncDisplayKit
 import Combine
 import FlowCryptCommon
 import FlowCryptUI
+import Foundation
+import PhotosUI
+
+// swiftlint:disable file_length
+private struct ComposedDraft: Equatable {
+    let email: String
+    let input: ComposeMessageInput
+    let contextToSend: ComposeMessageContext
+}
 
 /**
  * View controller to compose the message and send it
  * - User can be redirected here from *InboxViewController* by tapping on *+*
- * - Or from *MessageViewController* controller by tapping on *reply*
- */
+ * - Or from *ThreadDetailsViewController* controller by tapping on *reply*
+ **/
+@MainActor
 final class ComposeViewController: TableNodeViewController {
+    private lazy var logger = Logger.nested(Self.self)
+
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
         static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
@@ -37,9 +49,11 @@ final class ComposeViewController: TableNodeViewController {
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyService: KeyServiceType
+    private let keyMethods: KeyMethodsType
+    private let service: ServiceActor
+    private let passPhraseService: PassPhraseService
 
     private let search = PassthroughSubject<String, Never>()
-    private let cloudContactProvider: CloudContactsProvider
     private let userDefaults: UserDefaults
 
     private let email: String
@@ -49,6 +63,9 @@ final class ComposeViewController: TableNodeViewController {
     private var contextToSend = ComposeMessageContext()
 
     private var state: State = .main
+
+    private weak var saveDraftTimer: Timer?
+    private var composedLatestDraft: ComposedDraft?
 
     init(
         email: String,
@@ -61,19 +78,27 @@ final class ComposeViewController: TableNodeViewController {
         composeMessageService: ComposeMessageService = ComposeMessageService(),
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
-        keyService: KeyServiceType = KeyService()
+        keyService: KeyServiceType = KeyService(),
+        passPhraseService: PassPhraseService = PassPhraseService(),
+        keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        self.cloudContactProvider = cloudContactProvider
         self.userDefaults = userDefaults
         self.contactsService = contactsService
         self.composeMessageService = composeMessageService
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.keyService = keyService
+        self.keyMethods = keyMethods
+        self.service = ServiceActor(
+            composeMessageService: composeMessageService,
+            contactsService: contactsService,
+            cloudContactProvider: cloudContactProvider
+        )
+        self.passPhraseService = passPhraseService
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -89,12 +114,14 @@ final class ComposeViewController: TableNodeViewController {
         setupUI()
         setupNavigationBar()
         observeKeyboardNotifications()
+        observerAppStates()
         setupReply()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         node.view.endEditing(true)
+        stopDraftTimer()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -102,10 +129,83 @@ final class ComposeViewController: TableNodeViewController {
         showScopeAlertIfNeeded()
         cancellable.forEach { $0.cancel() }
         setupSearch()
+        startDraftTimer()
+
+        evaluateIfNeeded()
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    private func evaluateIfNeeded() {
+        guard contextToSend.recipients.isNotEmpty else {
+            return
+        }
+
+        for recepient in contextToSend.recipients {
+            evaluate(recipient: recepient)
+        }
+    }
+
+    func updateWithMessage(message: Message) {
+        self.contextToSend.subject = message.subject
+        self.contextToSend.message = message.raw
+        self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", state: decorator.recipientIdleState)]
+    }
+
+}
+
+// MARK: - Drafts
+extension ComposeViewController {
+    @objc private func startDraftTimer() {
+        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] _ in
+            self?.saveDraftIfNeeded()
+        }
+        saveDraftTimer?.fire()
+    }
+
+    @objc private func stopDraftTimer() {
+        saveDraftTimer?.invalidate()
+        saveDraftTimer = nil
+        saveDraftIfNeeded()
+    }
+
+    private func shouldSaveDraft() -> Bool {
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/975
+        return false
+//        let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
+//        guard let oldDraft = composedLatestDraft else {
+//            composedLatestDraft = newDraft
+//            return true
+//        }
+//        let result = newDraft != oldDraft
+//        composedLatestDraft = newDraft
+//        return result
+    }
+
+    private func saveDraftIfNeeded() {
+        guard shouldSaveDraft() else { return }
+        Task {
+            do {
+                let signingPrv = try await prepareSigningKey()
+                let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
+                    input: input,
+                    contextToSend: contextToSend,
+                    email: email,
+                    includeAttachments: false,
+                    signingPrv: signingPrv
+                )
+                try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
+            } catch {
+                if !(error is MessageValidationError) {
+                    // no need to save or notify user if validation error
+                    // for other errors show toast
+                    // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?
+                    showToast("Error saving draft: \(error.errorMessage)")
+                }
+            }
+        }
     }
 }
 
@@ -190,6 +290,20 @@ extension ComposeViewController {
         }
     }
 
+    private func observerAppStates() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(startDraftTimer),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(stopDraftTimer),
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
+    }
+
     private func adjustForKeyboard(height: CGFloat) {
         let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 8, right: 0)
         node.contentInset = insets
@@ -205,7 +319,6 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     @objc private func handleInfoTap() {
-        #warning("ToDo")
         showToast("Please email us at human@flowcrypt.com for help")
     }
 
@@ -214,78 +327,118 @@ extension ComposeViewController {
     }
 
     @objc private func handleSendTap() {
-        prepareSigningKey()
+        Task {
+            do {
+                let key = try await prepareSigningKey()
+                try await sendMessage(key)
+            } catch {
+                handle(error: error)
+            }
+        }
     }
 }
 
 // MARK: - Message Sending
 
 extension ComposeViewController {
-    private func prepareSigningKey() {
-        guard let signingKey = try? keyService.getSigningKey() else {
-            showAlert(message: "No available private key has your user id \"\(email)\" in it. Please import the appropriate private key.")
-            return
+    private func prepareSigningKey() async throws -> PrvKeyInfo {
+        guard let signingKey = try await keyService.getSigningKey() else {
+            throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
 
-        guard signingKey.passphrase != nil else {
+        guard let existingPassPhrase = signingKey.passphrase else {
+            return signingKey.copy(with: try await self.requestMissingPassPhraseWithModal(for: signingKey))
+        }
+
+        return signingKey.copy(with: existingPassPhrase)
+    }
+
+    private func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo) async throws -> String {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
-                onCancel: { [weak self] in
-                    self?.showAlert(message: "Passphrase is required for message signing")
+                onCancel: {
+                    return continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
                 },
                 onCompletion: { [weak self] passPhrase in
-                    self?.sendMessage(signingKey.copy(with: passPhrase))
-                })
+                    guard let self = self else {
+                        return continuation.resume(throwing: AppErr.nilSelf)
+                    }
+                    Task<Void, Never> {
+                        do {
+                            let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
+                            if matched {
+                                return continuation.resume(returning: passPhrase)
+                            } else {
+                                throw AppErr.user("This pass phrase did not match your signing private key")
+                            }
+                        } catch {
+                            return continuation.resume(throwing: error)
+                        }
+                    }
+                }
+            )
             present(alert, animated: true, completion: nil)
-            return
         }
-
-        sendMessage(signingKey)
     }
 
-    private func sendMessage(_ signingKey: PrvKeyInfo) {
+    private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
+        // since pass phrase was entered (an inconvenient thing for user to do),
+        //  let's find all keys that match and save the pass phrase for all
+        let allKeys = try await self.keyService.getPrvKeyInfo()
+        guard allKeys.isNotEmpty else {
+            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
+            //   I copied it from another usage, but has to be changed
+            throw KeyServiceError.retrieve
+        }
+        let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
+        // save passphrase for all matching keys
+        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        // now figure out if the pass phrase also matched the signing prv itself
+        let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
+        return matched != nil// true if the pass phrase matched signing key
+    }
+
+    private func sendMessage(_ signingKey: PrvKeyInfo) async throws {
         view.endEditing(true)
-        showSpinner("sending_title".localized)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
-        let result = composeMessageService.validateMessage(
-            input: input,
-            contextToSend: contextToSend,
-            email: email,
+        let spinnerTitle = contextToSend.attachments.isEmpty ? "sending_title" : "encrypting_title"
+        showSpinner(spinnerTitle.localized)
+
+        let selectedRecipients = contextToSend.recipients.filter(\.state.isSelected)
+        for selectedRecipient in selectedRecipients {
+            evaluate(recipient: selectedRecipient)
+        }
+
+        // TODO: - fix for spinner
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
+        try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
+        let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
+            input: self.input,
+            contextToSend: self.contextToSend,
+            email: self.email,
             signingPrv: signingKey
         )
-        switch result {
-        case .success(let message):
-            encryptAndSend(message)
-        case .failure(let error):
-            handle(error: error)
-        }
-    }
-
-    private func encryptAndSend(_ message: SendableMsg) {
-        Task {
-            do {
-                try await composeMessageService.encryptAndSend(message: message, threadId: input.threadId)
-                handleSuccessfullySentMessage()
-            } catch {
-                if let error = error as? ComposeMessageError {
-                    handle(error: error)
-                }
+        UIApplication.shared.isIdleTimerDisabled = true
+        try await service.encryptAndSend(
+            message: sendableMsg,
+            threadId: input.threadId,
+            progressHandler: { [weak self] progress in
+                self?.updateSpinner(progress: progress, systemImageName: "checkmark.circle")
             }
-        }
+        )
+        handleSuccessfullySentMessage()
     }
 
-    private func handle(error: ComposeMessageError) {
+    private func handle(error: Error) {
+        UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-
-        let message = "compose_error".localized
-            + "\n\n"
-            + error.description
-
-        showAlert(message: message)
+        showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
     }
 
     private func handleSuccessfullySentMessage() {
+        UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
         showToast(input.successfullySentToast)
@@ -583,7 +736,6 @@ extension ComposeViewController {
     private func handleEditingChanged(with text: String?) {
         guard let text = text, text.isNotEmpty else {
             search.send("")
-            updateState(with: .main)
             return
         }
 
@@ -598,33 +750,50 @@ extension ComposeViewController {
 // MARK: - Action Handling
 extension ComposeViewController {
     private func searchEmail(with query: String) {
-        cloudContactProvider.searchContacts(query: query)
-            .then(on: .main) { [weak self] emails in
-                let state: State = emails.isNotEmpty
-                    ? .searchEmails(emails)
-                    : .main
-                self?.updateState(with: state)
-            }
+        Task {
+            let localEmails = contactsService.searchContacts(query: query)
+            let cloudEmails = try? await service.searchContacts(query: query)
+            let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
+            let state: State = emails.isNotEmpty
+                ? .searchEmails(Array(emails))
+                : .main
+            updateState(with: state)
+        }
     }
 
     private func evaluate(recipient: ComposeMessageRecipient) {
-        guard isValid(email: recipient.email) else {
-            updateRecipientWithNew(state: self.decorator.recipientErrorState, for: .left(recipient))
+        guard recipient.email.isValidEmail else {
+            handleEvaluation(for: recipient, with: self.decorator.recipientInvalidEmailState)
             return
         }
 
-        contactsService.searchContact(with: recipient.email)
-            .then(on: .main) { [weak self] _ in
-                self?.handleEvaluation(for: recipient)
+        Task {
+            do {
+                let contact = try await service.searchContact(with: recipient.email)
+                let state = getRecipientState(from: contact)
+                handleEvaluation(for: recipient, with: state)
+            } catch {
+                handleEvaluation(error: error, with: recipient)
             }
-            .catch(on: .main) { [weak self] error in
-                self?.handleEvaluation(error: error, with: recipient)
-            }
+        }
     }
 
-    private func handleEvaluation(for recipient: ComposeMessageRecipient) {
+    private func getRecipientState(from recipient: RecipientWithSortedPubKeys) -> RecipientState {
+        switch recipient.keyState {
+        case .active:
+            return decorator.recipientKeyFoundState
+        case .expired:
+            return decorator.recipientKeyExpiredState
+        case .revoked:
+            return decorator.recipientKeyRevokedState
+        case .empty:
+            return decorator.recipientKeyNotFoundState
+        }
+    }
+
+    private func handleEvaluation(for recipient: ComposeMessageRecipient, with state: RecipientState) {
         updateRecipientWithNew(
-            state: decorator.recipientKeyFoundState,
+            state: state,
             for: .left(recipient)
         )
     }
@@ -649,11 +818,7 @@ extension ComposeViewController {
         let index: Int? = {
             switch context {
             case let .left(recipient):
-                guard let index = recipients.firstIndex(where: { $0.email == recipient.email }) else {
-                    assertionFailure()
-                    return nil
-                }
-                return index
+                return recipients.firstIndex(where: { $0.email == recipient.email })
             case let .right(index):
                 return index.row
             }
@@ -687,7 +852,7 @@ extension ComposeViewController {
         switch recipient.state {
         case .idle:
             handleRecipientSelection(with: indexPath)
-        case .keyFound, .keyNotFound, .selected:
+        case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .selected:
             break
         case let .error(_, isRetryError):
             if isRetryError {
@@ -699,12 +864,6 @@ extension ComposeViewController {
             }
         }
     }
-
-    private func isValid(email: String) -> Bool {
-        let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
-        return emailPredicate.evaluate(with: email)
-    }
 }
 
 // MARK: - State Handling
@@ -712,11 +871,13 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
+        node.reloadSections([1], with: .automatic)
+
         switch state {
         case .main:
-            node.reloadSections([0, 1], with: .fade)
+            node.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         case .searchEmails:
-            node.reloadSections([1], with: .fade)
+            break
         }
     }
 }
@@ -735,6 +896,46 @@ extension ComposeViewController: UIDocumentPickerDelegate {
     }
 }
 
+// MARK: - PHPickerViewControllerDelegate
+extension ComposeViewController: PHPickerViewControllerDelegate {
+    nonisolated func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        Task {
+            await picker.dismiss(animated: true)
+            let itemProvider = results.first?.itemProvider
+            if itemProvider?.hasItemConformingToTypeIdentifier("public.movie") == true {
+                itemProvider?.loadFileRepresentation(
+                    forTypeIdentifier: "public.movie",
+                    completionHandler: { [weak self] url, _ in
+                        guard let self = self else { return }
+                        DispatchQueue.main.async {
+                            if let url = url, let composeMessageAttachment = ComposeMessageAttachment(fileURL: url) {
+                                self.appendAttachmentIfAllowed(composeMessageAttachment)
+                                self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
+                            } else {
+                                self.showAlert(message: "files_picking_photos_error_message".localized)
+                            }
+                        }
+                    })
+            } else {
+                itemProvider?.loadFileRepresentation(
+                    forTypeIdentifier: "public.image",
+                    completionHandler: { [weak self] url, _ in
+                        guard let self = self else { return }
+                        DispatchQueue.main.async {
+                            if let url = url, let composeMessageAttachment = ComposeMessageAttachment(fileURL: url) {
+                                self.appendAttachmentIfAllowed(composeMessageAttachment)
+                                self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
+                            } else {
+                                self.showAlert(message: "files_picking_videos_error_message".localized)
+                            }
+                        }
+                    })
+            }
+        }
+        
+    }
+}
+
 // MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
 extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(
@@ -747,8 +948,6 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
         switch picker.sourceType {
         case .camera:
             composeMessageAttachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
-        case .photoLibrary:
-            composeMessageAttachment = ComposeMessageAttachment(librarySourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
         guard let attachment = composeMessageAttachment else {
@@ -782,11 +981,11 @@ extension ComposeViewController {
                 style: .default,
                 handler: { [weak self] _ in
                     guard let self = self else { return }
-                    self.photosManager.selectPhoto(source: .camera, from: self)
+                    self.photosManager.takePhoto(from: self)
                         .sinkFuture(
                             receiveValue: {},
                             receiveError: { _ in
-                                self.showNoAccessToPhotosAlert()
+                                self.showNoAccessToCameraAlert()
                             }
                         )
                         .store(in: &self.cancellable)
@@ -799,7 +998,7 @@ extension ComposeViewController {
                 style: .default,
                 handler: { [weak self] _ in
                     guard let self = self else { return }
-                    self.photosManager.selectPhoto(source: .photoLibrary, from: self)
+                    self.photosManager.selectPhoto(from: self)
                         .sinkFuture(
                             receiveValue: {},
                             receiveError: { _ in
@@ -835,7 +1034,29 @@ extension ComposeViewController {
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(
-            title: "setttings".localized,
+            title: "settings".localized,
+            style: .default
+        ) { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        }
+        alert.addAction(okAction)
+        alert.addAction(settingsAction)
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func showNoAccessToCameraAlert() {
+        let alert = UIAlertController(
+            title: "files_picking_no_camera_access_error_title".localized,
+            message: "files_picking_no_camera_access_error_message".localized,
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(
+            title: "OK",
+            style: .cancel
+        ) { _ in }
+        let settingsAction = UIAlertAction(
+            title: "settings".localized,
             style: .default
         ) { _ in
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
@@ -874,5 +1095,36 @@ extension ComposeViewController {
 
     private func shouldRenewToken(for newScope: [GoogleScope]) -> Bool {
         false
+    }
+}
+
+extension ComposeViewController: FilesManagerPresenter {}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let composeMessageService: ComposeMessageService
+    private let contactsService: ContactsServiceType
+    private let cloudContactProvider: CloudContactsProvider
+
+    init(composeMessageService: ComposeMessageService,
+         contactsService: ContactsServiceType,
+         cloudContactProvider: CloudContactsProvider) {
+        self.composeMessageService = composeMessageService
+        self.contactsService = contactsService
+        self.cloudContactProvider = cloudContactProvider
+    }
+
+    func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
+        try await composeMessageService.encryptAndSend(message: message,
+                                                       threadId: threadId,
+                                                       progressHandler: progressHandler)
+    }
+
+    func searchContacts(query: String) async throws -> [String] {
+        return try await cloudContactProvider.searchContacts(query: query)
+    }
+
+    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
+        return try await contactsService.searchContact(with: email)
     }
 }

@@ -6,28 +6,28 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class KeyMethodsTest: XCTestCase {
 
     var sut: KeyMethods!
     var decrypter: MockKeyDecrypter!
     var passPhrase = "Some long frase"
-    
+
     override func setUp() {
         decrypter = MockKeyDecrypter()
         sut = KeyMethods(decrypter: decrypter)
     }
-    
-    func testEmptyParsingKey() {
+
+    func testEmptyParsingKey() async throws {
         let emptyKeys: [KeyDetails] = []
-        let result = sut.filterByPassPhraseMatch(keys: emptyKeys, passPhrase: passPhrase)
-        
+        let result = try await sut.filterByPassPhraseMatch(keys: emptyKeys, passPhrase: passPhrase)
+
         XCTAssertTrue(result.isEmpty)
     }
-    
-    func testNoPrivateKey() {
+
+    func testPassPublicKeyWhenExpectingPrivateForPassPhraseMatch() async throws {
         // private part = nil
         let keys = [
             KeyDetails(
@@ -42,7 +42,8 @@ class KeyMethodsTest: XCTestCase {
                 lastModified: nil,
                 expiration: nil,
                 users: [],
-                algo: nil
+                algo: nil,
+                revoked: false
             ),
             KeyDetails(
                 public: "Public part2",
@@ -56,29 +57,33 @@ class KeyMethodsTest: XCTestCase {
                 lastModified: nil,
                 expiration: nil,
                 users: [],
-                algo: nil
+                algo: nil,
+                revoked: false
             )
         ]
-        let result = sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
-        
+        do {
+            _ = try await sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? KeyServiceError, KeyServiceError.expectedPrivateGotPublic)
+        }
+    }
+
+    func testCantDecryptKey() async throws {
+        decrypter.result = .failure(MockError())
+        let result = try await sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
         XCTAssertTrue(result.isEmpty)
     }
-    
-    func testCantDecryptKey() {
-        decrypter.result = .failure(.some)
-        let result = sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
-        XCTAssertTrue(result.isEmpty)
-    }
-    
-    func testSuccessDecryption() {
+
+    func testSuccessDecryption() async throws {
         decrypter.result = .success(CoreRes.DecryptKey(decryptedKey: "some key"))
-        let result = sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
+        let result = try await sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
         XCTAssertTrue(result.isNotEmpty)
     }
 }
 
 extension KeyMethodsTest {
-    var validKeys: [KeyDetails] {[
+    var validKeys: [KeyDetails] { [
         KeyDetails(
             public: "Public part",
             private: "private 1",
@@ -91,7 +96,8 @@ extension KeyMethodsTest {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         ),
         KeyDetails(
             public: "Public part2",
@@ -105,14 +111,15 @@ extension KeyMethodsTest {
             lastModified: nil,
             expiration: nil,
             users: [],
-            algo: nil
+            algo: nil,
+            revoked: false
         )
-    ]}
+    ] }
 }
 
 class MockKeyDecrypter: KeyDecrypter {
     var result: Result<CoreRes.DecryptKey, MockError> = .success(CoreRes.DecryptKey(decryptedKey: "decrypted"))
-    
+
     func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey {
         switch result {
         case .success(let key):

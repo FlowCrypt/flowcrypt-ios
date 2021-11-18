@@ -1,12 +1,17 @@
 // COMMON
 "loading_title" = "Loading";
+"downloading_title" = "Downloading";
+"encrypting_title" = "Encrypting...";
+"decrypting_title" = "Decrypting...";
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
 "ok" = "Ok";
 "cancel" = "Cancel";
 "open" = "Open";
-"setttings" = "Settings";
+"settings" = "Settings";
+"go_back" = "Go back";
+"continue" = "Continue";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -23,11 +28,21 @@
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved.";
+"message_open_anyway" = "Open anyway";
+"message_encrypted" = "encrypted";
+"message_not_encrypted" = "not encrypted";
+"message_signed" = "signed";
+"message_not_signed" = "not signed";
+"message_missing_pubkey" = "no public key %@";
+"message_signature_verify_error" = "cannot verify signature: %@";
+"message_bad_signature" = "bad signature";
+"message_signature_pending" = "verifying signature...";
+"message_signature_fail_reason" = "Failed to verify signature due to: %@";
 
 // REPLY
 "reply_title" = "Your reply"; // not used
 
-// EROOR
+// ERROR
 "error_internet_connection" = "No internet connection"; // not used
 "error_google_service" = "Could not configure google services"; // not used
 "error_background_core" = "Background core service error"; // not used
@@ -38,11 +53,13 @@
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
 "error_general_text" = "Something went wrong.";
 "error_no_folders" = "There are no folders on your account";
+"error_key_mismatch" = "No matched key found";
 
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
 "keyServiceError_retrieve_parse" = "Could not parse keys from storage. Please reinstall the app.";
 "keyServiceError_retrieve_unexpected" = "Could not import key. Please try to relogin.";
+"keyServiceError_missing_current_email" = "Missing current email. Please restart the app and try again.";
 
 "backupServiceError_parse" = "Key can't be parsed";
 "backupServiceError_email" = "Missing user email";
@@ -52,18 +69,22 @@
 
 // Compose
 "compose_enter_recipient" = "Enter recipient";
-"compose_no_pub_recipient" = "Recipient doesn't seem to have encryption set up";
-"compose_no_pub_multiple" = "Some recipients don't have encryption set up";
 "compose_no_pub_sender" = "Missing sender public key. Is FlowCrypt iOS app well set up?";
+"compose_recipient_no_pub" = "One or more of your recipients are missing a public key (marked in gray).\n\nPlease ask them to share it with you, or ask them to also set up FlowCrypt.";
+"compose_recipient_revoked" = "One or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.";
+"compose_recipient_expired" = "One or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.";
+"compose_recipient_invalid_email" = "One or more of your recipients have invalid email address (marked in red)";
 "compose_error" = "Could not compose message";
 "compose_reply_successfull" = "Reply successfully sent";
 "compose_reply_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
-"compose_sent" = "Encrypted message sent";
+"compose_encrypted_sent" = "Encrypted message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
 "compose_recipient" = "Add Recipient";
 "compose_subject" = "Subject";
 "compose_enable_search" = "To enable searching contacts, please Log out and set up FlowCrypt again";
+"compose_uploading" = "Uploading";
+"compose_sent" = "Sent";
 
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";
@@ -236,6 +257,7 @@
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
 "gmail_service_provider_error_error_message" = "Gmail provider error: %@";
 "gmail_service_missing_back_query_error_message" = "Missed backup query: %@";
+"gmail_service_no_access_to_account_message" = "Google login successful.\n Next, connect your inbox. Be sure to tick %@ permission on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
 // Files picking
 "files_picking_select_input_source_title" = "Please select input source";
@@ -244,7 +266,16 @@
 "files_picking_files_source" = "Files";
 "files_picking_no_library_access_error_title" = "No access to library";
 "files_picking_no_library_access_error_message" = "You may open Settings and give the full access to photo library";
+"files_picking_no_camera_access_error_title" = "No access to camera";
+"files_picking_no_camera_access_error_message" = "You may open Settings and give the access to camera";
 "files_picking_files_error_message" = "Could not add an attachment";
 "files_picking_photos_error_message" = "Could not add a photo";
+"files_picking_videos_error_message" = "Could not add a video";
 "files_picking_size_error_message" = "Total attachments size can not exceed 10 MB";
+
+// Invalid storage view controller
+"invalid_storage_title" = "Error";
+"invalid_storage_text" = "Your data storage is invalid. You could reset it and start with new one. Check error description below";
+"invalid_storage_reset_button" = "Reset";
+"invalid_storage_reset_error" = "Couldn't remove storage. Please reinstall application";
 

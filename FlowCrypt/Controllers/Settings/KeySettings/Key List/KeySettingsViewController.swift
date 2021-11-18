@@ -15,17 +15,21 @@ import FlowCryptUI
  * - User can proceed to importing keys *SetupManuallyImportKeyViewController*
  * - User can see detail information for the key in *KeyDetailViewController*
  */
+@MainActor
 final class KeySettingsViewController: TableNodeViewController {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
     private let keyService: KeyServiceType
+    private let isUsingKeyManager: Bool
 
     init(
         decorator: KeySettingsViewDecorator = KeySettingsViewDecorator(),
-        keyService: KeyServiceType = KeyService()
+        keyService: KeyServiceType = KeyService(),
+        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
     ) {
         self.decorator = decorator
         self.keyService = keyService
+        self.isUsingKeyManager = clientConfigurationService.getSavedForCurrentUser().isUsingKeyManager
         super.init(node: TableNode())
     }
 
@@ -41,29 +45,35 @@ final class KeySettingsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
         node.reloadData()
-
-        loadKeysFromStorageAndRender()
         setupNavigationBar()
+        loadKeys()
     }
 
     private func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .add,
-            target: self,
-            action: #selector(handleAddButtonTap)
-        )
+        if !isUsingKeyManager {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .add,
+                target: self,
+                action: #selector(handleAddButtonTap)
+            )
+        }
+    }
+
+    private func loadKeys() {
+        Task {
+            do {
+                try await loadKeysFromStorageAndRender()
+            } catch {
+                handleCommon(error: error)
+            }
+        }
     }
 }
 
 extension KeySettingsViewController {
-    private func loadKeysFromStorageAndRender() {
-        switch keyService.getPrvKeyDetails() {
-        case let .failure(error):
-            handleCommon(error: error)
-        case let .success(keys):
-            self.keys = keys
-            node.reloadData()
-        }
+    private func loadKeysFromStorageAndRender() async throws {
+        self.keys = try await keyService.getPrvKeyDetails()
+        await node.reloadData()
     }
 }
 
@@ -95,7 +105,15 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard let key = keys[safe: indexPath.row] else { return }
-        let viewController = KeyDetailViewController(key: key)
+
+        var parts = KeyDetailViewController.Parts.allCases
+        if isUsingKeyManager {
+            if let index = parts.firstIndex(where: { $0 == .privateInfo }) {
+                parts.remove(at: index)
+            }
+        }
+
+        let viewController = KeyDetailViewController(key: key, parts: parts)
         navigationController?.pushViewController(viewController, animated: true)
     }
 }

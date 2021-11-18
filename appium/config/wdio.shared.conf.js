@@ -5,7 +5,7 @@ exports.config = {
     runner: 'local',
     framework: 'jasmine',
     jasmineNodeOpts: {
-        defaultTimeoutInterval: 300000,
+        defaultTimeoutInterval: 600000,
         requires: ['ts-node/register', 'tsconfig-paths/register']
     },
     sync: true,
@@ -25,7 +25,7 @@ exports.config = {
     ],
     services: [
         ['appium', {
-            command : 'appium',
+            command : './node_modules/.bin/appium',
             logPath : join(process.cwd(), './tmp')
         }]
     ],

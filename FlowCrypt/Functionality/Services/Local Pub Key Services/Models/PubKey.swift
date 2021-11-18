@@ -5,7 +5,7 @@
 //  Created by Roma Sosnovsky on 11/10/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
+
 import Foundation
 
 struct PubKey {
@@ -24,6 +24,10 @@ struct PubKey {
     let created: Date?
     /// key algo
     let algo: KeyAlgo?
+    /// is key revoked
+    let isRevoked: Bool
+    /// user emails
+    let emails: [String]
 }
 
 extension PubKey {
@@ -31,6 +35,16 @@ extension PubKey {
     var longid: String? { longids.first }
     /// first key fingerprint
     var fingerprint: String? { fingerprints.first }
+
+    var keyState: PubKeyState {
+        guard !isRevoked else { return .revoked }
+
+        guard let expiresOn = expiresOn,
+              expiresOn.timeIntervalSinceNow.sign == .minus
+        else { return .active }
+
+        return .expired
+    }
 }
 
 extension PubKey {
@@ -46,7 +60,9 @@ extension PubKey {
                   longids: longids,
                   fingerprints: fingerprints,
                   created: Date(timeIntervalSince1970: Double(keyDetails.created)),
-                  algo: keyDetails.algo)
+                  algo: keyDetails.algo,
+                  isRevoked: keyDetails.revoked,
+                  emails: keyDetails.pgpUserEmails)
     }
 }
 

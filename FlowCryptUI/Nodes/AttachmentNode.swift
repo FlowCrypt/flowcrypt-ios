@@ -45,6 +45,8 @@ public final class AttachmentNode: CellNode {
         deleteButtonNode.setImage(UIImage(named: "cancel")?.tinted(.gray), for: .normal)
         imageNode.image = UIImage(named: "paperclip")?.tinted(.gray)
         buttonNode.setImage(UIImage(named: "download")?.tinted(.gray), for: .normal)
+        buttonNode.accessibilityIdentifier = "downloadButton"
+
         titleNode.attributedText = input.name
         subtitleNode.attributedText = input.size
 
