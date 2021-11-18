@@ -6,6 +6,7 @@ const SELECTORS = {
   OK_BUTTON: '~Ok',
   CONFIRM_PASS_PHRASE_FIELD: '~textField',
   CREATE_EMAIL_BUTTON: '-ios class chain:**/XCUIElementTypeButton[`label == "+"`]',
+  INBOX_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "INBOX"`]'
 };
 
 class InboxScreen extends BaseScreen {
@@ -15,6 +16,10 @@ class InboxScreen extends BaseScreen {
 
   get createEmailButton() {
     return $(SELECTORS.CREATE_EMAIL_BUTTON);
+  }
+
+  get inboxHeader() {
+      return $(SELECTORS.INBOX_HEADER)
   }
 
   clickOnUserEmail = async (email: string) => {
@@ -28,6 +33,11 @@ class InboxScreen extends BaseScreen {
 
   clickCreateEmail = async () => {
     await ElementHelper.waitAndClick(await this.createEmailButton);
+  }
+
+  checkInboxScreen = async () => {
+    await (await this.inboxHeader).waitForDisplayed();
+    await (await this.createEmailButton).waitForDisplayed();
   }
 }
 

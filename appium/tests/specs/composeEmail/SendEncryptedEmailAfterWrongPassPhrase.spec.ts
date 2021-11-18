@@ -38,7 +38,7 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.clickSentButton();
     await EmailScreen.enterPassPhrase(passPhrase);
     await EmailScreen.clickOkButton();
-    await EmailScreen.checkSentEmailMessage();
+    await InboxScreen.checkInboxScreen();
 
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.clickSentButton();
