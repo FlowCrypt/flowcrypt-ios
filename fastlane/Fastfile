@@ -32,5 +32,23 @@ platform :ios do
     )
   end
 
+  desc "Distribute app"
+    lane :distribute do
+        build_app(
+          workspace: "FlowCrypt.xcworkspace",
+          configuration: "Debug",
+          scheme: "Debug FlowCrypt",
+          output_name: "app.ipa"
+          # output_directory: "path/to/dir", # Destination directory. Defaults to current directory.
+          # output_name: "my-app.ipa",       # specify the name of the .ipa file to generate (including file extension)
+        )
+
+        firebase_app_distribution(
+            app: ENV['FIREBASE_APP_ID'],
+            service_credentials_file: "firebase_credentials.json"
+        )
+
+    end
+
 end
 
