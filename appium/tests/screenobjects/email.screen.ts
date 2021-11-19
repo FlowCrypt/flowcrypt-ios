@@ -10,6 +10,8 @@ const SELECTORS = {
   SAVE_BUTTON: '~Save',
   DOWNLOAD_ATTACHMENT_BUTTON: '~downloadButton',
   REPLY_BUTTON: '~replyButton',
+  DELETE_BUTTON: '~Delete',
+  CONFIRM_DELETING: '~OK'
 };
 
 
@@ -44,6 +46,14 @@ class EmailScreen extends BaseScreen {
 
   get replyButton() {
     return $(SELECTORS.REPLY_BUTTON);
+  }
+
+  get deleteButton() {
+      return $(SELECTORS.DELETE_BUTTON)
+  }
+
+  get confirmDeletingButton() {
+      return $(SELECTORS.CONFIRM_DELETING)
   }
 
   checkEmailAddress = async (email: string) => {
@@ -105,6 +115,14 @@ class EmailScreen extends BaseScreen {
 
   clickReplyButton = async () => {
     await ElementHelper.waitAndClick(await this.replyButton);
+  }
+
+  clickDeleteButton = async () => {
+    await ElementHelper.waitAndClick(await this.deleteButton);
+  }
+
+  confirmDelete = async () => {
+    await ElementHelper.waitAndClick(await this.confirmDeletingButton)
   }
 }
 
