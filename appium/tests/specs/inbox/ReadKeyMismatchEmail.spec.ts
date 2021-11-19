@@ -19,10 +19,6 @@ describe('INBOX: ', () => {
     await SetupKeyScreen.setPassPhrase();
 
     await InboxScreen.clickOnEmailBySubject(emailSubject);
-
-    await EmailScreen.clickOpenAnyway();
-    await EmailScreen.checkEmailAddress(senderEmail);
-    await EmailScreen.checkEmailSubject(emailSubject);
-    await EmailScreen.checkEmailText(emailText);
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
   });
 });

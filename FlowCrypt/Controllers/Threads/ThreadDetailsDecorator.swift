@@ -11,9 +11,9 @@ import UIKit
 
 extension ThreadMessageSenderCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
-        let signature: String
+        let signature: String?
         if let processedMessage = threadMessage.processedMessage, processedMessage.messageType == .encrypted {
-            signature = processedMessage.signature.message
+            signature = processedMessage.signature?.message
         } else {
             signature = "message_not_signed".localized
         }
@@ -34,9 +34,9 @@ extension ThreadMessageSenderCellNode.Input {
             : .mainTextUnreadColor
 
         self.init(
-            signature: NSAttributedString.text(from: signature, style: .regular(12), color: .white),
-            signatureColor: threadMessage.processedMessage?.signature.color,
-            signatureIcon: threadMessage.processedMessage?.signature.icon,
+            signature: signature.map { NSAttributedString.text(from: $0, style: .regular(12), color: .white) },
+            signatureColor: threadMessage.processedMessage?.signature?.color,
+            signatureIcon: threadMessage.processedMessage?.signature?.icon,
             sender: NSAttributedString.text(from: sender, style: style, color: textColor),
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,

@@ -10,7 +10,6 @@ const SELECTORS = {
   SAVE_BUTTON: '~Save',
   DOWNLOAD_ATTACHMENT_BUTTON: '~downloadButton',
   REPLY_BUTTON: '~replyButton',
-  OPEN_ANYWAY_BUTTON: '~Open anyway',
 };
 
 
@@ -45,10 +44,6 @@ class EmailScreen extends BaseScreen {
 
   get replyButton() {
     return $(SELECTORS.REPLY_BUTTON);
-  }
-
-  get openAnywayButton() {
-    return $(SELECTORS.OPEN_ANYWAY_BUTTON);
   }
 
   checkEmailAddress = async (email: string) => {
@@ -110,10 +105,6 @@ class EmailScreen extends BaseScreen {
 
   clickReplyButton = async () => {
     await ElementHelper.waitAndClick(await this.replyButton);
-  }
-
-  clickOpenAnyway = async () => {
-    await ElementHelper.waitAndClick(await this.openAnywayButton);
   }
 }
 
