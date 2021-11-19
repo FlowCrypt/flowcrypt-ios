@@ -7,7 +7,8 @@ const SELECTORS = {
   LOGOUT_BTN: '~Log out',
   SETTINGS_BTN: '~Settings',
   INBOX_BTN: '~INBOX',
-  SENT_BTN: '~SENT'
+  SENT_BTN: '~SENT',
+  TRASH_BTN: '~TRASH'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -33,6 +34,10 @@ class MenuBarScreen extends BaseScreen {
 
   get sentButton() {
     return $(SELECTORS.SENT_BTN);
+  }
+
+  get trashButton() {
+      return $(SELECTORS.TRASH_BTN)
   }
 
   clickMenuIcon = async () => {
@@ -63,6 +68,10 @@ class MenuBarScreen extends BaseScreen {
 
   clickSentButton = async () => {
       await ElementHelper.waitAndClick(await this.sentButton);
+  }
+
+  clickTrashButton = async () => {
+      await ElementHelper.waitAndClick(await this.trashButton);
   }
 }
 
