@@ -132,7 +132,7 @@ extension GoogleUserService {
             scopes: scopes.map(\.value),
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
-            additionalParameters: nil
+            additionalParameters: ["include_granted_scopes": "true"]
         )
     }
 
