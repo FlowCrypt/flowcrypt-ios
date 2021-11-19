@@ -10,7 +10,7 @@ import { CommonData } from '../../data';
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('user is able to select recipient from contact list using contact name', async () => {
+  it('sending message to user without public key prouces modal', async () => {
 
     const noPublicKeyRecipient = CommonData.recipientWithoutPublicKey.email;
     const emailSubject = CommonData.simpleEmail.subject;
