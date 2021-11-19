@@ -9,6 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
+import UIKit
 
 class CheckMailAuthViewController: TableNodeViewController {
     private let globalRouter: GlobalRouterType
@@ -26,10 +27,6 @@ class CheckMailAuthViewController: TableNodeViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-    }
-
-    var errorMessage: String {
-        "gmail_service_no_access_to_account_message".localized
     }
 }
 
@@ -78,9 +75,10 @@ extension CheckMailAuthViewController {
             return TextCellNode(
                 input: .init(
                     backgroundColor: .backgroundColor,
-                    title: errorMessage,
+                    title: "gmail_service_no_access_to_account_message".localized,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200),
+                    insets: UIEdgeInsets.side(24),
                     textAlignment: .center
                 )
             )

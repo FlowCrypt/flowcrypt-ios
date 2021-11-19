@@ -65,6 +65,7 @@ final class ComposeViewController: TableNodeViewController {
     private var contextToSend = ComposeMessageContext()
 
     private var state: State = .main
+    private var shouldEvaluateRecipientInput = true
 
     private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
@@ -131,9 +132,16 @@ final class ComposeViewController: TableNodeViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        startDraftTimer()
+
+        guard shouldEvaluateRecipientInput else {
+            shouldEvaluateRecipientInput = true
+            return
+        }
+
         cancellable.forEach { $0.cancel() }
         setupSearch()
-        startDraftTimer()
 
         evaluateIfNeeded()
     }
@@ -147,8 +155,8 @@ final class ComposeViewController: TableNodeViewController {
             return
         }
 
-        for recepient in contextToSend.recipients {
-            evaluate(recipient: recepient)
+        for recipient in contextToSend.recipients {
+            evaluate(recipient: recipient)
         }
     }
 
@@ -696,7 +704,9 @@ extension ComposeViewController {
     }
 
     private func handleEndEditingAction(with text: String?) {
-        guard let text = text, text.isNotEmpty else { return }
+        guard shouldEvaluateRecipientInput,
+              let text = text, text.isNotEmpty
+        else { return }
 
         // Set all recipients to idle state
         contextToSend.recipients = recipients.map { recipient in
@@ -1125,6 +1135,7 @@ extension ComposeViewController {
     }
 
     private func askForContactsPermission() {
+        shouldEvaluateRecipientInput = false
         router.askForContactsPermission(for: .gmailLogin(self))
     }
 }
