@@ -10,6 +10,8 @@ import ContactScreen from './contacts.screen';
 import ContactPublicKeyScreen from './contact-public-key.screen';
 import PublicKeyScreen from './public-key.screen';
 import AttachmentScreen from './attachment.screen';
+import SentScreen from './sent.screen';
+import TrashScreen from './trash.screen'
 
 export {
   SplashScreen,
@@ -23,5 +25,7 @@ export {
   AttachmentScreen,
   PublicKeyScreen,
   ContactScreen,
-  ContactPublicKeyScreen
+  ContactPublicKeyScreen,
+  SentScreen,
+  TrashScreen
 };
