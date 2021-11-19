@@ -14,10 +14,11 @@ enum AlertsFactory {
 
     static func makePassPhraseAlert(
         onCancel: @escaping CancelCompletion,
-        onCompletion: @escaping PassPhraseCompletion
+        onCompletion: @escaping PassPhraseCompletion,
+        title: String = "setup_enter_pass_phrase".localized
     ) -> UIAlertController {
         let alert = UIAlertController(
-            title: "setup_enter_pass_phrase".localized,
+            title: title,
             message: nil,
             preferredStyle: .alert
         )
@@ -51,43 +52,4 @@ enum AlertsFactory {
         return alert
     }
 
-    static func makeWrongPassPhraseAlert(
-        onCancel: @escaping CancelCompletion,
-        onCompletion: @escaping PassPhraseCompletion
-    ) -> UIAlertController {
-        let alert = UIAlertController(
-            title: "setup_wrong_pass_phrase_retry".localized,
-            message: nil,
-            preferredStyle: .alert
-        )
-
-        alert.addTextField { tf in
-            tf.isSecureTextEntry = true
-        }
-
-        let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
-            guard let textField = alert.textFields?.first,
-                  let passPhrase = textField.text,
-                  passPhrase.isNotEmpty
-            else {
-                alert.dismiss(animated: true, completion: nil)
-                return
-            }
-
-            alert.dismiss(animated: true) {
-                onCompletion(passPhrase)
-            }
-        }
-
-        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
-            alert.dismiss(animated: true) {
-                onCancel()
-            }
-        }
-
-        alert.addAction(cancelAction)
-        alert.addAction(saveAction)
-
-        return alert
-    }
 }
