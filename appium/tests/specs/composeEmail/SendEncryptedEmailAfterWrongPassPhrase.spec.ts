@@ -23,9 +23,14 @@ describe('COMPOSE EMAIL: ', () => {
     const wrongPassPhraseError = CommonData.errors.wrongPassPhrase;
     const wrongPassPhrase = "wrong";
     const senderEmail = CommonData.account.email;
+    const bundleId = CommonData.bundleId.id;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+
+    //Restart app to reset pass phrase memory cache
+    await driver.terminateApp(bundleId);
+    await driver.activateApp(bundleId);
 
     await InboxScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(contactEmail, emailSubject, emailText);
