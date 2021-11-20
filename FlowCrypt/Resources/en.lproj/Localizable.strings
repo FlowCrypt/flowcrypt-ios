@@ -10,10 +10,7 @@
 "cancel" = "Cancel";
 "open" = "Open";
 "settings" = "Settings";
-"go_back" = "Go back";
 "continue" = "Continue";
-"allow" = "Allow";
-"later" = "Later";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -23,14 +20,12 @@
 // MESSAGE
 "message_failed_open" = "Could not open message";
 "message_failed_load" = "Failed to load messages";
-"message_your" = "Your message";
 "message_compose_secure" = "Compose Secure Message";
 "message_unknown_sender" = "(unknown sender)";
 "message_missed_subject" = "No subject";
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved.";
-"message_open_anyway" = "Open anyway";
 "message_encrypted" = "encrypted";
 "message_not_encrypted" = "not encrypted";
 "message_signed" = "signed";
@@ -42,13 +37,7 @@
 "message_signature_fail_reason" = "Failed to verify signature due to: %@";
 "message_decrypt_error" = "decrypt error";
 
-// REPLY
-"reply_title" = "Your reply"; // not used
-
 // ERROR
-"error_internet_connection" = "No internet connection"; // not used
-"error_google_service" = "Could not configure google services"; // not used
-"error_background_core" = "Background core service error"; // not used
 "error_fetch_folders" = "Could not fetch folders";
 "error_move_trash" = "Unable to move message to Trash";
 "error_archive" = "Unable to archive message";
@@ -56,7 +45,6 @@
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
 "error_general_text" = "Something went wrong.";
 "error_no_folders" = "There are no folders on your account";
-"error_key_mismatch" = "No matched key found";
 
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
@@ -85,11 +73,8 @@
 "compose_enter_secure" = "Enter secure message";
 "compose_recipient" = "Add Recipient";
 "compose_subject" = "Subject";
-"compose_enable_search" = "To enable searching contacts, please Log out and set up FlowCrypt again";
-"compose_enable_contacts_search" = "To enable contacts search, please allow access to your Google contacts on the next screen";
 "compose_enable_google_contacts_search" = "Enable Google Contact Search";
 "compose_no_contacts_found" = "No contacts found";
-"compose_contacts_search" = "Contacts Search";
 "compose_uploading" = "Uploading";
 "compose_sent" = "Sent";
 
@@ -113,11 +98,6 @@
 "setup_load" = "Load Account";
 "setup_use_another" = "Use Another Account";
 "setup_no_backups" = "No backups found on account: \n";
-"setup_action_failed" = "Action failed";
-"setup_action_import" = "Import existing Private Key";
-"setup_action_create_new" = "Create new Private Key";
-"setup_action_create_new_subtitle" = "Create a new OpenPGP Private Key";
-"setup_use_otherAccount" = "Use other account";
 "setup_enter_pass_phrase" = "Enter pass phrase";
 "setup_wrong_pass_phrase_retry" = "Wrong pass phrase, please try again";
 "setup_backup_email" = "This email contains a key backup. It will help you access your encrypted messages from other computers (along with your pass phrase). You can safely leave it in your inbox or archive it.\n\nThe key below is protected with pass phrase that only you know. You should make sure to note your pass phrase down.\n\nDO NOT DELETE THIS EMAIL. Write us at human@flowcrypt.com so that we can help.";
@@ -149,7 +129,6 @@
 // Search
 "search_title" = "Search";
 "search_placeholder" = "Search All Mail";
-"search_error" = "Error in searching";
 "search_empty" = "No messages found";
 
 // Settings
@@ -186,9 +165,7 @@
 // Key Settings
 "key_settings_title" = "Keys";
 "key_settings_subtitle" = "Public Keys are safe to share";
-"key_settings_no_private" = "Private key";
 
-"key_settings_detail_title" = "My pulick keys";
 "key_settings_detail_show_public" = "Show public key";
 "key_settings_detail_show_private_title" = "Show private key";
 "key_settings_detail_copy" = "Copy to clipboard";
@@ -248,8 +225,6 @@
 "organisational_rules_autogen_passphrase_quitely_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + PASS_PHRASE_QUIET_AUTOGEN) is not supported on this platform";
 "organisational_rules_forbid_storing_passphrase_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + missing FORBID_STORING_PASS_PHRASE) is not supported on this platform";
 "organisational_rules_must_submit_attester_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + ENFORCE_ATTESTER_SUBMIT) is not supported on this platform";
-"organisational_rules_can_create_keys_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + missing NO_PRV_CREATE) is not supported on this platform";
-"organisational_rules_ekm_private_keys_message" = "Ignoring %d keys returned by EKM %@ (not implemented)";
 "organisational_rules_ekm_empty_private_keys_error" = "There are no private keys configured for you. Please ask yout systems administrator or help desk";
 "organisational_rules_ekm_keys_are_not_decrypted_error" = "Received private keys are not fully decrypted. Please try login flow again";
 "organisational_wrong_email_error" = "Not a valid email %@";

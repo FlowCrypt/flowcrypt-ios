@@ -27,7 +27,6 @@ final class ComposeViewController: TableNodeViewController {
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
-        static let didShowContactsScopeAlert = "didShowContactsScopeAlert"
     }
 
     enum State {
@@ -785,7 +784,6 @@ extension ComposeViewController {
     }
 
     private func handleDidBeginEditing() {
-        showNoAccessToContactsAlertIfNeeded()
         node.view.keyboardDismissMode = .none
     }
 }
@@ -1102,34 +1100,6 @@ extension ComposeViewController {
         }
         alert.addAction(okAction)
         alert.addAction(settingsAction)
-
-        present(alert, animated: true, completion: nil)
-    }
-
-    private func showNoAccessToContactsAlertIfNeeded() {
-        guard !cloudContactProvider.isContactsScopeEnabled,
-              !userDefaults.bool(forKey: Constants.didShowContactsScopeAlert)
-        else { return }
-
-        userDefaults.set(true, forKey: Constants.didShowContactsScopeAlert)
-
-        let alert = UIAlertController(
-            title: "compose_contacts_search".localized,
-            message: "compose_enable_contacts_search".localized,
-            preferredStyle: .alert
-        )
-        let laterAction = UIAlertAction(
-            title: "later".localized,
-            style: .cancel
-        )
-        let allowAction = UIAlertAction(
-            title: "allow".localized,
-            style: .default
-        ) { [weak self] _ in
-            self?.askForContactsPermission()
-        }
-        alert.addAction(allowAction)
-        alert.addAction(laterAction)
 
         present(alert, animated: true, completion: nil)
     }

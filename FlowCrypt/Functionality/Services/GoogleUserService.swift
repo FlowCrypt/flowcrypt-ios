@@ -81,7 +81,7 @@ extension GoogleUserService: UserServiceType {
                 presenting: viewController
             ) { authState, authError in
                 guard let authState = authState else {
-                    let error = authError ?? AppErr.unexpected("Shouldn't happen because covered received non nil error and non nil authState")
+                    let error = authError ?? AppErr.unexpected("Shouldn't happen because received non nil error and non nil authState")
                     return continuation.resume(throwing: error)
                 }
 
