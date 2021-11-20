@@ -292,7 +292,6 @@
 		D27177472424D59800BDA9A9 /* TextCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3523438B9D00A7371A /* TextCellNode.swift */; };
 		D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27177482424D73000BDA9A9 /* InboxViewDecorator.swift */; };
 		D271774A242558DA00BDA9A9 /* MessageSenderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779923737E1900E19C07 /* MessageSenderNode.swift */; };
-		D271774B242558DA00BDA9A9 /* MessageSubjectAndTimeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779B23737E2A00E19C07 /* MessageSubjectAndTimeNode.swift */; };
 		D271774C242558DA00BDA9A9 /* MessageTextSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */; };
 		D271774E24255F1100BDA9A9 /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */; };
 		D27177502425659F00BDA9A9 /* TitleCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F433239EC61C001F4607 /* TitleCellNode.swift */; };
@@ -612,7 +611,6 @@
 		9F8220D426336626004B2009 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9F8277952373732000E19C07 /* UIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
 		9F82779923737E1900E19C07 /* MessageSenderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderNode.swift; sourceTree = "<group>"; };
-		9F82779B23737E2A00E19C07 /* MessageSubjectAndTimeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSubjectAndTimeNode.swift; sourceTree = "<group>"; };
 		9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextSubjectNode.swift; sourceTree = "<group>"; };
 		9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewContainerController.swift; sourceTree = "<group>"; };
 		9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsDecorator.swift; sourceTree = "<group>"; };
@@ -1970,7 +1968,6 @@
 				5A39F433239EC61C001F4607 /* TitleCellNode.swift */,
 				9F82779923737E1900E19C07 /* MessageSenderNode.swift */,
 				5180CB9027356D48001FC7EF /* MessageSubjectNode.swift */,
-				9F82779B23737E2A00E19C07 /* MessageSubjectAndTimeNode.swift */,
 				9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */,
 				5180CB96273724E9001FC7EF /* ThreadMessageSenderCellNode.swift */,
 				9F56BD3123438B5B00A7371A /* InboxCellNode.swift */,
@@ -2727,7 +2724,6 @@
 			files = (
 				9F7ECCA7272C3FB4008A1770 /* TextImageNode.swift in Sources */,
 				D27177452424D44200BDA9A9 /* ComposeButtonNode.swift in Sources */,
-				D271774B242558DA00BDA9A9 /* MessageSubjectAndTimeNode.swift in Sources */,
 				D24FAFAB2520BFAE00BF46C5 /* CheckBoxNode.swift in Sources */,
 				5180CB9127356D48001FC7EF /* MessageSubjectNode.swift in Sources */,
 				D28655952423BFF60066F52E /* SideMenuOptionalView.swift in Sources */,

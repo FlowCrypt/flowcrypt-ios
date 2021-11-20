@@ -11,12 +11,6 @@ import UIKit
 
 extension ThreadMessageSenderCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
-        let signature: String?
-        if let processedMessage = threadMessage.processedMessage, processedMessage.messageType == .encrypted {
-            signature = processedMessage.signature?.message
-        } else {
-            signature = "message_not_signed".localized
-        }
         let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
         let isMessageRead = threadMessage.rawMessage.isMessageRead
@@ -34,13 +28,11 @@ extension ThreadMessageSenderCellNode.Input {
             : .mainTextUnreadColor
 
         self.init(
-            signature: signature.map { NSAttributedString.text(from: $0, style: .regular(12), color: .white) },
-            signatureColor: threadMessage.processedMessage?.signature?.color,
-            signatureIcon: threadMessage.processedMessage?.signature?.icon,
+            encryptionBadge: makeEncryptionBadge(threadMessage),
+            signatureBadge: makeSignatureBadge(threadMessage),
             sender: NSAttributedString.text(from: sender, style: style, color: textColor),
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,
-            isEncrypted: threadMessage.processedMessage?.messageType == .encrypted,
             buttonColor: .messageButtonColor
         )
     }
@@ -74,6 +66,49 @@ extension AttachmentNode.Input {
                 .attributed(.regular(18), color: .textColor, alignment: .left),
             size: msgAttachment.humanReadableSizeString
                 .attributed(.medium(12), color: .textColor, alignment: .left)
+        )
+    }
+}
+
+private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input {
+    let icon: String
+    let text: String
+    let color: UIColor
+    switch input.processedMessage?.messageType {
+    case .error:
+        icon = "lock.open"
+        text = "message_decrypt_error".localized
+        color = .red
+    case .encrypted:
+        icon = "lock"
+        text = "message_encrypted".localized
+        color = .main
+    default:
+        icon = "lock.open"
+        text = "message_not_encrypted".localized
+        color = .warningColor
+    }
+
+    return BadgeNode.Input(
+        icon: icon,
+        text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
+        color: color
+    )
+}
+
+private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input? {
+    input.processedMessage?.signature.map {
+        let text: String
+        if let processedMessage = input.processedMessage, processedMessage.messageType == .encrypted {
+            text = $0.message
+        } else {
+            text = "message_not_signed".localized
+        }
+
+        return BadgeNode.Input(
+            icon: $0.icon,
+            text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
+            color: $0.color
         )
     }
 }
