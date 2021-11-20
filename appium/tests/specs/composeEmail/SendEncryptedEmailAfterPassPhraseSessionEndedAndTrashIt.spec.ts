@@ -14,7 +14,7 @@ import DataHelper from "../../helpers/DataHelper";
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('user is able to send encrypted email after resetting pass phrase + move to trash, delete', async () => {
+  it('user is able to send encrypted email when pass phrase session ended + move to trash, delete', async () => {
 
     const contactEmail = CommonData.secondContact.email;
     const emailSubject = CommonData.simpleEmail.subject + DataHelper.uniqueValue();
@@ -27,6 +27,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
 
     //Restart app to reset pass phrase memory cache
     await driver.terminateApp(bundleId);
