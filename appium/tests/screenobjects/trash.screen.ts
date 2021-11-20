@@ -17,11 +17,11 @@ class TrashScreen extends BaseScreen {
   }
 
   get helpIcon() {
-      return $(SELECTORS.HELP_ICON);
+    return $(SELECTORS.HELP_ICON);
   }
 
   get trashHeader() {
-      return $(SELECTORS.TRASH_HEADER)
+    return $(SELECTORS.TRASH_HEADER)
   }
 
   checkTrashScreen = async () => {
@@ -31,7 +31,7 @@ class TrashScreen extends BaseScreen {
   }
 
   checkEmailIsNotDisplayed = async (subject: string) => {
-    await (await $(`~${subject}`)).waitForDisplayed({reverse: true});
+    await (await $(`~${subject}`)).waitForDisplayed({ reverse: true });
   }
 
   refreshTrashList = async () => {

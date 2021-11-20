@@ -59,6 +59,7 @@ describe('COMPOSE EMAIL: ', () => {
     await EmailScreen.clickDeleteButton();
     await SentScreen.checkSentScreen();
     await SentScreen.checkEmailIsNotDisplayed(emailSubject);
+    await browser.pause(2000); // give Google API time to process the deletion
     await SentScreen.refreshSentList();
     await SentScreen.checkSentScreen();
     await SentScreen.checkEmailIsNotDisplayed(emailSubject);
@@ -71,6 +72,7 @@ describe('COMPOSE EMAIL: ', () => {
     await EmailScreen.clickDeleteButton();
     await EmailScreen.confirmDelete();
     await TrashScreen.checkTrashScreen();
+    await browser.pause(2000); // give Google API time to process the deletion
     await TrashScreen.refreshTrashList();
     await TrashScreen.checkTrashScreen();
     await TrashScreen.checkEmailIsNotDisplayed(emailSubject);
