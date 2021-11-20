@@ -38,6 +38,7 @@
 "message_bad_signature" = "bad signature";
 "message_signature_pending" = "verifying signature...";
 "message_signature_fail_reason" = "Failed to verify signature due to: %@";
+"message_decrypt_error" = "decrypt error";
 
 // REPLY
 "reply_title" = "Your reply"; // not used

@@ -88,7 +88,7 @@ class EmailScreen extends BaseScreen {
 
   enterPassPhrase = async (text: string = CommonData.account.passPhrase) => {
     await (await this.enterPassPhraseField).setValue(text);
-  };
+  }
 
   checkWrongPassPhraseErrorMessage = async () => {
     await (await this.wrongPassPhraseMessage).waitForDisplayed();
