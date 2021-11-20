@@ -41,6 +41,6 @@ extension LocalClientConfiguration: LocalClientConfigurationType {
         guard let user = cache.encryptedStorage.activeUser else {
             fatalError("Internal inconsistency, no active user when saving client configuration")
         }
-        cache.save(ClientConfigurationRealmObject(raw, user: user))
+        cache.save(ClientConfigurationRealmObject(configuration: raw, user: user))
     }
 }

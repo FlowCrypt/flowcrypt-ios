@@ -56,7 +56,7 @@ extension UserAccountService: UserAccountServiceType {
         switch type {
         case let .google(email, name, token):
             // save new user data
-            let user = UserRealmObject.googleUser(
+            let user = User.googleUser(
                 name: name,
                 email: email,
                 token: token
@@ -82,16 +82,16 @@ extension UserAccountService: UserAccountServiceType {
     }
 
     func switchActiveSessionFor(user: User) -> SessionType? {
-        let userObj = self.encryptedStorage
+        let actualUser = encryptedStorage
             .getAllUsers()
             .first(where: { $0.email == user.email })
 
-        guard let userObject = userObj else {
+        guard let actualUser = actualUser else {
             logger.logWarning("UserObject should be persisted to encrypted storage in case of switching accounts")
             return nil
         }
 
-        let session = switchActiveSession(for: userObject)
+        let session = switchActiveSession(for: actualUser)
 
         return session
     }
@@ -117,15 +117,15 @@ extension UserAccountService: UserAccountServiceType {
     }
 
     @discardableResult
-    private func switchActiveSession(for userObject: UserRealmObject) -> SessionType? {
-        logger.logInfo("Try to switch session for \(userObject.email)")
+    private func switchActiveSession(for user: User) -> SessionType? {
+        logger.logInfo("Try to switch session for \(user.email)")
 
         let sessionType: SessionType
-        switch userObject.authType {
+        switch user.authType {
         case .oAuthGmail(let token):
-            sessionType = .google(userObject.email, name: userObject.name, token: token)
+            sessionType = .google(user.email, name: user.name, token: token)
         case .password:
-            sessionType = .session(userObject)
+            sessionType = .session(user)
         case .none:
             logger.logWarning("authType is not defined in switchActiveSession")
             return nil

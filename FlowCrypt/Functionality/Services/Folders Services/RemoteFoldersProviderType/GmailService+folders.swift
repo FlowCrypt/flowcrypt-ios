@@ -11,7 +11,7 @@ import GoogleAPIClientForREST_Gmail
 
 extension GmailService: RemoteFoldersProviderType {
     enum Constants {
-        static let allMailFolder = Folder(name: "All Mail", path: "", image: nil)
+        static let allMailFolder = Folder(path: "", name: "All Mail", image: nil)
     }
 
     func fetchFolders() async throws -> [Folder] {
@@ -61,8 +61,8 @@ private extension Folder {
         }
 
         self.init(
-            name: name,
             path: path,
+            name: name,
             image: nil
         )
     }

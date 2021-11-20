@@ -25,6 +25,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
 
     // Go to Contacts screen
     await MenuBarScreen.clickMenuIcon();

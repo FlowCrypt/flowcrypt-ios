@@ -23,6 +23,7 @@ describe('INBOX: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
 
     await InboxScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);

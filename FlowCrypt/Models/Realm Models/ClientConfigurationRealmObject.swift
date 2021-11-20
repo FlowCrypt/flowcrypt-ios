@@ -16,8 +16,8 @@ final class ClientConfigurationRealmObject: Object {
     @Persisted var keyManagerUrl: String?
     @Persisted var disallowAttesterSearchForDomains: Data?
     @Persisted var enforceKeygenAlgo: String?
-    @Persisted var enforceKeygenExpireMonths: Int = -1
-    @Persisted var user: UserRealmObject!
+    @Persisted var enforceKeygenExpireMonths: Int
+    @Persisted var user: UserRealmObject?
 
     convenience init(
         flags: [String]?,
@@ -42,19 +42,18 @@ final class ClientConfigurationRealmObject: Object {
         self.user = user
         self.userEmail = user.email
     }
+}
 
-    convenience init(
-        _ clientConfiguration: RawClientConfiguration,
-        user: UserRealmObject
-    ) {
+extension ClientConfigurationRealmObject {
+    convenience init(configuration: RawClientConfiguration, user: User) {
         self.init(
-            flags: clientConfiguration.flags?.map(\.rawValue),
-            customKeyserverUrl: clientConfiguration.customKeyserverUrl,
-            keyManagerUrl: clientConfiguration.keyManagerUrl,
-            disallowAttesterSearchForDomains: clientConfiguration.disallowAttesterSearchForDomains,
-            enforceKeygenAlgo: clientConfiguration.enforceKeygenAlgo,
-            enforceKeygenExpireMonths: clientConfiguration.enforceKeygenExpireMonths,
-            user: user
+            flags: configuration.flags?.map(\.rawValue),
+            customKeyserverUrl: configuration.customKeyserverUrl,
+            keyManagerUrl: configuration.keyManagerUrl,
+            disallowAttesterSearchForDomains: configuration.disallowAttesterSearchForDomains,
+            enforceKeygenAlgo: configuration.enforceKeygenAlgo,
+            enforceKeygenExpireMonths: configuration.enforceKeygenExpireMonths,
+            user: UserRealmObject(user)
         )
     }
 }

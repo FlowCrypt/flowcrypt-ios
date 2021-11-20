@@ -14,7 +14,7 @@ import DataHelper from "../../helpers/DataHelper";
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('user is able to send encrypted email after resetting pass phrase + move to trash, delete', async () => {
+  it('user is able to send encrypted email when pass phrase session ended + move to trash, delete', async () => {
 
     const contactEmail = CommonData.secondContact.email;
     const emailSubject = CommonData.simpleEmail.subject + DataHelper.uniqueValue();
@@ -23,9 +23,15 @@ describe('COMPOSE EMAIL: ', () => {
     const wrongPassPhraseError = CommonData.errors.wrongPassPhrase;
     const wrongPassPhrase = "wrong";
     const senderEmail = CommonData.account.email;
+    const bundleId = CommonData.bundleId.id;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
+
+    //Restart app to reset pass phrase memory cache
+    await driver.terminateApp(bundleId);
+    await driver.activateApp(bundleId);
 
     await InboxScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(contactEmail, emailSubject, emailText);
@@ -53,6 +59,7 @@ describe('COMPOSE EMAIL: ', () => {
     await EmailScreen.clickDeleteButton();
     await SentScreen.checkSentScreen();
     await SentScreen.checkEmailIsNotDisplayed(emailSubject);
+    await browser.pause(2000); // give Google API time to process the deletion
     await SentScreen.refreshSentList();
     await SentScreen.checkSentScreen();
     await SentScreen.checkEmailIsNotDisplayed(emailSubject);
@@ -65,6 +72,7 @@ describe('COMPOSE EMAIL: ', () => {
     await EmailScreen.clickDeleteButton();
     await EmailScreen.confirmDelete();
     await TrashScreen.checkTrashScreen();
+    await browser.pause(2000); // give Google API time to process the deletion
     await TrashScreen.refreshTrashList();
     await TrashScreen.checkTrashScreen();
     await TrashScreen.checkEmailIsNotDisplayed(emailSubject);
