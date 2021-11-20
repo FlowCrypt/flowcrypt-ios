@@ -9,15 +9,14 @@ import { CommonData } from '../../data';
 
 describe('INBOX: ', () => {
 
-  it('user is able to view text email', async () => {
+  it('user is able to view key mismatch email', async () => {
 
-    const senderEmail = CommonData.sender.email;
-    const emailSubject = CommonData.simpleEmail.subject;
-    const emailText = CommonData.simpleEmail.message;
+    const senderEmail = CommonData.account.email;
+    const emailSubject = CommonData.keyMismatchEmail.subject;
+    const emailText = CommonData.keyMismatchEmail.message;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
-    await InboxScreen.checkInboxScreen();
 
     await InboxScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);

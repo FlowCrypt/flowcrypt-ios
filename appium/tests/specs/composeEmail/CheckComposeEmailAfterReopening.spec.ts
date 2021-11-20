@@ -17,6 +17,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
 
     await InboxScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);

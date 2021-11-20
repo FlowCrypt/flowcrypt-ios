@@ -30,8 +30,12 @@ class PrvKeyInfoTests: XCTestCase {
     private let user = UserRealmObject(name: "name", email: "email", imap: nil, smtp: nil)
 
     func testInitFromKeyInfo() {
-        let keyInfo = try! KeyInfoRealmObject(keyDetail, passphrase: "123", source: .backup, user: user)
-        let keyInfoWithoutPassphrase = try! KeyInfoRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)
+        let keyInfo = KeyInfo(
+            try! KeyInfoRealmObject(keyDetail, passphrase: "123", source: .backup, user: user)
+        )
+        let keyInfoWithoutPassphrase = KeyInfo(
+            try! KeyInfoRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)
+        )
 
         let privateKey1 = PrvKeyInfo(keyInfo: keyInfo, passphrase: nil)
         XCTAssertEqual(privateKey1.passphrase, "123")

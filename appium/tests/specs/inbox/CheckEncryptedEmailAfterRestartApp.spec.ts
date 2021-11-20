@@ -22,6 +22,7 @@ describe('INBOX: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
 
     await InboxScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
@@ -38,7 +39,7 @@ describe('INBOX: ', () => {
 
     //check email after setting correct pass phrase
     await EmailScreen.enterPassPhrase(correctPassPhrase);
-    await EmailScreen.clickSaveButton();
+    await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
     //reopen email without pass phrase

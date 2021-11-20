@@ -11,33 +11,26 @@ import UIKit
 
 public final class ThreadMessageSenderCellNode: CellNode {
     public struct Input {
-        public let signature: NSAttributedString?
-        public let signatureColor: UIColor?
-        public let signatureIcon: String?
-
+        public let encryptionBadge: BadgeNode.Input
+        public let signatureBadge: BadgeNode.Input?
         public let sender: NSAttributedString
         public let date: NSAttributedString?
         public let isExpanded: Bool
-        public let isEncrypted: Bool
         public let buttonColor: UIColor
         public let nodeInsets: UIEdgeInsets
 
-        public init(signature: NSAttributedString?,
-                    signatureColor: UIColor?,
-                    signatureIcon: String?,
+        public init(encryptionBadge: BadgeNode.Input,
+                    signatureBadge: BadgeNode.Input?,
                     sender: NSAttributedString,
                     date: NSAttributedString,
                     isExpanded: Bool,
-                    isEncrypted: Bool,
                     buttonColor: UIColor,
                     nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 12)) {
-            self.signature = signature
-            self.signatureColor = signatureColor
-            self.signatureIcon = signatureIcon
+            self.encryptionBadge = encryptionBadge
+            self.signatureBadge = signatureBadge
             self.sender = sender
             self.date = date
             self.isExpanded = isExpanded
-            self.isEncrypted = isEncrypted
             self.buttonColor = buttonColor
             self.nodeInsets = nodeInsets
         }
@@ -57,22 +50,11 @@ public final class ThreadMessageSenderCellNode: CellNode {
     }
 
     private lazy var encryptionNode: BadgeNode = {
-        let text = input.isEncrypted ? "message_encrypted".localized : "message_not_encrypted".localized
-        let input = BadgeNode.Input(
-            icon: input.isEncrypted ? "lock" : "lock.open",
-            text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
-            color: input.isEncrypted ? .main : .warningColor
-        )
-        return BadgeNode(input: input)
+        return BadgeNode(input: input.encryptionBadge)
     }()
 
-    private lazy var signatureNode: BadgeNode = {
-        let input = BadgeNode.Input(
-            icon: input.signatureIcon,
-            text: input.signature,
-            color: input.signatureColor
-        )
-        return BadgeNode(input: input)
+    private lazy var signatureNode: BadgeNode? = {
+        return input.signatureBadge.map(BadgeNode.init)
     }()
 
     private let senderNode = ASTextNode2()
@@ -144,12 +126,19 @@ public final class ThreadMessageSenderCellNode: CellNode {
             let spacer = ASLayoutSpec()
             spacer.style.flexGrow = 1.0
 
+            var children: [ASLayoutElement] = []
+            children.append(encryptionNode)
+            if let signatureNode = signatureNode {
+                children.append(signatureNode)
+            }
+            children.append(spacer)
+
             let signatureSpec = ASStackLayoutSpec(
                 direction: .horizontal,
                 spacing: 4,
                 justifyContent: .spaceBetween,
                 alignItems: .start,
-                children: [encryptionNode, signatureNode, spacer]
+                children: children
             )
 
             contentSpec = ASStackLayoutSpec(

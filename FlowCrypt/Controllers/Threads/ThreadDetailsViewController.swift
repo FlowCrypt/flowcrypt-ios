@@ -247,13 +247,15 @@ extension ThreadDetailsViewController {
     }
 
     private func handleWrongPassPhrase(for rawMimeData: Data, with phrase: String, at indexPath: IndexPath) {
-        let alert = AlertsFactory.makeWrongPassPhraseAlert(
+        let alert = AlertsFactory.makePassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
                 self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
-            })
+            },
+            title: "setup_wrong_pass_phrase_retry".localized
+        )
         present(alert, animated: true, completion: nil)
     }
 

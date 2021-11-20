@@ -16,11 +16,11 @@ struct PrvKeyInfo: Encodable, Equatable {
 }
 
 extension PrvKeyInfo {
-    init(keyInfo: KeyInfoRealmObject, passphrase: String?) {
+    init(keyInfo: KeyInfo, passphrase: String?) {
         self.private = keyInfo.private
         self.longid = keyInfo.primaryLongid
         self.passphrase = keyInfo.passphrase ?? passphrase
-        self.fingerprints = Array(keyInfo.allFingerprints)
+        self.fingerprints = keyInfo.allFingerprints
     }
 
     func copy(with passphrase: String) -> PrvKeyInfo {
