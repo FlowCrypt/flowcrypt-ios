@@ -15,7 +15,6 @@ import FlowCryptUI
  * - User can proceed to importing keys *SetupManuallyImportKeyViewController*
  * - User can see detail information for the key in *KeyDetailViewController*
  */
-@MainActor
 final class KeySettingsViewController: TableNodeViewController {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator

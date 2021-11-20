@@ -10,6 +10,7 @@ import UIKit
 import FlowCryptUI
 import FlowCryptCommon
 
+@MainActor
 protocol MessageActionsHandler: AnyObject {
     var currentFolderPath: String { get }
     var trashFolderProvider: TrashFolderProviderType { get }
@@ -33,9 +34,7 @@ extension MessageActionsHandler where Self: UIViewController {
         Task {
             do {
                 let path = try await trashFolderProvider.getTrashFolderPath()
-                DispatchQueue.main.async {
-                    self.setupNavigationBarItems(with: path)
-                }
+                setupNavigationBarItems(with: path)
             } catch {
                 // todo - handle?
                 logger.logError("setupNavigationBar: \(error)")
@@ -95,22 +94,18 @@ extension MessageActionsHandler where Self: UIViewController {
         Task {
             do {
                 let trashPath = try await trashFolderProvider.getTrashFolderPath()
-                DispatchQueue.main.async {
-                    guard let trashPath = trashPath else {
-                        return
+                guard let trashPath = trashPath else {
+                    return
+                }
+                if self.currentFolderPath.caseInsensitiveCompare(trashPath) == .orderedSame {
+                    self.awaitUserConfirmation { [weak self] in
+                        self?.permanentlyDelete()
                     }
-                    if self.currentFolderPath.caseInsensitiveCompare(trashPath) == .orderedSame {
-                        self.awaitUserConfirmation { [weak self] in
-                            self?.permanentlyDelete()
-                        }
-                    } else {
-                        self.moveToTrash(with: trashPath)
-                    }
+                } else {
+                    self.moveToTrash(with: trashPath)
                 }
             } catch {
-                DispatchQueue.main.async {
-                    self.showToast(error.localizedDescription)
-                }
+                showToast(error.localizedDescription)
             }
         }
     }
