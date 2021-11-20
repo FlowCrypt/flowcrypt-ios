@@ -51,7 +51,7 @@ extension ProcessedMessage {
         case .encrypted:
             textColor = .main
         case .error:
-            textColor = .red
+            textColor = .errorColor
         case .plain:
             textColor = .mainTextColor
         }
@@ -78,7 +78,7 @@ private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> 
     case .error:
         icon = "lock.open"
         text = "message_decrypt_error".localized
-        color = .red
+        color = .errorColor
     case .encrypted:
         icon = "lock"
         text = "message_encrypted".localized
@@ -86,7 +86,7 @@ private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> 
     default:
         icon = "lock.open"
         text = "message_not_encrypted".localized
-        color = .warningColor
+        color = .errorColor
     }
 
     return BadgeNode.Input(
@@ -97,18 +97,20 @@ private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> 
 }
 
 private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input? {
-    input.processedMessage?.signature.map {
-        let text: String
-        if let processedMessage = input.processedMessage, processedMessage.messageType == .encrypted {
-            text = $0.message
-        } else {
-            text = "message_not_signed".localized
-        }
-
-        return BadgeNode.Input(
-            icon: $0.icon,
-            text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
-            color: $0.color
-        )
+    guard let signature = input.processedMessage?.signature else {
+        return nil
     }
+
+    let text: String
+    if input.processedMessage?.messageType == .encrypted {
+        text = signature.message
+    } else {
+        text = "message_not_signed".localized
+    }
+
+    return BadgeNode.Input(
+        icon: signature.icon,
+        text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
+        color: signature.color
+    )
 }
