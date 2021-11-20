@@ -41,7 +41,7 @@ describe('INBOX: ', () => {
 
     //check attachment after setting correct pass phrase
     await EmailScreen.enterPassPhrase(correctPassPhrase);
-    await EmailScreen.clickSaveButton();
+    await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     await EmailScreen.checkAttachment(attachmentName);
     await EmailScreen.clickOnDownloadButton();

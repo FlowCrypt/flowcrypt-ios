@@ -39,7 +39,7 @@ describe('INBOX: ', () => {
 
     //check email after setting correct pass phrase
     await EmailScreen.enterPassPhrase(correctPassPhrase);
-    await EmailScreen.clickSaveButton();
+    await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
     //reopen email without pass phrase
