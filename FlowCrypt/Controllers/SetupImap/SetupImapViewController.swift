@@ -512,13 +512,9 @@ extension SetupImapViewController {
             do {
                 try await self.imap.connectImap(session: imapSessionToCheck)
                 try await self.imap.connectSmtp(session: smtpSession)
-                DispatchQueue.main.async {
-                    self.handleSuccessfulConnection()
-                }
+                handleSuccessfulConnection()
             } catch {
-                DispatchQueue.main.async {
-                    self.handleConnection(error: error)
-                }
+                handleConnection(error: error)
             }
         }
     }

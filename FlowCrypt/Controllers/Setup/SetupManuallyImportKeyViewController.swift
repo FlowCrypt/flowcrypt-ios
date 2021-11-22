@@ -78,9 +78,7 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
     }
 
     private func updateSubtitle() {
-        DispatchQueue.main.async {
-            self.node.reloadRows(at: [Parts.description.indexPath], with: .fade)
-        }
+        node.reloadRows(at: [Parts.description.indexPath], with: .fade)
     }
 }
 
