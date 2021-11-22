@@ -1,5 +1,4 @@
 const { join } = require('path');
-const video = require('wdio-video-reporter');
 
 exports.config = {
 
@@ -17,13 +16,11 @@ exports.config = {
     connectionRetryTimeout: 90000,
     connectionRetryCount: 3,
     maxInstancesPerCapability: 1,
-    reporters: [
-        'spec',
-        [video, {
-            saveAllVideos: false,       // If true, also saves videos for successful test cases
-            videoSlowdownMultiplier: 3, // Higher to get slower videos, lower for faster videos [Value 1-100]
-            videoRenderTimeout: 10,      // Max seconds to wait for a video to finish rendering
+    reporters: ['spec',
+        ['allure', {
             outputDir: './tmp',
+            disableWebdriverStepsReporting: true,
+            disableWebdriverScreenshotsReporting: false,
         }]
     ],
     services: [
