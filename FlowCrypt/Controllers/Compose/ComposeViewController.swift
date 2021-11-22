@@ -1109,6 +1109,7 @@ extension ComposeViewController {
         Task {
             do {
                 try await router.askForContactsPermission(for: .gmailLogin(self))
+                node.reloadSections([2], with: .automatic)
             } catch {
                 handleContactsPermissionError(error)
             }

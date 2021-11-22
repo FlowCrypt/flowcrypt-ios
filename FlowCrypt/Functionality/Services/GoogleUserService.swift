@@ -33,7 +33,7 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
         case .inconsistentState(let message):
             return "Inconsistent state error: \(message)"
         case .userNotAllowedAllNeededScopes(let missingScopes):
-            return "Missing scopes error: \(missingScopes.map(\.value).joined(separator: ", "))"
+            return "Missing scopes error: \(missingScopes.map(\.title).joined(separator: ", "))"
         }
     }
 }
@@ -213,8 +213,10 @@ extension GoogleUserService {
     }
 
     private func checkMissingScopes(_ scope: String?, from scopes: [GoogleScope]) -> [GoogleScope] {
-        guard let scope = scope else { return scopes }
-        return scopes.filter { !scope.contains($0.value) }
+        guard let allowedScopes = scope?.split(separator: " ").map(String.init),
+              allowedScopes.isNotEmpty
+        else { return scopes }
+        return scopes.filter { !allowedScopes.contains($0.value) }
     }
 }
 

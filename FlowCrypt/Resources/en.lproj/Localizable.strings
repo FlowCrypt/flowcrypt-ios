@@ -80,7 +80,7 @@
 "compose_no_contacts_found" = "No contacts found";
 "compose_uploading" = "Uploading";
 "compose_sent" = "Sent";
-"compose_missing_contacts_scopes" = "To enable contacts search, please allow this device to access %@";
+"compose_missing_contacts_scopes" = "To enable contacts search, please allow this device to access %@ of your Google account";
 
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";
