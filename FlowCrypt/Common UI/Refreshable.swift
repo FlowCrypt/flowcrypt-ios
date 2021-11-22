@@ -8,7 +8,7 @@
 
 import Foundation
 
-@MainActor
-protocol Refreshable {
-    func startRefreshing()
-}
+ protocol Refreshable {
+
+     func startRefreshing()
+ }

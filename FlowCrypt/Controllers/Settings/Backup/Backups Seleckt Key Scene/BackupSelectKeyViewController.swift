@@ -10,7 +10,6 @@ import AsyncDisplayKit
 import FlowCryptUI
 import Foundation
 
-@MainActor
 final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
     private let backupService: BackupServiceType
     private let service: ServiceActor

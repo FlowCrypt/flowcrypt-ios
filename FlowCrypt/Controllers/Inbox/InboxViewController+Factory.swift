@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 
 class InboxViewControllerFactory {
-    @MainActor
     static func make(with viewModel: InboxViewModel) -> InboxViewController {
         guard let currentAuthType = DataService.shared.currentAuthType else {
             fatalError("Internal inconsistency")

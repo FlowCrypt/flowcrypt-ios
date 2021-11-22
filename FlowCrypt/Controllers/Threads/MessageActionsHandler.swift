@@ -10,7 +10,6 @@ import UIKit
 import FlowCryptUI
 import FlowCryptCommon
 
-@MainActor
 protocol MessageActionsHandler: AnyObject {
     var currentFolderPath: String { get }
     var trashFolderProvider: TrashFolderProviderType { get }
@@ -34,7 +33,9 @@ extension MessageActionsHandler where Self: UIViewController {
         Task {
             do {
                 let path = try await trashFolderProvider.getTrashFolderPath()
-                setupNavigationBarItems(with: path)
+                DispatchQueue.main.async {
+                    self.setupNavigationBarItems(with: path)
+                }
             } catch {
                 // todo - handle?
                 logger.logError("setupNavigationBar: \(error)")
@@ -94,18 +95,22 @@ extension MessageActionsHandler where Self: UIViewController {
         Task {
             do {
                 let trashPath = try await trashFolderProvider.getTrashFolderPath()
-                guard let trashPath = trashPath else {
-                    return
-                }
-                if self.currentFolderPath.caseInsensitiveCompare(trashPath) == .orderedSame {
-                    self.awaitUserConfirmation { [weak self] in
-                        self?.permanentlyDelete()
+                DispatchQueue.main.async {
+                    guard let trashPath = trashPath else {
+                        return
                     }
-                } else {
-                    self.moveToTrash(with: trashPath)
+                    if self.currentFolderPath.caseInsensitiveCompare(trashPath) == .orderedSame {
+                        self.awaitUserConfirmation { [weak self] in
+                            self?.permanentlyDelete()
+                        }
+                    } else {
+                        self.moveToTrash(with: trashPath)
+                    }
                 }
             } catch {
-                showToast(error.localizedDescription)
+                DispatchQueue.main.async {
+                    self.showToast(error.localizedDescription)
+                }
             }
         }
     }

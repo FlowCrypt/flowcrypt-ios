@@ -20,7 +20,6 @@ extension UIViewController {
     ///   - duration: Toast presented duration. Default is 3.0
     ///   - position: Bottom by default. Can be top, center, bottom.
     ///   - completion: Notify when toast dissapeared
-    @MainActor
     func showToast(
         _ message: String,
         title: String? = nil,
@@ -28,22 +27,24 @@ extension UIViewController {
         position: ToastPosition = .bottom,
         completion: ShowToastCompletion? = nil
     ) {
-        guard let view = UIApplication.shared.keyWindow?.rootViewController?.view else {
-            assertionFailure("Key window hasn't rootViewController")
-            return
+        DispatchQueue.main.async {
+            guard let view = UIApplication.shared.keyWindow?.rootViewController?.view else {
+                assertionFailure("Key window hasn't rootViewController")
+                return
+            }
+            view.hideAllToasts()
+            view.endEditing(true)
+
+            view.makeToast(
+                message,
+                duration: duration,
+                position: position,
+                title: title,
+                completion: completion
+            )
+
+            ToastManager.shared.isTapToDismissEnabled = true
         }
-        view.hideAllToasts()
-        view.endEditing(true)
-
-        view.makeToast(
-            message,
-            duration: duration,
-            position: position,
-            title: title,
-            completion: completion
-        )
-
-        ToastManager.shared.isTapToDismissEnabled = true
     }
 }
 
@@ -71,28 +72,30 @@ extension UIViewController {
         showAlert(message: formatted, onOk: onOk)
     }
 
-    @MainActor
     func showAlert(title: String? = "Error", message: String, onOk: (() -> Void)? = nil) {
-        self.view.hideAllToasts()
-        hideSpinner()
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in onOk?() })
-        self.present(alert, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            self.view.hideAllToasts()
+            self.hideSpinner()
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in onOk?() })
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
-    @MainActor
     func showRetryAlert(
         title: String? = "Error",
         message: String,
         onRetry: (() -> Void)? = nil,
         onOk: (() -> Void)? = nil
     ) {
-        self.view.hideAllToasts()
-        hideSpinner()
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
-        present(alert, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            self.view.hideAllToasts()
+            self.hideSpinner()
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
     func keyboardHeight(from notification: Notification) -> CGFloat {

@@ -8,7 +8,6 @@
 
 import UIKit
 
-@MainActor
 protocol MsgListViewController {
     func open(with message: InboxRenderable, path: String)
 
@@ -31,9 +30,11 @@ extension MsgListViewController where Self: UIViewController {
     private func openDraft(with message: Message) {
         guard let email = DataService.shared.email else { return }
 
-        let controller = ComposeViewController(email: email)
-        controller.updateWithMessage(message: message)
-        navigationController?.pushViewController(controller, animated: true)
+        Task {
+            let controller = await ComposeViewController(email: email)
+            await controller.updateWithMessage(message: message)
+            await navigationController?.pushViewController(controller, animated: true)
+        }
     }
 
     private func openMsg(with message: Message, path: String) {

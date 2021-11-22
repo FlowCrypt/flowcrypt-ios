@@ -8,7 +8,6 @@
 
 import UIKit
 
-@MainActor
 protocol NavigationChildController {
     var navigationItem: UINavigationItem { get }
     var shouldShowBackButton: Bool { get }
