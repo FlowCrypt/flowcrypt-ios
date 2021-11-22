@@ -1106,7 +1106,42 @@ extension ComposeViewController {
 
     private func askForContactsPermission() {
         shouldEvaluateRecipientInput = false
-        router.askForContactsPermission(for: .gmailLogin(self))
+
+        Task {
+            do {
+                try await router.askForContactsPermission(for: .gmailLogin(self))
+            } catch {
+                handleContactsPermissionError(error)
+            }
+        }
+    }
+
+    private func handleContactsPermissionError(_ error: Error) {
+        guard let gmailUserError = error as? GoogleUserServiceError,
+           case .userNotAllowedAllNeededScopes(let missingScopes) = gmailUserError
+        else { return }
+
+        let scopes = missingScopes.map(\.title).joined(separator: ", ")
+
+        let alert = UIAlertController(
+            title: "error".localized,
+            message: "compose_missing_contacts_scopes".localizeWithArguments(scopes),
+            preferredStyle: .alert
+        )
+        let laterAction = UIAlertAction(
+            title: "later".localized,
+            style: .cancel
+        )
+        let allowAction = UIAlertAction(
+            title: "allow".localized,
+            style: .default
+        ) { [weak self] _ in
+            self?.askForContactsPermission()
+        }
+        alert.addAction(laterAction)
+        alert.addAction(allowAction)
+
+        present(alert, animated: true, completion: nil)
     }
 }
 

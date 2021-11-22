@@ -41,3 +41,20 @@ enum GoogleScope: CaseIterable {
         }
     }
 }
+
+extension GoogleScope {
+    var title: String {
+        switch self {
+        case .userInfo:
+            return "User Info"
+        case .userEmail:
+            return "User Email"
+        case .mail:
+            return "Gmail"
+        case .contacts:
+            return "Contacts"
+        case .otherContacts:
+            return "Other Contacts"
+        }
+    }
+}

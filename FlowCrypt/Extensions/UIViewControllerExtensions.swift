@@ -72,7 +72,7 @@ extension UIViewController {
         showAlert(message: formatted, onOk: onOk)
     }
 
-    func showAlert(title: String? = "Error", message: String, onOk: (() -> Void)? = nil) {
+    func showAlert(title: String? = "error".localized, message: String, onOk: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             self.view.hideAllToasts()
             self.hideSpinner()
@@ -83,7 +83,7 @@ extension UIViewController {
     }
 
     func showRetryAlert(
-        title: String? = "Error",
+        title: String? = "error".localized,
         message: String,
         onRetry: (() -> Void)? = nil,
         onOk: (() -> Void)? = nil

@@ -13,7 +13,7 @@ protocol GlobalRouterType {
     @MainActor func proceed()
     @MainActor func signIn(with route: GlobalRoutingType)
     @MainActor func switchActive(user: User)
-    @MainActor func askForContactsPermission(for route: GlobalRoutingType)
+    @MainActor func askForContactsPermission(for route: GlobalRoutingType) async throws
     @MainActor func signOut()
 }
 
@@ -88,7 +88,7 @@ extension GlobalRouter {
     }
 
     @MainActor private func handleGmailError(_ error: Error) {
-        logger.logInfo("gmail login failed with error \(error.localizedDescription)")
+        logger.logInfo("gmail login failed with error \(error.errorMessage)")
         if let gmailUserError = error as? GoogleUserServiceError,
            case .userNotAllowedAllNeededScopes = gmailUserError {
             DispatchQueue.main.async {
@@ -136,21 +136,20 @@ extension GlobalRouter {
         }
     }
 
-    @MainActor func askForContactsPermission(for route: GlobalRoutingType) {
+    @MainActor func askForContactsPermission(for route: GlobalRoutingType) async throws {
         logger.logInfo("Ask for contacts permission with \(route)")
 
         switch route {
         case .gmailLogin(let viewController):
-            Task {
-                do {
-                    let session = try await googleService.signIn(
-                        in: viewController,
-                        scopes: GeneralConstants.Gmail.contactsScope
-                    )
-                    self.userAccountService.startSessionFor(user: session)
-                } catch {
-                    logger.logInfo("Contacts scope failed with error \(error.errorMessage)")
-                }
+            do {
+                let session = try await googleService.signIn(
+                    in: viewController,
+                    scopes: GeneralConstants.Gmail.contactsScope
+                )
+                self.userAccountService.startSessionFor(user: session)
+            } catch {
+                logger.logInfo("Contacts scope failed with error \(error.errorMessage)")
+                throw error
             }
         case .other:
             break

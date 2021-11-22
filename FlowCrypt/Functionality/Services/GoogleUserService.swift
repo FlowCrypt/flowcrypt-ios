@@ -18,11 +18,24 @@ protocol UserServiceType {
     func renewSession() async throws
 }
 
-enum GoogleUserServiceError: Error {
-    case missedAuthorization
-    case invalidUserEndpoint
+enum GoogleUserServiceError: Error, CustomStringConvertible {
+    case cancelledAuthorization
+    case contextError(String)
     case inconsistentState(String)
     case userNotAllowedAllNeededScopes(missingScopes: [GoogleScope])
+
+    var description: String {
+        switch self {
+        case .cancelledAuthorization:
+            return "Authorization was cancelled"
+        case .contextError(let message):
+            return "Context error: \(message)"
+        case .inconsistentState(let message):
+            return "Inconsistent state error: \(message)"
+        case .userNotAllowedAllNeededScopes(let missingScopes):
+            return "Missing scopes error: \(missingScopes.map(\.value).joined(separator: ", "))"
+        }
+    }
 }
 
 struct GoogleUser: Codable {
@@ -79,10 +92,17 @@ extension GoogleUserService: UserServiceType {
             let googleAuthSession = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
-            ) { authState, authError in
+            ) { [weak self] authState, authError in
+                guard let self = self else { return }
+
                 guard let authState = authState else {
-                    let error = authError ?? AppErr.unexpected("Shouldn't happen because received non nil error and non nil authState")
-                    return continuation.resume(throwing: error)
+                    if let authError = authError {
+                        let error = self.parseSignInError(authError)
+                        return continuation.resume(throwing: error)
+                    } else {
+                        let error = AppErr.unexpected("Shouldn't happen because received non nil error and non nil authState")
+                        return continuation.resume(throwing: error)
+                    }
                 }
 
                 Task<Void, Never> {
@@ -101,6 +121,22 @@ extension GoogleUserService: UserServiceType {
         DispatchQueue.main.async {
             self.appDelegate?.googleAuthSession = nil
             GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+        }
+    }
+
+    private func parseSignInError(_ error: Error) -> Error {
+        guard let underlyingError = (error as NSError).userInfo["NSUnderlyingError"] as? NSError
+        else { return error }
+
+        switch underlyingError.code {
+        case 1:
+            return GoogleUserServiceError.cancelledAuthorization
+        case 2:
+            return GoogleUserServiceError.contextError("A context wasn’t provided.")
+        case 3:
+            return GoogleUserServiceError.contextError("The context was invalid.")
+        default:
+            return error
         }
     }
 
