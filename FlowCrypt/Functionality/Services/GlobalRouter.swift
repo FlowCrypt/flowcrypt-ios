@@ -78,7 +78,7 @@ extension GlobalRouter: GlobalRouterType {
                     self.userAccountService.startSessionFor(user: session)
                     self.proceed(with: session)
                 } catch {
-                    self.handleGmailError(error)
+                    self.handleGmailError(error, in: viewController)
                 }
             }
         case .other(let session):
@@ -150,13 +150,13 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func handleGmailError(_ error: Error) {
+    private func handleGmailError(_ error: Error, in viewController: UIViewController) {
         logger.logInfo("gmail login failed with error \(error.errorMessage)")
         if let gmailUserError = error as? GoogleUserServiceError,
            case .userNotAllowedAllNeededScopes = gmailUserError {
-            let topNavigation = (self.keyWindow.rootViewController as? UINavigationController)
+            let navigationController = viewController.navigationController
             let checkAuthViewController = CheckMailAuthViewController()
-            topNavigation?.pushViewController(checkAuthViewController, animated: true)
+            navigationController?.pushViewController(checkAuthViewController, animated: true)
         }
     }
 }
