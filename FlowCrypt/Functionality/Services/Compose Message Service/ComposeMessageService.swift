@@ -78,7 +78,7 @@ final class ComposeMessageService {
             throw MessageValidationError.invalidEmailRecipient
         }
 
-        guard input.isReply || contextToSend.subject?.hasContent ?? false else {
+        guard input.isQuote || contextToSend.subject?.hasContent ?? false else {
             throw MessageValidationError.emptySubject
         }
 

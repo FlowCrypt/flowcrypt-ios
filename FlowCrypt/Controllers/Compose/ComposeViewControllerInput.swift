@@ -11,8 +11,9 @@ import Foundation
 struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
-    struct ReplyInfo: Equatable {
+    struct MessageQuoteInfo: Equatable {
         let recipient: String?
+        let sender: String?
         let subject: String?
         let mime: Data?
         let sentDate: Date
@@ -22,47 +23,49 @@ struct ComposeMessageInput: Equatable {
 
     enum InputType: Equatable {
         case idle
-        case reply(ReplyInfo)
+        case quote(MessageQuoteInfo)
     }
 
     let type: InputType
 
-    var isReply: Bool {
+    var isQuote: Bool {
         switch type {
         case .idle: return false
-        case .reply: return true
+        case .quote: return true
         }
     }
 
     var recipientReplyTitle: String? {
-        guard case let .reply(info) = type else { return nil }
+        guard case let .quote(info) = type else { return nil }
         return info.recipient
     }
 
     var subjectReplyTitle: String? {
-        guard case let .reply(info) = type else { return nil }
+        guard case let .quote(info) = type else { return nil }
         return "Re: \(info.subject ?? "(no subject)")"
     }
 
     var successfullySentToast: String {
         switch type {
         case .idle: return "compose_encrypted_sent".localized
-        case .reply: return "compose_reply_successfull".localized
+        case .quote: return "compose_reply_successful".localized
+        // TODO
+        // case .forward: return "compose_forward_successful".localized
         }
     }
 
     var subject: String? {
-        guard case let .reply(info) = type else { return nil }
+        guard case let .quote(info) = type else { return nil }
         return info.subject
     }
 
     var replyToMime: Data? {
-        guard case let .reply(info) = type else { return nil }
+        guard case let .quote(info) = type else { return nil }
         return info.mime
     }
 
     var threadId: String? {
-        guard case let .reply(info) = type else { return nil }
+        guard case let .quote(info) = type else { return nil }
         return info.threadId
     }
 }

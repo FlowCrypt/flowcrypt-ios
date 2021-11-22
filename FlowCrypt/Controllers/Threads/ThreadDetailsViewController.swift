@@ -123,8 +123,9 @@ extension ThreadDetailsViewController {
               let processedMessage = input.processedMessage
         else { return }
 
-        let replyInfo = ComposeMessageInput.ReplyInfo(
+        let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipient: input.rawMessage.sender,
+            sender: input.rawMessage.sender,
             subject: input.rawMessage.subject,
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
@@ -132,7 +133,30 @@ extension ThreadDetailsViewController {
             threadId: input.rawMessage.threadId
         )
 
-        let composeInput = ComposeMessageInput(type: .reply(replyInfo))
+        let composeInput = ComposeMessageInput(type: .quote(replyInfo))
+        navigationController?.pushViewController(
+            ComposeViewController(email: email, input: composeInput),
+            animated: true
+        )
+    }
+
+    private func handleForwardTap(at indexPath: IndexPath) {
+        guard let email = DataService.shared.email,
+              let input = input[safe: indexPath.section-1],
+              let processedMessage = input.processedMessage
+        else { return }
+
+        let replyInfo = ComposeMessageInput.MessageQuoteInfo(
+            recipient: nil,
+            sender: input.rawMessage.sender,
+            subject: input.rawMessage.subject,
+            mime: processedMessage.rawMimeData,
+            sentDate: input.rawMessage.date,
+            message: processedMessage.text,
+            threadId: input.rawMessage.threadId
+        )
+
+        let composeInput = ComposeMessageInput(type: .quote(replyInfo))
         navigationController?.pushViewController(
             ComposeViewController(email: email, input: composeInput),
             animated: true
@@ -397,7 +421,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             if indexPath.row == 0 {
                 return ThreadMessageSenderCellNode(
                     input: .init(threadMessage: section),
-                    onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) }
+                    onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
+                    onForwardTap: { [weak self] _ in self?.handleForwardTap(at: indexPath) }
                 )
             }
 

@@ -73,7 +73,7 @@ struct ComposeViewDecorator {
     }
 
     func styledReplyQuote(with input: ComposeMessageInput) -> NSAttributedString {
-        guard case let .reply(info) = input.type else { return NSAttributedString(string: "") }
+        guard case let .quote(info) = input.type else { return NSAttributedString(string: "") }
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short

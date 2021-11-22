@@ -240,7 +240,7 @@ extension ComposeViewController {
     }
 
     private func setupReply() {
-        guard input.isReply, let email = input.recipientReplyTitle else { return }
+        guard input.isQuote, let email = input.recipientReplyTitle else { return }
 
         let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
         contextToSend.recipients.append(recipient)
@@ -528,7 +528,7 @@ extension ComposeViewController {
         }
         .onShouldReturn { [weak self] _ in
             guard let self = self else { return true }
-            if !self.input.isReply, let node = self.node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first {
+            if !self.input.isQuote, let node = self.node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first {
                 node.becomeFirstResponder()
             } else {
                 self.node.view.endEditing(true)
@@ -536,7 +536,7 @@ extension ComposeViewController {
             return true
         }
         .then {
-            let subject = input.isReply ? input.subjectReplyTitle : contextToSend.subject
+            let subject = input.isQuote ? input.subjectReplyTitle : contextToSend.subject
             $0.attributedText = decorator.styledTitle(with: subject)
         }
     }
@@ -558,7 +558,7 @@ extension ComposeViewController {
         .then {
             let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
 
-            if input.isReply && !messageText.string.contains(replyQuote.string) {
+            if input.isQuote && !messageText.string.contains(replyQuote.string) {
                 let mutableString = NSMutableAttributedString(attributedString: messageText)
                 mutableString.append(replyQuote)
                 $0.textView.attributedText = mutableString
@@ -594,7 +594,7 @@ extension ComposeViewController {
         }
         .then {
             $0.isLowercased = true
-            if !self.input.isReply {
+            if !self.input.isQuote {
                 $0.becomeFirstResponder()
             }
         }

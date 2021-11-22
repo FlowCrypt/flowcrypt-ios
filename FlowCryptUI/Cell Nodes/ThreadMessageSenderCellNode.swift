@@ -38,6 +38,9 @@ public final class ThreadMessageSenderCellNode: CellNode {
         var replyImage: UIImage? {
             return createButtonImage(systemName: "arrowshape.turn.up.left")
         }
+        var forwardImage: UIImage? {
+            return createButtonImage(systemName: "arrowshape.turn.up.right")
+        }
         var expandImage: UIImage? {
             let systemName = isExpanded ? "chevron.up" : "chevron.down"
             return createButtonImage(systemName: systemName)
@@ -61,15 +64,19 @@ public final class ThreadMessageSenderCellNode: CellNode {
     private let dateNode = ASTextNode2()
 
     public private(set) var replyNode = ASButtonNode()
+    public private(set) var forwardNode = ASButtonNode()
     public private(set) var expandNode = ASImageNode()
 
     private let input: ThreadMessageSenderCellNode.Input
     private var onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?
+    private var onForwardTap: ((ThreadMessageSenderCellNode) -> Void)?
 
     public init(input: ThreadMessageSenderCellNode.Input,
-                onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?) {
+                onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?,
+                onForwardTap: ((ThreadMessageSenderCellNode) -> Void)?) {
         self.input = input
         self.onReplyTap = onReplyTap
+        self.onForwardTap = onForwardTap
         super.init()
         automaticallyManagesSubnodes = true
 
@@ -77,16 +84,34 @@ public final class ThreadMessageSenderCellNode: CellNode {
         dateNode.attributedText = input.date
 
         setupReplyNode()
+        setupForwardNode()
         setupExpandNode()
     }
 
     private func setupReplyNode() {
-        replyNode.setImage(input.replyImage, for: .normal)
-        replyNode.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
-        replyNode.contentMode = .center
-        replyNode.alpha = input.isExpanded ? 1 : 0
-        replyNode.addTarget(self, action: #selector(onReplyNodeTap), forControlEvents: .touchUpInside)
-        replyNode.accessibilityIdentifier = "replyButton"
+        setup(buttonNode: replyNode,
+              with: input.replyImage,
+              action: #selector(onReplyNodeTap),
+              accessibilityIdentifier: "replyButton")
+    }
+
+    private func setupForwardNode() {
+        setup(buttonNode: forwardNode,
+              with: input.forwardImage,
+              action: #selector(onForwardNodeTap),
+              accessibilityIdentifier: "forwardButton")
+    }
+
+    private func setup(buttonNode node: ASButtonNode,
+                       with image: UIImage?,
+                       action: Selector,
+                       accessibilityIdentifier: String) {
+        node.setImage(image, for: .normal)
+        node.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
+        node.contentMode = .center
+        node.alpha = input.isExpanded ? 1 : 0
+        node.addTarget(self, action: action, forControlEvents: .touchUpInside)
+        node.accessibilityIdentifier = accessibilityIdentifier
     }
 
     private func setupExpandNode() {
@@ -99,8 +124,13 @@ public final class ThreadMessageSenderCellNode: CellNode {
         onReplyTap?(self)
     }
 
+    @objc private func onForwardNodeTap() {
+        onForwardTap?(self)
+    }
+
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
+        forwardNode.style.preferredSize = CGSize(width: 44, height: 44)
         expandNode.style.preferredSize = CGSize(width: 18, height: 44)
 
         let infoNode = ASStackLayoutSpec(
@@ -118,7 +148,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
             spacing: 4,
             justifyContent: .spaceBetween,
             alignItems: .start,
-            children: [infoNode, replyNode, expandNode]
+            children: [infoNode, replyNode, forwardNode, expandNode]
         )
 
         let contentSpec: ASStackLayoutSpec
