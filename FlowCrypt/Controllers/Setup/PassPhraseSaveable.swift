@@ -8,6 +8,7 @@
 
 import FlowCryptUI
 
+@MainActor
 protocol PassPhraseSaveable {
     var storageMethod: StorageMethod { get set }
     var passPhraseIndexes: [IndexPath] { get }

@@ -14,47 +14,44 @@ extension UIViewController {
         MBProgressHUD.forView(view) ?? MBProgressHUD.showAdded(to: view, animated: true)
     }
 
+    @MainActor
     func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
-        DispatchQueue.main.async {
-            guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
-                // hud is already shown
-                return
-            }
-            self.view.isUserInteractionEnabled = isUserInteractionEnabled
-
-            let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
-            spinner.label.text = message
-            spinner.isUserInteractionEnabled = isUserInteractionEnabled
+        guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
+            // hud is already shown
+            return
         }
+        self.view.isUserInteractionEnabled = isUserInteractionEnabled
+
+        let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
+        spinner.label.text = message
+        spinner.isUserInteractionEnabled = isUserInteractionEnabled
     }
 
+    @MainActor
     func updateSpinner(label: String = "compose_uploading".localized,
                        progress: Float? = nil,
                        systemImageName: String? = nil) {
-        DispatchQueue.main.async {
-            if let progress = progress {
-                if progress >= 1, let imageName = systemImageName {
-                    self.updateSpinner(label: "compose_sent".localized,
-                                       systemImageName: imageName)
-                } else {
-                    self.showProgressHUD(progress: progress, label: label)
-                }
-            } else if let imageName = systemImageName {
-                self.showProgressHUDWithCustomImage(imageName: imageName, label: label)
+        if let progress = progress {
+            if progress >= 1, let imageName = systemImageName {
+                self.updateSpinner(label: "compose_sent".localized,
+                                   systemImageName: imageName)
             } else {
-                self.currentProgressHUD.mode = .indeterminate
-                self.currentProgressHUD.label.text = label
+                self.showProgressHUD(progress: progress, label: label)
             }
+        } else if let imageName = systemImageName {
+            self.showProgressHUDWithCustomImage(imageName: imageName, label: label)
+        } else {
+            self.currentProgressHUD.mode = .indeterminate
+            self.currentProgressHUD.label.text = label
         }
     }
 
+    @MainActor
     func hideSpinner() {
-        DispatchQueue.main.async {
-            self.view.subviews
-                .compactMap { $0 as? MBProgressHUD }
-                .forEach { $0.hide(animated: true) }
-            self.view.isUserInteractionEnabled = true
-        }
+        self.view.subviews
+            .compactMap { $0 as? MBProgressHUD }
+            .forEach { $0.hide(animated: true) }
+        self.view.isUserInteractionEnabled = true
     }
 }
 
