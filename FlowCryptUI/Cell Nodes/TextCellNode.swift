@@ -17,7 +17,8 @@ public final class TextCellNode: CellNode {
         let withSpinner: Bool
         let size: CGSize
         let insets: UIEdgeInsets
-        let alignment: NSTextAlignment?
+        let textAlignment: NSTextAlignment?
+        let itemsAlignment: ASStackLayoutAlignItems
 
         public init(
             backgroundColor: UIColor,
@@ -25,14 +26,16 @@ public final class TextCellNode: CellNode {
             withSpinner: Bool,
             size: CGSize,
             insets: UIEdgeInsets = .zero,
-            alignment: NSTextAlignment? = nil
+            textAlignment: NSTextAlignment? = nil,
+            itemsAlignment: ASStackLayoutAlignItems = .center
         ) {
             self.backgroundColor = backgroundColor
             self.title = title
             self.withSpinner = withSpinner
             self.size = size
             self.insets = insets
-            self.alignment = alignment
+            self.textAlignment = textAlignment
+            self.itemsAlignment = itemsAlignment
         }
     }
 
@@ -41,14 +44,19 @@ public final class TextCellNode: CellNode {
     private let size: CGSize
     private let insets: UIEdgeInsets
     private let withSpinner: Bool
+    private let itemsAlignment: ASStackLayoutAlignItems
 
     public init(input: Input) {
         withSpinner = input.withSpinner
         size = input.size
         insets = input.insets
+        itemsAlignment = input.itemsAlignment
         super.init()
         addSubnode(textNode)
-        textNode.attributedText = NSAttributedString.text(from: input.title, style: .medium(16), color: .lightGray, alignment: input.alignment)
+        textNode.attributedText = NSAttributedString.text(from: input.title,
+                                                          style: .medium(16),
+                                                          color: .lightGray,
+                                                          alignment: input.textAlignment)
         if input.withSpinner {
             addSubnode(spinner)
         }
@@ -60,7 +68,7 @@ public final class TextCellNode: CellNode {
             direction: .vertical,
             spacing: 16,
             justifyContent: .center,
-            alignItems: .center,
+            alignItems: itemsAlignment,
             children: withSpinner
                 ? [textNode, spinner]
                 : [textNode]

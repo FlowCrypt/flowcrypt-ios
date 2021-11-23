@@ -15,7 +15,7 @@ public final class DividerCellNode: CellNode {
     public init(
         inset: UIEdgeInsets = .zero,
         color: UIColor = .lightGray,
-        height: CGFloat = 1
+        height: CGFloat = 0.5
     ) {
         self.inset = inset
         super.init()

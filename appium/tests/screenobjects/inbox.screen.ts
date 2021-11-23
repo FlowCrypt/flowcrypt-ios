@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
+import TouchHelper from "../helpers/TouchHelper";
 
 const SELECTORS = {
   ENTER_YOUR_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField[`value == "Enter your pass phrase"`]',
@@ -19,7 +20,7 @@ class InboxScreen extends BaseScreen {
   }
 
   get inboxHeader() {
-      return $(SELECTORS.INBOX_HEADER)
+    return $(SELECTORS.INBOX_HEADER)
   }
 
   clickOnUserEmail = async (email: string) => {
@@ -28,16 +29,28 @@ class InboxScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
-    await ElementHelper.waitAndClick(await $(`~${subject}`), 500);
+    const selector = `~${subject}`;
+    if (await (await $(selector)).isDisplayed() !== true) {
+      await TouchHelper.scrollDown();
+    }
+    await ElementHelper.waitAndClick(await $(selector), 500);
   }
 
   clickCreateEmail = async () => {
-    await ElementHelper.waitAndClick(await this.createEmailButton);
+    await browser.pause(2000); // todo: loading inbox. Fix this: wait until loader gone
+    if (await (await this.createEmailButton).isDisplayed() !== true) {
+      await TouchHelper.scrollDown();
+      await (await this.createEmailButton).waitForDisplayed();
+    }
+    await ElementHelper.waitAndClick(await this.createEmailButton, 1000); // delay needed on M1
   }
 
   checkInboxScreen = async () => {
     await (await this.inboxHeader).waitForDisplayed();
-    await (await this.createEmailButton).waitForDisplayed();
+    if (await (await this.createEmailButton).isDisplayed() !== true) {
+      await TouchHelper.scrollDown();
+      await (await this.createEmailButton).waitForDisplayed();
+    }
   }
 }
 

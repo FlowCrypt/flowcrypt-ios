@@ -27,7 +27,6 @@ describe('LOGIN: ', () => {
 
       await MenuBarScreen.clickLogout();
       await SplashScreen.checkLoginPage();
-
     });
   });
 });

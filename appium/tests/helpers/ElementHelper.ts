@@ -44,7 +44,7 @@ class ElementHelper {
     await element.doubleClick();
   }
 
-  static waitAndClick = async (element: WebdriverIO.Element, delayMs = 10) => {
+  static waitAndClick = async (element: WebdriverIO.Element, delayMs = 50) => {
     await element.waitForDisplayed();
     // stability fix to make sure element is ready for interaction
     await browser.pause(delayMs)

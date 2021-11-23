@@ -26,7 +26,6 @@ final class ComposeViewController: TableNodeViewController {
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
-        static let shouldShowScopeAlertIndex = "indexShould_ShowScope"
     }
 
     enum State {
@@ -45,12 +44,14 @@ final class ComposeViewController: TableNodeViewController {
     private let notificationCenter: NotificationCenter
     private let decorator: ComposeViewDecorator
     private let contactsService: ContactsServiceType
+    private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyService: KeyServiceType
     private let keyMethods: KeyMethodsType
     private let service: ServiceActor
     private let passPhraseService: PassPhraseService
+    private let router: GlobalRouterType
 
     private let search = PassthroughSubject<String, Never>()
     private let userDefaults: UserDefaults
@@ -62,6 +63,7 @@ final class ComposeViewController: TableNodeViewController {
     private var contextToSend = ComposeMessageContext()
 
     private var state: State = .main
+    private var shouldEvaluateRecipientInput = true
 
     private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
@@ -79,7 +81,8 @@ final class ComposeViewController: TableNodeViewController {
         photosManager: PhotosManagerType = PhotosManager(),
         keyService: KeyServiceType = KeyService(),
         passPhraseService: PassPhraseService = PassPhraseService(),
-        keyMethods: KeyMethodsType = KeyMethods()
+        keyMethods: KeyMethodsType = KeyMethods(),
+        router: GlobalRouterType = GlobalRouter()
     ) {
         self.email = email
         self.notificationCenter = notificationCenter
@@ -87,6 +90,7 @@ final class ComposeViewController: TableNodeViewController {
         self.decorator = decorator
         self.userDefaults = userDefaults
         self.contactsService = contactsService
+        self.cloudContactProvider = cloudContactProvider
         self.composeMessageService = composeMessageService
         self.filesManager = filesManager
         self.photosManager = photosManager
@@ -98,6 +102,7 @@ final class ComposeViewController: TableNodeViewController {
             cloudContactProvider: cloudContactProvider
         )
         self.passPhraseService = passPhraseService
+        self.router = router
         self.contextToSend.subject = input.subject
         super.init(node: TableNode())
     }
@@ -125,10 +130,16 @@ final class ComposeViewController: TableNodeViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        showScopeAlertIfNeeded()
+
+        startDraftTimer()
+
+        guard shouldEvaluateRecipientInput else {
+            shouldEvaluateRecipientInput = true
+            return
+        }
+
         cancellable.forEach { $0.cancel() }
         setupSearch()
-        startDraftTimer()
 
         evaluateIfNeeded()
     }
@@ -142,8 +153,8 @@ final class ComposeViewController: TableNodeViewController {
             return
         }
 
-        for recepient in contextToSend.recipients {
-            evaluate(recipient: recepient)
+        for recipient in contextToSend.recipients {
+            evaluate(recipient: recipient)
         }
     }
 
@@ -465,7 +476,9 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (.searchEmails, 0):
             return RecipientParts.allCases.count
         case let (.searchEmails(emails), 1):
-            return emails.count
+            return emails.isNotEmpty ? emails.count : 1
+        case (.searchEmails, 2):
+            return cloudContactProvider.isContactsScopeEnabled ? 0 : 2
         default:
             return 0
         }
@@ -497,7 +510,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 }
                 return self.attachmentNode(for: indexPath.row)
             case let (.searchEmails(emails), 1):
+                guard emails.isNotEmpty else { return self.noSearchResultsNode() }
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
+            case (.searchEmails, 2):
+                return indexPath.row == 0 ? DividerCellNode() : self.enableGoogleContactsNode()
             default:
                 return ASCellNode()
             }
@@ -505,12 +521,17 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard case let .searchEmails(emails) = state,
-            indexPath.section == 1,
-            let selectedEmail = emails[safe: indexPath.row]
-        else { return }
+        guard case let .searchEmails(emails) = state else { return }
 
-        handleEndEditingAction(with: selectedEmail)
+        switch indexPath.section {
+        case 1:
+            let selectedEmail = emails[safe: indexPath.row]
+            handleEndEditingAction(with: selectedEmail)
+        case 2:
+            askForContactsPermission()
+        default:
+            break
+        }
     }
 }
 
@@ -613,6 +634,24 @@ extension ComposeViewController {
             }
         )
     }
+
+    private func noSearchResultsNode() -> ASCellNode {
+        TextCellNode(input: .init(
+            backgroundColor: .clear,
+            title: "compose_no_contacts_found".localized,
+            withSpinner: false,
+            size: .zero,
+            insets: UIEdgeInsets(top: 16, left: 8, bottom: 16, right: 8),
+            itemsAlignment: .start)
+        )
+    }
+
+    private func enableGoogleContactsNode() -> ASCellNode {
+        TextWithIconNode(input: .init(
+            title: "compose_enable_google_contacts_search".localized.attributed(.regular(16)),
+            image: UIImage(named: "gmail_icn"))
+        )
+    }
 }
 
 // MARK: - Recipients Input
@@ -665,7 +704,9 @@ extension ComposeViewController {
     }
 
     private func handleEndEditingAction(with text: String?) {
-        guard let text = text, text.isNotEmpty else { return }
+        guard shouldEvaluateRecipientInput,
+              let text = text, text.isNotEmpty
+        else { return }
 
         // Set all recipients to idle state
         contextToSend.recipients = recipients.map { recipient in
@@ -755,10 +796,7 @@ extension ComposeViewController {
             let localEmails = contactsService.searchContacts(query: query)
             let cloudEmails = try? await service.searchContacts(query: query)
             let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
-            let state: State = emails.isNotEmpty
-                ? .searchEmails(Array(emails))
-                : .main
-            updateState(with: state)
+            updateState(with: .searchEmails(Array(emails)))
         }
     }
 
@@ -872,7 +910,7 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
-        node.reloadSections([1], with: .automatic)
+        node.reloadSections([1, 2], with: .automatic)
 
         switch state {
         case .main:
@@ -1066,35 +1104,46 @@ extension ComposeViewController {
 
         present(alert, animated: true, completion: nil)
     }
-}
 
-extension ComposeViewController {
-    private func showScopeAlertIfNeeded() {
-        if shouldRenewToken(for: [.mail]),
-            !userDefaults.bool(forKey: Constants.shouldShowScopeAlertIndex) {
-            userDefaults.set(true, forKey: Constants.shouldShowScopeAlertIndex)
-            let alert = UIAlertController(
-                title: "",
-                message: "compose_enable_search".localized,
-                preferredStyle: .alert
-            )
-            let okAction = UIAlertAction(
-                title: "Log out",
-                style: .default
-            ) { _ in }
-            let cancelAction = UIAlertAction(
-                title: "cancel".localized,
-                style: .destructive
-            ) { _ in }
-            alert.addAction(okAction)
-            alert.addAction(cancelAction)
+    private func askForContactsPermission() {
+        shouldEvaluateRecipientInput = false
 
-            present(alert, animated: true, completion: nil)
+        Task {
+            do {
+                try await router.askForContactsPermission(for: .gmailLogin(self))
+                node.reloadSections([2], with: .automatic)
+            } catch {
+                handleContactsPermissionError(error)
+            }
         }
     }
 
-    private func shouldRenewToken(for newScope: [GoogleScope]) -> Bool {
-        false
+    private func handleContactsPermissionError(_ error: Error) {
+        guard let gmailUserError = error as? GoogleUserServiceError,
+           case .userNotAllowedAllNeededScopes(let missingScopes) = gmailUserError
+        else { return }
+
+        let scopes = missingScopes.map(\.title).joined(separator: ", ")
+
+        let alert = UIAlertController(
+            title: "error".localized,
+            message: "compose_missing_contacts_scopes".localizeWithArguments(scopes),
+            preferredStyle: .alert
+        )
+        let laterAction = UIAlertAction(
+            title: "later".localized,
+            style: .cancel
+        )
+        let allowAction = UIAlertAction(
+            title: "allow".localized,
+            style: .default
+        ) { [weak self] _ in
+            self?.askForContactsPermission()
+        }
+        alert.addAction(laterAction)
+        alert.addAction(allowAction)
+
+        present(alert, animated: true, completion: nil)
     }
 }
 
