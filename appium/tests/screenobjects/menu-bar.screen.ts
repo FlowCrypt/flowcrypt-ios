@@ -37,7 +37,7 @@ class MenuBarScreen extends BaseScreen {
   }
 
   get trashButton() {
-      return $(SELECTORS.TRASH_BTN)
+    return $(SELECTORS.TRASH_BTN)
   }
 
   clickMenuIcon = async () => {
@@ -63,15 +63,15 @@ class MenuBarScreen extends BaseScreen {
   }
 
   clickInboxButton = async () => {
-    await ElementHelper.waitAndClick(await this.inboxButton);
+    await ElementHelper.waitAndClick(await this.inboxButton, 500); // todo - instead wait until loader gone
   }
 
   clickSentButton = async () => {
-      await ElementHelper.waitAndClick(await this.sentButton);
+    await ElementHelper.waitAndClick(await this.sentButton, 500); // todo - instead wait until loader gone
   }
 
   clickTrashButton = async () => {
-      await ElementHelper.waitAndClick(await this.trashButton);
+    await ElementHelper.waitAndClick(await this.trashButton, 500); // todo - instead wait until loader gone
   }
 }
 

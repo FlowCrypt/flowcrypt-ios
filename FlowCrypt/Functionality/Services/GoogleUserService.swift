@@ -14,15 +14,28 @@ import RealmSwift
 
 protocol UserServiceType {
     func signOut(user email: String)
-    func signIn(in viewController: UIViewController) async throws -> SessionType
+    func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType
     func renewSession() async throws
 }
 
-enum GoogleUserServiceError: Error {
-    case missedAuthorization
-    case invalidUserEndpoint
+enum GoogleUserServiceError: Error, CustomStringConvertible {
+    case cancelledAuthorization
+    case contextError(String)
     case inconsistentState(String)
     case userNotAllowedAllNeededScopes(missingScopes: [GoogleScope])
+
+    var description: String {
+        switch self {
+        case .cancelledAuthorization:
+            return "Authorization was cancelled"
+        case .contextError(let message):
+            return "Context error: \(message)"
+        case .inconsistentState(let message):
+            return "Inconsistent state error: \(message)"
+        case .userNotAllowedAllNeededScopes(let missingScopes):
+            return "Missing scopes error: \(missingScopes.map(\.title).joined(separator: ", "))"
+        }
+    }
 }
 
 struct GoogleUser: Codable {
@@ -73,30 +86,34 @@ extension GoogleUserService: UserServiceType {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
     }
 
-    func signIn(in viewController: UIViewController) async throws -> SessionType {
+    @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType {
         return try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.main.async {
-                // todo - should be fixed with MainActor instead?
-                // Google doesn't like to be called on non-main thread
-                let request = self.makeAuthorizationRequest()
-                let googleAuthSession = OIDAuthState.authState(
-                    byPresenting: request,
-                    presenting: viewController
-                ) { authState, error in
-                    if let authState = authState {
-                        Task<Void, Never> {
-                            do {
-                                return continuation.resume(returning: try await self.handleGoogleAuthStateResult(authState))
-                            } catch {
-                                return continuation.resume(throwing: error)
-                            }
-                        }
-                        return
+            let request = self.makeAuthorizationRequest(scopes: scopes)
+            let googleAuthSession = OIDAuthState.authState(
+                byPresenting: request,
+                presenting: viewController
+            ) { [weak self] authState, authError in
+                guard let self = self else { return }
+
+                guard let authState = authState else {
+                    if let authError = authError {
+                        let error = self.parseSignInError(authError)
+                        return continuation.resume(throwing: error)
+                    } else {
+                        let error = AppErr.unexpected("Shouldn't happen because received non nil error and non nil authState")
+                        return continuation.resume(throwing: error)
                     }
-                    return continuation.resume(throwing: error ?? AppErr.unexpected("Shouldn't happen because covered received non nil error and non nil authState"))
                 }
-                self.appDelegate?.googleAuthSession = googleAuthSession
+
+                Task<Void, Never> {
+                    do {
+                        return continuation.resume(returning: try await self.handleGoogleAuthStateResult(authState, scopes: scopes))
+                    } catch {
+                        return continuation.resume(throwing: error)
+                    }
+                }
             }
+            self.appDelegate?.googleAuthSession = googleAuthSession
         }
     }
 
@@ -107,9 +124,25 @@ extension GoogleUserService: UserServiceType {
         }
     }
 
-    private func handleGoogleAuthStateResult(_ authState: OIDAuthState) async throws -> SessionType {
-        let missingScopes = self.checkMissingScopes(authState.scope)
-        if !missingScopes.isEmpty {
+    private func parseSignInError(_ error: Error) -> Error {
+        guard let underlyingError = (error as NSError).userInfo["NSUnderlyingError"] as? NSError
+        else { return error }
+
+        switch underlyingError.code {
+        case 1:
+            return GoogleUserServiceError.cancelledAuthorization
+        case 2:
+            return GoogleUserServiceError.contextError("A context wasn’t provided.")
+        case 3:
+            return GoogleUserServiceError.contextError("The context was invalid.")
+        default:
+            return error
+        }
+    }
+
+    private func handleGoogleAuthStateResult(_ authState: OIDAuthState, scopes: [GoogleScope]) async throws -> SessionType {
+        let missingScopes = self.checkMissingScopes(authState.scope, from: scopes)
+        if missingScopes.isNotEmpty {
             throw GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes)
         }
         let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
@@ -128,21 +161,21 @@ extension GoogleUserService: UserServiceType {
 // MARK: - Convenience
 extension GoogleUserService {
 
-    private func makeAuthorizationRequest() -> OIDAuthorizationRequest {
+    private func makeAuthorizationRequest(scopes: [GoogleScope]) -> OIDAuthorizationRequest {
         OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
-            scopes: GeneralConstants.Gmail.currentScope.map(\.value) + [OIDScopeEmail],
+            scopes: scopes.map(\.value),
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
-            additionalParameters: nil
+            additionalParameters: ["include_granted_scopes": "true"]
         )
     }
 
     // save auth session to keychain
     private func saveAuth(state: OIDAuthState, for email: String) {
         state.stateChangeDelegate = self
-        let authorization: GTMAppAuthFetcherAuthorization = GTMAppAuthFetcherAuthorization(authState: state)
+        let authorization = GTMAppAuthFetcherAuthorization(authState: state)
         GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.index + email)
     }
 
@@ -179,11 +212,11 @@ extension GoogleUserService {
         }
     }
 
-    private func checkMissingScopes(_ scope: String?) -> [GoogleScope] {
-        guard let scope = scope else {
-            return GoogleScope.allCases
-        }
-        return GoogleScope.allCases.filter { !scope.contains($0.value) }
+    private func checkMissingScopes(_ scope: String?, from scopes: [GoogleScope]) -> [GoogleScope] {
+        guard let allowedScopes = scope?.split(separator: " ").map(String.init),
+              allowedScopes.isNotEmpty
+        else { return scopes }
+        return scopes.filter { !allowedScopes.contains($0.value) }
     }
 }
 

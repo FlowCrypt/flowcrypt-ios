@@ -7,7 +7,7 @@
 3. `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash`
 4. `echo -e '\n\nexport NVM_DIR="$HOME/.nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"\n[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"\n' >> ~/.bash_profile`
 5. restart terminal
-6. `nvm install 12` - installs NodeJS 12 and sets it as default
+6. `nvm install 16` - installs NodeJS 16 and sets it as default
 7. `cd ~/git/flowcrypt-ios/appium && npm install`
 
 ## Run tests
