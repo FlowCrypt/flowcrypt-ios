@@ -9,6 +9,7 @@
 import UIKit
 import WebKit
 import FlowCryptUI
+import Combine
 
 final class AttachmentViewController: UIViewController {
 
@@ -21,6 +22,8 @@ final class AttachmentViewController: UIViewController {
         controller: self,
         filesManager: filesManager
     )
+    
+    private var cancellable = Set<AnyCancellable>()
 
     private let errorLabel: UILabel = {
         let label = UILabel()
@@ -53,12 +56,22 @@ final class AttachmentViewController: UIViewController {
         super.viewDidLoad()
         setupNavigationBar()
         addWebView()
-        load(with: filesManager.saveLocally(file: file))
+
+        filesManager.save(file: file)
+            .sink(
+                receiveCompletion: {_ in},
+                receiveValue: { [weak self] url in
+                    self?.load(with: url)
+                }
+            )
+            .store(in: &cancellable)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         filesManager.remove(file: file)
+            .sink(receiveCompletion: {_ in}, receiveValue: {_ in})
+            .store(in: &cancellable)
     }
 
     private func setupNavigationBar() {
@@ -69,7 +82,7 @@ final class AttachmentViewController: UIViewController {
                     image: UIImage(named: "download")?.tinted(.gray),
                     onTap: { [weak self] in
                         guard let self = self else { return }
-                        self.attachmentManager.open(self.file)
+                        self.attachmentManager.download(self.file)
                     }
                 ),
                 NavigationBarItemsView.Input(
@@ -77,7 +90,7 @@ final class AttachmentViewController: UIViewController {
                     titleFont: .systemFont(ofSize: 14),
                     onTap: { [weak self] in
                         guard let self = self else { return }
-                        self.attachmentManager.open(self.file)
+                        self.attachmentManager.download(self.file)
                     }
                 )
             ]

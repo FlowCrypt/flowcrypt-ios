@@ -21,13 +21,11 @@ protocol FilesManagerPresenter {
 
 protocol FilesManagerType {
     func save(file: FileType) -> Future<URL, Error>
+    func remove(file: FileType) -> Future<Void, Error>
     func saveToFilesApp(file: FileType, from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> AnyPublisher<Void, Error>
 
     @discardableResult
     func selectFromFilesApp(from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> Future<Void, Error>
-
-    func saveLocally(file: FileType) -> URL?
-    func remove(file: FileType)
 }
 
 class FilesManager: FilesManagerType {
@@ -48,7 +46,6 @@ class FilesManager: FilesManagerType {
 
             let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
             self.queue.async {
-
                 do {
                     try file.data.write(to: url)
                     future(.success(url))
@@ -93,26 +90,15 @@ class FilesManager: FilesManagerType {
         }
     }
 
-    func saveLocally(file: FileType) -> URL? {
-        let documentDirectory = try? FileManager.default.url(
-            for: .documentDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: true
-        )
-        guard let localPath = documentDirectory?.path.appending("/\(file.name)")
-        else { return nil }
-        let url = URL(fileURLWithPath: localPath)
-        try? file.data.write(to: url)
-        return url
-    }
-
-    func remove(file: FileType) {
-        let fileManager = FileManager.default
-        let documentDirectory = try? fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        guard let localPath = documentDirectory?.path.appending("/\(file.name)")
-        else { return }
-        let url = URL(fileURLWithPath: localPath)
-        try? fileManager.removeItem(at: url)
+    func remove(file: FileType) -> Future<Void, Error> {
+        Future<Void, Error> { promise in
+            let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
+            do {
+                try FileManager.default.removeItem(at: url)
+                promise(.success(()))
+            } catch let error {
+                promise(.failure(error))
+            }
+        }
     }
 }

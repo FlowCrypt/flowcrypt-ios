@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 protocol AttachmentManagerType {
-    func open(_ file: FileType)
+    func download(_ file: FileType)
 }
 
 final class AttachmentManager: NSObject {
@@ -44,7 +44,7 @@ final class AttachmentManager: NSObject {
 }
 
 extension AttachmentManager: AttachmentManagerType {
-    func open(_ file: FileType) {
+    func download(_ file: FileType) {
         filesManager.saveToFilesApp(file: file, from: self)
             .sinkFuture(
                 receiveValue: {},
