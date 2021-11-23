@@ -29,7 +29,7 @@ class InboxScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
-    const selector =  `~${subject}`;
+    const selector = `~${subject}`;
     if (await (await $(selector)).isDisplayed() !== true) {
       await TouchHelper.scrollDown();
     }
@@ -37,19 +37,20 @@ class InboxScreen extends BaseScreen {
   }
 
   clickCreateEmail = async () => {
-    if (await (await this.createEmailButton).isDisplayed() !== true ) {
+    await browser.pause(2000); // todo: loading inbox. Fix this: wait until loader gone
+    if (await (await this.createEmailButton).isDisplayed() !== true) {
       await TouchHelper.scrollDown();
       await (await this.createEmailButton).waitForDisplayed();
     }
-    await ElementHelper.waitAndClick(await this.createEmailButton);
+    await ElementHelper.waitAndClick(await this.createEmailButton, 1000); // delay needed on M1
   }
 
   checkInboxScreen = async () => {
     await (await this.inboxHeader).waitForDisplayed();
-      if (await (await this.createEmailButton).isDisplayed() !== true) {
-        await TouchHelper.scrollDown();
-        await (await this.createEmailButton).waitForDisplayed();
-      }
+    if (await (await this.createEmailButton).isDisplayed() !== true) {
+      await TouchHelper.scrollDown();
+      await (await this.createEmailButton).waitForDisplayed();
+    }
   }
 }
 
