@@ -43,15 +43,20 @@ describe('COMPOSE EMAIL: ', () => {
     await MenuBarScreen.clickInboxButton();
 
     // Add first contact
+    await browser.pause(1000);
     await InboxScreen.clickCreateEmail();
-
     await NewMessageScreen.setAddRecipientByName(firstContactName, firstContactEmail);
     await NewMessageScreen.checkAddedRecipient(firstContactEmail);
     await NewMessageScreen.clickBackButton();
 
     // Add second contact
+    await browser.pause(1000); // tom - else had issues on M1. Should add accessibility identifier just in case
+    //     [iPhone 13 iOS 15.0 #0-1] Error: element ("-ios class chain:**/XCUIElementTypeButton[`label == "+"`]") still not displayed after 15000ms
+    // [iPhone 13 iOS 15.0 #0-1]     at async Function.ElementHelper.waitAndClick (/Users/tom/git/flowcrypt-ios/appium/tests/helpers/ElementHelper.ts:48:5)
+    // [iPhone 13 iOS 15.0 #0-1]     at async InboxScreen.clickCreateEmail (/Users/tom/git/flowcrypt-ios/appium/tests/screenobjects/inbox.screen.ts:37:5)
+    // [iPhone 13 iOS 15.0 #0-1]     at async UserContext.<anonymous> (/Users/tom/git/flowcrypt-ios/appium/tests/specs/composeEmail/SelectRecipientByName.spec.ts:53:5)
+    // the element was in fact visible in the simulator when it crashed
     await InboxScreen.clickCreateEmail();
-
     await NewMessageScreen.setAddRecipientByName(secondContactName, secondContactEmail);
     await NewMessageScreen.checkAddedRecipient(secondContactEmail);
     await NewMessageScreen.clickBackButton();

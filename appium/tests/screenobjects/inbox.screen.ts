@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
+import TouchHelper from "../helpers/TouchHelper"
 
 const SELECTORS = {
   ENTER_YOUR_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField[`value == "Enter your pass phrase"`]',
@@ -19,7 +20,7 @@ class InboxScreen extends BaseScreen {
   }
 
   get inboxHeader() {
-      return $(SELECTORS.INBOX_HEADER)
+    return $(SELECTORS.INBOX_HEADER)
   }
 
   clickOnUserEmail = async (email: string) => {
@@ -28,6 +29,7 @@ class InboxScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
+    await TouchHelper.scrollDown(); // todo - fix this
     await ElementHelper.waitAndClick(await $(`~${subject}`), 500);
   }
 
