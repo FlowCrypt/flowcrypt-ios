@@ -7,6 +7,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Foundation
 
+@MainActor
 final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private lazy var logger = Logger.nested(Self.self)
 

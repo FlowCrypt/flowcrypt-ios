@@ -21,7 +21,6 @@ private struct ComposedDraft: Equatable {
  * - User can be redirected here from *InboxViewController* by tapping on *+*
  * - Or from *ThreadDetailsViewController* controller by tapping on *reply*
  **/
-@MainActor
 final class ComposeViewController: TableNodeViewController {
     private lazy var logger = Logger.nested(Self.self)
 
@@ -932,7 +931,6 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
                     })
             }
         }
-        
     }
 }
 
