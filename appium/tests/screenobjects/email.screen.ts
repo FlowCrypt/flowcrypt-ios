@@ -9,6 +9,7 @@ const SELECTORS = {
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
   DOWNLOAD_ATTACHMENT_BUTTON: '~downloadButton',
   REPLY_BUTTON: '~replyButton',
+  FORWARD_BUTTON: '~forwardButton',
   DELETE_BUTTON: '~Delete',
   CONFIRM_DELETING: '~OK'
 };
@@ -41,6 +42,10 @@ class EmailScreen extends BaseScreen {
 
   get replyButton() {
     return $(SELECTORS.REPLY_BUTTON);
+  }
+
+  get forwardButton() {
+    return $(SELECTORS.FORWARD_BUTTON);
   }
 
   get deleteButton() {
@@ -106,6 +111,10 @@ class EmailScreen extends BaseScreen {
 
   clickReplyButton = async () => {
     await ElementHelper.waitAndClick(await this.replyButton);
+  }
+
+  clickForwardButton = async () => {
+    await ElementHelper.waitAndClick(await this.forwardButton);
   }
 
   clickDeleteButton = async () => {

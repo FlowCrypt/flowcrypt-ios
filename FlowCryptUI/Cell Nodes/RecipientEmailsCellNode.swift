@@ -31,6 +31,7 @@ final public class RecipientEmailsCellNode: CellNode {
         layout.minimumLineSpacing = Constants.minimumLineSpacing
         layout.sectionInset = Constants.sectionInset
         let collectionNode = ASCollectionNode(collectionViewLayout: layout)
+        collectionNode.accessibilityIdentifier = "recipientsList"
         collectionNode.backgroundColor = .clear
         return collectionNode
     }()
