@@ -13,6 +13,7 @@ import FlowCryptUI
  * On tap on each folder user should be redirected to `InboxViewController` with selected folder
  * On settings tap user will be redirected to `SettingsViewController`
  */
+@MainActor
 final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
         static let allMail = "folder_all_mail".localized
@@ -174,13 +175,9 @@ extension MyMenuViewController {
         Task {
             do {
                 let folders = try await foldersProvider.fetchFolders(isForceReload: true)
-                DispatchQueue.main.async {
-                    self.handleNewFolders(with: folders)
-                }
+                handleNewFolders(with: folders)
             } catch {
-                DispatchQueue.main.async {
-                    self.handleError(with: error)
-                }
+                handleError(with: error)
             }
         }
     }

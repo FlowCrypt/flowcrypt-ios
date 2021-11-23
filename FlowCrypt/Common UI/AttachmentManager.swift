@@ -9,6 +9,7 @@
 import UIKit
 import Combine
 
+@MainActor
 protocol AttachmentManagerType {
     func download(_ file: FileType)
 }
@@ -49,12 +50,18 @@ extension AttachmentManager: AttachmentManagerType {
             .sinkFuture(
                 receiveValue: {},
                 receiveError: { [weak self] error in
-                    self?.controller?.showToast(
-                        "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
-                    )
+                    self?.handle(error)
                 }
             )
             .store(in: &self.cancellable)
+    }
+
+    private func handle(_ error: Error) {
+        Task {
+            await controller?.showToast(
+                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
+            )
+        }
     }
 }
 

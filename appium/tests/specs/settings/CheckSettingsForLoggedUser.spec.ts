@@ -1,10 +1,11 @@
 import {
   SplashScreen,
-  CreateKeyScreen,
+  SetupKeyScreen,
   MenuBarScreen,
   SettingsScreen,
   KeysScreen,
-  PublicKeyScreen
+  PublicKeyScreen,
+  InboxScreen
 } from '../../screenobjects/all-screens';
 
 
@@ -13,7 +14,8 @@ describe('SETTINGS: ', () => {
   it('user should see public key and should not see private key', async () => {
 
     await SplashScreen.login();
-    await CreateKeyScreen.setPassPhrase();
+    await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
 
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.checkUserEmail();

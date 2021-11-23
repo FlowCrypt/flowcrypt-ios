@@ -45,11 +45,11 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.SENT_BUTTON);
   }
 
-  get errorHeader () {
+  get errorHeader() {
     return $(SELECTORS.ERROR_HEADER)
   }
 
-  get okButton () {
+  get okButton() {
     return $(SELECTORS.OK_BUTTON);
   }
 
@@ -93,7 +93,6 @@ class NewMessageScreen extends BaseScreen {
   checkAddedRecipient = async (recipient: string) => {
     const addedRecipientEl = await this.addedRecipientEmail;
     const value = await addedRecipientEl.getValue();
-    console.log(`addedRecipientEl value: ${value}`);
     expect(value).toEqual(`  ${recipient}  `);
   };
 
@@ -107,10 +106,14 @@ class NewMessageScreen extends BaseScreen {
 
   checkError = async (errorText: string) => {
     const message = '-ios class chain:**/XCUIElementTypeAlert/XCUIElementTypeOther/XCUIElementTypeOther/' +
-        'XCUIElementTypeOther[2]/XCUIElementTypeScrollView[1]/XCUIElementTypeOther[1]/XCUIElementTypeStaticText[2]';//it works only with this selector
+      'XCUIElementTypeOther[2]/XCUIElementTypeScrollView[1]/XCUIElementTypeOther[1]/XCUIElementTypeStaticText[2]';//it works only with this selector
     await expect(await this.errorHeader).toBeDisplayed();
     await expect(await $(message)).toHaveAttribute('value', `${errorText}`);
     await expect(await this.okButton).toBeDisplayed();
+  }
+
+  clickOkButtonOnError = async () => {
+    await ElementHelper.waitAndClick(await this.okButton)
   }
 }
 

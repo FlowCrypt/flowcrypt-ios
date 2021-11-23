@@ -1,6 +1,6 @@
 import {
   SplashScreen,
-  CreateKeyScreen,
+  SetupKeyScreen,
   InboxScreen,
   NewMessageScreen
 } from '../../screenobjects/all-screens';
@@ -16,7 +16,8 @@ describe('COMPOSE EMAIL: ', () => {
     const emailText = CommonData.simpleEmail.message;
 
     await SplashScreen.login();
-    await CreateKeyScreen.setPassPhrase();
+    await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
 
     await InboxScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);

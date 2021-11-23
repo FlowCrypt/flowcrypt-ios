@@ -24,6 +24,7 @@ extension UIViewController {
 }
 
 // MARK: - ErrorHandler
+@MainActor
 protocol ErrorHandler {
     func handle(error: Error, for viewController: UIViewController) -> Bool
 }

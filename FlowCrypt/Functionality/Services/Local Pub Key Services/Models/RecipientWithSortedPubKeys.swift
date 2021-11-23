@@ -24,10 +24,10 @@ struct RecipientWithSortedPubKeys {
 }
 
 extension RecipientWithSortedPubKeys {
-    init(_ recipientObject: RecipientRealmObject, keyDetails: [KeyDetails] = []) {
-        self.email = recipientObject.email
-        self.name = recipientObject.name.nilIfEmpty
-        self.lastUsed = recipientObject.lastUsed
+    init(_ recipient: Recipient, keyDetails: [KeyDetails] = []) {
+        self.email = recipient.email
+        self.name = recipient.name
+        self.lastUsed = recipient.lastUsed
         self._pubKeys = keyDetails.map(PubKey.init)
     }
 }

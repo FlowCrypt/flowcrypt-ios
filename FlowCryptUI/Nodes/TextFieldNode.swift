@@ -118,14 +118,14 @@ public final class TextFieldNode: ASDisplayNode {
 
     private lazy var node = ASDisplayNode { TextField() }
 
-    private var textFiledAction: TextFieldAction?
+    private var textFieldAction: TextFieldAction?
 
     private var onToolbarDoneAction: (() -> Void)?
 
     public init(preferredHeight: CGFloat?, action: TextFieldAction? = nil, accessibilityIdentifier: String?) {
         super.init()
         addSubnode(node)
-        textFiledAction = action
+        textFieldAction = action
         setupTextField(with: accessibilityIdentifier)
     }
 
@@ -139,7 +139,7 @@ public final class TextFieldNode: ASDisplayNode {
             )
             self.textField.onBackspaceTap = { [weak self] in
                 guard let self = self else { return }
-                self.textFiledAction?(.deleteBackward(self.textField))
+                self.textFieldAction?(.deleteBackward(self.textField))
             }
             self.textField.accessibilityIdentifier = accessibilityIdentifier
         }
@@ -173,7 +173,7 @@ extension TextFieldNode {
     }
 
     @objc private func onEditingChanged() {
-        textFiledAction?(.editingChanged(textField.attributedText?.string ?? textField.text))
+        textFieldAction?(.editingChanged(textField.attributedText?.string ?? textField.text))
 
         if isLowercased {
             guard let attributedText = textField.attributedText, attributedText.string.isNotEmpty else { return }
@@ -187,11 +187,11 @@ extension TextFieldNode {
 
 extension TextFieldNode: UITextFieldDelegate {
     public func textFieldDidBeginEditing(_ textField: UITextField) {
-        textFiledAction?(.didBeginEditing(textField.text))
+        textFieldAction?(.didBeginEditing(textField.text))
     }
 
     public func textFieldDidEndEditing(_ textField: UITextField) {
-        textFiledAction?(.didEndEditing(textField.text))
+        textFieldAction?(.didEndEditing(textField.text))
     }
 
     public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {

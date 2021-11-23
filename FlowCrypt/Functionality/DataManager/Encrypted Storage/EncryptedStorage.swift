@@ -14,9 +14,9 @@ import RealmSwift
 protocol EncryptedStorageType: KeyStorageType {
     var storage: Realm { get }
 
-    func getAllUsers() -> [UserRealmObject]
-    func saveActiveUser(with user: UserRealmObject)
-    var activeUser: UserRealmObject? { get }
+    func getAllUsers() -> [User]
+    func saveActiveUser(with user: User)
+    var activeUser: User? { get }
     func doesAnyKeyExist(for email: String) -> Bool
 
     func validate() throws
@@ -154,7 +154,7 @@ extension EncryptedStorage {
 // MARK: - Keys
 extension EncryptedStorage {
     func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-        guard let user = storage.objects(UserRealmObject.self).first(where: { $0.email == email }) else {
+        guard let user = getUserObject(for: email) else {
             logger.logError("Can't find user with given email to add keys. User should be already saved")
             return
         }
@@ -230,22 +230,26 @@ extension EncryptedStorage: PassPhraseStorageType {
 
 // MARK: - User
 extension EncryptedStorage {
-    var activeUser: UserRealmObject? {
-        getAllUsers().first(where: \.isActive)
+    var activeUser: User? {
+        storage.objects(UserRealmObject.self)
+            .first(where: \.isActive)
+            .flatMap(User.init)
     }
 
-    func getAllUsers() -> [UserRealmObject] {
-        Array(storage.objects(UserRealmObject.self))
+    func getAllUsers() -> [User] {
+        storage.objects(UserRealmObject.self).map(User.init)
     }
 
-    func saveActiveUser(with user: UserRealmObject) {
+    func saveActiveUser(with user: User) {
         try! storage.write {
             // Mark all users as inactive
-            self.getAllUsers().forEach {
+            storage.objects(UserRealmObject.self).forEach {
                 $0.isActive = false
             }
-            user.isActive = true
-            self.storage.add(user, update: .all)
+
+            let object = UserRealmObject(user)
+            object.isActive = true
+            storage.add(object, update: .all)
         }
     }
 }

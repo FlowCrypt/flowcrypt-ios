@@ -30,7 +30,7 @@ final class SetupImapViewController: TableNodeViewController {
     private let decorator: SetupImapViewDecorator
     private let sessionCredentials: SessionCredentialsProvider
     private let imap: Imap
-    private var user = UserRealmObject.empty
+    private var user = User.empty
 
     init(
         globalRouter: GlobalRouterType = GlobalRouter(),
@@ -360,7 +360,7 @@ extension SetupImapViewController {
 
     private func updateForEmailChanges(with text: String?) {
         guard let email = text, email.isNotEmpty else {
-            user = UserRealmObject.empty
+            user = User.empty
             node.reloadData()
             return
         }
@@ -412,7 +412,8 @@ extension SetupImapViewController {
 
         switch settings {
         case let .failure(.notFound(defaultPort)):
-            user.imap?.port = user.imap?.port ?? defaultPort
+            let port = user.imap?.port ?? defaultPort
+            user.imap?.port = port
         case let .success(imapSetting):
             updateUser(imap: imapSetting)
         }
@@ -427,7 +428,8 @@ extension SetupImapViewController {
 
         switch settings {
         case let .failure(.notFound(defaultPort)):
-            user.smtp?.port = user.smtp?.port ?? defaultPort
+            let port = user.smtp?.port ?? defaultPort
+            user.smtp?.port = port
         case let .success(imapSetting):
             updateUser(smtp: imapSetting)
         }
@@ -500,8 +502,9 @@ extension SetupImapViewController {
     private func checkImapSession() {
         showSpinner()
 
-        guard let imapSessionToCheck = IMAPSession(userObject: user),
-            let smtpSession = SMTPSession(userObject: user)
+        guard
+            let imapSessionToCheck = IMAPSession(user: user),
+            let smtpSession = SMTPSession(user: user)
         else {
             fatalError("Should be able to create session at this momment")
         }
@@ -509,13 +512,9 @@ extension SetupImapViewController {
             do {
                 try await self.imap.connectImap(session: imapSessionToCheck)
                 try await self.imap.connectSmtp(session: smtpSession)
-                DispatchQueue.main.async {
-                    self.handleSuccessfulConnection()
-                }
+                handleSuccessfulConnection()
             } catch {
-                DispatchQueue.main.async {
-                    self.handleConnection(error: error)
-                }
+                handleConnection(error: error)
             }
         }
     }
@@ -529,8 +528,8 @@ extension SetupImapViewController {
         globalRouter.signIn(with: .other(.session(user)))
     }
 
-    private func checkCurrentUser() -> Result<UserRealmObject, UserError> {
-        guard user != UserRealmObject.empty, user.email != UserRealmObject.empty.email else {
+    private func checkCurrentUser() -> Result<User, UserError> {
+        guard user != User.empty, user.email != User.empty.email else {
             return .failure(.empty)
         }
 

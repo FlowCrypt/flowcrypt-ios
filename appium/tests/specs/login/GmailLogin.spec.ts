@@ -1,8 +1,9 @@
 import { MockApi } from 'api-mocks/mock';
 import {
   SplashScreen,
-  CreateKeyScreen,
-  MenuBarScreen
+  SetupKeyScreen,
+  MenuBarScreen,
+  InboxScreen
 } from '../../screenobjects/all-screens';
 
 
@@ -17,7 +18,8 @@ describe('LOGIN: ', () => {
     await mockApi.withMockedApis(async () => {
 
       await SplashScreen.login();
-      await CreateKeyScreen.setPassPhrase();
+      await SetupKeyScreen.setPassPhrase();
+      await InboxScreen.checkInboxScreen();
 
       await MenuBarScreen.clickMenuIcon();
       await MenuBarScreen.checkUserEmail();
@@ -25,7 +27,6 @@ describe('LOGIN: ', () => {
 
       await MenuBarScreen.clickLogout();
       await SplashScreen.checkLoginPage();
-
     });
   });
 });

@@ -6,6 +6,7 @@ import ENSwiftSideMenu
 import FlowCryptUI
 import UIKit
 
+@MainActor
 protocol SideMenuViewController {
     func didOpen()
 }

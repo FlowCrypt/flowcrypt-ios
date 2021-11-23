@@ -1,6 +1,6 @@
 import {
   SplashScreen,
-  CreateKeyScreen,
+  SetupKeyScreen,
   InboxScreen,
   EmailScreen
 } from '../../screenobjects/all-screens';
@@ -21,7 +21,8 @@ describe('INBOX: ', () => {
     const bundleId = CommonData.bundleId.id;
 
     await SplashScreen.login();
-    await CreateKeyScreen.setPassPhrase();
+    await SetupKeyScreen.setPassPhrase();
+    await InboxScreen.checkInboxScreen();
 
     await InboxScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
@@ -38,7 +39,7 @@ describe('INBOX: ', () => {
 
     //check email after setting correct pass phrase
     await EmailScreen.enterPassPhrase(correctPassPhrase);
-    await EmailScreen.clickSaveButton();
+    await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
     //reopen email without pass phrase
