@@ -52,7 +52,7 @@ class EmailScreen extends BaseScreen {
   }
 
   checkEmailAddress = async (email: string) => {
-    const selector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
+    const selector = `~${email}`;
     await (await $(selector)).waitForDisplayed();
   }
 
