@@ -77,7 +77,7 @@
 "compose_recipient_invalid_email" = "One or more of your recipients have invalid email address (marked in red)";
 "compose_error" = "Could not compose message";
 "compose_reply_successful" = "Reply successfully sent";
-"compose_reply_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
+"compose_quote_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
 "compose_forward_successful" = "Message forwarded successfully";
 "compose_encrypted_sent" = "Encrypted message sent";
 "compose_enter_subject" = "Enter subject";

@@ -19,7 +19,7 @@ private struct ComposedDraft: Equatable {
 /**
  * View controller to compose the message and send it
  * - User can be redirected here from *InboxViewController* by tapping on *+*
- * - Or from *ThreadDetailsViewController* controller by tapping on *reply*
+ * - Or from *ThreadDetailsViewController* controller by tapping on *reply* or *forward*
  **/
 final class ComposeViewController: TableNodeViewController {
     private lazy var logger = Logger.nested(Self.self)
@@ -114,7 +114,7 @@ final class ComposeViewController: TableNodeViewController {
         setupNavigationBar()
         observeKeyboardNotifications()
         observerAppStates()
-        setupReply()
+        setupQuote()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -239,7 +239,7 @@ extension ComposeViewController {
         }
     }
 
-    private func setupReply() {
+    private func setupQuote() {
         guard input.isQuote, let email = input.recipientQuoteTitle else { return }
 
         let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
@@ -542,8 +542,8 @@ extension ComposeViewController {
     }
 
     private func textNode() -> ASCellNode {
-        let replyQuote = decorator.styledReplyQuote(with: input)
-        let height = max(decorator.frame(for: replyQuote).height, 40)
+        let styledQuote = decorator.styledQuote(with: input)
+        let height = max(decorator.frame(for: styledQuote).height, 40)
 
         return TextViewCellNode(
             decorator.styledTextViewInput(with: height)
@@ -558,9 +558,9 @@ extension ComposeViewController {
         .then {
             let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
 
-            if input.isQuote && !messageText.string.contains(replyQuote.string) {
+            if input.isQuote && !messageText.string.contains(styledQuote.string) {
                 let mutableString = NSMutableAttributedString(attributedString: messageText)
-                mutableString.append(replyQuote)
+                mutableString.append(styledQuote)
                 $0.textView.attributedText = mutableString
                 $0.becomeFirstResponder()
             } else {
