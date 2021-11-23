@@ -41,6 +41,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.clickInboxButton();
+    await InboxScreen.checkInboxScreen();
 
     // Add first contact
     await InboxScreen.clickCreateEmail();
