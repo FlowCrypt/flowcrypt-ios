@@ -19,7 +19,7 @@ describe('COMPOSE EMAIL: ', () => {
     await SetupKeyScreen.setPassPhrase();
     await InboxScreen.checkInboxScreen();
 
-    await InboxScreen.clickCreateEmail();
+    // await InboxScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(recipientEmail, emailSubject, emailText);
 
