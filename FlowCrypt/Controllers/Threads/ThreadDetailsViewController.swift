@@ -133,18 +133,18 @@ extension ThreadDetailsViewController {
               let processedMessage = input.processedMessage
         else { return }
 
-        let recipient: String?
+        let recipients: [String]
         switch quoteType {
         case .reply:
-            recipient = input.rawMessage.sender
+            recipients = [input.rawMessage.sender].compactMap { $0 }
         case .forward:
-            recipient = nil
+            recipients = []
         }
 
         let subject = input.rawMessage.subject ?? "(no subject)"
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
-            recipient: recipient,
+            recipients: recipients,
             sender: input.rawMessage.sender,
             subject: "\(quoteType.subjectPrefix)\(subject)",
             mime: processedMessage.rawMimeData,

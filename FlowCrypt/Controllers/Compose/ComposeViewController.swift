@@ -240,11 +240,13 @@ extension ComposeViewController {
     }
 
     private func setupQuote() {
-        guard input.isQuote, let email = input.recipientQuoteTitle else { return }
+        guard input.isQuote else { return }
 
-        let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
-        contextToSend.recipients.append(recipient)
-        evaluate(recipient: recipient)
+        input.quoteRecipients.forEach { email in
+            let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
+            contextToSend.recipients.append(recipient)
+            evaluate(recipient: recipient)
+        }
     }
 }
 

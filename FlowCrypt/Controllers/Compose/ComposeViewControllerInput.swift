@@ -12,7 +12,7 @@ struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
     struct MessageQuoteInfo: Equatable {
-        let recipient: String?
+        let recipients: [String]
         let sender: String?
         let subject: String?
         let mime: Data?
@@ -35,9 +35,9 @@ struct ComposeMessageInput: Equatable {
         }
     }
 
-    var recipientQuoteTitle: String? {
-        guard case let .quote(info) = type else { return nil }
-        return info.recipient
+    var quoteRecipients: [String] {
+        guard case let .quote(info) = type else { return [] }
+        return info.recipients
     }
 
     var subjectQuoteTitle: String? {
@@ -49,7 +49,7 @@ struct ComposeMessageInput: Equatable {
         switch type {
         case .idle: return "compose_encrypted_sent".localized
         case .quote(let info):
-            if info.recipient == nil {
+            if info.recipients.isEmpty {
                 return "compose_forward_successful".localized
             } else {
                 return "compose_reply_successful".localized
