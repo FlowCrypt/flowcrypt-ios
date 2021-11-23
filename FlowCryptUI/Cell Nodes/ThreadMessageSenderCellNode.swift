@@ -36,10 +36,10 @@ public final class ThreadMessageSenderCellNode: CellNode {
         }
 
         var replyImage: UIImage? {
-            return createButtonImage(systemName: "arrowshape.turn.up.left")
+            return createButtonImage(systemName: "arrow.uturn.backward")
         }
         var forwardImage: UIImage? {
-            return createButtonImage(systemName: "arrowshape.turn.up.right")
+            return createButtonImage(systemName: "arrow.uturn.forward")
         }
         var expandImage: UIImage? {
             let systemName = isExpanded ? "chevron.up" : "chevron.down"
@@ -129,9 +129,9 @@ public final class ThreadMessageSenderCellNode: CellNode {
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        replyNode.style.preferredSize = CGSize(width: 44, height: 44)
-        forwardNode.style.preferredSize = CGSize(width: 44, height: 44)
-        expandNode.style.preferredSize = CGSize(width: 18, height: 44)
+        replyNode.style.preferredSize = CGSize(width: 36, height: 44)
+        forwardNode.style.preferredSize = CGSize(width: 36, height: 44)
+        expandNode.style.preferredSize = CGSize(width: 20, height: 44)
 
         let infoNode = ASStackLayoutSpec(
             direction: .vertical,
@@ -145,7 +145,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
 
         let senderSpec = ASStackLayoutSpec(
             direction: .horizontal,
-            spacing: 4,
+            spacing: 2,
             justifyContent: .spaceBetween,
             alignItems: .start,
             children: [infoNode, replyNode, forwardNode, expandNode]

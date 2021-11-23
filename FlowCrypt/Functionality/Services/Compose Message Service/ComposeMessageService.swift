@@ -86,7 +86,7 @@ final class ComposeMessageService {
             throw MessageValidationError.emptyMessage
         }
 
-        let subject = input.subjectReplyTitle
+        let subject = input.subjectQuoteTitle
             ?? contextToSend.subject
             ?? "(no subject)"
 

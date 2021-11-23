@@ -102,7 +102,9 @@ extension ThreadDetailsViewController {
         UIView.animate(
             withDuration: 0.3,
             animations: {
-                threadNode.replyNode.view.alpha = self.input[indexPath.section-1].isExpanded ? 0 : 1
+                let isExpanded = self.input[indexPath.section-1].isExpanded
+                threadNode.replyNode.view.alpha = isExpanded ? 0 : 1
+                threadNode.forwardNode.view.alpha = isExpanded ? 0 : 1
                 threadNode.expandNode.view.transform = CGAffineTransform(rotationAngle: .pi)
             },
             completion: { [weak self] _ in
@@ -118,38 +120,33 @@ extension ThreadDetailsViewController {
     }
 
     private func handleReplyTap(at indexPath: IndexPath) {
-        guard let email = DataService.shared.email,
-              let input = input[safe: indexPath.section-1],
-              let processedMessage = input.processedMessage
-        else { return }
-
-        let replyInfo = ComposeMessageInput.MessageQuoteInfo(
-            recipient: input.rawMessage.sender,
-            sender: input.rawMessage.sender,
-            subject: input.rawMessage.subject,
-            mime: processedMessage.rawMimeData,
-            sentDate: input.rawMessage.date,
-            message: processedMessage.text,
-            threadId: input.rawMessage.threadId
-        )
-
-        let composeInput = ComposeMessageInput(type: .quote(replyInfo))
-        navigationController?.pushViewController(
-            ComposeViewController(email: email, input: composeInput),
-            animated: true
-        )
+        composeNewMessage(at: indexPath, quoteType: .reply)
     }
 
     private func handleForwardTap(at indexPath: IndexPath) {
+        composeNewMessage(at: indexPath, quoteType: .forward)
+    }
+
+    private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
         guard let email = DataService.shared.email,
               let input = input[safe: indexPath.section-1],
               let processedMessage = input.processedMessage
         else { return }
 
+        let recipient: String?
+        switch quoteType {
+        case .reply:
+            recipient = input.rawMessage.sender
+        case .forward:
+            recipient = nil
+        }
+
+        let subject = input.rawMessage.subject ?? "(no subject)"
+
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
-            recipient: nil,
+            recipient: recipient,
             sender: input.rawMessage.sender,
-            subject: input.rawMessage.subject,
+            subject: "\(quoteType.subjectPrefix)\(subject)",
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,

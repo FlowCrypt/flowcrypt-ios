@@ -85,7 +85,7 @@ struct ComposeViewDecorator {
         dateFormatter.timeStyle = .short
         let time = dateFormatter.string(from: info.sentDate)
 
-        let from = info.recipient ?? "unknown sender"
+        let from = info.sender ?? "unknown sender"
 
         let text: String = "\n\n"
             + "compose_reply_from".localizeWithArguments(date, time, from)

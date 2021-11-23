@@ -240,7 +240,7 @@ extension ComposeViewController {
     }
 
     private func setupReply() {
-        guard input.isQuote, let email = input.recipientReplyTitle else { return }
+        guard input.isQuote, let email = input.recipientQuoteTitle else { return }
 
         let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
         contextToSend.recipients.append(recipient)
@@ -536,7 +536,7 @@ extension ComposeViewController {
             return true
         }
         .then {
-            let subject = input.isQuote ? input.subjectReplyTitle : contextToSend.subject
+            let subject = input.isQuote ? input.subjectQuoteTitle : contextToSend.subject
             $0.attributedText = decorator.styledTitle(with: subject)
         }
     }

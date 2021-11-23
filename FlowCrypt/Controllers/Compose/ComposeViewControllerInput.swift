@@ -35,22 +35,25 @@ struct ComposeMessageInput: Equatable {
         }
     }
 
-    var recipientReplyTitle: String? {
+    var recipientQuoteTitle: String? {
         guard case let .quote(info) = type else { return nil }
         return info.recipient
     }
 
-    var subjectReplyTitle: String? {
+    var subjectQuoteTitle: String? {
         guard case let .quote(info) = type else { return nil }
-        return "Re: \(info.subject ?? "(no subject)")"
+        return info.subject
     }
 
     var successfullySentToast: String {
         switch type {
         case .idle: return "compose_encrypted_sent".localized
-        case .quote: return "compose_reply_successful".localized
-        // TODO
-        // case .forward: return "compose_forward_successful".localized
+        case .quote(let info):
+            if info.recipient == nil {
+                return "compose_forward_successful".localized
+            } else {
+                return "compose_reply_successful".localized
+            }
         }
     }
 
