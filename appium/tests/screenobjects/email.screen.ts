@@ -57,8 +57,8 @@ class EmailScreen extends BaseScreen {
   }
 
   checkEmailAddress = async (email: string) => {
-    await (await this.senderEmail).waitForDisplayed();
-    await expect(await this.senderEmail).toHaveText(email);
+      await (await this.senderEmail).waitForDisplayed();
+      await expect(await this.senderEmail).toHaveText(email);
   }
 
   checkEmailSubject = async (subject: string) => {

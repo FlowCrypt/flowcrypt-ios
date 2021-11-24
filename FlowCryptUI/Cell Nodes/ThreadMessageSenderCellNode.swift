@@ -76,7 +76,6 @@ public final class ThreadMessageSenderCellNode: CellNode {
         senderNode.attributedText = input.sender
         senderNode.accessibilityIdentifier = "senderEmail"
         dateNode.attributedText = input.date
-        senderNode.accessibilityIdentifier = "date"
 
 
         setupReplyNode()
