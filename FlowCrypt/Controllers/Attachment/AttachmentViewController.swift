@@ -22,8 +22,6 @@ final class AttachmentViewController: UIViewController {
         controller: self,
         filesManager: filesManager
     )
-    
-    private var cancellable = Set<AnyCancellable>()
 
     private let errorLabel: UILabel = {
         let label = UILabel()
@@ -56,22 +54,27 @@ final class AttachmentViewController: UIViewController {
         super.viewDidLoad()
         setupNavigationBar()
         addWebView()
-
-        filesManager.save(file: file)
-            .sink(
-                receiveCompletion: {_ in},
-                receiveValue: { [weak self] url in
-                    self?.load(with: url)
-                }
-            )
-            .store(in: &cancellable)
+        showSpinner()
+        title = file.name
+        saveAndStartDownload(file: file)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        filesManager.remove(file: file)
-            .sink(receiveCompletion: {_ in}, receiveValue: {_ in})
-            .store(in: &cancellable)
+        remove(file: file)
+    }
+
+    private func remove(file: FileType) {
+        Task {
+            try await filesManager.remove(file: file)
+        }
+    }
+
+    private func saveAndStartDownload(file: FileType) {
+        Task { [weak self] in
+            let url = try await filesManager.save(file: file)
+            self?.load(with: url)
+        }
     }
 
     private func setupNavigationBar() {
@@ -103,13 +106,19 @@ extension AttachmentViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         errorLabel.isHidden = false
     }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        hideSpinner()
+    }
 }
 
 private extension AttachmentViewController {
 
     private func load(with link: URL?) {
         guard let wrappedLink = link else {
-            errorLabel.isHidden = false
+            DispatchQueue.main.async { [weak self] in
+                self?.errorLabel.isHidden = false
+            }
             return
         }
         webView.load(URLRequest(url: wrappedLink))

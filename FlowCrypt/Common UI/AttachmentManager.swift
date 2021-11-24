@@ -46,14 +46,20 @@ final class AttachmentManager: NSObject {
 
 extension AttachmentManager: AttachmentManagerType {
     func download(_ file: FileType) {
-        filesManager.saveToFilesApp(file: file, from: self)
-            .sinkFuture(
-                receiveValue: {},
-                receiveError: { [weak self] error in
-                    self?.handle(error)
-                }
-            )
-            .store(in: &self.cancellable)
+        Task {
+            do {
+                let url = try await filesManager.save(file: file)
+                openDocumentsController(from: url)
+            } catch {
+                handle(error)
+            }
+        }
+    }
+
+    @MainActor func openDocumentsController(from url: URL) {
+        let documentController = UIDocumentPickerViewController(forExporting: [url])
+        documentController.delegate = self
+        present(documentController, animated: true, completion: nil)
     }
 
     private func handle(_ error: Error) {

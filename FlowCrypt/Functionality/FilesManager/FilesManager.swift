@@ -20,9 +20,8 @@ protocol FilesManagerPresenter {
 }
 
 protocol FilesManagerType {
-    func save(file: FileType) -> Future<URL, Error>
-    func remove(file: FileType) -> Future<Void, Error>
-    func saveToFilesApp(file: FileType, from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> AnyPublisher<Void, Error>
+    func save(file: FileType) async throws -> URL
+    func remove(file: FileType) async throws
 
     @discardableResult
     func selectFromFilesApp(from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> Future<Void, Error>
@@ -35,43 +34,16 @@ class FilesManager: FilesManagerType {
     }()
     private var cancellable = Set<AnyCancellable>()
 
-    private let queue: DispatchQueue = DispatchQueue.global(qos: .background)
-
-    func save(file: FileType) -> Future<URL, Error> {
-        Future<URL, Error> { [weak self] future in
-            guard let self = self else {
-                future(.failure(AppErr.nilSelf))
-                return
-            }
-
-            let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
-            self.queue.async {
-                do {
-                    try file.data.write(to: url)
-                    future(.success(url))
-                } catch {
-                    future(.failure(error))
-                }
-            }
-        }
+    func remove(file: FileType) async throws {
+        let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
+        try FileManager.default.removeItem(at: url)
+        return
     }
 
-    func saveToFilesApp(
-        file: FileType,
-        from viewController: FilesManagerPresenter & UIDocumentPickerDelegate
-    ) -> AnyPublisher<Void, Error> {
-        return self.save(file: file)
-            .flatMap { url in
-                Future<Void, Error> { future in
-                    DispatchQueue.main.async {
-                        let documentController = UIDocumentPickerViewController(forExporting: [url])
-                        documentController.delegate = viewController
-                        viewController.present(documentController, animated: true, completion: nil)
-                        future(.success(()))
-                    }
-                }
-            }
-            .eraseToAnyPublisher()
+    func save(file: FileType) async throws -> URL {
+        let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
+        try file.data.write(to: url)
+        return url
     }
 
     @discardableResult
@@ -86,18 +58,6 @@ class FilesManager: FilesManagerType {
                 documentController.delegate = viewController
                 viewController.present(documentController, animated: true, completion: nil)
                 future(.success(()))
-            }
-        }
-    }
-
-    func remove(file: FileType) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
-            do {
-                try FileManager.default.removeItem(at: url)
-                promise(.success(()))
-            } catch let error {
-                promise(.failure(error))
             }
         }
     }
