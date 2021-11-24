@@ -10,7 +10,8 @@ const SELECTORS = {
   DOWNLOAD_ATTACHMENT_BUTTON: '~downloadButton',
   REPLY_BUTTON: '~replyButton',
   DELETE_BUTTON: '~Delete',
-  CONFIRM_DELETING: '~OK'
+  CONFIRM_DELETING: '~OK',
+  SENDER_EMAIL: '~senderEmail'
 };
 
 
@@ -51,9 +52,13 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.CONFIRM_DELETING)
   }
 
+  get senderEmail() {
+      return $(SELECTORS.SENDER_EMAIL);
+  }
+
   checkEmailAddress = async (email: string) => {
-    const selector = `~${email}`;
-    await (await $(selector)).waitForDisplayed();
+    await (await this.senderEmail).waitForDisplayed();
+    await expect(await this.senderEmail).toHaveText(email);
   }
 
   checkEmailSubject = async (subject: string) => {

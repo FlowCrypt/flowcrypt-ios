@@ -74,7 +74,10 @@ public final class ThreadMessageSenderCellNode: CellNode {
         automaticallyManagesSubnodes = true
 
         senderNode.attributedText = input.sender
+        senderNode.accessibilityIdentifier = "senderEmail"
         dateNode.attributedText = input.date
+        senderNode.accessibilityIdentifier = "date"
+
 
         setupReplyNode()
         setupExpandNode()
