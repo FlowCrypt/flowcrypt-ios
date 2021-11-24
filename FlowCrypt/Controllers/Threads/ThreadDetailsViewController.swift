@@ -414,8 +414,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         guard section > 0, input[section-1].isExpanded else { return 1 }
 
-        let count = input[section-1].processedMessage?.attachments.count ?? 0
-        return Parts.allCases.count + count
+        let attachmentsCount = input[section-1].processedMessage?.attachments.count ?? 0
+        return Parts.allCases.count + attachmentsCount
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -460,6 +460,24 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             return
         }
         handleExpandTap(at: indexPath)
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        dividerView()
+    }
+
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        section > 0 && section < input.count ? 1 / UIScreen.main.nativeScale : 0
+    }
+
+    private func dividerView() -> UIView {
+        UIView().then {
+            let frame = CGRect(x: 8, y: 0, width: view.frame.width - 16, height: 1 / UIScreen.main.nativeScale)
+            let divider = UIView(frame: frame)
+            $0.addSubview(divider)
+            $0.backgroundColor = .clear
+            divider.backgroundColor = .borderColor
+        }
     }
 }
 
