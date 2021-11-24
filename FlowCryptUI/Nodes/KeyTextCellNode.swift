@@ -9,10 +9,9 @@
 import AsyncDisplayKit
 
 public final class KeyTextCellNode: CellNode {
-    private let textNode = ASTextNode2()
-    private let selectedNode = ASDisplayNode()
 
     private let insets: UIEdgeInsets
+    private let textNode = ASTextNode2()
 
     public init(
         title: NSAttributedString,

@@ -10,7 +10,6 @@ import FlowCryptCommon
 import Foundation
 
 final class KeyDataStorage {
-    private lazy var logger = Logger.nested(Self.self)
 
     private let encryptedStorage: EncryptedStorageType
 

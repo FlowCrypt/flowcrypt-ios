@@ -31,10 +31,6 @@ enum MessagesListPagination {
     case byNextPage(token: String?)
 }
 
-enum MessagesListProviderError {
-    case provider
-}
-
 protocol MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext
 }

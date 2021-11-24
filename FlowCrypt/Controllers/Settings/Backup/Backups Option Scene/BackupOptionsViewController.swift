@@ -32,7 +32,6 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     private var selectedOption: BackupOption = .email {
         didSet { handleOptionChange() }
     }
-    private let attester = AttesterApi()
     private let backupService: BackupServiceType
     private let service: ServiceActor
     private let userId: UserId

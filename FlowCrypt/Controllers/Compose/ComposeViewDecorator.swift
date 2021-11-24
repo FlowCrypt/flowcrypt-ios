@@ -20,8 +20,7 @@ struct ComposeViewDecorator {
     let recipientKeyRevokedState: RecipientState = .keyRevoked(keyRevokedStateContext)
     let recipientKeyNotFoundState: RecipientState = .keyNotFound(keyNotFoundStateContext)
     let recipientInvalidEmailState: RecipientState = .invalidEmail(invalidEmailStateContext)
-    let recipientErrorState: RecipientState = .error(errorStateContext, false)
-    var recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
+    let recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
 
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(

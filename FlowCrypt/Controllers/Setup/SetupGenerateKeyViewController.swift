@@ -34,8 +34,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     private let attester: AttesterApiType
     private let service: Service
 
-    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
-
     init(
         user: UserId,
         backupService: BackupServiceType = BackupService(),

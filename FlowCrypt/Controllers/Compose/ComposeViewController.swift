@@ -22,7 +22,6 @@ private struct ComposedDraft: Equatable {
  * - Or from *ThreadDetailsViewController* controller by tapping on *reply*
  **/
 final class ComposeViewController: TableNodeViewController {
-    private lazy var logger = Logger.nested(Self.self)
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
