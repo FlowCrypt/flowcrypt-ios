@@ -25,10 +25,6 @@ enum GlobalRoutingType {
     case other(SessionType)
 }
 
-enum GlobalRoutingError: Error {
-    case missedRootViewController
-}
-
 // MARK: - GlobalRouter
 final class GlobalRouter {
 

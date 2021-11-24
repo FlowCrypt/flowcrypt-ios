@@ -32,7 +32,6 @@ class FilesManager: FilesManagerType {
     private let documentsDirectoryURL: URL = {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }()
-    private var cancellable = Set<AnyCancellable>()
 
     func remove(file: FileType) async throws {
         let url = self.documentsDirectoryURL.appendingPathComponent(file.name)

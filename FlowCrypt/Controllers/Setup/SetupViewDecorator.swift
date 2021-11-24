@@ -14,7 +14,6 @@ struct SetupViewInsets {
     let titleInset = UIEdgeInsets(top: 64, left: 16, bottom: 64, right: 16)
     let subTitleInset = UIEdgeInsets(top: 0, left: 16, bottom: 24, right: 16)
     let buttonInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
-    let optionalButtonInsets = UIEdgeInsets(top: 0, left: 24, bottom: 8, right: 24)
     let dividerInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
 }
 

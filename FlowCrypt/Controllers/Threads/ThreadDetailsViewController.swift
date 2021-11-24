@@ -91,40 +91,75 @@ extension ThreadDetailsViewController {
             return
         }
 
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                threadNode.replyNode.view.alpha = self.input[indexPath.section-1].isExpanded ? 0 : 1
-                threadNode.expandNode.view.transform = CGAffineTransform(rotationAngle: .pi)
-            },
-            completion: { [weak self] _ in
-                guard let self = self else { return }
+        input[indexPath.section - 1].isExpanded.toggle()
 
-                if let processedMessage = self.input[indexPath.section-1].processedMessage {
-                    self.handleReceived(message: processedMessage, at: indexPath)
-                } else {
-                    self.fetchDecryptAndRenderMsg(at: indexPath)
+        if input[indexPath.section-1].isExpanded {
+            UIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    threadNode.expandNode.view.alpha = 0
+                },
+                completion: { [weak self] _ in
+                    guard let self = self else { return }
+
+                    if let processedMessage = self.input[indexPath.section-1].processedMessage {
+                        self.handleReceived(message: processedMessage, at: indexPath)
+                    } else {
+                        self.fetchDecryptAndRenderMsg(at: indexPath)
+                    }
                 }
+            )
+        } else {
+            UIView.animate(withDuration: 0.3) {
+                self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
             }
-        )
+        }
     }
 
     private func handleReplyTap(at indexPath: IndexPath) {
+        composeNewMessage(at: indexPath, quoteType: .reply)
+    }
+
+    private func handleMenuTap(at indexPath: IndexPath) {
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alert.addAction(
+            UIAlertAction(
+                title: "forward".localized,
+                style: .default) { [weak self] _ in
+                    self?.composeNewMessage(at: indexPath, quoteType: .forward)
+                }
+            )
+        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
         guard let email = DataService.shared.email,
               let input = input[safe: indexPath.section-1],
               let processedMessage = input.processedMessage
         else { return }
 
-        let replyInfo = ComposeMessageInput.ReplyInfo(
-            recipient: input.rawMessage.sender,
-            subject: input.rawMessage.subject,
+        let recipients: [String]
+        switch quoteType {
+        case .reply:
+            recipients = [input.rawMessage.sender].compactMap { $0 }
+        case .forward:
+            recipients = []
+        }
+
+        let subject = input.rawMessage.subject ?? "(no subject)"
+
+        let replyInfo = ComposeMessageInput.MessageQuoteInfo(
+            recipients: recipients,
+            sender: input.rawMessage.sender,
+            subject: "\(quoteType.subjectPrefix)\(subject)",
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
             threadId: input.rawMessage.threadId
         )
 
-        let composeInput = ComposeMessageInput(type: .reply(replyInfo))
+        let composeInput = ComposeMessageInput(type: .quote(replyInfo))
         navigationController?.pushViewController(
             ComposeViewController(email: email, input: composeInput),
             animated: true
@@ -371,8 +406,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         guard section > 0, input[section-1].isExpanded else { return 1 }
 
-        let count = input[section-1].processedMessage?.attachments.count ?? 0
-        return Parts.allCases.count + count
+        let attachmentsCount = input[section-1].processedMessage?.attachments.count ?? 0
+        return Parts.allCases.count + attachmentsCount
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -389,7 +424,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             if indexPath.row == 0 {
                 return ThreadMessageSenderCellNode(
                     input: .init(threadMessage: section),
-                    onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) }
+                    onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
+                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) }
                 )
             }
 
@@ -422,6 +458,24 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 animated: true
             )
         default: return
+        }
+    }
+
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        dividerView()
+    }
+
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        section > 0 && section < input.count ? 1 / UIScreen.main.nativeScale : 0
+    }
+
+    private func dividerView() -> UIView {
+        UIView().then {
+            let frame = CGRect(x: 8, y: 0, width: view.frame.width - 16, height: 1 / UIScreen.main.nativeScale)
+            let divider = UIView(frame: frame)
+            $0.addSubview(divider)
+            $0.backgroundColor = .clear
+            divider.backgroundColor = .borderColor
         }
     }
 }

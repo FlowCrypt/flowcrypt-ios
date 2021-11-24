@@ -18,7 +18,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
         static let allMail = "folder_all_mail".localized
         static let inbox = "folder_all_inbox".localized
-        static let cellHeight: CGFloat = 60
     }
 
     private enum Sections: Int, CaseIterable {

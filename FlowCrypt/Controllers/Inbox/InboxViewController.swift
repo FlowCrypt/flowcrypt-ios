@@ -208,19 +208,6 @@ extension InboxViewController {
         }
     }
 
-    func shouldBatchFetch(for _: ASTableNode) -> Bool {
-        switch state {
-        case .idle:
-            return false
-        case .fetched(.byNumber(let total)):
-            return inboxInput.count < total ?? 0
-        case .fetched(.byNextPage(let token)):
-            return token != nil
-        case .error, .refresh, .fetching, .empty:
-            return false
-        }
-    }
-
     func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
         context.beginBatchFetching()
         handleBeginFetching(context)

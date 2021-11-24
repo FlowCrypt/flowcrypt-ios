@@ -13,7 +13,6 @@ final class BackupService {
     let backupProvider: BackupProvider
     let core: Core
     let messageSender: MessageGateway
-    private var cancellable = Set<AnyCancellable>()
 
     init(
         backupProvider: BackupProvider = MailProvider.shared.backupProvider,

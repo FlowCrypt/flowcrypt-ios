@@ -16,7 +16,7 @@ describe('COMPOSE EMAIL: ', () => {
 
   it('user is able to send encrypted email when pass phrase session ended + move to trash, delete', async () => {
 
-    const contactEmail = CommonData.secondContact.email;
+    const contactEmail = CommonData.recipient.email;
     const emailSubject = CommonData.simpleEmail.subject + DataHelper.uniqueValue();
     const emailText = CommonData.simpleEmail.message;
     const passPhrase = CommonData.account.passPhrase;
@@ -37,13 +37,13 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.composeEmail(contactEmail, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(contactEmail, emailSubject, emailText);
     //Set wrong pass phrase and check error
-    await NewMessageScreen.clickSentButton();
+    await NewMessageScreen.clickSendButton();
     await EmailScreen.enterPassPhrase(wrongPassPhrase);
     await EmailScreen.clickOkButton();
     await NewMessageScreen.checkError(wrongPassPhraseError);
     await NewMessageScreen.clickOkButtonOnError();
     //Set correct pass phrase
-    await NewMessageScreen.clickSentButton();
+    await NewMessageScreen.clickSendButton();
     await EmailScreen.enterPassPhrase(passPhrase);
     await EmailScreen.clickOkButton();
     await InboxScreen.checkInboxScreen();

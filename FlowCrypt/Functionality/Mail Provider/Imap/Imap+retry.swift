@@ -109,7 +109,8 @@ extension Imap {
             try await renewSession() // todo - log time
             return true
         case .connection:
-            // the connection has dropped, so it's probably ok to not officially "close" it. but maybe there could be a cleaner way to dispose of the connection?
+            // the connection has dropped, so it's probably ok to not officially "close" it.
+            // but maybe there could be a cleaner way to dispose of the connection?
             imapSess = nil
             smtpSess = nil
             // this is a mess, neads a real refactor. use DI

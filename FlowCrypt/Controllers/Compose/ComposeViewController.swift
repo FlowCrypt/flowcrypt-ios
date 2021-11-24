@@ -19,10 +19,9 @@ private struct ComposedDraft: Equatable {
 /**
  * View controller to compose the message and send it
  * - User can be redirected here from *InboxViewController* by tapping on *+*
- * - Or from *ThreadDetailsViewController* controller by tapping on *reply*
+ * - Or from *ThreadDetailsViewController* controller by tapping on *reply* or *forward*
  **/
 final class ComposeViewController: TableNodeViewController {
-    private lazy var logger = Logger.nested(Self.self)
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
@@ -119,7 +118,7 @@ final class ComposeViewController: TableNodeViewController {
         setupNavigationBar()
         observeKeyboardNotifications()
         observerAppStates()
-        setupReply()
+        setupQuote()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -250,12 +249,14 @@ extension ComposeViewController {
         }
     }
 
-    private func setupReply() {
-        guard input.isReply, let email = input.recipientReplyTitle else { return }
+    private func setupQuote() {
+        guard input.isQuote else { return }
 
-        let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
-        contextToSend.recipients.append(recipient)
-        evaluate(recipient: recipient)
+        input.quoteRecipients.forEach { email in
+            let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
+            contextToSend.recipients.append(recipient)
+            evaluate(recipient: recipient)
+        }
     }
 }
 
@@ -557,7 +558,7 @@ extension ComposeViewController {
         }
         .onShouldReturn { [weak self] _ in
             guard let self = self else { return true }
-            if !self.input.isReply, let node = self.node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first {
+            if !self.input.isQuote, let node = self.node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first {
                 node.becomeFirstResponder()
             } else {
                 self.node.view.endEditing(true)
@@ -565,14 +566,14 @@ extension ComposeViewController {
             return true
         }
         .then {
-            let subject = input.isReply ? input.subjectReplyTitle : contextToSend.subject
+            let subject = input.isQuote ? input.subjectQuoteTitle : contextToSend.subject
             $0.attributedText = decorator.styledTitle(with: subject)
         }
     }
 
     private func textNode() -> ASCellNode {
-        let replyQuote = decorator.styledReplyQuote(with: input)
-        let height = max(decorator.frame(for: replyQuote).height, 40)
+        let styledQuote = decorator.styledQuote(with: input)
+        let height = max(decorator.frame(for: styledQuote).height, 40)
 
         return TextViewCellNode(
             decorator.styledTextViewInput(with: height)
@@ -587,9 +588,9 @@ extension ComposeViewController {
         .then {
             let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
 
-            if input.isReply && !messageText.string.contains(replyQuote.string) {
+            if input.isQuote && !messageText.string.contains(styledQuote.string) {
                 let mutableString = NSMutableAttributedString(attributedString: messageText)
-                mutableString.append(replyQuote)
+                mutableString.append(styledQuote)
                 $0.textView.attributedText = mutableString
                 $0.becomeFirstResponder()
             } else {
@@ -623,7 +624,7 @@ extension ComposeViewController {
         }
         .then {
             $0.isLowercased = true
-            if !self.input.isReply {
+            if !self.input.isQuote {
                 $0.becomeFirstResponder()
             }
         }
