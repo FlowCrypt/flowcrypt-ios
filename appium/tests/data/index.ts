@@ -15,6 +15,9 @@ export const CommonData = {
     email: 'demo@flowcrypt.com',
     name: 'Demo'
   },
+  recipient: {
+      email: 'robot@flowcrypt.com',
+  },
   bundleId: {
     id: 'com.flowcrypt.as.ios.debug',
   },
