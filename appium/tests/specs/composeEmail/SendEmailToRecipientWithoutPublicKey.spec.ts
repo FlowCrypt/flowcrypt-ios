@@ -23,7 +23,7 @@ describe('COMPOSE EMAIL: ', () => {
     await InboxScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(noPublicKeyRecipient, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(noPublicKeyRecipient, emailSubject, emailText);
-    await NewMessageScreen.clickSentButton();
+    await NewMessageScreen.clickSendButton();
 
     await NewMessageScreen.checkError(noPublicKeyError);
   });

@@ -11,7 +11,7 @@ const SELECTORS = {
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
   RETURN_BUTTON: '~Return',
   BACK_BUTTON: '~arrow left c',
-  SENT_BUTTON: '~android send',
+  SEND_BUTTON: '~android send',
   ERROR_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Error"`]',
   OK_BUTTON: '~OK'
 };
@@ -41,8 +41,8 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.BACK_BUTTON);
   }
 
-  get sentButton() {
-    return $(SELECTORS.SENT_BUTTON);
+  get sendButton() {
+    return $(SELECTORS.SEND_BUTTON);
   }
 
   get errorHeader() {
@@ -100,8 +100,8 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.backButton);
   }
 
-  clickSentButton = async () => {
-    await ElementHelper.waitAndClick(await this.sentButton);
+  clickSendButton = async () => {
+    await ElementHelper.waitAndClick(await this.sendButton);
   }
 
   checkError = async (errorText: string) => {
