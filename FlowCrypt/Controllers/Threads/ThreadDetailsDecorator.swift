@@ -101,16 +101,9 @@ private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> B
         return nil
     }
 
-    let text: String
-    if input.processedMessage?.messageType == .encrypted {
-        text = signature.message
-    } else {
-        text = "message_not_signed".localized
-    }
-
     return BadgeNode.Input(
         icon: signature.icon,
-        text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
+        text: NSAttributedString.text(from: signature.message, style: .regular(12), color: .white),
         color: signature.color
     )
 }

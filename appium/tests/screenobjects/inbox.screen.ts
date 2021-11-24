@@ -28,10 +28,12 @@ class InboxScreen extends BaseScreen {
     await $(`~${email}`).click();
   }
 
-  clickOnEmailBySubject = async (subject: string) => {
+  clickOnEmailBySubject = async (subject: string, withScroll: boolean = true) => {
     const selector = `~${subject}`;
-    if (await (await $(selector)).isDisplayed() !== true) {
-      await TouchHelper.scrollDown();
+    if (withScroll) {
+      if (await (await $(selector)).isDisplayed() !== true) {
+        await TouchHelper.scrollDown();
+      }
     }
     await ElementHelper.waitAndClick(await $(selector), 500);
   }

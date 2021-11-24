@@ -53,7 +53,7 @@ class EmailScreen extends BaseScreen {
   }
 
   get senderEmail() {
-      return $(SELECTORS.SENDER_EMAIL);
+    return $(SELECTORS.SENDER_EMAIL);
   }
 
   checkEmailAddress = async (email: string) => {
@@ -118,7 +118,17 @@ class EmailScreen extends BaseScreen {
   }
 
   confirmDelete = async () => {
-    await ElementHelper.waitAndClick(await this.confirmDeletingButton)
+    await ElementHelper.waitAndClick(await this.confirmDeletingButton);
+  }
+
+  checkEncryptionBadge = async (value: string) => {
+    const selector = `~${value}`;
+    await (await $(selector)).waitForDisplayed();
+  }
+
+  checkSignatureBadge = async (value: string) => {
+    const selector = `~${value}`;
+    await (await $(selector)).waitForDisplayed();
   }
 }
 
