@@ -242,7 +242,3 @@ public func print(_ object: Any) {
       Swift.print(object)
   #endif
 }
-
-public func releasePrint(_ object: Any) {
-    Swift.print(object)
-}

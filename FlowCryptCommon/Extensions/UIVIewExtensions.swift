@@ -5,31 +5,6 @@
 import UIKit
 
 public extension UIView {
-    @discardableResult
-    func bordered(color: UIColor, width: CGFloat) -> Self {
-        layer.borderColor = color.cgColor
-        layer.borderWidth = width
-        return self
-    }
-
-    @discardableResult
-    func cornered(_ cornerRadius: CGFloat) -> Self {
-        layer.cornerRadius = cornerRadius
-        return self
-    }
-}
-
-public extension UIView {
-    func constraintsToEdges(to guide: UILayoutGuide) {
-        translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            leadingAnchor.constraint(equalTo: guide.leadingAnchor),
-            trailingAnchor.constraint(equalTo: guide.trailingAnchor),
-            topAnchor.constraint(equalTo: guide.topAnchor),
-            bottomAnchor.constraint(equalTo: guide.bottomAnchor),
-        ])
-    }
-
     func constrainToEdges(_ subview: UIView, insets: UIEdgeInsets = .zero) {
         subview.translatesAutoresizingMaskIntoConstraints = false
 
@@ -79,14 +54,6 @@ public extension UIView {
             leadingContraint,
             trailingContraint,
         ])
-    }
-
-    func constrainToBorders(_ subview: UIView, insets: UIEdgeInsets = .zero) {
-        subview.translatesAutoresizingMaskIntoConstraints = false
-        subview.leftAnchor.constraint(equalTo: leftAnchor, constant: insets.left).isActive = true
-        subview.rightAnchor.constraint(equalTo: rightAnchor, constant: -insets.right).isActive = true
-        subview.topAnchor.constraint(equalTo: topAnchor, constant: insets.top).isActive = true
-        subview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom).isActive = true
     }
 }
 

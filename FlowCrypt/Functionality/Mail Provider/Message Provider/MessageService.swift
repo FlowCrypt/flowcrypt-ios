@@ -107,9 +107,6 @@ enum MessageServiceError: Error {
 }
 
 final class MessageService {
-    private enum Constants {
-        static let encryptedAttachmentExtension = "pgp"
-    }
 
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
@@ -261,12 +258,6 @@ final class MessageService {
         }
         logger.logInfo("missing pass phrase for one of longids \(decryptErr.longids)")
         return true
-    }
-
-    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
-        privateKeys
-            .map { PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints) }
-            .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
     }
 }
 

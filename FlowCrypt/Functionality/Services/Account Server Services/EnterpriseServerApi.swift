@@ -50,9 +50,6 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
     private struct ClientConfigurationResponse: Codable {
         let clientConfiguration: RawClientConfiguration
-        private enum CodingKeys: String, CodingKey {
-            case clientConfiguration
-        }
     }
 
     func getActiveFesUrlForCurrentUser() async throws -> String? {
