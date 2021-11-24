@@ -45,14 +45,12 @@ describe('COMPOSE EMAIL: ', () => {
 
     // Add first contact
     await InboxScreen.clickCreateEmail();
-
     await NewMessageScreen.setAddRecipientByName(firstContactName, firstContactEmail);
     await NewMessageScreen.checkAddedRecipient(firstContactEmail);
     await NewMessageScreen.clickBackButton();
 
     // Add second contact
     await InboxScreen.clickCreateEmail();
-
     await NewMessageScreen.setAddRecipientByName(secondContactName, secondContactEmail);
     await NewMessageScreen.checkAddedRecipient(secondContactEmail);
     await NewMessageScreen.clickBackButton();

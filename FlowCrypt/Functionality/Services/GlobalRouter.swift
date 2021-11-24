@@ -13,6 +13,7 @@ import UIKit
 protocol GlobalRouterType {
     func proceed()
     func signIn(with route: GlobalRoutingType)
+    func askForContactsPermission(for route: GlobalRoutingType) async throws
     func switchActive(user: User)
     func signOut()
 }
@@ -70,11 +71,14 @@ extension GlobalRouter: GlobalRouterType {
         case .gmailLogin(let viewController):
             Task {
                 do {
-                    let session = try await googleService.signIn(in: viewController)
+                    let session = try await googleService.signIn(
+                        in: viewController,
+                        scopes: GeneralConstants.Gmail.mailScope
+                    )
                     self.userAccountService.startSessionFor(user: session)
                     self.proceed(with: session)
                 } catch {
-                    self.handleGmailError(error)
+                    self.handleGmailError(error, in: viewController)
                 }
             }
         case .other(let session):
@@ -91,6 +95,26 @@ extension GlobalRouter: GlobalRouterType {
             logger.logInfo("Sign out")
             userAccountService.cleanup()
             proceed()
+        }
+    }
+
+    func askForContactsPermission(for route: GlobalRoutingType) async throws {
+        logger.logInfo("Ask for contacts permission with \(route)")
+
+        switch route {
+        case .gmailLogin(let viewController):
+            do {
+                let session = try await googleService.signIn(
+                    in: viewController,
+                    scopes: GeneralConstants.Gmail.contactsScope
+                )
+                self.userAccountService.startSessionFor(user: session)
+            } catch {
+                logger.logInfo("Contacts scope failed with error \(error.errorMessage)")
+                throw error
+            }
+        case .other:
+            break
         }
     }
 
@@ -126,13 +150,13 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func handleGmailError(_ error: Error) {
-        logger.logInfo("gmail login failed with error \(error.localizedDescription)")
+    private func handleGmailError(_ error: Error, in viewController: UIViewController) {
+        logger.logInfo("gmail login failed with error \(error.errorMessage)")
         if let gmailUserError = error as? GoogleUserServiceError,
-           case .userNotAllowedAllNeededScopes(let missingScopes) = gmailUserError {
-            let topNavigation = (self.keyWindow.rootViewController as? UINavigationController)
-            let checkAuthViewControlelr = CheckAuthScopesViewController(missingScopes: missingScopes)
-            topNavigation?.pushViewController(checkAuthViewControlelr, animated: true)
+           case .userNotAllowedAllNeededScopes = gmailUserError {
+            let navigationController = viewController.navigationController
+            let checkAuthViewController = CheckMailAuthViewController()
+            navigationController?.pushViewController(checkAuthViewController, animated: true)
         }
     }
 }

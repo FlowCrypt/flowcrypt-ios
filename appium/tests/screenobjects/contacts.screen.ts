@@ -38,7 +38,7 @@ class ContactsScreen extends BaseScreen {
   }
 
   clickBackButton = async () => {
-    await ElementHelper.waitAndClick(await this.backButton);
+    await ElementHelper.waitAndClick(await this.backButton, 1000);
   }
 
   checkContact = async (name: string) => {

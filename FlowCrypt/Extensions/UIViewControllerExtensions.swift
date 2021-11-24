@@ -72,7 +72,7 @@ extension UIViewController {
     }
 
     @MainActor
-    func showAlert(title: String? = "Error", message: String, onOk: (() -> Void)? = nil) {
+    func showAlert(title: String? = "error".localized, message: String, onOk: (() -> Void)? = nil) {
         self.view.hideAllToasts()
         hideSpinner()
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -82,7 +82,7 @@ extension UIViewController {
 
     @MainActor
     func showRetryAlert(
-        title: String? = "Error",
+        title: String? = "error".localized,
         message: String,
         onRetry: (() -> Void)? = nil,
         onOk: (() -> Void)? = nil
