@@ -31,6 +31,7 @@ describe('INBOX: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo(senderEmail, replySubject, quoteText);
     
     await NewMessageScreen.clickBackButton();
+    await EmailScreen.clickMenuButton();
     await EmailScreen.clickForwardButton();
     await NewMessageScreen.checkFilledComposeEmailInfo("", forwardSubject, quoteText);
   });
