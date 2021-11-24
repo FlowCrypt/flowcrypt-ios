@@ -78,7 +78,7 @@ final class ComposeMessageService {
             throw MessageValidationError.invalidEmailRecipient
         }
 
-        guard input.isReply || contextToSend.subject?.hasContent ?? false else {
+        guard input.isQuote || contextToSend.subject?.hasContent ?? false else {
             throw MessageValidationError.emptySubject
         }
 
@@ -86,7 +86,7 @@ final class ComposeMessageService {
             throw MessageValidationError.emptyMessage
         }
 
-        let subject = input.subjectReplyTitle
+        let subject = input.subjectQuoteTitle
             ?? contextToSend.subject
             ?? "(no subject)"
 

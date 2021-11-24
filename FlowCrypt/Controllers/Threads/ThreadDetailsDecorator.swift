@@ -33,7 +33,8 @@ extension ThreadMessageSenderCellNode.Input {
             sender: NSAttributedString.text(from: sender, style: style, color: textColor),
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,
-            buttonColor: .messageButtonColor
+            buttonColor: .messageButtonColor,
+            nodeInsets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 8)
         )
     }
 }
