@@ -486,16 +486,20 @@ extension SetupImapViewController {
     private func connect() {
         view.endEditing(true)
 
-        let result = checkCurrentUser()
-        switch result {
-        case .failure(.empty):
-            showToast("other_provider_error_other".localized)
-        case .failure(.password):
-            showToast("other_provider_error_password".localized)
-        case .failure(.email):
-            showToast("other_provider_error_email".localized)
-        case .success:
+        do {
+            try checkCurrentUser()
             checkImapSession()
+        } catch {
+            switch error as? UserError {
+            case .empty:
+                showToast("other_provider_error_other".localized)
+            case .password:
+                showToast("other_provider_error_password".localized)
+            case .email:
+                showToast("other_provider_error_email".localized)
+            default:
+                break
+            }
         }
     }
 
@@ -528,16 +532,14 @@ extension SetupImapViewController {
         globalRouter.signIn(with: .other(.session(user)))
     }
 
-    private func checkCurrentUser() -> Result<User, UserError> {
+    private func checkCurrentUser() throws {
         guard user != User.empty, user.email != User.empty.email else {
-            return .failure(.empty)
+            throw UserError.empty
         }
 
         guard let password = user.password, password.isNotEmpty else {
-            return .failure(.password)
+            throw UserError.password
         }
-
-        return .success(user)
     }
 }
 

@@ -82,18 +82,16 @@ extension UserAccountService: UserAccountServiceType {
     }
 
     func switchActiveSessionFor(user: User) -> SessionType? {
-        let actualUser = encryptedStorage
+        let currentUser = encryptedStorage
             .getAllUsers()
             .first(where: { $0.email == user.email })
 
-        guard let actualUser = actualUser else {
+        guard let currentUser = currentUser else {
             logger.logWarning("UserObject should be persisted to encrypted storage in case of switching accounts")
             return nil
         }
 
-        let session = switchActiveSession(for: actualUser)
-
-        return session
+        return switchActiveSession(for: currentUser)
     }
 
     func cleanupSessions() {

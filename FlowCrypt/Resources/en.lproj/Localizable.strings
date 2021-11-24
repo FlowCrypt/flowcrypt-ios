@@ -14,6 +14,7 @@
 "error" = "Error";
 "allow" = "Allow";
 "later" = "Later";
+"forward" = "Forward";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -69,8 +70,9 @@
 "compose_recipient_expired" = "One or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.";
 "compose_recipient_invalid_email" = "One or more of your recipients have invalid email address (marked in red)";
 "compose_error" = "Could not compose message";
-"compose_reply_successfull" = "Reply successfully sent";
-"compose_reply_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
+"compose_reply_successful" = "Reply successfully sent";
+"compose_quote_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
+"compose_forward_successful" = "Message forwarded successfully";
 "compose_encrypted_sent" = "Encrypted message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";

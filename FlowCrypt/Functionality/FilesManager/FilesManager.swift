@@ -32,7 +32,6 @@ class FilesManager: FilesManagerType {
     private let documentsDirectoryURL: URL = {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }()
-    private var cancellable = Set<AnyCancellable>()
 
     private let queue: DispatchQueue = DispatchQueue.global(qos: .background)
 
@@ -45,7 +44,6 @@ class FilesManager: FilesManagerType {
 
             let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
             self.queue.async {
-
                 do {
                     try file.data.write(to: url)
                     future(.success(url))

@@ -5,6 +5,7 @@ const SELECTORS = {
   ADD_RECIPIENT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Add Recipient"`]',
   SUBJECT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Subject"`]',
   COMPOSE_SECURITY_MESSAGE: '-ios predicate string:type == "XCUIElementTypeTextView"',
+  RECIPIENTS_LIST: '~recipientsList',
   ADDED_RECIPIENT: '-ios class chain:**/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther' +
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
@@ -31,6 +32,10 @@ class NewMessageScreen extends BaseScreen {
 
   get composeSecurityMessage() {
     return $(SELECTORS.COMPOSE_SECURITY_MESSAGE);
+  }
+
+  get recipientsList() {
+    return $(SELECTORS.RECIPIENTS_LIST);
   }
 
   get addedRecipientEmail() {
@@ -87,8 +92,19 @@ class NewMessageScreen extends BaseScreen {
     expect(this.composeSecurityMessage).toHaveText(message);
     const element = await this.filledSubject(subject);
     await element.waitForDisplayed();
-    await this.checkAddedRecipient(recipient);
+
+    if (recipient.length === 0) {
+      await this.checkEmptyRecipientsList();
+    } else {
+      await this.checkAddedRecipient(recipient);
+    }
   };
+
+  checkEmptyRecipientsList = async () => {
+    const list = await this.recipientsList;
+    const listText = await list.getText();
+    expect(listText.length).toEqual(0);
+  }
 
   checkAddedRecipient = async (recipient: string) => {
     const addedRecipientEl = await this.addedRecipientEmail;
