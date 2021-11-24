@@ -103,9 +103,7 @@ extension ThreadDetailsViewController {
             withDuration: 0.3,
             animations: {
                 let isExpanded = self.input[indexPath.section-1].isExpanded
-                threadNode.replyNode.view.alpha = isExpanded ? 0 : 1
-                threadNode.forwardNode.view.alpha = isExpanded ? 0 : 1
-                threadNode.expandNode.view.transform = CGAffineTransform(rotationAngle: .pi)
+                threadNode.expandNode.view.alpha = isExpanded ? 1 : 0
             },
             completion: { [weak self] _ in
                 guard let self = self else { return }
@@ -123,8 +121,17 @@ extension ThreadDetailsViewController {
         composeNewMessage(at: indexPath, quoteType: .reply)
     }
 
-    private func handleForwardTap(at indexPath: IndexPath) {
-        composeNewMessage(at: indexPath, quoteType: .forward)
+    private func handleMenuTap(at indexPath: IndexPath) {
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alert.addAction(
+            UIAlertAction(
+                title: "forward".localized,
+                style: .default) { [weak self] _ in
+                    self?.composeNewMessage(at: indexPath, quoteType: .forward)
+                }
+            )
+        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
+        present(alert, animated: true, completion: nil)
     }
 
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
@@ -419,7 +426,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return ThreadMessageSenderCellNode(
                     input: .init(threadMessage: section),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
-                    onForwardTap: { [weak self] _ in self?.handleForwardTap(at: indexPath) }
+                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) }
                 )
             }
 

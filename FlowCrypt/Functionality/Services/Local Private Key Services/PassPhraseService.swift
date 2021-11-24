@@ -30,7 +30,9 @@ struct PassPhrase: Codable, Hashable, Equatable {
     }
 
     // (tom) todo - this is a confusing thing to do
-    // when comparing pass phrases to one another, you would expect that it's compared by the pass phrase string itself, and not by primary fingerprint of the associated key. I understand this is being used somewhere, but I suggest to refactor it to avoid defining this == overload.
+    // when comparing pass phrases to one another, you would expect that it's compared by the pass phrase string
+    // itself, and not by primary fingerprint of the associated key. I understand this is being used somewhere,
+    // but I suggest to refactor it to avoid defining this == overload.
     static func == (lhs: PassPhrase, rhs: PassPhrase) -> Bool {
         lhs.primaryFingerprintOfAssociatedKey == rhs.primaryFingerprintOfAssociatedKey
     }
