@@ -99,22 +99,29 @@ extension ThreadDetailsViewController {
             return
         }
 
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                let isExpanded = self.input[indexPath.section-1].isExpanded
-                threadNode.expandNode.view.alpha = isExpanded ? 1 : 0
-            },
-            completion: { [weak self] _ in
-                guard let self = self else { return }
+        input[indexPath.section - 1].isExpanded.toggle()
 
-                if let processedMessage = self.input[indexPath.section-1].processedMessage {
-                    self.handleReceived(message: processedMessage, at: indexPath)
-                } else {
-                    self.fetchDecryptAndRenderMsg(at: indexPath)
+        if input[indexPath.section-1].isExpanded {
+            UIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    threadNode.expandNode.view.alpha = 0
+                },
+                completion: { [weak self] _ in
+                    guard let self = self else { return }
+
+                    if let processedMessage = self.input[indexPath.section-1].processedMessage {
+                        self.handleReceived(message: processedMessage, at: indexPath)
+                    } else {
+                        self.fetchDecryptAndRenderMsg(at: indexPath)
+                    }
                 }
+            )
+        } else {
+            UIView.animate(withDuration: 0.3) {
+                self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
             }
-        )
+        }
     }
 
     private func handleReplyTap(at indexPath: IndexPath) {
