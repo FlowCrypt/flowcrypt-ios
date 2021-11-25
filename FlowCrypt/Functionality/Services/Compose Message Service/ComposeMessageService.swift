@@ -86,9 +86,7 @@ final class ComposeMessageService {
             throw MessageValidationError.emptyMessage
         }
 
-        let subject = input.subjectQuoteTitle
-            ?? contextToSend.subject
-            ?? "(no subject)"
+        let subject = contextToSend.subject ?? "(no subject)"
 
         guard let myPubKey = self.dataService.publicKey() else {
             throw MessageValidationError.missedPublicKey

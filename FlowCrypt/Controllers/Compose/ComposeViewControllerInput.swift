@@ -41,11 +41,6 @@ struct ComposeMessageInput: Equatable {
         return info.recipients
     }
 
-    var subjectQuoteTitle: String? {
-        guard case let .quote(info) = type else { return nil }
-        return info.subject
-    }
-
     var successfullySentToast: String {
         switch type {
         case .idle: return "compose_encrypted_sent".localized

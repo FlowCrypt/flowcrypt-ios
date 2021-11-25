@@ -156,6 +156,7 @@ extension ThreadDetailsViewController {
             : []
 
         let subject = input.rawMessage.subject ?? "(no subject)"
+        let threadId = quoteType == .reply ? input.rawMessage.threadId : nil
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
@@ -164,7 +165,7 @@ extension ThreadDetailsViewController {
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
-            threadId: input.rawMessage.threadId,
+            threadId: threadId,
             attachments: attachments
         )
 

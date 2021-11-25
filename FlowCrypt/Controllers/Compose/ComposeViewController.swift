@@ -559,8 +559,7 @@ extension ComposeViewController {
             return true
         }
         .then {
-            let subject = input.isQuote ? input.subjectQuoteTitle : contextToSend.subject
-            $0.attributedText = decorator.styledTitle(with: subject)
+            $0.attributedText = decorator.styledTitle(with: contextToSend.subject)
         }
     }
 
