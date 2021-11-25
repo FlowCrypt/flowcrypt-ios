@@ -25,7 +25,7 @@ public final class NavigationBarItemsView: UIBarButtonItem {
         let onTap: (() -> Void)?
 
         public init(
-            image: UIImage? = nil,
+            image: UIImage?,
             action: (target: Any?, selector: Selector)? = nil,
             title: String? = nil,
             accessibilityLabel: String? = nil,
