@@ -111,6 +111,7 @@ extension AttachmentViewController: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         errorLabel.isHidden = false
+        hideSpinner()
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -123,6 +124,7 @@ private extension AttachmentViewController {
     private func load(with link: URL?) {
         guard let wrappedLink = link else {
             errorLabel.isHidden = false
+            hideSpinner()
             return
         }
         webView.load(URLRequest(url: wrappedLink))

@@ -51,7 +51,7 @@ extension AttachmentManager: AttachmentManagerType {
                 let url = try await filesManager.save(file: file)
                 openDocumentsController(from: url)
             } catch {
-                await controller?.showToast(
+                controller?.showToast(
                     "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
                 )
             }
