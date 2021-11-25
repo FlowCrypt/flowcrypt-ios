@@ -65,8 +65,10 @@ final class AttachmentViewController: UIViewController {
             do {
                 try await filesManager.remove(file: file)
                 self?.navigationController?.popViewController(animated: true)
-            } catch {
-                showAlert(message: "could_not_remove_opened_attachment".localized) {
+            } catch let error {
+                showAlert(
+                    message: "could_not_remove_opened_attachment".localized + " (\(error.localizedDescription))"
+                ) {
                     self?.navigationController?.popViewController(animated: true)
                 }
             }
@@ -78,8 +80,10 @@ final class AttachmentViewController: UIViewController {
             do {
                 let url = try await filesManager.save(file: file)
                 self?.load(with: url)
-            } catch {
-                showAlert(message: "could_not_open_an_attachment".localized) {
+            } catch let error {
+                showAlert(
+                    message: "could_not_open_an_attachment".localized + " (\(error.localizedDescription))"
+                ) {
                     self?.navigationController?.popViewController(animated: true)
                 }
             }
@@ -92,14 +96,7 @@ final class AttachmentViewController: UIViewController {
             with: [
                 NavigationBarItemsView.Input(
                     image: UIImage(named: "download")?.tinted(.gray),
-                    onTap: { [weak self] in
-                        guard let self = self else { return }
-                        self.attachmentManager.download(self.file)
-                    }
-                ),
-                NavigationBarItemsView.Input(
-                    title: "Download",
-                    titleFont: .systemFont(ofSize: 14),
+                    title: "save".localized,
                     onTap: { [weak self] in
                         guard let self = self else { return }
                         self.attachmentManager.download(self.file)

@@ -15,6 +15,7 @@
 "allow" = "Allow";
 "later" = "Later";
 "forward" = "Forward";
+"save" = "Save";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";

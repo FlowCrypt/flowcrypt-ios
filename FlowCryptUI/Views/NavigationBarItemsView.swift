@@ -21,7 +21,6 @@ public final class NavigationBarItemsView: UIBarButtonItem {
         @available(*, deprecated, message: "Use onTap closure instead")
         let action: TargetAction?
         let title: String?
-        let titleFont: UIFont?
         let accessibilityLabel: String?
         let onTap: (() -> Void)?
 
@@ -29,14 +28,12 @@ public final class NavigationBarItemsView: UIBarButtonItem {
             image: UIImage? = nil,
             action: (target: Any?, selector: Selector)? = nil,
             title: String? = nil,
-            titleFont: UIFont? = nil,
             accessibilityLabel: String? = nil,
             onTap: (() -> Void)? = nil
         ) {
             self.image = image
             self.action = action
             self.title = title
-            self.titleFont = titleFont
             self.accessibilityLabel = accessibilityLabel
             self.onTap = onTap
         }
@@ -56,7 +53,6 @@ public final class NavigationBarItemsView: UIBarButtonItem {
                     $0.imageView?.frame.size = Constants.buttonSize
                     $0.setImage(value.element.image, for: .normal)
                     $0.setTitle(value.element.title, for: .normal)
-                    $0.titleLabel?.font = value.element.titleFont
                     $0.accessibilityLabel = self.accessibilityLabel
                     if let action = value.element.action {
                         $0.addTarget(action.target, action: action.selector, for: .touchUpInside)
