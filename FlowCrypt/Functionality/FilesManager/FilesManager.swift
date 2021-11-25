@@ -21,7 +21,6 @@ protocol FilesManagerPresenter {
 
 protocol FilesManagerType {
     func save(file: FileType) async throws -> URL
-    func remove(file: FileType) async throws
 
     @discardableResult
     func selectFromFilesApp(from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> Future<Void, Error>
@@ -32,12 +31,6 @@ class FilesManager: FilesManagerType {
     private let documentsDirectoryURL: URL = {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }()
-
-    func remove(file: FileType) async throws {
-        let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
-        try FileManager.default.removeItem(at: url)
-        return
-    }
 
     func save(file: FileType) async throws -> URL {
         let url = self.documentsDirectoryURL.appendingPathComponent(file.name)

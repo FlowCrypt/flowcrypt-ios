@@ -57,37 +57,7 @@ final class AttachmentViewController: UIViewController {
         addWebView()
         showSpinner()
         title = file.name
-        saveAndStartDownload(file: file)
-    }
-
-    private func remove(file: FileType) {
-        Task { [weak self] in
-            do {
-                try await filesManager.remove(file: file)
-                self?.navigationController?.popViewController(animated: true)
-            } catch let error {
-                showAlert(
-                    message: "could_not_remove_opened_attachment".localized + " (\(error.localizedDescription))"
-                ) {
-                    self?.navigationController?.popViewController(animated: true)
-                }
-            }
-        }
-    }
-
-    private func saveAndStartDownload(file: FileType) {
-        Task { [weak self] in
-            do {
-                let url = try await filesManager.save(file: file)
-                self?.load(with: url)
-            } catch let error {
-                showAlert(
-                    message: "could_not_open_an_attachment".localized + " (\(error.localizedDescription))"
-                ) {
-                    self?.navigationController?.popViewController(animated: true)
-                }
-            }
-        }
+        load()
     }
 
     private func setupNavigationBar() {
@@ -121,13 +91,15 @@ extension AttachmentViewController: WKNavigationDelegate {
 
 private extension AttachmentViewController {
 
-    private func load(with link: URL?) {
-        guard let wrappedLink = link else {
-            errorLabel.isHidden = false
-            hideSpinner()
-            return
-        }
-        webView.load(URLRequest(url: wrappedLink))
+    private func load() {
+        webView.load(
+            file.data,
+            mimeType: file.name.mimeType,
+            characterEncodingName: "UTF-8",
+            // It is a URL that should be used to resolve relative URLs within the document.
+            // As we don't resolve any relative URLs we pass just NSURL()
+            baseURL: NSURL() as URL
+        )
     }
 
     private func addWebView() {
@@ -148,11 +120,5 @@ private extension AttachmentViewController {
             errorLabel.rightAnchor.constraint(equalTo: webView.rightAnchor),
             errorLabel.bottomAnchor.constraint(equalTo: webView.bottomAnchor)
         ])
-    }
-}
-
-extension AttachmentViewController: NavigationChildController {
-    func handleBackButtonTap() {
-        remove(file: file)
     }
 }
