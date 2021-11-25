@@ -93,7 +93,8 @@ private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> 
     return BadgeNode.Input(
         icon: icon,
         text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
-        color: color
+        color: color,
+        textAccessibilityIdentifier: "encryptionBadge"
     )
 }
 
@@ -105,6 +106,7 @@ private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> B
     return BadgeNode.Input(
         icon: signature.icon,
         text: NSAttributedString.text(from: signature.message, style: .regular(12), color: .white),
-        color: signature.color
+        color: signature.color,
+        textAccessibilityIdentifier: "signatureBadge"
     )
 }
