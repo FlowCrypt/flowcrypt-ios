@@ -4,7 +4,7 @@ import TouchHelper from "../helpers/TouchHelper";
 const SELECTORS = {
   SENT_HEADER: '-ios class chain:**/XCUIElementTypeNavigationBar[`name == "SENT"`]',
   SEARCH_ICON: '~search icn',
-  HELP_ICON: '~help icn'
+  HELP_ICON: '~help icn',
 };
 
 
@@ -36,7 +36,7 @@ class SentScreen extends BaseScreen {
   }
 
   refreshSentList = async () => {
-    await TouchHelper.scrollUp();
+    await TouchHelper.pullToRefresh();
   }
 }
 
