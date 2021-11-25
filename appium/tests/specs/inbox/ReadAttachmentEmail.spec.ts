@@ -1,7 +1,7 @@
 import {
   SplashScreen,
   SetupKeyScreen,
-  InboxScreen,
+  MailFolderScreen,
   EmailScreen,
   AttachmentScreen
 } from '../../screenobjects/all-screens';
@@ -23,16 +23,16 @@ describe('INBOX: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
-    await InboxScreen.checkInboxScreen();
+    await MailFolderScreen.checkInboxScreen();
 
-    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     await EmailScreen.checkAttachment(attachmentName); //disabled due to
 
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
 
-    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
 
     //try to see encrypted message with wrong pass phrase
     await EmailScreen.enterPassPhrase(wrongPassPhrase);
@@ -52,7 +52,7 @@ describe('INBOX: ', () => {
     await EmailScreen.checkAttachment(attachmentName);
     await EmailScreen.clickBackButton();
 
-    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     await EmailScreen.checkAttachment(attachmentName);
     await EmailScreen.clickOnDownloadButton();

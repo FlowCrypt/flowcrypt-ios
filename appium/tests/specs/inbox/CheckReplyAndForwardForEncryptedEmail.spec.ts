@@ -1,7 +1,7 @@
 import {
   SplashScreen,
   SetupKeyScreen,
-  InboxScreen,
+  MailFolderScreen,
   EmailScreen,
   NewMessageScreen
 } from '../../screenobjects/all-screens';
@@ -22,14 +22,14 @@ describe('INBOX: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
-    await InboxScreen.checkInboxScreen();
+    await MailFolderScreen.checkInboxScreen();
 
-    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
     await EmailScreen.clickReplyButton();
     await NewMessageScreen.checkFilledComposeEmailInfo(senderEmail, replySubject, quoteText);
-    
+
     await NewMessageScreen.clickBackButton();
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickForwardButton();
