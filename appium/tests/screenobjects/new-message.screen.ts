@@ -10,6 +10,7 @@ const SELECTORS = {
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
+  DELETE_ATTACHMENT_BUTTON: '~deleteAttachmentButton',
   RETURN_BUTTON: '~Return',
   BACK_BUTTON: '~arrow left c',
   SEND_BUTTON: '~android send',
@@ -40,6 +41,10 @@ class NewMessageScreen extends BaseScreen {
 
   get addedRecipientEmail() {
     return $(SELECTORS.ADDED_RECIPIENT);
+  }
+
+  get deleteAttachmentButton() {
+    return $(SELECTORS.DELETE_ATTACHMENT_BUTTON);
   }
 
   get backButton() {
@@ -88,8 +93,9 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
 
-  checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string) => {
+  checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string, attachmentName?: string) => {
     expect(this.composeSecurityMessage).toHaveText(message);
+    
     const element = await this.filledSubject(subject);
     await element.waitForDisplayed();
 
@@ -97,6 +103,10 @@ class NewMessageScreen extends BaseScreen {
       await this.checkEmptyRecipientsList();
     } else {
       await this.checkAddedRecipient(recipient);
+    }
+
+    if (attachmentName !== undefined) {
+      this.checkAddedAttachment(attachmentName);
     }
   };
 
@@ -111,6 +121,17 @@ class NewMessageScreen extends BaseScreen {
     const value = await addedRecipientEl.getValue();
     expect(value).toEqual(`  ${recipient}  `);
   };
+
+  attachmentName = async (name: string) => {
+    const selector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${name}"\`]`;
+    return $(selector);
+  }
+
+  checkAddedAttachment = async (name: string) => {
+    await (await this.deleteAttachmentButton).waitForDisplayed();
+    const element = await this.attachmentName(name);
+    await element.waitForDisplayed();
+  }
 
   clickBackButton = async () => {
     await ElementHelper.waitAndClick(await this.backButton);

@@ -103,6 +103,7 @@ final class ComposeViewController: TableNodeViewController {
         self.passPhraseService = passPhraseService
         self.router = router
         self.contextToSend.subject = input.subject
+        self.contextToSend.attachments = input.attachments
         super.init(node: TableNode())
     }
 
@@ -996,7 +997,7 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
     }
 
     private func appendAttachmentIfAllowed(_ attachment: MessageAttachment) {
-        let totalSize = contextToSend.attachments.reduce(0, { $0 + $1.size }) + attachment.size
+        let totalSize = contextToSend.attachments.map(\.size).reduce(0, +) + attachment.size
         if totalSize > GeneralConstants.Global.attachmentSizeLimit {
             showToast("files_picking_size_error_message".localized)
         } else {

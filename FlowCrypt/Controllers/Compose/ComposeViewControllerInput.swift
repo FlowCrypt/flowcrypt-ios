@@ -72,4 +72,9 @@ struct ComposeMessageInput: Equatable {
         guard case let .quote(info) = type else { return nil }
         return info.threadId
     }
+
+    var attachments: [MessageAttachment] {
+        guard case let .quote(info) = type else { return [] }
+        return info.attachments
+    }
 }
