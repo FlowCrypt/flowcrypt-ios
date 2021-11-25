@@ -9,10 +9,12 @@ public final class AttachmentNode: CellNode {
     public struct Input {
         let name: NSAttributedString
         let size: NSAttributedString
+        let index: Int
 
-        public init(name: NSAttributedString, size: NSAttributedString) {
+        public init(name: NSAttributedString, size: NSAttributedString, index: Int) {
             self.name = name
             self.size = size
+            self.index = index
         }
     }
 
@@ -42,13 +44,16 @@ public final class AttachmentNode: CellNode {
 
         imageNode.tintColor = .gray
         buttonNode.tintColor = .gray
+
         deleteButtonNode.setImage(UIImage(named: "cancel")?.tinted(.gray), for: .normal)
-        deleteButtonNode.accessibilityIdentifier = "deleteAttachmentButton"
+        deleteButtonNode.accessibilityIdentifier = "attachmentDeleteButton\(input.index)"
+
         imageNode.image = UIImage(named: "paperclip")?.tinted(.gray)
         buttonNode.setImage(UIImage(named: "download")?.tinted(.gray), for: .normal)
-        buttonNode.accessibilityIdentifier = "downloadButton"
+        buttonNode.accessibilityIdentifier = "attachmentDownloadButton\(input.index)"
 
         titleNode.attributedText = input.name
+        titleNode.accessibilityIdentifier = "attachmentTitleLabel\(input.index)"
         subtitleNode.attributedText = input.size
 
         buttonNode.addTarget(self, action: #selector(onDownloadButtonTap), forControlEvents: .touchUpInside)

@@ -626,7 +626,8 @@ extension ComposeViewController {
     private func attachmentNode(for index: Int) -> ASCellNode {
         AttachmentNode(
             input: .init(
-                composeAttachment: contextToSend.attachments[index]
+                attachment: contextToSend.attachments[index],
+                index: index
             ),
             onDeleteTap: { [weak self] in
                 self?.contextToSend.attachments.safeRemove(at: index)

@@ -10,7 +10,8 @@ const SELECTORS = {
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
-  DELETE_ATTACHMENT_BUTTON: '~deleteAttachmentButton',
+  ATTACHMENT_NAME_LABEL: '~attachmentTitleLabel0',
+  DELETE_ATTACHMENT_BUTTON: '~attachmentDeleteButton0',
   RETURN_BUTTON: '~Return',
   BACK_BUTTON: '~arrow left c',
   SEND_BUTTON: '~android send',
@@ -41,6 +42,10 @@ class NewMessageScreen extends BaseScreen {
 
   get addedRecipientEmail() {
     return $(SELECTORS.ADDED_RECIPIENT);
+  }
+
+  get attachmentNameLabel() {
+    return $(SELECTORS.ATTACHMENT_NAME_LABEL);
   }
 
   get deleteAttachmentButton() {
@@ -106,7 +111,7 @@ class NewMessageScreen extends BaseScreen {
     }
 
     if (attachmentName !== undefined) {
-      this.checkAddedAttachment(attachmentName);
+      await this.checkAddedAttachment(attachmentName);
     }
   };
 
@@ -122,15 +127,15 @@ class NewMessageScreen extends BaseScreen {
     expect(value).toEqual(`  ${recipient}  `);
   };
 
-  attachmentName = async (name: string) => {
-    const selector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${name}"\`]`;
-    return $(selector);
-  }
-
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();
-    const element = await this.attachmentName(name);
-    await element.waitForDisplayed();
+    const label = await this.attachmentNameLabel;
+    const value = await label.getValue();
+    expect(value).toEqual(name);
+  }
+
+  deleteAttachment = async () => {
+    await ElementHelper.waitAndClick(await this.deleteAttachmentButton);
   }
 
   clickBackButton = async () => {
