@@ -11,8 +11,15 @@ import UIKit
 
 protocol FileType {
     var name: String { get }
-    var size: Int { get }
     var data: Data { get }
+}
+
+extension FileType {
+    var size: Int { data.count }
+    var formattedSize: String {
+        ByteCountFormatter().string(fromByteCount: Int64(size))
+    }
+    var type: String { name.mimeType }
 }
 
 protocol FilesManagerPresenter {

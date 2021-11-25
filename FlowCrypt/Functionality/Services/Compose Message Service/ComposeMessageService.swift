@@ -16,7 +16,7 @@ struct ComposeMessageContext: Equatable {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []
     var subject: String?
-    var attachments: [ComposeMessageAttachment] = []
+    var attachments: [MessageAttachment] = []
 }
 
 struct ComposeMessageRecipient: Equatable {

@@ -236,11 +236,11 @@ extension RecipientEmailsCellNode.Input {
 
 // MARK: - AttachmentNode.Input
 extension AttachmentNode.Input {
-    init(composeAttachment: ComposeMessageAttachment) {
+    init(composeAttachment: MessageAttachment) {
         self.init(
             name: composeAttachment.name
                 .attributed(.regular(18), color: .mainTextColor, alignment: .left),
-            size: composeAttachment.humanReadableSizeString
+            size: composeAttachment.formattedSize
                 .attributed(.medium(12), color: .mainTextColor, alignment: .left)
         )
     }

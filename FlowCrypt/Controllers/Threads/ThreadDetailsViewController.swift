@@ -147,13 +147,13 @@ extension ThreadDetailsViewController {
               let processedMessage = input.processedMessage
         else { return }
 
-        let recipients: [String]
-        switch quoteType {
-        case .reply:
-            recipients = [input.rawMessage.sender].compactMap { $0 }
-        case .forward:
-            recipients = []
-        }
+        let recipients = quoteType == .reply
+            ? [input.rawMessage.sender].compactMap({ $0 })
+            : []
+
+        let attachments = quoteType == .forward
+            ? input.processedMessage?.attachments ?? []
+            : []
 
         let subject = input.rawMessage.subject ?? "(no subject)"
 
@@ -164,7 +164,8 @@ extension ThreadDetailsViewController {
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
-            threadId: input.rawMessage.threadId
+            threadId: input.rawMessage.threadId,
+            attachments: attachments
         )
 
         let composeInput = ComposeMessageInput(type: .quote(replyInfo))

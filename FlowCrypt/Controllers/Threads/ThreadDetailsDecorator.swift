@@ -65,7 +65,7 @@ extension AttachmentNode.Input {
         self.init(
             name: msgAttachment.name
                 .attributed(.regular(18), color: .textColor, alignment: .left),
-            size: msgAttachment.humanReadableSizeString
+            size: msgAttachment.formattedSize
                 .attributed(.medium(12), color: .textColor, alignment: .left)
         )
     }
