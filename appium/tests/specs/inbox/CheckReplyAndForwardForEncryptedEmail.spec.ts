@@ -35,5 +35,6 @@ describe('INBOX: ', () => {
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickForwardButton();
     await NewMessageScreen.checkFilledComposeEmailInfo("", forwardSubject, quoteText, attachmentName);
+    await NewMessageScreen.deleteAttachment();
   });
 });
