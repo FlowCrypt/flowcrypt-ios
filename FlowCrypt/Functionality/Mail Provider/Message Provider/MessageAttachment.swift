@@ -36,8 +36,6 @@ extension MessageAttachment {
 }
 
 extension MessageAttachment {
-    var type: String { name.mimeType }
-
     func toSendableMsgAttachment() -> SendableMsg.Attachment {
         return SendableMsg.Attachment(name: name, type: type, base64: data.base64EncodedString())
     }
