@@ -35,7 +35,7 @@ class TrashScreen extends BaseScreen {
   }
 
   refreshTrashList = async () => {
-    await TouchHelper.scrollUp();
+    await TouchHelper.pullToRefresh();
   }
 }
 
