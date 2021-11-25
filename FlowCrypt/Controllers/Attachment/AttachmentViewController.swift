@@ -5,12 +5,13 @@
 //  Created by Evgenii Kyivskyi on 11/16/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
+
 import UIKit
 import WebKit
 import FlowCryptUI
 import Combine
 
+@MainActor
 final class AttachmentViewController: UIViewController {
 
     private lazy var webView = WKWebView()
@@ -27,7 +28,7 @@ final class AttachmentViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.text = "No preview available"
+        label.text = "no_preview_avalable".localized
         label.isHidden = true
         label.textColor = .textColor
         label.font = .systemFont(ofSize: 12)
@@ -59,21 +60,29 @@ final class AttachmentViewController: UIViewController {
         saveAndStartDownload(file: file)
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        remove(file: file)
-    }
-
     private func remove(file: FileType) {
-        Task {
-            try await filesManager.remove(file: file)
+        Task { [weak self] in
+            do {
+                try await filesManager.remove(file: file)
+                self?.navigationController?.popViewController(animated: true)
+            } catch {
+                showAlert(message: "could_not_remove_opened_attachment".localized) {
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }
         }
     }
 
     private func saveAndStartDownload(file: FileType) {
         Task { [weak self] in
-            let url = try await filesManager.save(file: file)
-            self?.load(with: url)
+            do {
+                let url = try await filesManager.save(file: file)
+                self?.load(with: url)
+            } catch {
+                showAlert(message: "could_not_open_an_attachment".localized) {
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }
         }
     }
 
@@ -116,9 +125,7 @@ private extension AttachmentViewController {
 
     private func load(with link: URL?) {
         guard let wrappedLink = link else {
-            DispatchQueue.main.async { [weak self] in
-                self?.errorLabel.isHidden = false
-            }
+            errorLabel.isHidden = false
             return
         }
         webView.load(URLRequest(url: wrappedLink))
@@ -142,5 +149,11 @@ private extension AttachmentViewController {
             errorLabel.rightAnchor.constraint(equalTo: webView.rightAnchor),
             errorLabel.bottomAnchor.constraint(equalTo: webView.bottomAnchor)
         ])
+    }
+}
+
+extension AttachmentViewController: NavigationChildController {
+    func handleBackButtonTap() {
+        remove(file: file)
     }
 }
