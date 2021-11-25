@@ -51,7 +51,9 @@ extension AttachmentManager: AttachmentManagerType {
                 let url = try await filesManager.save(file: file)
                 openDocumentsController(from: url)
             } catch {
-                handle(error)
+                await controller?.showToast(
+                    "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
+                )
             }
         }
     }
@@ -60,14 +62,6 @@ extension AttachmentManager: AttachmentManagerType {
         let documentController = UIDocumentPickerViewController(forExporting: [url])
         documentController.delegate = self
         present(documentController, animated: true, completion: nil)
-    }
-
-    private func handle(_ error: Error) {
-        Task {
-            await controller?.showToast(
-                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
-            )
-        }
     }
 }
 
