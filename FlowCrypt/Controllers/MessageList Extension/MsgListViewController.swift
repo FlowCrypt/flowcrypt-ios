@@ -32,7 +32,7 @@ extension MsgListViewController where Self: UIViewController {
         guard let email = DataService.shared.email else { return }
 
         let controller = ComposeViewController(email: email)
-        controller.updateWithMessage(message: message)
+        controller.update(with: message)
         navigationController?.pushViewController(controller, animated: true)
     }
 

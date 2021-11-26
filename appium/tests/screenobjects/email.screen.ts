@@ -7,7 +7,7 @@ const SELECTORS = {
   ENTER_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
   OK_BUTTON: '~Ok',
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
-  DOWNLOAD_ATTACHMENT_BUTTON: '~downloadButton',
+  DOWNLOAD_ATTACHMENT_BUTTON: '~attachmentDownloadButton0',
   REPLY_BUTTON: '~replyButton',
   MENU_BUTTON: '~messageMenuButton',
   FORWARD_BUTTON: '~Forward',

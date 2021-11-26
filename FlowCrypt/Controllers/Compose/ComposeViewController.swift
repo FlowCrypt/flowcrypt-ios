@@ -103,6 +103,7 @@ final class ComposeViewController: TableNodeViewController {
         self.passPhraseService = passPhraseService
         self.router = router
         self.contextToSend.subject = input.subject
+        self.contextToSend.attachments = input.attachments
         super.init(node: TableNode())
     }
 
@@ -157,7 +158,7 @@ final class ComposeViewController: TableNodeViewController {
         }
     }
 
-    func updateWithMessage(message: Message) {
+    func update(with message: Message) {
         self.contextToSend.subject = message.subject
         self.contextToSend.message = message.raw
         self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", state: decorator.recipientIdleState)]
@@ -558,8 +559,7 @@ extension ComposeViewController {
             return true
         }
         .then {
-            let subject = input.isQuote ? input.subjectQuoteTitle : contextToSend.subject
-            $0.attributedText = decorator.styledTitle(with: subject)
+            $0.attributedText = decorator.styledTitle(with: contextToSend.subject)
         }
     }
 
@@ -625,7 +625,8 @@ extension ComposeViewController {
     private func attachmentNode(for index: Int) -> ASCellNode {
         AttachmentNode(
             input: .init(
-                composeAttachment: contextToSend.attachments[index]
+                attachment: contextToSend.attachments[index],
+                index: index
             ),
             onDeleteTap: { [weak self] in
                 self?.contextToSend.attachments.safeRemove(at: index)
@@ -924,7 +925,7 @@ extension ComposeViewController {
 extension ComposeViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let fileUrl = urls.first,
-              let attachment = ComposeMessageAttachment(fileURL: fileUrl)
+              let attachment = MessageAttachment(fileURL: fileUrl)
         else {
             showAlert(message: "files_picking_files_error_message".localized)
             return
@@ -946,7 +947,7 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
                     completionHandler: { [weak self] url, _ in
                         guard let self = self else { return }
                         DispatchQueue.main.async {
-                            if let url = url, let composeMessageAttachment = ComposeMessageAttachment(fileURL: url) {
+                            if let url = url, let composeMessageAttachment = MessageAttachment(fileURL: url) {
                                 self.appendAttachmentIfAllowed(composeMessageAttachment)
                                 self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
                             } else {
@@ -960,7 +961,7 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
                     completionHandler: { [weak self] url, _ in
                         guard let self = self else { return }
                         DispatchQueue.main.async {
-                            if let url = url, let composeMessageAttachment = ComposeMessageAttachment(fileURL: url) {
+                            if let url = url, let composeMessageAttachment = MessageAttachment(fileURL: url) {
                                 self.appendAttachmentIfAllowed(composeMessageAttachment)
                                 self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
                             } else {
@@ -981,10 +982,10 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
     ) {
         picker.dismiss(animated: true, completion: nil)
 
-        let composeMessageAttachment: ComposeMessageAttachment?
+        let composeMessageAttachment: MessageAttachment?
         switch picker.sourceType {
         case .camera:
-            composeMessageAttachment = ComposeMessageAttachment(cameraSourceMediaInfo: info)
+            composeMessageAttachment = MessageAttachment(cameraSourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
         guard let attachment = composeMessageAttachment else {
@@ -995,8 +996,8 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
         node.reloadSections(IndexSet(integer: 2), with: .automatic)
     }
 
-    private func appendAttachmentIfAllowed(_ attachment: ComposeMessageAttachment) {
-        let totalSize = contextToSend.attachments.reduce(0, { $0 + $1.size }) + attachment.size
+    private func appendAttachmentIfAllowed(_ attachment: MessageAttachment) {
+        let totalSize = contextToSend.attachments.map(\.size).reduce(0, +) + attachment.size
         if totalSize > GeneralConstants.Global.attachmentSizeLimit {
             showToast("files_picking_size_error_message".localized)
         } else {

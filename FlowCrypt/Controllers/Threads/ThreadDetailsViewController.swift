@@ -147,15 +147,16 @@ extension ThreadDetailsViewController {
               let processedMessage = input.processedMessage
         else { return }
 
-        let recipients: [String]
-        switch quoteType {
-        case .reply:
-            recipients = [input.rawMessage.sender].compactMap { $0 }
-        case .forward:
-            recipients = []
-        }
+        let recipients = quoteType == .reply
+            ? [input.rawMessage.sender].compactMap({ $0 })
+            : []
+
+        let attachments = quoteType == .forward
+            ? input.processedMessage?.attachments ?? []
+            : []
 
         let subject = input.rawMessage.subject ?? "(no subject)"
+        let threadId = quoteType == .reply ? input.rawMessage.threadId : nil
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
@@ -164,7 +165,8 @@ extension ThreadDetailsViewController {
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
-            threadId: input.rawMessage.threadId
+            threadId: threadId,
+            attachments: attachments
         )
 
         let composeInput = ComposeMessageInput(type: .quote(replyInfo))
@@ -445,7 +447,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 let attachment = message.attachments[indexPath.row - 2]
                 return AttachmentNode(
                     input: .init(
-                        msgAttachment: attachment
+                        msgAttachment: attachment,
+                        index: indexPath.row - 2
                     ),
                     onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
                 )
