@@ -22,12 +22,14 @@ struct ProcessedMessage {
     }
 
     enum MessageSignature: Hashable {
-        case good, unsigned, error(String), missingPubkey(String), bad, pending
+        case good, goodMixed, unsigned, error(String), missingPubkey(String), partial, bad, pending
 
         var message: String {
             switch self {
             case .good:
                 return "message_signed".localized
+            case .goodMixed:
+                return "message_signature_good_mixed".localized
             case .unsigned:
                 return "message_not_signed".localized
             case .error(let message):
@@ -35,6 +37,8 @@ struct ProcessedMessage {
             case .missingPubkey(let longid):
                 let message = "message_missing_pubkey".localizeWithArguments(longid)
                 return "message_signature_verify_error".localizeWithArguments(message)
+            case .partial:
+                return "message_signature_partial".localized
             case .bad:
                 return "message_bad_signature".localized
             case .pending:
@@ -44,9 +48,9 @@ struct ProcessedMessage {
 
         var icon: String {
             switch self {
-            case .good:
+            case .good, .goodMixed:
                 return "lock"
-            case .error, .missingPubkey:
+            case .error, .missingPubkey, .partial:
                 return "exclamationmark.triangle"
             case .unsigned, .bad:
                 return "xmark"
@@ -57,9 +61,9 @@ struct ProcessedMessage {
 
         var color: UIColor {
             switch self {
-            case .good:
+            case .good, .goodMixed:
                 return .main
-            case .error, .missingPubkey:
+            case .error, .missingPubkey, .partial:
                 return .warningColor
             case .unsigned, .bad:
                 return .errorColor
@@ -279,6 +283,10 @@ extension MessageService {
         guard signature.match != nil else { return .missingPubkey(signer) }
 
         guard signature.match == true else { return .bad }
+
+        guard signature.partial != true else { return .partial }
+
+        guard signature.mixed != true else { return .goodMixed }
 
         return .good
     }
