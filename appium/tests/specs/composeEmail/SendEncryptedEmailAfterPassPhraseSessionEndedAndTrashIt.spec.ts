@@ -1,12 +1,10 @@
 import {
   SplashScreen,
   SetupKeyScreen,
-  InboxScreen,
+  MailFolderScreen,
   NewMessageScreen,
   EmailScreen,
   MenuBarScreen,
-  SentScreen,
-  TrashScreen
 } from '../../screenobjects/all-screens';
 
 import { CommonData } from '../../data';
@@ -27,13 +25,13 @@ describe('COMPOSE EMAIL: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
-    await InboxScreen.checkInboxScreen();
+    await MailFolderScreen.checkInboxScreen();
 
     //Restart app to reset pass phrase memory cache
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
 
-    await InboxScreen.clickCreateEmail();
+    await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(contactEmail, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(contactEmail, emailSubject, emailText);
     //Set wrong pass phrase and check error
@@ -46,35 +44,35 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.clickSendButton();
     await EmailScreen.enterPassPhrase(passPhrase);
     await EmailScreen.clickOkButton();
-    await InboxScreen.checkInboxScreen();
+    await MailFolderScreen.checkInboxScreen();
 
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.clickSentButton();
-    await SentScreen.checkSentScreen();
+    await MailFolderScreen.checkSentScreen();
 
     //Check sent email
-    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     //Delete sent email
     await EmailScreen.clickDeleteButton();
-    await SentScreen.checkSentScreen();
-    await SentScreen.checkEmailIsNotDisplayed(emailSubject);
+    await MailFolderScreen.checkSentScreen();
+    await MailFolderScreen.checkEmailIsNotDisplayed(emailSubject);
     await browser.pause(2000); // give Google API time to process the deletion
-    await SentScreen.refreshSentList();
-    await SentScreen.checkSentScreen();
-    await SentScreen.checkEmailIsNotDisplayed(emailSubject);
+    await MailFolderScreen.refreshMailList();
+    await MailFolderScreen.checkSentScreen();
+    await MailFolderScreen.checkEmailIsNotDisplayed(emailSubject);
     //Check email in Trash list
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.clickTrashButton();
-    await TrashScreen.checkTrashScreen();
-    await InboxScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.checkTrashScreen();
+    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     //Remove from Trash
     await EmailScreen.clickDeleteButton();
     await EmailScreen.confirmDelete();
-    await TrashScreen.checkTrashScreen();
+    await MailFolderScreen.checkTrashScreen();
     await browser.pause(2000); // give Google API time to process the deletion
-    await TrashScreen.refreshTrashList();
-    await TrashScreen.checkTrashScreen();
-    await TrashScreen.checkEmailIsNotDisplayed(emailSubject);
+    await MailFolderScreen.refreshMailList();
+    await MailFolderScreen.checkTrashScreen();
+    await MailFolderScreen.checkEmailIsNotDisplayed(emailSubject);
   });
 });

@@ -19,6 +19,7 @@ struct ComposeMessageInput: Equatable {
         let sentDate: Date
         let message: String
         let threadId: String?
+        let attachments: [MessageAttachment]
     }
 
     enum InputType: Equatable {
@@ -38,11 +39,6 @@ struct ComposeMessageInput: Equatable {
     var quoteRecipients: [String] {
         guard case let .quote(info) = type else { return [] }
         return info.recipients
-    }
-
-    var subjectQuoteTitle: String? {
-        guard case let .quote(info) = type else { return nil }
-        return info.subject
     }
 
     var successfullySentToast: String {
@@ -70,5 +66,10 @@ struct ComposeMessageInput: Equatable {
     var threadId: String? {
         guard case let .quote(info) = type else { return nil }
         return info.threadId
+    }
+
+    var attachments: [MessageAttachment] {
+        guard case let .quote(info) = type else { return [] }
+        return info.attachments
     }
 }

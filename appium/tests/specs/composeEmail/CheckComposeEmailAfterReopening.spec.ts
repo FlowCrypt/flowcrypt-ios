@@ -1,7 +1,7 @@
 import {
   SplashScreen,
   SetupKeyScreen,
-  InboxScreen,
+  MailFolderScreen,
   NewMessageScreen
 } from '../../screenobjects/all-screens';
 
@@ -17,9 +17,9 @@ describe('COMPOSE EMAIL: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
-    await InboxScreen.checkInboxScreen();
+    await MailFolderScreen.checkInboxScreen();
 
-    await InboxScreen.clickCreateEmail();
+    await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(recipientEmail, emailSubject, emailText);
 

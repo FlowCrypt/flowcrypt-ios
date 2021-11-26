@@ -3,7 +3,7 @@ import {
   SplashScreen,
   SetupKeyScreen,
   MenuBarScreen,
-  InboxScreen
+  MailFolderScreen
 } from '../../screenobjects/all-screens';
 
 
@@ -19,7 +19,7 @@ describe('LOGIN: ', () => {
 
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
-      await InboxScreen.checkInboxScreen();
+      await MailFolderScreen.checkInboxScreen();
 
       await MenuBarScreen.clickMenuIcon();
       await MenuBarScreen.checkUserEmail();
