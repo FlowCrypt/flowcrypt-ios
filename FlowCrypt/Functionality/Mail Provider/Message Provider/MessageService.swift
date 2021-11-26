@@ -83,7 +83,7 @@ struct ProcessedMessage {
     let text: String
     let attachments: [MessageAttachment]
     let messageType: MessageType
-    var signature: MessageSignature
+    var signature: MessageSignature?
 }
 
 extension ProcessedMessage {
@@ -101,16 +101,12 @@ extension ProcessedMessage {
 enum MessageServiceError: Error {
     case missingPassPhrase(_ rawMimeData: Data)
     case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
-    case keyMismatch(_ rawMimeData: Data)
     // Could not fetch keys
     case emptyKeys
     case unknown
 }
 
 final class MessageService {
-    private enum Constants {
-        static let encryptedAttachmentExtension = "pgp"
-    }
 
     private let messageProvider: MessageProvider
     private let keyService: KeyServiceType
@@ -186,24 +182,10 @@ final class MessageService {
             throw MessageServiceError.missingPassPhrase(rawMimeData)
         }
 
-        let processedMessage = try await processMessage(rawMimeData: rawMimeData,
-                                                        sender: sender,
-                                                        with: decrypted,
-                                                        keys: keys)
-
-        switch processedMessage.messageType {
-        case .error(let errorType):
-            switch errorType {
-            case .needPassphrase:
-                throw MessageServiceError.missingPassPhrase(rawMimeData)
-            case .keyMismatch:
-                throw MessageServiceError.keyMismatch(rawMimeData)
-            default:
-                throw MessageServiceError.unknown
-            }
-        case .plain, .encrypted:
-            return processedMessage
-        }
+        return try await processMessage(rawMimeData: rawMimeData,
+                                        sender: sender,
+                                        with: decrypted,
+                                        keys: keys)
     }
 
     private func processMessage(
@@ -220,14 +202,14 @@ final class MessageService {
         )
         let messageType: ProcessedMessage.MessageType
         let text: String
-        let signature: ProcessedMessage.MessageSignature
+        let signature: ProcessedMessage.MessageSignature?
 
         if let decryptErrBlock = decryptErrBlocks.first {
             let rawMsg = decryptErrBlock.content
             let err = decryptErrBlock.decryptErr?.error
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
-            signature = .error("processing error")
+            signature = nil
         } else {
             text = decrypted.text
             messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
@@ -276,12 +258,6 @@ final class MessageService {
         }
         logger.logInfo("missing pass phrase for one of longids \(decryptErr.longids)")
         return true
-    }
-
-    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
-        privateKeys
-            .map { PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints) }
-            .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
     }
 }
 

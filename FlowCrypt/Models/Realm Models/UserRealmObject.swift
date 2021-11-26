@@ -10,77 +10,31 @@ import Foundation
 import RealmSwift
 
 final class UserRealmObject: Object {
-    @Persisted(primaryKey: true) var email: String = ""
-    @Persisted var isActive = true
-    @Persisted var name: String = "" {
-        didSet {
-            imap?.username = name
-            smtp?.username = name
-        }
-    }
+    @Persisted(primaryKey: true) var email: String
+    @Persisted var isActive: Bool
+    @Persisted var name: String
     @Persisted var imap: SessionRealmObject?
     @Persisted var smtp: SessionRealmObject?
+}
 
-    var password: String? {
-        imap?.password
-    }
-
-    convenience init(
-        name: String,
-        email: String,
-        imap: SessionRealmObject?,
-        smtp: SessionRealmObject?
-    ) {
+extension UserRealmObject {
+    convenience init(name: String, email: String, imap: SessionRealmObject?, smtp: SessionRealmObject?) {
         self.init()
-        self.name = name
         self.email = email
+        self.isActive = true
+        self.name = name
         self.imap = imap
         self.smtp = smtp
     }
-
-    override var description: String {
-        email
-    }
 }
 
 extension UserRealmObject {
-    static func googleUser(name: String, email: String, token: String) -> UserRealmObject {
-        UserRealmObject(
-            name: name,
-            email: email,
-            imap: SessionRealmObject.googleIMAP(with: token, username: name, email: email),
-            smtp: SessionRealmObject.googleSMTP(with: token, username: name, email: email)
-        )
-    }
-}
-
-extension UserRealmObject {
-    var authType: AuthType? {
-        if let password = password {
-            return .password(password)
-        }
-        if let token = smtp?.oAuth2Token {
-            return .oAuthGmail(token)
-        }
-        return nil
-    }
-}
-
-extension User {
-    init(_ userObject: UserRealmObject) {
-        self.name = userObject.name
-        self.email = userObject.email
-        self.isActive = userObject.isActive
-    }
-}
-
-extension UserRealmObject {
-    static var empty: UserRealmObject {
-        UserRealmObject(
-            name: "",
-            email: "",
-            imap: .empty,
-            smtp: .empty
-        )
+    convenience init(_ user: User) {
+        self.init()
+        self.email = user.email
+        self.isActive = user.isActive
+        self.name = user.name
+        self.imap = user.imap.flatMap(SessionRealmObject.init)
+        self.smtp = user.smtp.flatMap(SessionRealmObject.init)
     }
 }

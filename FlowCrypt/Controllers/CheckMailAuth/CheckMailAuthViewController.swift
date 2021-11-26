@@ -1,5 +1,5 @@
 //
-//  CheckAuthScopesViewController.swift
+//  CheckMailAuthViewController.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 28.10.2021
@@ -9,28 +9,12 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
+import UIKit
 
-private extension GoogleScope {
-    var title: String {
-        switch self {
-        case .userInfo: return "User Info"
-        case .mail: return "Gmail"
-        case .contacts: return "Contacts"
-        case .otherContacts: return "Other Contacts"
-        }
-    }
-}
-
-class CheckAuthScopesViewController: TableNodeViewController {
-
-    private let missingScopes: [GoogleScope]
+class CheckMailAuthViewController: TableNodeViewController {
     private let globalRouter: GlobalRouterType
 
-    init(
-        missingScopes: [GoogleScope],
-        globalRouter: GlobalRouterType = GlobalRouter()
-    ) {
-        self.missingScopes = missingScopes
+    init(globalRouter: GlobalRouterType = GlobalRouter()) {
         self.globalRouter = globalRouter
         super.init(node: TableNode())
     }
@@ -44,15 +28,10 @@ class CheckAuthScopesViewController: TableNodeViewController {
         super.viewDidLoad()
         setupUI()
     }
-
-    var errorMessage: String {
-        let scopesMessage = missingScopes.map { $0.title }.joined(separator: ", ")
-        return "gmail_service_no_access_to_account_message".localizeWithArguments(scopesMessage)
-    }
 }
 
 // MARK: - ASTableDelegate, ASTableDataSource
-extension CheckAuthScopesViewController: ASTableDelegate, ASTableDataSource {
+extension CheckMailAuthViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         return 3
     }
@@ -66,7 +45,7 @@ extension CheckAuthScopesViewController: ASTableDelegate, ASTableDataSource {
 }
 
 // MARK: - UI
-extension CheckAuthScopesViewController {
+extension CheckMailAuthViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
@@ -96,10 +75,11 @@ extension CheckAuthScopesViewController {
             return TextCellNode(
                 input: .init(
                     backgroundColor: .backgroundColor,
-                    title: errorMessage,
+                    title: "gmail_service_no_access_to_account_message".localized,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200),
-                    alignment: .center
+                    insets: UIEdgeInsets.side(24),
+                    textAlignment: .center
                 )
             )
         case 2:

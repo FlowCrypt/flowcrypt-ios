@@ -10,23 +10,21 @@ import Foundation
 import RealmSwift
 
 final class FolderRealmObject: Object {
-    @Persisted(primaryKey: true) var path: String = ""
-    @Persisted var name: String = ""
+    @Persisted(primaryKey: true) var path: String
+    @Persisted var name: String
     @Persisted var image: Data?
-    @Persisted var itemType: String = FolderViewModel.ItemType.folder.rawValue
-    @Persisted var user: UserRealmObject!
+    @Persisted var itemType: String
+    @Persisted var user: UserRealmObject?
+}
 
-    convenience init(
-        name: String,
-        path: String,
-        image: Data?,
-        user: UserRealmObject
-    ) {
+extension FolderRealmObject {
+    convenience init(folder: Folder, user: User) {
         self.init()
-        self.name = name
-        self.path = path
-        self.image = image
-        self.user = user
+        self.path = folder.path
+        self.name = folder.name
+        self.image = folder.image
+        self.itemType = folder.itemType
+        self.user = UserRealmObject(user)
     }
 }
 

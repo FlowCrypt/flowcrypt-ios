@@ -33,22 +33,11 @@ struct LocalFoldersProvider: LocalFoldersProviderType {
             return
         }
 
-        folders.map { FolderRealmObject(folder: $0, currentUser: currentUser) }
+        folders.map { FolderRealmObject(folder: $0, user: currentUser) }
             .forEach(folderCache.save)
     }
 
     func removeFolders() {
         folderCache.removeAllForActiveUser()
-    }
-}
-
-private extension FolderRealmObject {
-    convenience init(folder: Folder, currentUser: UserRealmObject) {
-        self.init(
-            name: folder.name,
-            path: folder.path,
-            image: folder.image,
-            user: currentUser
-        )
     }
 }

@@ -59,15 +59,6 @@ public extension NSAttributedString {
     }
 }
 
-public extension Optional where Wrapped == String {
-    var nilIfEmpty: String? {
-        guard let strongSelf = self else {
-            return nil
-        }
-        return strongSelf.isEmpty ? nil : strongSelf
-    }
-}
-
 // MARK: Email parsing
 public extension String {
     var userAndRecipientDomain: (user: String, domain: String)? {

@@ -2,7 +2,8 @@ import { MockApi } from 'api-mocks/mock';
 import {
   SplashScreen,
   SetupKeyScreen,
-  MenuBarScreen
+  MenuBarScreen,
+  MailFolderScreen
 } from '../../screenobjects/all-screens';
 
 
@@ -18,6 +19,7 @@ describe('LOGIN: ', () => {
 
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
+      await MailFolderScreen.checkInboxScreen();
 
       await MenuBarScreen.clickMenuIcon();
       await MenuBarScreen.checkUserEmail();
@@ -25,7 +27,6 @@ describe('LOGIN: ', () => {
 
       await MenuBarScreen.clickLogout();
       await SplashScreen.checkLoginPage();
-
     });
   });
 });

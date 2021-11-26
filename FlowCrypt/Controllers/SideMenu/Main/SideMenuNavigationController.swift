@@ -6,6 +6,7 @@ import ENSwiftSideMenu
 import FlowCryptUI
 import UIKit
 
+@MainActor
 protocol SideMenuViewController {
     func didOpen()
 }
@@ -37,7 +38,6 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
     private enum Constants {
         static let menuOffset: CGFloat = 80
-        static let sideOffset: CGFloat = 100
         static let animationDuration: TimeInterval = 0.3
     }
 

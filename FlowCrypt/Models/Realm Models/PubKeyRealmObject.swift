@@ -14,15 +14,17 @@ enum PubKeyObjectError: Error {
 }
 
 final class PubKeyRealmObject: Object {
-    @Persisted(primaryKey: true) var primaryFingerprint: String = ""
-    @Persisted var armored: String = ""
+    @Persisted(primaryKey: true) var primaryFingerprint: String
+    @Persisted var armored: String
     @Persisted var lastSig: Date?
     @Persisted var lastChecked: Date?
     @Persisted var expiresOn: Date?
     @Persisted var longids: List<String>
     @Persisted var fingerprints: List<String>
     @Persisted var created: Date?
+}
 
+extension PubKeyRealmObject {
     convenience init(armored: String,
                      lastSig: Date? = nil,
                      lastChecked: Date? = nil,

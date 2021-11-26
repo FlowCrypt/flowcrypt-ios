@@ -28,14 +28,11 @@ enum CreateKeyError: Error {
  * - Here user can enter a pass phrase (can be saved in memory or in encrypted storage) and generate a key
  * - After key is generated, user will be redirected to **main flow** (inbox view)
  */
-@MainActor
 final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewController {
 
     private let backupService: BackupServiceType
     private let attester: AttesterApiType
     private let service: Service
-
-    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
         user: UserId,

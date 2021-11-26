@@ -7,6 +7,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Foundation
 
+@MainActor
 final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private lazy var logger = Logger.nested(Self.self)
 
@@ -204,19 +205,6 @@ extension InboxViewController {
             } catch {
                 handle(error: error)
             }
-        }
-    }
-
-    func shouldBatchFetch(for _: ASTableNode) -> Bool {
-        switch state {
-        case .idle:
-            return false
-        case .fetched(.byNumber(let total)):
-            return inboxInput.count < total ?? 0
-        case .fetched(.byNextPage(let token)):
-            return token != nil
-        case .error, .refresh, .fetching, .empty:
-            return false
         }
     }
 

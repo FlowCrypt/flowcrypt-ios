@@ -7,9 +7,13 @@ const SELECTORS = {
   ENTER_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
   OK_BUTTON: '~Ok',
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
-  SAVE_BUTTON: '~Save',
   DOWNLOAD_ATTACHMENT_BUTTON: '~downloadButton',
   REPLY_BUTTON: '~replyButton',
+  MENU_BUTTON: '~messageMenuButton',
+  FORWARD_BUTTON: '~Forward',
+  DELETE_BUTTON: '~Delete',
+  CONFIRM_DELETING: '~OK',
+  SENDER_EMAIL: '~senderEmail'
 };
 
 
@@ -34,10 +38,6 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.WRONG_PASS_PHRASE_MESSAGE)
   }
 
-  get saveButton() {
-    return $(SELECTORS.SAVE_BUTTON)
-  }
-
   get downloadAttachmentButton() {
     return $(SELECTORS.DOWNLOAD_ATTACHMENT_BUTTON);
   }
@@ -46,9 +46,29 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.REPLY_BUTTON);
   }
 
+  get menuButton() {
+    return $(SELECTORS.MENU_BUTTON);
+  }
+
+  get forwardButton() {
+    return $(SELECTORS.FORWARD_BUTTON);
+  }
+
+  get deleteButton() {
+    return $(SELECTORS.DELETE_BUTTON)
+  }
+
+  get confirmDeletingButton() {
+    return $(SELECTORS.CONFIRM_DELETING)
+  }
+
+  get senderEmail() {
+      return $(SELECTORS.SENDER_EMAIL);
+  }
+
   checkEmailAddress = async (email: string) => {
-    const selector = `~${email}`;
-    await (await $(selector)).waitForDisplayed();
+      await (await this.senderEmail).waitForDisplayed();
+      await expect(await this.senderEmail).toHaveText(email);
   }
 
   checkEmailSubject = async (subject: string) => {
@@ -78,14 +98,10 @@ class EmailScreen extends BaseScreen {
 
   enterPassPhrase = async (text: string = CommonData.account.passPhrase) => {
     await (await this.enterPassPhraseField).setValue(text);
-  };
+  }
 
   checkWrongPassPhraseErrorMessage = async () => {
     await (await this.wrongPassPhraseMessage).waitForDisplayed();
-  }
-
-  clickSaveButton = async () => {
-    await ElementHelper.waitAndClick(await this.saveButton);
   }
 
   attachmentName = async (name: string) => {
@@ -105,6 +121,22 @@ class EmailScreen extends BaseScreen {
 
   clickReplyButton = async () => {
     await ElementHelper.waitAndClick(await this.replyButton);
+  }
+
+  clickMenuButton = async () => {
+    await ElementHelper.waitAndClick(await this.menuButton);
+  }
+
+  clickForwardButton = async () => {
+    await ElementHelper.waitAndClick(await this.forwardButton);
+  }
+
+  clickDeleteButton = async () => {
+    await ElementHelper.waitAndClick(await this.deleteButton);
+  }
+
+  confirmDelete = async () => {
+    await ElementHelper.waitAndClick(await this.confirmDeletingButton)
   }
 }
 

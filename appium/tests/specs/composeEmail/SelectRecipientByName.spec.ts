@@ -1,7 +1,7 @@
 import {
   SplashScreen,
   SetupKeyScreen,
-  InboxScreen,
+  MailFolderScreen,
   NewMessageScreen,
   ContactScreen,
   ContactPublicKeyScreen,
@@ -25,6 +25,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await MailFolderScreen.checkInboxScreen();
 
     // Go to Contacts screen
     await MenuBarScreen.clickMenuIcon();
@@ -40,17 +41,16 @@ describe('COMPOSE EMAIL: ', () => {
 
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.clickInboxButton();
+    await MailFolderScreen.checkInboxScreen();
 
     // Add first contact
-    await InboxScreen.clickCreateEmail();
-
+    await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.setAddRecipientByName(firstContactName, firstContactEmail);
     await NewMessageScreen.checkAddedRecipient(firstContactEmail);
     await NewMessageScreen.clickBackButton();
 
     // Add second contact
-    await InboxScreen.clickCreateEmail();
-
+    await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.setAddRecipientByName(secondContactName, secondContactEmail);
     await NewMessageScreen.checkAddedRecipient(secondContactEmail);
     await NewMessageScreen.clickBackButton();

@@ -7,7 +7,8 @@ const SELECTORS = {
   LOGOUT_BTN: '~Log out',
   SETTINGS_BTN: '~Settings',
   INBOX_BTN: '~INBOX',
-  SENT_BTN: '~SENT'
+  SENT_BTN: '~SENT',
+  TRASH_BTN: '~TRASH'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -35,6 +36,10 @@ class MenuBarScreen extends BaseScreen {
     return $(SELECTORS.SENT_BTN);
   }
 
+  get trashButton() {
+    return $(SELECTORS.TRASH_BTN)
+  }
+
   clickMenuIcon = async () => {
     await ElementHelper.waitAndClick(await this.menuIcon, 1000);
   }
@@ -58,11 +63,15 @@ class MenuBarScreen extends BaseScreen {
   }
 
   clickInboxButton = async () => {
-    await ElementHelper.waitAndClick(await this.inboxButton);
+    await ElementHelper.waitAndClick(await this.inboxButton, 500); // todo - instead wait until loader gone
   }
 
   clickSentButton = async () => {
-      await ElementHelper.waitAndClick(await this.sentButton);
+    await ElementHelper.waitAndClick(await this.sentButton, 500); // todo - instead wait until loader gone
+  }
+
+  clickTrashButton = async () => {
+    await ElementHelper.waitAndClick(await this.trashButton, 500); // todo - instead wait until loader gone
   }
 }
 

@@ -31,10 +31,6 @@ final class EncryptedCacheService<T: CachedRealmObject> {
         }
     }
 
-    func retreive(for identifier: T.Identifier) -> T? {
-        getAll()?.first(where: { $0.identifier == identifier })
-    }
-
     func remove(object: T, with identifier: T.Identifier) {
         guard let objectToDelete = realm
             .objects(T.self)
@@ -55,10 +51,6 @@ final class EncryptedCacheService<T: CachedRealmObject> {
     func removeAllForActiveUser() {
         let allObjects = getAllForActiveUser() ?? []
         remove(objects: allObjects)
-    }
-
-    func getAll() -> [T]? {
-        Array(realm.objects(T.self))
     }
 
     func getAllForActiveUser() -> [T]? {

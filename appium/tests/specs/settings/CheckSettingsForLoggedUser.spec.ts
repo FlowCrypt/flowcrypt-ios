@@ -4,7 +4,8 @@ import {
   MenuBarScreen,
   SettingsScreen,
   KeysScreen,
-  PublicKeyScreen
+  PublicKeyScreen,
+  MailFolderScreen
 } from '../../screenobjects/all-screens';
 
 
@@ -14,6 +15,7 @@ describe('SETTINGS: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await MailFolderScreen.checkInboxScreen();
 
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.checkUserEmail();

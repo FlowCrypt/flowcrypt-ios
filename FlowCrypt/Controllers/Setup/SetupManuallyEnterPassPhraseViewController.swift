@@ -288,10 +288,6 @@ extension SetupManuallyEnterPassPhraseViewController {
         }
     }
 
-    private func handleAnotherKeySelection() {
-        navigationController?.popViewController(animated: true)
-    }
-
     private func moveToMainFlow() {
         router.proceed()
     }

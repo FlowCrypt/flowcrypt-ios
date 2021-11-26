@@ -29,8 +29,6 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
     }
     private let keys: [KeyDetails]
 
-    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
-
     init(
         user: UserId,
         keys: [KeyDetails] = [],

@@ -5,13 +5,14 @@ const SELECTORS = {
   ADD_RECIPIENT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Add Recipient"`]',
   SUBJECT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Subject"`]',
   COMPOSE_SECURITY_MESSAGE: '-ios predicate string:type == "XCUIElementTypeTextView"',
+  RECIPIENTS_LIST: '~recipientsList',
   ADDED_RECIPIENT: '-ios class chain:**/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther' +
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
   RETURN_BUTTON: '~Return',
   BACK_BUTTON: '~arrow left c',
-  SENT_BUTTON: '~android send',
+  SEND_BUTTON: '~android send',
   ERROR_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Error"`]',
   OK_BUTTON: '~OK'
 };
@@ -33,6 +34,10 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.COMPOSE_SECURITY_MESSAGE);
   }
 
+  get recipientsList() {
+    return $(SELECTORS.RECIPIENTS_LIST);
+  }
+
   get addedRecipientEmail() {
     return $(SELECTORS.ADDED_RECIPIENT);
   }
@@ -41,15 +46,15 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.BACK_BUTTON);
   }
 
-  get sentButton() {
-    return $(SELECTORS.SENT_BUTTON);
+  get sendButton() {
+    return $(SELECTORS.SEND_BUTTON);
   }
 
-  get errorHeader () {
+  get errorHeader() {
     return $(SELECTORS.ERROR_HEADER)
   }
 
-  get okButton () {
+  get okButton() {
     return $(SELECTORS.OK_BUTTON);
   }
 
@@ -87,13 +92,23 @@ class NewMessageScreen extends BaseScreen {
     expect(this.composeSecurityMessage).toHaveText(message);
     const element = await this.filledSubject(subject);
     await element.waitForDisplayed();
-    await this.checkAddedRecipient(recipient);
+
+    if (recipient.length === 0) {
+      await this.checkEmptyRecipientsList();
+    } else {
+      await this.checkAddedRecipient(recipient);
+    }
   };
+
+  checkEmptyRecipientsList = async () => {
+    const list = await this.recipientsList;
+    const listText = await list.getText();
+    expect(listText.length).toEqual(0);
+  }
 
   checkAddedRecipient = async (recipient: string) => {
     const addedRecipientEl = await this.addedRecipientEmail;
     const value = await addedRecipientEl.getValue();
-    console.log(`addedRecipientEl value: ${value}`);
     expect(value).toEqual(`  ${recipient}  `);
   };
 
@@ -101,13 +116,13 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.backButton);
   }
 
-  clickSentButton = async () => {
-    await ElementHelper.waitAndClick(await this.sentButton);
+  clickSendButton = async () => {
+    await ElementHelper.waitAndClick(await this.sendButton);
   }
 
   checkError = async (errorText: string) => {
     const message = '-ios class chain:**/XCUIElementTypeAlert/XCUIElementTypeOther/XCUIElementTypeOther/' +
-        'XCUIElementTypeOther[2]/XCUIElementTypeScrollView[1]/XCUIElementTypeOther[1]/XCUIElementTypeStaticText[2]';//it works only with this selector
+      'XCUIElementTypeOther[2]/XCUIElementTypeScrollView[1]/XCUIElementTypeOther[1]/XCUIElementTypeStaticText[2]';//it works only with this selector
     await expect(await this.errorHeader).toBeDisplayed();
     await expect(await $(message)).toHaveAttribute('value', `${errorText}`);
     await expect(await this.okButton).toBeDisplayed();

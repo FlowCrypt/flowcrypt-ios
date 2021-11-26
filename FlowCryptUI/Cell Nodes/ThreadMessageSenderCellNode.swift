@@ -11,115 +11,120 @@ import UIKit
 
 public final class ThreadMessageSenderCellNode: CellNode {
     public struct Input {
-        public let signature: NSAttributedString?
-        public let signatureColor: UIColor?
-        public let signatureIcon: String?
-
+        public let encryptionBadge: BadgeNode.Input
+        public let signatureBadge: BadgeNode.Input?
         public let sender: NSAttributedString
         public let date: NSAttributedString?
         public let isExpanded: Bool
-        public let isEncrypted: Bool
         public let buttonColor: UIColor
         public let nodeInsets: UIEdgeInsets
 
-        public init(signature: NSAttributedString?,
-                    signatureColor: UIColor?,
-                    signatureIcon: String?,
+        public init(encryptionBadge: BadgeNode.Input,
+                    signatureBadge: BadgeNode.Input?,
                     sender: NSAttributedString,
                     date: NSAttributedString,
                     isExpanded: Bool,
-                    isEncrypted: Bool,
                     buttonColor: UIColor,
-                    nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 12)) {
-            self.signature = signature
-            self.signatureColor = signatureColor
-            self.signatureIcon = signatureIcon
+                    nodeInsets: UIEdgeInsets) {
+            self.encryptionBadge = encryptionBadge
+            self.signatureBadge = signatureBadge
             self.sender = sender
             self.date = date
             self.isExpanded = isExpanded
-            self.isEncrypted = isEncrypted
             self.buttonColor = buttonColor
             self.nodeInsets = nodeInsets
         }
 
-        var replyImage: UIImage? {
-            return createButtonImage(systemName: "arrowshape.turn.up.left")
-        }
-        var expandImage: UIImage? {
-            let systemName = isExpanded ? "chevron.up" : "chevron.down"
-            return createButtonImage(systemName: systemName)
-        }
+        var replyImage: UIImage? { createButtonImage("arrow.turn.up.left") }
+        var menuImage: UIImage? { createButtonImage("ellipsis") }
+        var expandImage: UIImage? { createButtonImage("chevron.down") }
 
-        private func createButtonImage(systemName: String, pointSize: CGFloat = 18) -> UIImage? {
+        private func createButtonImage(_ systemName: String, pointSize: CGFloat = 18) -> UIImage? {
             let configuration = UIImage.SymbolConfiguration(pointSize: pointSize)
             return UIImage(systemName: systemName, withConfiguration: configuration)
         }
     }
 
     private lazy var encryptionNode: BadgeNode = {
-        let text = input.isEncrypted ? "message_encrypted".localized : "message_not_encrypted".localized
-        let input = BadgeNode.Input(
-            icon: input.isEncrypted ? "lock" : "lock.open",
-            text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
-            color: input.isEncrypted ? .main : .warningColor
-        )
-        return BadgeNode(input: input)
+        return BadgeNode(input: input.encryptionBadge)
     }()
 
-    private lazy var signatureNode: BadgeNode = {
-        let input = BadgeNode.Input(
-            icon: input.signatureIcon,
-            text: input.signature,
-            color: input.signatureColor
-        )
-        return BadgeNode(input: input)
+    private lazy var signatureNode: BadgeNode? = {
+        return input.signatureBadge.map(BadgeNode.init)
     }()
 
     private let senderNode = ASTextNode2()
     private let dateNode = ASTextNode2()
 
     public private(set) var replyNode = ASButtonNode()
+    public private(set) var menuNode = ASButtonNode()
     public private(set) var expandNode = ASImageNode()
 
     private let input: ThreadMessageSenderCellNode.Input
     private var onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?
+    private var onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?
 
     public init(input: ThreadMessageSenderCellNode.Input,
-                onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?) {
+                onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?,
+                onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?) {
         self.input = input
         self.onReplyTap = onReplyTap
+        self.onMenuTap = onMenuTap
         super.init()
         automaticallyManagesSubnodes = true
 
         senderNode.attributedText = input.sender
+        senderNode.accessibilityIdentifier = "senderEmail"
         dateNode.attributedText = input.date
 
+
         setupReplyNode()
+        setupMenuNode()
         setupExpandNode()
     }
 
     private func setupReplyNode() {
-        replyNode.setImage(input.replyImage, for: .normal)
-        replyNode.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
-        replyNode.contentMode = .center
-        replyNode.alpha = input.isExpanded ? 1 : 0
-        replyNode.addTarget(self, action: #selector(onReplyNodeTap), forControlEvents: .touchUpInside)
-        replyNode.accessibilityIdentifier = "replyButton"
+        setup(buttonNode: replyNode,
+              with: input.replyImage,
+              action: #selector(onReplyNodeTap),
+              accessibilityIdentifier: "replyButton")
+    }
+
+    private func setupMenuNode() {
+        setup(buttonNode: menuNode,
+              with: input.menuImage,
+              action: #selector(onMenuNodeTap),
+              accessibilityIdentifier: "messageMenuButton")
+    }
+
+    private func setup(buttonNode node: ASButtonNode,
+                       with image: UIImage?,
+                       action: Selector,
+                       accessibilityIdentifier: String) {
+        node.setImage(image, for: .normal)
+        node.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
+        node.addTarget(self, action: action, forControlEvents: .touchUpInside)
+        node.accessibilityIdentifier = accessibilityIdentifier
     }
 
     private func setupExpandNode() {
         expandNode.image = input.expandImage
         expandNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
-        expandNode.contentMode = .right
+        expandNode.contentMode = .center
     }
 
     @objc private func onReplyNodeTap() {
         onReplyTap?(self)
     }
 
+    @objc private func onMenuNodeTap() {
+        onMenuTap?(self)
+    }
+
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
-        expandNode.style.preferredSize = CGSize(width: 18, height: 44)
+        menuNode.style.preferredSize = CGSize(width: 36, height: 44)
+        expandNode.style.preferredSize = CGSize(width: 36, height: 44)
 
         let infoNode = ASStackLayoutSpec(
             direction: .vertical,
@@ -131,16 +136,17 @@ public final class ThreadMessageSenderCellNode: CellNode {
         infoNode.style.flexGrow = 1
         infoNode.style.flexShrink = 1
 
-        let senderSpec = ASStackLayoutSpec(
-            direction: .horizontal,
-            spacing: 4,
-            justifyContent: .spaceBetween,
-            alignItems: .start,
-            children: [infoNode, replyNode, expandNode]
-        )
-
         let contentSpec: ASStackLayoutSpec
+
         if input.isExpanded {
+            let senderSpec = ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 2,
+                justifyContent: .spaceBetween,
+                alignItems: .start,
+                children: [infoNode, replyNode, menuNode]
+            )
+
             let spacer = ASLayoutSpec()
             spacer.style.flexGrow = 1.0
 
@@ -149,7 +155,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
                 spacing: 4,
                 justifyContent: .spaceBetween,
                 alignItems: .start,
-                children: [encryptionNode, signatureNode, spacer]
+                children: [encryptionNode, signatureNode, spacer].compactMap { $0 }
             )
 
             contentSpec = ASStackLayoutSpec(
@@ -160,7 +166,13 @@ public final class ThreadMessageSenderCellNode: CellNode {
                 children: [senderSpec, signatureSpec]
             )
         } else {
-            contentSpec = senderSpec
+            contentSpec = ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 4,
+                justifyContent: .spaceBetween,
+                alignItems: .start,
+                children: [infoNode, expandNode]
+            )
         }
 
         return ASInsetLayoutSpec(

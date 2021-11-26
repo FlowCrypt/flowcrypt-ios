@@ -9,6 +9,7 @@
 import Foundation
 
 struct PubKey {
+    let primaryFingerprint: String
     let armored: String
     /// will be provided later
     let lastSig: Date?
@@ -53,16 +54,36 @@ extension PubKey {
         let longids = keyIds.map(\.longid)
         let fingerprints = keyIds.map(\.fingerprint)
 
-        self.init(armored: keyDetails.public,
-                  lastSig: keyDetails.lastModified.map { Date(timeIntervalSince1970: TimeInterval($0)) },
-                  lastChecked: Date(),
-                  expiresOn: keyDetails.expiration.map { Date(timeIntervalSince1970: TimeInterval($0)) },
-                  longids: longids,
-                  fingerprints: fingerprints,
-                  created: Date(timeIntervalSince1970: Double(keyDetails.created)),
-                  algo: keyDetails.algo,
-                  isRevoked: keyDetails.revoked,
-                  emails: keyDetails.pgpUserEmails)
+        self.init(
+            primaryFingerprint: keyDetails.primaryFingerprint,
+            armored: keyDetails.public,
+            lastSig: keyDetails.lastModified.map { Date(timeIntervalSince1970: TimeInterval($0)) },
+            lastChecked: Date(),
+            expiresOn: keyDetails.expiration.map { Date(timeIntervalSince1970: TimeInterval($0)) },
+            longids: longids,
+            fingerprints: fingerprints,
+            created: Date(timeIntervalSince1970: Double(keyDetails.created)),
+            algo: keyDetails.algo,
+            isRevoked: keyDetails.revoked,
+            emails: keyDetails.pgpUserEmails
+        )
+    }
+}
+
+extension PubKey {
+    init(_ object: PubKeyRealmObject) {
+        self.primaryFingerprint = object.primaryFingerprint
+        self.armored = object.armored
+        self.lastSig = object.lastSig
+        self.lastChecked = object.lastChecked
+        self.expiresOn = object.expiresOn
+        self.longids = object.longids.map { $0 }
+        self.fingerprints = object.fingerprints.map { $0 }
+        self.created = object.created
+
+        self.algo = nil
+        self.isRevoked = false
+        self.emails = []
     }
 }
 

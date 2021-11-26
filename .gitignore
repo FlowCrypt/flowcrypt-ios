@@ -49,3 +49,5 @@ appium/package-lock.json
 appium/tmp
 appium/.env
 appium/FlowCrypt.app
+appium/video
+

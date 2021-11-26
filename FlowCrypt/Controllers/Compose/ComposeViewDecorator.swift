@@ -20,8 +20,7 @@ struct ComposeViewDecorator {
     let recipientKeyRevokedState: RecipientState = .keyRevoked(keyRevokedStateContext)
     let recipientKeyNotFoundState: RecipientState = .keyNotFound(keyNotFoundStateContext)
     let recipientInvalidEmailState: RecipientState = .invalidEmail(invalidEmailStateContext)
-    let recipientErrorState: RecipientState = .error(errorStateContext, false)
-    var recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
+    let recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
 
     func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
@@ -72,8 +71,8 @@ struct ComposeViewDecorator {
         text.attributed(.regular(17))
     }
 
-    func styledReplyQuote(with input: ComposeMessageInput) -> NSAttributedString {
-        guard case let .reply(info) = input.type else { return NSAttributedString(string: "") }
+    func styledQuote(with input: ComposeMessageInput) -> NSAttributedString {
+        guard case let .quote(info) = input.type else { return NSAttributedString(string: "") }
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
@@ -85,10 +84,10 @@ struct ComposeViewDecorator {
         dateFormatter.timeStyle = .short
         let time = dateFormatter.string(from: info.sentDate)
 
-        let from = info.recipient ?? "unknown sender"
+        let from = info.sender ?? "unknown sender"
 
         let text: String = "\n\n"
-            + "compose_reply_from".localizeWithArguments(date, time, from)
+            + "compose_quote_from".localizeWithArguments(date, time, from)
             + "\n"
 
         let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
