@@ -10,6 +10,9 @@ const SELECTORS = {
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
+  ATTACHMENT_CELL: '~attachmentCell0',
+  ATTACHMENT_NAME_LABEL: '~attachmentTitleLabel0',
+  DELETE_ATTACHMENT_BUTTON: '~attachmentDeleteButton0',
   RETURN_BUTTON: '~Return',
   BACK_BUTTON: '~arrow left c',
   SEND_BUTTON: '~android send',
@@ -40,6 +43,18 @@ class NewMessageScreen extends BaseScreen {
 
   get addedRecipientEmail() {
     return $(SELECTORS.ADDED_RECIPIENT);
+  }
+
+  get attachmentCell() {
+    return $(SELECTORS.ATTACHMENT_CELL);
+  }
+
+  get attachmentNameLabel() {
+    return $(SELECTORS.ATTACHMENT_NAME_LABEL);
+  }
+
+  get deleteAttachmentButton() {
+    return $(SELECTORS.DELETE_ATTACHMENT_BUTTON);
   }
 
   get backButton() {
@@ -88,8 +103,9 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
 
-  checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string) => {
+  checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string, attachmentName?: string) => {
     expect(this.composeSecurityMessage).toHaveText(message);
+    
     const element = await this.filledSubject(subject);
     await element.waitForDisplayed();
 
@@ -97,6 +113,10 @@ class NewMessageScreen extends BaseScreen {
       await this.checkEmptyRecipientsList();
     } else {
       await this.checkAddedRecipient(recipient);
+    }
+
+    if (attachmentName !== undefined) {
+      await this.checkAddedAttachment(attachmentName);
     }
   };
 
@@ -111,6 +131,18 @@ class NewMessageScreen extends BaseScreen {
     const value = await addedRecipientEl.getValue();
     expect(value).toEqual(`  ${recipient}  `);
   };
+
+  checkAddedAttachment = async (name: string) => {
+    await (await this.deleteAttachmentButton).waitForDisplayed();
+    const label = await this.attachmentNameLabel;
+    const value = await label.getValue();
+    expect(value).toEqual(name);
+  }
+
+  deleteAttachment = async () => {
+    await ElementHelper.waitAndClick(await this.deleteAttachmentButton);
+    await ElementHelper.waitElementInvisible(await this.attachmentCell);
+  }
 
   clickBackButton = async () => {
     await ElementHelper.waitAndClick(await this.backButton);
