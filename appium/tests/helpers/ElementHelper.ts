@@ -6,7 +6,7 @@ class ElementHelper {
    * returns true or false for element visibility
    */
   static elementDisplayed = async (element: WebdriverIO.Element): Promise<boolean> => {
-    return await element.isExisting();
+    return await element.isDisplayed();
   }
 
   static waitElementVisible = async (element: WebdriverIO.Element, timeout: number = DEFAULT_TIMEOUT) => {
