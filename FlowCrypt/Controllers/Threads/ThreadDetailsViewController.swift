@@ -439,7 +439,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 let attachment = message.attachments[indexPath.row - 2]
                 return AttachmentNode(
                     input: .init(
-                        msgAttachment: attachment
+                        msgAttachment: attachment,
+                        index: indexPath.row - 2
                     )
                 )
             }

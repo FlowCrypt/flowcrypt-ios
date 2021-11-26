@@ -47,14 +47,11 @@ public final class AttachmentNode: CellNode {
         borderNode.isUserInteractionEnabled = false
 
         imageNode.tintColor = .gray
-        buttonNode.tintColor = .gray
 
         deleteButtonNode.setImage(UIImage(named: "cancel")?.tinted(.gray), for: .normal)
         deleteButtonNode.accessibilityIdentifier = input.deleteButtonIdentifier
 
         imageNode.image = UIImage(named: "paperclip")?.tinted(.gray)
-        buttonNode.setImage(UIImage(named: "download")?.tinted(.gray), for: .normal)
-        buttonNode.accessibilityIdentifier = input.downloadButtonIdentifier
 
         titleNode.attributedText = input.name
         titleNode.accessibilityIdentifier = input.titleLabelIdentifier
