@@ -1,26 +1,20 @@
 //
-//  ComposeMessageAttachment.swift
+//  MessageAttachment.swift
 //  FlowCrypt
 //
-//  Created by Yevhen Kyivskyi on 24.09.2021.
+//  Created by Roma Sosnovsky on 25/11/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import Photos
+import UIKit
 
-struct ComposeMessageAttachment: Equatable {
+struct MessageAttachment: Equatable, FileType {
     let name: String
-    let size: Int
     let data: Data
-    let type: String
-    var humanReadableSizeString: String {
-        return ByteCountFormatter().string(fromByteCount: Int64(self.size))
-    }
 }
 
-extension ComposeMessageAttachment {
-
+extension MessageAttachment {
     init?(cameraSourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
         guard let image = cameraSourceMediaInfo[.originalImage] as? UIImage,
               let data = image.jpegData(compressionQuality: 1) else {
@@ -29,8 +23,6 @@ extension ComposeMessageAttachment {
 
         self.name = "\(UUID().uuidString).jpg"
         self.data = data
-        self.size = data.count
-        self.type = "image/jpg"
     }
 
     init?(fileURL: URL) {
@@ -40,11 +32,11 @@ extension ComposeMessageAttachment {
 
         self.name = fileURL.lastPathComponent
         self.data = data
-        self.size = data.count
-        self.type = fileURL.mimeType
     }
+}
 
+extension MessageAttachment {
     func toSendableMsgAttachment() -> SendableMsg.Attachment {
-        return SendableMsg.Attachment( name: self.name, type: self.type, base64: self.data.base64EncodedString())
+        return SendableMsg.Attachment(name: name, type: type, base64: data.base64EncodedString())
     }
 }

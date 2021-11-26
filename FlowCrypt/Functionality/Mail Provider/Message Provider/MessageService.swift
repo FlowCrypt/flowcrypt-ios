@@ -10,16 +10,6 @@ import Foundation
 import FlowCryptCommon
 import UIKit
 
-// MARK: - MessageAttachment
-struct MessageAttachment: FileType {
-    let name: String
-    let size: Int
-    let data: Data
-    var humanReadableSizeString: String {
-        return ByteCountFormatter().string(fromByteCount: Int64(self.size))
-    }
-}
-
 // MARK: - MessageFetchState
 enum MessageFetchState {
     case fetch, download(Float), decrypt
@@ -232,23 +222,25 @@ final class MessageService {
         keys: [PrvKeyInfo]
     ) async throws -> [MessageAttachment] {
         let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
-        var result: [MessageAttachment] = []
+
+        var attachments: [MessageAttachment] = []
         for block in attachmentBlocks {
             guard let meta = block.attMeta else { continue }
 
-            var name = meta.name
-            var data = meta.data
-            var size = meta.length
+            let attachment: MessageAttachment
             if block.type == .encryptedAtt { // decrypt
-                let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
-                data = decrypted.content
-                name = decrypted.name
-                size = decrypted.content.count
+                let decrypted = try await core.decryptFile(encrypted: meta.data, keys: keys, msgPwd: nil)
+                attachment = MessageAttachment(name: decrypted.name,
+                                               data: decrypted.content)
+            } else {
+                attachment = MessageAttachment(name: meta.name,
+                                               data: meta.data)
             }
 
-            result.append(MessageAttachment(name: name, size: size, data: data))
+            attachments.append(attachment)
         }
-        return result
+
+        return attachments
     }
 
     private func hasMsgBlockThatNeedsPassPhrase(_ msg: CoreRes.ParseDecryptMsg) -> Bool {
@@ -295,7 +287,6 @@ extension MessageService {
 private extension MessageAttachment {
     init(block: MsgBlock) {
         self.name = block.attMeta?.name ?? "Attachment"
-        self.size = block.attMeta?.length ?? 0
         self.data = block.attMeta?.data ?? Data()
     }
 }
