@@ -19,12 +19,13 @@ describe('INBOX: ', () => {
 
     const replySubject = `Re: ${emailSubject}`;
     const forwardSubject = `Fwd: ${emailSubject}`;
-    const quoteText = `On 11/5/21 at 4:15 AM ${senderEmail} wrote:\n > ${emailText}`;
+    const quoteText = `On 11/5/21 at 1:15 PM ${senderEmail} wrote:\n > ${emailText}`;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
+    await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
