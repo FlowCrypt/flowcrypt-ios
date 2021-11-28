@@ -91,6 +91,10 @@ class MailFolderScreen extends BaseScreen {
   scrollDown = async () => {
     await TouchHelper.scrollDown();
   }
+
+  clickSearchButton = async () => {
+    await ElementHelper.waitAndClick(await this.searchIcon, 1000); // delay needed on M1
+  }
 }
 
 export default new MailFolderScreen();

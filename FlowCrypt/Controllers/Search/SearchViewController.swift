@@ -79,6 +79,7 @@ final class SearchViewController: TableNodeViewController {
 extension SearchViewController {
     private func setupUI() {
         view.backgroundColor = .backgroundColor
+        view.accessibilityIdentifier = "searchViewController"
         title = "search_title".localized
         node.delegate = self
         node.dataSource = self
@@ -244,6 +245,7 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
                 alignment: .left
             )
         searchController.searchBar.searchTextField.textColor = .white
+        searchController.searchBar.searchTextField.accessibilityIdentifier = "searchField"
     }
 }
 
