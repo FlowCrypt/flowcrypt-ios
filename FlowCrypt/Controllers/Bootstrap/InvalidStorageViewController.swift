@@ -29,19 +29,24 @@ final class InvalidStorageViewController: UIViewController {
         super.viewDidLoad()
         title = "invalid_storage_title".localized
 
-        view.backgroundColor = .white
+        view.backgroundColor = .backgroundColor
 
+        let font = UIFont.systemFont(ofSize: 16)
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "invalid_storage_text".localized
         label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = font
+        label.textColor = .mainTextColor
         view.addSubview(label)
 
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.isEditable = false
         textView.text = error.localizedDescription
+        textView.font = font
+        textView.textColor = .mainTextColor
+        textView.backgroundColor = .backgroundColor
         view.addSubview(textView)
 
         let button = UIButton(type: .custom)
