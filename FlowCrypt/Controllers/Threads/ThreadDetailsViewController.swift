@@ -344,7 +344,7 @@ extension ThreadDetailsViewController {
         case .download(let progress):
             updateSpinner(label: "downloading_title".localized, progress: progress)
         case .decrypt:
-            updateSpinner(label: "decrypting_title".localized)
+            updateSpinner(label: "processing_title".localized)
         }
     }
 }
