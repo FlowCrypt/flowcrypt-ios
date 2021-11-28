@@ -9,7 +9,6 @@
 import FlowCryptUI
 import AsyncDisplayKit
 
-@MainActor
 final class InvalidStorageViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case screenTitle
