@@ -31,6 +31,7 @@ describe('COMPOSE EMAIL: ', () => {
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
 
+    await MailFolderScreen.checkInboxScreen();
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(contactEmail, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(contactEmail, emailSubject, emailText);
