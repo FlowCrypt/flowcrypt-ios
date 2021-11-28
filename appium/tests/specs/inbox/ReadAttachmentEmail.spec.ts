@@ -32,6 +32,7 @@ describe('INBOX: ', () => {
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
 
+    await MailFolderScreen.checkInboxScreen();
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
 
     //try to see encrypted message with wrong pass phrase
