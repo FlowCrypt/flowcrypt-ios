@@ -48,6 +48,7 @@ extension GmailService: MessageOperationsProvider {
             labelsToRemove: message.labels
                 .filter(\.isLabel)
                 .map(\.type)
+                .filter { $0.isInbox }
         )
     }
 
