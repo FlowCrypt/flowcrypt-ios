@@ -10,14 +10,12 @@ import Foundation
 
 struct FileMock: FileType {
     let name: String
-    let size: Int
     let data: Data
 }
 
 extension FileMock {
     static let stringedFile = FileMock(
         name: "mock_file.pdf",
-        size: 125,
         data: "mocktext".data(using: .utf8)!
     )
 }

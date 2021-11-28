@@ -25,6 +25,7 @@ describe('INBOX: ', () => {
     await driver.terminateApp(CommonData.bundleId.id);
     await driver.activateApp(CommonData.bundleId.id);
 
+    await MailFolderScreen.checkInboxScreen();
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
   });

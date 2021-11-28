@@ -16,7 +16,7 @@ struct ComposeMessageContext: Equatable {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []
     var subject: String?
-    var attachments: [ComposeMessageAttachment] = []
+    var attachments: [MessageAttachment] = []
 }
 
 struct ComposeMessageRecipient: Equatable {
@@ -86,9 +86,7 @@ final class ComposeMessageService {
             throw MessageValidationError.emptyMessage
         }
 
-        let subject = input.subjectQuoteTitle
-            ?? contextToSend.subject
-            ?? "(no subject)"
+        let subject = contextToSend.subject ?? "(no subject)"
 
         guard let myPubKey = self.dataService.publicKey() else {
             throw MessageValidationError.missedPublicKey

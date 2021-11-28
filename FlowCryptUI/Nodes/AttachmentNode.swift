@@ -9,11 +9,18 @@ public final class AttachmentNode: CellNode {
     public struct Input {
         let name: NSAttributedString
         let size: NSAttributedString
+        let index: Int
 
-        public init(name: NSAttributedString, size: NSAttributedString) {
+        public init(name: NSAttributedString, size: NSAttributedString, index: Int) {
             self.name = name
             self.size = size
+            self.index = index
         }
+
+        var cellIdentifier: String { "attachmentCell\(index)" }
+        var titleLabelIdentifier: String { "attachmentTitleLabel\(index)" }
+        var deleteButtonIdentifier: String { "attachmentDeleteButton\(index)" }
+        var downloadButtonIdentifier: String { "attachmentDownloadButton\(index)" }
     }
 
     private let titleNode = ASTextNode()
@@ -34,6 +41,9 @@ public final class AttachmentNode: CellNode {
         self.onDownloadTap = onDownloadTap
         self.onDeleteTap = onDeleteTap
         super.init()
+
+        accessibilityIdentifier = input.cellIdentifier
+        
         automaticallyManagesSubnodes = true
         borderNode.borderWidth = 1.0
         borderNode.cornerRadius = 8.0
@@ -42,12 +52,16 @@ public final class AttachmentNode: CellNode {
 
         imageNode.tintColor = .gray
         buttonNode.tintColor = .gray
+
         deleteButtonNode.setImage(UIImage(named: "cancel")?.tinted(.gray), for: .normal)
+        deleteButtonNode.accessibilityIdentifier = input.deleteButtonIdentifier
+
         imageNode.image = UIImage(named: "paperclip")?.tinted(.gray)
         buttonNode.setImage(UIImage(named: "download")?.tinted(.gray), for: .normal)
-        buttonNode.accessibilityIdentifier = "downloadButton"
+        buttonNode.accessibilityIdentifier = input.downloadButtonIdentifier
 
         titleNode.attributedText = input.name
+        titleNode.accessibilityIdentifier = input.titleLabelIdentifier
         subtitleNode.attributedText = input.size
 
         buttonNode.addTarget(self, action: #selector(onDownloadButtonTap), forControlEvents: .touchUpInside)
