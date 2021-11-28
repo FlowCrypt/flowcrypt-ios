@@ -6,9 +6,18 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
+import FlowCryptUI
+import AsyncDisplayKit
 
-final class InvalidStorageViewController: UIViewController {
+@MainActor
+final class InvalidStorageViewController: TableNodeViewController {
+    private enum Parts: Int, CaseIterable {
+        case screenTitle
+        case title
+        case description
+        case button
+    }
+
     private let error: Error
     private let encryptedStorage: EncryptedStorageType
     private let router: GlobalRouterType
@@ -17,7 +26,7 @@ final class InvalidStorageViewController: UIViewController {
         self.error = error
         self.encryptedStorage = encryptedStorage
         self.router = router
-        super.init(nibName: nil, bundle: nil)
+        super.init(node: TableNode())
     }
 
     @available(*, unavailable)
@@ -27,53 +36,12 @@ final class InvalidStorageViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "invalid_storage_title".localized
-
         view.backgroundColor = .backgroundColor
 
-        let font = UIFont.systemFont(ofSize: 16)
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "invalid_storage_text".localized
-        label.numberOfLines = 0
-        label.font = font
-        label.textColor = .mainTextColor
-        view.addSubview(label)
-
-        let textView = UITextView()
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.isEditable = false
-        textView.text = error.localizedDescription
-        textView.font = font
-        textView.textColor = .mainTextColor
-        textView.backgroundColor = .backgroundColor
-        view.addSubview(textView)
-
-        let button = UIButton(type: .custom)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .red
-        button.setTitle("invalid_storage_reset_button".localized, for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(handleTap), for: .touchUpInside)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        button.layer.cornerRadius = 5
-        view.addSubview(button)
-
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            label.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
-            label.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
-
-            textView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 10),
-            textView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
-            textView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
-            textView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -10),
-
-            button.heightAnchor.constraint(equalToConstant: 50),
-            button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
-            button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
-            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8)
-        ])
+        node.delegate = self
+        node.dataSource = self
+        node.bounces = false
+        node.reloadData()
     }
 
     @objc private func handleTap() {
@@ -82,6 +50,76 @@ final class InvalidStorageViewController: UIViewController {
             router.proceed()
         } catch {
             showAlert(message: "invalid_storage_reset_error".localized)
+        }
+    }
+}
+
+extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
+    func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
+        Parts.allCases.count
+    }
+
+    func tableNode(_ node: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
+        return { [weak self] in
+            guard let self = self, let part = Parts(rawValue: indexPath.row) else {
+                return ASCellNode()
+            }
+
+            let insets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+            switch part {
+            case .screenTitle:
+                return SetupTitleNode(
+                    SetupTitleNode.Input(
+                        title: "invalid_storage_title".localized
+                            .attributed(
+                                .bold(18),
+                                color: .mainTextColor,
+                                alignment: .center
+                            ),
+                        insets: insets,
+                        backgroundColor: .backgroundColor
+                    )
+                )
+            case .title:
+                return SetupTitleNode(
+                    SetupTitleNode.Input(
+                        title: "invalid_storage_text".localized
+                            .attributed(
+                                .regular(16),
+                                color: .mainTextColor,
+                                alignment: .center
+                            ),
+                        insets: insets,
+                        backgroundColor: .backgroundColor
+                    )
+                )
+            case .description:
+                return SetupTitleNode(
+                    SetupTitleNode.Input(
+                        title: self.error.localizedDescription.attributed(
+                            .regular(16),
+                            color: .mainTextColor,
+                            alignment: .center
+                        ),
+                        insets: insets,
+                        backgroundColor: .backgroundColor
+                    )
+                )
+            case .button:
+                return ButtonCellNode(
+                    input: ButtonCellNode.Input(
+                        title: "invalid_storage_reset_button".localized.attributed(
+                            .bold(16),
+                            color: .white,
+                            alignment: .center
+                        ),
+                        insets: insets,
+                        color: .red
+                    )
+                ) { [weak self] in
+                    self?.handleTap()
+                }
+            }
         }
     }
 }
