@@ -10,6 +10,7 @@ import UIKit
 import WebKit
 import FlowCryptUI
 import Combine
+import FlowCryptCommon
 
 @MainActor
 final class AttachmentViewController: UIViewController {
@@ -57,7 +58,14 @@ final class AttachmentViewController: UIViewController {
         addWebView()
         showSpinner()
         title = file.name
-        load()
+        do {
+            try load()
+        } catch {
+            Logger.logError("error previewing file: \(error)")
+            // todo - exact error should be surfaced to user?
+            errorLabel.isHidden = false
+            hideSpinner()
+        }
     }
 
     private func setupNavigationBar() {
@@ -91,15 +99,11 @@ extension AttachmentViewController: WKNavigationDelegate {
 
 private extension AttachmentViewController {
 
-    private func load() {
-        webView.load(
-            file.data,
-            mimeType: file.name.mimeType,
-            characterEncodingName: "UTF-8",
-            // It is a URL that should be used to resolve relative URLs within the document.
-            // As we don't resolve any relative URLs we pass just NSURL()
-            baseURL: NSURL() as URL
-        )
+    private func load() throws {
+        guard let url = URL(string: "data:\(file.name.mimeType);base64,\(file.data.base64EncodedString())") else {
+            throw AppErr.general("Could not produce a data URL to preview this file")
+        }
+        webView.load(URLRequest(url: url))
     }
 
     private func addWebView() {
