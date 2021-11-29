@@ -24,12 +24,15 @@ describe('INBOX: ', () => {
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
+    await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
 
+    await MailFolderScreen.checkInboxScreen();
+    await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
 
     //try to see encrypted message with wrong pass phrase

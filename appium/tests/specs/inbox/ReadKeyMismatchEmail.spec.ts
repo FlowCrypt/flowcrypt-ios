@@ -17,8 +17,9 @@ describe('INBOX: ', () => {
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
-    await MailFolderScreen.checkInboxScreen()
+    await MailFolderScreen.checkInboxScreen();
 
+    await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
   });

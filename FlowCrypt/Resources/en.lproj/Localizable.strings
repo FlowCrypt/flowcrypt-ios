@@ -2,7 +2,7 @@
 "loading_title" = "Loading";
 "downloading_title" = "Downloading";
 "encrypting_title" = "Encrypting...";
-"decrypting_title" = "Decrypting...";
+"processing_title" = "Processing...";
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";

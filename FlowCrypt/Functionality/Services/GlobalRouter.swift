@@ -123,6 +123,7 @@ extension GlobalRouter: GlobalRouterType {
         proceed(with: session)
     }
 
+    @MainActor
     private func validateEncryptedStorage(_ completion: () -> Void) {
         let storage = EncryptedStorage()
         do {

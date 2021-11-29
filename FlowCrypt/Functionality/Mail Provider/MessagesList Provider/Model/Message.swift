@@ -14,6 +14,7 @@ struct Message: Hashable {
     let identifier: Identifier
     let date: Date
     let sender: String?
+    let recipient: String?
     let subject: String?
     let size: Int?
     let attachmentIds: [String]
@@ -45,7 +46,8 @@ struct Message: Hashable {
         attachmentIds: [String],
         threadId: String? = nil,
         draftIdentifier: String? = nil,
-        raw: String? = nil
+        raw: String? = nil,
+        recipient: String? = nil
     ) {
         self.identifier = identifier
         self.date = date
@@ -57,6 +59,7 @@ struct Message: Hashable {
         self.threadId = threadId
         self.draftIdentifier = draftIdentifier
         self.raw = raw
+        self.recipient = recipient
     }
 }
 
