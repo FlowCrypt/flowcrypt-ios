@@ -146,6 +146,7 @@
 		9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */; };
 		9F5C2A92257E94DF00DE9B4B /* Imap+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A91257E94DF00DE9B4B /* Imap+MessageOperations.swift */; };
 		9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */; };
+		9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */ = {isa = PBXBuildFile; fileRef = 9F5EF7002753DA7000CC3F88 /* UI Guidance.md */; };
 		9F5F501D26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F501C26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift */; };
 		9F5F503526F90E5F00294FA2 /* ClientConfigurationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F503426F90E5F00294FA2 /* ClientConfigurationServiceTests.swift */; };
 		9F5F503C26FA6C5E00294FA2 /* CurrentUserEmailMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F503B26FA6C5E00294FA2 /* CurrentUserEmailMock.swift */; };
@@ -582,6 +583,7 @@
 		9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapError.swift; sourceTree = "<group>"; };
 		9F5C2A91257E94DF00DE9B4B /* Imap+MessageOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+MessageOperations.swift"; sourceTree = "<group>"; };
 		9F5C2A98257E94E900DE9B4B /* Gmail+MessageOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+MessageOperations.swift"; sourceTree = "<group>"; };
+		9F5EF7002753DA7000CC3F88 /* UI Guidance.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "UI Guidance.md"; sourceTree = "<group>"; };
 		9F5F501C26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganisationalRulesServiceMock.swift; sourceTree = "<group>"; };
 		9F5F503426F90E5F00294FA2 /* ClientConfigurationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationServiceTests.swift; sourceTree = "<group>"; };
 		9F5F503B26FA6C5E00294FA2 /* CurrentUserEmailMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserEmailMock.swift; sourceTree = "<group>"; };
@@ -1636,6 +1638,7 @@
 				51E1673C270DAFF900D27C52 /* Localizable.stringsdict */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
 				D269E025240EAD9A000495C3 /* Naming Convention.md */,
+				9F5EF7002753DA7000CC3F88 /* UI Guidance.md */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -2296,6 +2299,7 @@
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
+				9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
 				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,

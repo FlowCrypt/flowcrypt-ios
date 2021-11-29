@@ -147,6 +147,7 @@ extension Message {
 
         var sender: String?
         var subject: String?
+        var recipient: String?
 
         messageHeaders.compactMap { $0 }.forEach {
             guard let name = $0.name?.lowercased() else { return }
@@ -154,6 +155,7 @@ extension Message {
             switch name {
             case .from: sender = value
             case .subject: subject = value
+            case .to: recipient = value
             default: break
             }
         }
@@ -175,7 +177,8 @@ extension Message {
             attachmentIds: attachmentsIds,
             threadId: message.threadId,
             draftIdentifier: draftIdentifier,
-            raw: message.raw
+            raw: message.raw,
+            recipient: recipient
         )
     }
 }

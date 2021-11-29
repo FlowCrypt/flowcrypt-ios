@@ -19,11 +19,15 @@ describe('INBOX: ', () => {
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
+    await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
     await driver.terminateApp(CommonData.bundleId.id);
     await driver.activateApp(CommonData.bundleId.id);
+
+    await MailFolderScreen.checkInboxScreen();
+    await MailFolderScreen.searchEmailBySubject(emailSubject);
 
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);

@@ -8,7 +8,8 @@ const SELECTORS = {
   CREATE_EMAIL_BUTTON: '-ios class chain:**/XCUIElementTypeButton[`label == "+"`]',
   INBOX_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "INBOX"`]',
   SEARCH_ICON: '~search icn',
-  HELP_ICON: '~help icn'
+  HELP_ICON: '~help icn',
+  SEARCH_FIELD: '~searchAllEmailField'
 };
 
 class MailFolderScreen extends BaseScreen {
@@ -40,6 +41,10 @@ class MailFolderScreen extends BaseScreen {
     return $(SELECTORS.CREATE_EMAIL_BUTTON);
   }
 
+  get searchField() {
+    return $(SELECTORS.SEARCH_FIELD);
+  }
+
   checkTrashScreen = async () => {
     await expect(await this.trashHeader).toBeDisplayed();
     await expect(await this.searchIcon).toBeDisplayed();
@@ -61,15 +66,17 @@ class MailFolderScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
-    await browser.pause(2000); // todo: loading inbox. Fix this: wait until loader gone
     const selector = `~${subject}`;
+    if (await (await $(selector)).isDisplayed() !== true) {
+      await TouchHelper.scrollDownToElement(await $(selector));
+    }
     await ElementHelper.waitAndClick(await $(selector), 500);
   }
 
   clickCreateEmail = async () => {
     await browser.pause(2000); // todo: loading inbox. Fix this: wait until loader gone
     if (await (await this.createEmailButton).isDisplayed() !== true) {
-      await TouchHelper.scrollDown();
+      await TouchHelper.scrollDownToElement(await this.createEmailButton);
       await (await this.createEmailButton).waitForDisplayed();
     }
     await ElementHelper.waitAndClick(await this.createEmailButton, 1000); // delay needed on M1
@@ -81,19 +88,20 @@ class MailFolderScreen extends BaseScreen {
   }
 
   checkInboxScreen = async () => {
-    await (await this.inboxHeader).waitForDisplayed();
-    if (await (await this.createEmailButton).isDisplayed() !== true) {
-      await TouchHelper.scrollDown();
-      await (await this.createEmailButton).waitForDisplayed();
-    }
-  }
-
-  scrollDown = async () => {
-    await TouchHelper.scrollDown();
+    await expect(await this.inboxHeader).toBeDisplayed();
+    await expect(await this.searchIcon).toBeDisplayed();
+    await expect(await this.helpIcon).toBeDisplayed()
   }
 
   clickSearchButton = async () => {
     await ElementHelper.waitAndClick(await this.searchIcon, 1000); // delay needed on M1
+  }
+
+  searchEmailBySubject = async (subject: string) => {
+    await this.clickSearchButton();
+    await (await this.searchField).setValue(`subject: '${subject}'`);
+    const selector = `~${subject}`;
+    await expect(await $(selector)).toBeDisplayed();
   }
 }
 
