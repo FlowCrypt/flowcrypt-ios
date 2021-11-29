@@ -71,5 +71,15 @@ describe('INBOX: ', () => {
     await EmailScreen.checkEncryptionBadge('not encrypted');
     await EmailScreen.checkSignatureBadge('bad signature');
     await EmailScreen.clickBackButton();
+
+    await SearchScreen.clickBackButton();
+
+    // partially signed only message
+    await MailFolderScreen.clickSearchButton();
+    await SearchScreen.searchAndClickEmailBySubject('Partially signed only message');
+
+    await EmailScreen.checkEncryptionBadge('not encrypted');
+    await EmailScreen.checkSignatureBadge('only partially signed');
+    await EmailScreen.clickBackButton();
   });
 });
