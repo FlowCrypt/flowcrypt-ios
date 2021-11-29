@@ -8,7 +8,8 @@ const SELECTORS = {
   CREATE_EMAIL_BUTTON: '-ios class chain:**/XCUIElementTypeButton[`label == "+"`]',
   INBOX_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "INBOX"`]',
   SEARCH_ICON: '~search icn',
-  HELP_ICON: '~help icn'
+  HELP_ICON: '~help icn',
+  SEARCH_FIELD: '~searchAllEmailField'
 };
 
 class MailFolderScreen extends BaseScreen {
@@ -40,6 +41,10 @@ class MailFolderScreen extends BaseScreen {
     return $(SELECTORS.CREATE_EMAIL_BUTTON);
   }
 
+  get searchField() {
+    return $(SELECTORS.SEARCH_FIELD);
+  }
+
   checkTrashScreen = async () => {
     await expect(await this.trashHeader).toBeDisplayed();
     await expect(await this.searchIcon).toBeDisplayed();
@@ -61,7 +66,6 @@ class MailFolderScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
-    await expect(await this.helpIcon).toBeDisplayed();
     const selector = `~${subject}`;
     if (await (await $(selector)).isDisplayed() !== true) {
       await TouchHelper.scrollDownToElement(await $(selector));
@@ -87,6 +91,17 @@ class MailFolderScreen extends BaseScreen {
     await expect(await this.inboxHeader).toBeDisplayed();
     await expect(await this.searchIcon).toBeDisplayed();
     await expect(await this.helpIcon).toBeDisplayed()
+  }
+
+  clickSearchButton = async () => {
+    await ElementHelper.waitAndClick(await this.searchIcon, 1000); // delay needed on M1
+  }
+
+  searchEmailBySubject = async (subject: string) => {
+    await this.clickSearchButton();
+    await (await this.searchField).setValue(`subject: '${subject}'`);
+    const selector = `~${subject}`;
+    await expect(await $(selector)).toBeDisplayed();
   }
 }
 
