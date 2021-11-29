@@ -66,6 +66,7 @@ class MailFolderScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
+    await expect(await this.helpIcon).toBeDisplayed();
     const selector = `~${subject}`;
     if (await (await $(selector)).isDisplayed() !== true) {
       await TouchHelper.scrollDownToElement(await $(selector));

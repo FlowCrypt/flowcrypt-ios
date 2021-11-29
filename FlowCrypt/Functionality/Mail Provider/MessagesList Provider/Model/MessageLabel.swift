@@ -49,6 +49,15 @@ enum MessageLabelType: Equatable, Hashable {
     }
 }
 
+extension MessageLabelType {
+    var isInbox: Bool {
+        guard case .inbox = self else {
+            return false
+        }
+        return true
+    }
+}
+
 // MARK: - IMAP Flags
 extension MessageLabelType {
     // swiftlint:disable cyclomatic_complexity
