@@ -34,23 +34,24 @@ class TouchHelper {
   static scrollDownToElement = async (element: WebdriverIO.Element) => {
     const { width, height } = await driver.getWindowSize();
     const anchor = width / 2;
-    const startPoint = height * 0.25;
+    const startPoint = height * 0.75;
     const endPoint = height * 0.15;
-    let index = 0;
 
-    do {
-      await browser.pause(1000); // due to scroll action which takes about second
+    // this wait can be later replaced by waiting for loader to go away before scrolling
+    await browser.pause(1000); // make sure contents are loaded first, so we don't scroll too early
+    for(let i = 0; i < 15; i++) {
+      if (await (await element).isDisplayed()) {
+        return;
+      }
       await driver.touchPerform([
         {action: 'press', options: {x: anchor, y: startPoint}},
         {action: 'wait', options: {ms: 100}},
         {action: 'moveTo', options: {x: anchor, y: endPoint}},
         {action: 'release', options: {}},
       ]);
-    } while (await (await element).isDisplayed() !== true  && index++ < 14);
-
-    if(index === 15) throw new Error(`Element ${JSON.stringify(element.selector)} doesn't displayed after scroll`);
+      await browser.pause(1000); // due to scroll action which takes about second
+    }
+    throw new Error(`Element ${JSON.stringify(element.selector)} not displayed after scroll`);
   }
-
 }
-
 export default TouchHelper;
