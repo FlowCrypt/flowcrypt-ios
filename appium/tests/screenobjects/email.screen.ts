@@ -13,7 +13,9 @@ const SELECTORS = {
   FORWARD_BUTTON: '~Forward',
   DELETE_BUTTON: '~Delete',
   CONFIRM_DELETING: '~OK',
-  SENDER_EMAIL: '~senderEmail'
+  SENDER_EMAIL: '~senderEmail',
+  ENCRYPTION_BADGE: '~encryptionBadge',
+  SIGNATURE_BADGE: '~signatureBadge'
 };
 
 
@@ -63,7 +65,15 @@ class EmailScreen extends BaseScreen {
   }
 
   get senderEmail() {
-      return $(SELECTORS.SENDER_EMAIL);
+    return $(SELECTORS.SENDER_EMAIL);
+  }
+
+  get encryptionBadge() {
+    return $(SELECTORS.ENCRYPTION_BADGE);
+  }
+
+  get signatureBadge() {
+    return $(SELECTORS.SIGNATURE_BADGE);
   }
 
   checkEmailAddress = async (email: string) => {
@@ -136,7 +146,17 @@ class EmailScreen extends BaseScreen {
   }
 
   confirmDelete = async () => {
-    await ElementHelper.waitAndClick(await this.confirmDeletingButton)
+    await ElementHelper.waitAndClick(await this.confirmDeletingButton);
+  }
+
+  checkEncryptionBadge = async (value: string) => {
+    await (await this.encryptionBadge).waitForDisplayed();
+    await expect(await this.encryptionBadge).toHaveText(value);
+  }
+
+  checkSignatureBadge = async (value: string) => {
+    await (await this.signatureBadge).waitForDisplayed();
+    await expect(await this.signatureBadge).toHaveText(value);
   }
 }
 
