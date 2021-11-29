@@ -53,5 +53,6 @@ extension String {
     static let subject = "subject"
     static let date = "date"
     static let to = "to"
+    static let cc = "cc"
     static let identifier = "Message-ID"
 }

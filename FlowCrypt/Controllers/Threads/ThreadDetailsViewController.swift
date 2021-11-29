@@ -429,29 +429,30 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return MessageSubjectNode(subject.attributed(.medium(18)))
             }
 
-            let section = self.input[indexPath.section-1]
+            let message = self.input[indexPath.section-1]
 
             if indexPath.row == 0 {
                 return ThreadMessageSenderCellNode(
-                    input: .init(threadMessage: section),
+                    input: .init(threadMessage: message),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
                     onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) }
                 )
             }
 
-            if indexPath.row == 1, let message = section.processedMessage {
-                return MessageTextSubjectNode(message.attributedMessage)
-            }
-
-            if indexPath.row > 1, let message = section.processedMessage {
-                let attachment = message.attachments[indexPath.row - 2]
-                return AttachmentNode(
-                    input: .init(
-                        msgAttachment: attachment,
-                        index: indexPath.row - 2
-                    ),
-                    onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
-                )
+            if let processedMessage = message.processedMessage {
+                if indexPath.row == 1 {
+                    return MessageTextSubjectNode(processedMessage.attributedMessage)
+                } else if indexPath.row > 1 {
+                    let attachmentIndex = indexPath.row - 2
+                    let attachment = processedMessage.attachments[attachmentIndex]
+                    return AttachmentNode(
+                        input: .init(
+                            msgAttachment: attachment,
+                            index: attachmentIndex
+                        ),
+                        onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
+                    )
+                }
             }
 
             return ASCellNode()

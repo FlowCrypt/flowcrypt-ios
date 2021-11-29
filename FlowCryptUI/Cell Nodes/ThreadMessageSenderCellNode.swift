@@ -14,6 +14,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
         public let encryptionBadge: BadgeNode.Input
         public let signatureBadge: BadgeNode.Input?
         public let sender: NSAttributedString
+        public let recipient: NSAttributedString
         public let date: NSAttributedString?
         public let isExpanded: Bool
         public let buttonColor: UIColor
@@ -22,6 +23,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
         public init(encryptionBadge: BadgeNode.Input,
                     signatureBadge: BadgeNode.Input?,
                     sender: NSAttributedString,
+                    recipient: NSAttributedString,
                     date: NSAttributedString,
                     isExpanded: Bool,
                     buttonColor: UIColor,
@@ -29,6 +31,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
             self.encryptionBadge = encryptionBadge
             self.signatureBadge = signatureBadge
             self.sender = sender
+            self.recipient = recipient
             self.date = date
             self.isExpanded = isExpanded
             self.buttonColor = buttonColor
@@ -54,6 +57,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
     }()
 
     private let senderNode = ASTextNode2()
+    private let recipientNode = ASTextNode2()
     private let dateNode = ASTextNode2()
 
     public private(set) var replyNode = ASButtonNode()
@@ -74,9 +78,12 @@ public final class ThreadMessageSenderCellNode: CellNode {
         automaticallyManagesSubnodes = true
 
         senderNode.attributedText = input.sender
-        senderNode.accessibilityIdentifier = "senderEmail"
-        dateNode.attributedText = input.date
+        senderNode.accessibilityIdentifier = "messageSenderLabel"
 
+        recipientNode.attributedText = input.recipient
+        recipientNode.accessibilityIdentifier = "messageRecipientLabel"
+
+        dateNode.attributedText = input.date
 
         setupReplyNode()
         setupMenuNode()
@@ -131,7 +138,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
             spacing: 4,
             justifyContent: .spaceBetween,
             alignItems: .start,
-            children: [senderNode, dateNode]
+            children: [senderNode, recipientNode, dateNode]
         )
         infoNode.style.flexGrow = 1
         infoNode.style.flexShrink = 1

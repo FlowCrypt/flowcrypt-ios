@@ -13,7 +13,7 @@ const SELECTORS = {
   FORWARD_BUTTON: '~Forward',
   DELETE_BUTTON: '~Delete',
   CONFIRM_DELETING: '~OK',
-  SENDER_EMAIL: '~senderEmail',
+  SENDER_EMAIL: '~messageSenderLabel',
   ENCRYPTION_BADGE: '~encryptionBadge',
   SIGNATURE_BADGE: '~signatureBadge'
 };
