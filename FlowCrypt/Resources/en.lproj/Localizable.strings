@@ -33,8 +33,10 @@
 "message_encrypted" = "encrypted";
 "message_not_encrypted" = "not encrypted";
 "message_signed" = "signed";
+"message_signature_good_mixed" = "signed with mixed keys";
 "message_not_signed" = "not signed";
 "message_missing_pubkey" = "no public key %@";
+"message_signature_partial" = "only partially signed";
 "message_signature_verify_error" = "cannot verify signature: %@";
 "message_bad_signature" = "bad signature";
 "message_signature_pending" = "verifying signature...";
