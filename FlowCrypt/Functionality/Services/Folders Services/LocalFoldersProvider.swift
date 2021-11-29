@@ -18,7 +18,7 @@ protocol LocalFoldersProviderType {
 struct LocalFoldersProvider: LocalFoldersProviderType {
     private let folderCache: EncryptedCacheService<FolderRealmObject>
 
-    init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
+    init(encryptedStorage: EncryptedStorageType) {
         self.folderCache = EncryptedCacheService(encryptedStorage: encryptedStorage)
     }
 

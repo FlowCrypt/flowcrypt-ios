@@ -48,14 +48,13 @@ enum SessionType: CustomStringConvertible {
 
 // MARK: - DataService
 final class DataService {
-    static let shared = DataService()
 
     private let encryptedStorage: EncryptedStorageType
     private let localStorage: LocalStorageType
     private let migrationService: DBMigration
 
     private init(
-        encryptedStorage: EncryptedStorageType = EncryptedStorage(),
+        encryptedStorage: EncryptedStorageType,
         localStorage: LocalStorageType = LocalStorage()
     ) {
         self.encryptedStorage = encryptedStorage

@@ -28,7 +28,7 @@ final class UserAccountService {
     private lazy var logger = Logger.nested(Self.self)
 
     init(
-        encryptedStorage: EncryptedStorageType & LogOutHandler = EncryptedStorage(),
+        encryptedStorage: EncryptedStorageType & LogOutHandler,
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
         dataService: DataServiceType = DataService.shared,
         imap: Imap = .shared,

@@ -18,7 +18,7 @@ protocol LocalClientConfigurationType {
 
 struct LocalClientConfiguration {
     let cache: EncryptedCacheService<ClientConfigurationRealmObject>
-    init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
+    init(encryptedStorage: EncryptedStorageType) {
         self.cache = EncryptedCacheService(encryptedStorage: encryptedStorage)
     }
 }

@@ -51,13 +51,13 @@ final class EncryptedStorage: EncryptedStorageType {
         static let encryptedDbFilename = "encrypted.realm"
     }
 
-    private let keychainService: KeyChainServiceType
-
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
     private let currentSchema: EncryptedStorageSchema = .version5
     private let supportedSchemas = EncryptedStorageSchema.allCases
+    
+    private let storageEncryptionKey: Data
 
     var storage: Realm {
         do {
@@ -70,8 +70,8 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    init(keychainHelper: KeyChainServiceType = KeyChainService()) {
-        self.keychainService = KeyChainService()
+    init(storageEncryptionKey: Data) {
+        self.storageEncryptionKey = storageEncryptionKey
     }
 
     private func getDocumentDirectory() -> String {
@@ -83,12 +83,11 @@ final class EncryptedStorage: EncryptedStorageType {
 
     private func getConfiguration() throws -> Realm.Configuration {
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        let key = try keychainService.getStorageEncryptionKey()
         let latestSchemaVersion = currentSchema.version.dbSchemaVersion
 
         return Realm.Configuration(
             fileURL: URL(fileURLWithPath: path),
-            encryptionKey: key,
+            encryptionKey: storageEncryptionKey,
             schemaVersion: latestSchemaVersion,
             migrationBlock: { [weak self] migration, oldSchemaVersion in
                 self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)

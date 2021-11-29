@@ -77,7 +77,7 @@ final class PassPhraseService: PassPhraseServiceType {
     let inMemoryStorage: PassPhraseStorageType
 
     init(
-        encryptedStorage: PassPhraseStorageType = EncryptedStorage(),
+        encryptedStorage: PassPhraseStorageType,
         localStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
         emailProvider: EmailProviderType = DataService.shared
     ) {

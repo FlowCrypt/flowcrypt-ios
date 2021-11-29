@@ -54,9 +54,17 @@ final class GlobalRouter {
 extension GlobalRouter: GlobalRouterType {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        validateEncryptedStorage {
-            userAccountService.cleanupSessions()
-            proceed(with: nil)
+        do {
+            let keyChainService = KeyChainService()
+            let encryptedStorage = EncryptedStorage(
+                storageEncryptionKey: try keyChainService.getStorageEncryptionKey()
+            )
+            validateEncryptedStorage(encryptedStorage) {
+                userAccountService.cleanupSessions()
+                proceed(with: nil)
+            }
+        } catch {
+            fatalError("todo - need to handle more gracefully, with fatal error view")
         }
     }
 
@@ -124,15 +132,17 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func validateEncryptedStorage(_ completion: () -> Void) {
-        let storage = EncryptedStorage()
+    private func validateEncryptedStorage(
+        _ encryptedStorage: EncryptedStorageType,
+        _ completion: () -> Void
+    ) {
         do {
-            try storage.validate()
+            try encryptedStorage.validate()
             completion()
         } catch {
             let controller = InvalidStorageViewController(
                 error: error,
-                encryptedStorage: storage,
+                encryptedStorage: encryptedStorage,
                 router: self
             )
             keyWindow.rootViewController = UINavigationController(rootViewController: controller)
