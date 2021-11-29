@@ -4,17 +4,13 @@ import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
   BACK_BUTTON: '~arrow left c',
   SCREEN: '~searchViewController',
-  SEARCH_FIELD: '~searchField'  
+  SEARCH_FIELD: '~searchAllEmailField'
 };
 
 class SearchScreen extends BaseScreen {
   constructor() {
     super(SELECTORS.SCREEN);
   }
-
-  get screen() {
-    return $(SELECTORS.SCREEN)
-  }  
 
   get backButton() {
     return $(SELECTORS.BACK_BUTTON)
@@ -24,12 +20,8 @@ class SearchScreen extends BaseScreen {
     return $(SELECTORS.SEARCH_FIELD);
   }
 
-  checkScreen = async () => {
-    await browser.pause(2000);
-    await (await this.screen).waitForDisplayed();
-  }
-
   clickBackButton = async () => {
+    await browser.pause(2000);
     await ElementHelper.waitAndClick(await this.backButton);
   }
 
