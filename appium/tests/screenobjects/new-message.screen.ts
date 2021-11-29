@@ -104,8 +104,8 @@ class NewMessageScreen extends BaseScreen {
   };
 
   checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string, attachmentName?: string) => {
-    expect(this.composeSecurityMessage).toHaveText(message);
-    
+    expect(this.composeSecurityMessage).toHaveTextContaining(message);
+
     const element = await this.filledSubject(subject);
     await element.waitForDisplayed();
 

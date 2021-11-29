@@ -244,6 +244,8 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
                 alignment: .left
             )
         searchController.searchBar.searchTextField.textColor = .white
+        searchController.searchBar.searchTextField.accessibilityIdentifier = "searchAllEmailField"
+
     }
 }
 
