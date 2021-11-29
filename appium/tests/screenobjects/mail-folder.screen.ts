@@ -9,7 +9,7 @@ const SELECTORS = {
   INBOX_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "INBOX"`]',
   SEARCH_ICON: '~search icn',
   HELP_ICON: '~help icn',
-  SEARCH_FIELD: '~Search All Mail'
+  SEARCH_FIELD: '~searchAllEmailField'
 };
 
 class MailFolderScreen extends BaseScreen {
@@ -66,7 +66,6 @@ class MailFolderScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
-    await expect(await this.helpIcon).toBeDisplayed();
     const selector = `~${subject}`;
     if (await (await $(selector)).isDisplayed() !== true) {
       await TouchHelper.scrollDownToElement(await $(selector));
