@@ -29,7 +29,9 @@ class InboxMessageThreadsProvider: InboxDataProvider {
 
     override func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
-        let inboxData = result.threads.map(InboxRenderable.init)
+        let inboxData = result.threads.map { thread in
+            return InboxRenderable(thread: thread, folderPath: context.folderPath ?? "")
+        }
         let inboxContext = InboxContext(
             data: inboxData,
             pagination: result.pagination

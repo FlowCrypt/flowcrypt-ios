@@ -352,7 +352,7 @@ extension ThreadDetailsViewController {
 extension ThreadDetailsViewController: MessageActionsHandler {
     private func handleSuccessfulMessage(action: MessageAction) {
         hideSpinner()
-        onComplete(action, .init(thread: thread))
+        onComplete(action, .init(thread: thread, folderPath: currentFolderPath))
         navigationController?.popViewController(animated: true)
     }
 
@@ -488,7 +488,7 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
         logger.logInfo("Back button. Are all messages read \(isRead) ")
-        onComplete(MessageAction.markAsRead(isRead), .init(thread: thread))
+        onComplete(MessageAction.markAsRead(isRead), .init(thread: thread, folderPath: currentFolderPath))
         navigationController?.popViewController(animated: true)
     }
 }
