@@ -112,13 +112,13 @@ final class MessageService {
     init(
         appContext: AppContext,
         clientConfiguration: ClientConfiguration,
-        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
+        messageProvider: MessageProvider? = nil,
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
         contactsService: ContactsServiceType? = nil
     ) {
         self.appContext = appContext
-        self.messageProvider = messageProvider
+        self.messageProvider = messageProvider ?? appContext.getRequiredMailProvider().messageProvider
         self.core = core
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
         self.keyMethods = keyMethods

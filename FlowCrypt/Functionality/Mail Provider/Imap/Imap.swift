@@ -21,7 +21,7 @@ final class Imap: MailServiceProvider {
 
     lazy var logger = Logger.nested(Self.self)
 
-    private init(
+    init(
         dataService: ImapSessionProvider & DataServiceType,
         helper: ImapHelperType = ImapHelper(),
         messageKindProvider: MessageKindProviderType = MessageKindProvider()

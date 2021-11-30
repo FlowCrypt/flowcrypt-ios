@@ -51,6 +51,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
     private var accounts: [User] { appContext.dataService.validAccounts() }
+    private let currentUser: User
 
     private let tableNode: ASTableNode
 
@@ -65,13 +66,20 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         appContext: AppContext,
-        foldersProvider: FoldersServiceType = FoldersService(),
+        foldersProvider: FoldersServiceType? = nil,
         globalRouter: GlobalRouterType = GlobalRouter(),
         decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("no current user") // todo - dependency-inject
+        }
+        self.currentUser = currentUser
         self.appContext = appContext
-        self.foldersProvider = foldersProvider
+        self.foldersProvider = foldersProvider ?? FoldersService(
+            encryptedStorage: appContext.encryptedStorage,
+            remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
+        )
         self.router = globalRouter
         self.decorator = decorator
         self.tableNode = tableNode
@@ -173,7 +181,7 @@ extension MyMenuViewController {
         showSpinner()
         Task {
             do {
-                let folders = try await foldersProvider.fetchFolders(isForceReload: true)
+                let folders = try await foldersProvider.fetchFolders(isForceReload: true, for: self.currentUser)
                 handleNewFolders(with: folders)
             } catch {
                 handleError(with: error)

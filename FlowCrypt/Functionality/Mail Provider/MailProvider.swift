@@ -78,10 +78,11 @@ final class MailProvider {
 
     init(
         currentAuthType: AuthType,
-        currentUserEmail: String
+        currentUserEmail: String,
+        dataService: DataServiceType
     ) {
         self.currentAuthType = currentAuthType
-        self.services = MailServiceProviderFactory.services(currentUserEmail: currentUserEmail)
+        self.services = MailServiceProviderFactory.services(currentUserEmail: currentUserEmail, dataService: dataService)
     }
 
     private func resolveService<T>(of type: T.Type) -> T {
@@ -100,9 +101,12 @@ final class MailProvider {
 }
 
 private struct MailServiceProviderFactory {
-    static func services(currentUserEmail: String) -> [MailServiceProvider] {
+    static func services(
+        currentUserEmail: String,
+        dataService: DataServiceType
+    ) -> [MailServiceProvider] {
         [
-            Imap.shared,
+            Imap(dataService: dataService), // todo - dunno
             GmailService(currentUserEmail: currentUserEmail)
         ]
     }

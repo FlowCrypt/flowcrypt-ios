@@ -48,11 +48,13 @@ final class SearchViewController: TableNodeViewController {
 
     init(
         appContext: AppContext,
-        searchProvider: MessageSearchProvider = MailProvider.shared.messageSearchProvider,
+        searchProvider: MessageSearchProvider? = nil,
         folderPath: String
     ) {
         self.appContext = appContext
-        self.service = ServiceActor(searchProvider: searchProvider)
+        self.service = ServiceActor(
+            searchProvider: searchProvider ?? appContext.getRequiredMailProvider().messageSearchProvider
+        )
         self.folderPath = folderPath
         super.init(node: TableNode())
     }
