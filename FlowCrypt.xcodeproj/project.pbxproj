@@ -381,6 +381,7 @@
 		E26D5E182756E07F007B8802 /* DBMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAF3025DFB8E1009E98D4 /* DBMigrationService.swift */; };
 		E26D5E192756E0AC007B8802 /* UIViewController+Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518389C72726D7DD00131B2C /* UIViewController+Spinner.swift */; };
 		E26D5E1A2756E19B007B8802 /* Imap+Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9362182573D10E0009912F /* Imap+Message.swift */; };
+		E26D5E1B2756E1E8007B8802 /* Gmail+Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93623E2573D16F0009912F /* Gmail+Message.swift */; };
 		E2A601A12756880B00DCC9A7 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		E2A601A22756A4E400DCC9A7 /* IMAPConnectionParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1322433753100DB4065 /* IMAPConnectionParameters.swift */; };
 		E2A601A32756A60700DCC9A7 /* SMTPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1342433753B00DB4065 /* SMTPSession.swift */; };
@@ -2741,6 +2742,7 @@
 				E2A601F42756A99600DCC9A7 /* Gmail+MessagesList.swift in Sources */,
 				E2A602062756A9CB00DCC9A7 /* LocalContactsProvider.swift in Sources */,
 				E26D5E192756E0AC007B8802 /* UIViewController+Spinner.swift in Sources */,
+				E26D5E1B2756E1E8007B8802 /* Gmail+Message.swift in Sources */,
 				E2A601AC2756A6CA00DCC9A7 /* KeyInfoRealmObject.swift in Sources */,
 				9F97653D267E17C90058419D /* LocalStorageTests.swift in Sources */,
 				A34D222A27294C67004E0220 /* PubLookupTest.swift in Sources */,
