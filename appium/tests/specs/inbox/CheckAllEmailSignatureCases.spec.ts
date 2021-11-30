@@ -59,7 +59,8 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject('Signed only message where the pubkey is not available');
 
-    await EmailScreen.checkEncryptionBadge('decrypt error');
+    await EmailScreen.checkEncryptionBadge('not encrypted');
+    await EmailScreen.checkSignatureBadge('cannot verify signature: no public key A54D82BE1521D20E');
     await EmailScreen.clickBackButton();
 
     await SearchScreen.clickBackButton();
