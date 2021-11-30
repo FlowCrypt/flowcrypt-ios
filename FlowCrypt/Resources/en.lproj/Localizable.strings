@@ -16,6 +16,8 @@
 "later" = "Later";
 "forward" = "Forward";
 "to" = "to";
+"cc" = "cc";
+"bcc" = "bcc";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";

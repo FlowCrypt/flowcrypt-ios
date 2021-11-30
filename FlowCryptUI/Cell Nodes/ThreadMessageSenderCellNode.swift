@@ -14,26 +14,38 @@ public final class ThreadMessageSenderCellNode: CellNode {
         public let encryptionBadge: BadgeNode.Input
         public let signatureBadge: BadgeNode.Input?
         public let sender: NSAttributedString
-        public let recipient: NSAttributedString
+        public let recipientLabel: NSAttributedString
+        public let recipients: [String]
+        public let ccRecipients: [String]
+        public let bccRecipients: [String]
         public let date: NSAttributedString?
         public let isExpanded: Bool
+        public let shouldShowRecipientsList: Bool
         public let buttonColor: UIColor
         public let nodeInsets: UIEdgeInsets
 
         public init(encryptionBadge: BadgeNode.Input,
                     signatureBadge: BadgeNode.Input?,
                     sender: NSAttributedString,
-                    recipient: NSAttributedString,
+                    recipientLabel: NSAttributedString,
+                    recipients: [String],
+                    ccRecipients: [String],
+                    bccRecipients: [String],
                     date: NSAttributedString,
                     isExpanded: Bool,
+                    shouldShowRecipientsList: Bool,
                     buttonColor: UIColor,
                     nodeInsets: UIEdgeInsets) {
             self.encryptionBadge = encryptionBadge
             self.signatureBadge = signatureBadge
             self.sender = sender
-            self.recipient = recipient
+            self.recipientLabel = recipientLabel
+            self.recipients = recipients
+            self.ccRecipients = ccRecipients
+            self.bccRecipients = bccRecipients
             self.date = date
             self.isExpanded = isExpanded
+            self.shouldShowRecipientsList = shouldShowRecipientsList
             self.buttonColor = buttonColor
             self.nodeInsets = nodeInsets
         }
@@ -57,7 +69,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
     }()
 
     private let senderNode = ASTextNode2()
-    private let recipientNode = ASTextNode2()
+    private let recipientNode = ASButtonNode()
     private let dateNode = ASTextNode2()
 
     public private(set) var replyNode = ASButtonNode()
@@ -65,22 +77,32 @@ public final class ThreadMessageSenderCellNode: CellNode {
     public private(set) var expandNode = ASImageNode()
 
     private let input: ThreadMessageSenderCellNode.Input
-    private var onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?
-    private var onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?
+
+    private let onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?
+    private let onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?
+    private let onRecipientsTap: ((ThreadMessageSenderCellNode) -> Void)?
+
+    private enum RecipientType: String, CaseIterable {
+        case to, cc, bcc
+    }
 
     public init(input: ThreadMessageSenderCellNode.Input,
                 onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?,
-                onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?) {
+                onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?,
+                onRecipientsTap: ((ThreadMessageSenderCellNode) -> Void)?) {
         self.input = input
         self.onReplyTap = onReplyTap
         self.onMenuTap = onMenuTap
+        self.onRecipientsTap = onRecipientsTap
+
         super.init()
         automaticallyManagesSubnodes = true
 
         senderNode.attributedText = input.sender
         senderNode.accessibilityIdentifier = "messageSenderLabel"
 
-        recipientNode.attributedText = input.recipient
+        recipientNode.setAttributedTitle(input.recipientLabel, for: .normal)
+        recipientNode.addTarget(self, action: #selector(onRecipientsNodeTap), forControlEvents: .touchUpInside)
         recipientNode.accessibilityIdentifier = "messageRecipientLabel"
 
         dateNode.attributedText = input.date
@@ -128,17 +150,85 @@ public final class ThreadMessageSenderCellNode: CellNode {
         onMenuTap?(self)
     }
 
+    @objc private func onRecipientsNodeTap() {
+        onRecipientsTap?(self)
+    }
+
+    private func recipientList(label: String, recipients: [String]) -> ASStackLayoutSpec? {
+        guard recipients.isNotEmpty else { return nil }
+
+        let labelNode = ASTextNode2()
+        labelNode.attributedText = label.localizedCapitalized.attributed()
+        labelNode.style.preferredSize = CGSize(width: 40, height: 20)
+
+        let children: [ASDisplayNode] = recipients.map {
+            let node = ASTextNode2()
+            node.attributedText = $0.attributed()
+            return node
+        }
+
+        let recipientsList = ASStackLayoutSpec(
+            direction: .vertical,
+            spacing: 4,
+            justifyContent: .start,
+            alignItems: .start,
+            children: children
+        )
+
+        return ASStackLayoutSpec(
+            direction: .horizontal,
+            spacing: 4,
+            justifyContent: .spaceBetween,
+            alignItems: .start,
+            children: [labelNode, recipientsList]
+        )
+    }
+
+    private var recipientsListNode: ASStackLayoutSpec {
+        let recipientsNodes: [ASStackLayoutSpec] = RecipientType.allCases.compactMap { type in
+            let recipients: [String]
+            switch type {
+            case .to:
+                recipients = input.recipients
+            case .cc:
+                recipients = input.ccRecipients
+            case .bcc:
+                recipients = input.bccRecipients
+            }
+            return recipientList(label: type.rawValue, recipients: recipients)
+        }
+
+        return ASStackLayoutSpec(
+            direction: .vertical,
+            spacing: 4,
+            justifyContent: .spaceBetween,
+            alignItems: .start,
+            children: recipientsNodes
+        )
+    }
+
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
         menuNode.style.preferredSize = CGSize(width: 36, height: 44)
         expandNode.style.preferredSize = CGSize(width: 36, height: 44)
+
+        let infoChildren: [ASLayoutElement]
+        if input.isExpanded {
+            if input.shouldShowRecipientsList {
+                infoChildren = [senderNode, recipientNode, recipientsListNode, dateNode]
+            } else {
+                infoChildren = [senderNode, recipientNode, dateNode]
+            }
+        } else {
+            infoChildren = [senderNode, dateNode]
+        }
 
         let infoNode = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 4,
             justifyContent: .spaceBetween,
             alignItems: .start,
-            children: [senderNode, recipientNode, dateNode]
+            children: infoChildren
         )
         infoNode.style.flexGrow = 1
         infoNode.style.flexShrink = 1

@@ -149,6 +149,7 @@ extension Message {
         var subject: String?
         var recipient: String?
         var cc: String?
+        var bcc: String?
 
         messageHeaders.compactMap({ $0 }).forEach {
             guard let name = $0.name?.lowercased() else { return }
@@ -158,6 +159,7 @@ extension Message {
             case .subject: subject = value
             case .to: recipient = value
             case .cc: cc = value
+            case .bcc: bcc = value
             default: break
             }
         }
@@ -181,7 +183,8 @@ extension Message {
             draftIdentifier: draftIdentifier,
             raw: message.raw,
             recipient: recipient,
-            cc: cc
+            cc: cc,
+            bcc: bcc
         )
     }
 }

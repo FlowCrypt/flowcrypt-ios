@@ -18,11 +18,13 @@ final class ThreadDetailsViewController: TableNodeViewController {
     class Input {
         var rawMessage: Message
         var isExpanded: Bool
+        var shouldShowRecipientsList: Bool
         var processedMessage: ProcessedMessage?
 
-        init(message: Message, isExpanded: Bool) {
+        init(message: Message, isExpanded: Bool = false, shouldShowRecipientsList: Bool = false) {
             self.rawMessage = message
             self.isExpanded = isExpanded
+            self.shouldShowRecipientsList = shouldShowRecipientsList
         }
     }
 
@@ -66,7 +68,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.onComplete = completion
         self.input = thread.messages
             .sorted(by: >)
-            .map { Input(message: $0, isExpanded: false) }
+            .map { Input(message: $0) }
 
         super.init(node: TableNode())
     }
@@ -124,6 +126,14 @@ extension ThreadDetailsViewController {
         }
     }
 
+    private func handleRecipientsTap(at indexPath: IndexPath) {
+        input[indexPath.section - 1].shouldShowRecipientsList.toggle()
+
+        UIView.animate(withDuration: 0.3) {
+            self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
+        }
+    }
+
     private func handleReplyTap(at indexPath: IndexPath) {
         composeNewMessage(at: indexPath, quoteType: .reply)
     }
@@ -161,7 +171,7 @@ extension ThreadDetailsViewController {
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
             sender: input.rawMessage.sender,
-            subject: "\(quoteType.subjectPrefix)\(subject)",
+            subject: [quoteType.subjectPrefix, subject].joined(),
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
@@ -435,7 +445,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return ThreadMessageSenderCellNode(
                     input: .init(threadMessage: message),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
-                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) }
+                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) },
+                    onRecipientsTap: { [weak self] _ in self?.handleRecipientsTap(at: indexPath) }
                 )
             }
 

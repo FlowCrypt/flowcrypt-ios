@@ -16,6 +16,7 @@ struct Message: Hashable {
     let sender: String?
     let recipient: String?
     let cc: String?
+    let bcc: String?
     let subject: String?
     let size: Int?
     let attachmentIds: [String]
@@ -49,7 +50,8 @@ struct Message: Hashable {
         draftIdentifier: String? = nil,
         raw: String? = nil,
         recipient: String? = nil,
-        cc: String? = nil
+        cc: String? = nil,
+        bcc: String? = nil
     ) {
         self.identifier = identifier
         self.date = date
@@ -63,6 +65,7 @@ struct Message: Hashable {
         self.raw = raw
         self.recipient = recipient
         self.cc = cc
+        self.bcc = bcc
     }
 }
 
@@ -89,7 +92,7 @@ extension Message {
     }
 
     var recipientsList: String {
-        [recipient, cc]
+        [recipient, cc, bcc]
             .compactMap { $0 }
             .flatMap { $0.components(separatedBy: ", ") }
             .compactMap {
