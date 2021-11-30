@@ -51,7 +51,6 @@ final class SetupInitialViewController: TableNodeViewController {
         .default
     }
 
-    private let backupService: BackupServiceType
     private let service: ServiceActor
     private let user: UserId
     private let router: GlobalRouterType
@@ -65,16 +64,13 @@ final class SetupInitialViewController: TableNodeViewController {
     init(
         appContext: AppContext,
         user: UserId,
-        backupService: BackupServiceType? = nil,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         emailKeyManagerApi: EmailKeyManagerApiType? = nil
     ) {
         self.appContext = appContext
         self.user = user
-        let backupService = backupService ?? appContext.getBackupService()
-        self.backupService = backupService
-        self.service = ServiceActor(backupService: backupService)
+        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.router = router
         self.decorator = decorator
         let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)

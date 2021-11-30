@@ -32,7 +32,6 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     private var selectedOption: BackupOption = .email {
         didSet { handleOptionChange() }
     }
-    private let backupService: BackupServiceType
     private let service: ServiceActor
     private let userId: UserId
     private let appContext: AppContext
@@ -47,9 +46,7 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
         self.appContext = appContext
         self.decorator = decorator
         self.backups = backups
-        let backupService = backupService ?? appContext.getBackupService()
-        self.service = ServiceActor(backupService: backupService)
-        self.backupService = backupService
+        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -124,7 +121,7 @@ extension BackupOptionsViewController {
     }
 
     private func backupAsFile() {
-        backupService.backupAsFile(keys: backups, for: self)
+        service.backupService.backupAsFile(keys: backups, for: self)
     }
 }
 
@@ -186,7 +183,7 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
 
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
-    private let backupService: BackupServiceType
+    let backupService: BackupServiceType
 
     init(backupService: BackupServiceType) {
         self.backupService = backupService

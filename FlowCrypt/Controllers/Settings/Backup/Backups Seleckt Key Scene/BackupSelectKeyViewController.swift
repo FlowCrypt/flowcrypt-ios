@@ -12,9 +12,8 @@ import Foundation
 
 @MainActor
 final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
-    
+
     private let appContext: AppContext
-    private let backupService: BackupServiceType
     private let service: ServiceActor
     private let decorator: BackupSelectKeyDecoratorType
     private var backupsContext: [(KeyDetails, Bool)]
@@ -24,17 +23,14 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
     init(
         appContext: AppContext,
         decorator: BackupSelectKeyDecoratorType = BackupSelectKeyDecorator(),
-        backupService: BackupServiceType? = nil,
         selectedOption: BackupOption,
         backups: [KeyDetails],
         userId: UserId
     ) {
         self.decorator = decorator
-        // set all selected bu default
+        // set all selected by default
         self.backupsContext = backups.map { ($0, true) }
-        let backupService = backupService ?? appContext.getBackupService()
-        self.service = ServiceActor(backupService: backupService)
-        self.backupService = backupService
+        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.selectedOption = selectedOption
         self.userId = userId
         self.appContext = appContext
@@ -104,7 +100,7 @@ extension BackupSelectKeyViewController {
     }
 
     private func backupAsFile() {
-        backupService.backupAsFile(keys: backupsContext.map(\.0), for: self)
+        service.backupService.backupAsFile(keys: backupsContext.map(\.0), for: self)
     }
 }
 
@@ -138,7 +134,7 @@ extension BackupSelectKeyViewController: ASTableDelegate, ASTableDataSource {
 
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
-    private let backupService: BackupServiceType
+    let backupService: BackupServiceType
 
     init(backupService: BackupServiceType) {
         self.backupService = backupService

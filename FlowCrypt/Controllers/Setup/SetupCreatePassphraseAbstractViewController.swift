@@ -27,7 +27,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
 
     let appContext: AppContext
     let decorator: SetupViewDecorator
-    let core: Core
+    let core: Core = Core.shared
     let router: GlobalRouterType
     let user: UserId
     let fetchedKeysCount: Int
@@ -51,14 +51,12 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         appContext: AppContext,
         user: UserId,
         fetchedKeysCount: Int = 0,
-        core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.appContext = appContext
         self.user = user
         self.fetchedKeysCount = fetchedKeysCount
-        self.core = core
         self.router = router
         self.decorator = decorator
         super.init(node: TableNode())

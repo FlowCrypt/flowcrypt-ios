@@ -44,18 +44,11 @@ final class BackupViewController: ASDKViewController<TableNode> {
     init(
         appContext: AppContext,
         decorator: BackupViewDecoratorType = BackupViewDecorator(),
-        backupProvider: BackupServiceType? = nil,
         userId: UserId
     ) {
         self.appContext = appContext
         self.decorator = decorator
-        self.service = ServiceActor(
-            // todo - rename backupProvider property name to backupService
-            backupProvider: BackupService(
-                backupProvider: appContext.getRequiredMailProvider().backupProvider,
-                messageSender: appContext.getRequiredMailProvider().messageSender
-            )
-        )
+        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -154,8 +147,8 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
 private actor ServiceActor {
     private let backupProvider: BackupServiceType
 
-    init(backupProvider: BackupServiceType) {
-        self.backupProvider = backupProvider
+    init(backupService: BackupServiceType) {
+        self.backupProvider = backupService
     }
 
     func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {

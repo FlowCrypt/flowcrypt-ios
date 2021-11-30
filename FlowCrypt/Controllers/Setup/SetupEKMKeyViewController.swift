@@ -33,7 +33,6 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
         appContext: AppContext,
         user: UserId,
         keys: [KeyDetails] = [],
-        core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
@@ -42,7 +41,6 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
             appContext: appContext,
             user: user,
             fetchedKeysCount: keys.count,
-            core: core,
             router: router,
             decorator: decorator
         )

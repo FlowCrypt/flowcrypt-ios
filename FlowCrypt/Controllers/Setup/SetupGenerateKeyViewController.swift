@@ -18,35 +18,28 @@ import FlowCryptUI
  */
 final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewController {
 
-    private let backupService: BackupServiceType
     private let attester: AttesterApiType
     private let service: Service
 
     init(
         appContext: AppContext,
         user: UserId,
-        backupService: BackupServiceType? = nil,
-        core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator(),
-        attester: AttesterApiType? = nil
+        decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
-        let backupService = backupService ?? appContext.getBackupService()
-        self.backupService = backupService
-        self.attester = attester ?? AttesterApi(
+        self.attester = AttesterApi(
             clientConfiguration: appContext.clientConfigurationService.getSaved(for: user.email)
         )
         self.service = Service(
             appContext: appContext,
             user: user,
-            backupService: backupService,
-            core: core,
+            backupService: appContext.getBackupService(),
+            core: Core.shared,
             attester: self.attester
         )
         super.init(
             appContext: appContext,
             user: user,
-            core: core,
             router: router,
             decorator: decorator
         )
