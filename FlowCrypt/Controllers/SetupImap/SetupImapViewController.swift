@@ -39,6 +39,7 @@ final class SetupImapViewController: TableNodeViewController {
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
         imap: Imap = Imap.shared
     ) {
+        self.appContext = appContext
         self.globalRouter = globalRouter
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials

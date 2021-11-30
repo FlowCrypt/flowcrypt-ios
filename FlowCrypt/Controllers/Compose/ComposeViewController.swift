@@ -49,7 +49,6 @@ final class ComposeViewController: TableNodeViewController {
     private let photosManager: PhotosManagerType
     private let keyMethods: KeyMethodsType
     private let service: ServiceActor
-    private let passPhraseService: PassPhraseService
     private let router: GlobalRouterType
 
     private let search = PassthroughSubject<String, Never>()
@@ -410,7 +409,7 @@ extension ComposeViewController {
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         // now figure out if the pass phrase also matched the signing prv itself
         let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
         return matched != nil// true if the pass phrase matched signing key

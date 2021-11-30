@@ -28,7 +28,6 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let keysStorage: KeyStorageType
     private let router: GlobalRouterType
 
     private var passPhrase: String?
@@ -49,7 +48,6 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(),
         router: GlobalRouterType = GlobalRouter(),
-        keyService: KeyServiceType = KeyService(),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
@@ -229,7 +227,7 @@ extension SetupManuallyEnterPassPhraseViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        let keyDetails = try await appContext.keyStorage.getPrvKeyDetails()
+        let keyDetails = try await appContext.keyService.getPrvKeyDetails()
         importKeys(with: keyDetails, and: passPhrase)
     }
 
@@ -237,8 +235,8 @@ extension SetupManuallyEnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        keysStorage.addKeys(keyDetails: newKeysToAdd, passPhrase: passPhrase, source: .imported, for: email)
-        keysStorage.updateKeys(keyDetails: keysToUpdate, passPhrase: passPhrase, source: .imported, for: email)
+        appContext.keyStorage.addKeys(keyDetails: newKeysToAdd, passPhrase: passPhrase, source: .imported, for: email)
+        appContext.keyStorage.updateKeys(keyDetails: keysToUpdate, passPhrase: passPhrase, source: .imported, for: email)
 
         if storageMethod == .memory {
             keysToUpdate
@@ -246,7 +244,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                     PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
-                    passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
+                    appContext.passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
                 }
 
             newKeysToAdd
@@ -254,7 +252,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                     PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
-                    passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
+                    appContext.passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
                 }
         }
 

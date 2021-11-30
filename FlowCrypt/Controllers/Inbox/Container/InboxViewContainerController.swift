@@ -29,6 +29,7 @@ final class InboxViewContainerController: TableNodeViewController {
         case loadedFolders([FolderViewModel])
     }
 
+    let appContext: AppContext
     let folderService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
 
@@ -37,9 +38,11 @@ final class InboxViewContainerController: TableNodeViewController {
     }
 
     init(
+        appContext: AppContext,
         folderService: FoldersServiceType = FoldersService(),
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
+        self.appContext = appContext
         self.folderService = folderService
         self.decorator = decorator
         super.init(node: TableNode())
@@ -99,7 +102,7 @@ final class InboxViewContainerController: TableNodeViewController {
                 return
             }
             let input = InboxViewModel(inbox)
-            let inboxViewController = InboxViewControllerFactory.make(with: input)
+            let inboxViewController = InboxViewControllerFactory.make(appContext: appContext, with: input)
             navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }

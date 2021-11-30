@@ -145,8 +145,7 @@ extension ThreadDetailsViewController {
     }
 
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
-        guard let email = appContext.dataService.currentUser?.email,
-              let input = input[safe: indexPath.section-1],
+        guard let input = input[safe: indexPath.section-1],
               let processedMessage = input.processedMessage
         else { return }
 

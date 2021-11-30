@@ -45,13 +45,12 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     private let appContext: AppContext
     private let foldersProvider: FoldersServiceType
-    private let dataService: DataServiceType
     private let router: GlobalRouterType
     private let decorator: MyMenuViewDecoratorType
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
-    private var accounts: [User] { dataService.validAccounts() }
+    private var accounts: [User] { appContext.dataService.validAccounts() }
 
     private let tableNode: ASTableNode
 
@@ -210,7 +209,7 @@ extension MyMenuViewController {
 // MARK: - Account functionality
 extension MyMenuViewController {
     private func addAccount() {
-        let vc = MainNavigationController(rootViewController: SignInViewController())
+        let vc = MainNavigationController(rootViewController: SignInViewController(appContext: appContext))
         present(vc, animated: true, completion: nil)
     }
 
@@ -245,7 +244,7 @@ extension MyMenuViewController {
         switch (section, state) {
         case (.header, _):
             let headerInput = decorator.header(
-                for: dataService.currentUser,
+                for: appContext.dataService.currentUser,
                 image: state.arrowImage
             )
             return TextImageNode(input: headerInput) { [weak self] node in
@@ -280,7 +279,7 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let viewController = InboxViewControllerFactory.make(with: input)
+            let viewController = InboxViewControllerFactory.make(appContext: appContext, with: input)
 
             if let topController = topController(controllerType: InboxViewController.self),
                topController.path == folder.path {

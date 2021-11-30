@@ -17,11 +17,11 @@ class AppStartup {
     }
 
     private let appContext: AppContext
-    
+
     init(appContext: AppContext) {
         self.appContext = appContext
     }
-    
+
     @MainActor
     func initializeApp(window: UIWindow) {
         logger.logInfo("Initialize application with session \(appContext.session.debugDescription)")
@@ -68,11 +68,11 @@ class AppStartup {
         switch entryPoint {
         case .mainFlow:
             let contentViewController = InboxViewContainerController()
-            viewController = SideMenuNavigationController(contentViewController: contentViewController)
+            viewController = SideMenuNavigationController(appContext: appContext, contentViewController: contentViewController)
         case .signIn:
             viewController = MainNavigationController(rootViewController: SignInViewController())
         case .setupFlow(let userId):
-            let setupViewController = SetupInitialViewController(user: userId)
+            let setupViewController = SetupInitialViewController(appContet: AppContext, user: userId)
             viewController = MainNavigationController(rootViewController: setupViewController)
         }
 
