@@ -92,6 +92,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 extension InboxViewController {
     private func setupUI() {
         title = inboxTitle
+        navigationItem.titleView?.accessibilityIdentifier = inboxTitle
 
         tableNode.do {
             $0.delegate = self

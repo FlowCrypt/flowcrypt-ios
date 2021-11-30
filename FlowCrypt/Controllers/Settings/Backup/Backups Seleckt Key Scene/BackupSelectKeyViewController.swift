@@ -11,7 +11,7 @@ import FlowCryptUI
 import Foundation
 
 @MainActor
-final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
+final class BackupSelectKeyViewController: TableNodeViewController {
     private let backupService: BackupServiceType
     private let service: ServiceActor
     private let decorator: BackupSelectKeyDecoratorType
