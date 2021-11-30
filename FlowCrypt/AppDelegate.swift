@@ -5,11 +5,20 @@
 
 import AppAuth
 import UIKit
+import GTMAppAuth
 
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssionContainer {
     var blurViewController: BlurViewController?
     var googleAuthSession: OIDExternalUserAgentSession?
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
+
+    func removeGoogleSession(email: String) {
+        self.googleAuthSession = nil
+    }
+
+    func setGoogleSession(_ session: OIDExternalUserAgentSession) {
+        self.googleAuthSession = session
+    }
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let isRunningTests = NSClassFromString("XCTestCase") != nil

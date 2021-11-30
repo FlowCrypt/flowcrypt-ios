@@ -100,7 +100,10 @@ extension DataService: DataServiceType {
     var token: String? {
         switch currentAuthType {
         case .oAuthGmail:
-            return GoogleUserService(currentUserEmail: currentUser?.email).userToken
+            return GoogleUserService(
+                currentUserEmail: currentUser?.email,
+                appDelegateGoogleSessionContainer: nil // needed only when signing in/out
+            ).userToken
         default:
             return nil
         }

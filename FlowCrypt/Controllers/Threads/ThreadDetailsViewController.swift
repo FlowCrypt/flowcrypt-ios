@@ -64,8 +64,15 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.user = user
         let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
         self.messageService = messageService ?? MessageService(
-            appContext: appContext,
-            clientConfiguration: clientConfiguration
+            contactsService: ContactsService(
+                localContactsProvider: LocalContactsProvider(
+                    encryptedStorage: appContext.encryptedStorage
+                ),
+                clientConfiguration: clientConfiguration
+            ),
+            keyService: appContext.keyService,
+            messageProvider: appContext.getRequiredMailProvider().messageProvider,
+            passPhraseService: appContext.passPhraseService
         )
         guard let threadOperationsProvider = appContext.getRequiredMailProvider().threadOperationsProvider else {
             fatalError("expected threadOperationsProvider on gmail")

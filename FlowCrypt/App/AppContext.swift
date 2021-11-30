@@ -7,10 +7,11 @@
 //
 
 import Foundation
+import UIKit
 
 class AppContext {
 
-    let globalRouter: GlobalRouter
+    let globalRouter: GlobalRouterType
     let encryptedStorage: EncryptedStorageType
     let session: SessionType?
     // todo - should be called sessionService
@@ -31,7 +32,7 @@ class AppContext {
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
         clientConfigurationService: ClientConfigurationServiceType,
-        globalRouter: GlobalRouter
+        globalRouter: GlobalRouterType
     ) {
         self.encryptedStorage = encryptedStorage
         self.session = session
@@ -45,7 +46,7 @@ class AppContext {
     }
 
     @MainActor
-    static func setUpAppContext(globalRouter: GlobalRouter) throws -> AppContext {
+    static func setUpAppContext(globalRouter: GlobalRouterType) throws -> AppContext {
         let keyChainService = KeyChainService()
         let encryptedStorage = EncryptedStorage(
             storageEncryptionKey: try keyChainService.getStorageEncryptionKey()
@@ -68,7 +69,11 @@ class AppContext {
             session: nil, // will be set later. But would be nice to already set here, if available
             userAccountService: UserAccountService(
                 encryptedStorage: encryptedStorage,
-                dataService: dataService
+                dataService: dataService,
+                googleService: GoogleUserService(
+                    currentUserEmail: dataService.currentUser?.email,
+                    appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+                )
             ),
             dataService: dataService,
             keyStorage: keyStorage,

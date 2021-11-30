@@ -65,7 +65,10 @@ extension GlobalRouter: GlobalRouterType {
         case .gmailLogin(let viewController):
             Task {
                 do {
-                    let googleService = GoogleUserService(currentUserEmail: appContext.dataService.currentUser?.email)
+                    let googleService = GoogleUserService(
+                        currentUserEmail: appContext.dataService.currentUser?.email,
+                        appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+                    )
                     let session = try await googleService.signIn(
                         in: viewController,
                         scopes: GeneralConstants.Gmail.mailScope
@@ -99,7 +102,10 @@ extension GlobalRouter: GlobalRouterType {
         switch route {
         case .gmailLogin(let viewController):
             do {
-                let googleService = GoogleUserService(currentUserEmail: appContext.dataService.currentUser?.email)
+                let googleService = GoogleUserService(
+                    currentUserEmail: appContext.dataService.currentUser?.email,
+                    appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+                )
                 let session = try await googleService.signIn(
                     in: viewController,
                     scopes: GeneralConstants.Gmail.contactsScope

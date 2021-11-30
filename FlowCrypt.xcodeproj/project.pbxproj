@@ -361,8 +361,10 @@
 		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
 		D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
+		E24D66F52756C380008E5D5E /* MessageThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F778E7D27162038001D4B21 /* MessageThread.swift */; };
+		E24D66F62756C3BA008E5D5E /* ComposeViewControllerInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */; };
+		E24D66F72756CA3C008E5D5E /* GoogleUserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */; };
 		E2A6019D27563DC200DCC9A7 /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6019C27563DC200DCC9A7 /* AppContext.swift */; };
-		E2A6019E27563DC200DCC9A7 /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6019C27563DC200DCC9A7 /* AppContext.swift */; };
 		E2A601A02756880B00DCC9A7 /* ImapSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6019F2756880B00DCC9A7 /* ImapSessionProvider.swift */; };
 		E2A601A12756880B00DCC9A7 /* ImapSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6019F2756880B00DCC9A7 /* ImapSessionProvider.swift */; };
 		E2A601A22756A4E400DCC9A7 /* IMAPConnectionParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F6D1322433753100DB4065 /* IMAPConnectionParameters.swift */; };
@@ -468,73 +470,7 @@
 		E2A602092756A9D700DCC9A7 /* KeyDataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F79229326696B9300DA3D80 /* KeyDataStorage.swift */; };
 		E2A6020A2756AA4100DCC9A7 /* ApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C124DB32728809100A2EFA6 /* ApiCall.swift */; };
 		E2A6020B2756AA6800DCC9A7 /* Recipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141B2B274572D50038A3F8 /* Recipient.swift */; };
-		E2A6020C2756AA7000DCC9A7 /* MessageThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F778E7D27162038001D4B21 /* MessageThread.swift */; };
 		E2A6020D2756AAA500DCC9A7 /* URLSessionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA7E0AFE19FACB0F233ED /* URLSessionExtension.swift */; };
-		E2A6020E2756AB1A00DCC9A7 /* GoogleUserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */; };
-		E2A6020F2756AB1E00DCC9A7 /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
-		E2A602102756AB2B00DCC9A7 /* AppStartup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B7C31823F576BA0022D628 /* AppStartup.swift */; };
-		E2A602112756AB3200DCC9A7 /* CheckMailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */; };
-		E2A602122756AC8100DCC9A7 /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
-		E2A602132756AC8100DCC9A7 /* MyMenuViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */; };
-		E2A602142756AC8400DCC9A7 /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
-		E2A602152756AC8700DCC9A7 /* NavigationChildController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E8F18269C538E0021C07F /* NavigationChildController.swift */; };
-		E2A602162756AC8700DCC9A7 /* MainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE743062347AA54005E2DBB /* MainNavigationController.swift */; };
-		E2A602172756AC8A00DCC9A7 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
-		E2A602182756AC8A00DCC9A7 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
-		E2A602192756AC8D00DCC9A7 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
-		E2A6021A2756AC8D00DCC9A7 /* SignInViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */; };
-		E2A6021B2756AC9000DCC9A7 /* SetupGenerateKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA405C6265AEBA40084D133 /* SetupGenerateKeyViewController.swift */; };
-		E2A6021C2756AC9000DCC9A7 /* SetupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */; };
-		E2A6021D2756AC9000DCC9A7 /* SetupCreatePassphraseAbstractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7E26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift */; };
-		E2A6021E2756AC9000DCC9A7 /* SetupManuallyEnterPassPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD364852381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift */; };
-		E2A6021F2756AC9000DCC9A7 /* PassPhraseSaveable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7920F42667CEF100DA3D80 /* PassPhraseSaveable.swift */; };
-		E2A602202756AC9000DCC9A7 /* SetupManuallyImportKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268890237DC55600428A94 /* SetupManuallyImportKeyViewController.swift */; };
-		E2A602212756AC9000DCC9A7 /* SetupBackupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupBackupsViewController.swift */; };
-		E2A602222756AC9000DCC9A7 /* SetupEKMKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21750D7C26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift */; };
-		E2A602232756AC9000DCC9A7 /* SetupInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */; };
-		E2A602242756AC9300DCC9A7 /* BootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F4C2123E2359B00C5EEE4 /* BootstrapViewController.swift */; };
-		E2A602252756AC9300DCC9A7 /* InvalidStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */; };
-		E2A602262756AC9600DCC9A7 /* InboxRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ECCA8272C47DA008A1770 /* InboxRenderable.swift */; };
-		E2A602272756AC9600DCC9A7 /* InboxViewController+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD75A2713880300321FA4 /* InboxViewController+Factory.swift */; };
-		E2A602282756AC9600DCC9A7 /* InboxViewController+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD7582713870800321FA4 /* InboxViewController+State.swift */; };
-		E2A602292756AC9600DCC9A7 /* InboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9D81EC30E1D00763715 /* InboxViewController.swift */; };
-		E2A6022A2756AC9600DCC9A7 /* InboxProviders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD75C2714A06300321FA4 /* InboxProviders.swift */; };
-		E2A6022B2756AC9600DCC9A7 /* InboxViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27177482424D73000BDA9A9 /* InboxViewDecorator.swift */; };
-		E2A6022C2756AC9B00DCC9A7 /* InboxViewControllerContainerDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4300CB2571045B00791CFB /* InboxViewControllerContainerDecorator.swift */; };
-		E2A6022D2756AC9B00DCC9A7 /* InboxViewContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */; };
-		E2A6022E2756AC9D00DCC9A7 /* ComposeViewControllerInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */; };
-		E2A6022F2756AC9D00DCC9A7 /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */; };
-		E2A602302756AC9D00DCC9A7 /* ComposeViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */; };
-		E2A602312756AC9F00DCC9A7 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */; };
-		E2A602322756ACA600DCC9A7 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
-		E2A602332756ACA600DCC9A7 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
-		E2A602342756ACAA00DCC9A7 /* ContactDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6F24F266F300612AF1 /* ContactDetailViewController.swift */; };
-		E2A602352756ACAA00DCC9A7 /* ContactKeyDetailDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */; };
-		E2A602362756ACAA00DCC9A7 /* ContactsListDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6524F169B400612AF1 /* ContactsListDecorator.swift */; };
-		E2A602372756ACAA00DCC9A7 /* ContactsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F6224F1698100612AF1 /* ContactsListViewController.swift */; };
-		E2A602382756ACAA00DCC9A7 /* ContactDetailDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E26F7324F2705B00612AF1 /* ContactDetailDecorator.swift */; };
-		E2A602392756ACAA00DCC9A7 /* ContactKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */; };
-		E2A6023A2756ACAE00DCC9A7 /* KeySettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCAE23A3EA9E00EC495E /* KeySettingsViewDecorator.swift */; };
-		E2A6023B2756ACAE00DCC9A7 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
-		E2A6023C2756ACB300DCC9A7 /* KeyDetailInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */; };
-		E2A6023D2756ACB300DCC9A7 /* KeyDetailInfoViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBF23A43B0800EC495E /* KeyDetailInfoViewDecorator.swift */; };
-		E2A6023E2756ACB500DCC9A7 /* PublicKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */; };
-		E2A6023F2756ACB800DCC9A7 /* KeyDetailViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB823A42B9400EC495E /* KeyDetailViewDecorator.swift */; };
-		E2A602402756ACB800DCC9A7 /* KeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCB523A426E300EC495E /* KeyDetailViewController.swift */; };
-		E2A602412756ACBB00DCC9A7 /* LegalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A948DC4239EF2F4006284D7 /* LegalViewController.swift */; };
-		E2A602422756ACBB00DCC9A7 /* LegalViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F440239EF17F001F4607 /* LegalViewDecorator.swift */; };
-		E2A602432756ACBE00DCC9A7 /* BackupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */; };
-		E2A602442756ACBE00DCC9A7 /* BackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C662520AB1000D4AA9A /* BackupViewController.swift */; };
-		E2A602452756ACC200DCC9A7 /* BackupOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C882520B67C00D4AA9A /* BackupOptionsViewController.swift */; };
-		E2A602462756ACC200DCC9A7 /* BackupOptionsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C8F2520B68A00D4AA9A /* BackupOptionsViewDecorator.swift */; };
-		E2A602472756ACC600DCC9A7 /* BackupSelectKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA27253B75F4003B970D /* BackupSelectKeyViewController.swift */; };
-		E2A602482756ACC600DCC9A7 /* BackupSelectKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */; };
-		E2A602492756ACC800DCC9A7 /* MsgListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF33023B1785600FA0CEF /* MsgListViewController.swift */; };
-		E2A6024A2756ACCB00DCC9A7 /* MessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8839132721EB5000669B56 /* MessageAction.swift */; };
-		E2A6024B2756ACCB00DCC9A7 /* MessageActionsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */; };
-		E2A6024C2756ACCB00DCC9A7 /* AlertsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */; };
-		E2A6024D2756ACCB00DCC9A7 /* ThreadDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F778E7B27161C06001D4B21 /* ThreadDetailsViewController.swift */; };
-		E2A6024E2756ACCB00DCC9A7 /* ThreadDetailsDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */; };
 		E2A6024F2756ACD200DCC9A7 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC50FB02744167A0051629A /* Folder.swift */; };
 		E2A602502756ACD400DCC9A7 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
 		E2A602512756ACD800DCC9A7 /* InboxViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1D1230DAD1E00700F8E /* InboxViewModel.swift */; };
@@ -563,9 +499,7 @@
 		E2A602692756ADE800DCC9A7 /* AttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC12C3E273571B80021DDDF /* AttachmentManager.swift */; };
 		E2A6026A2756ADF300DCC9A7 /* Refreshable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2155E9EE26E3628C008FB033 /* Refreshable.swift */; };
 		E2A6026B2756AE1400DCC9A7 /* DraftsListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E95352720B6640093F243 /* DraftsListProvider.swift */; };
-		E2A6026C2756AE3A00DCC9A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9B31EC2DBD800763715 /* AppDelegate.swift */; };
 		E2A6026D2756AE3F00DCC9A7 /* PhotosManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21623D1726FA860600A11B9A /* PhotosManager.swift */; };
-		E2A6026E2756AF2A00DCC9A7 /* BlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F191F620272511790053833E /* BlurViewController.swift */; };
 		E2A6026F2756AF5B00DCC9A7 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2891AC324C62446008918E3 /* ErrorHandler.swift */; };
 		E2A602702756AF6700DCC9A7 /* CommonNodesInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163E5266520B600106194 /* CommonNodesInputs.swift */; };
 		E2A602712756AFCE00DCC9A7 /* DecryptedPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */; };
@@ -2692,36 +2626,24 @@
 				9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */,
 				E2A601AF2756A6F100DCC9A7 /* KeyInfo.swift in Sources */,
 				E2A601EF2756A98E00DCC9A7 /* SessionCredentialsProvider.swift in Sources */,
-				E2A602492756ACC800DCC9A7 /* MsgListViewController.swift in Sources */,
-				E2A6021F2756AC9000DCC9A7 /* PassPhraseSaveable.swift in Sources */,
 				E2A602092756A9D700DCC9A7 /* KeyDataStorage.swift in Sources */,
 				E2A601BB2756A77400DCC9A7 /* FolderRealmObject.swift in Sources */,
 				E2A601F62756A99900DCC9A7 /* MessageQuoteType.swift in Sources */,
 				E2A601F32756A99200DCC9A7 /* Imap+send.swift in Sources */,
 				E2A6025A2756AD0D00DCC9A7 /* CoreHost.swift in Sources */,
+				E24D66F72756CA3C008E5D5E /* GoogleUserService.swift in Sources */,
 				E2A601F92756A9B200DCC9A7 /* Gmail+Backup.swift in Sources */,
 				E2A601E12756A97500DCC9A7 /* UserAccountService.swift in Sources */,
-				E2A6020C2756AA7000DCC9A7 /* MessageThread.swift in Sources */,
-				E2A602242756AC9300DCC9A7 /* BootstrapViewController.swift in Sources */,
 				E2A601D02756A85100DCC9A7 /* MessageService.swift in Sources */,
-				E2A6022C2756AC9B00DCC9A7 /* InboxViewControllerContainerDecorator.swift in Sources */,
 				E2A602622756AD4700DCC9A7 /* FoldersService.swift in Sources */,
-				E2A6023B2756ACAE00DCC9A7 /* KeySettingsViewController.swift in Sources */,
 				9F976584267E194F0058419D /* TestData.swift in Sources */,
 				E2A602012756A9C400DCC9A7 /* AttesterApi.swift in Sources */,
 				E2A6020D2756AAA500DCC9A7 /* URLSessionExtension.swift in Sources */,
 				E2A601E52756A97D00DCC9A7 /* Imap+msg.swift in Sources */,
-				E2A602282756AC9600DCC9A7 /* InboxViewController+State.swift in Sources */,
-				E2A6024C2756ACCB00DCC9A7 /* AlertsFactory.swift in Sources */,
 				E2A601D62756A8A200DCC9A7 /* CloudContactsProvider.swift in Sources */,
-				E2A602112756AB3200DCC9A7 /* CheckMailAuthViewController.swift in Sources */,
 				E2A602032756A9C400DCC9A7 /* WkdApi.swift in Sources */,
-				E2A6024D2756ACCB00DCC9A7 /* ThreadDetailsViewController.swift in Sources */,
 				E2A601DA2756A8C400DCC9A7 /* KeyMethods.swift in Sources */,
-				E2A6026C2756AE3A00DCC9A7 /* AppDelegate.swift in Sources */,
 				9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */,
-				E2A6022B2756AC9600DCC9A7 /* InboxViewDecorator.swift in Sources */,
-				E2A6021E2756AC9000DCC9A7 /* SetupManuallyEnterPassPhraseViewController.swift in Sources */,
 				E2A6026B2756AE1400DCC9A7 /* DraftsListProvider.swift in Sources */,
 				E2A601FD2756A9B600DCC9A7 /* Imap+Search.swift in Sources */,
 				E2A601DD2756A8E700DCC9A7 /* MessageLabel.swift in Sources */,
@@ -2730,12 +2652,11 @@
 				9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */,
 				E2A601FC2756A9B600DCC9A7 /* Gmail+Search.swift in Sources */,
 				E2A6024F2756ACD200DCC9A7 /* Folder.swift in Sources */,
+				E24D66F62756C3BA008E5D5E /* ComposeViewControllerInput.swift in Sources */,
 				E2A602732756AFE000DCC9A7 /* BackupServiceErrorHandler.swift in Sources */,
-				E2A602382756ACAA00DCC9A7 /* ContactDetailDecorator.swift in Sources */,
 				51B0C774272AB61000124663 /* StringTestExtension.swift in Sources */,
 				E2A601A32756A60700DCC9A7 /* SMTPSession.swift in Sources */,
 				E2A601F12756A99200DCC9A7 /* GmailService+send.swift in Sources */,
-				E2A602132756AC8100DCC9A7 /* MyMenuViewDecorator.swift in Sources */,
 				E2A601B32756A72000DCC9A7 /* ClientConfigurationService.swift in Sources */,
 				E2A601D82756A8AB00DCC9A7 /* EnterpriseServerApi.swift in Sources */,
 				E2A6025C2756AD2900DCC9A7 /* BackupService.swift in Sources */,
@@ -2746,18 +2667,14 @@
 				2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */,
 				E2A602722756AFD500DCC9A7 /* KeyServiceErrorHandler.swift in Sources */,
 				E2A601A42756A62400DCC9A7 /* ConnectionType.swift in Sources */,
-				E2A602172756AC8A00DCC9A7 /* SetupImapViewController.swift in Sources */,
 				E2A601E02756A97100DCC9A7 /* KeyChainService.swift in Sources */,
 				9F976490267E11880058419D /* ImapHelperTest.swift in Sources */,
-				E2A602152756AC8700DCC9A7 /* NavigationChildController.swift in Sources */,
-				E2A602272756AC9600DCC9A7 /* InboxViewController+Factory.swift in Sources */,
 				E2A602632756AD4C00DCC9A7 /* GmailService+folders.swift in Sources */,
 				E2A601A82756A67E00DCC9A7 /* KeyService.swift in Sources */,
 				E2A602562756ACE000DCC9A7 /* Error+Extension.swift in Sources */,
 				E2A601C72756A7E900DCC9A7 /* PubKeyRealmObject.swift in Sources */,
 				9F5F501D26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift in Sources */,
 				E2A6025B2756AD1E00DCC9A7 /* BackupServiceType.swift in Sources */,
-				E2A602452756ACC200DCC9A7 /* BackupOptionsViewController.swift in Sources */,
 				E2A601D92756A8BB00DCC9A7 /* Core.swift in Sources */,
 				E2A602662756AD5300DCC9A7 /* TrashFolderProvider.swift in Sources */,
 				E2A601A72756A67500DCC9A7 /* EncryptedStorageProtocols.swift in Sources */,
@@ -2768,34 +2685,24 @@
 				9F5F503C26FA6C5E00294FA2 /* CurrentUserEmailMock.swift in Sources */,
 				E2A601CF2756A84F00DCC9A7 /* Gmail+Message.swift in Sources */,
 				F8A72FA12729F82800E4BCAB /* DraftGatewayMock.swift in Sources */,
-				E2A602322756ACA600DCC9A7 /* SettingsViewDecorator.swift in Sources */,
 				9FC413182683C492004C0A69 /* InMemoryPassPhraseStorageTest.swift in Sources */,
-				E2A602212756AC9000DCC9A7 /* SetupBackupsViewController.swift in Sources */,
 				E2A602612756AD4700DCC9A7 /* LocalFoldersProvider.swift in Sources */,
 				E2A601E92756A97D00DCC9A7 /* Imap+messages.swift in Sources */,
 				E2A601F82756A9B200DCC9A7 /* Imap+Backup.swift in Sources */,
 				9F9764C5267E14AB0058419D /* GeneralConstantsTest.swift in Sources */,
 				E2A602702756AF6700DCC9A7 /* CommonNodesInputs.swift in Sources */,
-				E2A6024B2756ACCB00DCC9A7 /* MessageActionsHandler.swift in Sources */,
-				E2A602392756ACAA00DCC9A7 /* ContactKeyDetailViewController.swift in Sources */,
 				E2A601C52756A7DA00DCC9A7 /* RawClientConfiguration.swift in Sources */,
-				E2A6019E27563DC200DCC9A7 /* AppContext.swift in Sources */,
 				E2A601D42756A89B00DCC9A7 /* Imap+MessageOperations.swift in Sources */,
 				E2A602692756ADE800DCC9A7 /* AttachmentManager.swift in Sources */,
-				E2A602402756ACB800DCC9A7 /* KeyDetailViewController.swift in Sources */,
 				E2A601F02756A98E00DCC9A7 /* MailSettingsCredentials.swift in Sources */,
-				E2A6021B2756AC9000DCC9A7 /* SetupGenerateKeyViewController.swift in Sources */,
 				E2A601B02756A6FD00DCC9A7 /* ClientConfigurationRealmObject.swift in Sources */,
 				E2A601FF2756A9B900DCC9A7 /* MessagesThreadProvider.swift in Sources */,
-				E2A602482756ACC600DCC9A7 /* BackupSelectKeyDecorator.swift in Sources */,
-				E2A6023F2756ACB800DCC9A7 /* KeyDetailViewDecorator.swift in Sources */,
 				9F976507267E165D0058419D /* ZBase32EncodingTests.swift in Sources */,
 				E2A601C32756A7D000DCC9A7 /* ClientConfiguration.swift in Sources */,
 				E2A601D52756A89E00DCC9A7 /* Gmail+MessageOperations.swift in Sources */,
-				E2A6026E2756AF2A00DCC9A7 /* BlurViewController.swift in Sources */,
-				E2A602162756AC8700DCC9A7 /* MainNavigationController.swift in Sources */,
 				E2A601DF2756A92400DCC9A7 /* GeneralConstants.swift in Sources */,
 				E2A602542756ACE000DCC9A7 /* UIColorExtension.swift in Sources */,
+				E24D66F52756C380008E5D5E /* MessageThread.swift in Sources */,
 				E2A601BA2756A76D00DCC9A7 /* UserRealmObject.swift in Sources */,
 				E2A6025D2756AD3200DCC9A7 /* BackendApi.swift in Sources */,
 				2C2A3B4D2719EF7300B7F27B /* PassPhraseServiceMock.swift in Sources */,
@@ -2804,7 +2711,6 @@
 				9F5F504A26FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift in Sources */,
 				E2A602512756ACD800DCC9A7 /* InboxViewModel.swift in Sources */,
 				E2A602082756A9CE00DCC9A7 /* RecipientWithSortedPubKeys.swift in Sources */,
-				E2A602372756ACAA00DCC9A7 /* ContactsListViewController.swift in Sources */,
 				9FC4117D268118AE004C0A69 /* PassPhraseStorageMock.swift in Sources */,
 				E2A601F22756A99200DCC9A7 /* GmailService+draft.swift in Sources */,
 				E2A601D12756A85700DCC9A7 /* MessageAttachment.swift in Sources */,
@@ -2812,62 +2718,41 @@
 				E2A601C22756A7C500DCC9A7 /* LogOutHandler.swift in Sources */,
 				E2A602052756A9C700DCC9A7 /* EmailKeyManagerApi.swift in Sources */,
 				9F97650E267E16620058419D /* WKDURLsConstructorTests.swift in Sources */,
-				E2A602182756AC8A00DCC9A7 /* SetupImapViewDecorator.swift in Sources */,
-				E2A602442756ACBE00DCC9A7 /* BackupViewController.swift in Sources */,
 				E2A601E22756A97D00DCC9A7 /* Imap+retry.swift in Sources */,
 				E2A6026A2756ADF300DCC9A7 /* Refreshable.swift in Sources */,
-				E2A602252756AC9300DCC9A7 /* InvalidStorageViewController.swift in Sources */,
-				E2A602462756ACC200DCC9A7 /* BackupOptionsViewDecorator.swift in Sources */,
 				9F976585267E194F0058419D /* FlowCryptCoreTests.swift in Sources */,
 				E2A601DE2756A8FC00DCC9A7 /* MessageContext.swift in Sources */,
-				E2A602202756AC9000DCC9A7 /* SetupManuallyImportKeyViewController.swift in Sources */,
-				E2A6022E2756AC9D00DCC9A7 /* ComposeViewControllerInput.swift in Sources */,
 				E2A601CB2756A83600DCC9A7 /* MessageGateway.swift in Sources */,
 				E2A601C12756A7B700DCC9A7 /* Session.swift in Sources */,
-				E2A602362756ACAA00DCC9A7 /* ContactsListDecorator.swift in Sources */,
 				E2A602042756A9C400DCC9A7 /* WkdUrlConstructor.swift in Sources */,
 				E2A602072756A9CE00DCC9A7 /* PubKeyState.swift in Sources */,
 				E2A601CD2756A84300DCC9A7 /* MessagesListProvider.swift in Sources */,
 				E2A601E82756A97D00DCC9A7 /* Imap.swift in Sources */,
-				E2A602352756ACAA00DCC9A7 /* ContactKeyDetailDecorator.swift in Sources */,
 				9F6F3C7D26ADFC60005BD9C6 /* ContactsServiceMock.swift in Sources */,
 				E2A601EA2756A97D00DCC9A7 /* Imap+Other.swift in Sources */,
-				E2A602102756AB2B00DCC9A7 /* AppStartup.swift in Sources */,
 				E2A601EC2756A98300DCC9A7 /* GmailService.swift in Sources */,
 				9F6F3C3C26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift in Sources */,
 				9FC4116B2681186D004C0A69 /* KeyMethodsTest.swift in Sources */,
 				E2A601C92756A82600DCC9A7 /* PubKey.swift in Sources */,
-				E2A6021A2756AC8D00DCC9A7 /* SignInViewDecorator.swift in Sources */,
-				E2A6024A2756ACCB00DCC9A7 /* MessageAction.swift in Sources */,
-				E2A6020F2756AB1E00DCC9A7 /* GlobalRouter.swift in Sources */,
 				E2A601AE2756A6E800DCC9A7 /* PrvKeyInfo.swift in Sources */,
 				E2A602572756ACE000DCC9A7 /* UIApplicationExtension.swift in Sources */,
 				E2A602712756AFCE00DCC9A7 /* DecryptedPrivateKey.swift in Sources */,
 				E2A601B82756A75C00DCC9A7 /* KeyAlgo.swift in Sources */,
 				E2A602582756ACE000DCC9A7 /* String+Extension.swift in Sources */,
 				E2A601F42756A99600DCC9A7 /* Gmail+MessagesList.swift in Sources */,
-				E2A602292756AC9600DCC9A7 /* InboxViewController.swift in Sources */,
-				E2A602472756ACC600DCC9A7 /* BackupSelectKeyViewController.swift in Sources */,
 				E2A602062756A9CB00DCC9A7 /* LocalContactsProvider.swift in Sources */,
 				E2A601AC2756A6CA00DCC9A7 /* KeyInfoRealmObject.swift in Sources */,
-				E2A602312756AC9F00DCC9A7 /* SearchViewController.swift in Sources */,
-				E2A602122756AC8100DCC9A7 /* MyMenuViewController.swift in Sources */,
 				9F97653D267E17C90058419D /* LocalStorageTests.swift in Sources */,
 				A34D222A27294C67004E0220 /* PubLookupTest.swift in Sources */,
-				E2A602142756AC8400DCC9A7 /* SideMenuNavigationController.swift in Sources */,
-				E2A6023A2756ACAE00DCC9A7 /* KeySettingsViewDecorator.swift in Sources */,
 				E2A601D72756A8A500DCC9A7 /* GoogleContactsResponse.swift in Sources */,
 				9F9764F4267E15CC0058419D /* ExtensionTests.swift in Sources */,
-				E2A602222756AC9000DCC9A7 /* SetupEKMKeyViewController.swift in Sources */,
 				E2A601CC2756A83C00DCC9A7 /* RemoteFoldersProvider.swift in Sources */,
 				E2A601FA2756A9B200DCC9A7 /* BackupProvider.swift in Sources */,
 				E2A601CE2756A84A00DCC9A7 /* MessageProvider.swift in Sources */,
 				9F5F503526F90E5F00294FA2 /* ClientConfigurationServiceTests.swift in Sources */,
 				E2A6020B2756AA6800DCC9A7 /* Recipient.swift in Sources */,
-				E2A602262756AC9600DCC9A7 /* InboxRenderable.swift in Sources */,
 				9F2F206826AEEAA60044E144 /* CombineTestExtension.swift in Sources */,
 				E2A6026D2756AE3F00DCC9A7 /* PhotosManager.swift in Sources */,
-				E2A6023D2756ACB300DCC9A7 /* KeyDetailInfoViewDecorator.swift in Sources */,
 				E2A601BC2756A77A00DCC9A7 /* RecipientRealmObject.swift in Sources */,
 				51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */,
 				E2A6026F2756AF5B00DCC9A7 /* ErrorHandler.swift in Sources */,
@@ -2876,14 +2761,10 @@
 				E2A601A12756880B00DCC9A7 /* ImapSessionProvider.swift in Sources */,
 				E2A601B72756A75700DCC9A7 /* KeyId.swift in Sources */,
 				E2A6025F2756AD3E00DCC9A7 /* ComposeMessageError.swift in Sources */,
-				E2A602302756AC9D00DCC9A7 /* ComposeViewDecorator.swift in Sources */,
 				E2A601CA2756A82F00DCC9A7 /* MailServiceProviderType.swift in Sources */,
-				E2A6022F2756AC9D00DCC9A7 /* ComposeViewController.swift in Sources */,
 				E2A602592756ACE000DCC9A7 /* CombineExtensions.swift in Sources */,
 				E2A602602756AD3E00DCC9A7 /* ComposeMessageService.swift in Sources */,
-				E2A6021D2756AC9000DCC9A7 /* SetupCreatePassphraseAbstractViewController.swift in Sources */,
 				9FC413442683C912004C0A69 /* GmailServiceTest.swift in Sources */,
-				E2A6023E2756ACB500DCC9A7 /* PublicKeyDetailViewController.swift in Sources */,
 				E2A601AD2756A6D900DCC9A7 /* EncryptedStorage.swift in Sources */,
 				9F976556267E186D0058419D /* RawClientConfigurationTests.swift in Sources */,
 				E2A601FE2756A9B600DCC9A7 /* MessageSearchProvider.swift in Sources */,
@@ -2895,19 +2776,12 @@
 				E2A601C82756A7F500DCC9A7 /* InMemoryPassPhraseStorage.swift in Sources */,
 				9F5F504326FA6C7500294FA2 /* EnterpriseServerApiMock.swift in Sources */,
 				E2A601AB2756A6C400DCC9A7 /* KeyDetails.swift in Sources */,
-				E2A602422756ACBB00DCC9A7 /* LegalViewDecorator.swift in Sources */,
-				E2A602332756ACA600DCC9A7 /* SettingsViewController.swift in Sources */,
 				E2A601DB2756A8C900DCC9A7 /* ContactsService.swift in Sources */,
 				E2A601D22756A88800DCC9A7 /* FilesManager.swift in Sources */,
 				E2A601E72756A97D00DCC9A7 /* Imap+session.swift in Sources */,
 				E2A602652756AD4F00DCC9A7 /* FolderViewModel.swift in Sources */,
-				E2A602232756AC9000DCC9A7 /* SetupInitialViewController.swift in Sources */,
 				E2A601B12756A70600DCC9A7 /* Version5SchemaMigration.swift in Sources */,
-				E2A602412756ACBB00DCC9A7 /* LegalViewController.swift in Sources */,
-				E2A6022D2756AC9B00DCC9A7 /* InboxViewContainerController.swift in Sources */,
-				E2A6021C2756AC9000DCC9A7 /* SetupViewDecorator.swift in Sources */,
 				E2A601A92756A68400DCC9A7 /* PassPhraseService.swift in Sources */,
-				E2A602342756ACAA00DCC9A7 /* ContactDetailViewController.swift in Sources */,
 				E2A601B42756A72900DCC9A7 /* MailProvider.swift in Sources */,
 				E2A601B52756A74700DCC9A7 /* LocalStorage.swift in Sources */,
 				E2A602002756A9B900DCC9A7 /* MessagesThreadOperationsProvider.swift in Sources */,
@@ -2915,21 +2789,15 @@
 				E2A601EB2756A98300DCC9A7 /* GmailServiceError.swift in Sources */,
 				E2A602502756ACD400DCC9A7 /* Document.swift in Sources */,
 				E2A601F52756A99600DCC9A7 /* Imap+MessagesList.swift in Sources */,
-				E2A6022A2756AC9600DCC9A7 /* InboxProviders.swift in Sources */,
 				E2A602642756AD4C00DCC9A7 /* Imap+folders.swift in Sources */,
 				E2A601FB2756A9B600DCC9A7 /* GmailSearchExpressionGenerator.swift in Sources */,
 				51DA5BDA2722C82E001C4359 /* RecipientTests.swift in Sources */,
 				E2A601C02756A7B100DCC9A7 /* EncryptedCacheService.swift in Sources */,
-				E2A602192756AC8D00DCC9A7 /* SignInViewController.swift in Sources */,
 				E2A601D32756A89700DCC9A7 /* MessageOperationsProvider.swift in Sources */,
-				E2A6024E2756ACCB00DCC9A7 /* ThreadDetailsDecorator.swift in Sources */,
 				9FC41171268118A7004C0A69 /* PassPhraseStorageTests.swift in Sources */,
 				9F6F3C7626ADFC37005BD9C6 /* KeyStorageMock.swift in Sources */,
 				E2A601A52756A62D00DCC9A7 /* User.swift in Sources */,
-				E2A602432756ACBE00DCC9A7 /* BackupViewDecorator.swift in Sources */,
-				E2A6023C2756ACB300DCC9A7 /* KeyDetailInfoViewController.swift in Sources */,
 				E2A601B92756A76800DCC9A7 /* AppErr.swift in Sources */,
-				E2A6020E2756AB1A00DCC9A7 /* GoogleUserService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

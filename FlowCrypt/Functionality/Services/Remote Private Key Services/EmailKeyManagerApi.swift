@@ -56,7 +56,10 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             throw EmailKeyManagerApiError.noPrivateKeysUrlString
         }
 
-        guard let idToken = GoogleUserService(currentUserEmail: currentUserEmail).idToken else {
+        guard let idToken = GoogleUserService(
+            currentUserEmail: currentUserEmail,
+            appDelegateGoogleSessionContainer: nil // only needed when signing in/out
+        ).idToken else {
             throw EmailKeyManagerApiError.noGoogleIdToken
         }
 

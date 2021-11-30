@@ -10,18 +10,6 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-enum CreateKeyError: Error {
-    case weakPassPhrase(_ strength: CoreRes.ZxcvbnStrengthBar)
-    // Missing user email
-    case missedUserEmail
-    // Missing user name
-    case missedUserName
-    // Pass phrases don't match
-    case doesntMatch
-    // silent abort
-    case conformingPassPhraseError
-}
-
 /**
  * Controller which is responsible for generating a new key during setup
  * - User is sent here from **SetupInitialViewController** in case there are no backups found

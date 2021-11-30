@@ -8,6 +8,7 @@
 
 import Foundation
 import GoogleAPIClientForREST_Gmail
+import UIKit
 
 // TODO - Instead of get properties use some DI mechanism
 // to reuse already initialised services
@@ -105,7 +106,13 @@ private struct MailServiceProviderFactory {
     ) -> [MailServiceProvider] {
         [
             Imap(user: user),
-            GmailService(currentUserEmail: user.email)
+            GmailService(
+                currentUserEmail: user.email,
+                userService: GoogleUserService(
+                    currentUserEmail: user.email,
+                    appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegateGoogleSesssionContainer
+                )
+            )
         ]
     }
 }

@@ -36,10 +36,10 @@ class GmailService: MailServiceProvider {
 
     init(
         currentUserEmail: String,
-        userService: GoogleUserServiceType? = nil,
+        userService: GoogleUserServiceType,
         backupSearchQueryProvider: GmailBackupSearchQueryProviderType = GmailBackupSearchQueryProvider()
     ) {
-        self.userService = userService ?? GoogleUserService(currentUserEmail: currentUserEmail)
+        self.userService = userService
         self.backupSearchQueryProvider = backupSearchQueryProvider
     }
 }

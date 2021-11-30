@@ -33,9 +33,9 @@ final class UserAccountService {
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
         dataService: DataService,
         imap: Imap? = nil,
-        googleService: GoogleUserService? = nil
+        googleService: GoogleUserService
     ) {
-        self.googleService = googleService ?? GoogleUserService(currentUserEmail: dataService.currentUser?.email)
+        self.googleService = googleService
         // todo - the following User.empty may be wrong - unsure, untested
         // maybe should instead get user
         self.imap = imap ?? Imap(user: dataService.currentUser ?? User.empty)

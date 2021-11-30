@@ -12,6 +12,8 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 import FlowCryptCommon
 
+typealias RecipientState = RecipientEmailsCellNode.Input.State
+
 struct ComposeMessageContext: Equatable {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []

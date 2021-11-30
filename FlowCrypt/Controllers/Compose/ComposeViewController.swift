@@ -98,7 +98,10 @@ final class ComposeViewController: TableNodeViewController {
             clientConfiguration: clientConfiguration
         )
         let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
-            userService: GoogleUserService(currentUserEmail: email)
+            userService: GoogleUserService(
+                currentUserEmail: email,
+                appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+            )
         )
         self.cloudContactProvider = cloudContactProvider
         self.composeMessageService = composeMessageService ?? ComposeMessageService(

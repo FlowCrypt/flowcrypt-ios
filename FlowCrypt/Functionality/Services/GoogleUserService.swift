@@ -13,7 +13,6 @@ import GTMAppAuth
 import RealmSwift
 
 protocol UserServiceType {
-    func signOut(user email: String)
     func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType
     func renewSession() async throws
 }
@@ -48,19 +47,30 @@ protocol GoogleUserServiceType {
     func renewSession() async throws
 }
 
+// this is here so that we don't have to include AppDelegate in test target
+protocol AppDelegateGoogleSesssionContainer {
+    var googleAuthSession: OIDExternalUserAgentSession? { get set }
+}
+
 // todo - should be refactored to not require currentUserEmail
 final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     let currentUserEmail: String?
-    
-    init(currentUserEmail: String?) {
+    var appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer?
+
+    init(
+        currentUserEmail: String?,
+        appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer? = nil
+    ) {
+        self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
     }
-    
+
     private enum Constants {
         static let index = "GTMAppAuthAuthorizerIndex"
         static let userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo"
     }
+
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
     var userToken: String? {
@@ -82,10 +92,6 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 }
 
 extension GoogleUserService: UserServiceType {
-    
-    private var appDelegate: AppDelegate? {
-        UIApplication.shared.delegate as? AppDelegate
-    }
 
     func renewSession() async throws {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
@@ -94,12 +100,11 @@ extension GoogleUserService: UserServiceType {
     @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType {
         return try await withCheckedThrowingContinuation { continuation in
             let request = self.makeAuthorizationRequest(scopes: scopes)
-            let googleAuthSession = OIDAuthState.authState(
+            let googleDelegateSess = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
             ) { [weak self] authState, authError in
                 guard let self = self else { return }
-
                 guard let authState = authState else {
                     if let authError = authError {
                         let error = self.parseSignInError(authError)
@@ -109,7 +114,6 @@ extension GoogleUserService: UserServiceType {
                         return continuation.resume(throwing: error)
                     }
                 }
-
                 Task<Void, Never> {
                     do {
                         return continuation.resume(returning: try await self.handleGoogleAuthStateResult(authState, scopes: scopes))
@@ -118,13 +122,13 @@ extension GoogleUserService: UserServiceType {
                     }
                 }
             }
-            self.appDelegate?.googleAuthSession = googleAuthSession
+            self.appDelegateGoogleSessionContainer?.googleAuthSession = googleDelegateSess
         }
     }
 
     func signOut(user email: String) {
         DispatchQueue.main.async {
-            self.appDelegate?.googleAuthSession = nil
+            self.appDelegateGoogleSessionContainer?.googleAuthSession = nil
             GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
         }
     }
