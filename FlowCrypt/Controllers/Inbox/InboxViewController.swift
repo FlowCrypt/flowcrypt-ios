@@ -165,9 +165,6 @@ extension InboxViewController {
                         pagination: currentMessagesListPagination()
                     )
                 )
-                guard let currentUserEmail = appContext.dataService.currentUser?.email else {
-                    throw AppErr.noCurrentUser
-                }
                 let inboxContext = InboxContext(
                     data: context.messages.map { InboxRenderable(message: $0) },
                     pagination: context.pagination

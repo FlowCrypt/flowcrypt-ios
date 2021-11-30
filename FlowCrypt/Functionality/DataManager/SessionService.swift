@@ -9,8 +9,7 @@
 import FlowCryptCommon
 import Foundation
 
-// todo - rename to SessionService?
-protocol UserAccountServiceType {
+protocol SessionServiceType {
     func startSessionFor(session: SessionType)
     func switchActiveSessionFor(user: User) -> SessionType?
     func startActiveSessionForNextUser() -> SessionType?
@@ -18,7 +17,7 @@ protocol UserAccountServiceType {
     func cleanup()
 }
 
-final class UserAccountService {
+final class SessionService {
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
     private let localStorage: LocalStorageType & LogOutHandler
 
@@ -49,7 +48,7 @@ final class UserAccountService {
     }
 }
 
-extension UserAccountService: UserAccountServiceType {
+extension SessionService: SessionServiceType {
     /// start session for a user, this method will log out current user if user was saved, save and start session for a new user
     func startSessionFor(session: SessionType) {
         switch session {

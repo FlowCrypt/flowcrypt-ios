@@ -13,7 +13,7 @@ import UIKit
 protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType)
-    func askForContactsPermission(appContext: AppContext, for route: GlobalRoutingType) async throws
+    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws
     func switchActive(user: User, appContext: AppContext)
     func signOut(appContext: AppContext)
 }
@@ -96,7 +96,7 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func askForContactsPermission(appContext: AppContext, for route: GlobalRoutingType) async throws {
+    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws {
         logger.logInfo("Ask for contacts permission with \(route)")
 
         switch route {

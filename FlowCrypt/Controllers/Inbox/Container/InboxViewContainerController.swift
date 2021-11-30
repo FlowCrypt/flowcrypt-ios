@@ -30,7 +30,7 @@ final class InboxViewContainerController: TableNodeViewController {
     }
 
     let appContext: AppContext
-    let folderService: FoldersServiceType
+    let foldersService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
     let currentUser: User
 
@@ -40,7 +40,7 @@ final class InboxViewContainerController: TableNodeViewController {
 
     init(
         appContext: AppContext,
-        folderService: FoldersServiceType? = nil,
+        foldersService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
         guard let currentUser = appContext.dataService.currentUser else {
@@ -48,10 +48,7 @@ final class InboxViewContainerController: TableNodeViewController {
         }
         self.currentUser = currentUser
         self.appContext = appContext
-        self.folderService = folderService ?? FoldersService(
-            encryptedStorage: appContext.encryptedStorage,
-            remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
-        )
+        self.foldersService = foldersService ?? appContext.getFoldersService()
         self.decorator = decorator
         super.init(node: TableNode())
         node.delegate = self
@@ -71,7 +68,7 @@ final class InboxViewContainerController: TableNodeViewController {
     private func fetchInboxFolder() {
         Task {
             do {
-                let folders = try await folderService.fetchFolders(isForceReload: true, for: self.currentUser)
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: self.currentUser)
                 self.handleFetched(folders: folders)
             } catch {
                 self.state = .error(error)

@@ -14,9 +14,8 @@ class AppContext {
     let globalRouter: GlobalRouterType
     let encryptedStorage: EncryptedStorageType
     let session: SessionType?
-    // todo - should be called sessionService
-    // also should have maybe `.currentSession` on it, then we don't have to have `session` above?
-    let userAccountService: UserAccountServiceType
+    // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
+    let userAccountService: SessionServiceType
     let dataService: DataServiceType
     let keyStorage: KeyStorageType
     let keyService: KeyServiceType
@@ -26,7 +25,7 @@ class AppContext {
     private init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
-        userAccountService: UserAccountServiceType,
+        userAccountService: SessionServiceType,
         dataService: DataServiceType,
         keyStorage: KeyStorageType,
         keyService: KeyServiceType,
@@ -67,7 +66,7 @@ class AppContext {
         return AppContext(
             encryptedStorage: encryptedStorage,
             session: nil, // will be set later. But would be nice to already set here, if available
-            userAccountService: UserAccountService(
+            userAccountService: SessionService(
                 encryptedStorage: encryptedStorage,
                 dataService: dataService,
                 googleService: GoogleUserService(
@@ -115,12 +114,19 @@ class AppContext {
             currentUser: currentUser
         )
     }
-    
+
     func getBackupService() -> BackupService {
         let mailProvider = self.getRequiredMailProvider()
         return BackupService(
             backupProvider: mailProvider.backupProvider,
             messageSender: mailProvider.messageSender
+        )
+    }
+
+    func getFoldersService() -> FoldersService {
+        return FoldersService(
+            encryptedStorage: self.encryptedStorage,
+            remoteFoldersProvider: self.getRequiredMailProvider().remoteFoldersProvider
         )
     }
 
