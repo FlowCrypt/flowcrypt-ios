@@ -201,7 +201,7 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
                 )
             case .fetched:
                 return InboxCellNode(
-                    input: .init((InboxRenderable(message: self.state.messages[indexPath.row], activeUserEmail: self.currentUser.email)))
+                    input: .init((InboxRenderable(message: self.state.messages[indexPath.row])))
                 )
                     .then { $0.backgroundColor = .backgroundColor }
             case let .error(message):
@@ -222,7 +222,7 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         guard let message = state.messages[safe: indexPath.row] else { return }
 
         // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
-        open(appContext: appContext, with: .init(message: message, activeUserEmail: self.currentUser.email), path: folderPath)
+        open(appContext: appContext, with: .init(message: message), path: folderPath)
     }
 }
 

@@ -169,7 +169,7 @@ extension InboxViewController {
                     throw AppErr.noCurrentUser
                 }
                 let inboxContext = InboxContext(
-                    data: context.messages.map { InboxRenderable(message: $0, activeUserEmail: currentUserEmail) },
+                    data: context.messages.map { InboxRenderable(message: $0) },
                     pagination: context.pagination
                 )
                 handleEndFetching(with: inboxContext, context: batchContext)

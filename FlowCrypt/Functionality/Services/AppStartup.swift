@@ -11,7 +11,7 @@ import UIKit
 
 private let logger = Logger.nested("AppStart")
 
-class AppStartup {
+struct AppStartup {
     private enum EntryPoint {
         case signIn, setupFlow(UserId), mainFlow
     }

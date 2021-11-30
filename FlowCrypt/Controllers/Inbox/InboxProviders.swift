@@ -50,7 +50,7 @@ class InboxMessageListProvider: InboxDataProvider {
 
     override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
-        let inboxData = result.messages.map { InboxRenderable(message: $0, activeUserEmail: userEmail) }
+        let inboxData = result.messages.map { InboxRenderable(message: $0) }
         let inboxContext = InboxContext(
             data: inboxData,
             pagination: result.pagination

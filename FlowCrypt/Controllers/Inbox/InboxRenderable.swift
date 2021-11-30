@@ -37,7 +37,7 @@ extension InboxRenderable {
 
 extension InboxRenderable {
 
-    init(message: Message, activeUserEmail: String) {
+    init(message: Message) {
         self.title = message.sender ?? "message_unknown_sender".localized
         self.messageCount = 1
         self.subtitle = message.subject ?? "message_missed_subject".localized

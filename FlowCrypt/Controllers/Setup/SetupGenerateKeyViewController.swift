@@ -169,7 +169,7 @@ private actor Service {
         guard let email = appContext.dataService.email, !email.isEmpty else {
             throw CreateKeyError.missedUserEmail
         }
-        guard let name = appContext.dataService.email, !name.isEmpty else {
+        guard let name = appContext.dataService.currentUser?.name, !name.isEmpty else {
             throw CreateKeyError.missedUserName
         }
         return UserId(email: email, name: name)

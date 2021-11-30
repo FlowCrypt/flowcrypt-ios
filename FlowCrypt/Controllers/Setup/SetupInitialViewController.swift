@@ -9,7 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import SwiftUI
 
 /**
  * Initial controller for setup flow which is responsible for searching backups and
