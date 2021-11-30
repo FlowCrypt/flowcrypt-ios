@@ -32,10 +32,7 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
         self.decorator = decorator
         // set all selected bu default
         self.backupsContext = backups.map { ($0, true) }
-        let backupService = backupService ?? BackupService(
-            backupProvider: appContext.getRequiredMailProvider().backupProvider,
-            messageSender: appContext.getRequiredMailProvider().messageSender
-        )
+        let backupService = backupService ?? appContext.getBackupService()
         self.service = ServiceActor(backupService: backupService)
         self.backupService = backupService
         self.selectedOption = selectedOption

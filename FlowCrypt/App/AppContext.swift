@@ -115,5 +115,13 @@ class AppContext {
             currentUser: currentUser
         )
     }
+    
+    func getBackupService() -> BackupService {
+        let mailProvider = self.getRequiredMailProvider()
+        return BackupService(
+            backupProvider: mailProvider.backupProvider,
+            messageSender: mailProvider.messageSender
+        )
+    }
 
 }

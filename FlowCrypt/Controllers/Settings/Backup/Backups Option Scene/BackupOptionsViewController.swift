@@ -47,10 +47,7 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
         self.appContext = appContext
         self.decorator = decorator
         self.backups = backups
-        let backupService = backupService ?? BackupService(
-            backupProvider: appContext.getRequiredMailProvider().backupProvider,
-            messageSender: appContext.getRequiredMailProvider().messageSender
-        )
+        let backupService = backupService ?? appContext.getBackupService()
         self.service = ServiceActor(backupService: backupService)
         self.backupService = backupService
         self.userId = userId

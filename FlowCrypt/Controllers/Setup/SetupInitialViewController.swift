@@ -72,10 +72,7 @@ final class SetupInitialViewController: TableNodeViewController {
     ) {
         self.appContext = appContext
         self.user = user
-        let backupService = backupService ?? BackupService(
-            backupProvider: appContext.getRequiredMailProvider().backupProvider,
-            messageSender: appContext.getRequiredMailProvider().messageSender
-        )
+        let backupService = backupService ?? appContext.getBackupService()
         self.backupService = backupService
         self.service = ServiceActor(backupService: backupService)
         self.router = router
