@@ -54,7 +54,7 @@ final class KeyServiceTests: XCTestCase {
         let keyService = KeyService(
             storage: keyStorage,
             passPhraseService: passPhraseService,
-            currentUserEmail: "bill@test.com"
+            currentUserEmail: { "bill@test.com" }
         )
 
         // act
@@ -83,7 +83,7 @@ final class KeyServiceTests: XCTestCase {
         let keyService = KeyService(
             storage: keyStorage,
             passPhraseService: PassPhraseServiceMock(),
-            currentUserEmail: "bill@test.com"
+            currentUserEmail: { "bill@test.com" }
         )
 
         // act

@@ -21,8 +21,7 @@ class PassPhraseStorageTests: XCTestCase {
 
         sut = PassPhraseService(
             encryptedStorage: encryptedStorage,
-            localStorage: inMemoryStorage,
-            currentUserEmail: "email@gmail.com"
+            localStorage: inMemoryStorage
         )
     }
 

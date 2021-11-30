@@ -31,6 +31,8 @@ extension EnterpriseServerApiError: LocalizedError {
 /// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
 class EnterpriseServerApi: EnterpriseServerApiType {
 
+    static let publicEmailProviderDomains = ["gmail.com", "googlemail.com", "outlook.com"]
+    
     private enum Constants {
         /// 404 - Not Found
         static let getToleratedHTTPStatuses = [404]
@@ -53,7 +55,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) async throws -> String? {
         do {
             guard let userDomain = email.recipientDomain,
-                  !Configuration.publicEmailProviderDomains.contains(userDomain) else {
+                  !EnterpriseServerApi.publicEmailProviderDomains.contains(userDomain) else {
                 return nil
             }
             let urlString = "https://fes.\(userDomain)/"
@@ -95,7 +97,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             return .empty
         }
 
-        if Configuration.publicEmailProviderDomains.contains(userDomain) {
+        if EnterpriseServerApi.publicEmailProviderDomains.contains(userDomain) {
             return .empty
         }
         let request = ApiCall.Request(
