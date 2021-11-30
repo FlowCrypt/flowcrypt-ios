@@ -23,7 +23,6 @@ describe('LOGIN: ', () => {
 
       await MenuBarScreen.clickMenuIcon();
       await MenuBarScreen.checkUserEmail();
-      await MenuBarScreen.checkMenuBar();
 
       await MenuBarScreen.clickLogout();
       await SplashScreen.checkLoginPage();
