@@ -12,12 +12,20 @@ import AsyncDisplayKit
 open class TableNodeViewController: ASDKViewController<TableNode> {
     public override var title: String? {
         didSet {
-            navigationItem.titleView?.accessibilityIdentifier = title
+            navigationItem.setAccessibility(id: title)
         }
     }
     
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         node.reloadData()
+    }
+}
+
+public extension UINavigationItem {
+    func setAccessibility(id: String?) {
+        isAccessibilityElement = true
+        titleView?.accessibilityIdentifier = title
+        accessibilityLabel = title
     }
 }
