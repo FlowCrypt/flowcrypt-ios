@@ -41,16 +41,18 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        attester: AttesterApiType = AttesterApi()
+        attester: AttesterApiType? = nil
     ) {
         self.backupService = backupService
-        self.attester = attester
+        self.attester = attester ?? AttesterApi(
+            clientConfiguration: appContext.clientConfigurationService.getSaved(for: user.email)
+        )
         self.service = Service(
             appContext: appContext,
             user: user,
             backupService: backupService,
             core: core,
-            attester: attester
+            attester: self.attester
         )
         super.init(
             appContext: appContext,

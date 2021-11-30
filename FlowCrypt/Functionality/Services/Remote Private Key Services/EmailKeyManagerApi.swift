@@ -40,14 +40,14 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         static let apiName = "EmailKeyManagerApi"
     }
 
-    private let clientConfigurationService: ClientConfigurationServiceType
+    private let clientConfiguration: ClientConfiguration
     private let core: Core
 
     init(
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
+        clientConfiguration: ClientConfiguration,
         core: Core = .shared
     ) {
-        self.clientConfigurationService = clientConfigurationService
+        self.clientConfiguration = clientConfiguration
         self.core = core
     }
 
@@ -95,7 +95,7 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
     }
 
     private func getPrivateKeysUrlString() -> String? {
-        guard let keyManagerUrlString = clientConfigurationService.getSavedForCurrentUser().keyManagerUrlString else {
+        guard let keyManagerUrlString = clientConfiguration.keyManagerUrlString else {
             return nil
         }
         return "\(keyManagerUrlString)v1/keys/private"

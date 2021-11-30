@@ -10,16 +10,14 @@ import MailCore
 
 protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) async throws -> String?
-    func getActiveFesUrlForCurrentUser() async throws -> String?
-
     func getClientConfiguration(for email: String) async throws -> RawClientConfiguration
-    func getClientConfigurationForCurrentUser() async throws -> RawClientConfiguration
 }
 
 enum EnterpriseServerApiError: Error {
     case parse
     case emailFormat
 }
+
 extension EnterpriseServerApiError: LocalizedError {
     var errorDescription: String? {
         switch self {
@@ -50,13 +48,6 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
     private struct ClientConfigurationResponse: Codable {
         let clientConfiguration: RawClientConfiguration
-    }
-
-    func getActiveFesUrlForCurrentUser() async throws -> String? {
-        guard let email = DataService.shared.currentUser?.email else {
-            return nil
-        }
-        return try await getActiveFesUrl(for: email)
     }
 
     func getActiveFesUrl(for email: String) async throws -> String? {
@@ -126,10 +117,4 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         return clientConfiguration
     }
 
-    func getClientConfigurationForCurrentUser() async throws -> RawClientConfiguration {
-        guard let email = DataService.shared.currentUser?.email else {
-            fatalError("User has to be set while getting client configuration")
-        }
-        return try await getClientConfiguration(for: email)
-    }
 }
