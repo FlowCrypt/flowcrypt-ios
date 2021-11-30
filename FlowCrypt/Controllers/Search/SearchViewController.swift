@@ -222,7 +222,7 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         guard let message = state.messages[safe: indexPath.row] else { return }
 
         // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
-        open(appContext: appContext, with: .init(message: message), path: folderPath)
+        open(with: .init(message: message), path: folderPath, appContext: appContext)
     }
 }
 

@@ -10,7 +10,7 @@ import UIKit
 
 @MainActor
 protocol MsgListViewController {
-    func open(appContext: AppContext, with message: InboxRenderable, path: String)
+    func open(with message: InboxRenderable, path: String, appContext: AppContext)
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int?
     func updateMessage(isRead: Bool, at index: Int)
@@ -20,12 +20,12 @@ protocol MsgListViewController {
 extension MsgListViewController where Self: UIViewController {
 
     // todo - tom - don't know how to add AppContext into init of protocol/extension
-    func open(appContext: AppContext, with message: InboxRenderable, path: String) {
+    func open(with message: InboxRenderable, path: String, appContext: AppContext) {
         switch message.wrappedType {
         case .message(let message):
             openMsg(appContext: appContext, with: message, path: path)
         case .thread(let thread):
-            openThread(appContext: appContext, with: thread)
+            openThread(with: thread, appContext: appContext)
         }
     }
 
@@ -41,10 +41,10 @@ extension MsgListViewController where Self: UIViewController {
                                    snippet: nil,
                                    path: path,
                                    messages: [message])
-        openThread(appContext: appContext, with: thread)
+        openThread(with: thread, appContext: appContext)
     }
 
-    private func openThread(appContext: AppContext, with thread: MessageThread) {
+    private func openThread(with thread: MessageThread, appContext: AppContext) {
         let viewController = ThreadDetailsViewController(
             appContext: appContext,
             thread: thread

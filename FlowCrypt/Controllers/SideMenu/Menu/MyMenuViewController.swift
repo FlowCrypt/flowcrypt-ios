@@ -226,7 +226,7 @@ extension MyMenuViewController {
             return
         }
 
-        router.switchActive(appContext: appContext, user: account)
+        router.switchActive(user: account, appContext: appContext)
     }
 }
 

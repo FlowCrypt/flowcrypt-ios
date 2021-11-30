@@ -364,7 +364,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(appContext: appContext, with: inboxInput[indexPath.row], path: viewModel.path)
+        open(with: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
     }
 
     // MARK: Cell Nodes

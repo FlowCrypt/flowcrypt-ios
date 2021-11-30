@@ -14,7 +14,7 @@ protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType)
     func askForContactsPermission(appContext: AppContext, for route: GlobalRoutingType) async throws
-    func switchActive(appContext: AppContext, user: User)
+    func switchActive(user: User, appContext: AppContext)
     func signOut(appContext: AppContext)
 }
 
@@ -121,7 +121,7 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func switchActive(appContext: AppContext, user: User) {
+    func switchActive(user: User, appContext: AppContext) {
         logger.logInfo("Switching active user \(user)")
         guard let session = appContext.userAccountService.switchActiveSessionFor(user: user) else {
             logger.logWarning("Can't switch active user with \(user.email)")
