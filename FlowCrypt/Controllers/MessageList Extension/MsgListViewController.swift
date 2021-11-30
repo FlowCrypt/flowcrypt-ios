@@ -18,6 +18,9 @@ protocol MsgListViewController {
 }
 
 extension MsgListViewController where Self: UIViewController {
+    
+    private let appContext: AppContext
+    
     func open(with message: InboxRenderable, path: String) {
         switch message.wrappedType {
         case .message(let message):

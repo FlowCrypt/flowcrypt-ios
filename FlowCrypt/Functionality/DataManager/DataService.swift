@@ -9,11 +9,10 @@
 import Foundation
 import RealmSwift
 
-protocol EmailProviderType {
-    var email: String? { get }
-}
 
-protocol DataServiceType: EmailProviderType {
+// todo DataServiceType in general is a bit of a confused class
+// hopefully we can refactor it away or shrink it
+protocol DataServiceType {
     // data
     var email: String? { get }
     var currentUser: User? { get }
@@ -25,6 +24,8 @@ protocol DataServiceType: EmailProviderType {
     var users: [User] { get }
 
     func validAccounts() -> [User]
+    
+    func performMigrationIfNeeded() async throws
 }
 
 protocol ImapSessionProvider {
@@ -53,7 +54,7 @@ final class DataService {
     private let localStorage: LocalStorageType
     private let migrationService: DBMigration
 
-    private init(
+    init(
         encryptedStorage: EncryptedStorageType,
         localStorage: LocalStorageType = LocalStorage()
     ) {

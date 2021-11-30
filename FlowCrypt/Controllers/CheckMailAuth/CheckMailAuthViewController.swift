@@ -13,8 +13,10 @@ import UIKit
 
 class CheckMailAuthViewController: TableNodeViewController {
     private let globalRouter: GlobalRouterType
+    private let appContext: AppContext
 
-    init(globalRouter: GlobalRouterType = GlobalRouter()) {
+    init(appContext: AppContext, globalRouter: GlobalRouterType = GlobalRouter()) {
+        self.appContext = appContext
         self.globalRouter = globalRouter
         super.init(node: TableNode())
     }
@@ -85,7 +87,7 @@ extension CheckMailAuthViewController {
         case 2:
             return ButtonCellNode(input: .signInAgain) { [weak self] in
                 guard let self = self else { return }
-                self.globalRouter.signIn(with: .gmailLogin(self))
+                self.globalRouter.signIn(appContext: self.appContext, route: .gmailLogin(self))
             }
         default:
             return ASCellNode()

@@ -9,6 +9,7 @@
 import FlowCryptCommon
 import Foundation
 
+// todo - rename to SessionService?
 protocol UserAccountServiceType {
     func startSessionFor(user type: SessionType)
     func switchActiveSessionFor(user: User) -> SessionType?
@@ -30,7 +31,7 @@ final class UserAccountService {
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler,
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
-        dataService: DataServiceType = DataService.shared,
+        dataService: DataServiceType,
         imap: Imap = .shared,
         googleService: GoogleUserService = GoogleUserService()
     ) {

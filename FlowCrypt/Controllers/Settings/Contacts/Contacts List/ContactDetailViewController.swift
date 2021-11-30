@@ -31,13 +31,14 @@ final class ContactDetailViewController: TableNodeViewController {
     private let action: ContactDetailAction?
 
     init(
+        appContext: AppContext,
         decorator: ContactDetailDecoratorType = ContactDetailDecorator(),
-        contactsProvider: LocalContactsProviderType = LocalContactsProvider(),
+        contactsProvider: LocalContactsProviderType?,
         recipient: RecipientWithSortedPubKeys,
         action: ContactDetailAction?
     ) {
         self.decorator = decorator
-        self.contactsProvider = contactsProvider
+        self.contactsProvider = contactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
         self.recipient = recipient
         self.action = action
         super.init(node: TableNode())

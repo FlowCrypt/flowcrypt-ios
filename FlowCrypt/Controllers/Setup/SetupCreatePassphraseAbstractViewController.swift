@@ -24,14 +24,12 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         Parts.allCases
     }
 
+    let appContext: AppContext
     let decorator: SetupViewDecorator
     let core: Core
     let router: GlobalRouterType
     let user: UserId
     let fetchedKeysCount: Int
-    let storage: DataServiceType
-    let keyStorage: KeyStorageType
-    let passPhraseService: PassPhraseServiceType
 
     var storageMethod: StorageMethod = .persistent {
         didSet {
@@ -49,23 +47,19 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
+        appContext: AppContext,
         user: UserId,
         fetchedKeysCount: Int = 0,
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
     ) {
+        self.appContext = appContext
         self.user = user
         self.fetchedKeysCount = fetchedKeysCount
         self.core = core
         self.router = router
         self.decorator = decorator
-        self.storage = storage
-        self.keyStorage = keyStorage
-        self.passPhraseService = passPhraseService
         super.init(node: TableNode())
     }
 
@@ -97,7 +91,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     }
 
     func handleBackButtonTap() {
-        router.signOut()
+        router.signOut(appContext: self.appContext)
     }
 }
 

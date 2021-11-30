@@ -13,6 +13,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     private let numberOfInboxItemsToLoad: Int
 
+    private let appContext: AppContext
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
@@ -32,12 +33,14 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     var path: String { viewModel.path }
 
     init(
+        appContext: AppContext,
         _ viewModel: InboxViewModel,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = MailProvider.shared.draftsProvider,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
+        self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
 
@@ -324,11 +327,11 @@ extension InboxViewController {
     }
 
     private func btnComposeTap() {
-        guard let email = DataService.shared.email else {
+        guard let email = appContext.dataService.email else {
             return
         }
         TapTicFeedback.generate(.light)
-        let composeVc = ComposeViewController(email: email)
+        let composeVc = ComposeViewController(appContext: appContext)
         navigationController?.pushViewController(composeVc, animated: true)
     }
 }

@@ -28,6 +28,7 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
         }
     }
 
+    private let appContext: AppContext
     private let decorator: SetupViewDecorator
     private let pasteboard: UIPasteboard
     private let dataService: DataServiceType
@@ -38,11 +39,13 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
     }
 
     init(
+        appContext: AppContext,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         pasteboard: UIPasteboard = UIPasteboard.general,
         core: Core = Core.shared,
         dataService: DataServiceType = DataService.shared
     ) {
+        self.appContext = appContext
         self.pasteboard = pasteboard
         self.decorator = decorator
         self.dataService = dataService

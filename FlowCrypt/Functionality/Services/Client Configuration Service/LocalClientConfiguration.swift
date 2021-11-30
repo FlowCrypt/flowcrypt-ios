@@ -11,9 +11,9 @@ import RealmSwift
 import IDZSwiftCommonCrypto
 
 protocol LocalClientConfigurationType {
-    func load() -> RawClientConfiguration?
-    func remove()
-    func save(raw: RawClientConfiguration)
+    func load(for user: String) -> RawClientConfiguration?
+    func remove(for user: String)
+    func save(for user: User, raw: RawClientConfiguration)
 }
 
 struct LocalClientConfiguration {
@@ -24,23 +24,16 @@ struct LocalClientConfiguration {
 }
 
 extension LocalClientConfiguration: LocalClientConfigurationType {
-    func load() -> RawClientConfiguration? {
-        // (tom) todo - should we not guard here?
-//        guard let user = cache.encryptedStorage.activeUser else {
-//            fatalError("Internal inconsistency, no active user when loading client configuration")
-//        }
-        RawClientConfiguration(cache.getAllForActiveUser()?.first)
+    func load(for userEmail: String) -> RawClientConfiguration? {
+        guard let foundLocal = cache.getAll(for: userEmail).first else { return nil }
+        return RawClientConfiguration(foundLocal)
     }
 
-    func remove() {
-        // (tom) todo - should we not guard here?
-        cache.removeAllForActiveUser()
+    func remove(for userEmail: String) {
+        cache.removeAll(for: userEmail)
     }
 
-    func save(raw: RawClientConfiguration) {
-        guard let user = cache.encryptedStorage.activeUser else {
-            fatalError("Internal inconsistency, no active user when saving client configuration")
-        }
+    func save(for user: User, raw: RawClientConfiguration) {
         cache.save(ClientConfigurationRealmObject(configuration: raw, user: user))
     }
 }

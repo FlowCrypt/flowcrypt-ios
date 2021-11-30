@@ -33,8 +33,9 @@ protocol CoreComposeMessageType {
 }
 
 final class ComposeMessageService {
+
     private let messageGateway: MessageGateway
-    private let dataService: KeyStorageType
+    private let keyStorage: KeyStorageType
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
@@ -43,13 +44,13 @@ final class ComposeMessageService {
     init(
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
         draftGateway: DraftGateway? = MailProvider.shared.draftGateway,
-        dataService: KeyStorageType = KeyDataStorage(),
+        keyStorage: KeyStorageType,
         contactsService: ContactsServiceType = ContactsService(),
         core: CoreComposeMessageType & KeyParser = Core.shared
     ) {
         self.messageGateway = messageGateway
         self.draftGateway = draftGateway
-        self.dataService = dataService
+        self.keyStorage = keyStorage
         self.contactsService = contactsService
         self.core = core
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
@@ -88,7 +89,7 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = self.dataService.publicKey() else {
+        guard let myPubKey = self.keyStorage.publicKey() else {
             throw MessageValidationError.missedPublicKey
         }
 

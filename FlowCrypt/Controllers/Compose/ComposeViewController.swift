@@ -39,6 +39,7 @@ final class ComposeViewController: TableNodeViewController {
         case subject, subjectDivider, text
     }
 
+    private let appContext: AppContext
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
     private let decorator: ComposeViewDecorator
@@ -46,7 +47,6 @@ final class ComposeViewController: TableNodeViewController {
     private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
-    private let keyService: KeyServiceType
     private let keyMethods: KeyMethodsType
     private let service: ServiceActor
     private let passPhraseService: PassPhraseService
@@ -68,39 +68,43 @@ final class ComposeViewController: TableNodeViewController {
     private var composedLatestDraft: ComposedDraft?
 
     init(
+        appContext: AppContext,
         email: String,
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         cloudContactProvider: CloudContactsProvider = UserContactsProvider(),
         userDefaults: UserDefaults = .standard,
-        contactsService: ContactsServiceType = ContactsService(),
-        composeMessageService: ComposeMessageService = ComposeMessageService(),
+        contactsService: ContactsServiceType? = nil,
+        composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
-        keyService: KeyServiceType = KeyService(),
-        passPhraseService: PassPhraseService = PassPhraseService(),
         keyMethods: KeyMethodsType = KeyMethods(),
         router: GlobalRouterType = GlobalRouter()
     ) {
+        self.appContext = appContext
         self.email = email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
         self.userDefaults = userDefaults
-        self.contactsService = contactsService
+        self.contactsService = contactsService ?? ContactsService(
+            localContactsProvider: LocalContactsProvider(
+                encryptedStorage: appContext.encryptedStorage
+            )
+        )
         self.cloudContactProvider = cloudContactProvider
-        self.composeMessageService = composeMessageService
+        self.composeMessageService = composeMessageService ?? ComposeMessageService(
+            keyStorage: appContext.keyStorage
+        )
         self.filesManager = filesManager
         self.photosManager = photosManager
-        self.keyService = keyService
         self.keyMethods = keyMethods
         self.service = ServiceActor(
-            composeMessageService: composeMessageService,
-            contactsService: contactsService,
+            composeMessageService: self.composeMessageService,
+            contactsService: self.contactsService,
             cloudContactProvider: cloudContactProvider
         )
-        self.passPhraseService = passPhraseService
         self.router = router
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
@@ -354,7 +358,7 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
-        guard let signingKey = try await keyService.getSigningKey() else {
+        guard let signingKey = try await appContext.keyService.getSigningKey() else {
             throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
 
@@ -396,7 +400,7 @@ extension ComposeViewController {
     private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await self.keyService.getPrvKeyInfo()
+        let allKeys = try await appContext.keyService.getPrvKeyInfo()
         guard allKeys.isNotEmpty else {
             // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
             //   I copied it from another usage, but has to be changed
@@ -1110,7 +1114,7 @@ extension ComposeViewController {
 
         Task {
             do {
-                try await router.askForContactsPermission(for: .gmailLogin(self))
+                try await router.askForContactsPermission(appContext: appContext, for: .gmailLogin(self))
                 node.reloadSections([2], with: .automatic)
             } catch {
                 handleContactsPermissionError(error)

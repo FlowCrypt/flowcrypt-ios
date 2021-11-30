@@ -20,13 +20,16 @@ final class ContactsListViewController: TableNodeViewController {
     private let contactsProvider: LocalContactsProviderType
     private var recipients: [RecipientWithSortedPubKeys] = []
     private var selectedIndexPath: IndexPath?
+    private let appContext: AppContext
 
     init(
+        appContext: AppContext,
         decorator: ContactsListDecoratorType = ContactsListDecorator(),
-        contactsProvider: LocalContactsProviderType = LocalContactsProvider()
+        contactsProvider: LocalContactsProviderType?
     ) {
         self.decorator = decorator
-        self.contactsProvider = contactsProvider
+        self.appContext = appContext
+        self.contactsProvider = contactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
         super.init(node: TableNode())
     }
 
@@ -105,6 +108,8 @@ extension ContactsListViewController {
 
     private func proceedToContactDetail(with indexPath: IndexPath) {
         let contactDetailViewController = ContactDetailViewController(
+            appContext: appContext,
+            contactsProvider: contactsProvider,
             recipient: recipients[indexPath.row]
         ) { [weak self] action in
             guard case let .delete(contact) = action else {

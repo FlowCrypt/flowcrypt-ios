@@ -30,25 +30,21 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
     private let keys: [KeyDetails]
 
     init(
+        appContext: AppContext,
         user: UserId,
         keys: [KeyDetails] = [],
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
     ) {
         self.keys = keys
         super.init(
+            appContext: appContext,
             user: user,
             fetchedKeysCount: keys.count,
             core: core,
             router: router,
             decorator: decorator,
-            storage: storage,
-            keyStorage: keyStorage,
-            passPhraseService: passPhraseService
         )
         self.storageMethod = .memory
     }

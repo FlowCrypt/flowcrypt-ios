@@ -19,6 +19,7 @@ import FlowCryptUI
  *      - Create new key - **SetupGenerateKeyViewController**
  */
 final class SetupInitialViewController: TableNodeViewController {
+    
     private enum Parts: Int, CaseIterable {
         case title, description, createKey, importKey, anotherAccount
     }
@@ -57,10 +58,12 @@ final class SetupInitialViewController: TableNodeViewController {
     private let decorator: SetupViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let emailKeyManagerApi: EmailKeyManagerApiType
-
+    private let appContext: AppContext
+    
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
+        appContext: AppContext,
         user: UserId,
         backupService: BackupServiceType = BackupService(),
         router: GlobalRouterType = GlobalRouter(),
@@ -68,6 +71,7 @@ final class SetupInitialViewController: TableNodeViewController {
         clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
         emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi()
     ) {
+        self.appContext = appContext
         self.user = user
         self.backupService = backupService
         self.service = ServiceActor(backupService: backupService)

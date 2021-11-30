@@ -11,14 +11,20 @@ import UIKit
 
 private let logger = Logger.nested("AppStart")
 
-struct AppStartup {
+class AppStartup {
     private enum EntryPoint {
         case signIn, setupFlow(UserId), mainFlow
     }
 
+    private let appContext: AppContext
+    
+    init(appContext: AppContext) {
+        self.appContext = appContext
+    }
+    
     @MainActor
-    func initializeApp(window: UIWindow, session: SessionType?) {
-        logger.logInfo("Initialize application with session \(session.debugDescription)")
+    func initializeApp(window: UIWindow) {
+        logger.logInfo("Initialize application with session \(appContext.session.debugDescription)")
 
         Task {
             window.rootViewController = BootstrapViewController()
@@ -26,12 +32,12 @@ struct AppStartup {
 
             do {
                 await setupCore()
-                try await DataService.shared.performMigrationIfNeeded()
+                try await appContext.dataService.performMigrationIfNeeded()
                 try await setupSession()
                 try await getUserOrgRulesIfNeeded()
-                chooseView(for: window, session: session)
+                chooseView(for: window)
             } catch {
-                showErrorAlert(with: error, on: window, session: session)
+                showErrorAlert(of: error, on: window)
             }
         }
     }
@@ -47,15 +53,15 @@ struct AppStartup {
     }
 
     private func renewSessionIfValid() async throws {
-        guard DataService.shared.currentAuthType != nil else {
+        guard appContext.dataService.currentAuthType != nil else {
             return
         }
         return try await MailProvider.shared.sessionProvider.renewSession()
     }
 
     @MainActor
-    private func chooseView(for window: UIWindow, session: SessionType?) {
-        let entryPoint = entryPointForUser(session: session)
+    private func chooseView(for window: UIWindow) {
+        let entryPoint = entryPointForUser()
 
         let viewController: UIViewController
 
@@ -73,15 +79,14 @@ struct AppStartup {
         window.rootViewController = viewController
     }
 
-    private func entryPointForUser(session: SessionType?) -> EntryPoint {
-        let dataService = DataService.shared
-        if !dataService.isLoggedIn {
+    private func entryPointForUser() -> EntryPoint {
+        if !appContext.dataService.isLoggedIn {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
-        } else if dataService.isSetupFinished {
+        } else if appContext.dataService.isSetupFinished {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
-        } else if let session = session, let userId = makeUserIdForSetup(session: session) {
+        } else if let session = appContext.session, let userId = makeUserIdForSetup(session: session) {
             logger.logInfo("User with session \(session) -> setupFlow")
             return .setupFlow(userId)
         } else {
@@ -91,13 +96,13 @@ struct AppStartup {
     }
 
     private func getUserOrgRulesIfNeeded() async throws {
-        if DataService.shared.isLoggedIn {
+        if appContext.dataService.isLoggedIn {
             _ = try await ClientConfigurationService().fetchForCurrentUser()
         }
     }
 
     private func makeUserIdForSetup(session: SessionType) -> UserId? {
-        guard let currentUser = DataService.shared.currentUser else {
+        guard let currentUser = appContext.dataService.currentUser else {
             Logger.logInfo("Can't create user id for setup")
             return nil
         }
@@ -125,10 +130,10 @@ struct AppStartup {
     }
 
     @MainActor
-    private func showErrorAlert(with error: Error, on window: UIWindow, session: SessionType?) {
+    private func showErrorAlert(of error: Error, on window: UIWindow) {
         let alert = UIAlertController(title: "Startup Error", message: "\(error.localizedDescription)", preferredStyle: .alert)
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in
-            self.initializeApp(window: window, session: session)
+            self.initializeApp(window: window)
         }
         alert.addAction(retry)
         window.rootViewController?.present(alert, animated: true, completion: nil)

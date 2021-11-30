@@ -35,12 +35,12 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     private let service: Service
 
     init(
+        appContext: AppContext,
         user: UserId,
         backupService: BackupServiceType = BackupService(),
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
         keyStorage: KeyStorageType = KeyDataStorage(),
         attester: AttesterApiType = AttesterApi(),
         passPhraseService: PassPhraseServiceType = PassPhraseService()
@@ -48,20 +48,20 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         self.backupService = backupService
         self.attester = attester
         self.service = Service(
+            appContext: appContext,
             user: user,
             backupService: backupService,
             core: core,
             keyStorage: keyStorage,
-            storage: storage,
             attester: attester,
             passPhraseService: passPhraseService
         )
         super.init(
+            appContext: appContext,
             user: user,
             core: core,
             router: router,
             decorator: decorator,
-            storage: storage,
             keyStorage: keyStorage,
             passPhraseService: passPhraseService
         )
@@ -100,26 +100,28 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 private actor Service {
     typealias ViewController = SetupCreatePassphraseAbstractViewController
 
+    private let appContext: AppContext
     private let user: UserId
     private let backupService: BackupServiceType
     private let core: Core
     private let keyStorage: KeyStorageType
-    private let storage: DataServiceType
     private let attester: AttesterApiType
     private let passPhraseService: PassPhraseServiceType
 
-    init(user: UserId,
-         backupService: BackupServiceType,
-         core: Core,
-         keyStorage: KeyStorageType,
-         storage: DataServiceType,
-         attester: AttesterApiType,
-         passPhraseService: PassPhraseServiceType) {
+    init(
+        appContext: AppContext,
+        user: UserId,
+        backupService: BackupServiceType,
+        core: Core,
+        keyStorage: KeyStorageType,
+        attester: AttesterApiType,
+        passPhraseService: PassPhraseServiceType
+    ) {
+        self.appContext = appContext
         self.user = user
         self.backupService = backupService
         self.core = core
         self.keyStorage = keyStorage
-        self.storage = storage
         self.attester = attester
         self.passPhraseService = passPhraseService
     }
@@ -173,7 +175,7 @@ private actor Service {
             _ = try await attester.update(
                 email: email,
                 pubkey: publicKey,
-                token: storage.token
+                token: appContext.dataService.token
             )
         } catch {
             let message = "Failed to submit Public Key"
@@ -182,10 +184,10 @@ private actor Service {
     }
 
     private func getUserId() throws -> UserId {
-        guard let email = storage.email, !email.isEmpty else {
+        guard let email = appContext.dataService.email, !email.isEmpty else {
             throw CreateKeyError.missedUserEmail
         }
-        guard let name = storage.email, !name.isEmpty else {
+        guard let name = appContext.dataService.email, !name.isEmpty else {
             throw CreateKeyError.missedUserName
         }
         return UserId(email: email, name: name)
