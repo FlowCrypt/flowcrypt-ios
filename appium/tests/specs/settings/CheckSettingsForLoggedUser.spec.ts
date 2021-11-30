@@ -19,7 +19,6 @@ describe('SETTINGS: ', () => {
 
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.checkUserEmail();
-    await MenuBarScreen.checkMenuBar();
 
     await MenuBarScreen.clickSettingsButton();
     await SettingsScreen.checkSettingsScreen();
