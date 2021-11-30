@@ -21,8 +21,7 @@ final class ClientConfigurationService {
 
     init(
         server: EnterpriseServerApiType = EnterpriseServerApi(),
-        local: LocalClientConfigurationType,
-        getCurrentUserEmail: @autoclosure @escaping () -> (String?)
+        local: LocalClientConfigurationType
     ) {
         self.server = server
         self.local = local

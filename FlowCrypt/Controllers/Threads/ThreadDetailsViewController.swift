@@ -30,6 +30,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         case thread, message
     }
 
+    private let appContext: AppContext
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
@@ -49,6 +50,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     )
 
     init(
+        appContext: AppContext,
         messageService: MessageService = MessageService(),
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
@@ -57,6 +59,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         completion: @escaping MessageActionCompletion
     ) {
+        self.appContext = appContext
         self.messageService = messageService
         self.threadOperationsProvider = threadOperationsProvider
         self.messageOperationsProvider = messageOperationsProvider
@@ -142,7 +145,7 @@ extension ThreadDetailsViewController {
     }
 
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
-        guard let email = DataService.shared.email,
+        guard let email = appContext.dataService.currentUser?.email,
               let input = input[safe: indexPath.section-1],
               let processedMessage = input.processedMessage
         else { return }
@@ -171,7 +174,7 @@ extension ThreadDetailsViewController {
 
         let composeInput = ComposeMessageInput(type: .quote(replyInfo))
         navigationController?.pushViewController(
-            ComposeViewController(email: email, input: composeInput),
+            ComposeViewController(appContext: appContext, input: composeInput),
             animated: true
         )
     }

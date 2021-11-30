@@ -327,9 +327,6 @@ extension InboxViewController {
     }
 
     private func btnComposeTap() {
-        guard let email = appContext.dataService.email else {
-            return
-        }
         TapTicFeedback.generate(.light)
         let composeVc = ComposeViewController(appContext: appContext)
         navigationController?.pushViewController(composeVc, animated: true)
@@ -359,7 +356,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(with: inboxInput[indexPath.row], path: viewModel.path)
+        open(appContext: appContext, with: inboxInput[indexPath.row], path: viewModel.path)
     }
 
     // MARK: Cell Nodes

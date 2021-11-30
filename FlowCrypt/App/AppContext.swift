@@ -5,12 +5,11 @@
 //  Created by Tom on 30.11.2021
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
 import Foundation
 
 class AppContext {
-    
+
     let encryptedStorage: EncryptedStorageType
     let session: SessionType?
     // todo - should be called sessionService
@@ -20,7 +19,8 @@ class AppContext {
     let keyStorage: KeyStorageType
     let keyService: KeyServiceType
     let passPhraseService: PassPhraseServiceType
-    
+    let clientConfigurationService: ClientConfigurationServiceType
+
     private init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
@@ -28,7 +28,8 @@ class AppContext {
         dataService: DataServiceType,
         keyStorage: KeyStorageType,
         keyService: KeyServiceType,
-        passPhraseService: PassPhraseServiceType
+        passPhraseService: PassPhraseServiceType,
+        clientConfigurationService: ClientConfigurationServiceType
     ) {
         self.encryptedStorage = encryptedStorage
         self.session = session
@@ -37,8 +38,9 @@ class AppContext {
         self.keyStorage = keyStorage // todo - keyStorage and keyService should be the same
         self.keyService = keyService
         self.passPhraseService = passPhraseService
+        self.clientConfigurationService = clientConfigurationService
     }
-    
+
     @MainActor
     static func setUpAppContext() throws -> AppContext {
         let keyChainService = KeyChainService()
@@ -46,6 +48,18 @@ class AppContext {
             storageEncryptionKey: try keyChainService.getStorageEncryptionKey()
         )
         let dataService = DataService(encryptedStorage: encryptedStorage)
+        let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
+        let keyStorage = KeyDataStorage(encryptedStorage: encryptedStorage)
+        let keyService = KeyService(
+            storage: keyStorage,
+            passPhraseService: passPhraseService,
+            currentUserEmail: { dataService.email }
+        )
+        let clientConfigurationService = ClientConfigurationService(
+            local: LocalClientConfiguration(
+                encryptedStorage: encryptedStorage
+            )
+        )
         return AppContext(
             encryptedStorage: encryptedStorage,
             session: nil, // will be set later. But would be nice to already set here, if available
@@ -54,11 +68,13 @@ class AppContext {
                 dataService: dataService
             ),
             dataService: dataService,
-            keyStorage: KeyDataStorage(encryptedStorage: encryptedStorage),
-            passPhraseService: PassPhraseService(encryptedStorage: encryptedStorage)
+            keyStorage: keyStorage,
+            keyService: keyService,
+            passPhraseService: passPhraseService,
+            clientConfigurationService: clientConfigurationService
         )
     }
-    
+
     func withSession(_ session: SessionType?) -> AppContext {
         return AppContext(
             encryptedStorage: self.encryptedStorage,
@@ -67,8 +83,9 @@ class AppContext {
             dataService: self.dataService,
             keyStorage: self.keyStorage,
             keyService: self.keyService,
-            passPhraseService: self.passPhraseService
+            passPhraseService: self.passPhraseService,
+            clientConfigurationService: self.clientConfigurationService
         )
     }
-    
+
 }

@@ -69,7 +69,6 @@ final class ComposeViewController: TableNodeViewController {
 
     init(
         appContext: AppContext,
-        email: String,
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
@@ -83,6 +82,9 @@ final class ComposeViewController: TableNodeViewController {
         router: GlobalRouterType = GlobalRouter()
     ) {
         self.appContext = appContext
+        guard let email = appContext.dataService.email else {
+            fatalError("missing current user email") // todo - need a more elegant solution
+        }
         self.email = email
         self.notificationCenter = notificationCenter
         self.input = input

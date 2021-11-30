@@ -16,19 +16,22 @@ import FlowCryptUI
  * - User can see detail information for the key in *KeyDetailViewController*
  */
 final class KeySettingsViewController: TableNodeViewController {
+    
+    private let appContext: AppContext
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
     private let keyService: KeyServiceType
     private let isUsingKeyManager: Bool
 
     init(
-        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator(),
-        keyService: KeyServiceType = KeyService(),
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
+        appContext: AppContext,
+        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
     ) {
         self.decorator = decorator
-        self.keyService = keyService
-        self.isUsingKeyManager = clientConfigurationService.getSavedForCurrentUser().isUsingKeyManager
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("missing current user") // todo - need more elegant solution
+        }
+        self.isUsingKeyManager = appContext.clientConfigurationService.getSaved(for: currentUser.email).isUsingKeyManager
         super.init(node: TableNode())
     }
 
@@ -78,7 +81,7 @@ extension KeySettingsViewController {
 
 extension KeySettingsViewController {
     @objc private func handleAddButtonTap() {
-        navigationController?.pushViewController(SetupManuallyImportKeyViewController(), animated: true)
+        navigationController?.pushViewController(SetupManuallyImportKeyViewController(appContext: appContext), animated: true)
     }
 }
 
