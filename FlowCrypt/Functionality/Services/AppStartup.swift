@@ -52,11 +52,12 @@ class AppStartup {
         try await renewSessionIfValid()
     }
 
+    /// todo - refactor so that it doesn't need getOptionalMailProvider
     private func renewSessionIfValid() async throws {
-        guard appContext.dataService.currentAuthType != nil else {
+        guard let mailProvider = appContext.getOptionalMailProvider() else {
             return
         }
-        return try await MailProvider.shared.sessionProvider.renewSession()
+        return try await mailProvider.sessionProvider.renewSession()
     }
 
     @MainActor

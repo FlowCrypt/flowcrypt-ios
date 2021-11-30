@@ -33,13 +33,13 @@ final class UserAccountService {
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
         dataService: DataServiceType,
         imap: Imap = .shared,
-        googleService: GoogleUserService = GoogleUserService()
+        googleService: GoogleUserService? = nil
     ) {
+        self.googleService = googleService ?? GoogleUserService(currentUserEmail: dataService.email)
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
         self.dataService = dataService
         self.imap = imap
-        self.googleService = googleService
     }
 
     private var currentUser: User? {

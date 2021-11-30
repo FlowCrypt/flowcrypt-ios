@@ -15,9 +15,9 @@ final class BackupService {
     let messageSender: MessageGateway
 
     init(
-        backupProvider: BackupProvider = MailProvider.shared.backupProvider,
+        backupProvider: BackupProvider,
         core: Core = .shared,
-        messageSender: MessageGateway = MailProvider.shared.messageSender
+        messageSender: MessageGateway
     ) {
         self.backupProvider = backupProvider
         self.core = core

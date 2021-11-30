@@ -35,10 +35,11 @@ class GmailService: MailServiceProvider {
     var progressHandler: ((Float) -> Void)?
 
     init(
-        userService: GoogleUserServiceType = GoogleUserService(),
+        currentUserEmail: String,
+        userService: GoogleUserServiceType? = nil,
         backupSearchQueryProvider: GmailBackupSearchQueryProviderType = GmailBackupSearchQueryProvider()
     ) {
-        self.userService = userService
+        self.userService = userService ?? GoogleUserService(currentUserEmail: currentUserEmail)
         self.backupSearchQueryProvider = backupSearchQueryProvider
     }
 }

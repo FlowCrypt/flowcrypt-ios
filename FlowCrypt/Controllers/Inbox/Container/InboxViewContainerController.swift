@@ -39,11 +39,14 @@ final class InboxViewContainerController: TableNodeViewController {
 
     init(
         appContext: AppContext,
-        folderService: FoldersServiceType = FoldersService(),
+        folderService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
         self.appContext = appContext
-        self.folderService = folderService
+        self.folderService = folderService ?? FoldersService(
+            encryptedStorage: appContext.encryptedStorage,
+            remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
+        )
         self.decorator = decorator
         super.init(node: TableNode())
         node.delegate = self

@@ -37,7 +37,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         _ viewModel: InboxViewModel,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
-        draftsListProvider: DraftsListProvider? = MailProvider.shared.draftsProvider,
+        draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
         self.appContext = appContext
@@ -45,7 +45,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
 
         self.service = ServiceActor(inboxDataProvider: provider)
-        self.draftsListProvider = draftsListProvider
+        self.draftsListProvider = draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
 
@@ -121,7 +121,7 @@ extension InboxViewController {
 // MARK: - Helpers
 extension InboxViewController {
     private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        MailProvider.shared.currentMessagesListPagination(from: number, token: state.token)
+        appContext.getRequiredMailProvider().currentMessagesListPagination(from: number, token: state.token)
     }
 
     private func messagesToLoad() -> Int {
@@ -160,8 +160,11 @@ extension InboxViewController {
                         pagination: currentMessagesListPagination()
                     )
                 )
+                guard let currentUserEmail = appContext.dataService.currentUser?.email else {
+                    throw AppErr.noCurrentUser
+                }
                 let inboxContext = InboxContext(
-                    data: context.messages.map(InboxRenderable.init),
+                    data: context.messages.map { InboxRenderable(message: $0, activeUserEmail: currentUserEmail) },
                     pagination: context.pagination
                 )
                 handleEndFetching(with: inboxContext, context: batchContext)

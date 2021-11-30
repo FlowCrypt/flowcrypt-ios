@@ -19,7 +19,7 @@ class InboxViewControllerFactory {
         switch currentAuthType {
         case .oAuthGmail:
             // Inject threads provider - Gmail API
-            guard let threadsProvider = MailProvider.shared.messagesThreadProvider else {
+            guard let threadsProvider = appContext.getRequiredMailProvider().messagesThreadProvider else {
                 fatalError("Internal inconsistency")
             }
 
@@ -31,7 +31,7 @@ class InboxViewControllerFactory {
             )
         case .password:
             // Inject message list provider - IMAP
-            let provider = InboxMessageListProvider()
+            let provider = InboxMessageListProvider(provider: appContext.getRequiredMailProvider().messageListProvider)
 
             return InboxViewController(
                 appContext: appContext,

@@ -35,17 +35,24 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     private let backupService: BackupServiceType
     private let service: ServiceActor
     private let userId: UserId
+    private let appContext: AppContext
 
     init(
+        appContext: AppContext,
         decorator: BackupOptionsViewDecoratorType = BackupOptionsViewDecorator(),
-        backupService: BackupServiceType = BackupService(),
+        backupService: BackupServiceType? = nil,
         backups: [KeyDetails],
         userId: UserId
     ) {
+        self.appContext = appContext
         self.decorator = decorator
         self.backups = backups
-        self.backupService = backupService
+        let backupService = backupService ?? BackupService(
+            backupProvider: appContext.getRequiredMailProvider().backupProvider,
+            messageSender: appContext.getRequiredMailProvider().messageSender
+        )
         self.service = ServiceActor(backupService: backupService)
+        self.backupService = backupService
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -87,6 +94,7 @@ extension BackupOptionsViewController {
     private func proceedToSelectBackupsScreen() {
         navigationController?.pushViewController(
             BackupSelectKeyViewController(
+                appContext: appContext,
                 selectedOption: selectedOption,
                 backups: backups,
                 userId: userId

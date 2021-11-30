@@ -44,7 +44,7 @@ class InboxMessageThreadsProvider: InboxDataProvider {
 class InboxMessageListProvider: InboxDataProvider {
     let provider: MessagesListProvider
 
-    init(provider: MessagesListProvider = MailProvider.shared.messageListProvider) {
+    init(provider: MessagesListProvider) {
         self.provider = provider
     }
 

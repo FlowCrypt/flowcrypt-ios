@@ -12,6 +12,8 @@ import Foundation
 
 @MainActor
 final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
+    
+    private let appContext: AppContext
     private let backupService: BackupServiceType
     private let service: ServiceActor
     private let decorator: BackupSelectKeyDecoratorType
@@ -20,8 +22,9 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
     private let userId: UserId
 
     init(
+        appContext: AppContext,
         decorator: BackupSelectKeyDecoratorType = BackupSelectKeyDecorator(),
-        backupService: BackupServiceType = BackupService(),
+        backupService: BackupServiceType? = nil,
         selectedOption: BackupOption,
         backups: [KeyDetails],
         userId: UserId
@@ -29,11 +32,15 @@ final class BackupSelectKeyViewController: ASDKViewController<TableNode> {
         self.decorator = decorator
         // set all selected bu default
         self.backupsContext = backups.map { ($0, true) }
-        self.backupService = backupService
+        let backupService = backupService ?? BackupService(
+            backupProvider: appContext.getRequiredMailProvider().backupProvider,
+            messageSender: appContext.getRequiredMailProvider().messageSender
+        )
         self.service = ServiceActor(backupService: backupService)
+        self.backupService = backupService
         self.selectedOption = selectedOption
         self.userId = userId
-
+        self.appContext = appContext
         super.init(node: TableNode())
     }
 

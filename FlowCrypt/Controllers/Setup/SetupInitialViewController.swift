@@ -163,7 +163,7 @@ extension SetupInitialViewController {
     private func fetchKeysFromEKM() {
         Task {
             do {
-                let result = try await emailKeyManagerApi.getPrivateKeys()
+                let result = try await emailKeyManagerApi.getPrivateKeys(currentUserEmail: user.email)
                 switch result {
                 case .success(keys: let keys):
                     proceedToSetupWithEKMKeys(keys: keys)

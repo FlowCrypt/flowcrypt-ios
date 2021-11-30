@@ -44,8 +44,8 @@ final class ComposeMessageService {
     init(
         clientConfiguration: ClientConfiguration,
         encryptedStorage: EncryptedStorageType,
-        messageGateway: MessageGateway = MailProvider.shared.messageSender,
-        draftGateway: DraftGateway? = MailProvider.shared.draftGateway,
+        messageGateway: MessageGateway,
+        draftGateway: DraftGateway? = nil,
         keyStorage: KeyStorageType? = nil,
         contactsService: ContactsServiceType? = nil,
         core: CoreComposeMessageType & KeyParser = Core.shared
