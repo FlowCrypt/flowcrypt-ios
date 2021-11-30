@@ -6,6 +6,7 @@ import FlowCryptCommon
 import MailCore
 
 final class Imap: MailServiceProvider {
+
     let mailServiceProviderType = MailServiceProviderType.imap
 
     let user: User

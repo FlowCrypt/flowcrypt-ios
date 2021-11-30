@@ -11,6 +11,7 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 
 class GmailService: MailServiceProvider {
+    
     let mailServiceProviderType = MailServiceProviderType.gmail
     let userService: GoogleUserServiceType
     let backupSearchQueryProvider: GmailBackupSearchQueryProviderType
