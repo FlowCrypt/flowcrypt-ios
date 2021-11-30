@@ -48,8 +48,15 @@ protocol GoogleUserServiceType {
     func renewSession() async throws
 }
 
+// todo - should be refactored to not require currentUserEmail
 final class GoogleUserService: NSObject, GoogleUserServiceType {
 
+    let currentUserEmail: String?
+    
+    init(currentUserEmail: String?) {
+        self.currentUserEmail = currentUserEmail
+    }
+    
     private enum Constants {
         static let index = "GTMAppAuthAuthorizerIndex"
         static let userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo"
@@ -72,12 +79,10 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         getAuthorizationForCurrentUser()
     }
 
-    private var currentUserEmail: String? {
-        DataService.shared.email
-    }
 }
 
 extension GoogleUserService: UserServiceType {
+    
     private var appDelegate: AppDelegate? {
         UIApplication.shared.delegate as? AppDelegate
     }
@@ -202,7 +207,7 @@ extension GoogleUserService {
             return try JSONDecoder().decode(GoogleUser.self, from: data)
         } catch {
             let isTokenErr = (error as NSError).isEqual(OIDOAuthTokenErrorDomain)
-            if isTokenErr, let email = self.currentUserEmail {
+            if isTokenErr, let email = currentUserEmail {
                 self.logger.logError("Authorization error during token refresh, clearing state. \(error)")
                 // removes any authorisation information which was stored in Keychain, the same happens on logout.
                 // if any error happens during token refresh then user will be signed out automatically.
@@ -226,7 +231,6 @@ extension GoogleUserService: OIDAuthStateChangeDelegate {
         guard let email = currentUserEmail else {
             return
         }
-
         saveAuth(state: state, for: email)
     }
 }

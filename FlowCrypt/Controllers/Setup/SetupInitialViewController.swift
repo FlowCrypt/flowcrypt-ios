@@ -59,7 +59,7 @@ final class SetupInitialViewController: TableNodeViewController {
     private let clientConfiguration: ClientConfiguration
     private let emailKeyManagerApi: EmailKeyManagerApiType
     private let appContext: AppContext
-    
+
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
@@ -68,7 +68,7 @@ final class SetupInitialViewController: TableNodeViewController {
         backupService: BackupServiceType = BackupService(),
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi()
+        emailKeyManagerApi: EmailKeyManagerApiType? = nil
     ) {
         self.appContext = appContext
         self.user = user
@@ -76,9 +76,9 @@ final class SetupInitialViewController: TableNodeViewController {
         self.service = ServiceActor(backupService: backupService)
         self.router = router
         self.decorator = decorator
-        self.clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
-        self.emailKeyManagerApi = emailKeyManagerApi
-
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
+        self.emailKeyManagerApi = emailKeyManagerApi ?? EmailKeyManagerApi(clientConfiguration: clientConfiguration)
+        self.clientConfiguration = clientConfiguration
         super.init(node: TableNode())
     }
 

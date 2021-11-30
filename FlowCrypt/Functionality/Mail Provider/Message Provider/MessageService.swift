@@ -102,33 +102,36 @@ enum MessageServiceError: Error {
 
 final class MessageService {
 
+    private let appContext: AppContext
     private let messageProvider: MessageProvider
-    private let keyService: KeyServiceType
     private let keyMethods: KeyMethodsType
-    private let passPhraseService: PassPhraseServiceType
     private let contactsService: ContactsServiceType
     private let core: Core
     private let logger: Logger
 
     init(
+        appContext: AppContext,
+        clientConfiguration: ClientConfiguration,
         messageProvider: MessageProvider = MailProvider.shared.messageProvider,
-        keyService: KeyServiceType = KeyService(),
         core: Core = Core.shared,
-        passPhraseService: PassPhraseServiceType = PassPhraseService(),
         keyMethods: KeyMethodsType = KeyMethods(),
-        contactsService: ContactsServiceType = ContactsService()
+        contactsService: ContactsServiceType? = nil
     ) {
+        self.appContext = appContext
         self.messageProvider = messageProvider
-        self.keyService = keyService
         self.core = core
-        self.passPhraseService = passPhraseService
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
         self.keyMethods = keyMethods
-        self.contactsService = contactsService
+        self.contactsService = contactsService ?? ContactsService(
+            localContactsProvider: LocalContactsProvider(
+                encryptedStorage: appContext.encryptedStorage
+            ),
+            clientConfiguration: clientConfiguration
+        )
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
-        let keys = try await keyService.getPrvKeyInfo()
+        let keys = try await appContext.keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
@@ -137,7 +140,7 @@ final class MessageService {
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
-        passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 
@@ -160,7 +163,7 @@ final class MessageService {
     func decryptAndProcessMessage(mime rawMimeData: Data,
                                   sender: String?,
                                   onlyLocalKeys: Bool) async throws -> ProcessedMessage {
-        let keys = try await keyService.getPrvKeyInfo()
+        let keys = try await appContext.keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }

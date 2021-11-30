@@ -51,7 +51,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     init(
         appContext: AppContext,
-        messageService: MessageService = MessageService(),
+        messageService: MessageService? = nil,
         trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
         messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
         threadOperationsProvider: MessagesThreadOperationsProvider,
@@ -60,7 +60,14 @@ final class ThreadDetailsViewController: TableNodeViewController {
         completion: @escaping MessageActionCompletion
     ) {
         self.appContext = appContext
-        self.messageService = messageService
+        guard let user = appContext.dataService.currentUser else {
+            fatalError("expected current user to exist") // todo - better accept user as VC argument
+        }
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
+        self.messageService = messageService ?? MessageService(
+            appContext: appContext,
+            clientConfiguration: clientConfiguration
+        )
         self.threadOperationsProvider = threadOperationsProvider
         self.messageOperationsProvider = messageOperationsProvider
         self.trashFolderProvider = trashFolderProvider

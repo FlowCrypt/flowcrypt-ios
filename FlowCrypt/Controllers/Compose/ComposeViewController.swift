@@ -50,6 +50,7 @@ final class ComposeViewController: TableNodeViewController {
     private let keyMethods: KeyMethodsType
     private let service: ServiceActor
     private let router: GlobalRouterType
+    private let clientConfiguration: ClientConfiguration
 
     private let search = PassthroughSubject<String, Never>()
     private let userDefaults: UserDefaults
@@ -71,7 +72,7 @@ final class ComposeViewController: TableNodeViewController {
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
-        cloudContactProvider: CloudContactsProvider = UserContactsProvider(),
+        cloudContactProvider: CloudContactsProvider? = nil,
         userDefaults: UserDefaults = .standard,
         contactsService: ContactsServiceType? = nil,
         composeMessageService: ComposeMessageService? = nil,
@@ -89,13 +90,19 @@ final class ComposeViewController: TableNodeViewController {
         self.input = input
         self.decorator = decorator
         self.userDefaults = userDefaults
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: email)
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(
                 encryptedStorage: appContext.encryptedStorage
-            )
+            ),
+            clientConfiguration: clientConfiguration
+        )
+        let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
+            userService: GoogleUserService(currentUserEmail: email)
         )
         self.cloudContactProvider = cloudContactProvider
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
+            clientConfiguration: clientConfiguration,
             encryptedStorage: appContext.encryptedStorage
         )
         self.filesManager = filesManager
@@ -109,6 +116,7 @@ final class ComposeViewController: TableNodeViewController {
         self.router = router
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
+        self.clientConfiguration = clientConfiguration
         super.init(node: TableNode())
     }
 

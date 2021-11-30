@@ -9,7 +9,7 @@
 import Foundation
 
 protocol EmailKeyManagerApiType {
-    func getPrivateKeys() async throws -> EmailKeyManagerApiResult
+    func getPrivateKeys(currentUserEmail: String) async throws -> EmailKeyManagerApiResult
 }
 
 enum EmailKeyManagerApiError: Error {
@@ -51,12 +51,12 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         self.core = core
     }
 
-    func getPrivateKeys() async throws -> EmailKeyManagerApiResult {
+    func getPrivateKeys(currentUserEmail: String) async throws -> EmailKeyManagerApiResult {
         guard let urlString = getPrivateKeysUrlString() else {
             throw EmailKeyManagerApiError.noPrivateKeysUrlString
         }
 
-        guard let idToken = GoogleUserService().idToken else {
+        guard let idToken = GoogleUserService(currentUserEmail: currentUserEmail).idToken else {
             throw EmailKeyManagerApiError.noGoogleIdToken
         }
 

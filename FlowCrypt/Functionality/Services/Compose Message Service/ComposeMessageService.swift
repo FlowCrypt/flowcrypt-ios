@@ -42,6 +42,7 @@ final class ComposeMessageService {
     private let logger: Logger
 
     init(
+        clientConfiguration: ClientConfiguration,
         encryptedStorage: EncryptedStorageType,
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
         draftGateway: DraftGateway? = MailProvider.shared.draftGateway,
@@ -52,7 +53,10 @@ final class ComposeMessageService {
         self.messageGateway = messageGateway
         self.draftGateway = draftGateway
         self.keyStorage = keyStorage ?? KeyDataStorage(encryptedStorage: encryptedStorage)
-        self.contactsService = contactsService ?? ContactsService(localContactsProvider: LocalContactsProvider(encryptedStorage: encryptedStorage))
+        self.contactsService = contactsService ?? ContactsService(
+            localContactsProvider: LocalContactsProvider(encryptedStorage: encryptedStorage),
+            clientConfiguration: clientConfiguration
+        )
         self.core = core
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
