@@ -45,12 +45,8 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     private func openThread(appContext: AppContext, with thread: MessageThread) {
-        guard let threadOperationsProvider = appContext.getRequiredMailProvider().threadOperationsProvider else {
-            fatalError("expected to get threadOperationsProvider on Gmail")
-        }
         let viewController = ThreadDetailsViewController(
             appContext: appContext,
-            threadOperationsProvider: threadOperationsProvider,
             thread: thread
         ) { [weak self] (action, message) in
             self?.handleMessageOperation(with: message, action: action)

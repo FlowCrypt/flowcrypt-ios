@@ -9,6 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
+import SwiftUI
 
 /**
  * Initial controller for setup flow which is responsible for searching backups and
@@ -65,13 +66,17 @@ final class SetupInitialViewController: TableNodeViewController {
     init(
         appContext: AppContext,
         user: UserId,
-        backupService: BackupServiceType = BackupService(),
+        backupService: BackupServiceType? = nil,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         emailKeyManagerApi: EmailKeyManagerApiType? = nil
     ) {
         self.appContext = appContext
         self.user = user
+        let backupService = backupService ?? BackupService(
+            backupProvider: appContext.getRequiredMailProvider().backupProvider,
+            messageSender: appContext.getRequiredMailProvider().messageSender
+        )
         self.backupService = backupService
         self.service = ServiceActor(backupService: backupService)
         self.router = router

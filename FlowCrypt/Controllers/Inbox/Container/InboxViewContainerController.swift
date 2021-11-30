@@ -32,6 +32,7 @@ final class InboxViewContainerController: TableNodeViewController {
     let appContext: AppContext
     let folderService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
+    let currentUser: User
 
     private var state: State = .loading {
         didSet { handleNewState() }
@@ -42,6 +43,10 @@ final class InboxViewContainerController: TableNodeViewController {
         folderService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("missing current user") // todo - use DI
+        }
+        self.currentUser = currentUser
         self.appContext = appContext
         self.folderService = folderService ?? FoldersService(
             encryptedStorage: appContext.encryptedStorage,
@@ -66,7 +71,7 @@ final class InboxViewContainerController: TableNodeViewController {
     private func fetchInboxFolder() {
         Task {
             do {
-                let folders = try await folderService.fetchFolders(isForceReload: true)
+                let folders = try await folderService.fetchFolders(isForceReload: true, for: self.currentUser)
                 self.handleFetched(folders: folders)
             } catch {
                 self.state = .error(error)

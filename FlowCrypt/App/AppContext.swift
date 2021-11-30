@@ -87,7 +87,7 @@ class AppContext {
             clientConfigurationService: self.clientConfigurationService
         )
     }
-    
+
     func getRequiredMailProvider() -> MailProvider {
         guard let mailProvider = getOptionalMailProvider() else {
             // todo - should throw instead
@@ -95,14 +95,15 @@ class AppContext {
         }
         return mailProvider
     }
-    
+
     func getOptionalMailProvider() -> MailProvider? {
         guard let currentUserEmail = self.dataService.currentUser?.email, let currentAuthType = self.dataService.currentAuthType else {
             return nil
         }
         return MailProvider(
             currentAuthType: currentAuthType,
-            currentUserEmail: currentUserEmail
+            currentUserEmail: currentUserEmail,
+            dataService: self.dataService
         )
     }
 

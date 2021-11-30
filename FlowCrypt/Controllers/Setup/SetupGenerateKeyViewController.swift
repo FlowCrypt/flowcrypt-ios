@@ -37,12 +37,16 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     init(
         appContext: AppContext,
         user: UserId,
-        backupService: BackupServiceType = BackupService(),
+        backupService: BackupServiceType? = nil,
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         attester: AttesterApiType? = nil
     ) {
+        let backupService = backupService ?? BackupService(
+            backupProvider: appContext.getRequiredMailProvider().backupProvider,
+            messageSender: appContext.getRequiredMailProvider().messageSender
+        )
         self.backupService = backupService
         self.attester = attester ?? AttesterApi(
             clientConfiguration: appContext.clientConfigurationService.getSaved(for: user.email)

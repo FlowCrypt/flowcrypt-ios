@@ -11,7 +11,8 @@ struct TrashFolderProvider {
     private let folderProvider: FoldersServiceType
 
     init(
-        folderProvider: FoldersServiceType = FoldersService(),
+        // todo - rename argument to folderService:
+        folderProvider: FoldersServiceType,
         localStorage: LocalStorageType = LocalStorage()
     ) {
         self.folderProvider = folderProvider
@@ -20,11 +21,11 @@ struct TrashFolderProvider {
 }
 
 extension TrashFolderProvider: TrashFolderProviderType {
-    func getTrashFolderPath() async throws -> String? {
+    func getTrashFolderPath(for user: User) async throws -> String? {
         if let path = localStorage.trashFolderPath {
             return path
         } else {
-            _ = try await folderProvider.fetchFolders(isForceReload: true)
+            _ = try await folderProvider.fetchFolders(isForceReload: true, for: user)
             return localStorage.trashFolderPath
         }
     }

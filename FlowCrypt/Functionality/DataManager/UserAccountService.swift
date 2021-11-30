@@ -32,7 +32,7 @@ final class UserAccountService {
         encryptedStorage: EncryptedStorageType & LogOutHandler,
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
         dataService: DataServiceType,
-        imap: Imap = .shared,
+        imap: Imap = .shared, // todo
         googleService: GoogleUserService? = nil
     ) {
         self.googleService = googleService ?? GoogleUserService(currentUserEmail: dataService.email)

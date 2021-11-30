@@ -27,10 +27,10 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
+    override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
         let inboxData = result.threads.map { thread in
-            return InboxRenderable(thread: thread, folderPath: context.folderPath ?? "")
+            return InboxRenderable(thread: thread, folderPath: context.folderPath ?? "", activeUserEmail: userEmail)
         }
         let inboxContext = InboxContext(
             data: inboxData,
