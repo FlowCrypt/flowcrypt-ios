@@ -32,8 +32,8 @@ extension ThreadMessageSenderCellNode.Input {
         self.init(
             encryptionBadge: makeEncryptionBadge(threadMessage),
             signatureBadge: makeSignatureBadge(threadMessage),
-            sender: NSAttributedString.text(from: sender, style: style, color: textColor),
-            recipientLabel: NSAttributedString.text(from: recipientLabel, style: style, color: textColor),
+            sender: NSAttributedString.text(from: sender, style: style, color: .label),
+            recipientLabel: NSAttributedString.text(from: recipientLabel, style: style, color: .secondaryLabel),
             recipients: threadMessage.rawMessage.recipient?.components(separatedBy: ", ") ?? [],
             ccRecipients: threadMessage.rawMessage.cc?.components(separatedBy: ", ") ?? [],
             bccRecipients: threadMessage.rawMessage.bcc?.components(separatedBy: ", ") ?? [],

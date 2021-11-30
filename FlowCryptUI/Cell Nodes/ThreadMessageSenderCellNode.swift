@@ -68,6 +68,13 @@ public final class ThreadMessageSenderCellNode: CellNode {
         return input.signatureBadge.map(BadgeNode.init)
     }()
 
+    private lazy var recipientsListNode: ASDisplayNode = {
+        MessageRecipientsNode(input: .init(recipients: input.recipients,
+                              ccRecipients: input.ccRecipients,
+                              bccRecipients: input.bccRecipients)
+        )
+    }()
+
     private let senderNode = ASTextNode2()
     private let recipientNode = ASButtonNode()
     private let dateNode = ASTextNode2()
@@ -81,10 +88,6 @@ public final class ThreadMessageSenderCellNode: CellNode {
     private let onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?
     private let onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?
     private let onRecipientsTap: ((ThreadMessageSenderCellNode) -> Void)?
-
-    private enum RecipientType: String, CaseIterable {
-        case to, cc, bcc
-    }
 
     public init(input: ThreadMessageSenderCellNode.Input,
                 onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?,
@@ -154,59 +157,6 @@ public final class ThreadMessageSenderCellNode: CellNode {
         onRecipientsTap?(self)
     }
 
-    private func recipientList(label: String, recipients: [String]) -> ASStackLayoutSpec? {
-        guard recipients.isNotEmpty else { return nil }
-
-        let labelNode = ASTextNode2()
-        labelNode.attributedText = label.localizedCapitalized.attributed()
-        labelNode.style.preferredSize = CGSize(width: 40, height: 20)
-
-        let children: [ASDisplayNode] = recipients.map {
-            let node = ASTextNode2()
-            node.attributedText = $0.attributed()
-            return node
-        }
-
-        let recipientsList = ASStackLayoutSpec(
-            direction: .vertical,
-            spacing: 4,
-            justifyContent: .start,
-            alignItems: .start,
-            children: children
-        )
-
-        return ASStackLayoutSpec(
-            direction: .horizontal,
-            spacing: 4,
-            justifyContent: .spaceBetween,
-            alignItems: .start,
-            children: [labelNode, recipientsList]
-        )
-    }
-
-    private var recipientsListNode: ASStackLayoutSpec {
-        let recipientsNodes: [ASStackLayoutSpec] = RecipientType.allCases.compactMap { type in
-            let recipients: [String]
-            switch type {
-            case .to:
-                recipients = input.recipients
-            case .cc:
-                recipients = input.ccRecipients
-            case .bcc:
-                recipients = input.bccRecipients
-            }
-            return recipientList(label: type.rawValue, recipients: recipients)
-        }
-
-        return ASStackLayoutSpec(
-            direction: .vertical,
-            spacing: 4,
-            justifyContent: .spaceBetween,
-            alignItems: .start,
-            children: recipientsNodes
-        )
-    }
-
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
         menuNode.style.preferredSize = CGSize(width: 36, height: 44)
@@ -225,7 +175,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
 
         let infoNode = ASStackLayoutSpec(
             direction: .vertical,
-            spacing: 4,
+            spacing: 6,
             justifyContent: .spaceBetween,
             alignItems: .start,
             children: infoChildren
