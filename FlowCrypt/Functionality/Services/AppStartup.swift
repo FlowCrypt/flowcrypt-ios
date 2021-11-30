@@ -67,12 +67,12 @@ class AppStartup {
 
         switch entryPoint {
         case .mainFlow:
-            let contentViewController = InboxViewContainerController()
+            let contentViewController = InboxViewContainerController(appContext: appContext)
             viewController = SideMenuNavigationController(appContext: appContext, contentViewController: contentViewController)
         case .signIn:
-            viewController = MainNavigationController(rootViewController: SignInViewController())
+            viewController = MainNavigationController(rootViewController: SignInViewController(appContext: appContext))
         case .setupFlow(let userId):
-            let setupViewController = SetupInitialViewController(appContet: AppContext, user: userId)
+            let setupViewController = SetupInitialViewController(appContext: appContext, user: userId)
             viewController = MainNavigationController(rootViewController: setupViewController)
         }
 
@@ -96,8 +96,11 @@ class AppStartup {
     }
 
     private func getUserOrgRulesIfNeeded() async throws {
+        guard let currentUser = appContext.dataService.currentUser else {
+            return
+        }
         if appContext.dataService.isLoggedIn {
-            _ = try await ClientConfigurationService().fetchForCurrentUser()
+            _ = try await appContext.clientConfigurationService.fetch(for: currentUser)
         }
     }
 
