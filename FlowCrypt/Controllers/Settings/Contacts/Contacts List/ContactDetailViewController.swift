@@ -33,12 +33,11 @@ final class ContactDetailViewController: TableNodeViewController {
     init(
         appContext: AppContext,
         decorator: ContactDetailDecoratorType = ContactDetailDecorator(),
-        contactsProvider: LocalContactsProviderType?,
         recipient: RecipientWithSortedPubKeys,
         action: ContactDetailAction?
     ) {
         self.decorator = decorator
-        self.contactsProvider = contactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
+        self.contactsProvider = LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
         self.recipient = recipient
         self.action = action
         super.init(node: TableNode())

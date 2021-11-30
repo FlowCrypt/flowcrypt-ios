@@ -123,10 +123,7 @@ extension SettingsViewController {
             viewController = LegalViewController()
         case .contacts:
             viewController = ContactsListViewController(
-                appContext: appContext,
-                contactsProvider: LocalContactsProvider(
-                    encryptedStorage: self.appContext.encryptedStorage
-                )
+                appContext: appContext
             )
         case .backups:
             guard let currentUser = appContext.dataService.currentUser,

@@ -17,19 +17,18 @@ import FlowCryptUI
  */
 final class ContactsListViewController: TableNodeViewController {
     private let decorator: ContactsListDecoratorType
-    private let contactsProvider: LocalContactsProviderType
+    private let localContactsProvider: LocalContactsProviderType
     private var recipients: [RecipientWithSortedPubKeys] = []
     private var selectedIndexPath: IndexPath?
     private let appContext: AppContext
 
     init(
         appContext: AppContext,
-        decorator: ContactsListDecoratorType = ContactsListDecorator(),
-        contactsProvider: LocalContactsProviderType?
+        decorator: ContactsListDecoratorType = ContactsListDecorator()
     ) {
         self.decorator = decorator
         self.appContext = appContext
-        self.contactsProvider = contactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
+        self.localContactsProvider = LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
         super.init(node: TableNode())
     }
 
@@ -67,7 +66,7 @@ extension ContactsListViewController {
     private func fetchContacts() {
         Task {
             do {
-                self.recipients = try await contactsProvider.getAllRecipients()
+                self.recipients = try await localContactsProvider.getAllRecipients()
                 await self.node.reloadData()
             } catch {
                 self.showToast("Failed to load recipients: \(error.localizedDescription)")
@@ -109,7 +108,6 @@ extension ContactsListViewController {
     private func proceedToContactDetail(with indexPath: IndexPath) {
         let contactDetailViewController = ContactDetailViewController(
             appContext: appContext,
-            contactsProvider: contactsProvider,
             recipient: recipients[indexPath.row]
         ) { [weak self] action in
             guard case let .delete(contact) = action else {
@@ -138,7 +136,7 @@ extension ContactsListViewController {
             recipientToRemove = recipients[indexPath.row]
         }
 
-        contactsProvider.remove(recipient: recipientToRemove)
+        localContactsProvider.remove(recipient: recipientToRemove)
         recipients.remove(at: indexPathToRemove.row)
         node.deleteRows(at: [indexPathToRemove], with: .left)
     }
