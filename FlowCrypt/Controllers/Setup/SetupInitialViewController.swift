@@ -19,7 +19,7 @@ import FlowCryptUI
  *      - Create new key - **SetupGenerateKeyViewController**
  */
 final class SetupInitialViewController: TableNodeViewController {
-    
+
     private enum Parts: Int, CaseIterable {
         case title, description, createKey, importKey, anotherAccount
     }
@@ -68,7 +68,6 @@ final class SetupInitialViewController: TableNodeViewController {
         backupService: BackupServiceType = BackupService(),
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
         emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi()
     ) {
         self.appContext = appContext
@@ -77,7 +76,7 @@ final class SetupInitialViewController: TableNodeViewController {
         self.service = ServiceActor(backupService: backupService)
         self.router = router
         self.decorator = decorator
-        self.clientConfiguration = clientConfigurationService.getSavedForCurrentUser()
+        self.clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
         self.emailKeyManagerApi = emailKeyManagerApi
 
         super.init(node: TableNode())
@@ -139,7 +138,7 @@ extension SetupInitialViewController {
     }
 
     private func handleOtherAccount() {
-        router.signOut()
+        router.signOut(appContext: appContext)
     }
 
     private func handle(error: Error) {
@@ -155,7 +154,8 @@ extension SetupInitialViewController {
             state = .searchingKeyBackupsInInbox
         case .inconsistentClientConfiguration(let error):
             showAlert(message: error.description) { [weak self] in
-                self?.router.signOut()
+                guard let self = self else { return }
+                self.router.signOut(appContext: self.appContext)
             }
         }
     }
@@ -174,12 +174,14 @@ extension SetupInitialViewController {
                             self?.state = .fetchingKeysFromEKM
                         },
                         onOk: { [weak self] in
-                            self?.router.signOut()
+                            guard let self = self else { return }
+                            self.router.signOut(appContext: self.appContext)
                         }
                     )
                 case .keysAreNotDecrypted:
                     showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: { [weak self] in
-                        self?.router.signOut()
+                        guard let self = self else { return }
+                        self.router.signOut(appContext: self.appContext)
                     })
                 }
             } catch {
@@ -317,16 +319,16 @@ extension SetupInitialViewController {
 // MARK: - Navigation
 extension SetupInitialViewController {
     private func proceedToKeyImport() {
-        let viewController = SetupManuallyImportKeyViewController()
+        let viewController = SetupManuallyImportKeyViewController(appContext: appContext)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
     private func proceedToCreatingNewKey() {
-        let viewController = SetupGenerateKeyViewController(user: user)
+        let viewController = SetupGenerateKeyViewController(appContext: appContext, user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
     private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {
-        let viewController = SetupEKMKeyViewController(user: user, keys: keys)
+        let viewController = SetupEKMKeyViewController(appContext: appContext, user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
@@ -338,7 +340,7 @@ extension SetupInitialViewController {
             state = .noKeyBackupsInInbox
         } else {
             logger.logInfo("\(keys.count) key backups found in inbox")
-            let viewController = SetupBackupsViewController(fetchedEncryptedKeys: keys, user: user)
+            let viewController = SetupBackupsViewController(appContext: appContext, fetchedEncryptedKeys: keys, user: user)
             navigationController?.pushViewController(viewController, animated: true)
         }
     }

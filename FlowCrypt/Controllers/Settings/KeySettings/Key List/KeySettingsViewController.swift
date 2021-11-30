@@ -16,17 +16,17 @@ import FlowCryptUI
  * - User can see detail information for the key in *KeyDetailViewController*
  */
 final class KeySettingsViewController: TableNodeViewController {
-    
+
     private let appContext: AppContext
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
-    private let keyService: KeyServiceType
     private let isUsingKeyManager: Bool
 
     init(
         appContext: AppContext,
         decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
     ) {
+        self.appContext = appContext
         self.decorator = decorator
         guard let currentUser = appContext.dataService.currentUser else {
             fatalError("missing current user") // todo - need more elegant solution
@@ -74,7 +74,7 @@ final class KeySettingsViewController: TableNodeViewController {
 
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() async throws {
-        self.keys = try await keyService.getPrvKeyDetails()
+        self.keys = try await appContext.keyService.getPrvKeyDetails()
         await node.reloadData()
     }
 }

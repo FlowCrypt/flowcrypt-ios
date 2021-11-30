@@ -23,9 +23,9 @@ extension MsgListViewController where Self: UIViewController {
     func open(appContext: AppContext, with message: InboxRenderable, path: String) {
         switch message.wrappedType {
         case .message(let message):
-            openMsg(appContext: AppContext, with: message, path: path)
+            openMsg(appContext: appContext, with: message, path: path)
         case .thread(let thread):
-            openThread(appContext: AppContext, with: thread)
+            openThread(appContext: appContext, with: thread)
         }
     }
 

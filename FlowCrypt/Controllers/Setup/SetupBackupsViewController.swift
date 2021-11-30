@@ -49,7 +49,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
         decorator: SetupViewDecorator = SetupViewDecorator(),
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
-        user: UserId,
+        user: UserId
     ) {
         self.appContext = appContext
         self.fetchedEncryptedKeys = fetchedEncryptedKeys

@@ -43,6 +43,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         }
     }
 
+    private let appContext: AppContext
     private let foldersProvider: FoldersServiceType
     private let dataService: DataServiceType
     private let router: GlobalRouterType
@@ -64,14 +65,14 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private var isFirstLaunch = true
 
     init(
+        appContext: AppContext,
         foldersProvider: FoldersServiceType = FoldersService(),
-        dataService: DataServiceType = DataService.shared,
         globalRouter: GlobalRouterType = GlobalRouter(),
         decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
+        self.appContext = appContext
         self.foldersProvider = foldersProvider
-        self.dataService = dataService
         self.router = globalRouter
         self.decorator = decorator
         self.tableNode = tableNode
@@ -218,7 +219,7 @@ extension MyMenuViewController {
             return
         }
 
-        router.switchActive(user: account)
+        router.switchActive(appContext: appContext, user: account)
     }
 }
 
@@ -293,9 +294,9 @@ extension MyMenuViewController {
                 sideMenuController()?.sideMenu?.hideSideMenu()
                 return
             }
-            sideMenuController()?.setContentViewController(SettingsViewController())
+            sideMenuController()?.setContentViewController(SettingsViewController(appContext: appContext))
         case .logOut:
-            router.signOut()
+            router.signOut(appContext: appContext)
         }
     }
 

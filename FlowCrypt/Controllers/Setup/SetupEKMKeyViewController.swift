@@ -35,7 +35,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
         keys: [KeyDetails] = [],
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator(),
+        decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.keys = keys
         super.init(
@@ -44,7 +44,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
             fetchedKeysCount: keys.count,
             core: core,
             router: router,
-            decorator: decorator,
+            decorator: decorator
         )
         self.storageMethod = .memory
     }
@@ -94,7 +94,7 @@ extension SetupEKMKeyViewController {
                 passphrase: passPhrase
             )
             let parsedKey = try await self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-            self.keyStorage.addKeys(
+            appContext.keyStorage.addKeys(
                 keyDetails: parsedKey.keyDetails,
                 passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
                 source: .ekm,
@@ -104,7 +104,7 @@ extension SetupEKMKeyViewController {
         }
         if self.storageMethod == .memory {
             let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: allFingerprints.unique())
-            self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
+            appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
         }
     }
 }

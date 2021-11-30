@@ -41,9 +41,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        attester: AttesterApiType = AttesterApi(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        attester: AttesterApiType = AttesterApi()
     ) {
         self.backupService = backupService
         self.attester = attester
@@ -52,18 +50,14 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
             user: user,
             backupService: backupService,
             core: core,
-            keyStorage: keyStorage,
-            attester: attester,
-            passPhraseService: passPhraseService
+            attester: attester
         )
         super.init(
             appContext: appContext,
             user: user,
             core: core,
             router: router,
-            decorator: decorator,
-            keyStorage: keyStorage,
-            passPhraseService: passPhraseService
+            decorator: decorator
         )
     }
 
@@ -104,26 +98,20 @@ private actor Service {
     private let user: UserId
     private let backupService: BackupServiceType
     private let core: Core
-    private let keyStorage: KeyStorageType
     private let attester: AttesterApiType
-    private let passPhraseService: PassPhraseServiceType
 
     init(
         appContext: AppContext,
         user: UserId,
         backupService: BackupServiceType,
         core: Core,
-        keyStorage: KeyStorageType,
-        attester: AttesterApiType,
-        passPhraseService: PassPhraseServiceType
+        attester: AttesterApiType
     ) {
         self.appContext = appContext
         self.user = user
         self.backupService = backupService
         self.core = core
-        self.keyStorage = keyStorage
         self.attester = attester
-        self.passPhraseService = passPhraseService
     }
 
     func setupAccount(passPhrase: String,
@@ -140,7 +128,7 @@ private actor Service {
         )
         try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
 
-        keyStorage.addKeys(keyDetails: [encryptedPrv.key],
+        appContext.keyStorage.addKeys(keyDetails: [encryptedPrv.key],
                            passPhrase: storageMethod == .persistent ? passPhrase: nil,
                            source: .generated,
                            for: user.email)
@@ -150,7 +138,7 @@ private actor Service {
                 value: passPhrase,
                 fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints
             )
-            passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
+            appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 
         await submitKeyToAttesterAndShowAlertOnFailure(
