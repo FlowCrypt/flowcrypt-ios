@@ -53,11 +53,12 @@ final class ComposeViewController: TableNodeViewController {
     private let router: GlobalRouterType
 
     private let search = PassthroughSubject<String, Never>()
-    private let userDefaults: UserDefaults
 
     private let email: String
 
     private var cancellable = Set<AnyCancellable>()
+    private var lifeTimeCancellable = Set<AnyCancellable>()
+
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
 
@@ -73,7 +74,6 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         cloudContactProvider: CloudContactsProvider = UserContactsProvider(),
-        userDefaults: UserDefaults = .standard,
         contactsService: ContactsServiceType = ContactsService(),
         composeMessageService: ComposeMessageService = ComposeMessageService(),
         filesManager: FilesManagerType = FilesManager(),
@@ -87,7 +87,6 @@ final class ComposeViewController: TableNodeViewController {
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        self.userDefaults = userDefaults
         self.contactsService = contactsService
         self.cloudContactProvider = cloudContactProvider
         self.composeMessageService = composeMessageService
@@ -119,6 +118,7 @@ final class ComposeViewController: TableNodeViewController {
         setupNavigationBar()
         observeKeyboardNotifications()
         observerAppStates()
+        observeComposeUpdates()
         setupQuote()
     }
 
@@ -164,6 +164,22 @@ final class ComposeViewController: TableNodeViewController {
         self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", state: decorator.recipientIdleState)]
     }
 
+    private func observeComposeUpdates() {
+        composeMessageService.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                guard let message = state.message else {
+                    self?.hideSpinner()
+                    return
+                }
+                self?.updateSpinner(
+                    label: message,
+                    progress: state.progress,
+                    systemImageName: "checkmark.circle"
+                )
+            }
+            .store(in: &lifeTimeCancellable)
+    }
 }
 
 // MARK: - Drafts
@@ -434,10 +450,7 @@ extension ComposeViewController {
         UIApplication.shared.isIdleTimerDisabled = true
         try await service.encryptAndSend(
             message: sendableMsg,
-            threadId: input.threadId,
-            progressHandler: { [weak self] progress in
-                self?.updateSpinner(progress: progress, systemImageName: "checkmark.circle")
-            }
+            threadId: input.threadId
         )
         handleSuccessfullySentMessage()
     }
@@ -1151,7 +1164,7 @@ extension ComposeViewController: FilesManagerPresenter {}
 
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
-    private let composeMessageService: ComposeMessageService
+    let composeMessageService: ComposeMessageService
     private let contactsService: ContactsServiceType
     private let cloudContactProvider: CloudContactsProvider
 
@@ -1163,10 +1176,11 @@ private actor ServiceActor {
         self.cloudContactProvider = cloudContactProvider
     }
 
-    func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
-        try await composeMessageService.encryptAndSend(message: message,
-                                                       threadId: threadId,
-                                                       progressHandler: progressHandler)
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+        try await composeMessageService.encryptAndSend(
+            message: message,
+            threadId: threadId
+        )
     }
 
     func searchContacts(query: String) async throws -> [String] {

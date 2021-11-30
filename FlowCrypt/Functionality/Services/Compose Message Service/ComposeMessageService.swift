@@ -38,7 +38,9 @@ final class ComposeMessageService {
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
-    private let logger: Logger
+    private lazy var logger: Logger = Logger.nested(Self.self)
+
+    @Published private(set) var state: State = .idle
 
     init(
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
@@ -62,8 +64,11 @@ final class ComposeMessageService {
         includeAttachments: Bool = true,
         signingPrv: PrvKeyInfo?
     ) async throws -> SendableMsg {
+        state = .validatingMessage
+
         let recipients = contextToSend.recipients
         guard recipients.isNotEmpty else {
+            state = .error
             throw MessageValidationError.emptyRecipient
         }
 
@@ -71,24 +76,29 @@ final class ComposeMessageService {
         let emptyEmails = emails.filter { !$0.hasContent }
 
         guard emails.isNotEmpty, emptyEmails.isEmpty else {
+            state = .error
             throw MessageValidationError.emptyRecipient
         }
 
         guard emails.filter({ !$0.isValidEmail }).isEmpty else {
+            state = .error
             throw MessageValidationError.invalidEmailRecipient
         }
 
         guard input.isQuote || contextToSend.subject?.hasContent ?? false else {
+            state = .error
             throw MessageValidationError.emptySubject
         }
 
         guard let text = contextToSend.message, text.hasContent else {
+            state = .error
             throw MessageValidationError.emptyMessage
         }
 
         let subject = contextToSend.subject ?? "(no subject)"
 
         guard let myPubKey = self.dataService.publicKey() else {
+            state = .error
             throw MessageValidationError.missedPublicKey
         }
 
@@ -99,6 +109,7 @@ final class ComposeMessageService {
         let allRecipientPubs = try await getPubKeys(for: recipients)
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
+
         return SendableMsg(
             text: text,
             to: recipients.map(\.email),
@@ -130,12 +141,15 @@ final class ComposeMessageService {
         logger.logDebug("validate recipients: \(recipients)")
         logger.logDebug("validate recipient keyStates: \(recipients.map { $0.keyState })")
         guard !contains(keyState: .empty) else {
+            state = .error
             throw MessageValidationError.noPubRecipients
         }
         guard !contains(keyState: .expired) else {
+            state = .error
             throw MessageValidationError.expiredKeyRecipients
         }
         guard !contains(keyState: .revoked) else {
+            state = .error
             throw MessageValidationError.revokedKeyRecipients
         }
         return recipients.flatMap(\.activePubKeys).map(\.armored)
@@ -150,26 +164,66 @@ final class ComposeMessageService {
             )
             draft = try await draftGateway?.saveDraft(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId), draft: draft)
         } catch {
+            state = .error
             throw ComposeMessageError.gatewayError(error)
         }
     }
 
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
         do {
+            state = .startComposing
             let r = try await core.composeEmail(
                 msg: message,
                 fmt: MsgFmt.encryptInline
             )
 
-            try await messageGateway.sendMail(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
-                                              progressHandler: progressHandler)
+            try await messageGateway.sendMail(
+                input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
+                progressHandler: { [weak self] progress in
+                    self?.state = .progressChanged(progress)
+                }
+            )
+
             // cleaning any draft saved/created/fetched during editing
             if let draftId = draft?.identifier {
                 await draftGateway?.deleteDraft(with: draftId)
             }
+            state = .messageSent
         } catch {
+            state = .error
             throw ComposeMessageError.gatewayError(error)
+        }
+    }
+}
+
+extension ComposeMessageService {
+    enum State {
+        case idle
+        case validatingMessage
+        case startComposing
+        case progressChanged(Float)
+        case messageSent
+        case error
+
+        var message: String? {
+            switch self {
+            case .idle, .error:
+                return nil
+            case .validatingMessage:
+                return "Validating"
+            case .startComposing, .progressChanged:
+                return "Composing"
+            case .messageSent:
+                return "Message sent"
+            }
+        }
+
+        var progress: Float? {
+            guard case .progressChanged(let progress) = self else {
+                return nil
+            }
+            return progress
         }
     }
 }

@@ -28,18 +28,20 @@ extension UIViewController {
     }
 
     @MainActor
-    func updateSpinner(label: String = "compose_uploading".localized,
-                       progress: Float? = nil,
-                       systemImageName: String? = nil) {
+    func updateSpinner(
+        label: String = "compose_uploading".localized,
+        progress: Float? = nil,
+        systemImageName: String? = nil
+     ) {
         if let progress = progress {
             if progress >= 1, let imageName = systemImageName {
-                self.updateSpinner(label: "compose_sent".localized,
-                                   systemImageName: imageName)
+                self.updateSpinner(
+                    label: "compose_sent".localized,
+                    systemImageName: imageName
+                )
             } else {
                 self.showProgressHUD(progress: progress, label: label)
             }
-        } else if let imageName = systemImageName {
-            self.showProgressHUDWithCustomImage(imageName: imageName, label: label)
         } else {
             self.currentProgressHUD.mode = .indeterminate
             self.currentProgressHUD.label.text = label
