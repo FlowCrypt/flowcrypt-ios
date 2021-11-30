@@ -14,7 +14,7 @@ struct InboxContext {
 }
 
 class InboxDataProvider {
-    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
+    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         fatalError("Should be implemented")
     }
 }
@@ -48,9 +48,9 @@ class InboxMessageListProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
+    override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
-        let inboxData = result.messages.map(InboxRenderable.init)
+        let inboxData = result.messages.map { InboxRenderable(message: $0, activeUserEmail: userEmail) }
         let inboxContext = InboxContext(
             data: inboxData,
             pagination: result.pagination

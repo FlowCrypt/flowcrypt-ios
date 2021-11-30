@@ -37,13 +37,13 @@ final class SetupImapViewController: TableNodeViewController {
         globalRouter: GlobalRouterType = GlobalRouter(),
         decorator: SetupImapViewDecorator = SetupImapViewDecorator(),
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
-        imap: Imap? = nil
+        imap: Imap = Imap(user: User.empty)
     ) {
         self.appContext = appContext
         self.globalRouter = globalRouter
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials
-        self.imap = imap ?? Imap(dataService: appContext.dataService) // todo - dunno
+        self.imap = imap
 
         super.init(node: TableNode())
         node.delegate = self

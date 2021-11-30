@@ -10,7 +10,7 @@ import FlowCryptCommon
 import Foundation
 
 protocol TrashFolderProviderType {
-    func getTrashFolderPath(for user: User) async throws -> String?
+    func getTrashFolderPath() async throws -> String?
 }
 
 protocol FoldersServiceType {

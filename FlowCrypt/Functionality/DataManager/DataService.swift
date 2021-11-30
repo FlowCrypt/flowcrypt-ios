@@ -28,11 +28,6 @@ protocol DataServiceType {
     func performMigrationIfNeeded() async throws
 }
 
-protocol ImapSessionProvider {
-    func imapSession() -> IMAPSession?
-    func smtpSession() -> SMTPSession?
-}
-
 enum SessionType: CustomStringConvertible {
     case google(_ email: String, name: String, token: String)
     case session(_ user: User)
@@ -123,36 +118,5 @@ extension DataService: DBMigration {
     /// Perform all kind of migrations
     func performMigrationIfNeeded() async throws {
         try await migrationService.performMigrationIfNeeded()
-    }
-}
-
-// MARK: - SessionProvider
-extension DataService: ImapSessionProvider {
-    func imapSession() -> IMAPSession? {
-        guard let user = activeUser else {
-            assertionFailure("Can't get IMAP Session without user data")
-            return nil
-        }
-
-        guard let imapSession = IMAPSession(user: user) else {
-            assertionFailure("couldn't create IMAP Session with this parameters")
-            return nil
-        }
-
-        return imapSession
-    }
-
-    func smtpSession() -> SMTPSession? {
-        guard let user = activeUser else {
-            assertionFailure("Can't get SMTP Session without user data")
-            return nil
-        }
-
-        guard let smtpSession = SMTPSession(user: user) else {
-            assertionFailure("couldn't create SMTP Session with this parameters")
-            return nil
-        }
-
-        return smtpSession
     }
 }

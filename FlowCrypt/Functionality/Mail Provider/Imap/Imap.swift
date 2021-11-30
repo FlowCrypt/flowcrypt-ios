@@ -8,6 +8,7 @@ import MailCore
 final class Imap: MailServiceProvider {
     let mailServiceProviderType = MailServiceProviderType.imap
 
+    let user: User
     let helper: ImapHelperType
     let messageKindProvider: MessageKindProviderType
     var imapSess: MCOIMAPSession?
@@ -17,16 +18,17 @@ final class Imap: MailServiceProvider {
     typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
 
-    let dataService: ImapSessionProvider & DataServiceType
+    let imapSessionProvider: ImapSessionProviderType
 
     lazy var logger = Logger.nested(Self.self)
 
     init(
-        dataService: ImapSessionProvider & DataServiceType,
+        user: User,
         helper: ImapHelperType = ImapHelper(),
         messageKindProvider: MessageKindProviderType = MessageKindProvider()
     ) {
-        self.dataService = dataService
+        self.user = user
+        self.imapSessionProvider = ImapSessionProvider(user: user)
         self.helper = helper
         self.messageKindProvider = messageKindProvider
     }

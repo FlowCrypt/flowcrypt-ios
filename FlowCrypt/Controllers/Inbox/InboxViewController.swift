@@ -14,6 +14,7 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     private let numberOfInboxItemsToLoad: Int
 
     private let appContext: AppContext
+    private let user: User
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
@@ -40,6 +41,10 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
         draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
+        guard let user = appContext.dataService.currentUser else {
+            fatalError("missing current user") // todo - DI user
+        }
+        self.user = user
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
@@ -182,7 +187,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: numberOfInboxItemsToLoad,
                         pagination: currentMessagesListPagination()
-                    )
+                    ), userEmail: user.email
                 )
                 handleEndFetching(with: context, context: batchContext)
             } catch {
@@ -204,7 +209,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
                         pagination: pagination
-                    )
+                    ), userEmail: user.email
                 )
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
@@ -458,7 +463,7 @@ private actor ServiceActor {
         self.inboxDataProvider = inboxDataProvider
     }
 
-    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
-        return try await inboxDataProvider.fetchInboxItems(using: context)
+    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+        return try await inboxDataProvider.fetchInboxItems(using: context, userEmail: userEmail)
     }
 }

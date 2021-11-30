@@ -36,24 +36,17 @@ final class GlobalRouter {
         return delegate.window
     }
 
-    private let googleService: GoogleUserService
-
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
-    init(
-        googleService: GoogleUserService = GoogleUserService()
-    ) {
-        self.googleService = googleService
-    }
 }
 
 // MARK: - Proceed
 extension GlobalRouter: GlobalRouterType {
-    
+
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
         do {
-            let appContext = try AppContext.setUpAppContext()
+            let appContext = try AppContext.setUpAppContext(globalRouter: self)
             do {
                 try appContext.encryptedStorage.validate()
                 proceed(with: appContext)
@@ -69,22 +62,23 @@ extension GlobalRouter: GlobalRouterType {
         logger.logInfo("Sign in with \(route)")
 
         switch route {
-            case .gmailLogin(let viewController):
-                Task {
-                    do {
-                        let session = try await googleService.signIn(
-                            in: viewController,
-                            scopes: GeneralConstants.Gmail.mailScope
-                        )
-                        appContext.userAccountService.startSessionFor(user: session)
-                        self.proceed(with: appContext.withSession(session))
-                    } catch {
-                        self.handleGmailError(appContext: appContext, error, in: viewController)
-                    }
+        case .gmailLogin(let viewController):
+            Task {
+                do {
+                    let googleService = GoogleUserService(currentUserEmail: appContext.dataService.currentUser?.email)
+                    let session = try await googleService.signIn(
+                        in: viewController,
+                        scopes: GeneralConstants.Gmail.mailScope
+                    )
+                    appContext.userAccountService.startSessionFor(session: session)
+                    self.proceed(with: appContext.withSession(session))
+                } catch {
+                    self.handleGmailError(appContext: appContext, error, in: viewController)
                 }
-            case .other(let session):
-                appContext.userAccountService.startSessionFor(user: session)
-                proceed(with: appContext.withSession(session))
+            }
+        case .other(let session):
+            appContext.userAccountService.startSessionFor(session: session)
+            proceed(with: appContext.withSession(session))
         }
     }
 
@@ -105,11 +99,12 @@ extension GlobalRouter: GlobalRouterType {
         switch route {
         case .gmailLogin(let viewController):
             do {
+                let googleService = GoogleUserService(currentUserEmail: appContext.dataService.currentUser?.email)
                 let session = try await googleService.signIn(
                     in: viewController,
                     scopes: GeneralConstants.Gmail.contactsScope
                 )
-                appContext.userAccountService.startSessionFor(user: session)
+                appContext.userAccountService.startSessionFor(session: session)
                 // todo? - no need to update context itself with new session?
             } catch {
                 logger.logInfo("Contacts scope failed with error \(error.errorMessage)")
@@ -128,7 +123,7 @@ extension GlobalRouter: GlobalRouterType {
         }
         proceed(with: appContext.withSession(session))
     }
-    
+
     @MainActor
     private func renderInvalidStorageView(error: Error, encryptedStorage: EncryptedStorageType?) {
         // EncryptedStorage is nil if we could not successfully initialize it

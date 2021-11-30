@@ -17,7 +17,7 @@ import GoogleAPIClientForREST_Gmail
 final class MailProvider {
 
     private var currentAuthType: AuthType // todo - originally was auto-enclosure, testing
-    
+
     private var authType: AuthType {
         switch currentAuthType {
         case let .oAuthGmail(token):
@@ -78,11 +78,10 @@ final class MailProvider {
 
     init(
         currentAuthType: AuthType,
-        currentUserEmail: String,
-        dataService: DataServiceType
+        currentUser: User
     ) {
         self.currentAuthType = currentAuthType
-        self.services = MailServiceProviderFactory.services(currentUserEmail: currentUserEmail, dataService: dataService)
+        self.services = MailServiceProviderFactory.services(user: currentUser)
     }
 
     private func resolveService<T>(of type: T.Type) -> T {
@@ -102,12 +101,11 @@ final class MailProvider {
 
 private struct MailServiceProviderFactory {
     static func services(
-        currentUserEmail: String,
-        dataService: DataServiceType
+        user: User
     ) -> [MailServiceProvider] {
         [
-            Imap(dataService: dataService), // todo - dunno
-            GmailService(currentUserEmail: currentUserEmail)
+            Imap(user: user),
+            GmailService(currentUserEmail: user.email)
         ]
     }
 }

@@ -10,6 +10,7 @@ import Foundation
 
 class AppContext {
 
+    let globalRouter: GlobalRouter
     let encryptedStorage: EncryptedStorageType
     let session: SessionType?
     // todo - should be called sessionService
@@ -29,7 +30,8 @@ class AppContext {
         keyStorage: KeyStorageType,
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
-        clientConfigurationService: ClientConfigurationServiceType
+        clientConfigurationService: ClientConfigurationServiceType,
+        globalRouter: GlobalRouter
     ) {
         self.encryptedStorage = encryptedStorage
         self.session = session
@@ -39,10 +41,11 @@ class AppContext {
         self.keyService = keyService
         self.passPhraseService = passPhraseService
         self.clientConfigurationService = clientConfigurationService
+        self.globalRouter = globalRouter
     }
 
     @MainActor
-    static func setUpAppContext() throws -> AppContext {
+    static func setUpAppContext(globalRouter: GlobalRouter) throws -> AppContext {
         let keyChainService = KeyChainService()
         let encryptedStorage = EncryptedStorage(
             storageEncryptionKey: try keyChainService.getStorageEncryptionKey()
@@ -71,7 +74,8 @@ class AppContext {
             keyStorage: keyStorage,
             keyService: keyService,
             passPhraseService: passPhraseService,
-            clientConfigurationService: clientConfigurationService
+            clientConfigurationService: clientConfigurationService,
+            globalRouter: globalRouter
         )
     }
 
@@ -84,7 +88,8 @@ class AppContext {
             keyStorage: self.keyStorage,
             keyService: self.keyService,
             passPhraseService: self.passPhraseService,
-            clientConfigurationService: self.clientConfigurationService
+            clientConfigurationService: self.clientConfigurationService,
+            globalRouter: globalRouter
         )
     }
 
@@ -97,13 +102,12 @@ class AppContext {
     }
 
     func getOptionalMailProvider() -> MailProvider? {
-        guard let currentUserEmail = self.dataService.currentUser?.email, let currentAuthType = self.dataService.currentAuthType else {
+        guard let currentUser = self.dataService.currentUser, let currentAuthType = self.dataService.currentAuthType else {
             return nil
         }
         return MailProvider(
             currentAuthType: currentAuthType,
-            currentUserEmail: currentUserEmail,
-            dataService: self.dataService
+            currentUser: currentUser
         )
     }
 
