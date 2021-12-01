@@ -12,9 +12,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssion
     var googleAuthSession: OIDExternalUserAgentSession?
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
 
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let isRunningTests = NSClassFromString("XCTestCase") != nil
-        if isRunningTests {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if application.isRunningTests {
             return true
         }
         GlobalRouter().proceed()

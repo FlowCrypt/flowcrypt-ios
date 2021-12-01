@@ -7,8 +7,8 @@
 //
 
 import FlowCryptCommon
-import Foundation
 import RealmSwift
+import UIKit
 
 // swiftlint:disable force_try
 protocol EncryptedStorageType: KeyStorageType {
@@ -82,6 +82,10 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     private func getConfiguration() throws -> Realm.Configuration {
+        guard !UIApplication.shared.isRunningTests else {
+            return Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
+        }
+
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
         let latestSchemaVersion = currentSchema.version.dbSchemaVersion
 
