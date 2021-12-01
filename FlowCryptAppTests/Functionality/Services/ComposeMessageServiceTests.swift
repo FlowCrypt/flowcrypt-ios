@@ -38,6 +38,7 @@ class ComposeMessageServiceTests: XCTestCase {
             ),
             messageGateway: MessageGatewayMock(),
             draftGateway: DraftGatewayMock(),
+            keyStorage: keyStorage,
             contactsService: contactsService,
             core: core
         )

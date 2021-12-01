@@ -15,7 +15,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
     var enterpriseServerApi: EnterpriseServerApiMock!
     var localClientConfigurationProvider: LocalClientConfigurationMock!
     var isCurrentUserExistMock: CurrentUserEmailMock!
-    let user = User(email: "user@domain.test", isActive: true, name: "User", imap: nil, smtp: nil)
+    let user = User(email: "example@flowcrypt.test", isActive: true, name: "User", imap: nil, smtp: nil)
 
     override func setUp() {
         super.setUp()
