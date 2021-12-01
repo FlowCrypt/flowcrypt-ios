@@ -24,8 +24,13 @@ open class TableNodeViewController: ASDKViewController<TableNode> {
 
 public extension UINavigationItem {
     func setAccessibility(id: String?) {
-        isAccessibilityElement = true
-        titleView?.accessibilityIdentifier = title
-        accessibilityLabel = title
+        let titleLabel = UILabel()
+        titleLabel.text = id
+        titleLabel.isAccessibilityElement = true
+        titleLabel.accessibilityIdentifier = title
+        titleLabel.accessibilityLabel = title
+        titleLabel.backgroundColor = .red
+        titleLabel.sizeToFit()
+        titleView = titleLabel
     }
 }
