@@ -29,6 +29,7 @@ public extension UINavigationItem {
         titleLabel.isAccessibilityElement = true
         titleLabel.accessibilityIdentifier = title
         titleLabel.accessibilityLabel = title
+        titleLabel.accessibilityTraits = .header
         titleLabel.backgroundColor = .red
         titleLabel.sizeToFit()
         titleView = titleLabel
