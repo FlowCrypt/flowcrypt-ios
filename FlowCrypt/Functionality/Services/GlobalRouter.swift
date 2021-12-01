@@ -12,10 +12,10 @@ import UIKit
 @MainActor
 protocol GlobalRouterType {
     func proceed()
-    func signIn(with route: GlobalRoutingType)
-    func askForContactsPermission(for route: GlobalRoutingType) async throws
-    func switchActive(user: User)
-    func signOut()
+    func signIn(appContext: AppContext, route: GlobalRoutingType)
+    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws
+    func switchActive(user: User, appContext: AppContext)
+    func signOut(appContext: AppContext)
 }
 
 enum GlobalRoutingType {
@@ -36,75 +36,82 @@ final class GlobalRouter {
         return delegate.window
     }
 
-    private let userAccountService: UserAccountServiceType
-    private let googleService: GoogleUserService
-
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
-    init(
-        userAccountService: UserAccountServiceType = UserAccountService(),
-        googleService: GoogleUserService = GoogleUserService()
-    ) {
-        self.userAccountService = userAccountService
-        self.googleService = googleService
-    }
 }
 
 // MARK: - Proceed
 extension GlobalRouter: GlobalRouterType {
+
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        validateEncryptedStorage {
-            userAccountService.cleanupSessions()
-            proceed(with: nil)
+        do {
+            let appContext = try AppContext.setUpAppContext(globalRouter: self)
+            do {
+                try appContext.encryptedStorage.validate()
+                proceed(with: appContext)
+            } catch {
+                renderInvalidStorageView(error: error, encryptedStorage: nil)
+            }
+        } catch {
+            renderInvalidStorageView(error: error, encryptedStorage: nil)
         }
     }
 
-    func signIn(with route: GlobalRoutingType) {
+    func signIn(appContext: AppContext, route: GlobalRoutingType) {
         logger.logInfo("Sign in with \(route)")
 
         switch route {
         case .gmailLogin(let viewController):
             Task {
                 do {
+                    let googleService = GoogleUserService(
+                        currentUserEmail: appContext.dataService.currentUser?.email,
+                        appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+                    )
                     let session = try await googleService.signIn(
                         in: viewController,
                         scopes: GeneralConstants.Gmail.mailScope
                     )
-                    self.userAccountService.startSessionFor(user: session)
-                    self.proceed(with: session)
+                    appContext.userAccountService.startSessionFor(session: session)
+                    self.proceed(with: appContext.withSession(session))
                 } catch {
-                    self.handleGmailError(error, in: viewController)
+                    self.handleGmailError(appContext: appContext, error, in: viewController)
                 }
             }
         case .other(let session):
-            userAccountService.startSessionFor(user: session)
-            proceed(with: session)
+            appContext.userAccountService.startSessionFor(session: session)
+            proceed(with: appContext.withSession(session))
         }
     }
 
-    func signOut() {
-        if let session = userAccountService.startActiveSessionForNextUser() {
+    func signOut(appContext: AppContext) {
+        if let session = appContext.userAccountService.startActiveSessionForNextUser() {
             logger.logInfo("Start session for another email user \(session)")
-            proceed(with: session)
+            proceed(with: appContext.withSession(session))
         } else {
             logger.logInfo("Sign out")
-            userAccountService.cleanup()
+            appContext.userAccountService.cleanup()
             proceed()
         }
     }
 
-    func askForContactsPermission(for route: GlobalRoutingType) async throws {
+    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws {
         logger.logInfo("Ask for contacts permission with \(route)")
 
         switch route {
         case .gmailLogin(let viewController):
             do {
+                let googleService = GoogleUserService(
+                    currentUserEmail: appContext.dataService.currentUser?.email,
+                    appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+                )
                 let session = try await googleService.signIn(
                     in: viewController,
                     scopes: GeneralConstants.Gmail.contactsScope
                 )
-                self.userAccountService.startSessionFor(user: session)
+                appContext.userAccountService.startSessionFor(session: session)
+                // todo? - no need to update context itself with new session?
             } catch {
                 logger.logInfo("Contacts scope failed with error \(error.errorMessage)")
                 throw error
@@ -114,45 +121,40 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func switchActive(user: User) {
+    func switchActive(user: User, appContext: AppContext) {
         logger.logInfo("Switching active user \(user)")
-        guard let session = userAccountService.switchActiveSessionFor(user: user) else {
+        guard let session = appContext.userAccountService.switchActiveSessionFor(user: user) else {
             logger.logWarning("Can't switch active user with \(user.email)")
             return
         }
-        proceed(with: session)
+        proceed(with: appContext.withSession(session))
     }
 
     @MainActor
-    private func validateEncryptedStorage(_ completion: () -> Void) {
-        let storage = EncryptedStorage()
-        do {
-            try storage.validate()
-            completion()
-        } catch {
-            let controller = InvalidStorageViewController(
-                error: error,
-                encryptedStorage: storage,
-                router: self
-            )
-            keyWindow.rootViewController = UINavigationController(rootViewController: controller)
-            keyWindow.makeKeyAndVisible()
-        }
+    private func renderInvalidStorageView(error: Error, encryptedStorage: EncryptedStorageType?) {
+        // EncryptedStorage is nil if we could not successfully initialize it
+        let controller = InvalidStorageViewController(
+            error: error,
+            encryptedStorage: encryptedStorage,
+            router: self
+        )
+        keyWindow.rootViewController = UINavigationController(rootViewController: controller)
+        keyWindow.makeKeyAndVisible()
     }
 
     @MainActor
-    private func proceed(with session: SessionType?) {
-        logger.logInfo("proceed for session \(session.debugDescription)")
-        AppStartup().initializeApp(window: keyWindow, session: session)
+    private func proceed(with appContext: AppContext) {
+        logger.logInfo("proceed for session: \(appContext.session?.description ?? "nil")")
+        AppStartup(appContext: appContext).initializeApp(window: keyWindow)
     }
 
     @MainActor
-    private func handleGmailError(_ error: Error, in viewController: UIViewController) {
+    private func handleGmailError(appContext: AppContext, _ error: Error, in viewController: UIViewController) {
         logger.logInfo("gmail login failed with error \(error.errorMessage)")
         if let gmailUserError = error as? GoogleUserServiceError,
            case .userNotAllowedAllNeededScopes = gmailUserError {
             let navigationController = viewController.navigationController
-            let checkAuthViewController = CheckMailAuthViewController()
+            let checkAuthViewController = CheckMailAuthViewController(appContext: appContext)
             navigationController?.pushViewController(checkAuthViewController, animated: true)
         }
     }

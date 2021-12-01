@@ -30,11 +30,11 @@ extension MessageActionsHandler where Self: UIViewController {
         Logger.nested("MessageActions")
     }
 
-    func setupNavigationBar() {
+    func setupNavigationBar(user: User) {
         Task {
             do {
                 let path = try await trashFolderProvider.getTrashFolderPath()
-                setupNavigationBarItems(with: path)
+                setupNavigationBarItems(with: path, user: user)
             } catch {
                 // todo - handle?
                 logger.logError("setupNavigationBar: \(error)")
@@ -42,7 +42,7 @@ extension MessageActionsHandler where Self: UIViewController {
         }
     }
 
-    private func setupNavigationBarItems(with trashFolderPath: String?) {
+    private func setupNavigationBarItems(with trashFolderPath: String?, user: User) {
         logger.logInfo("setup navigation bar with \(trashFolderPath ?? "N/A")")
         logger.logInfo("currentFolderPath \(currentFolderPath)")
 

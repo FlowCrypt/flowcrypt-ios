@@ -25,6 +25,7 @@ extension UIViewController {
         let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
         spinner.label.text = message
         spinner.isUserInteractionEnabled = isUserInteractionEnabled
+        spinner.accessibilityIdentifier = "loadingSpinner"
     }
 
     @MainActor

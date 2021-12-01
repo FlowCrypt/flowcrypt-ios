@@ -26,10 +26,10 @@ final class AttesterApi: AttesterApiType {
 
     init(
         core: Core = .shared,
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
+        clientConfiguration: ClientConfiguration
     ) {
         self.core = core
-        self.clientConfiguration = clientConfigurationService.getSavedForCurrentUser()
+        self.clientConfiguration = clientConfiguration
     }
 
     private func urlPub(emailOrLongid: String) -> String {

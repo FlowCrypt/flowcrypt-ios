@@ -39,6 +39,7 @@ final class ComposeViewController: TableNodeViewController {
         case subject, subjectDivider, text
     }
 
+    private let appContext: AppContext
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
     private let decorator: ComposeViewDecorator
@@ -46,11 +47,10 @@ final class ComposeViewController: TableNodeViewController {
     private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
-    private let keyService: KeyServiceType
     private let keyMethods: KeyMethodsType
     private let service: ServiceActor
-    private let passPhraseService: PassPhraseService
     private let router: GlobalRouterType
+    private let clientConfiguration: ClientConfiguration
 
     private let search = PassthroughSubject<String, Never>()
 
@@ -68,40 +68,57 @@ final class ComposeViewController: TableNodeViewController {
     private var composedLatestDraft: ComposedDraft?
 
     init(
-        email: String,
+        appContext: AppContext,
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
-        cloudContactProvider: CloudContactsProvider = UserContactsProvider(),
-        contactsService: ContactsServiceType = ContactsService(),
-        composeMessageService: ComposeMessageService = ComposeMessageService(),
+        cloudContactProvider: CloudContactsProvider? = nil,
+        contactsService: ContactsServiceType? = nil,
+        composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
-        keyService: KeyServiceType = KeyService(),
-        passPhraseService: PassPhraseService = PassPhraseService(),
         keyMethods: KeyMethodsType = KeyMethods(),
         router: GlobalRouterType = GlobalRouter()
     ) {
+        self.appContext = appContext
+        guard let email = appContext.dataService.email else {
+            fatalError("missing current user email") // todo - need a more elegant solution
+        }
         self.email = email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        self.contactsService = contactsService
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: email)
+        self.contactsService = contactsService ?? ContactsService(
+            localContactsProvider: LocalContactsProvider(
+                encryptedStorage: appContext.encryptedStorage
+            ),
+            clientConfiguration: clientConfiguration
+        )
+        let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
+            userService: GoogleUserService(
+                currentUserEmail: email,
+                appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+            )
+        )
         self.cloudContactProvider = cloudContactProvider
-        self.composeMessageService = composeMessageService
+        self.composeMessageService = composeMessageService ?? ComposeMessageService(
+            clientConfiguration: clientConfiguration,
+            encryptedStorage: appContext.encryptedStorage,
+            messageGateway: appContext.getRequiredMailProvider().messageSender
+        )
         self.filesManager = filesManager
         self.photosManager = photosManager
-        self.keyService = keyService
         self.keyMethods = keyMethods
         self.service = ServiceActor(
-            composeMessageService: composeMessageService,
-            contactsService: contactsService,
+            composeMessageService: self.composeMessageService,
+            contactsService: self.contactsService,
             cloudContactProvider: cloudContactProvider
         )
-        self.passPhraseService = passPhraseService
         self.router = router
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
+        self.clientConfiguration = clientConfiguration
         super.init(node: TableNode())
     }
 
@@ -368,7 +385,7 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
-        guard let signingKey = try await keyService.getSigningKey() else {
+        guard let signingKey = try await appContext.keyService.getSigningKey() else {
             throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
 
@@ -410,7 +427,7 @@ extension ComposeViewController {
     private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await self.keyService.getPrvKeyInfo()
+        let allKeys = try await appContext.keyService.getPrvKeyInfo()
         guard allKeys.isNotEmpty else {
             // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
             //   I copied it from another usage, but has to be changed
@@ -418,7 +435,7 @@ extension ComposeViewController {
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        self.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         // now figure out if the pass phrase also matched the signing prv itself
         let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
         return matched != nil// true if the pass phrase matched signing key
@@ -1125,7 +1142,7 @@ extension ComposeViewController {
 
         Task {
             do {
-                try await router.askForContactsPermission(for: .gmailLogin(self))
+                try await router.askForContactsPermission(for: .gmailLogin(self), appContext: appContext)
                 node.reloadSections([2], with: .automatic)
             } catch {
                 handleContactsPermissionError(error)

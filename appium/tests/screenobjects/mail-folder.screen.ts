@@ -62,7 +62,7 @@ class MailFolderScreen extends BaseScreen {
   }
 
   refreshMailList = async () => {
-    await TouchHelper.scrollUp();
+    await TouchHelper.pullToRefresh();
   }
 
   clickOnEmailBySubject = async (subject: string) => {

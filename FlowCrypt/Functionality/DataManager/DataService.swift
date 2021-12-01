@@ -9,11 +9,10 @@
 import Foundation
 import RealmSwift
 
-protocol EmailProviderType {
-    var email: String? { get }
-}
 
-protocol DataServiceType: EmailProviderType {
+// todo DataServiceType in general is a bit of a confused class
+// hopefully we can refactor it away or shrink it
+protocol DataServiceType {
     // data
     var email: String? { get }
     var currentUser: User? { get }
@@ -25,11 +24,8 @@ protocol DataServiceType: EmailProviderType {
     var users: [User] { get }
 
     func validAccounts() -> [User]
-}
-
-protocol ImapSessionProvider {
-    func imapSession() -> IMAPSession?
-    func smtpSession() -> SMTPSession?
+    
+    func performMigrationIfNeeded() async throws
 }
 
 enum SessionType: CustomStringConvertible {
@@ -48,14 +44,13 @@ enum SessionType: CustomStringConvertible {
 
 // MARK: - DataService
 final class DataService {
-    static let shared = DataService()
 
     private let encryptedStorage: EncryptedStorageType
     private let localStorage: LocalStorageType
     private let migrationService: DBMigration
 
-    private init(
-        encryptedStorage: EncryptedStorageType = EncryptedStorage(),
+    init(
+        encryptedStorage: EncryptedStorageType,
         localStorage: LocalStorageType = LocalStorage()
     ) {
         self.encryptedStorage = encryptedStorage
@@ -105,7 +100,10 @@ extension DataService: DataServiceType {
     var token: String? {
         switch currentAuthType {
         case .oAuthGmail:
-            return GoogleUserService().userToken
+            return GoogleUserService(
+                currentUserEmail: currentUser?.email,
+                appDelegateGoogleSessionContainer: nil // needed only when signing in/out
+            ).userToken
         default:
             return nil
         }
@@ -123,36 +121,5 @@ extension DataService: DBMigration {
     /// Perform all kind of migrations
     func performMigrationIfNeeded() async throws {
         try await migrationService.performMigrationIfNeeded()
-    }
-}
-
-// MARK: - SessionProvider
-extension DataService: ImapSessionProvider {
-    func imapSession() -> IMAPSession? {
-        guard let user = activeUser else {
-            assertionFailure("Can't get IMAP Session without user data")
-            return nil
-        }
-
-        guard let imapSession = IMAPSession(user: user) else {
-            assertionFailure("couldn't create IMAP Session with this parameters")
-            return nil
-        }
-
-        return imapSession
-    }
-
-    func smtpSession() -> SMTPSession? {
-        guard let user = activeUser else {
-            assertionFailure("Can't get SMTP Session without user data")
-            return nil
-        }
-
-        guard let smtpSession = SMTPSession(user: user) else {
-            assertionFailure("couldn't create SMTP Session with this parameters")
-            return nil
-        }
-
-        return smtpSession
     }
 }

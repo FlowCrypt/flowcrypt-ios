@@ -14,8 +14,8 @@ extension Imap {
 
     func setupSession() {
         guard
-            let imapSession = dataService.imapSession(),
-            let smtpSession = dataService.smtpSession()
+            let imapSession = imapSessionProvider.imapSession(),
+            let smtpSession = imapSessionProvider.smtpSession()
         else { return }
         logger.logInfo("Creating a new IMAP session")
         let newImapSession = MCOIMAPSession(session: imapSession)

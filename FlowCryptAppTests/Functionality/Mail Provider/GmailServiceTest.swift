@@ -19,7 +19,11 @@ class GmailServiceTest: XCTestCase {
     override func setUp() {
         userService = GoogleUserServiceMock()
         backupSearchQueryProvider = GmailBackupSearchQueryProviderMock()
-        sut = GmailService(userService: userService, backupSearchQueryProvider: backupSearchQueryProvider)
+        sut = GmailService(
+            currentUserEmail: "user@example.test",
+            userService: userService,
+            backupSearchQueryProvider: backupSearchQueryProvider
+        )
     }
 
     func testSearchBackupsWhenErrorInQuery() async {

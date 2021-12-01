@@ -26,6 +26,7 @@ final class EncryptedCacheService<T: CachedRealmObject> {
     }
 
     func save(_ object: T) {
+        // todo - should throw instead, don't "try?"
         try? realm.write {
             realm.add(object, update: .modified)
         }
@@ -37,28 +38,26 @@ final class EncryptedCacheService<T: CachedRealmObject> {
             .first(where: { $0.identifier == identifier })
         else { return }
 
+        // todo - should throw instead, don't "try?"
         try? realm.write {
            realm.delete(objectToDelete)
         }
     }
 
     func remove(objects: [T]) {
+        // todo - should throw instead, don't "try?"
         try? realm.write {
             realm.delete(objects)
         }
     }
 
-    func removeAllForActiveUser() {
-        let allObjects = getAllForActiveUser() ?? []
+    func removeAll(for userEmail: String) {
+        let allObjects = getAll(for: userEmail)
         remove(objects: allObjects)
     }
 
-    func getAllForActiveUser() -> [T]? {
-        let currentUser = realm
-            .objects(UserRealmObject.self)
-            .first(where: \.isActive)
-
+    func getAll(for userEmail: String) -> [T] {
         return Array(realm.objects(T.self))
-            .filter { $0.activeUser?.email == currentUser?.email }
+            .filter { $0.activeUser?.email == userEmail }
     }
 }

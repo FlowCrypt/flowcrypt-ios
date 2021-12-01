@@ -14,17 +14,14 @@ class PassPhraseStorageTests: XCTestCase {
     var sut: PassPhraseService!
     var encryptedStorage: PassPhraseStorageMock!
     var inMemoryStorage: PassPhraseStorageMock!
-    var emailProvider: EmailProviderMock!
 
     override func setUp() {
-        emailProvider = EmailProviderMock()
         encryptedStorage = PassPhraseStorageMock()
         inMemoryStorage = PassPhraseStorageMock()
 
         sut = PassPhraseService(
             encryptedStorage: encryptedStorage,
-            localStorage: inMemoryStorage,
-            emailProvider: emailProvider
+            localStorage: inMemoryStorage
         )
     }
 

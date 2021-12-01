@@ -9,7 +9,6 @@
 import FlowCryptUI
 import UIKit
 
-typealias RecipientState = RecipientEmailsCellNode.Input.State
 typealias RecipientStateContext = RecipientEmailsCellNode.Input.StateContext
 
 struct ComposeViewDecorator {

@@ -15,6 +15,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
     var enterpriseServerApi: EnterpriseServerApiMock!
     var localClientConfigurationProvider: LocalClientConfigurationMock!
     var isCurrentUserExistMock: CurrentUserEmailMock!
+    let user = User(email: "example@flowcrypt.test", isActive: true, name: "User", imap: nil, smtp: nil)
 
     override func setUp() {
         super.setUp()
@@ -24,8 +25,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
 
         sut = ClientConfigurationService(
             server: enterpriseServerApi,
-            local: localClientConfigurationProvider,
-            getCurrentUserEmail: self.isCurrentUserExistMock.currentUserEmail()
+            local: localClientConfigurationProvider
         )
     }
 
@@ -35,7 +35,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             expectedConfiguration
         }
 
-        let clientConfiguration = sut.getSavedForCurrentUser()
+        let clientConfiguration = sut.getSaved(for: user.email)
         XCTAssert(localClientConfigurationProvider.fetchCount == 1)
         XCTAssert(localClientConfigurationProvider.fetchInvoked == true)
         XCTAssert(clientConfiguration.raw == expectedConfiguration)
@@ -46,7 +46,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             nil
         }
         do {
-            _ = try await sut.fetchForCurrentUser()
+            _ = try await sut.fetch(for: user)
             XCTFail()
         } catch {
         }
@@ -68,7 +68,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             "example@flowcrypt.test"
         }
 
-        _ = try await sut.fetchForCurrentUser()
+        _ = try await sut.fetch(for: user)
     }
 
     func testInCaseGetClientConfigurationReturnsError() async throws {
@@ -86,7 +86,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             expectedClientConfiguration
         }
 
-        let clientConfiguration = try await sut.fetchForCurrentUser()
+        let clientConfiguration = try await sut.fetch(for: user)
         XCTAssertTrue(clientConfiguration.raw == expectedClientConfiguration)
     }
 }
