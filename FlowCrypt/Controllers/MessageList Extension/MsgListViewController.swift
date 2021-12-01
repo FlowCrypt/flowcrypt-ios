@@ -10,7 +10,7 @@ import UIKit
 
 @MainActor
 protocol MsgListViewController {
-    func open(with message: InboxRenderable, path: String)
+    func open(with message: InboxRenderable, path: String, appContext: AppContext)
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int?
     func updateMessage(isRead: Bool, at index: Int)
@@ -18,39 +18,35 @@ protocol MsgListViewController {
 }
 
 extension MsgListViewController where Self: UIViewController {
-    func open(with message: InboxRenderable, path: String) {
+
+    // todo - tom - don't know how to add AppContext into init of protocol/extension
+    func open(with message: InboxRenderable, path: String, appContext: AppContext) {
         switch message.wrappedType {
         case .message(let message):
-            openMsg(with: message, path: path)
+            openMsg(appContext: appContext, with: message, path: path)
         case .thread(let thread):
-            openThread(with: thread)
+            openThread(with: thread, appContext: appContext)
         }
     }
 
     // TODO: uncomment in "sent message from draft" feature
-    private func openDraft(with message: Message) {
-        guard let email = DataService.shared.email else { return }
-
-        let controller = ComposeViewController(email: email)
+    private func openDraft(appContext: AppContext, with message: Message) {
+        let controller = ComposeViewController(appContext: appContext)
         controller.update(with: message)
         navigationController?.pushViewController(controller, animated: true)
     }
 
-    private func openMsg(with message: Message, path: String) {
+    private func openMsg(appContext: AppContext, with message: Message, path: String) {
         let thread = MessageThread(identifier: message.threadId,
                                    snippet: nil,
                                    path: path,
                                    messages: [message])
-        openThread(with: thread)
+        openThread(with: thread, appContext: appContext)
     }
 
-    private func openThread(with thread: MessageThread) {
-        guard let threadOperationsProvider = MailProvider.shared.threadOperationsProvider else {
-            assertionFailure("Internal error. Provider should conform to MessagesThreadOperationsProvider")
-            return
-        }
+    private func openThread(with thread: MessageThread, appContext: AppContext) {
         let viewController = ThreadDetailsViewController(
-            threadOperationsProvider: threadOperationsProvider,
+            appContext: appContext,
             thread: thread
         ) { [weak self] (action, message) in
             self?.handleMessageOperation(with: message, action: action)

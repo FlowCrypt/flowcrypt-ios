@@ -11,6 +11,7 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 
 class GmailService: MailServiceProvider {
+    
     let mailServiceProviderType = MailServiceProviderType.gmail
     let userService: GoogleUserServiceType
     let backupSearchQueryProvider: GmailBackupSearchQueryProviderType
@@ -35,7 +36,8 @@ class GmailService: MailServiceProvider {
     var progressHandler: ((Float) -> Void)?
 
     init(
-        userService: GoogleUserServiceType = GoogleUserService(),
+        currentUserEmail: String,
+        userService: GoogleUserServiceType,
         backupSearchQueryProvider: GmailBackupSearchQueryProviderType = GmailBackupSearchQueryProvider()
     ) {
         self.userService = userService

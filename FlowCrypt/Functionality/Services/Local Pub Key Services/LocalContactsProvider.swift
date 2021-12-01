@@ -24,7 +24,7 @@ struct LocalContactsProvider {
     let core: Core
 
     init(
-        encryptedStorage: EncryptedStorageType = EncryptedStorage(),
+        encryptedStorage: EncryptedStorageType,
         core: Core = .shared
     ) {
         self.localContactsCache = EncryptedCacheService<RecipientRealmObject>(encryptedStorage: encryptedStorage)

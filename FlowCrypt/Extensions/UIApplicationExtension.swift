@@ -23,4 +23,7 @@ extension UIApplication {
             .first(where: \.isKeyWindow)
     }
 
+    var isRunningTests: Bool {
+        NSClassFromString("XCTestCase") != nil
+    }
 }

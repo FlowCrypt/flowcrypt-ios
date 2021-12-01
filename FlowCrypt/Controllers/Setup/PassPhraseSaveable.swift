@@ -14,9 +14,6 @@ protocol PassPhraseSaveable {
     var passPhraseIndexes: [IndexPath] { get }
     var saveLocallyNode: CellNode { get }
     var saveInMemoryNode: CellNode { get }
-
-    var passPhraseService: PassPhraseServiceType { get }
-
     func handleSelectedPassPhraseOption()
     func showPassPhraseErrorAlert()
 }

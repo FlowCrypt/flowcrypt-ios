@@ -10,6 +10,7 @@ import AsyncDisplayKit
 
 @MainActor
 open class TableNodeViewController: ASDKViewController<TableNode> {
+    
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         node.reloadData()

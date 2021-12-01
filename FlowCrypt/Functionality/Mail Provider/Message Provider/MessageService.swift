@@ -103,25 +103,25 @@ enum MessageServiceError: Error {
 final class MessageService {
 
     private let messageProvider: MessageProvider
-    private let keyService: KeyServiceType
     private let keyMethods: KeyMethodsType
-    private let passPhraseService: PassPhraseServiceType
     private let contactsService: ContactsServiceType
     private let core: Core
     private let logger: Logger
+    private let keyService: KeyServiceType
+    private let passPhraseService: PassPhraseServiceType
 
     init(
-        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
-        keyService: KeyServiceType = KeyService(),
         core: Core = Core.shared,
-        passPhraseService: PassPhraseServiceType = PassPhraseService(),
         keyMethods: KeyMethodsType = KeyMethods(),
-        contactsService: ContactsServiceType = ContactsService()
+        contactsService: ContactsServiceType,
+        keyService: KeyServiceType,
+        messageProvider: MessageProvider,
+        passPhraseService: PassPhraseServiceType
     ) {
-        self.messageProvider = messageProvider
         self.keyService = keyService
-        self.core = core
         self.passPhraseService = passPhraseService
+        self.messageProvider = messageProvider
+        self.core = core
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
         self.keyMethods = keyMethods
         self.contactsService = contactsService

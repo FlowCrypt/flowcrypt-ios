@@ -28,11 +28,17 @@ class ComposeMessageServiceTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-
+        let storageEncryptionKey = CoreHost().getSecureRandomByteNumberArray(64)!
         sut = ComposeMessageService(
+            clientConfiguration: ClientConfiguration(
+                raw: RawClientConfiguration()
+            ),
+            encryptedStorage: EncryptedStorage(
+                storageEncryptionKey: Data(storageEncryptionKey)
+            ),
             messageGateway: MessageGatewayMock(),
             draftGateway: DraftGatewayMock(),
-            dataService: keyStorage,
+            keyStorage: keyStorage,
             contactsService: contactsService,
             core: core
         )

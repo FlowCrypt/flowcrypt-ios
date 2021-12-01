@@ -10,6 +10,7 @@ import GoogleAPIClientForREST_Gmail
 import GTMSessionFetcherCore
 
 extension GmailService: MessageProvider {
+
     func fetchMsg(message: Message,
                   folder: String,
                   progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data {

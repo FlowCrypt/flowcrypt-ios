@@ -21,11 +21,8 @@ final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
         }
     }
 
-    var fetchOrganisationalRulesForEmail: (String) throws -> ClientConfiguration = { _ in
-        throw MockError()
-    }
-    func fetchOrganisationalRules(for email: String) async throws -> ClientConfiguration {
-        return try fetchOrganisationalRulesForEmail(email)
+    func fetch(for user: User) async throws -> ClientConfiguration {
+        throw MockError() // ??
     }
 
     var clientConfiguration: RawClientConfiguration!
@@ -33,7 +30,7 @@ final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
     var getSavedOrganisationalRulesForCurrentUserResult: ClientConfiguration {
         ClientConfiguration(raw: clientConfiguration)
     }
-    func getSavedForCurrentUser() -> ClientConfiguration {
+    func getSaved(for user: String) -> ClientConfiguration {
         getSavedOrganisationalRulesForCurrentUserResult
     }
 }
