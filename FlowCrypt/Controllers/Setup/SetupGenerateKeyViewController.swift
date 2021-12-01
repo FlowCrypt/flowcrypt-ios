@@ -112,10 +112,12 @@ private actor Service {
         )
         try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
 
-        appContext.keyStorage.addKeys(keyDetails: [encryptedPrv.key],
-                           passPhrase: storageMethod == .persistent ? passPhrase: nil,
-                           source: .generated,
-                           for: user.email)
+        appContext.encryptedStorage.addKeys(
+            keyDetails: [encryptedPrv.key],
+            passPhrase: storageMethod == .persistent ? passPhrase: nil,
+            source: .generated,
+            for: user.email
+        )
 
         if storageMethod == .memory {
             let passPhrase = PassPhrase(

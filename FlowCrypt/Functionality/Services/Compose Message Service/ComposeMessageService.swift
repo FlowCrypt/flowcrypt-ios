@@ -37,7 +37,7 @@ protocol CoreComposeMessageType {
 final class ComposeMessageService {
 
     private let messageGateway: MessageGateway
-    private let keyStorage: KeyStorageType
+    private let storage: EncryptedStorageType
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
@@ -48,13 +48,12 @@ final class ComposeMessageService {
         encryptedStorage: EncryptedStorageType,
         messageGateway: MessageGateway,
         draftGateway: DraftGateway? = nil,
-        keyStorage: KeyStorageType? = nil,
         contactsService: ContactsServiceType? = nil,
         core: CoreComposeMessageType & KeyParser = Core.shared
     ) {
         self.messageGateway = messageGateway
         self.draftGateway = draftGateway
-        self.keyStorage = keyStorage ?? KeyDataStorage(encryptedStorage: encryptedStorage)
+        self.storage = encryptedStorage
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(encryptedStorage: encryptedStorage),
             clientConfiguration: clientConfiguration
@@ -96,7 +95,7 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = self.keyStorage.publicKey() else {
+        guard let myPubKey = storage.publicKey() else {
             throw MessageValidationError.missedPublicKey
         }
 

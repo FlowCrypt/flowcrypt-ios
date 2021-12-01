@@ -11,13 +11,19 @@ import RealmSwift
 import UIKit
 
 // swiftlint:disable force_try
-protocol EncryptedStorageType: KeyStorageType {
+protocol EncryptedStorageType {
     var storage: Realm { get }
 
     func getAllUsers() -> [User]
     func saveActiveUser(with user: User)
     var activeUser: User? { get }
     func doesAnyKeyExist(for email: String) -> Bool
+
+    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
+    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
+    func publicKey() -> String?
+    func findKeyInfo(by email: String) -> [KeyInfo]
+    func findPrivateKey(by email: String) -> [String]
 
     func validate() throws
     func reset() throws
@@ -56,7 +62,7 @@ final class EncryptedStorage: EncryptedStorageType {
 
     private let currentSchema: EncryptedStorageSchema = .version5
     private let supportedSchemas = EncryptedStorageSchema.allCases
-    
+
     private let storageEncryptionKey: Data
 
     var storage: Realm {
@@ -181,34 +187,43 @@ extension EncryptedStorage {
     }
 
     func updateKeys(with primaryFingerprint: String, passphrase: String?) {
-        let keys = keysInfo()
-            .filter { $0.primaryFingerprint == primaryFingerprint }
+        let keys = storage.objects(KeyInfoRealmObject.self).where {
+            $0.primaryFingerprint == primaryFingerprint
+        }
 
         try! storage.write {
             keys.map { $0.passphrase = passphrase }
         }
     }
 
-    func keysInfo() -> [KeyInfoRealmObject] {
-        let result = storage.objects(KeyInfoRealmObject.self)
-        return Array(result)
+    func findKeyInfo(by email: String) -> [KeyInfo] {
+        return storage.objects(KeyInfoRealmObject.self).where({
+            $0.account == email
+        }).map(KeyInfo.init)
+    }
+
+    func findPrivateKey(by email: String) -> [String] {
+        return storage.objects(KeyInfoRealmObject.self).where({
+            $0.account == email
+        }).map(\.private)
     }
 
     func publicKey() -> String? {
         storage.objects(KeyInfoRealmObject.self)
-            .map(\.public)
-            .first
+            .first.map(\.public)
     }
 
     func doesAnyKeyExist(for email: String) -> Bool {
-        keysInfo()
-            .map(\.account)
-            .map { $0 == email }
-            .contains(true)
+        let keys = storage.objects(KeyInfoRealmObject.self).where {
+            $0.account == email
+        }
+        return !keys.isEmpty
     }
 
     private func getUserObject(for email: String) -> UserRealmObject? {
-        storage.objects(UserRealmObject.self).first(where: { $0.email == email })
+        storage.objects(UserRealmObject.self).where {
+            $0.email == email
+        }.first
     }
 }
 
@@ -227,16 +242,18 @@ extension EncryptedStorage: PassPhraseStorageType {
     }
 
     func getPassPhrases() -> [PassPhrase] {
-        keysInfo().compactMap(PassPhrase.init)
+        return storage.objects(KeyInfoRealmObject.self)
+            .compactMap(PassPhrase.init)
     }
 }
 
 // MARK: - User
 extension EncryptedStorage {
     var activeUser: User? {
-        storage.objects(UserRealmObject.self)
-            .first(where: \.isActive)
-            .flatMap(User.init)
+        let users = storage.objects(UserRealmObject.self).where {
+            $0.isActive == true
+        }
+        return users.first.flatMap(User.init)
     }
 
     func getAllUsers() -> [User] {

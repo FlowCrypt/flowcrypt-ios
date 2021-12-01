@@ -235,8 +235,18 @@ extension SetupManuallyEnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        appContext.keyStorage.addKeys(keyDetails: newKeysToAdd, passPhrase: passPhrase, source: .imported, for: email)
-        appContext.keyStorage.updateKeys(keyDetails: keysToUpdate, passPhrase: passPhrase, source: .imported, for: email)
+        appContext.encryptedStorage.addKeys(
+            keyDetails: newKeysToAdd,
+            passPhrase: passPhrase,
+            source: .imported,
+            for: email
+        )
+        appContext.encryptedStorage.updateKeys(
+            keyDetails: keysToUpdate,
+            passPhrase: passPhrase,
+            source: .imported,
+            for: email
+        )
 
         if storageMethod == .memory {
             keysToUpdate

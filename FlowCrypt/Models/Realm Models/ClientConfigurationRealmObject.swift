@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 final class ClientConfigurationRealmObject: Object {
-    @Persisted(primaryKey: true) var userEmail: String!
+    @Persisted(primaryKey: true) var userEmail: String
     @Persisted var flags: Data?
     @Persisted var customKeyserverUrl: String?
     @Persisted var keyManagerUrl: String?
