@@ -28,9 +28,9 @@ final class KeyService: KeyServiceType {
     let logger: Logger
 
     init(
-        storage: KeyStorageType = KeyDataStorage(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService(),
-        currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
+        storage: KeyStorageType,
+        passPhraseService: PassPhraseServiceType,
+        currentUserEmail: @escaping () -> (String?)
     ) {
         self.storage = storage
         self.passPhraseService = passPhraseService

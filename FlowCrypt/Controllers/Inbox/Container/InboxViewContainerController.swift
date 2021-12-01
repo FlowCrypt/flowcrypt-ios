@@ -29,18 +29,26 @@ final class InboxViewContainerController: TableNodeViewController {
         case loadedFolders([FolderViewModel])
     }
 
-    let folderService: FoldersServiceType
+    let appContext: AppContext
+    let foldersService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
+    let currentUser: User
 
     private var state: State = .loading {
         didSet { handleNewState() }
     }
 
     init(
-        folderService: FoldersServiceType = FoldersService(),
+        appContext: AppContext,
+        foldersService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
-        self.folderService = folderService
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("missing current user") // todo - use DI
+        }
+        self.currentUser = currentUser
+        self.appContext = appContext
+        self.foldersService = foldersService ?? appContext.getFoldersService()
         self.decorator = decorator
         super.init(node: TableNode())
         node.delegate = self
@@ -60,7 +68,7 @@ final class InboxViewContainerController: TableNodeViewController {
     private func fetchInboxFolder() {
         Task {
             do {
-                let folders = try await folderService.fetchFolders(isForceReload: true)
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: self.currentUser)
                 self.handleFetched(folders: folders)
             } catch {
                 self.state = .error(error)
@@ -99,7 +107,7 @@ final class InboxViewContainerController: TableNodeViewController {
                 return
             }
             let input = InboxViewModel(inbox)
-            let inboxViewController = InboxViewControllerFactory.make(with: input)
+            let inboxViewController = InboxViewControllerFactory.make(appContext: appContext, with: input)
             navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }

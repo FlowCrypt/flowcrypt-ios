@@ -30,14 +30,14 @@ protocol PublicKeyProvider {
 
 struct ContactsService: ContactsServiceType {
     let localContactsProvider: LocalContactsProviderType
-    let pubLookup: PubLookupType
+    let pubLookup: PubLookup
 
     init(
-        localContactsProvider: LocalContactsProviderType = LocalContactsProvider(),
-        pubLookup: PubLookupType = PubLookup()
+        localContactsProvider: LocalContactsProviderType,
+        clientConfiguration: ClientConfiguration
     ) {
         self.localContactsProvider = localContactsProvider
-        self.pubLookup = pubLookup
+        self.pubLookup = PubLookup(clientConfiguration: clientConfiguration)
     }
 }
 

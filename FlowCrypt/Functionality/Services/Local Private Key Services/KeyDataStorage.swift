@@ -9,13 +9,12 @@
 import FlowCryptCommon
 import Foundation
 
+// todo - what is this and what is it used for?
 final class KeyDataStorage {
 
     private let encryptedStorage: EncryptedStorageType
 
-    init(
-        encryptedStorage: EncryptedStorageType = EncryptedStorage()
-    ) {
+    init(encryptedStorage: EncryptedStorageType) {
         self.encryptedStorage = encryptedStorage
     }
 }

@@ -18,10 +18,10 @@ final class InvalidStorageViewController: TableNodeViewController {
     }
 
     private let error: Error
-    private let encryptedStorage: EncryptedStorageType
+    private let encryptedStorage: EncryptedStorageType? // nil if failed to initialize
     private let router: GlobalRouterType
 
-    init(error: Error, encryptedStorage: EncryptedStorageType, router: GlobalRouterType) {
+    init(error: Error, encryptedStorage: EncryptedStorageType?, router: GlobalRouterType) {
         self.error = error
         self.encryptedStorage = encryptedStorage
         self.router = router
@@ -44,6 +44,10 @@ final class InvalidStorageViewController: TableNodeViewController {
     }
 
     @objc private func handleTap() {
+        guard let encryptedStorage = encryptedStorage else {
+            showAlert(message: "invalid_storage_failed_to_initialize".localized)
+            return
+        }
         do {
             try encryptedStorage.reset()
             router.proceed()

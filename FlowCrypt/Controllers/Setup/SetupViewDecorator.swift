@@ -83,9 +83,7 @@ struct SetupViewDecorator {
         case .choosingPassPhrase:
             subtitle = "" // "create_pass_phrase_description".localized https://github.com/FlowCrypt/flowcrypt-ios/issues/497
         case .noBackups:
-            let user = DataService.shared.email ?? "unknown_title".localized
-            let msg = "setup_no_backups".localized + user
-            subtitle = msg
+            subtitle = "setup_no_backups".localized // todo - edit
         }
 
         return subtitle

@@ -9,7 +9,7 @@
 import Foundation
 
 protocol EmailKeyManagerApiType {
-    func getPrivateKeys() async throws -> EmailKeyManagerApiResult
+    func getPrivateKeys(currentUserEmail: String) async throws -> EmailKeyManagerApiResult
 }
 
 enum EmailKeyManagerApiError: Error {
@@ -40,23 +40,26 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         static let apiName = "EmailKeyManagerApi"
     }
 
-    private let clientConfigurationService: ClientConfigurationServiceType
+    private let clientConfiguration: ClientConfiguration
     private let core: Core
 
     init(
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
+        clientConfiguration: ClientConfiguration,
         core: Core = .shared
     ) {
-        self.clientConfigurationService = clientConfigurationService
+        self.clientConfiguration = clientConfiguration
         self.core = core
     }
 
-    func getPrivateKeys() async throws -> EmailKeyManagerApiResult {
+    func getPrivateKeys(currentUserEmail: String) async throws -> EmailKeyManagerApiResult {
         guard let urlString = getPrivateKeysUrlString() else {
             throw EmailKeyManagerApiError.noPrivateKeysUrlString
         }
 
-        guard let idToken = GoogleUserService().idToken else {
+        guard let idToken = GoogleUserService(
+            currentUserEmail: currentUserEmail,
+            appDelegateGoogleSessionContainer: nil // only needed when signing in/out
+        ).idToken else {
             throw EmailKeyManagerApiError.noGoogleIdToken
         }
 
@@ -95,7 +98,7 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
     }
 
     private func getPrivateKeysUrlString() -> String? {
-        guard let keyManagerUrlString = clientConfigurationService.getSavedForCurrentUser().keyManagerUrlString else {
+        guard let keyManagerUrlString = clientConfiguration.keyManagerUrlString else {
             return nil
         }
         return "\(keyManagerUrlString)v1/keys/private"

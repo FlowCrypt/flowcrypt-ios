@@ -12,6 +12,8 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 import FlowCryptCommon
 
+typealias RecipientState = RecipientEmailsCellNode.Input.State
+
 struct ComposeMessageContext: Equatable {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []
@@ -33,24 +35,30 @@ protocol CoreComposeMessageType {
 }
 
 final class ComposeMessageService {
+
     private let messageGateway: MessageGateway
-    private let dataService: KeyStorageType
+    private let keyStorage: KeyStorageType
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
     private let logger: Logger
 
     init(
-        messageGateway: MessageGateway = MailProvider.shared.messageSender,
-        draftGateway: DraftGateway? = MailProvider.shared.draftGateway,
-        dataService: KeyStorageType = KeyDataStorage(),
-        contactsService: ContactsServiceType = ContactsService(),
+        clientConfiguration: ClientConfiguration,
+        encryptedStorage: EncryptedStorageType,
+        messageGateway: MessageGateway,
+        draftGateway: DraftGateway? = nil,
+        keyStorage: KeyStorageType? = nil,
+        contactsService: ContactsServiceType? = nil,
         core: CoreComposeMessageType & KeyParser = Core.shared
     ) {
         self.messageGateway = messageGateway
         self.draftGateway = draftGateway
-        self.dataService = dataService
-        self.contactsService = contactsService
+        self.keyStorage = keyStorage ?? KeyDataStorage(encryptedStorage: encryptedStorage)
+        self.contactsService = contactsService ?? ContactsService(
+            localContactsProvider: LocalContactsProvider(encryptedStorage: encryptedStorage),
+            clientConfiguration: clientConfiguration
+        )
         self.core = core
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
@@ -88,7 +96,7 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = self.dataService.publicKey() else {
+        guard let myPubKey = self.keyStorage.publicKey() else {
             throw MessageValidationError.missedPublicKey
         }
 
