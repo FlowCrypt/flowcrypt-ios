@@ -57,7 +57,6 @@ final class ComposeViewController: TableNodeViewController {
     private let email: String
 
     private var cancellable = Set<AnyCancellable>()
-    private var lifeTimeCancellable = Set<AnyCancellable>()
 
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
@@ -165,9 +164,8 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private func observeComposeUpdates() {
-        composeMessageService.$state
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
+        composeMessageService.onStateChanged { [weak self] state in
+            DispatchQueue.main.async {
                 guard let message = state.message else {
                     self?.hideSpinner()
                     return
@@ -178,7 +176,7 @@ final class ComposeViewController: TableNodeViewController {
                     systemImageName: "checkmark.circle"
                 )
             }
-            .store(in: &lifeTimeCancellable)
+        }
     }
 }
 
@@ -459,7 +457,11 @@ extension ComposeViewController {
         UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-        showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+
+        let hideSpinnerAnimationDuration: TimeInterval = 1
+        DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
+            self?.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+        }
     }
 
     private func handleSuccessfullySentMessage() {

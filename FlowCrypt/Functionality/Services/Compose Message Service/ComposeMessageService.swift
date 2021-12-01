@@ -40,8 +40,6 @@ final class ComposeMessageService {
     private let draftGateway: DraftGateway?
     private lazy var logger: Logger = Logger.nested(Self.self)
 
-    @Published private(set) var state: State = .idle
-
     init(
         messageGateway: MessageGateway = MailProvider.shared.messageSender,
         draftGateway: DraftGateway? = MailProvider.shared.draftGateway,
@@ -57,6 +55,11 @@ final class ComposeMessageService {
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
+    private var onStateChanged: ((State) -> Void)?
+    func onStateChanged(_ completion: ((State) -> Void)?) {
+        self.onStateChanged = completion
+    }
+
     func validateAndProduceSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
@@ -64,11 +67,10 @@ final class ComposeMessageService {
         includeAttachments: Bool = true,
         signingPrv: PrvKeyInfo?
     ) async throws -> SendableMsg {
-        state = .validatingMessage
+        onStateChanged?(.validatingMessage)
 
         let recipients = contextToSend.recipients
         guard recipients.isNotEmpty else {
-            state = .error
             throw MessageValidationError.emptyRecipient
         }
 
@@ -76,29 +78,24 @@ final class ComposeMessageService {
         let emptyEmails = emails.filter { !$0.hasContent }
 
         guard emails.isNotEmpty, emptyEmails.isEmpty else {
-            state = .error
             throw MessageValidationError.emptyRecipient
         }
 
         guard emails.filter({ !$0.isValidEmail }).isEmpty else {
-            state = .error
             throw MessageValidationError.invalidEmailRecipient
         }
 
         guard input.isQuote || contextToSend.subject?.hasContent ?? false else {
-            state = .error
             throw MessageValidationError.emptySubject
         }
 
         guard let text = contextToSend.message, text.hasContent else {
-            state = .error
             throw MessageValidationError.emptyMessage
         }
 
         let subject = contextToSend.subject ?? "(no subject)"
 
         guard let myPubKey = self.dataService.publicKey() else {
-            state = .error
             throw MessageValidationError.missedPublicKey
         }
 
@@ -141,15 +138,12 @@ final class ComposeMessageService {
         logger.logDebug("validate recipients: \(recipients)")
         logger.logDebug("validate recipient keyStates: \(recipients.map { $0.keyState })")
         guard !contains(keyState: .empty) else {
-            state = .error
             throw MessageValidationError.noPubRecipients
         }
         guard !contains(keyState: .expired) else {
-            state = .error
             throw MessageValidationError.expiredKeyRecipients
         }
         guard !contains(keyState: .revoked) else {
-            state = .error
             throw MessageValidationError.revokedKeyRecipients
         }
         return recipients.flatMap(\.activePubKeys).map(\.armored)
@@ -164,7 +158,6 @@ final class ComposeMessageService {
             )
             draft = try await draftGateway?.saveDraft(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId), draft: draft)
         } catch {
-            state = .error
             throw ComposeMessageError.gatewayError(error)
         }
     }
@@ -172,7 +165,7 @@ final class ComposeMessageService {
     // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
         do {
-            state = .startComposing
+            onStateChanged?(.startComposing)
             let r = try await core.composeEmail(
                 msg: message,
                 fmt: MsgFmt.encryptInline
@@ -181,7 +174,7 @@ final class ComposeMessageService {
             try await messageGateway.sendMail(
                 input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
                 progressHandler: { [weak self] progress in
-                    self?.state = .progressChanged(progress)
+                    self?.onStateChanged?(.progressChanged(progress))
                 }
             )
 
@@ -189,9 +182,8 @@ final class ComposeMessageService {
             if let draftId = draft?.identifier {
                 await draftGateway?.deleteDraft(with: draftId)
             }
-            state = .messageSent
+            onStateChanged?(.messageSent)
         } catch {
-            state = .error
             throw ComposeMessageError.gatewayError(error)
         }
     }
@@ -204,11 +196,10 @@ extension ComposeMessageService {
         case startComposing
         case progressChanged(Float)
         case messageSent
-        case error
 
         var message: String? {
             switch self {
-            case .idle, .error:
+            case .idle:
                 return nil
             case .validatingMessage:
                 return "Validating"
