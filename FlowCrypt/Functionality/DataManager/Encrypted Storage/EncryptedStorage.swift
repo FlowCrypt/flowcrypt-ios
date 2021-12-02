@@ -14,16 +14,14 @@ import UIKit
 protocol EncryptedStorageType {
     var storage: Realm { get }
 
+    var activeUser: User? { get }
     func getAllUsers() -> [User]
     func saveActiveUser(with user: User)
-    var activeUser: User? { get }
-    func doesAnyKeyExist(for email: String) -> Bool
+    func doesAnyKeypairExist(for email: String) -> Bool
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
-    func publicKey() -> String?
-    func findKeyInfo(by email: String) -> [KeyInfo]
-    func findPrivateKey(by email: String) -> [String]
+    func getKeypairs(by email: String) -> [KeyInfo]
 
     func validate() throws
     func reset() throws
@@ -196,24 +194,13 @@ extension EncryptedStorage {
         }
     }
 
-    func findKeyInfo(by email: String) -> [KeyInfo] {
+    func getKeypairs(by email: String) -> [KeyInfo] {
         return storage.objects(KeyInfoRealmObject.self).where({
             $0.account == email
         }).map(KeyInfo.init)
     }
 
-    func findPrivateKey(by email: String) -> [String] {
-        return storage.objects(KeyInfoRealmObject.self).where({
-            $0.account == email
-        }).map(\.private)
-    }
-
-    func publicKey() -> String? {
-        storage.objects(KeyInfoRealmObject.self)
-            .first.map(\.public)
-    }
-
-    func doesAnyKeyExist(for email: String) -> Bool {
+    func doesAnyKeypairExist(for email: String) -> Bool {
         let keys = storage.objects(KeyInfoRealmObject.self).where {
             $0.account == email
         }

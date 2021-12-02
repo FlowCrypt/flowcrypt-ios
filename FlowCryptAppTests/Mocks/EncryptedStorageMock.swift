@@ -12,11 +12,7 @@ import RealmSwift
 final class EncryptedStorageMock: EncryptedStorageType {
 
     var storage: Realm {
-        do {
-            return try Realm()
-        } catch {
-            fatalError()
-        }
+        fatalError()
     }
 
     var activeUser: FlowCrypt.User?
@@ -29,9 +25,9 @@ final class EncryptedStorageMock: EncryptedStorageType {
     func saveActiveUser(with user: FlowCrypt.User) {
     }
 
-    var doesAnyKeyExistResult = false
-    func doesAnyKeyExist(for email: String) -> Bool {
-        doesAnyKeyExistResult
+    var doesAnyKeypairExistResult = false
+    func doesAnyKeypairExist(for email: String) -> Bool {
+        doesAnyKeypairExistResult
     }
 
     func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
@@ -40,19 +36,9 @@ final class EncryptedStorageMock: EncryptedStorageType {
     func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
     }
 
-    var publicKeyResult: String?
-    func publicKey() -> String? {
-        publicKeyResult
-    }
-
-    var findKeyInfoResult: [KeyInfo] = []
-    func findKeyInfo(by email: String) -> [KeyInfo] {
-        findKeyInfoResult
-    }
-
-    var findPrivateKeyResult: [String] = []
-    func findPrivateKey(by email: String) -> [String] {
-        findPrivateKeyResult
+    var getKeypairsResult: [KeyInfo] = []
+    func getKeypairs(by email: String) -> [KeyInfo] {
+        getKeypairsResult
     }
 
     func validate() throws {

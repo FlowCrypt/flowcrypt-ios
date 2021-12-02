@@ -95,7 +95,7 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = storage.publicKey() else {
+        guard let myPubKey = storage.getKeypairs(by: email).map(\.public).first else {
             throw MessageValidationError.missedPublicKey
         }
 

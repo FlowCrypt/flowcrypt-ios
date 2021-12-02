@@ -40,7 +40,7 @@ final class KeyServiceTests: XCTestCase {
         ]
 
         let keyStorage = EncryptedStorageMock()
-        keyStorage.findKeyInfoResult = keys
+        keyStorage.getKeypairsResult = keys
 
         let passPhraseService = PassPhraseServiceMock()
         passPhraseService.passPhrases = [
@@ -78,7 +78,7 @@ final class KeyServiceTests: XCTestCase {
         ]
 
         let keyStorage = EncryptedStorageMock()
-        keyStorage.findKeyInfoResult = keys
+        keyStorage.getKeypairsResult = keys
 
         let keyService = KeyService(
             storage: keyStorage,

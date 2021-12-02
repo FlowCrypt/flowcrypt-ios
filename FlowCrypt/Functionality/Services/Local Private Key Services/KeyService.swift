@@ -43,7 +43,7 @@ final class KeyService: KeyServiceType {
         guard let email = currentUserEmail() else {
             throw KeyServiceError.missingCurrentUserEmail
         }
-        let privateKeys = storage.findPrivateKey(by: email)
+        let privateKeys = storage.getKeypairs(by: email).map(\.private)
         let parsed = try await coreService.parseKeys(
             armoredOrBinary: privateKeys.joined(separator: "\n").data()
         )
@@ -60,7 +60,7 @@ final class KeyService: KeyServiceType {
         }
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
-        let privateKeys = storage.findKeyInfo(by: email)
+        let privateKeys = storage.getKeypairs(by: email)
             .map { keyInfo -> PrvKeyInfo in
                 let passphrase = storedPassPhrases
                     .filter { $0.value.isNotEmpty }
@@ -77,7 +77,7 @@ final class KeyService: KeyServiceType {
             throw AppErr.noCurrentUser
         }
 
-        let keysInfo = storage.findKeyInfo(by: email)
+        let keysInfo = storage.getKeypairs(by: email)
         guard let foundKey = try await findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
             return nil
         }

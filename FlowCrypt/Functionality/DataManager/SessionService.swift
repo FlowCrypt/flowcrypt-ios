@@ -97,13 +97,13 @@ extension SessionService: SessionServiceType {
     func cleanupSessions() {
         logger.logInfo("Clean up sessions")
         for user in encryptedStorage.getAllUsers() {
-            if !encryptedStorage.doesAnyKeyExist(for: user.email) {
+            if !encryptedStorage.doesAnyKeypairExist(for: user.email) {
                 logger.logInfo("User session to clean up \(user.email)")
                 logOut(user: user)
             }
         }
         let users = encryptedStorage.getAllUsers()
-        if !users.contains(where: { $0.isActive }), let user = users.first(where: { encryptedStorage.doesAnyKeyExist(for: $0.email ) }) {
+        if !users.contains(where: { $0.isActive }), let user = users.first(where: { encryptedStorage.doesAnyKeypairExist(for: $0.email ) }) {
             switchActiveSession(for: user)
         }
     }
