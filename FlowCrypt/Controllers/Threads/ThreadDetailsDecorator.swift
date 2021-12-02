@@ -29,10 +29,6 @@ extension ThreadMessageInfoCellNode.Input {
             ? .lightGray
             : .main
 
-        let textColor: UIColor = isMessageRead
-            ? .lightGray
-            : .mainTextUnreadColor
-
         self.init(
             encryptionBadge: makeEncryptionBadge(threadMessage),
             signatureBadge: makeSignatureBadge(threadMessage),

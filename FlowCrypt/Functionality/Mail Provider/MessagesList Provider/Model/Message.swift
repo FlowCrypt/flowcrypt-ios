@@ -116,19 +116,21 @@ struct MessageRecipient: Hashable {
     let name: String?
     let email: String
 
-    init(emailString: String) {
-        let parts = emailString.components(separatedBy: " ")
+    init(_ string: String) {
+        let parts = string.components(separatedBy: " ")
 
         guard parts.count > 1, let email = parts.last else {
             self.name = nil
-            self.email = emailString
+            self.email = string
             return
         }
 
-        self.name = emailString
-            .replacingOccurrences(of: email, with: "")
-            .trimmingCharacters(in: .whitespaces)
         self.email = email.filter { !["<", ">"].contains($0) }
+        let name = string
+            .replacingOccurrences(of: email, with: "")
+            .replacingOccurrences(of: "\"", with: "")
+            .trimmingCharacters(in: .whitespaces)
+        self.name = name == self.email ? nil : name
     }
 }
 
