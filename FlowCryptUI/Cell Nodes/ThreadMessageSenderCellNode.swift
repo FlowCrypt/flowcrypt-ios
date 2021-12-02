@@ -15,9 +15,9 @@ public final class ThreadMessageSenderCellNode: CellNode {
         public let signatureBadge: BadgeNode.Input?
         public let sender: NSAttributedString
         public let recipientLabel: NSAttributedString
-        public let recipients: [String]
-        public let ccRecipients: [String]
-        public let bccRecipients: [String]
+        public let recipients: [MessageRecipient]
+        public let ccRecipients: [MessageRecipient]
+        public let bccRecipients: [MessageRecipient]
         public let date: NSAttributedString?
         public let isExpanded: Bool
         public let shouldShowRecipientsList: Bool
@@ -28,9 +28,9 @@ public final class ThreadMessageSenderCellNode: CellNode {
                     signatureBadge: BadgeNode.Input?,
                     sender: NSAttributedString,
                     recipientLabel: NSAttributedString,
-                    recipients: [String],
-                    ccRecipients: [String],
-                    bccRecipients: [String],
+                    recipients: [(String?, String)],
+                    ccRecipients: [(String?, String)],
+                    bccRecipients: [(String?, String)],
                     date: NSAttributedString,
                     isExpanded: Bool,
                     shouldShowRecipientsList: Bool,

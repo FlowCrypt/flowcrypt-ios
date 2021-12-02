@@ -14,9 +14,9 @@ struct Message: Hashable {
     let identifier: Identifier
     let date: Date
     let sender: String?
-    let recipient: String?
-    let cc: String?
-    let bcc: String?
+    let recipients: [MessageRecipient]
+    let cc: [MessageRecipient]
+    let bcc: [MessageRecipient]
     let subject: String?
     let size: Int?
     let attachmentIds: [String]
@@ -63,9 +63,9 @@ struct Message: Hashable {
         self.threadId = threadId
         self.draftIdentifier = draftIdentifier
         self.raw = raw
-        self.recipient = recipient
-        self.cc = cc
-        self.bcc = bcc
+        self.recipients = Message.parseRecipients(recipient)
+        self.cc = Message.parseRecipients(cc)
+        self.bcc = Message.parseRecipients(bcc)
     }
 }
 
@@ -76,6 +76,12 @@ extension Message: Equatable, Comparable {
 
     static func == (lhs: Message, rhs: Message) -> Bool {
         lhs.identifier == rhs.identifier
+    }
+}
+
+extension Message {
+    static func parseRecipients(_ string: String?) -> [MessageRecipient] {
+        string?.components(separatedBy: ", ").map(MessageRecipient.init) ?? []
     }
 }
 
@@ -91,15 +97,8 @@ extension Message {
         return copy
     }
 
-    var recipientsList: String {
-        [recipient, cc, bcc]
-            .compactMap { $0 }
-            .flatMap { $0.components(separatedBy: ", ") }
-            .compactMap {
-                $0.components(separatedBy: " ").first?
-                  .components(separatedBy: "@").first
-            }
-            .joined(separator: ", ")
+    var allRecipients: [MessageRecipient] {
+        [recipients, cc, bcc].flatMap { $0 }
     }
 }
 
@@ -110,5 +109,33 @@ struct Identifier: Equatable, Hashable {
     init(stringId: String? = nil, intId: Int? = nil) {
         self.stringId = stringId
         self.intId = intId
+    }
+}
+
+struct MessageRecipient: Hashable {
+    let name: String?
+    let email: String
+
+    init(emailString: String) {
+        let parts = emailString.components(separatedBy: " ")
+
+        guard parts.count > 1, let email = parts.last else {
+            self.name = nil
+            self.email = emailString
+            return
+        }
+
+        self.name = emailString
+            .replacingOccurrences(of: email, with: "")
+            .trimmingCharacters(in: .whitespaces)
+        self.email = email.filter { !["<", ">"].contains($0) }
+    }
+}
+
+extension MessageRecipient {
+    var displayName: String {
+        name?.components(separatedBy: " ").first ??
+        email.components(separatedBy: "@").first ??
+        "unknown"
     }
 }

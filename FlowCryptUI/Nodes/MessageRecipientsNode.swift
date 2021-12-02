@@ -8,15 +8,17 @@
 
 import AsyncDisplayKit
 
+public typealias MessageRecipient = (name: String?, email: String)
+
 public final class MessageRecipientsNode: ASDisplayNode {
     public struct Input {
-        public let recipients: [String]
-        public let ccRecipients: [String]
-        public let bccRecipients: [String]
+        let recipients: [MessageRecipient]
+        let ccRecipients: [MessageRecipient]
+        let bccRecipients: [MessageRecipient]
 
-        public init(recipients: [String],
-                    ccRecipients: [String],
-                    bccRecipients: [String]) {
+        public init(recipients: [MessageRecipient],
+                    ccRecipients: [MessageRecipient],
+                    bccRecipients: [MessageRecipient]) {
             self.recipients = recipients
             self.ccRecipients = ccRecipients
             self.bccRecipients = bccRecipients
@@ -41,7 +43,7 @@ public final class MessageRecipientsNode: ASDisplayNode {
         cornerRadius = 6
     }
 
-    private func recipientList(label: String, recipients: [String]) -> ASStackLayoutSpec? {
+    private func recipientList(label: String, recipients: [MessageRecipient]) -> ASStackLayoutSpec? {
         guard recipients.isNotEmpty else { return nil }
 
         let labelNode = ASTextNode2()
@@ -50,20 +52,18 @@ public final class MessageRecipientsNode: ASDisplayNode {
 
         let children: [ASDisplayNode] = recipients.compactMap { recipient in
             let node = ASTextNode2()
-            let parts = recipient.components(separatedBy: " ")
-            if parts.count > 1 {
-                guard let email = parts.last else { return nil }
 
-                let attributedEmail = email.attributed(.regular(15), color: .secondaryLabel)
-                let name = recipient
-                    .replacingOccurrences(of: email, with: "")
-                    .attributed(.regular(15), color: .label)
-                let text = name.mutable()
-                text.append(attributedEmail)
-                node.attributedText = text
-            } else {
-                node.attributedText = recipient.attributed(.regular(15), color: .secondaryLabel)
-            }
+            let style: NSAttributedString.Style = .regular(15)
+            let nameString = recipient.name?.attributed(style, color: .label)
+            let emailString = recipient.email.attributed(style, color: .secondaryLabel)
+            let separator = " ".attributed(style)
+            node.attributedText = [nameString, emailString]
+                                    .compactMap { $0 }
+                                    .reduce(NSMutableAttributedString(), {
+                                        if !$0.string.isEmpty { $0.append(separator) }
+                                        $0.append($1);
+                                        return $0
+                                    })
 
             return node
         }
@@ -88,7 +88,7 @@ public final class MessageRecipientsNode: ASDisplayNode {
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let recipientsNodes: [ASStackLayoutSpec] = RecipientType.allCases.compactMap { type in
-            let recipients: [String]
+            let recipients: [MessageRecipient]
             switch type {
             case .to:
                 recipients = input.recipients

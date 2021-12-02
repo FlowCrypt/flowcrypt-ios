@@ -13,7 +13,11 @@ extension ThreadMessageSenderCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
         let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
         let recipientPrefix = "to".localized
-        let recipientLabel = "\(recipientPrefix) \(threadMessage.rawMessage.recipientsList)"
+        let recipientsList = threadMessage.rawMessage
+                                .allRecipients
+                                .map(\.displayName)
+                                .joined(separator: ", ")
+        let recipientLabel = [recipientPrefix, recipientsList].joined(separator: " ")
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
         let isMessageRead = threadMessage.rawMessage.isMessageRead
 
@@ -34,9 +38,9 @@ extension ThreadMessageSenderCellNode.Input {
             signatureBadge: makeSignatureBadge(threadMessage),
             sender: NSAttributedString.text(from: sender, style: style, color: .label),
             recipientLabel: NSAttributedString.text(from: recipientLabel, style: style, color: .secondaryLabel),
-            recipients: threadMessage.rawMessage.recipient?.components(separatedBy: ", ") ?? [],
-            ccRecipients: threadMessage.rawMessage.cc?.components(separatedBy: ", ") ?? [],
-            bccRecipients: threadMessage.rawMessage.bcc?.components(separatedBy: ", ") ?? [],
+            recipients: threadMessage.rawMessage.recipients.map { ($0.name, $0.email) },
+            ccRecipients: threadMessage.rawMessage.cc.map { ($0.name, $0.email) },
+            bccRecipients: threadMessage.rawMessage.bcc.map { ($0.name, $0.email) },
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,
             shouldShowRecipientsList: threadMessage.shouldShowRecipientsList,
