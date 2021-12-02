@@ -1,5 +1,5 @@
 //
-//  ThreadMessageSenderCellNode.swift
+//  ThreadMessageInfoCellNode.swift
 //  FlowCryptUI
 //
 //  Created by Roma Sosnovsky on 06/11/21
@@ -9,7 +9,8 @@
 import AsyncDisplayKit
 import UIKit
 
-public final class ThreadMessageSenderCellNode: CellNode {
+public final class ThreadMessageInfoCellNode: CellNode {
+    // MARK: - Input
     public struct Input {
         public let encryptionBadge: BadgeNode.Input
         public let signatureBadge: BadgeNode.Input?
@@ -60,13 +61,83 @@ public final class ThreadMessageSenderCellNode: CellNode {
         }
     }
 
-    private lazy var encryptionNode: BadgeNode = {
-        return BadgeNode(input: input.encryptionBadge)
+    // MARK: - Node State
+    private enum InfoNodeState {
+        case collapsed, expanded, expandedWithRecipients
+    }
+
+    private var nodeState: InfoNodeState {
+        guard input.isExpanded else { return .collapsed }
+        guard input.shouldShowRecipientsList else { return .expanded }
+        return .expandedWithRecipients
+    }
+
+    // MARK: - Specs
+    private lazy var headerSpec: ASStackLayoutSpec = {
+        ASStackLayoutSpec(
+            direction: .horizontal,
+            spacing: 2,
+            justifyContent: .spaceBetween,
+            alignItems: .start,
+            children: [infoSpec, replyNode, menuNode]
+        )
     }()
 
-    private lazy var signatureNode: BadgeNode? = {
-        return input.signatureBadge.map(BadgeNode.init)
+    private lazy var infoSpec: ASStackLayoutSpec = {
+        let node = ASStackLayoutSpec(
+            direction: .vertical,
+            spacing: 6,
+            justifyContent: .spaceBetween,
+            alignItems: .start,
+            children: infoSpecChildren
+        )
+        node.style.flexGrow = 1
+        node.style.flexShrink = 1
+        return node
     }()
+
+    private var infoSpecChildren: [ASLayoutElement] {
+        switch nodeState {
+        case .collapsed:
+            return [senderNode, dateNode]
+        case .expanded:
+            return [senderNode, recipientButtonNode, dateNode]
+        case .expandedWithRecipients:
+            return [senderNode, recipientButtonNode]
+        }
+    }
+
+    private lazy var recipientsSpec: ASStackLayoutSpec = {
+        ASStackLayoutSpec(
+            direction: .vertical,
+            spacing: 4,
+            justifyContent: .spaceBetween,
+            alignItems: .start,
+            children: [recipientsListNode, dateNode]
+        )
+    }()
+
+    private lazy var encryptionInfoSpec: ASStackLayoutSpec = {
+        let spacer = ASLayoutSpec()
+        spacer.style.flexGrow = 1.0
+
+        return ASStackLayoutSpec(
+            direction: .horizontal,
+            spacing: 4,
+            justifyContent: .spaceBetween,
+            alignItems: .start,
+            children: [encryptionNode, signatureNode, spacer].compactMap { $0 }
+        )
+    }()
+
+    // MARK: - Nodes
+    private let senderNode = ASTextNode2()
+    private let recipientButtonNode = ASButtonNode()
+    private let dateNode = ASTextNode2()
+
+    private let replyNode = ASButtonNode()
+    private let menuNode = ASButtonNode()
+    public private(set) var expandNode = ASImageNode()
 
     private lazy var recipientsListNode: ASDisplayNode = {
         MessageRecipientsNode(
@@ -78,24 +149,32 @@ public final class ThreadMessageSenderCellNode: CellNode {
         )
     }()
 
-    private let senderNode = ASTextNode2()
-    private let recipientButtonNode = ASButtonNode()
-    private let dateNode = ASTextNode2()
+    private lazy var encryptionNode: BadgeNode = {
+        BadgeNode(input: input.encryptionBadge)
+    }()
 
-    public private(set) var replyNode = ASButtonNode()
-    public private(set) var menuNode = ASButtonNode()
-    public private(set) var expandNode = ASImageNode()
+    private lazy var signatureNode: BadgeNode? = {
+        input.signatureBadge.map(BadgeNode.init)
+    }()
 
-    private let input: ThreadMessageSenderCellNode.Input
+    // MARK: - Properties
+    private let input: ThreadMessageInfoCellNode.Input
 
-    private let onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?
-    private let onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?
-    private let onRecipientsTap: ((ThreadMessageSenderCellNode) -> Void)?
+    private let onReplyTap: ((ThreadMessageInfoCellNode) -> Void)?
+    private let onMenuTap: ((ThreadMessageInfoCellNode) -> Void)?
+    private let onRecipientsTap: ((ThreadMessageInfoCellNode) -> Void)?
 
-    public init(input: ThreadMessageSenderCellNode.Input,
-                onReplyTap: ((ThreadMessageSenderCellNode) -> Void)?,
-                onMenuTap: ((ThreadMessageSenderCellNode) -> Void)?,
-                onRecipientsTap: ((ThreadMessageSenderCellNode) -> Void)?) {
+    private var recipientButtonImage: UIImage? {
+        let configuration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 12, weight: .medium))
+        let imageName = input.shouldShowRecipientsList ? "chevron.up" : "chevron.down"
+        return UIImage(systemName: imageName, withConfiguration: configuration)
+    }
+
+    // MARK: - Init
+    public init(input: ThreadMessageInfoCellNode.Input,
+                onReplyTap: ((ThreadMessageInfoCellNode) -> Void)?,
+                onMenuTap: ((ThreadMessageInfoCellNode) -> Void)?,
+                onRecipientsTap: ((ThreadMessageInfoCellNode) -> Void)?) {
         self.input = input
         self.onReplyTap = onReplyTap
         self.onMenuTap = onMenuTap
@@ -115,16 +194,17 @@ public final class ThreadMessageSenderCellNode: CellNode {
         setupExpandNode()
     }
 
+    // MARK: - Setup
     private func setupRecipientButton() {
-        let imageName = input.shouldShowRecipientsList ? "chevron.up" : "chevron.down"
-        let configuration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 12, weight: .medium))
-        recipientButtonNode.setImage(UIImage(systemName: imageName, withConfiguration: configuration), for: .normal)
+        recipientButtonNode.setImage(recipientButtonImage, for: .normal)
+        recipientButtonNode.imageAlignment = .end
+        recipientButtonNode.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
+
         recipientButtonNode.setAttributedTitle(input.recipientLabel, for: .normal)
         recipientButtonNode.titleNode.maximumNumberOfLines = 1
         recipientButtonNode.titleNode.truncationMode = .byTruncatingTail
-        recipientButtonNode.imageAlignment = .end
-        recipientButtonNode.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
         recipientButtonNode.contentSpacing = 4
+
         recipientButtonNode.addTarget(self, action: #selector(onRecipientsNodeTap), forControlEvents: .touchUpInside)
         recipientButtonNode.accessibilityIdentifier = "messageRecipientButton"
     }
@@ -159,6 +239,7 @@ public final class ThreadMessageSenderCellNode: CellNode {
         expandNode.contentMode = .center
     }
 
+    // MARK: - Callbacks
     @objc private func onReplyNodeTap() {
         onReplyTap?(self)
     }
@@ -171,89 +252,33 @@ public final class ThreadMessageSenderCellNode: CellNode {
         onRecipientsTap?(self)
     }
 
+    // MARK: - Layout
+    private var contentSpec: ASStackLayoutSpec {
+        switch nodeState {
+        case .collapsed:
+            return ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 4,
+                justifyContent: .spaceBetween,
+                alignItems: .start,
+                children: [infoSpec, expandNode]
+            )
+        case .expanded, .expandedWithRecipients:
+            let children = nodeState == .expanded ? [headerSpec, encryptionInfoSpec] : [headerSpec, recipientsSpec, encryptionInfoSpec]
+            return ASStackLayoutSpec(
+                direction: .vertical,
+                spacing: 8,
+                justifyContent: .spaceBetween,
+                alignItems: .stretch,
+                children: children
+            )
+        }
+    }
+
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
         menuNode.style.preferredSize = CGSize(width: 36, height: 44)
         expandNode.style.preferredSize = CGSize(width: 36, height: 44)
-
-        let infoChildren: [ASLayoutElement]
-        if input.isExpanded {
-            if input.shouldShowRecipientsList {
-                infoChildren = [senderNode, recipientButtonNode]
-            } else {
-                infoChildren = [senderNode, recipientButtonNode, dateNode]
-            }
-        } else {
-            infoChildren = [senderNode, dateNode]
-        }
-
-        let infoNode = ASStackLayoutSpec(
-            direction: .vertical,
-            spacing: 6,
-            justifyContent: .spaceBetween,
-            alignItems: .start,
-            children: infoChildren
-        )
-        infoNode.style.flexGrow = 1
-        infoNode.style.flexShrink = 1
-
-        let contentSpec: ASStackLayoutSpec
-
-        if input.isExpanded {
-            let senderSpec = ASStackLayoutSpec(
-                direction: .horizontal,
-                spacing: 2,
-                justifyContent: .spaceBetween,
-                alignItems: .start,
-                children: [infoNode, replyNode, menuNode]
-            )
-
-            let spacer = ASLayoutSpec()
-            spacer.style.flexGrow = 1.0
-
-            let signatureSpec = ASStackLayoutSpec(
-                direction: .horizontal,
-                spacing: 4,
-                justifyContent: .spaceBetween,
-                alignItems: .start,
-                children: [encryptionNode, signatureNode, spacer].compactMap { $0 }
-            )
-
-            if input.shouldShowRecipientsList {
-                let recipientsSpec = ASStackLayoutSpec(
-                    direction: .vertical,
-                    spacing: 4,
-                    justifyContent: .spaceBetween,
-                    alignItems: .start,
-                    children: [recipientsListNode, dateNode]
-                )
-
-                contentSpec = ASStackLayoutSpec(
-                    direction: .vertical,
-                    spacing: 8,
-                    justifyContent: .spaceBetween,
-                    alignItems: .stretch,
-                    children: [senderSpec, recipientsSpec, signatureSpec]
-                )
-            } else {
-                contentSpec = ASStackLayoutSpec(
-                    direction: .vertical,
-                    spacing: 4,
-                    justifyContent: .spaceBetween,
-                    alignItems: .stretch,
-                    children: [senderSpec, signatureSpec]
-                )
-            }
-
-        } else {
-            contentSpec = ASStackLayoutSpec(
-                direction: .horizontal,
-                spacing: 4,
-                justifyContent: .spaceBetween,
-                alignItems: .start,
-                children: [infoNode, expandNode]
-            )
-        }
 
         return ASInsetLayoutSpec(
             insets: input.nodeInsets,

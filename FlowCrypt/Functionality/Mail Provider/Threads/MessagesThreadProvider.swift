@@ -151,7 +151,7 @@ extension Message {
         var cc: String?
         var bcc: String?
 
-        messageHeaders.compactMap({ $0 }).forEach {
+        messageHeaders.compactMap { $0 }.forEach {
             guard let name = $0.name?.lowercased() else { return }
             let value = $0.value
             switch name {

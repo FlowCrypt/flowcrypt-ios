@@ -9,7 +9,7 @@
 import FlowCryptUI
 import UIKit
 
-extension ThreadMessageSenderCellNode.Input {
+extension ThreadMessageInfoCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
         let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
         let recipientPrefix = "to".localized
@@ -38,9 +38,9 @@ extension ThreadMessageSenderCellNode.Input {
             signatureBadge: makeSignatureBadge(threadMessage),
             sender: NSAttributedString.text(from: sender, style: style, color: .label),
             recipientLabel: NSAttributedString.text(from: recipientLabel, style: style, color: .secondaryLabel),
-            recipients: threadMessage.rawMessage.recipients.map { ($0.name, $0.email) },
-            ccRecipients: threadMessage.rawMessage.cc.map { ($0.name, $0.email) },
-            bccRecipients: threadMessage.rawMessage.bcc.map { ($0.name, $0.email) },
+            recipients: threadMessage.rawMessage.recipients.map(\.rawString),
+            ccRecipients: threadMessage.rawMessage.cc.map(\.rawString),
+            bccRecipients: threadMessage.rawMessage.bcc.map(\.rawString),
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,
             shouldShowRecipientsList: threadMessage.shouldShowRecipientsList,

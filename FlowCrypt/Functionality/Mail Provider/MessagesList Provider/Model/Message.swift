@@ -138,4 +138,6 @@ extension MessageRecipient {
         email.components(separatedBy: "@").first ??
         "unknown"
     }
+
+    var rawString: (String?, String) { (name, email) }
 }
