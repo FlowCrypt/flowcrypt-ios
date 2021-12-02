@@ -112,7 +112,7 @@ private actor Service {
         )
         try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
 
-        appContext.encryptedStorage.addKeys(
+        appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,
             source: .generated,

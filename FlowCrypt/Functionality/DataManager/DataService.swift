@@ -9,7 +9,6 @@
 import Foundation
 import RealmSwift
 
-
 // todo DataServiceType in general is a bit of a confused class
 // hopefully we can refactor it away or shrink it
 protocol DataServiceType {
@@ -23,8 +22,8 @@ protocol DataServiceType {
 
     var users: [User] { get }
 
-    func validAccounts() -> [User]
-    
+    func getFinishedSetupUsers(exceptUserEmail: String) -> [User]
+
     func performMigrationIfNeeded() async throws
 }
 
@@ -109,10 +108,10 @@ extension DataService: DataServiceType {
         }
     }
 
-    func validAccounts() -> [User] {
+    func getFinishedSetupUsers(exceptUserEmail: String) -> [User] {
         encryptedStorage.getAllUsers()
+            .filter { $0.email != exceptUserEmail }
             .filter { encryptedStorage.doesAnyKeypairExist(for: $0.email) }
-            .filter { $0.email != currentUser?.email }
     }
 }
 

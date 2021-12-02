@@ -30,10 +30,7 @@ final class EncryptedStorageMock: EncryptedStorageType {
         doesAnyKeypairExistResult
     }
 
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-    }
-
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
     }
 
     var getKeypairsResult: [KeyInfo] = []

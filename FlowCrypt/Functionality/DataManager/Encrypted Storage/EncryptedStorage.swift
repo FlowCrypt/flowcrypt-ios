@@ -19,8 +19,7 @@ protocol EncryptedStorageType {
     func saveActiveUser(with user: User)
     func doesAnyKeypairExist(for email: String) -> Bool
 
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
     func getKeypairs(by email: String) -> [KeyInfo]
 
     func validate() throws
@@ -160,19 +159,7 @@ extension EncryptedStorage {
 
 // MARK: - Keys
 extension EncryptedStorage {
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-        guard let user = getUserObject(for: email) else {
-            logger.logError("Can't find user with given email to add keys. User should be already saved")
-            return
-        }
-        try! storage.write {
-            for key in keyDetails {
-                storage.add(try! KeyInfoRealmObject(key, passphrase: passPhrase, source: source, user: user))
-            }
-        }
-    }
-
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
         guard let user = getUserObject(for: email) else {
             logger.logError("Can't find user with given email to update keys. User should be already saved")
             return

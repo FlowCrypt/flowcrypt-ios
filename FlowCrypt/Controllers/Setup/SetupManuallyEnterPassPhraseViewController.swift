@@ -235,13 +235,13 @@ extension SetupManuallyEnterPassPhraseViewController {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        appContext.encryptedStorage.addKeys(
+        appContext.encryptedStorage.putKeypairs(
             keyDetails: newKeysToAdd,
             passPhrase: passPhrase,
             source: .imported,
             for: email
         )
-        appContext.encryptedStorage.updateKeys(
+        appContext.encryptedStorage.putKeypairs(
             keyDetails: keysToUpdate,
             passPhrase: passPhrase,
             source: .imported,
