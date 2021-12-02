@@ -32,7 +32,7 @@ extension EnterpriseServerApiError: LocalizedError {
 class EnterpriseServerApi: EnterpriseServerApiType {
 
     static let publicEmailProviderDomains = ["gmail.com", "googlemail.com", "outlook.com"]
-    
+
     private enum Constants {
         /// 404 - Not Found
         static let getToleratedHTTPStatuses = [404]

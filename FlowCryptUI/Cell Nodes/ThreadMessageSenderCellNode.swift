@@ -69,14 +69,17 @@ public final class ThreadMessageSenderCellNode: CellNode {
     }()
 
     private lazy var recipientsListNode: ASDisplayNode = {
-        MessageRecipientsNode(input: .init(recipients: input.recipients,
-                              ccRecipients: input.ccRecipients,
-                              bccRecipients: input.bccRecipients)
+        MessageRecipientsNode(
+            input: .init(
+                recipients: input.recipients,
+                ccRecipients: input.ccRecipients,
+                bccRecipients: input.bccRecipients
+            )
         )
     }()
 
     private let senderNode = ASTextNode2()
-    private let recipientNode = ASButtonNode()
+    private let recipientButtonNode = ASButtonNode()
     private let dateNode = ASTextNode2()
 
     public private(set) var replyNode = ASButtonNode()
@@ -104,15 +107,26 @@ public final class ThreadMessageSenderCellNode: CellNode {
         senderNode.attributedText = input.sender
         senderNode.accessibilityIdentifier = "messageSenderLabel"
 
-        recipientNode.setAttributedTitle(input.recipientLabel, for: .normal)
-        recipientNode.addTarget(self, action: #selector(onRecipientsNodeTap), forControlEvents: .touchUpInside)
-        recipientNode.accessibilityIdentifier = "messageRecipientLabel"
-
         dateNode.attributedText = input.date
 
+        setupRecipientButton()
         setupReplyNode()
         setupMenuNode()
         setupExpandNode()
+    }
+
+    private func setupRecipientButton() {
+        let imageName = input.shouldShowRecipientsList ? "chevron.up" : "chevron.down"
+        let configuration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 12, weight: .medium))
+        recipientButtonNode.setImage(UIImage(systemName: imageName, withConfiguration: configuration), for: .normal)
+        recipientButtonNode.setAttributedTitle(input.recipientLabel, for: .normal)
+        recipientButtonNode.titleNode.maximumNumberOfLines = 1
+        recipientButtonNode.titleNode.truncationMode = .byTruncatingTail
+        recipientButtonNode.imageAlignment = .end
+        recipientButtonNode.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
+        recipientButtonNode.contentSpacing = 4
+        recipientButtonNode.addTarget(self, action: #selector(onRecipientsNodeTap), forControlEvents: .touchUpInside)
+        recipientButtonNode.accessibilityIdentifier = "messageRecipientButton"
     }
 
     private func setupReplyNode() {
@@ -165,9 +179,9 @@ public final class ThreadMessageSenderCellNode: CellNode {
         let infoChildren: [ASLayoutElement]
         if input.isExpanded {
             if input.shouldShowRecipientsList {
-                infoChildren = [senderNode, recipientNode, recipientsListNode, dateNode]
+                infoChildren = [senderNode, recipientButtonNode]
             } else {
-                infoChildren = [senderNode, recipientNode, dateNode]
+                infoChildren = [senderNode, recipientButtonNode, dateNode]
             }
         } else {
             infoChildren = [senderNode, dateNode]
@@ -205,13 +219,32 @@ public final class ThreadMessageSenderCellNode: CellNode {
                 children: [encryptionNode, signatureNode, spacer].compactMap { $0 }
             )
 
-            contentSpec = ASStackLayoutSpec(
-                direction: .vertical,
-                spacing: 4,
-                justifyContent: .spaceBetween,
-                alignItems: .stretch,
-                children: [senderSpec, signatureSpec]
-            )
+            if input.shouldShowRecipientsList {
+                let recipientsSpec = ASStackLayoutSpec(
+                    direction: .vertical,
+                    spacing: 4,
+                    justifyContent: .spaceBetween,
+                    alignItems: .start,
+                    children: [recipientsListNode, dateNode]
+                )
+
+                contentSpec = ASStackLayoutSpec(
+                    direction: .vertical,
+                    spacing: 8,
+                    justifyContent: .spaceBetween,
+                    alignItems: .stretch,
+                    children: [senderSpec, recipientsSpec, signatureSpec]
+                )
+            } else {
+                contentSpec = ASStackLayoutSpec(
+                    direction: .vertical,
+                    spacing: 4,
+                    justifyContent: .spaceBetween,
+                    alignItems: .stretch,
+                    children: [senderSpec, signatureSpec]
+                )
+            }
+
         } else {
             contentSpec = ASStackLayoutSpec(
                 direction: .horizontal,

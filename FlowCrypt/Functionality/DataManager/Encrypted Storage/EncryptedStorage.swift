@@ -56,7 +56,7 @@ final class EncryptedStorage: EncryptedStorageType {
 
     private let currentSchema: EncryptedStorageSchema = .version5
     private let supportedSchemas = EncryptedStorageSchema.allCases
-    
+
     private let storageEncryptionKey: Data
 
     var storage: Realm {

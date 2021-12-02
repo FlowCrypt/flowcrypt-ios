@@ -9,7 +9,6 @@
 import Foundation
 import RealmSwift
 
-
 // todo DataServiceType in general is a bit of a confused class
 // hopefully we can refactor it away or shrink it
 protocol DataServiceType {
@@ -24,7 +23,7 @@ protocol DataServiceType {
     var users: [User] { get }
 
     func validAccounts() -> [User]
-    
+
     func performMigrationIfNeeded() async throws
 }
 

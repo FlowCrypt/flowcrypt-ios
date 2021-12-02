@@ -31,6 +31,14 @@ public final class MessageRecipientsNode: ASDisplayNode {
 
     public init(input: MessageRecipientsNode.Input) {
         self.input = input
+
+        super.init()
+
+        automaticallyManagesSubnodes = true
+
+        borderColor = UIColor.tertiaryLabel.cgColor
+        borderWidth = 1
+        cornerRadius = 6
     }
 
     private func recipientList(label: String, recipients: [String]) -> ASStackLayoutSpec? {
@@ -49,7 +57,6 @@ public final class MessageRecipientsNode: ASDisplayNode {
                 let attributedEmail = email.attributed(.regular(15), color: .secondaryLabel)
                 let name = recipient
                     .replacingOccurrences(of: email, with: "")
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
                     .attributed(.regular(15), color: .label)
                 let text = name.mutable()
                 text.append(attributedEmail)
@@ -68,17 +75,18 @@ public final class MessageRecipientsNode: ASDisplayNode {
             alignItems: .start,
             children: children
         )
+        recipientsList.style.flexShrink = 1
 
         return ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 4,
-            justifyContent: .spaceBetween,
+            justifyContent: .start,
             alignItems: .start,
             children: [labelNode, recipientsList]
         )
     }
 
-    private var recipientsListNode: ASLayoutSpec {
+    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let recipientsNodes: [ASStackLayoutSpec] = RecipientType.allCases.compactMap { type in
             let recipients: [String]
             switch type {
@@ -93,7 +101,7 @@ public final class MessageRecipientsNode: ASDisplayNode {
         }
 
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 6, left: 0, bottom: 6, right: 0),
+            insets: UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6),
             child: ASStackLayoutSpec(
                 direction: .vertical,
                 spacing: 6,

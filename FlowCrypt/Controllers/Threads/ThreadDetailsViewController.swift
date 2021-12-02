@@ -384,7 +384,7 @@ extension ThreadDetailsViewController {
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {
-    
+
     private func handleSuccessfulMessage(action: MessageAction) {
         hideSpinner()
         onComplete(action, .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: user.email))
