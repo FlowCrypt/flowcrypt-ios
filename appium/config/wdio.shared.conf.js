@@ -5,7 +5,7 @@ exports.config = {
 
     runner: 'local',
     framework: 'jasmine',
-    jasmineNodeOpts: {
+    jasmineOpts: {
         defaultTimeoutInterval: 600000,
         requires: ['ts-node/register', 'tsconfig-paths/register']
     },
