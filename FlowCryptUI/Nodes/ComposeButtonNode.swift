@@ -15,6 +15,7 @@ public final class ComposeButtonNode: ASButtonNode {
         super.init()
         onTap = action
         backgroundColor = .main
+        accessibilityIdentifier = "composeMessageButton"
         setTitle("+", with: UIFont.boldSystemFont(ofSize: 30), with: .white, for: .normal)
         addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
     }

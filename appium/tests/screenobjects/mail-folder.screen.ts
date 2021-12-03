@@ -5,7 +5,7 @@ import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
   TRASH_HEADER: '-ios class chain:**/XCUIElementTypeNavigationBar[`name == "TRASH"`]',
   SENT_HEADER: '-ios class chain:**/XCUIElementTypeNavigationBar[`name == "SENT"`]',
-  CREATE_EMAIL_BUTTON: '-ios class chain:**/XCUIElementTypeButton[`label == "+"`]',
+  CREATE_EMAIL_BUTTON: '~composeMessageButton',
   INBOX_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "INBOX"`]',
   SEARCH_ICON: '~search icn',
   HELP_ICON: '~help icn',
@@ -74,12 +74,7 @@ class MailFolderScreen extends BaseScreen {
   }
 
   clickCreateEmail = async () => {
-    await browser.pause(2000); // todo: loading inbox. Fix this: wait until loader gone
-    if (await (await this.createEmailButton).isDisplayed() !== true) {
-      await TouchHelper.scrollDownToElement(await this.createEmailButton);
-      await (await this.createEmailButton).waitForDisplayed();
-    }
-    await ElementHelper.waitAndClick(await this.createEmailButton, 1000); // delay needed on M1
+    await ElementHelper.waitAndClick(await this.createEmailButton);
   }
 
   clickOnUserEmail = async (email: string) => {
