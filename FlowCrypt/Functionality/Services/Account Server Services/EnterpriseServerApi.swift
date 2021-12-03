@@ -54,7 +54,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
     private func constructUrlBase(emailDomain: String) -> String {
         guard !CommandLine.isDebugBundleWithArgument("--mock-fes-api") else {
-            return "https://localhost:8001/fes/\(emailDomain)" // mock
+            return "http://127.0.0.1:8001/fes" // mock
         }
         return "https://fes.\(emailDomain)" // live
     }

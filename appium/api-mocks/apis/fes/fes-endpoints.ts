@@ -16,7 +16,7 @@ export const getMockFesEndpoints = (
   }
 
   return {
-    '/api/': async ({ }, req) => {
+    '/fes/api/': async ({ }, req) => {
       throwIfNotGetMethod(req);
       return {
         "vendor": "Mock",
@@ -26,18 +26,18 @@ export const getMockFesEndpoints = (
         "apiVersion": 'v1',
       };
     },
-    '/api/v1/client-configuration': async ({ }, req) => {
+    '/fes/api/v1/client-configuration': async ({ }, req) => {
       throwIfNotGetMethod(req);
       return { clientConfiguration: fesConfig.clientConfiguration };
     },
-    '/api/v1/message/new-reply-token': async ({ }, req) => {
+    '/fes/api/v1/message/new-reply-token': async ({ }, req) => {
       if (req.method === 'POST') {
         authenticate(req);
         return { 'replyToken': 'mock-fes-reply-token' };
       }
       throw new HttpClientErr('Not Found', 404);
     },
-    '/api/v1/message': async ({ body }, req) => {
+    '/fes/api/v1/message': async ({ body }, req) => {
       // body is a mime-multipart string, we're doing a few smoke checks here without parsing it
       if (req.method === 'POST') {
         expectContains(body, '-----BEGIN PGP MESSAGE-----');

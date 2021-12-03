@@ -10,12 +10,18 @@
 6. `nvm install 16` - installs NodeJS 16 and sets it as default
 7. `cd ~/git/flowcrypt-ios/appium && npm install`
 
+## Building app for testing
+
+Run this in `flowcrypt-ios` folder: `bundle exec fastlane build`. This will produce folder `appium/FlowCrypt.app` that contains the built app.
+
 ## Run tests
 
-Run this in `appium` folder. 
+Run these in `appium` folder.
 
-`npm test` - build `FlowCrypt.app` and run all ui tests
+Tests that use live APIs:
+- `npm run-script only.test.live.all` - run all ui tests
+- `npm run-script only.test.live.filter "user is able to view text email"` - run a particular ui test 
 
-`npm run-script only.test.all` - run all ui tests without building the `.app`. Use this if you already built the `.app` before, and now only want to change the UI test spec without rebuilding the app
-
-`npm run-script only.test.filter "user is able to view text email"` - run a particular ui test without building `.app`, filtered by name
+Tests that use mock APIs:
+- `npm run-script only.test.mock.all` - run all ui tests against mocks
+- `npm run-script only.test.mock.filter "app setup fails with bad EKM URL"` - run a particular ui test against mocks
