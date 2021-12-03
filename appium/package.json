@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "only.test.smoke": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite smoke",
-    "only.test.all": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite all",
-    "only.test.filter": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite all --jasmineNodeOpts.grep",
-    "only.test.mock.all": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all",
-    "only.test.mock.filter": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all --jasmineNodeOpts.grep",
+    "test.live.all": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite all",
+    "test.live": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite all --jasmineNodeOpts.grep",
+    "test.mock.all": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all",
+    "test.mock": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all --jasmineNodeOpts.grep",
     "test": "npm run-script build.app && npm run-script only.test.all",
     "lint": "cd .. && ./appium/node_modules/.bin/eslint appium/ --ext .ts"
   },

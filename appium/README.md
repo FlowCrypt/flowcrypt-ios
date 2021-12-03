@@ -16,12 +16,10 @@ Run this in `flowcrypt-ios` folder: `bundle exec fastlane build`. This will prod
 
 ## Run tests
 
-Run these in `appium` folder.
+Run these in `appium` folder. `live` means real production APIs, `mock` means local mock APIs. 
 
-Tests that use live APIs:
-- `npm run-script only.test.live.all` - run all ui tests
-- `npm run-script only.test.live.filter "user is able to view text email"` - run a particular ui test 
+To run a particular test:
+- `npm run-script test.live "user is able to view text email"`
+- `npm run-script test.mock "app setup fails with bad EKM URL"`
 
-Tests that use mock APIs:
-- `npm run-script only.test.mock.all` - run all ui tests against mocks
-- `npm run-script only.test.mock.filter "app setup fails with bad EKM URL"` - run a particular ui test against mocks
+To run all tests: `npm run-script test.live.all` or `npm run-script test.mock.all`
