@@ -12,7 +12,7 @@ const SELECTORS = {
   RECIPIENTS_BUTTON: '~messageRecipientButton',
   RECIPIENTS_TO_LABEL: '~toLabel0',
   RECIPIENTS_CC_LABEL: '~ccLabel0',
-  RECIPIENTS_BCC_LABEL: '~bcLabel0',
+  RECIPIENTS_BCC_LABEL: '~bccLabel0',
   MENU_BUTTON: '~messageMenuButton',
   FORWARD_BUTTON: '~Forward',
   DELETE_BUTTON: '~Delete',
@@ -61,11 +61,11 @@ class EmailScreen extends BaseScreen {
   }
 
   get recipientsCcLabel() {
-    return $(SELECTORS.RECIPIENTS_TO_LABEL);
+    return $(SELECTORS.RECIPIENTS_CC_LABEL);
   }
 
   get recipientsBccLabel() {
-    return $(SELECTORS.RECIPIENTS_TO_LABEL);
+    return $(SELECTORS.RECIPIENTS_BCC_LABEL);
   }
 
   get menuButton() {
