@@ -22,7 +22,7 @@ protocol DataServiceType {
 
     var users: [User] { get }
 
-    func validAccounts() -> [User]
+    func getFinishedSetupUsers(exceptUserEmail: String) -> [User]
 
     func performMigrationIfNeeded() async throws
 }
@@ -68,7 +68,7 @@ extension DataService: DataServiceType {
         guard let currentUser = currentUser else {
             return false
         }
-        return encryptedStorage.doesAnyKeyExist(for: currentUser.email)
+        return encryptedStorage.doesAnyKeypairExist(for: currentUser.email)
     }
 
     var isLoggedIn: Bool {
@@ -108,10 +108,10 @@ extension DataService: DataServiceType {
         }
     }
 
-    func validAccounts() -> [User] {
+    func getFinishedSetupUsers(exceptUserEmail: String) -> [User] {
         encryptedStorage.getAllUsers()
-            .filter { encryptedStorage.doesAnyKeyExist(for: $0.email) }
-            .filter { $0.email != currentUser?.email }
+            .filter { $0.email != exceptUserEmail }
+            .filter { encryptedStorage.doesAnyKeypairExist(for: $0.email) }
     }
 }
 

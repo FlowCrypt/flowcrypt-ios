@@ -143,7 +143,7 @@ extension SetupBackupsViewController {
                 appContext.passPhraseService.savePassPhrase(with: pp, storageMethod: storageMethod)
             }
         }
-        appContext.keyStorage.addKeys(
+        appContext.encryptedStorage.putKeypairs(
             keyDetails: Array(matchingKeyBackups),
             passPhrase: storageMethod == .persistent ? passPhrase : nil,
             source: .backup,

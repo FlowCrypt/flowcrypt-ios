@@ -50,9 +50,19 @@ export const CommonData = {
   recipientWithoutPublicKey: {
     email: 'no.publickey@flowcrypt.com'
   },
+  recipientWithExpiredPublicKey: {
+    email: 'expired@flowcrypt.com'
+  },
+  recipientWithRevokedPublicKey: {
+    email: 'revoked@flowcrypt.com'
+  },
   errors: {
     noPublicKey: 'Could not compose message One or more of your recipients are missing a public key (marked in gray). ' +
       'Please ask them to share it with you, or ask them to also set up FlowCrypt.',
-     wrongPassPhrase: 'Could not compose message This pass phrase did not match your signing private key'
+    wrongPassPhrase: 'Could not compose message This pass phrase did not match your signing private key',
+    expiredPublicKey: 'Could not compose message One or more of your recipients have expired public keys (marked in orange).' +
+      ' Please ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.',
+    revokedPublicKey: 'Could not compose message One or more of your recipients have revoked public keys (marked in red).' +
+      ' Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
   }
 };
