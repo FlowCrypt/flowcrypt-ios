@@ -211,8 +211,10 @@ extension ComposeMessageService {
                 return nil
             case .validatingMessage:
                 return "Validating"
-            case .startComposing, .progressChanged:
-                return "Composing"
+            case .startComposing:
+                return "Encrypting"
+            case .progressChanged:
+                return "Uploading"
             case .messageSent:
                 return "Message sent"
             }

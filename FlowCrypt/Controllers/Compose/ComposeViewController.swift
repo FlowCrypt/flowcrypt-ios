@@ -183,16 +183,27 @@ final class ComposeViewController: TableNodeViewController {
     private func observeComposeUpdates() {
         composeMessageService.onStateChanged { [weak self] state in
             DispatchQueue.main.async {
-                guard let message = state.message else {
-                    self?.hideSpinner()
-                    return
-                }
-                self?.updateSpinner(
-                    label: message,
-                    progress: state.progress,
-                    systemImageName: "checkmark.circle"
-                )
+                self?.updateSpinner(with: state)
             }
+        }
+    }
+
+    private func updateSpinner(with state: ComposeMessageService.State) {
+        switch state {
+        case .progressChanged(let progress):
+            showProgressHUD(
+                progress: progress,
+                label: state.message ?? "\(progress)"
+            )
+        case .messageSent:
+            showProgressHUDWithCustomImage(
+                imageName: "checkmark.circle",
+                label: "compose_sent".localized
+            )
+        case .startComposing, .validatingMessage:
+            showIndeterminateHUD(with: state.message ?? "")
+        case .idle:
+            hideSpinner()
         }
     }
 }
