@@ -9,11 +9,15 @@ import { CommonData } from '../../data';
 
 describe('INBOX: ', () => {
 
-  it('user is able to view text email', async () => {
+  it('user is able to view text email and recipients list', async () => {
 
-    const senderEmail = CommonData.sender.email;
-    const emailSubject = CommonData.simpleEmail.subject;
-    const emailText = CommonData.simpleEmail.message;
+    const senderEmail = CommonData.recipientsListEmail.sender;
+    const emailSubject = CommonData.recipientsListEmail.subject;
+    const emailText = CommonData.recipientsListEmail.message;
+    const recipientsButton = CommonData.recipientsListEmail.recipients;
+    const toLabel = CommonData.recipientsListEmail.to;
+    const ccLabel = CommonData.recipientsListEmail.cc;
+    const bccLabel = CommonData.recipientsListEmail.bcc;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
@@ -22,5 +26,8 @@ describe('INBOX: ', () => {
     await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkRecipientsButton(recipientsButton);
+    await EmailScreen.clickRecipientsButton();
+    await EmailScreen.checkRecipientsList(toLabel, ccLabel, bccLabel);
   });
 });

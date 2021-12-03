@@ -38,6 +38,10 @@ public final class MessageRecipientsNode: ASDisplayNode {
 
         automaticallyManagesSubnodes = true
 
+        setupBorder()
+    }
+
+    private func setupBorder() {
         borderColor = UIColor.tertiaryLabel.cgColor
         borderWidth = 1
         cornerRadius = 6
@@ -50,24 +54,9 @@ public final class MessageRecipientsNode: ASDisplayNode {
         labelNode.attributedText = label.localizedCapitalized.attributed()
         labelNode.style.preferredSize = CGSize(width: 30, height: 20)
 
-        let children: [ASDisplayNode] = recipients.compactMap { recipient in
-            let node = ASTextNode2()
-
-            let style: NSAttributedString.Style = .regular(15)
-            let nameString = recipient.name?.attributed(style, color: .label)
-            let emailString = recipient.email.attributed(style, color: .secondaryLabel)
-            let separator = " ".attributed(style)
-            node.attributedText = [nameString, emailString]
-                                    .compactMap { $0 }
-                                    .reduce(NSMutableAttributedString(), {
-                                        if !$0.string.isEmpty { $0.append(separator) }
-                                        $0.append($1);
-                                        return $0
-                                    })
-
-            return node
+        let children = recipients.enumerated().map { index, recipient in
+            return recipientNode(for: recipient, identifier: "\(label)Label\(index)")
         }
-
         let recipientsList = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 4,
@@ -84,6 +73,25 @@ public final class MessageRecipientsNode: ASDisplayNode {
             alignItems: .start,
             children: [labelNode, recipientsList]
         )
+    }
+
+    private func recipientNode(for recipient: MessageRecipient, identifier: String) -> ASTextNode2 {
+        let style: NSAttributedString.Style = .regular(15)
+        let nameString = recipient.name?.attributed(style, color: .label)
+        let emailString = recipient.email.attributed(style, color: .secondaryLabel)
+        let separator = " ".attributed(style)
+
+        let node = ASTextNode2()
+        node.accessibilityIdentifier = identifier
+        node.attributedText = [nameString, emailString]
+                                .compactMap { $0 }
+                                .reduce(NSMutableAttributedString(), {
+                                    if !$0.string.isEmpty { $0.append(separator) }
+                                    $0.append($1);
+                                    return $0
+                                })
+
+        return node
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
