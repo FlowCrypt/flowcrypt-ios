@@ -13,7 +13,7 @@ class RecipientTests: XCTestCase {
     private let calendar = Calendar.current
 
     func testRecipientWithRevokedKey() {
-        let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: nil, revoked: true)
+        let keyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: nil, revoked: true)
         let recipient = RecipientWithSortedPubKeys(email: "test@flowcrypt.com", keyDetails: [keyDetails])
 
         XCTAssertEqual(recipient.keyState, .revoked)
@@ -21,7 +21,7 @@ class RecipientTests: XCTestCase {
 
     func testRecipientWithExpiredKey() {
         let expiration = Date().timeIntervalSince1970 - 60 * 60
-        let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: Int(expiration))
+        let keyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: Int(expiration))
 
         let recipient = RecipientWithSortedPubKeys(email: "test@flowcrypt.com", keyDetails: [keyDetails])
         XCTAssertEqual(recipient.keyState, .expired)
@@ -29,12 +29,12 @@ class RecipientTests: XCTestCase {
 
     func testRecipientWithValidKey() {
         let expiration = Date().timeIntervalSince1970 + 60 * 60
-        let keyDetails = KeyStorageMock.createFakeKeyDetails(expiration: Int(expiration))
+        let keyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: Int(expiration))
         let recipient = RecipientWithSortedPubKeys(email: "test@flowcrypt.com", keyDetails: [keyDetails])
         XCTAssertEqual(recipient.keyState, .active)
         XCTAssertEqual(recipient.pubKeys.first?.emails, ["test@flowcrypt.com"])
 
-        let keyDetails2 = KeyStorageMock.createFakeKeyDetails(expiration: nil)
+        let keyDetails2 = EncryptedStorageMock.createFakeKeyDetails(expiration: nil)
         let recipient2 = RecipientWithSortedPubKeys(email: "test@flowcrypt.com", keyDetails: [keyDetails2])
         XCTAssertEqual(recipient2.keyState, .active)
     }
@@ -46,15 +46,15 @@ class RecipientTests: XCTestCase {
 
     func testRecipientKeysOrder() {
         let now = Int(Date().timeIntervalSince1970)
-        let revokedKey = KeyStorageMock.createFakeKeyDetails(expiration: now + 1 * 3600, revoked: true)
+        let revokedKey = EncryptedStorageMock.createFakeKeyDetails(expiration: now + 1 * 3600, revoked: true)
 
-        let activeKey1 = KeyStorageMock.createFakeKeyDetails(expiration: now + 1 * 3600)
-        let activeKey2 = KeyStorageMock.createFakeKeyDetails(expiration: now + 2 * 3600)
-        let activeKey3 = KeyStorageMock.createFakeKeyDetails(expiration: now + 3 * 3600)
+        let activeKey1 = EncryptedStorageMock.createFakeKeyDetails(expiration: now + 1 * 3600)
+        let activeKey2 = EncryptedStorageMock.createFakeKeyDetails(expiration: now + 2 * 3600)
+        let activeKey3 = EncryptedStorageMock.createFakeKeyDetails(expiration: now + 3 * 3600)
 
-        let nonExpiringKey = KeyStorageMock.createFakeKeyDetails(expiration: nil)
-        let expiredKey = KeyStorageMock.createFakeKeyDetails(expiration: now - 1 * 3600)
-        let oldExpiredKey = KeyStorageMock.createFakeKeyDetails(expiration: now - 2 * 3600)
+        let nonExpiringKey = EncryptedStorageMock.createFakeKeyDetails(expiration: nil)
+        let expiredKey = EncryptedStorageMock.createFakeKeyDetails(expiration: now - 1 * 3600)
+        let oldExpiredKey = EncryptedStorageMock.createFakeKeyDetails(expiration: now - 2 * 3600)
 
         let keyDetails = [revokedKey, oldExpiredKey, activeKey1, expiredKey, activeKey2, nonExpiringKey, activeKey3]
         let recipient = RecipientWithSortedPubKeys(email: "test@flowcrypt.com",

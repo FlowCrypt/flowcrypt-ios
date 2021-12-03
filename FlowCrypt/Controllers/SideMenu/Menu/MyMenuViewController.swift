@@ -50,7 +50,9 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
-    private var accounts: [User] { appContext.dataService.validAccounts() }
+    private var accounts: [User] {
+        appContext.dataService.getFinishedSetupUsers(exceptUserEmail: currentUser.email)
+    }
     private let currentUser: User
 
     private let tableNode: ASTableNode
