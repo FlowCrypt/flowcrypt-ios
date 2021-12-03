@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "only.test.smoke": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite smoke",
-    "only.test.settings": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite settings",
-    "only.test.all": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite all",
-    "only.test.inbox": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite inbox",
-    "only.test.filter": "./node_modules/.bin/wdio ./config/wdio.ios.app.conf.js --suite all --jasmineNodeOpts.grep",
+    "only.test.smoke": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite smoke",
+    "only.test.all": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite all",
+    "only.test.filter": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite all --jasmineNodeOpts.grep",
+    "only.test.mock.all": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all",
+    "only.test.mock.filter": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all --jasmineNodeOpts.grep",
     "test": "npm run-script build.app && npm run-script only.test.all",
-    "build.app": "cd .. && bundle exec fastlane build",
     "lint": "cd .. && ./appium/node_modules/.bin/eslint appium/ --ext .ts"
   },
   "author": "FlowCrypt a. s.",
