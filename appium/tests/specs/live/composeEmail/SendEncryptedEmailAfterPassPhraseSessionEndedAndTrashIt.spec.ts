@@ -5,10 +5,10 @@ import {
   NewMessageScreen,
   EmailScreen,
   MenuBarScreen,
-} from '../../screenobjects/all-screens';
+} from '../../../screenobjects/all-screens';
 
-import { CommonData } from '../../data';
-import DataHelper from "../../helpers/DataHelper";
+import { CommonData } from '../../../data';
+import DataHelper from "../../../helpers/DataHelper";
 
 describe('COMPOSE EMAIL: ', () => {
 
