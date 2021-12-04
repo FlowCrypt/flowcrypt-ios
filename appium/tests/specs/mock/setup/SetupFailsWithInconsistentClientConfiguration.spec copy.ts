@@ -1,11 +1,10 @@
 import { MockApi } from 'api-mocks/mock';
 import {
   SplashScreen,
-  // SetupKeyScreen,
 } from '../../../screenobjects/all-screens';
 
 
-describe('LOGIN: ', () => {
+describe('SETUP: ', () => {
 
   it('app setup fails with bad EKM URL', async () => {
     const mockApi = new MockApi();
