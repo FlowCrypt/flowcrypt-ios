@@ -7,9 +7,6 @@ config.suites = {
   all: [
     './tests/specs/live/**/*.spec.ts'
   ],
-  smoke: [
-    './tests/specs/live/login/GmailLogin.spec.ts'
-  ],
   settings: [
     './tests/specs/live/settings/*.spec.ts'
   ],
