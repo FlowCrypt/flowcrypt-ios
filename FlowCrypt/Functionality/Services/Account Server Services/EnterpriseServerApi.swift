@@ -86,12 +86,10 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
             return urlBase
         } catch {
-            if let httpError = error as? HttpErr,
-               let nsError = httpError.error as NSError?,
-               Constants.getToleratedNSErrorCodes.contains(nsError.code) {
-                return nil
+            guard shouldTolerateWhenCallingOpportunistically(error) else {
+                throw error
             }
-            throw error
+            return nil
         }
     }
 
@@ -123,4 +121,14 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         return clientConfiguration
     }
 
+    private func shouldTolerateWhenCallingOpportunistically(_ error: Error) -> Bool {
+        guard
+            let apiError = error as? ApiError,
+            let nsError = apiError.internalError as NSError?,
+            Constants.getToleratedNSErrorCodes.contains(nsError.code)
+        else {
+            return false
+        }
+        return true
+    }
 }

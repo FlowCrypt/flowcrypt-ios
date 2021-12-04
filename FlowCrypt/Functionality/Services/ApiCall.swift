@@ -57,6 +57,7 @@ extension ApiCall {
 
 struct ApiError: LocalizedError {
     var errorDescription: String?
+    var internalError: Error?
 }
 
 extension ApiError {
@@ -65,13 +66,17 @@ extension ApiError {
             let data = httpError.data,
             let object = try? JSONDecoder().decode(HttpError.self, from: data)
         else {
-            return ApiError(errorDescription: httpError.error?.localizedDescription ?? "")
+            return ApiError(
+                errorDescription: httpError.error?.localizedDescription ?? "",
+                internalError: httpError.error
+            )
         }
 
         var message = "\(request.apiName) \(object.code) \(object.message)"
         message += "\n"
         message += "\(request.method) \(request.url)"
-        return ApiError(errorDescription: message)
+
+        return ApiError(errorDescription: message, internalError: httpError.error)
     }
 }
 
