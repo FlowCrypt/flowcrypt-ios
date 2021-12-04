@@ -4,7 +4,7 @@ import {
   MailFolderScreen,
   EmailScreen,
   SearchScreen
-} from '../../screenobjects/all-screens';
+} from '../../../screenobjects/all-screens';
 
 describe('INBOX: ', () => {
 

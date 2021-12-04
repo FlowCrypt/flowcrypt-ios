@@ -4,9 +4,9 @@ import {
   MailFolderScreen,
   EmailScreen,
   SearchScreen
-} from '../../screenobjects/all-screens';
+} from '../../../screenobjects/all-screens';
 
-import { CommonData } from '../../data';
+import { CommonData } from '../../../data';
 
 describe('INBOX: ', () => {
 

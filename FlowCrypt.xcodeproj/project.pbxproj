@@ -362,6 +362,10 @@
 		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
 		D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
+		E26D5E1F275AA295007B8802 /* CommandLineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */; };
+		E26D5E21275AA417007B8802 /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E20275AA417007B8802 /* BundleExtensions.swift */; };
+		E26D5E22275AA421007B8802 /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E20275AA417007B8802 /* BundleExtensions.swift */; };
+		E26D5E23275AA42B007B8802 /* CommandLineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */; };
 		F191F621272511790053833E /* BlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F191F620272511790053833E /* BlurViewController.swift */; };
 		F80E95362720B6640093F243 /* DraftsListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E95352720B6640093F243 /* DraftsListProvider.swift */; };
 		F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678DCB2722143300BB1710 /* GmailService+draft.swift */; };
@@ -770,6 +774,8 @@
 		D2FF6965243115EC007182F0 /* SetupImapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewDecorator.swift; sourceTree = "<group>"; };
 		D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.release.xcconfig"; sourceTree = "<group>"; };
+		E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineExtensions.swift; sourceTree = "<group>"; };
+		E26D5E20275AA417007B8802 /* BundleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtensions.swift; sourceTree = "<group>"; };
 		F191F620272511790053833E /* BlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurViewController.swift; sourceTree = "<group>"; };
 		F80E95352720B6640093F243 /* DraftsListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftsListProvider.swift; sourceTree = "<group>"; };
 		F8678DCB2722143300BB1710 /* GmailService+draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GmailService+draft.swift"; sourceTree = "<group>"; };
@@ -1004,7 +1010,9 @@
 			isa = PBXGroup;
 			children = (
 				D2D27B78248A8694007346FA /* BigIntExtension.swift */,
+				E26D5E20275AA417007B8802 /* BundleExtensions.swift */,
 				9F2F217226B3269D0044E144 /* CombineExtensions.swift */,
+				E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */,
 				51E4F0B427348E310017DABB /* Error+Extension.swift */,
 				51B0C7702729861C00124663 /* String+Extension.swift */,
 				518389C92726D8F700131B2C /* UIApplicationExtension.swift */,
@@ -2479,6 +2487,7 @@
 				9F976584267E194F0058419D /* TestData.swift in Sources */,
 				9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */,
 				9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */,
+				E26D5E23275AA42B007B8802 /* CommandLineExtensions.swift in Sources */,
 				51B0C774272AB61000124663 /* StringTestExtension.swift in Sources */,
 				2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */,
 				9F976490267E11880058419D /* ImapHelperTest.swift in Sources */,
@@ -2501,6 +2510,16 @@
 				9FC4117D268118AE004C0A69 /* PassPhraseStorageMock.swift in Sources */,
 				9F97650E267E16620058419D /* WKDURLsConstructorTests.swift in Sources */,
 				9F976585267E194F0058419D /* FlowCryptCoreTests.swift in Sources */,
+				9F6F3C7D26ADFC60005BD9C6 /* ContactsServiceMock.swift in Sources */,
+				9F6F3C3C26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift in Sources */,
+				9FC4116B2681186D004C0A69 /* KeyMethodsTest.swift in Sources */,
+				9F97653D267E17C90058419D /* LocalStorageTests.swift in Sources */,
+				A34D222A27294C67004E0220 /* PubLookupTest.swift in Sources */,
+				9F9764F4267E15CC0058419D /* ExtensionTests.swift in Sources */,
+				9F5F503526F90E5F00294FA2 /* ClientConfigurationServiceTests.swift in Sources */,
+				9F2F206826AEEAA60044E144 /* CombineTestExtension.swift in Sources */,
+				9F976585267E194F0058419D /* FlowCryptCoreTests.swift in Sources */,
+				E26D5E22275AA421007B8802 /* BundleExtensions.swift in Sources */,
 				9F6F3C7D26ADFC60005BD9C6 /* ContactsServiceMock.swift in Sources */,
 				9F6F3C3C26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift in Sources */,
 				9FC4116B2681186D004C0A69 /* KeyMethodsTest.swift in Sources */,
@@ -2662,6 +2681,7 @@
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
 				9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
+				E26D5E1F275AA295007B8802 /* CommandLineExtensions.swift in Sources */,
 				D2F41371243CC76F0066AFB5 /* SessionRealmObject.swift in Sources */,
 				9F9362192573D10E0009912F /* Imap+Message.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
@@ -2726,6 +2746,7 @@
 				9F53CB872555E7F300C0157A /* Imap+Other.swift in Sources */,
 				D2F6D1352433753B00DB4065 /* SMTPSession.swift in Sources */,
 				9FBEAF3125DFB8E1009E98D4 /* DBMigrationService.swift in Sources */,
+				E26D5E21275AA417007B8802 /* BundleExtensions.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */,
 				5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */,
 				D227C0E6250538780070F805 /* RemoteFoldersProvider.swift in Sources */,
