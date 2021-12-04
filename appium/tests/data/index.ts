@@ -38,6 +38,15 @@ export const CommonData = {
     subject: 'Encrypted message with key mismatch',
     message: 'Could not decrypt:',
   },
+  recipientsListEmail: {
+    sender: 'flowcrypt.compatibility@gmail.com',
+    subject: 'CC and BCC test',
+    message: 'Test message for CC and BCC recipients',
+    recipients: 'to Robot, robot+cc, e2e.enterprise.test',
+    to: 'Robot FlowCrypt robot@flowcrypt.com',
+    cc: 'robot+cc@flowcrypt.com',
+    bcc: 'e2e.enterprise.test@flowcrypt.com'
+  },
   encryptedMDCHashMismatchEmail: {
     senderEmail: 'flowcrypt.compatibility@gmail.com',
     subject: 'encrypted - MDC hash mismatch - modification detected - should fail',
