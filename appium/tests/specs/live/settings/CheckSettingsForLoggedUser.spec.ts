@@ -6,7 +6,7 @@ import {
   KeysScreen,
   PublicKeyScreen,
   MailFolderScreen
-} from '../../screenobjects/all-screens';
+} from '../../../screenobjects/all-screens';
 
 
 describe('SETTINGS: ', () => {
