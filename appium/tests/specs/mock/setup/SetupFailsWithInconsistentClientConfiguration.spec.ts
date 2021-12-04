@@ -12,10 +12,22 @@ describe('LOGIN: ', () => {
     mockApi.fesConfig = { clientConfiguration: { key_manager_url: 'INTENTIONAL BAD URL' } };
     await mockApi.withMockedApis(async () => {
       await SplashScreen.login();
-      await browser.pause(30000);
-      // todo - currently this passes because we are not testing the desired result yet
-      //   it logs in and shows a "network lost" but should be showing a more specific modal
-      //   mock is not reached yet probably due to app security settings (plain http)
+      // todo - replace the following pause with wait for modal error
+      //   that says "Please check if key manager url set correctly"
+      await browser.pause(5000);
     });
   });
+
+  it('setup shows meaningful error when FES returns 400', async () => {
+    const mockApi = new MockApi();
+    mockApi.fesConfig = { returnError: { code: 400, message: "some client err" } };
+    await mockApi.withMockedApis(async () => {
+      await SplashScreen.login();
+      // todo - replace the following pause with wait for modal error
+      await browser.pause(5000);
+    });
+  });
+
+  // todo - app shows meaningful error when FES returns wrong err format
+
 });

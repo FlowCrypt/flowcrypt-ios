@@ -1,10 +1,21 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-import { HandlersDefinition, HttpClientErr } from '../../lib/api';
+import { HandlersDefinition, HttpErr, Status } from '../../lib/api';
 import { Dict } from '../../core/common';
 import { isPost, isGet } from '../../lib/mock-util';
 import { oauth } from '../../lib/oauth';
 import { AttesterConfig, MockConfig } from '../../lib/configuration-types';
+
+export class AttesterErr extends HttpErr {
+  public formatted = (): unknown => {
+    return { // follows Attester errror format
+      error: {
+        "code": this.statusCode,
+        "message": this.message,
+      }
+    }
+  }
+}
 
 export const MOCK_ATTESTER_LAST_INSERTED_PUB: { [email: string]: string } = {};
 
@@ -25,31 +36,31 @@ export const getMockAttesterEndpoints = (
         if (pubkey) {
           return pubkey;
         }
-        throw new HttpClientErr('Pubkey not found on mock', 404);
+        throw new AttesterErr('Pubkey not found on mock', 404);
       } else if (isPost(req)) {
         if (attesterConfig.enableSubmittingPubkeys !== true) {
-          throw new HttpClientErr('Mock Attester received unexpected pubkey submission', 405);
+          throw new AttesterErr('Mock Attester received unexpected pubkey submission', 405);
         }
         oauth.checkAuthorizationHeaderWithIdToken(req.headers.authorization);
         if (!(body as string).includes('-----BEGIN PGP PUBLIC KEY BLOCK-----')) {
-          throw new HttpClientErr(`Bad public key format`, 400);
+          throw new AttesterErr(`Bad public key format`, 400);
         }
         MOCK_ATTESTER_LAST_INSERTED_PUB[email] = body as string;
         return 'Saved'; // 200 OK
       } else {
-        throw new HttpClientErr(`Not implemented: ${req.method}`);
+        throw new AttesterErr(`Not implemented: ${req.method}`, Status.BAD_REQUEST);
       }
     },
     '/attester/test/welcome': async ({ body }, req) => {
       if (!isPost(req)) {
-        throw new HttpClientErr(`Wrong method: ${req.method}`);
+        throw new AttesterErr(`Wrong method: ${req.method}`, Status.BAD_REQUEST);
       }
       const { email, pubkey } = body as Dict<string>;
       if (email.includes('@')) {
-        throw new HttpClientErr(`Bad email format`, 400);
+        throw new AttesterErr(`Bad email format`, 400);
       }
       if (pubkey.includes('-----BEGIN PGP PUBLIC KEY BLOCK-----')) {
-        throw new HttpClientErr(`Bad public key format`, 400);
+        throw new AttesterErr(`Bad public key format`, 400);
       }
       return { sent: true };
     },

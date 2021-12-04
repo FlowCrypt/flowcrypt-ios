@@ -58,7 +58,7 @@ export class MockApi {
       () => getMockGoogleEndpoints(this.mockConfig, this.googleConfig),
       () => getMockEkmEndpoints(this.mockConfig, this.ekmConfig),
       () => getMockWkdEndpoints(this.mockConfig, this.wkdConfig),
-    ]);
+    ], undefined, false);
     await api.listen(this.port);
     try {
       await testRunner();

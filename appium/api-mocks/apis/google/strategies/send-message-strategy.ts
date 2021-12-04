@@ -7,7 +7,7 @@
 // import { Config } from '../util';
 // import { expect } from 'chai';
 // import { GoogleData } from '../google-data';
-// import { HttpClientErr } from '../../lib/api';
+// import { HttpErr } from '../../lib/api';
 // import { MsgUtil } from '../../../core/crypto/pgp/msg-util';
 // import Parse from '../../../util/parse';
 // import { parsedMailAddressObjectAsArray } from '../google-endpoints';
@@ -27,13 +27,13 @@
 //   public test = async (mimeMsg: ParsedMail) => {
 //     const senderEmail = Str.parseEmail(mimeMsg.from!.text).email;
 //     if (!mimeMsg.text?.includes(`${senderEmail} has sent you a password-encrypted email`)) {
-//       throw new HttpClientErr(`Error checking sent text in:\n\n${mimeMsg.text}`);
+//       throw new HttpErr(`Error checking sent text in:\n\n${mimeMsg.text}`);
 //     }
 //     if (!mimeMsg.text?.match(/https:\/\/flowcrypt.com\/[a-z0-9A-Z]{10}/)) {
-//       throw new HttpClientErr(`Error: cannot find pwd encrypted flowcrypt.com/api link in:\n\n${mimeMsg.text}`);
+//       throw new HttpErr(`Error: cannot find pwd encrypted flowcrypt.com/api link in:\n\n${mimeMsg.text}`);
 //     }
 //     if (!mimeMsg.text?.includes('Follow this link to open it')) {
-//       throw new HttpClientErr(`Error: cannot find pwd encrypted open link prompt in ${mimeMsg.text}`);
+//       throw new HttpErr(`Error: cannot find pwd encrypted open link prompt in ${mimeMsg.text}`);
 //     }
 //   }
 // }
@@ -43,16 +43,16 @@
 //     const senderEmail = Str.parseEmail(mimeMsg.from!.text).email;
 //     const expectedSenderEmail = 'user@standardsubdomainfes.test:8001';
 //     if (senderEmail !== expectedSenderEmail) {
-//       throw new HttpClientErr(`Unexpected sender email ${senderEmail}, expecting ${expectedSenderEmail}`);
+//       throw new HttpErr(`Unexpected sender email ${senderEmail}, expecting ${expectedSenderEmail}`);
 //     }
 //     if (!mimeMsg.text?.includes(`${senderEmail} has sent you a password-encrypted email`)) {
-//       throw new HttpClientErr(`Error checking sent text in:\n\n${mimeMsg.text}`);
+//       throw new HttpErr(`Error checking sent text in:\n\n${mimeMsg.text}`);
 //     }
 //     if (!mimeMsg.text?.includes('http://fes.standardsubdomainfes.test:8001/message/FES-MOCK-MESSAGE-ID')) {
-//       throw new HttpClientErr(`Error: cannot find pwd encrypted FES link in:\n\n${mimeMsg.text}`);
+//       throw new HttpErr(`Error: cannot find pwd encrypted FES link in:\n\n${mimeMsg.text}`);
 //     }
 //     if (!mimeMsg.text?.includes('Follow this link to open it')) {
-//       throw new HttpClientErr(`Error: cannot find pwd encrypted open link prompt in ${mimeMsg.text}`);
+//       throw new HttpErr(`Error: cannot find pwd encrypted open link prompt in ${mimeMsg.text}`);
 //     }
 //   }
 // }
@@ -62,16 +62,16 @@
 //     const senderEmail = Str.parseEmail(mimeMsg.from!.text).email;
 //     const expectedSenderEmail = 'user@disablefesaccesstoken.test:8001';
 //     if (senderEmail !== expectedSenderEmail) {
-//       throw new HttpClientErr(`Unexpected sender email ${senderEmail}, expecting ${expectedSenderEmail}`);
+//       throw new HttpErr(`Unexpected sender email ${senderEmail}, expecting ${expectedSenderEmail}`);
 //     }
 //     if (!mimeMsg.text?.includes(`${senderEmail} has sent you a password-encrypted email`)) {
-//       throw new HttpClientErr(`Error checking sent text in:\n\n${mimeMsg.text}`);
+//       throw new HttpErr(`Error checking sent text in:\n\n${mimeMsg.text}`);
 //     }
 //     if (!mimeMsg.text?.includes('http://fes.disablefesaccesstoken.test:8001/message/FES-MOCK-MESSAGE-ID')) {
-//       throw new HttpClientErr(`Error: cannot find pwd encrypted FES link in:\n\n${mimeMsg.text}`);
+//       throw new HttpErr(`Error: cannot find pwd encrypted FES link in:\n\n${mimeMsg.text}`);
 //     }
 //     if (!mimeMsg.text?.includes('Follow this link to open it')) {
-//       throw new HttpClientErr(`Error: cannot find pwd encrypted open link prompt in ${mimeMsg.text}`);
+//       throw new HttpErr(`Error: cannot find pwd encrypted open link prompt in ${mimeMsg.text}`);
 //     }
 //   }
 // }
@@ -83,11 +83,11 @@
 //     const keyInfo = await Config.getKeyInfo(["flowcrypt.compatibility.1pp1", "flowcrypt.compatibility.2pp1"]);
 //     const decrypted = await MsgUtil.decryptMessage({ kisWithPp: keyInfo!, encryptedData: Buf.fromUtfStr(mimeMsg.text || '') });
 //     if (!decrypted.success) {
-//       throw new HttpClientErr(`Error: can't decrypt message`);
+//       throw new HttpErr(`Error: can't decrypt message`);
 //     }
 //     const textContent = decrypted.content.toUtfStr();
 //     if (!textContent.includes(this.footer)) {
-//       throw new HttpClientErr(`Error: Msg Text doesn't contain footer. Current: '${mimeMsg.text}', expected footer: '${this.footer}'`);
+//       throw new HttpErr(`Error: Msg Text doesn't contain footer. Current: '${mimeMsg.text}', expected footer: '${this.footer}'`);
 //     }
 //   }
 // }
@@ -100,17 +100,17 @@
 //     const keyInfo = await Config.getKeyInfo(["flowcrypt.compatibility.1pp1", "flowcrypt.compatibility.2pp1"]);
 //     const decrypted = await MsgUtil.decryptMessage({ kisWithPp: keyInfo!, encryptedData: Buf.fromUtfStr(mimeMsg.text!) });
 //     if (!decrypted.success) {
-//       throw new HttpClientErr(`Error: Could not successfully verify signed message`);
+//       throw new HttpErr(`Error: Could not successfully verify signed message`);
 //     }
 //     if (!decrypted.signature) {
-//       throw new HttpClientErr(`Error: The message isn't signed.`);
+//       throw new HttpErr(`Error: The message isn't signed.`);
 //     }
 //     if (decrypted.signature.signer?.longid !== this.signedBy) {
-//       throw new HttpClientErr(`Error: expected message signed by ${this.signedBy} but was actually signed by ${decrypted.signature.signer?.longid}`);
+//       throw new HttpErr(`Error: expected message signed by ${this.signedBy} but was actually signed by ${decrypted.signature.signer?.longid}`);
 //     }
 //     const content = decrypted.content.toUtfStr();
 //     if (!content.includes(this.expectedText)) {
-//       throw new HttpClientErr(`Error: Contents don't match. Expected: '${this.expectedText}' but got: '${content}'.`);
+//       throw new HttpErr(`Error: Contents don't match. Expected: '${this.expectedText}' but got: '${content}'.`);
 //     }
 //   }
 // }
@@ -120,7 +120,7 @@
 
 //   public test = async (mimeMsg: ParsedMail) => {
 //     if (!mimeMsg.text?.includes(this.expectedText)) {
-//       throw new HttpClientErr(`Error: Msg Text is not matching expected. Current: '${mimeMsg.text}', expected: '${this.expectedText}'`);
+//       throw new HttpErr(`Error: Msg Text is not matching expected. Current: '${mimeMsg.text}', expected: '${this.expectedText}'`);
 //     }
 //   }
 // }
@@ -143,11 +143,11 @@
 //     const keyInfo = await Config.getKeyInfo(["flowcrypt.compatibility.1pp1", "flowcrypt.compatibility.2pp1"]);
 //     const decrypted = await MsgUtil.decryptMessage({ kisWithPp: keyInfo!, encryptedData: Buf.fromUtfStr(mimeMsg.text!) });
 //     if (!decrypted.success) {
-//       throw new HttpClientErr(`Error: can't decrypt message`);
+//       throw new HttpErr(`Error: can't decrypt message`);
 //     }
 //     const textContent = decrypted.content.toUtfStr();
 //     if (!textContent.endsWith(this.quotedContent)) {
-//       throw new HttpClientErr(`Error: Quoted content isn't included to the Msg. Msg text: '${textContent}'\n Quoted part: '${this.quotedContent}'`, 400);
+//       throw new HttpErr(`Error: Quoted content isn't included to the Msg. Msg text: '${textContent}'\n Quoted part: '${this.quotedContent}'`, 400);
 //     }
 //   }
 // }
@@ -156,13 +156,13 @@
 //   public test = async (mimeMsg: ParsedMail) => {
 //     const hasAtLeastOneRecipient = (ao: AddressObject[]) => ao && ao.length && ao[0].value && ao[0].value.length && ao[0].value[0].address;
 //     if (!hasAtLeastOneRecipient(parsedMailAddressObjectAsArray(mimeMsg.to))) {
-//       throw new HttpClientErr(`Error: There is no 'To' header.`, 400);
+//       throw new HttpErr(`Error: There is no 'To' header.`, 400);
 //     }
 //     if (!hasAtLeastOneRecipient(parsedMailAddressObjectAsArray(mimeMsg.cc))) {
-//       throw new HttpClientErr(`Error: There is no 'Cc' header.`, 400);
+//       throw new HttpErr(`Error: There is no 'Cc' header.`, 400);
 //     }
 //     if (!hasAtLeastOneRecipient(parsedMailAddressObjectAsArray(mimeMsg.bcc))) {
-//       throw new HttpClientErr(`Error: There is no 'Bcc' header.`, 400);
+//       throw new HttpErr(`Error: There is no 'Bcc' header.`, 400);
 //     }
 //   }
 // }
