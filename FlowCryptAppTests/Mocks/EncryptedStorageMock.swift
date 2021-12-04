@@ -38,6 +38,11 @@ final class EncryptedStorageMock: EncryptedStorageType {
         getKeypairsResult
     }
 
+    var findResult: Recipient?
+    func find(with email: String) -> Recipient? {
+        findResult
+    }
+
     func validate() throws {
     }
 

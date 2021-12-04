@@ -11,27 +11,41 @@ import RealmSwift
 
 protocol LocalFoldersProviderType {
     func fetchFolders(for userEmail: String) -> [FolderViewModel]
-    func removeFolders(for userEmail: String)
-    func save(folders: [Folder], for user: User)
+    func removeFolders(for userEmail: String) throws
+    func save(folders: [Folder], for user: User) throws
 }
 
-struct LocalFoldersProvider: LocalFoldersProviderType {
-    private let folderCache: EncryptedCacheService<FolderRealmObject>
+final class LocalFoldersProvider {
+    private let storage: Realm
 
     init(encryptedStorage: EncryptedStorageType) {
-        self.folderCache = EncryptedCacheService(encryptedStorage: encryptedStorage)
+        self.storage = encryptedStorage.storage
     }
+}
 
+extension LocalFoldersProvider: LocalFoldersProviderType {
     func fetchFolders(for userEmail: String) -> [FolderViewModel] {
-        return folderCache.getAll(for: userEmail).compactMap(FolderViewModel.init)
+        storage.objects(FolderRealmObject.self).where {
+            $0.user.email == userEmail
+        }.compactMap(FolderViewModel.init)
     }
 
-    func save(folders: [Folder], for user: User) {
-        folders.map { FolderRealmObject(folder: $0, user: user) }
-            .forEach(folderCache.save)
+    func save(folders: [Folder], for user: User) throws {
+        let objects = folders.map { FolderRealmObject(folder: $0, user: user) }
+        try storage.write {
+            objects.forEach {
+                storage.add($0, update: .modified)
+            }
+        }
     }
 
-    func removeFolders(for userEmail: String) {
-        folderCache.removeAll(for: userEmail)
+    func removeFolders(for userEmail: String) throws {
+        let objects = storage.objects(FolderRealmObject.self).where {
+            $0.user.email == userEmail
+        }
+
+        try storage.write {
+            storage.delete(objects)
+        }
     }
 }

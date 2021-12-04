@@ -22,6 +22,8 @@ protocol EncryptedStorageType {
     func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
     func getKeypairs(by email: String) -> [KeyInfo]
 
+    func find(with email: String) -> Recipient?
+
     func validate() throws
     func reset() throws
     func cleanup()
@@ -245,6 +247,16 @@ extension EncryptedStorage {
             object.isActive = true
             storage.add(object, update: .all)
         }
+    }
+}
+
+// MARK: - Recipient
+extension EncryptedStorage {
+    func find(with email: String) -> Recipient? {
+        storage.object(
+            ofType: RecipientRealmObject.self,
+            forPrimaryKey: email
+        ).map(Recipient.init)
     }
 }
 

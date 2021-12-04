@@ -69,10 +69,9 @@ extension ContactsListViewController {
                 self.recipients = try await localContactsProvider.getAllRecipients()
                 await self.node.reloadData()
             } catch {
-                self.showToast("Failed to load recipients: \(error.localizedDescription)")
+                self.showToast("contacs_screen_load_error".localizeWithArguments(error.localizedDescription))
             }
         }
-
     }
 }
 
@@ -136,8 +135,12 @@ extension ContactsListViewController {
             recipientToRemove = recipients[indexPath.row]
         }
 
-        localContactsProvider.remove(recipient: recipientToRemove)
-        recipients.remove(at: indexPathToRemove.row)
-        node.deleteRows(at: [indexPathToRemove], with: .left)
+        do {
+            try localContactsProvider.remove(recipient: recipientToRemove)
+            recipients.remove(at: indexPathToRemove.row)
+            node.deleteRows(at: [indexPathToRemove], with: .left)
+        } catch {
+            showToast("contacs_screen_remove_error".localizeWithArguments(error.localizedDescription))
+        }
     }
 }
