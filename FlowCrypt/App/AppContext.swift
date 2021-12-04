@@ -17,7 +17,6 @@ class AppContext {
     // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
     let userAccountService: SessionServiceType
     let dataService: DataServiceType
-    let keyStorage: KeyStorageType
     let keyService: KeyServiceType
     let passPhraseService: PassPhraseServiceType
     let clientConfigurationService: ClientConfigurationServiceType
@@ -27,7 +26,6 @@ class AppContext {
         session: SessionType?,
         userAccountService: SessionServiceType,
         dataService: DataServiceType,
-        keyStorage: KeyStorageType,
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
         clientConfigurationService: ClientConfigurationServiceType,
@@ -37,7 +35,6 @@ class AppContext {
         self.session = session
         self.userAccountService = userAccountService
         self.dataService = dataService
-        self.keyStorage = keyStorage // todo - keyStorage and keyService should be the same
         self.keyService = keyService
         self.passPhraseService = passPhraseService
         self.clientConfigurationService = clientConfigurationService
@@ -52,9 +49,8 @@ class AppContext {
         )
         let dataService = DataService(encryptedStorage: encryptedStorage)
         let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
-        let keyStorage = KeyDataStorage(encryptedStorage: encryptedStorage)
         let keyService = KeyService(
-            storage: keyStorage,
+            storage: encryptedStorage,
             passPhraseService: passPhraseService,
             currentUserEmail: { dataService.email }
         )
@@ -75,7 +71,6 @@ class AppContext {
                 )
             ),
             dataService: dataService,
-            keyStorage: keyStorage,
             keyService: keyService,
             passPhraseService: passPhraseService,
             clientConfigurationService: clientConfigurationService,
@@ -89,7 +84,6 @@ class AppContext {
             session: session,
             userAccountService: self.userAccountService,
             dataService: self.dataService,
-            keyStorage: self.keyStorage,
             keyService: self.keyService,
             passPhraseService: self.passPhraseService,
             clientConfigurationService: self.clientConfigurationService,

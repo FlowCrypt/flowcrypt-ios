@@ -53,11 +53,11 @@ final class ComposeViewController: TableNodeViewController {
     private let clientConfiguration: ClientConfiguration
 
     private let search = PassthroughSubject<String, Never>()
-    private let userDefaults: UserDefaults
 
     private let email: String
 
     private var cancellable = Set<AnyCancellable>()
+
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
 
@@ -73,7 +73,6 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         cloudContactProvider: CloudContactsProvider? = nil,
-        userDefaults: UserDefaults = .standard,
         contactsService: ContactsServiceType? = nil,
         composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
@@ -89,7 +88,6 @@ final class ComposeViewController: TableNodeViewController {
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        self.userDefaults = userDefaults
         let clientConfiguration = appContext.clientConfigurationService.getSaved(for: email)
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(
@@ -136,6 +134,7 @@ final class ComposeViewController: TableNodeViewController {
         setupNavigationBar()
         observeKeyboardNotifications()
         observerAppStates()
+        observeComposeUpdates()
         setupQuote()
     }
 
@@ -181,6 +180,32 @@ final class ComposeViewController: TableNodeViewController {
         self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", state: decorator.recipientIdleState)]
     }
 
+    private func observeComposeUpdates() {
+        composeMessageService.onStateChanged { [weak self] state in
+            DispatchQueue.main.async {
+                self?.updateSpinner(with: state)
+            }
+        }
+    }
+
+    private func updateSpinner(with state: ComposeMessageService.State) {
+        switch state {
+        case .progressChanged(let progress):
+            showProgressHUD(
+                progress: progress,
+                label: state.message ?? "\(progress)"
+            )
+        case .messageSent:
+            showProgressHUDWithCustomImage(
+                imageName: "checkmark.circle",
+                label: "compose_sent".localized
+            )
+        case .startComposing, .validatingMessage:
+            showIndeterminateHUD(with: state.message ?? "")
+        case .idle:
+            hideSpinner()
+        }
+    }
 }
 
 // MARK: - Drafts
@@ -451,10 +476,7 @@ extension ComposeViewController {
         UIApplication.shared.isIdleTimerDisabled = true
         try await service.encryptAndSend(
             message: sendableMsg,
-            threadId: input.threadId,
-            progressHandler: { [weak self] progress in
-                self?.updateSpinner(progress: progress, systemImageName: "checkmark.circle")
-            }
+            threadId: input.threadId
         )
         handleSuccessfullySentMessage()
     }
@@ -463,7 +485,11 @@ extension ComposeViewController {
         UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-        showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+
+        let hideSpinnerAnimationDuration: TimeInterval = 1
+        DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
+            self?.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+        }
     }
 
     private func handleSuccessfullySentMessage() {
@@ -1168,7 +1194,7 @@ extension ComposeViewController: FilesManagerPresenter {}
 
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
-    private let composeMessageService: ComposeMessageService
+    let composeMessageService: ComposeMessageService
     private let contactsService: ContactsServiceType
     private let cloudContactProvider: CloudContactsProvider
 
@@ -1180,10 +1206,11 @@ private actor ServiceActor {
         self.cloudContactProvider = cloudContactProvider
     }
 
-    func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
-        try await composeMessageService.encryptAndSend(message: message,
-                                                       threadId: threadId,
-                                                       progressHandler: progressHandler)
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+        try await composeMessageService.encryptAndSend(
+            message: message,
+            threadId: threadId
+        )
     }
 
     func searchContacts(query: String) async throws -> [String] {

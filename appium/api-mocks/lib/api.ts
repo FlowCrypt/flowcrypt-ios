@@ -5,13 +5,6 @@ import * as http from 'http';
 import { readFileSync } from 'fs';
 // tslint:disable:await-returned-promise
 
-export class HttpAuthErr extends Error { }
-export class HttpClientErr extends Error {
-  constructor(message: string, public statusCode = 400) {
-    super(message);
-  }
-}
-
 export type HandlersDefinition = Handlers<{ query: { [k: string]: string; }; body?: unknown; }, unknown>;
 
 export enum Status {
@@ -65,11 +58,7 @@ export class Api<REQ, RES> {
         process.exit(1);
       }
     }).catch((e) => {
-      if (e instanceof HttpAuthErr) {
-        response.statusCode = Status.UNAUTHORIZED;
-        response.setHeader('WWW-Authenticate', `Basic realm="${this.apiName}"`);
-        e.stack = undefined;
-      } else if (e instanceof HttpClientErr) {
+      if (e instanceof HttpErr) {
         response.statusCode = e.statusCode;
         e.stack = undefined;
       } else {
@@ -150,7 +139,7 @@ export class Api<REQ, RES> {
       res.setHeader('content-type', 'application/json');
       return this.fmtRes({ alive: true });
     }
-    throw new HttpClientErr(`unknown MOCK path ${req.url}`);
+    throw new HttpErr(`unknown MOCK path ${req.url}`, Status.BAD_REQUEST);
   }
 
   protected chooseHandler = (req: http.IncomingMessage): RequestHandler<REQ, RES> | undefined => {
@@ -178,7 +167,16 @@ export class Api<REQ, RES> {
     if (String(e).includes('invalid_grant')) {
       return Buffer.from(JSON.stringify({ "error": "invalid_grant", "error_description": "Bad Request" }));
     }
-    return Buffer.from(JSON.stringify({ "error": { "message": e instanceof Error ? e.message : String(e), stack: e instanceof Error ? e.stack : '' } }));
+    if (!(e instanceof HttpErr)) {
+      if (e instanceof Error) {
+        const newErr = new HttpErr(e.message, Status.SERVER_ERROR)
+        newErr.stack = e.stack;
+        e = newErr;
+      } else {
+        e = new HttpErr("Non-error thrown in mock: " + String(e), Status.SERVER_ERROR);
+      }
+    }
+    return Buffer.from(JSON.stringify((e as HttpErr).formatted()));
   }
 
   protected fmtHandlerRes = (handlerRes: RES, serverRes: http.ServerResponse): Buffer => {
@@ -212,7 +210,7 @@ export class Api<REQ, RES> {
       req.on('data', (chunk: Buffer) => {
         byteLength += chunk.length;
         if (this.maxRequestSizeBytes && byteLength > this.maxRequestSizeBytes) {
-          reject(new HttpClientErr(`Message over ${this.maxRequestSizeMb} MB`));
+          reject(new HttpErr(`Message over ${this.maxRequestSizeMb} MB`, Status.BAD_REQUEST));
         } else {
           body.push(chunk);
         }
@@ -282,3 +280,17 @@ export class Api<REQ, RES> {
   }
 
 }
+
+export class HttpErr extends Error {
+  constructor(message: string, public statusCode: number) {
+    super(message);
+  }
+  public formatted = (): unknown => {
+    return {
+      "mockError": this.message,
+      "mockStack": this.stack || "no stack",
+      "noFormatter": "if you wanted a different error format, subclass from HttpErr and add a formatter",
+    }
+  }
+}
+

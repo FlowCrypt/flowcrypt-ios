@@ -3,13 +3,13 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen
-} from '../../screenobjects/all-screens';
+} from '../../../screenobjects/all-screens';
 
-import { CommonData } from '../../data';
+import { CommonData } from '../../../data';
 
 describe('INBOX: ', () => {
 
-  it('user is able to see plain email without setting pass phrase after restart app', async () => {
+  it('user is able to view text email', async () => {
 
     const senderEmail = CommonData.sender.email;
     const emailSubject = CommonData.simpleEmail.subject;
@@ -20,15 +20,6 @@ describe('INBOX: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.searchEmailBySubject(emailSubject);
-    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-
-    await driver.terminateApp(CommonData.bundleId.id);
-    await driver.activateApp(CommonData.bundleId.id);
-
-    await MailFolderScreen.checkInboxScreen();
-    await MailFolderScreen.searchEmailBySubject(emailSubject);
-
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
   });

@@ -2,9 +2,19 @@
 
 import { IncomingMessage } from 'http';
 import { FesConfig, MockConfig } from '../../lib/configuration-types';
-import { HandlersDefinition, HttpClientErr } from '../../lib/api';
+import { HandlersDefinition, HttpErr, Status } from '../../lib/api';
 import { MockJwt } from '../../lib/oauth';
 import { expectContains, throwIfNotGetMethod } from '../../lib/mock-util';
+
+export class FesHttpErr extends HttpErr {
+  public formatted = (): unknown => {
+    return { // follows FES error response format
+      "code": this.statusCode,
+      "message": `message:${this.message}`,
+      "details": `details:${this.message}`
+    }
+  }
+}
 
 export const getMockFesEndpoints = (
   mockConfig: MockConfig,
@@ -16,7 +26,8 @@ export const getMockFesEndpoints = (
   }
 
   return {
-    '/api/': async ({ }, req) => {
+    '/fes/api/': async ({ }, req) => {
+      throwErrorIfConfigSaysSo(fesConfig);
       throwIfNotGetMethod(req);
       return {
         "vendor": "Mock",
@@ -26,18 +37,21 @@ export const getMockFesEndpoints = (
         "apiVersion": 'v1',
       };
     },
-    '/api/v1/client-configuration': async ({ }, req) => {
+    '/fes/api/v1/client-configuration': async ({ }, req) => {
+      throwErrorIfConfigSaysSo(fesConfig);
       throwIfNotGetMethod(req);
-      return { clientConfiguration: fesConfig.clientConfiguration };
+      return { clientConfiguration: fesConfig.clientConfiguration || {} };
     },
-    '/api/v1/message/new-reply-token': async ({ }, req) => {
+    '/fes/api/v1/message/new-reply-token': async ({ }, req) => {
+      throwErrorIfConfigSaysSo(fesConfig);
       if (req.method === 'POST') {
         authenticate(req);
         return { 'replyToken': 'mock-fes-reply-token' };
       }
-      throw new HttpClientErr('Not Found', 404);
+      throw new FesHttpErr('Not Found', Status.NOT_FOUND);
     },
-    '/api/v1/message': async ({ body }, req) => {
+    '/fes/api/v1/message': async ({ body }, req) => {
+      throwErrorIfConfigSaysSo(fesConfig);
       // body is a mime-multipart string, we're doing a few smoke checks here without parsing it
       if (req.method === 'POST') {
         expectContains(body, '-----BEGIN PGP MESSAGE-----');
@@ -49,10 +63,15 @@ export const getMockFesEndpoints = (
         expectContains(body, '"from":"user@disablefesaccesstoken.test:8001"');
         return { 'url': `${mockConfig}/message/FES-MOCK-MESSAGE-ID` };
       }
-      throw new HttpClientErr('Not Found', 404);
+      throw new FesHttpErr('Not Found', Status.NOT_FOUND);
     },
   };
+}
 
+const throwErrorIfConfigSaysSo = (config: FesConfig) => {
+  if (config.returnError) {
+    throw new FesHttpErr(config.returnError.message, config.returnError.code);
+  }
 }
 
 const authenticate = (req: IncomingMessage): string => {
