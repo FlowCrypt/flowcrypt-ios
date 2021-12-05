@@ -17,7 +17,6 @@ final class AttesterApi: AttesterApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 10
-        static let baseURL = "https://flowcrypt.com/attester/"
         static let apiName = "AttesterApi"
     }
 
@@ -32,11 +31,18 @@ final class AttesterApi: AttesterApiType {
         self.clientConfiguration = clientConfiguration
     }
 
-    private func urlPub(emailOrLongid: String) -> String {
-        let normalizedEmail = emailOrLongid
+    private func constructUrlBase() -> String {
+        guard !CommandLine.isDebugBundleWithArgument("--mock-attester-api") else {
+            return "http://127.0.0.1:8001/attester" // mock
+        }
+        return "https://flowcrypt.com/attester" // live
+    }
+    
+    private func pubUrl(email: String) -> String {
+        let normalizedEmail = email
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return "\(Constants.baseURL)pub/\(normalizedEmail)"
+        return "\(constructUrlBase())/pub/\(normalizedEmail)"
     }
 }
 
@@ -45,23 +51,19 @@ extension AttesterApi {
         if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
             return []
         }
-
         let request = ApiCall.Request(
             apiName: Constants.apiName,
-            url: urlPub(emailOrLongid: email),
+            url: pubUrl(email: email),
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
         let res = try await ApiCall.call(request)
-
         if res.status >= 200, res.status <= 299 {
             return try await core.parseKeys(armoredOrBinary: res.data).keyDetails
         }
-
         if res.status == 404 {
             return []
         }
-
         throw AppErr.unexpected(
             "programing error - should have been caught above" +
             " - unexpected status \(res.status) when looking up pubkey for \(email)"
@@ -72,7 +74,6 @@ extension AttesterApi {
     func update(email: String, pubkey: String, token: String?) async throws -> String {
         let httpMethod: HTTPMetod
         let headers: [URLHeader]
-
         if let value = token {
             httpMethod = .post
             headers = [URLHeader(value: "Bearer \(value)", httpHeaderField: "Authorization")]
@@ -80,10 +81,9 @@ extension AttesterApi {
             httpMethod = .put
             headers = []
         }
-
         let request = ApiCall.Request(
             apiName: Constants.apiName,
-            url: urlPub(emailOrLongid: email),
+            url: pubUrl(email: email),
             method: httpMethod,
             body: pubkey.data(),
             headers: headers
@@ -96,7 +96,7 @@ extension AttesterApi {
     func replace(email: String, pubkey: String) async throws -> String {
         let request = ApiCall.Request(
             apiName: Constants.apiName,
-            url: urlPub(emailOrLongid: email),
+            url: pubUrl(email: email),
             method: .post,
             body: pubkey.data()
         )

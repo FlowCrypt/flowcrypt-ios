@@ -17,7 +17,7 @@ config.capabilities = [
     platformVersion: '15.0',
     automationName: 'XCUITest',
     app: join(process.cwd(), './FlowCrypt.app'),
-    processArguments: { 'args': ['--mock-fes-api'] },
+    processArguments: { 'args': ['--mock-fes-api', '--mock-attester-api'] },
     newCommandTimeout: 10000,
     wdaLaunchTimeout: 300000,
     wdaConnectionTimeout: 600000,
