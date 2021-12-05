@@ -42,7 +42,7 @@ final class AttesterApi: AttesterApiType {
         let normalizedEmail = email
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return "\(constructUrlBase())/pub/\(normalizedEmail)"
+        return constructUrlBase() + "/pub/" + normalizedEmail
     }
 }
 
@@ -107,7 +107,7 @@ extension AttesterApi {
     func testWelcome(email: String, pubkey: String) async throws {
         let request = ApiCall.Request(
             apiName: Constants.apiName,
-            url: Constants.baseURL + "test/welcome",
+            url: constructUrlBase() + "/test/welcome",
             method: .post,
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
