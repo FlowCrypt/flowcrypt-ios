@@ -69,7 +69,7 @@ extension ContactsListViewController {
                 self.recipients = try await localContactsProvider.getAllRecipients()
                 await self.node.reloadData()
             } catch {
-                self.showToast("contacs_screen_load_error".localizeWithArguments(error.localizedDescription))
+                self.showToast("contacts_screen_load_error".localizeWithArguments(error.localizedDescription))
             }
         }
     }
@@ -140,7 +140,7 @@ extension ContactsListViewController {
             recipients.remove(at: indexPathToRemove.row)
             node.deleteRows(at: [indexPathToRemove], with: .left)
         } catch {
-            showToast("contacs_screen_remove_error".localizeWithArguments(error.localizedDescription))
+            showToast("contacts_screen_remove_error".localizeWithArguments(error.localizedDescription))
         }
     }
 }

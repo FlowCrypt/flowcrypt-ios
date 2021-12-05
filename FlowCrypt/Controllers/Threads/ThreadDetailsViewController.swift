@@ -222,7 +222,7 @@ extension ThreadDetailsViewController {
                 input[index].rawMessage = updatedMessage
                 node.reloadSections(IndexSet(integer: index), with: .fade)
             } catch {
-                showToast("Could not mark message as read: \(error.localizedDescription)")
+                showToast("message_mark_read_error".localizeWithArguments(error.localizedDescription))
             }
         }
     }
