@@ -6,7 +6,7 @@ import Foundation
 import MailCore
 
 extension Imap {
-    
+
     func fetchMsg(message: MCOIMAPMessage, folder: String) async throws -> Data {
         return try await execute("fetchMsg", { sess, respond in
             sess.fetchMessageOperation(

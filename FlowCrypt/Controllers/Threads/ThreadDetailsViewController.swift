@@ -18,11 +18,13 @@ final class ThreadDetailsViewController: TableNodeViewController {
     class Input {
         var rawMessage: Message
         var isExpanded: Bool
+        var shouldShowRecipientsList: Bool
         var processedMessage: ProcessedMessage?
 
-        init(message: Message, isExpanded: Bool) {
+        init(message: Message, isExpanded: Bool = false, shouldShowRecipientsList: Bool = false) {
             self.rawMessage = message
             self.isExpanded = isExpanded
+            self.shouldShowRecipientsList = shouldShowRecipientsList
         }
     }
 
@@ -91,7 +93,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.onComplete = completion
         self.input = thread.messages
             .sorted(by: >)
-            .map { Input(message: $0, isExpanded: false) }
+            .map { Input(message: $0) }
 
         super.init(node: TableNode())
     }
@@ -119,7 +121,7 @@ extension ThreadDetailsViewController {
     }
 
     private func handleExpandTap(at indexPath: IndexPath) {
-        guard let threadNode = node.nodeForRow(at: indexPath) as? ThreadMessageSenderCellNode else {
+        guard let threadNode = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode else {
             logger.logError("Fail to handle tap at \(indexPath)")
             return
         }
@@ -146,6 +148,14 @@ extension ThreadDetailsViewController {
             UIView.animate(withDuration: 0.3) {
                 self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
             }
+        }
+    }
+
+    private func handleRecipientsTap(at indexPath: IndexPath) {
+        input[indexPath.section - 1].shouldShowRecipientsList.toggle()
+
+        UIView.animate(withDuration: 0.3) {
+            self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
         }
     }
 
@@ -185,7 +195,7 @@ extension ThreadDetailsViewController {
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
             sender: input.rawMessage.sender,
-            subject: "\(quoteType.subjectPrefix)\(subject)",
+            subject: [quoteType.subjectPrefix, subject].joined(),
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
@@ -374,7 +384,7 @@ extension ThreadDetailsViewController {
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {
-    
+
     private func handleSuccessfulMessage(action: MessageAction) {
         hideSpinner()
         onComplete(action, .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: user.email))
@@ -454,37 +464,42 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return MessageSubjectNode(subject.attributed(.medium(18)))
             }
 
-            let section = self.input[indexPath.section-1]
+            let message = self.input[indexPath.section-1]
 
             if indexPath.row == 0 {
-                return ThreadMessageSenderCellNode(
-                    input: .init(threadMessage: section),
+                return ThreadMessageInfoCellNode(
+                    input: .init(threadMessage: message),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
-                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) }
+                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) },
+                    onRecipientsTap: { [weak self] _ in self?.handleRecipientsTap(at: indexPath) }
                 )
             }
 
-            if indexPath.row == 1, let message = section.processedMessage {
-                return MessageTextSubjectNode(message.attributedMessage)
-            }
+            guard let processedMessage = message.processedMessage
+            else { return ASCellNode() }
 
-            if indexPath.row > 1, let message = section.processedMessage {
-                let attachment = message.attachments[indexPath.row - 2]
-                return AttachmentNode(
-                    input: .init(
-                        msgAttachment: attachment,
-                        index: indexPath.row - 2
-                    ),
-                    onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
-                )
-            }
+            guard indexPath.row > 1
+            else { return MessageTextSubjectNode(processedMessage.attributedMessage) }
 
-            return ASCellNode()
+            let attachmentIndex = indexPath.row - 2
+            let attachment = processedMessage.attachments[attachmentIndex]
+            return AttachmentNode(
+                input: .init(
+                    msgAttachment: attachment,
+                    index: attachmentIndex
+                ),
+                onDownloadTap: { [weak self] in
+                    guard let self = self else { return }
+                    Task {
+                        await self.attachmentManager.open(attachment)
+                    }
+                }
+            )
         }
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard tableNode.nodeForRow(at: indexPath) is ThreadMessageSenderCellNode else {
+        guard tableNode.nodeForRow(at: indexPath) is ThreadMessageInfoCellNode else {
             return
         }
         handleExpandTap(at: indexPath)

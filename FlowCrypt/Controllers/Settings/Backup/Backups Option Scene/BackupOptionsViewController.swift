@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Combine
 
 enum BackupOption: Int, CaseIterable, Equatable {
     case email, download

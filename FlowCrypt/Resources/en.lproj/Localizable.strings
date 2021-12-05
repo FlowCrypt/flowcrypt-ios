@@ -15,6 +15,9 @@
 "allow" = "Allow";
 "later" = "Later";
 "forward" = "Forward";
+"to" = "to";
+"cc" = "cc";
+"bcc" = "bcc";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -26,10 +29,11 @@
 "message_failed_load" = "Failed to load messages";
 "message_compose_secure" = "Compose Secure Message";
 "message_unknown_sender" = "(unknown sender)";
+"message_no_recipients" = "(no recipients)";
 "message_missed_subject" = "No subject";
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
-"message_attachment_saved_with_error" = "Attachment could not be saved.";
+"message_attachment_saved_with_error" = "Attachment could not be saved. %@";
 "message_encrypted" = "encrypted";
 "message_not_encrypted" = "not encrypted";
 "message_signed" = "signed";

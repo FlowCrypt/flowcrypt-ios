@@ -16,7 +16,7 @@ import FlowCryptUI
  */
 
 class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
-    
+
     enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle, fetchedKeys
     }
