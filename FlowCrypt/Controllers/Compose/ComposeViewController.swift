@@ -77,8 +77,7 @@ final class ComposeViewController: TableNodeViewController {
         composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
-        keyMethods: KeyMethodsType = KeyMethods(),
-        router: GlobalRouterType = GlobalRouter()
+        keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.appContext = appContext
         guard let email = appContext.dataService.email else {
@@ -115,7 +114,7 @@ final class ComposeViewController: TableNodeViewController {
             contactsService: self.contactsService,
             cloudContactProvider: cloudContactProvider
         )
-        self.router = router
+        self.router = appContext.globalRouter
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
         self.clientConfiguration = clientConfiguration
@@ -983,37 +982,55 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
     nonisolated func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         Task {
             await picker.dismiss(animated: true)
-            let itemProvider = results.first?.itemProvider
-            if itemProvider?.hasItemConformingToTypeIdentifier("public.movie") == true {
-                itemProvider?.loadFileRepresentation(
-                    forTypeIdentifier: "public.movie",
-                    completionHandler: { [weak self] url, _ in
-                        guard let self = self else { return }
-                        DispatchQueue.main.async {
-                            if let url = url, let composeMessageAttachment = MessageAttachment(fileURL: url) {
-                                self.appendAttachmentIfAllowed(composeMessageAttachment)
-                                self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
-                            } else {
-                                self.showAlert(message: "files_picking_photos_error_message".localized)
-                            }
-                        }
-                    })
-            } else {
-                itemProvider?.loadFileRepresentation(
-                    forTypeIdentifier: "public.image",
-                    completionHandler: { [weak self] url, _ in
-                        guard let self = self else { return }
-                        DispatchQueue.main.async {
-                            if let url = url, let composeMessageAttachment = MessageAttachment(fileURL: url) {
-                                self.appendAttachmentIfAllowed(composeMessageAttachment)
-                                self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
-                            } else {
-                                self.showAlert(message: "files_picking_videos_error_message".localized)
-                            }
-                        }
-                    })
-            }
+            await handleResults(results)
         }
+    }
+
+    private func handleResults(_ results: [PHPickerResult]) {
+        let itemProvider = results.first?.itemProvider
+        if itemProvider?.hasItemConformingToTypeIdentifier("public.movie") == true {
+            itemProvider?.loadFileRepresentation(
+                forTypeIdentifier: "public.movie",
+                completionHandler: { [weak self] url, error in
+                    DispatchQueue.main.async {
+                        self?.handleRepresentation(
+                            url: url,
+                            error: error,
+                            isVideo: true
+                        )
+                    }
+                }
+            )
+        } else {
+            itemProvider?.loadFileRepresentation(
+                forTypeIdentifier: "public.image",
+                completionHandler: { [weak self] url, error in
+                    DispatchQueue.main.async {
+                        self?.handleRepresentation(
+                            url: url,
+                            error: error,
+                            isVideo: false
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    private func handleRepresentation(url: URL?, error: Error?, isVideo: Bool) {
+        guard
+            let url = url,
+            let composeMessageAttachment = MessageAttachment(fileURL: url)
+        else {
+            let message = isVideo ? "files_picking_videos_error_message".localized
+                : "files_picking_photos_error_message".localized
+            let errorMessage = error.flatMap({ "." + $0.localizedDescription }) ?? ""
+            showAlert(message: message + errorMessage)
+            return
+        }
+
+        appendAttachmentIfAllowed(composeMessageAttachment)
+        node.reloadSections(IndexSet(integer: 2), with: .automatic)
     }
 }
 
@@ -1060,48 +1077,47 @@ extension ComposeViewController {
             UIAlertAction(
                 title: "files_picking_camera_input_source".localized,
                 style: .default,
-                handler: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.photosManager.takePhoto(from: self)
-                        .sinkFuture(
-                            receiveValue: {},
-                            receiveError: { _ in
-                                self.showNoAccessToCameraAlert()
-                            }
-                        )
-                        .store(in: &self.cancellable)
-                }
+                handler: { [weak self] _ in self?.takePhoto() }
             )
         )
         alert.addAction(
             UIAlertAction(
                 title: "files_picking_photo_library_source".localized,
                 style: .default,
-                handler: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.photosManager.selectPhoto(from: self)
-                        .sinkFuture(
-                            receiveValue: {},
-                            receiveError: { _ in
-                                self.showNoAccessToPhotosAlert()
-                            }
-                        )
-                        .store(in: &self.cancellable)
-                }
+                handler: { [weak self] _ in self?.selectPhoto() }
             )
         )
         alert.addAction(
             UIAlertAction(
                 title: "files_picking_files_source".localized,
                 style: .default,
-                handler: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.filesManager.selectFromFilesApp(from: self)
-                }
+                handler: { [weak self] _ in self?.selectFromFilesApp() }
             )
         )
         alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
         present(alert, animated: true, completion: nil)
+    }
+
+    private func takePhoto() {
+        Task {
+            do {
+                try await photosManager.takePhoto(from: self)
+            } catch {
+                showNoAccessToCameraAlert()
+            }
+        }
+    }
+
+    private func selectPhoto() {
+        Task {
+            await photosManager.selectPhoto(from: self)
+        }
+    }
+
+    private func selectFromFilesApp() {
+        Task {
+            await filesManager.selectFromFilesApp(from: self)
+        }
     }
 
     private func showNoAccessToPhotosAlert() {

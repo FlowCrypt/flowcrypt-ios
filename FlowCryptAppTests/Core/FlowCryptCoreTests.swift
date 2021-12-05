@@ -5,7 +5,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Combine
 @testable import FlowCrypt
 import FlowCryptCommon
 import XCTest

@@ -488,7 +488,12 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                     msgAttachment: attachment,
                     index: attachmentIndex
                 ),
-                onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
+                onDownloadTap: { [weak self] in
+                    guard let self = self else { return }
+                    Task {
+                        await self.attachmentManager.open(attachment)
+                    }
+                }
             )
         }
     }

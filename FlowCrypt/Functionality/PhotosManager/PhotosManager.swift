@@ -9,20 +9,15 @@
 import Foundation
 import UIKit
 import Photos
-import Combine
 import PhotosUI
 
 typealias PhotoPickerViewController = UIViewController & PHPickerViewControllerDelegate
 typealias TakePhotoViewController = UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
 
+@MainActor
 protocol PhotosManagerType {
-    func takePhoto(
-        from viewController: TakePhotoViewController
-    ) -> Future<Void, Error>
-
-    func selectPhoto(
-        from viewController: PhotoPickerViewController
-    ) -> Future<Void, Error>
+    func takePhoto(from viewController: TakePhotoViewController) async throws
+    func selectPhoto(from viewController: PhotoPickerViewController) async
 }
 
 enum PhotosManagerError: Error {
@@ -31,42 +26,29 @@ enum PhotosManagerError: Error {
     case cantFetchImage
 }
 
-class PhotosManager: PhotosManagerType {
+final class PhotosManager {
+}
 
-    func takePhoto(
-        from viewController: TakePhotoViewController
-    ) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            DispatchQueue.main.async {
-                let status = AVCaptureDevice.authorizationStatus(for: .video)
-                let imagePicker = UIImagePickerController()
-                imagePicker.delegate = viewController
-                imagePicker.sourceType = .camera
-                switch status {
-                case .authorized, .notDetermined:
-                    viewController.present(imagePicker, animated: true, completion: nil)
-                    promise(.success(()))
-                default:
-                    promise(.failure(PhotosManagerError.noAccessToCamera))
-                }
-            }
+extension PhotosManager: PhotosManagerType {
+    func takePhoto(from viewController: TakePhotoViewController) async throws {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized, .notDetermined:
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = viewController
+            imagePicker.sourceType = .camera
+            viewController.present(imagePicker, animated: true, completion: nil)
+        default:
+            throw PhotosManagerError.noAccessToCamera
         }
     }
 
-    func selectPhoto(
-        from viewController: PhotoPickerViewController
-    ) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            DispatchQueue.main.async {
-                var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
-                config.selectionLimit = 1
-                config.filter = PHPickerFilter.any(of: [.images, .videos])
+    func selectPhoto(from viewController: PhotoPickerViewController) async {
+        var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+        config.selectionLimit = 1
+        config.filter = PHPickerFilter.any(of: [.images, .videos])
 
-                let pickerViewController = PHPickerViewController(configuration: config)
-                pickerViewController.delegate = viewController
-                viewController.present(pickerViewController, animated: true, completion: nil)
-                promise(.success(()))
-            }
-        }
+        let pickerViewController = PHPickerViewController(configuration: config)
+        pickerViewController.delegate = viewController
+        viewController.present(pickerViewController, animated: true, completion: nil)
     }
 }
