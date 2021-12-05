@@ -27,6 +27,7 @@ export type FesConfig = {
 
 export type AttesterConfig = {
   enableSubmittingPubkeys?: boolean,
+  enableTestWelcome?: boolean,
   servedPubkeys?: Dict<string>
 };
 
