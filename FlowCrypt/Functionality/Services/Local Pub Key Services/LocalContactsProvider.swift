@@ -20,16 +20,20 @@ protocol LocalContactsProviderType: PublicKeyProvider {
 }
 
 final class LocalContactsProvider {
-    private let storage: Realm
+    private let encryptedStorage: EncryptedStorageType
     private let core: Core
 
     private lazy var logger = Logger.nested(Self.self)
+
+    private var storage: Realm {
+        encryptedStorage.storage
+    }
 
     init(
         encryptedStorage: EncryptedStorageType,
         core: Core = .shared
     ) {
-        self.storage = encryptedStorage.storage
+        self.encryptedStorage = encryptedStorage
         self.core = core
     }
 }

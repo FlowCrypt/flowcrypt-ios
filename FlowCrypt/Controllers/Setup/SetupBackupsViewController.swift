@@ -140,10 +140,10 @@ extension SetupBackupsViewController {
         if storageMethod == .memory {
             for backup in matchingKeyBackups {
                 let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: backup.fingerprints)
-                appContext.passPhraseService.savePassPhrase(with: pp, storageMethod: storageMethod)
+                try appContext.passPhraseService.savePassPhrase(with: pp, storageMethod: storageMethod)
             }
         }
-        appContext.encryptedStorage.putKeypairs(
+        try appContext.encryptedStorage.putKeypairs(
             keyDetails: Array(matchingKeyBackups),
             passPhrase: storageMethod == .persistent ? passPhrase : nil,
             source: .backup,

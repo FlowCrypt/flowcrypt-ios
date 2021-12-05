@@ -16,9 +16,14 @@ protocol LocalClientConfigurationType {
 }
 
 final class LocalClientConfiguration {
-    private let storage: Realm
+    private let encryptedStorage: EncryptedStorageType
+
+    private var storage: Realm {
+        encryptedStorage.storage
+    }
+
     init(encryptedStorage: EncryptedStorageType) {
-        self.storage = encryptedStorage.storage
+        self.encryptedStorage = encryptedStorage
     }
 }
 

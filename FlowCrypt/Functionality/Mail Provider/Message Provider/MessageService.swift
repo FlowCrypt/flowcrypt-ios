@@ -137,7 +137,7 @@ final class MessageService {
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
-        passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        try passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 

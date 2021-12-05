@@ -85,7 +85,12 @@ extension CheckMailAuthViewController {
         case 2:
             return ButtonCellNode(input: .signInAgain) { [weak self] in
                 guard let self = self else { return }
-                self.appContext.globalRouter.signIn(appContext: self.appContext, route: .gmailLogin(self))
+                Task {
+                    await self.appContext.globalRouter.signIn(
+                        appContext: self.appContext,
+                        route: .gmailLogin(self)
+                    )
+                }
             }
         default:
             return ASCellNode()
