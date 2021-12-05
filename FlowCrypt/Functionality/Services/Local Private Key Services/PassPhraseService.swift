@@ -77,10 +77,10 @@ final class PassPhraseService: PassPhraseServiceType {
 
     init(
         encryptedStorage: PassPhraseStorageType,
-        localStorage: PassPhraseStorageType = InMemoryPassPhraseStorage()
+        inMemoryStorage: PassPhraseStorageType = InMemoryPassPhraseStorage()
     ) {
         self.encryptedStorage = encryptedStorage
-        self.inMemoryStorage = localStorage
+        self.inMemoryStorage = inMemoryStorage
     }
 
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {
