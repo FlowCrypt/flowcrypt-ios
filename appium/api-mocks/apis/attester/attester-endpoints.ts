@@ -53,7 +53,7 @@ export const getMockAttesterEndpoints = (
     },
     '/attester/test/welcome': async ({ body }, req) => {
       if (!attesterConfig.enableTestWelcome) {
-        throw new AttesterErr('Mock Attester received unexpected pubkey submission', 405);
+        throw new AttesterErr('Mock Attester received unexpected /test/welcome request', 405);
       }
       if (!isPost(req)) {
         throw new AttesterErr(`Wrong method: ${req.method}`, Status.BAD_REQUEST);
