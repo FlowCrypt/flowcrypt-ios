@@ -12,8 +12,7 @@ describe('SETUP: ', () => {
     await mockApi.withMockedApis(async () => {
       await SplashScreen.login();
       // todo - replace the following pause with wait for modal error
-      await browser.pause(5000);
+      await browser.pause(10000);
     });
   });
-
 });
