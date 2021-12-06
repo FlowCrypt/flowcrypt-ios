@@ -7,17 +7,20 @@
 //
 
 import FlowCryptCommon
-import Foundation
 import RealmSwift
+import UIKit
 
 // swiftlint:disable force_try
-protocol EncryptedStorageType: KeyStorageType {
+protocol EncryptedStorageType {
     var storage: Realm { get }
 
+    var activeUser: User? { get }
     func getAllUsers() -> [User]
     func saveActiveUser(with user: User)
-    var activeUser: User? { get }
-    func doesAnyKeyExist(for email: String) -> Bool
+    func doesAnyKeypairExist(for email: String) -> Bool
+
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
+    func getKeypairs(by email: String) -> [KeyInfo]
 
     func validate() throws
     func reset() throws
@@ -51,13 +54,13 @@ final class EncryptedStorage: EncryptedStorageType {
         static let encryptedDbFilename = "encrypted.realm"
     }
 
-    private let keychainService: KeyChainServiceType
-
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
     private let currentSchema: EncryptedStorageSchema = .version5
     private let supportedSchemas = EncryptedStorageSchema.allCases
+
+    private let storageEncryptionKey: Data
 
     var storage: Realm {
         do {
@@ -70,8 +73,8 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    init(keychainHelper: KeyChainServiceType = KeyChainService()) {
-        self.keychainService = KeyChainService()
+    init(storageEncryptionKey: Data) {
+        self.storageEncryptionKey = storageEncryptionKey
     }
 
     private func getDocumentDirectory() -> String {
@@ -82,13 +85,16 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     private func getConfiguration() throws -> Realm.Configuration {
+        guard !UIApplication.shared.isRunningTests else {
+            return Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
+        }
+
         let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        let key = try keychainService.getStorageEncryptionKey()
         let latestSchemaVersion = currentSchema.version.dbSchemaVersion
 
         return Realm.Configuration(
             fileURL: URL(fileURLWithPath: path),
-            encryptionKey: key,
+            encryptionKey: storageEncryptionKey,
             schemaVersion: latestSchemaVersion,
             migrationBlock: { [weak self] migration, oldSchemaVersion in
                 self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
@@ -153,19 +159,7 @@ extension EncryptedStorage {
 
 // MARK: - Keys
 extension EncryptedStorage {
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-        guard let user = getUserObject(for: email) else {
-            logger.logError("Can't find user with given email to add keys. User should be already saved")
-            return
-        }
-        try! storage.write {
-            for key in keyDetails {
-                storage.add(try! KeyInfoRealmObject(key, passphrase: passPhrase, source: source, user: user))
-            }
-        }
-    }
-
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
         guard let user = getUserObject(for: email) else {
             logger.logError("Can't find user with given email to update keys. User should be already saved")
             return
@@ -178,34 +172,32 @@ extension EncryptedStorage {
     }
 
     func updateKeys(with primaryFingerprint: String, passphrase: String?) {
-        let keys = keysInfo()
-            .filter { $0.primaryFingerprint == primaryFingerprint }
+        let keys = storage.objects(KeyInfoRealmObject.self).where {
+            $0.primaryFingerprint == primaryFingerprint
+        }
 
         try! storage.write {
             keys.map { $0.passphrase = passphrase }
         }
     }
 
-    func keysInfo() -> [KeyInfoRealmObject] {
-        let result = storage.objects(KeyInfoRealmObject.self)
-        return Array(result)
+    func getKeypairs(by email: String) -> [KeyInfo] {
+        return storage.objects(KeyInfoRealmObject.self).where({
+            $0.account == email
+        }).map(KeyInfo.init)
     }
 
-    func publicKey() -> String? {
-        storage.objects(KeyInfoRealmObject.self)
-            .map(\.public)
-            .first
-    }
-
-    func doesAnyKeyExist(for email: String) -> Bool {
-        keysInfo()
-            .map(\.account)
-            .map { $0 == email }
-            .contains(true)
+    func doesAnyKeypairExist(for email: String) -> Bool {
+        let keys = storage.objects(KeyInfoRealmObject.self).where {
+            $0.account == email
+        }
+        return !keys.isEmpty
     }
 
     private func getUserObject(for email: String) -> UserRealmObject? {
-        storage.objects(UserRealmObject.self).first(where: { $0.email == email })
+        storage.objects(UserRealmObject.self).where {
+            $0.email == email
+        }.first
     }
 }
 
@@ -224,16 +216,18 @@ extension EncryptedStorage: PassPhraseStorageType {
     }
 
     func getPassPhrases() -> [PassPhrase] {
-        keysInfo().compactMap(PassPhrase.init)
+        return storage.objects(KeyInfoRealmObject.self)
+            .compactMap(PassPhrase.init)
     }
 }
 
 // MARK: - User
 extension EncryptedStorage {
     var activeUser: User? {
-        storage.objects(UserRealmObject.self)
-            .first(where: \.isActive)
-            .flatMap(User.init)
+        let users = storage.objects(UserRealmObject.self).where {
+            $0.isActive == true
+        }
+        return users.first.flatMap(User.init)
     }
 
     func getAllUsers() -> [User] {

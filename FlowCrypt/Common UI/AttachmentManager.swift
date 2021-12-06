@@ -7,17 +7,15 @@
 //
 
 import UIKit
-import Combine
 
 @MainActor
 protocol AttachmentManagerType {
-    func open(_ attachment: MessageAttachment)
+    func open(_ attachment: MessageAttachment) async
 }
 
 final class AttachmentManager: NSObject {
     private weak var controller: UIViewController?
     private let filesManager: FilesManagerType
-    private var cancellable = Set<AnyCancellable>()
 
     init(controller: UIViewController,
          filesManager: FilesManagerType) {
@@ -45,21 +43,12 @@ final class AttachmentManager: NSObject {
 }
 
 extension AttachmentManager: AttachmentManagerType {
-    func open(_ attachment: MessageAttachment) {
-        filesManager.saveToFilesApp(file: attachment, from: self)
-            .sinkFuture(
-                receiveValue: {},
-                receiveError: { [weak self] error in
-                    self?.handle(error)
-                }
-            )
-            .store(in: &self.cancellable)
-    }
-
-    private func handle(_ error: Error) {
-        Task {
-            await controller?.showToast(
-                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
+    func open(_ attachment: MessageAttachment) async {
+        do {
+            try await filesManager.saveToFilesApp(file: attachment, from: self)
+        } catch {
+            controller?.showToast(
+                "message_attachment_saved_with_error".localizeWithArguments(error.localizedDescription)
             )
         }
     }

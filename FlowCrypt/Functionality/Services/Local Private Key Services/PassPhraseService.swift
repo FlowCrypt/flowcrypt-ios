@@ -72,18 +72,15 @@ protocol PassPhraseServiceType {
 final class PassPhraseService: PassPhraseServiceType {
     private lazy var logger = Logger.nested(Self.self)
 
-    let currentUserEmail: String?
     let encryptedStorage: PassPhraseStorageType
     let inMemoryStorage: PassPhraseStorageType
 
     init(
-        encryptedStorage: PassPhraseStorageType = EncryptedStorage(),
-        localStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
-        emailProvider: EmailProviderType = DataService.shared
+        encryptedStorage: PassPhraseStorageType,
+        inMemoryStorage: PassPhraseStorageType = InMemoryPassPhraseStorage()
     ) {
         self.encryptedStorage = encryptedStorage
-        self.inMemoryStorage = localStorage
-        self.currentUserEmail = emailProvider.email
+        self.inMemoryStorage = inMemoryStorage
     }
 
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {

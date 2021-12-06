@@ -23,6 +23,7 @@ struct InboxRenderable {
     let date: Date
 
     let wrappedType: WrappedType
+
 }
 
 extension InboxRenderable {
@@ -35,6 +36,7 @@ extension InboxRenderable {
 }
 
 extension InboxRenderable {
+
     init(message: Message) {
         self.title = message.sender ?? "message_unknown_sender".localized
         self.messageCount = 1
@@ -45,9 +47,9 @@ extension InboxRenderable {
         self.wrappedType = .message(message)
     }
 
-    init(thread: MessageThread, folderPath: String) {
+    init(thread: MessageThread, folderPath: String, activeUserEmail: String) {
 
-        self.title = InboxRenderable.messageTitle(with: thread, and: folderPath)
+        self.title = InboxRenderable.messageTitle(activeUserEmail: activeUserEmail, with: thread, and: folderPath)
 
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missed_subject".localized
@@ -64,23 +66,15 @@ extension InboxRenderable {
         self.wrappedType = .thread(thread)
     }
 
-    private static func messageTitle(with thread: MessageThread, and folderPath: String) -> String {
-        guard let myEmail = DataService.shared.email else { return "" }
-
+    private static func messageTitle(activeUserEmail: String, with thread: MessageThread, and folderPath: String) -> String {
         // for now its not exactly clear how titles on other folders should looks like
         // so in scope of this PR we are applying this title presentation only for "sent" folder
         if folderPath == MessageLabelType.sent.value {
-            var emails = thread.messages.compactMap(\.sender).unique()
-            // if we have only one email, it means that it could be "me" and we are not
-            // clearing our own email from that
-            if emails.count > 1 {
-                if let i = emails.firstIndex(of: myEmail) {
-                    emails.remove(at: i)
-                }
-            }
-            let recipients = emails
-                .compactMap { $0.components(separatedBy: "@").first }
-                .joined(separator: ",")
+            let recipients = thread.messages
+                .flatMap(\.allRecipients)
+                .map(\.displayName)
+                .unique()
+                .joined(separator: ", ")
             return "To: \(recipients)"
 
         } else {

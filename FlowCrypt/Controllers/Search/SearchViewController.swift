@@ -41,16 +41,25 @@ final class SearchViewController: TableNodeViewController {
     // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads
     private let service: ServiceActor
     private var searchTask: DispatchWorkItem?
-
+    private let appContext: AppContext
     private let searchController = UISearchController(searchResultsController: nil)
     private let folderPath: String
     private var searchedExpression: String = ""
+    private let currentUser: User
 
     init(
-        searchProvider: MessageSearchProvider = MailProvider.shared.messageSearchProvider,
+        appContext: AppContext,
+        searchProvider: MessageSearchProvider? = nil,
         folderPath: String
     ) {
-        self.service = ServiceActor(searchProvider: searchProvider)
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("no current user") // todo - use DI
+        }
+        self.currentUser = currentUser
+        self.appContext = appContext
+        self.service = ServiceActor(
+            searchProvider: searchProvider ?? appContext.getRequiredMailProvider().messageSearchProvider
+        )
         self.folderPath = folderPath
         super.init(node: TableNode())
     }
@@ -111,6 +120,7 @@ extension SearchViewController {
 
 // MARK: - MessageHandlerViewConroller
 extension SearchViewController: MsgListViewController {
+
     // TODO: - ANTON - check
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
         guard let message = message.wrappedMessage else {
@@ -212,7 +222,7 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         guard let message = state.messages[safe: indexPath.row] else { return }
 
         // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
-        open(with: .init(message: message), path: folderPath)
+        open(with: .init(message: message), path: folderPath, appContext: appContext)
     }
 }
 

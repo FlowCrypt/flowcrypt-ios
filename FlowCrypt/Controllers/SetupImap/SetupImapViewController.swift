@@ -24,25 +24,25 @@ final class SetupImapViewController: TableNodeViewController {
     private var state: State = .idle
     private var selectedSection: Section?
 
-    private let dataService: DataServiceType
     private let globalRouter: GlobalRouterType
 
+    private let appContext: AppContext
     private let decorator: SetupImapViewDecorator
     private let sessionCredentials: SessionCredentialsProvider
     private let imap: Imap
     private var user = User.empty
 
     init(
+        appContext: AppContext,
         globalRouter: GlobalRouterType = GlobalRouter(),
-        dataService: DataServiceType = DataService.shared,
         decorator: SetupImapViewDecorator = SetupImapViewDecorator(),
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
-        imap: Imap = Imap.shared
+        imap: Imap = Imap(user: User.empty)
     ) {
+        self.appContext = appContext
         self.globalRouter = globalRouter
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials
-        self.dataService = dataService
         self.imap = imap
 
         super.init(node: TableNode())
@@ -529,7 +529,7 @@ extension SetupImapViewController {
 
     private func handleSuccessfulConnection() {
         hideSpinner()
-        globalRouter.signIn(with: .other(.session(user)))
+        globalRouter.signIn(appContext: self.appContext, route: .other(.session(user)))
     }
 
     private func checkCurrentUser() throws {

@@ -34,18 +34,20 @@ final class BackupViewController: TableNodeViewController {
         }
     }
 
+    private let appContext: AppContext
     private let decorator: BackupViewDecoratorType
     private let service: ServiceActor
     private let userId: UserId
     private var state: State = .idle { didSet { updateState() } }
 
     init(
+        appContext: AppContext,
         decorator: BackupViewDecoratorType = BackupViewDecorator(),
-        backupProvider: BackupServiceType = BackupService(),
         userId: UserId
     ) {
+        self.appContext = appContext
         self.decorator = decorator
-        self.service = ServiceActor(backupProvider: backupProvider)
+        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -131,7 +133,11 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func proceedToBackupOptionsScreen() {
-        let optionsScreen = BackupOptionsViewController(backups: state.backups, userId: userId)
+        let optionsScreen = BackupOptionsViewController(
+            appContext: appContext,
+            backups: state.backups,
+            userId: userId
+        )
         navigationController?.pushViewController(optionsScreen, animated: true)
     }
 }
@@ -140,8 +146,8 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
 private actor ServiceActor {
     private let backupProvider: BackupServiceType
 
-    init(backupProvider: BackupServiceType) {
-        self.backupProvider = backupProvider
+    init(backupService: BackupServiceType) {
+        self.backupProvider = backupService
     }
 
     func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {

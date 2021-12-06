@@ -43,14 +43,17 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         }
     }
 
-    private let foldersProvider: FoldersServiceType
-    private let dataService: DataServiceType
+    private let appContext: AppContext
+    private let foldersService: FoldersServiceType
     private let router: GlobalRouterType
     private let decorator: MyMenuViewDecoratorType
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
-    private var accounts: [User] { dataService.validAccounts() }
+    private var accounts: [User] {
+        appContext.dataService.getFinishedSetupUsers(exceptUserEmail: currentUser.email)
+    }
+    private let currentUser: User
 
     private let tableNode: ASTableNode
 
@@ -64,14 +67,17 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private var isFirstLaunch = true
 
     init(
-        foldersProvider: FoldersServiceType = FoldersService(),
-        dataService: DataServiceType = DataService.shared,
+        appContext: AppContext,
         globalRouter: GlobalRouterType = GlobalRouter(),
         decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
-        self.foldersProvider = foldersProvider
-        self.dataService = dataService
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("no current user") // todo - dependency-inject
+        }
+        self.currentUser = currentUser
+        self.appContext = appContext
+        self.foldersService = appContext.getFoldersService()
         self.router = globalRouter
         self.decorator = decorator
         self.tableNode = tableNode
@@ -173,7 +179,7 @@ extension MyMenuViewController {
         showSpinner()
         Task {
             do {
-                let folders = try await foldersProvider.fetchFolders(isForceReload: true)
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: self.currentUser)
                 handleNewFolders(with: folders)
             } catch {
                 handleError(with: error)
@@ -209,7 +215,7 @@ extension MyMenuViewController {
 // MARK: - Account functionality
 extension MyMenuViewController {
     private func addAccount() {
-        let vc = MainNavigationController(rootViewController: SignInViewController())
+        let vc = MainNavigationController(rootViewController: SignInViewController(appContext: appContext))
         present(vc, animated: true, completion: nil)
     }
 
@@ -218,7 +224,7 @@ extension MyMenuViewController {
             return
         }
 
-        router.switchActive(user: account)
+        router.switchActive(user: account, appContext: appContext)
     }
 }
 
@@ -244,7 +250,7 @@ extension MyMenuViewController {
         switch (section, state) {
         case (.header, _):
             let headerInput = decorator.header(
-                for: dataService.currentUser,
+                for: appContext.dataService.currentUser,
                 image: state.arrowImage
             )
             return TextImageNode(input: headerInput) { [weak self] node in
@@ -279,7 +285,7 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let viewController = InboxViewControllerFactory.make(with: input)
+            let viewController = InboxViewControllerFactory.make(appContext: appContext, with: input)
 
             if let topController = topController(controllerType: InboxViewController.self),
                topController.path == folder.path {
@@ -293,9 +299,9 @@ extension MyMenuViewController {
                 sideMenuController()?.sideMenu?.hideSideMenu()
                 return
             }
-            sideMenuController()?.setContentViewController(SettingsViewController())
+            sideMenuController()?.setContentViewController(SettingsViewController(appContext: appContext))
         case .logOut:
-            router.signOut()
+            router.signOut(appContext: appContext)
         }
     }
 

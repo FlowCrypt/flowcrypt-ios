@@ -13,6 +13,8 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
     private let numberOfInboxItemsToLoad: Int
 
+    private let appContext: AppContext
+    private let user: User
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
@@ -32,17 +34,23 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
     var path: String { viewModel.path }
 
     init(
+        appContext: AppContext,
         _ viewModel: InboxViewModel,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
-        draftsListProvider: DraftsListProvider? = MailProvider.shared.draftsProvider,
+        draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
+        guard let user = appContext.dataService.currentUser else {
+            fatalError("missing current user") // todo - DI user
+        }
+        self.user = user
+        self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
 
         self.service = ServiceActor(inboxDataProvider: provider)
-        self.draftsListProvider = draftsListProvider
+        self.draftsListProvider = draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
 
@@ -119,7 +127,7 @@ extension InboxViewController {
 // MARK: - Helpers
 extension InboxViewController {
     private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        MailProvider.shared.currentMessagesListPagination(from: number, token: state.token)
+        appContext.getRequiredMailProvider().currentMessagesListPagination(from: number, token: state.token)
     }
 
     private func messagesToLoad() -> Int {
@@ -159,7 +167,7 @@ extension InboxViewController {
                     )
                 )
                 let inboxContext = InboxContext(
-                    data: context.messages.map(InboxRenderable.init),
+                    data: context.messages.map { InboxRenderable(message: $0) },
                     pagination: context.pagination
                 )
                 handleEndFetching(with: inboxContext, context: batchContext)
@@ -177,7 +185,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: numberOfInboxItemsToLoad,
                         pagination: currentMessagesListPagination()
-                    )
+                    ), userEmail: user.email
                 )
                 handleEndFetching(with: context, context: batchContext)
             } catch {
@@ -199,7 +207,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
                         pagination: pagination
-                    )
+                    ), userEmail: user.email
                 )
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
@@ -314,7 +322,7 @@ extension InboxViewController {
     }
 
     @objc private func handleSearchTap() {
-        let viewController = SearchViewController(folderPath: viewModel.path)
+        let viewController = SearchViewController(appContext: appContext, folderPath: viewModel.path)
         navigationController?.pushViewController(viewController, animated: false)
     }
 
@@ -325,11 +333,8 @@ extension InboxViewController {
     }
 
     private func btnComposeTap() {
-        guard let email = DataService.shared.email else {
-            return
-        }
         TapTicFeedback.generate(.light)
-        let composeVc = ComposeViewController(email: email)
+        let composeVc = ComposeViewController(appContext: appContext)
         navigationController?.pushViewController(composeVc, animated: true)
     }
 }
@@ -357,7 +362,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(with: inboxInput[indexPath.row], path: viewModel.path)
+        open(with: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
     }
 
     // MARK: Cell Nodes
@@ -456,7 +461,7 @@ private actor ServiceActor {
         self.inboxDataProvider = inboxDataProvider
     }
 
-    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
-        return try await inboxDataProvider.fetchInboxItems(using: context)
+    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+        return try await inboxDataProvider.fetchInboxItems(using: context, userEmail: userEmail)
     }
 }

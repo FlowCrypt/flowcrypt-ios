@@ -25,11 +25,12 @@ class PubLookup: PubLookupType {
     }
 
     init(
+        clientConfiguration: ClientConfiguration,
         wkd: WkdApiType = WkdApi(),
-        attesterApi: AttesterApiType = AttesterApi()
+        attesterApi: AttesterApiType? = nil
     ) {
         self.wkd = wkd
-        self.attesterApi = attesterApi
+        self.attesterApi = attesterApi ?? AttesterApi(clientConfiguration: clientConfiguration)
     }
 
     func lookup(email: String) async throws -> RecipientWithSortedPubKeys {

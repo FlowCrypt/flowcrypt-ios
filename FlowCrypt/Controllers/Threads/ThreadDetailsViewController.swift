@@ -18,11 +18,13 @@ final class ThreadDetailsViewController: TableNodeViewController {
     class Input {
         var rawMessage: Message
         var isExpanded: Bool
+        var shouldShowRecipientsList: Bool
         var processedMessage: ProcessedMessage?
 
-        init(message: Message, isExpanded: Bool) {
+        init(message: Message, isExpanded: Bool = false, shouldShowRecipientsList: Bool = false) {
             self.rawMessage = message
             self.isExpanded = isExpanded
+            self.shouldShowRecipientsList = shouldShowRecipientsList
         }
     }
 
@@ -30,12 +32,14 @@ final class ThreadDetailsViewController: TableNodeViewController {
         case thread, message
     }
 
+    private let appContext: AppContext
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
     private let thread: MessageThread
     private let filesManager: FilesManagerType
     private var input: [ThreadDetailsViewController.Input]
+    private let user: User
 
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
@@ -49,24 +53,47 @@ final class ThreadDetailsViewController: TableNodeViewController {
     )
 
     init(
-        messageService: MessageService = MessageService(),
-        trashFolderProvider: TrashFolderProviderType = TrashFolderProvider(),
-        messageOperationsProvider: MessageOperationsProvider = MailProvider.shared.messageOperationsProvider,
-        threadOperationsProvider: MessagesThreadOperationsProvider,
+        appContext: AppContext,
+        messageService: MessageService? = nil,
         thread: MessageThread,
         filesManager: FilesManagerType = FilesManager(),
         completion: @escaping MessageActionCompletion
     ) {
-        self.messageService = messageService
+        self.appContext = appContext
+        guard let user = appContext.dataService.currentUser else {
+            fatalError("expected current user to exist") // todo - better accept user as VC argument
+        }
+        self.user = user
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
+        self.messageService = messageService ?? MessageService(
+            contactsService: ContactsService(
+                localContactsProvider: LocalContactsProvider(
+                    encryptedStorage: appContext.encryptedStorage
+                ),
+                clientConfiguration: clientConfiguration
+            ),
+            keyService: appContext.keyService,
+            messageProvider: appContext.getRequiredMailProvider().messageProvider,
+            passPhraseService: appContext.passPhraseService
+        )
+        guard let threadOperationsProvider = appContext.getRequiredMailProvider().threadOperationsProvider else {
+            fatalError("expected threadOperationsProvider on gmail")
+        }
         self.threadOperationsProvider = threadOperationsProvider
-        self.messageOperationsProvider = messageOperationsProvider
-        self.trashFolderProvider = trashFolderProvider
+        self.messageOperationsProvider = appContext.getRequiredMailProvider().messageOperationsProvider
+        self.trashFolderProvider = TrashFolderProvider(
+            user: user,
+            folderProvider: FoldersService(
+                encryptedStorage: appContext.encryptedStorage,
+                remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
+            )
+        )
         self.thread = thread
         self.filesManager = filesManager
         self.onComplete = completion
         self.input = thread.messages
             .sorted(by: >)
-            .map { Input(message: $0, isExpanded: false) }
+            .map { Input(message: $0) }
 
         super.init(node: TableNode())
     }
@@ -81,7 +108,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
 
-        setupNavigationBar()
+        setupNavigationBar(user: user)
         expandThreadMessage()
     }
 }
@@ -94,7 +121,7 @@ extension ThreadDetailsViewController {
     }
 
     private func handleExpandTap(at indexPath: IndexPath) {
-        guard let threadNode = node.nodeForRow(at: indexPath) as? ThreadMessageSenderCellNode else {
+        guard let threadNode = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode else {
             logger.logError("Fail to handle tap at \(indexPath)")
             return
         }
@@ -124,6 +151,14 @@ extension ThreadDetailsViewController {
         }
     }
 
+    private func handleRecipientsTap(at indexPath: IndexPath) {
+        input[indexPath.section - 1].shouldShowRecipientsList.toggle()
+
+        UIView.animate(withDuration: 0.3) {
+            self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
+        }
+    }
+
     private func handleReplyTap(at indexPath: IndexPath) {
         composeNewMessage(at: indexPath, quoteType: .reply)
     }
@@ -142,8 +177,7 @@ extension ThreadDetailsViewController {
     }
 
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
-        guard let email = DataService.shared.email,
-              let input = input[safe: indexPath.section-1],
+        guard let input = input[safe: indexPath.section-1],
               let processedMessage = input.processedMessage
         else { return }
 
@@ -161,7 +195,7 @@ extension ThreadDetailsViewController {
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
             sender: input.rawMessage.sender,
-            subject: "\(quoteType.subjectPrefix)\(subject)",
+            subject: [quoteType.subjectPrefix, subject].joined(),
             mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
@@ -171,7 +205,7 @@ extension ThreadDetailsViewController {
 
         let composeInput = ComposeMessageInput(type: .quote(replyInfo))
         navigationController?.pushViewController(
-            ComposeViewController(email: email, input: composeInput),
+            ComposeViewController(appContext: appContext, input: composeInput),
             animated: true
         )
     }
@@ -350,9 +384,10 @@ extension ThreadDetailsViewController {
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {
+
     private func handleSuccessfulMessage(action: MessageAction) {
         hideSpinner()
-        onComplete(action, .init(thread: thread, folderPath: currentFolderPath))
+        onComplete(action, .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: user.email))
         navigationController?.popViewController(animated: true)
     }
 
@@ -429,37 +464,42 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return MessageSubjectNode(subject.attributed(.medium(18)))
             }
 
-            let section = self.input[indexPath.section-1]
+            let message = self.input[indexPath.section-1]
 
             if indexPath.row == 0 {
-                return ThreadMessageSenderCellNode(
-                    input: .init(threadMessage: section),
+                return ThreadMessageInfoCellNode(
+                    input: .init(threadMessage: message),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
-                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) }
+                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) },
+                    onRecipientsTap: { [weak self] _ in self?.handleRecipientsTap(at: indexPath) }
                 )
             }
 
-            if indexPath.row == 1, let message = section.processedMessage {
-                return MessageTextSubjectNode(message.attributedMessage)
-            }
+            guard let processedMessage = message.processedMessage
+            else { return ASCellNode() }
 
-            if indexPath.row > 1, let message = section.processedMessage {
-                let attachment = message.attachments[indexPath.row - 2]
-                return AttachmentNode(
-                    input: .init(
-                        msgAttachment: attachment,
-                        index: indexPath.row - 2
-                    ),
-                    onDownloadTap: { [weak self] in self?.attachmentManager.open(attachment) }
-                )
-            }
+            guard indexPath.row > 1
+            else { return MessageTextSubjectNode(processedMessage.attributedMessage) }
 
-            return ASCellNode()
+            let attachmentIndex = indexPath.row - 2
+            let attachment = processedMessage.attachments[attachmentIndex]
+            return AttachmentNode(
+                input: .init(
+                    msgAttachment: attachment,
+                    index: attachmentIndex
+                ),
+                onDownloadTap: { [weak self] in
+                    guard let self = self else { return }
+                    Task {
+                        await self.attachmentManager.open(attachment)
+                    }
+                }
+            )
         }
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard tableNode.nodeForRow(at: indexPath) is ThreadMessageSenderCellNode else {
+        guard tableNode.nodeForRow(at: indexPath) is ThreadMessageInfoCellNode else {
             return
         }
         handleExpandTap(at: indexPath)
@@ -488,7 +528,7 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
         logger.logInfo("Back button. Are all messages read \(isRead) ")
-        onComplete(MessageAction.markAsRead(isRead), .init(thread: thread, folderPath: currentFolderPath))
+        onComplete(MessageAction.markAsRead(isRead), .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: self.user.email))
         navigationController?.popViewController(animated: true)
     }
 }

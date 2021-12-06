@@ -28,9 +28,9 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
         }
     }
 
+    private let appContext: AppContext
     private let decorator: SetupViewDecorator
     private let pasteboard: UIPasteboard
-    private let dataService: DataServiceType
     private let core: Core
 
     private var userInfoMessage = "" {
@@ -38,14 +38,14 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
     }
 
     init(
+        appContext: AppContext,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         pasteboard: UIPasteboard = UIPasteboard.general,
-        core: Core = Core.shared,
-        dataService: DataServiceType = DataService.shared
+        core: Core = Core.shared
     ) {
+        self.appContext = appContext
         self.pasteboard = pasteboard
         self.decorator = decorator
-        self.dataService = dataService
         self.core = core
         super.init(node: TableNode())
     }
@@ -172,7 +172,7 @@ extension SetupManuallyImportKeyViewController {
     private func parseUserProvided(data keyData: Data) async throws {
         let keys = try await core.parseKeys(armoredOrBinary: keyData)
         let privateKey = keys.keyDetails.filter { $0.private != nil }
-        let user = dataService.email ?? "unknown_title".localized
+        let user = appContext.dataService.email ?? "unknown_title".localized
         if privateKey.isEmpty {
             userInfoMessage = "import_no_backups_clipboard".localized + user
         } else {
@@ -183,6 +183,7 @@ extension SetupManuallyImportKeyViewController {
 
     private func proceedToPassPhrase(with email: String, keys: [KeyDetails]) {
         let viewController = SetupManuallyEnterPassPhraseViewController(
+            appContext: appContext,
             decorator: decorator,
             email: email,
             fetchedKeys: keys

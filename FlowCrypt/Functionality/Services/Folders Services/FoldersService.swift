@@ -14,7 +14,7 @@ protocol TrashFolderProviderType {
 }
 
 protocol FoldersServiceType {
-    func fetchFolders(isForceReload: Bool) async throws -> [FolderViewModel]
+    func fetchFolders(isForceReload: Bool, for user: User) async throws -> [FolderViewModel]
 }
 
 final class FoldersService: FoldersServiceType {
@@ -24,40 +24,41 @@ final class FoldersService: FoldersServiceType {
     private let remoteFoldersProvider: RemoteFoldersProviderType
 
     init(
-        localFoldersProvider: LocalFoldersProviderType = LocalFoldersProvider(),
-        remoteFoldersProvider: RemoteFoldersProviderType = MailProvider.shared.remoteFoldersProvider,
+        encryptedStorage: EncryptedStorageType,
+        localFoldersProvider: LocalFoldersProviderType? = nil,
+        remoteFoldersProvider: RemoteFoldersProviderType,
         trashPathStorage: LocalStorageType = LocalStorage()
     ) {
-        self.localFoldersProvider = localFoldersProvider
+        self.localFoldersProvider = localFoldersProvider ?? LocalFoldersProvider(encryptedStorage: encryptedStorage)
         self.remoteFoldersProvider = remoteFoldersProvider
         self.trashPathStorage = trashPathStorage
     }
 
-    func fetchFolders(isForceReload: Bool) async throws -> [FolderViewModel] {
+    func fetchFolders(isForceReload: Bool, for user: User) async throws -> [FolderViewModel] {
         if isForceReload {
-            return try await getAndSaveFolders()
+            return try await getAndSaveFolders(for: user)
         }
-        let localFolders = self.localFoldersProvider.fetchFolders()
+        let localFolders = self.localFoldersProvider.fetchFolders(for: user.email)
         if localFolders.isEmpty {
-            return try await getAndSaveFolders()
+            return try await getAndSaveFolders(for: user)
         } else {
-            try await getAndSaveFolders()
+            try await getAndSaveFolders(for: user)
             return localFolders
         }
     }
 
     @discardableResult
-    private func getAndSaveFolders() async throws -> [FolderViewModel] {
+    private func getAndSaveFolders(for user: User) async throws -> [FolderViewModel] {
         // fetch all folders
         let fetchedFolders = try await self.remoteFoldersProvider.fetchFolders()
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async {
                 // TODO: - Ticket? - instead of removing all folders remove only
                 // those folders which are in DB and not in remoteFolders
-                self.localFoldersProvider.removeFolders()
+                self.localFoldersProvider.removeFolders(for: user.email)
 
                 // save to Realm
-                self.localFoldersProvider.save(folders: fetchedFolders)
+                self.localFoldersProvider.save(folders: fetchedFolders, for: user)
 
                 // save trash folder path
                 self.saveTrashFolderPath(with: fetchedFolders.map(\.path))
