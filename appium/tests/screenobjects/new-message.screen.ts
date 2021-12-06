@@ -75,7 +75,7 @@ class NewMessageScreen extends BaseScreen {
 
   setAddRecipient = async (recipient: string) => {
     await (await this.addRecipientField).setValue(recipient);
-    await browser.pause(1000);
+    await browser.pause(2000);
     await (await $(SELECTORS.RETURN_BUTTON)).click()
   };
 
