@@ -8,32 +8,46 @@
 
 import Foundation
 import RealmSwift
-import IDZSwiftCommonCrypto
 
 protocol LocalClientConfigurationType {
     func load(for user: String) -> RawClientConfiguration?
-    func remove(for user: String)
-    func save(for user: User, raw: RawClientConfiguration)
+    func remove(for user: String) throws
+    func save(for user: User, raw: RawClientConfiguration) throws
 }
 
-struct LocalClientConfiguration {
-    let cache: EncryptedCacheService<ClientConfigurationRealmObject>
+final class LocalClientConfiguration {
+    private let encryptedStorage: EncryptedStorageType
+
+    private var storage: Realm {
+        encryptedStorage.storage
+    }
+
     init(encryptedStorage: EncryptedStorageType) {
-        self.cache = EncryptedCacheService(encryptedStorage: encryptedStorage)
+        self.encryptedStorage = encryptedStorage
     }
 }
 
 extension LocalClientConfiguration: LocalClientConfigurationType {
     func load(for userEmail: String) -> RawClientConfiguration? {
-        guard let foundLocal = cache.getAll(for: userEmail).first else { return nil }
-        return RawClientConfiguration(foundLocal)
+        return storage.objects(ClientConfigurationRealmObject.self).where {
+            $0.userEmail == userEmail
+        }.first.flatMap(RawClientConfiguration.init)
     }
 
-    func remove(for userEmail: String) {
-        cache.removeAll(for: userEmail)
+    func remove(for userEmail: String) throws {
+        let objects = storage.objects(ClientConfigurationRealmObject.self).where {
+            $0.userEmail == userEmail
+        }
+
+        try storage.write {
+            storage.delete(objects)
+        }
     }
 
-    func save(for user: User, raw: RawClientConfiguration) {
-        cache.save(ClientConfigurationRealmObject(configuration: raw, user: user))
+    func save(for user: User, raw: RawClientConfiguration) throws {
+        let object = ClientConfigurationRealmObject(configuration: raw, user: user)
+        try storage.write {
+            storage.add(object, update: .modified)
+        }
     }
 }

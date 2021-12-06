@@ -228,20 +228,20 @@ extension SetupManuallyEnterPassPhraseViewController {
             return
         }
         let keyDetails = try await appContext.keyService.getPrvKeyDetails()
-        importKeys(with: keyDetails, and: passPhrase)
+        try importKeys(with: keyDetails, and: passPhrase)
     }
 
-    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) {
+    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) throws {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        appContext.encryptedStorage.putKeypairs(
+        try appContext.encryptedStorage.putKeypairs(
             keyDetails: newKeysToAdd,
             passPhrase: passPhrase,
             source: .imported,
             for: email
         )
-        appContext.encryptedStorage.putKeypairs(
+        try appContext.encryptedStorage.putKeypairs(
             keyDetails: keysToUpdate,
             passPhrase: passPhrase,
             source: .imported,
@@ -249,20 +249,20 @@ extension SetupManuallyEnterPassPhraseViewController {
         )
 
         if storageMethod == .memory {
-            keysToUpdate
+            try keysToUpdate
                 .map {
                     PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
-                    appContext.passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
+                    try appContext.passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
                 }
 
-            newKeysToAdd
+            try newKeysToAdd
                 .map {
                     PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
-                    appContext.passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
+                    try appContext.passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
                 }
         }
 

@@ -57,9 +57,3 @@ extension ClientConfigurationRealmObject {
         )
     }
 }
-
-extension ClientConfigurationRealmObject: CachedRealmObject {
-    var identifier: String { userEmail ?? "" }
-
-    var activeUser: UserRealmObject? { user }
-}

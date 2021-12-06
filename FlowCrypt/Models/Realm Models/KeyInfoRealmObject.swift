@@ -70,7 +70,8 @@ extension KeyInfoRealmObject {
 
 extension KeyInfoRealmObject {
     /// associated user email
-    var account: String? {
-        user?.email
+    var account: String {
+        guard let email = user?.email else { fatalError() }
+        return email
     }
 }

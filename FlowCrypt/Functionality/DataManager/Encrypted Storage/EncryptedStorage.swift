@@ -10,16 +10,15 @@ import FlowCryptCommon
 import RealmSwift
 import UIKit
 
-// swiftlint:disable force_try
 protocol EncryptedStorageType {
     var storage: Realm { get }
 
     var activeUser: User? { get }
     func getAllUsers() -> [User]
-    func saveActiveUser(with user: User)
+    func saveActiveUser(with user: User) throws
     func doesAnyKeypairExist(for email: String) -> Bool
 
-    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String)
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) throws
     func getKeypairs(by email: String) -> [KeyInfo]
 
     func validate() throws
@@ -159,25 +158,17 @@ extension EncryptedStorage {
 
 // MARK: - Keys
 extension EncryptedStorage {
-    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) throws {
         guard let user = getUserObject(for: email) else {
             logger.logError("Can't find user with given email to update keys. User should be already saved")
             return
         }
-        try! storage.write {
+
+        try storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfoRealmObject(key, passphrase: passPhrase, source: source, user: user), update: .all)
+                let object = try KeyInfoRealmObject(key, passphrase: passPhrase, source: source, user: user)
+                storage.add(object, update: .all)
             }
-        }
-    }
-
-    func updateKeys(with primaryFingerprint: String, passphrase: String?) {
-        let keys = storage.objects(KeyInfoRealmObject.self).where {
-            $0.primaryFingerprint == primaryFingerprint
-        }
-
-        try! storage.write {
-            keys.map { $0.passphrase = passphrase }
         }
     }
 
@@ -199,20 +190,30 @@ extension EncryptedStorage {
             $0.email == email
         }.first
     }
+
+    private func updateKeys(with primaryFingerprint: String, passphrase: String?) throws {
+        let keys = storage.objects(KeyInfoRealmObject.self).where {
+            $0.primaryFingerprint == primaryFingerprint
+        }
+
+        try storage.write {
+            keys.map { $0.passphrase = passphrase }
+        }
+    }
 }
 
 // MARK: - PassPhrase
 extension EncryptedStorage: PassPhraseStorageType {
-    func save(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
+    func save(passPhrase: PassPhrase) throws {
+        try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
     }
 
-    func update(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
+    func update(passPhrase: PassPhrase) throws {
+        try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
     }
 
-    func remove(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
+    func remove(passPhrase: PassPhrase) throws {
+        try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
     }
 
     func getPassPhrases() -> [PassPhrase] {
@@ -234,8 +235,8 @@ extension EncryptedStorage {
         storage.objects(UserRealmObject.self).map(User.init)
     }
 
-    func saveActiveUser(with user: User) {
-        try! storage.write {
+    func saveActiveUser(with user: User) throws {
+        try storage.write {
             // Mark all users as inactive
             storage.objects(UserRealmObject.self).forEach {
                 $0.isActive = false
