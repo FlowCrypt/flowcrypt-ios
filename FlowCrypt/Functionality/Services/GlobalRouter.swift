@@ -133,7 +133,8 @@ extension GlobalRouter: GlobalRouterType {
             }
             proceed(with: appContext.withSession(session))
         } catch {
-            // TODO
+            logger.logError("Failed to switch active user due to \(error.localizedDescription)")
+            handle(error: error, appContext: appContext)
         }
     }
 
