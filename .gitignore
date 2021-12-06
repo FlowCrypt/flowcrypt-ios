@@ -50,4 +50,5 @@ appium/tmp
 appium/.env
 appium/FlowCrypt.app
 appium/video
+appium/.env
 
