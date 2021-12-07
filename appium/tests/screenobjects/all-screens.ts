@@ -9,8 +9,8 @@ import ContactScreen from './contacts.screen';
 import ContactPublicKeyScreen from './contact-public-key.screen';
 import PublicKeyScreen from './public-key.screen';
 import AttachmentScreen from './attachment.screen';
-import MailFolderScreen from './mail-folder.screen'
-import SearchScreen from './search.screen'
+import MailFolderScreen from './mail-folder.screen';
+import SearchScreen from './search.screen';
 
 export {
   SplashScreen,
