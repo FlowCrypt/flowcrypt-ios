@@ -53,11 +53,11 @@ final class ComposeViewController: TableNodeViewController {
     private let clientConfiguration: ClientConfiguration
 
     private let search = PassthroughSubject<String, Never>()
-    private let userDefaults: UserDefaults
 
     private let email: String
 
     private var cancellable = Set<AnyCancellable>()
+
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
 
@@ -73,13 +73,11 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         cloudContactProvider: CloudContactsProvider? = nil,
-        userDefaults: UserDefaults = .standard,
         contactsService: ContactsServiceType? = nil,
         composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
-        keyMethods: KeyMethodsType = KeyMethods(),
-        router: GlobalRouterType = GlobalRouter()
+        keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.appContext = appContext
         guard let email = appContext.dataService.email else {
@@ -89,7 +87,6 @@ final class ComposeViewController: TableNodeViewController {
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        self.userDefaults = userDefaults
         let clientConfiguration = appContext.clientConfigurationService.getSaved(for: email)
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(
@@ -117,7 +114,7 @@ final class ComposeViewController: TableNodeViewController {
             contactsService: self.contactsService,
             cloudContactProvider: cloudContactProvider
         )
-        self.router = router
+        self.router = appContext.globalRouter
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
         self.clientConfiguration = clientConfiguration
@@ -136,6 +133,7 @@ final class ComposeViewController: TableNodeViewController {
         setupNavigationBar()
         observeKeyboardNotifications()
         observerAppStates()
+        observeComposeUpdates()
         setupQuote()
     }
 
@@ -181,6 +179,32 @@ final class ComposeViewController: TableNodeViewController {
         self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", state: decorator.recipientIdleState)]
     }
 
+    private func observeComposeUpdates() {
+        composeMessageService.onStateChanged { [weak self] state in
+            DispatchQueue.main.async {
+                self?.updateSpinner(with: state)
+            }
+        }
+    }
+
+    private func updateSpinner(with state: ComposeMessageService.State) {
+        switch state {
+        case .progressChanged(let progress):
+            showProgressHUD(
+                progress: progress,
+                label: state.message ?? "\(progress)"
+            )
+        case .messageSent:
+            showProgressHUDWithCustomImage(
+                imageName: "checkmark.circle",
+                label: "compose_sent".localized
+            )
+        case .startComposing, .validatingMessage:
+            showIndeterminateHUD(with: state.message ?? "")
+        case .idle:
+            hideSpinner()
+        }
+    }
 }
 
 // MARK: - Drafts
@@ -421,7 +445,7 @@ extension ComposeViewController {
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        try appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         // now figure out if the pass phrase also matched the signing prv itself
         let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
         return matched != nil// true if the pass phrase matched signing key
@@ -451,10 +475,7 @@ extension ComposeViewController {
         UIApplication.shared.isIdleTimerDisabled = true
         try await service.encryptAndSend(
             message: sendableMsg,
-            threadId: input.threadId,
-            progressHandler: { [weak self] progress in
-                self?.updateSpinner(progress: progress, systemImageName: "checkmark.circle")
-            }
+            threadId: input.threadId
         )
         handleSuccessfullySentMessage()
     }
@@ -463,7 +484,11 @@ extension ComposeViewController {
         UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-        showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+
+        let hideSpinnerAnimationDuration: TimeInterval = 1
+        DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
+            self?.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+        }
     }
 
     private func handleSuccessfullySentMessage() {
@@ -957,37 +982,55 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
     nonisolated func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         Task {
             await picker.dismiss(animated: true)
-            let itemProvider = results.first?.itemProvider
-            if itemProvider?.hasItemConformingToTypeIdentifier("public.movie") == true {
-                itemProvider?.loadFileRepresentation(
-                    forTypeIdentifier: "public.movie",
-                    completionHandler: { [weak self] url, _ in
-                        guard let self = self else { return }
-                        DispatchQueue.main.async {
-                            if let url = url, let composeMessageAttachment = MessageAttachment(fileURL: url) {
-                                self.appendAttachmentIfAllowed(composeMessageAttachment)
-                                self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
-                            } else {
-                                self.showAlert(message: "files_picking_photos_error_message".localized)
-                            }
-                        }
-                    })
-            } else {
-                itemProvider?.loadFileRepresentation(
-                    forTypeIdentifier: "public.image",
-                    completionHandler: { [weak self] url, _ in
-                        guard let self = self else { return }
-                        DispatchQueue.main.async {
-                            if let url = url, let composeMessageAttachment = MessageAttachment(fileURL: url) {
-                                self.appendAttachmentIfAllowed(composeMessageAttachment)
-                                self.node.reloadSections(IndexSet(integer: 2), with: .automatic)
-                            } else {
-                                self.showAlert(message: "files_picking_videos_error_message".localized)
-                            }
-                        }
-                    })
-            }
+            await handleResults(results)
         }
+    }
+
+    private func handleResults(_ results: [PHPickerResult]) {
+        let itemProvider = results.first?.itemProvider
+        if itemProvider?.hasItemConformingToTypeIdentifier("public.movie") == true {
+            itemProvider?.loadFileRepresentation(
+                forTypeIdentifier: "public.movie",
+                completionHandler: { [weak self] url, error in
+                    DispatchQueue.main.async {
+                        self?.handleRepresentation(
+                            url: url,
+                            error: error,
+                            isVideo: true
+                        )
+                    }
+                }
+            )
+        } else {
+            itemProvider?.loadFileRepresentation(
+                forTypeIdentifier: "public.image",
+                completionHandler: { [weak self] url, error in
+                    DispatchQueue.main.async {
+                        self?.handleRepresentation(
+                            url: url,
+                            error: error,
+                            isVideo: false
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    private func handleRepresentation(url: URL?, error: Error?, isVideo: Bool) {
+        guard
+            let url = url,
+            let composeMessageAttachment = MessageAttachment(fileURL: url)
+        else {
+            let message = isVideo ? "files_picking_videos_error_message".localized
+                : "files_picking_photos_error_message".localized
+            let errorMessage = error.flatMap({ "." + $0.localizedDescription }) ?? ""
+            showAlert(message: message + errorMessage)
+            return
+        }
+
+        appendAttachmentIfAllowed(composeMessageAttachment)
+        node.reloadSections(IndexSet(integer: 2), with: .automatic)
     }
 }
 
@@ -1034,48 +1077,47 @@ extension ComposeViewController {
             UIAlertAction(
                 title: "files_picking_camera_input_source".localized,
                 style: .default,
-                handler: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.photosManager.takePhoto(from: self)
-                        .sinkFuture(
-                            receiveValue: {},
-                            receiveError: { _ in
-                                self.showNoAccessToCameraAlert()
-                            }
-                        )
-                        .store(in: &self.cancellable)
-                }
+                handler: { [weak self] _ in self?.takePhoto() }
             )
         )
         alert.addAction(
             UIAlertAction(
                 title: "files_picking_photo_library_source".localized,
                 style: .default,
-                handler: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.photosManager.selectPhoto(from: self)
-                        .sinkFuture(
-                            receiveValue: {},
-                            receiveError: { _ in
-                                self.showNoAccessToPhotosAlert()
-                            }
-                        )
-                        .store(in: &self.cancellable)
-                }
+                handler: { [weak self] _ in self?.selectPhoto() }
             )
         )
         alert.addAction(
             UIAlertAction(
                 title: "files_picking_files_source".localized,
                 style: .default,
-                handler: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.filesManager.selectFromFilesApp(from: self)
-                }
+                handler: { [weak self] _ in self?.selectFromFilesApp() }
             )
         )
         alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
         present(alert, animated: true, completion: nil)
+    }
+
+    private func takePhoto() {
+        Task {
+            do {
+                try await photosManager.takePhoto(from: self)
+            } catch {
+                showNoAccessToCameraAlert()
+            }
+        }
+    }
+
+    private func selectPhoto() {
+        Task {
+            await photosManager.selectPhoto(from: self)
+        }
+    }
+
+    private func selectFromFilesApp() {
+        Task {
+            await filesManager.selectFromFilesApp(from: self)
+        }
     }
 
     private func showNoAccessToPhotosAlert() {
@@ -1168,7 +1210,7 @@ extension ComposeViewController: FilesManagerPresenter {}
 
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
-    private let composeMessageService: ComposeMessageService
+    let composeMessageService: ComposeMessageService
     private let contactsService: ContactsServiceType
     private let cloudContactProvider: CloudContactsProvider
 
@@ -1180,10 +1222,11 @@ private actor ServiceActor {
         self.cloudContactProvider = cloudContactProvider
     }
 
-    func encryptAndSend(message: SendableMsg, threadId: String?, progressHandler: ((Float) -> Void)?) async throws {
-        try await composeMessageService.encryptAndSend(message: message,
-                                                       threadId: threadId,
-                                                       progressHandler: progressHandler)
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+        try await composeMessageService.encryptAndSend(
+            message: message,
+            threadId: threadId
+        )
     }
 
     func searchContacts(query: String) async throws -> [String] {

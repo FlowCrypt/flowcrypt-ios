@@ -3,17 +3,17 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen
-} from '../../screenobjects/all-screens';
+} from '../../../screenobjects/all-screens';
 
-import { CommonData } from '../../data';
+import { CommonData } from '../../../data';
 
 describe('INBOX: ', () => {
 
-  it('user is able to view text email', async () => {
+  it('user is able to view key mismatch email', async () => {
 
-    const senderEmail = CommonData.sender.email;
-    const emailSubject = CommonData.simpleEmail.subject;
-    const emailText = CommonData.simpleEmail.message;
+    const senderEmail = CommonData.account.email;
+    const emailSubject = CommonData.keyMismatchEmail.subject;
+    const emailText = CommonData.keyMismatchEmail.message;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();

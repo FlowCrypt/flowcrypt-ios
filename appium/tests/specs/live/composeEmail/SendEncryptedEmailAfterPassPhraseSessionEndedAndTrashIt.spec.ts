@@ -5,10 +5,11 @@ import {
   NewMessageScreen,
   EmailScreen,
   MenuBarScreen,
-} from '../../screenobjects/all-screens';
+} from '../../../screenobjects/all-screens';
 
-import { CommonData } from '../../data';
-import DataHelper from "../../helpers/DataHelper";
+import { CommonData } from '../../../data';
+import DataHelper from "../../../helpers/DataHelper";
+import BaseScreen from "../../../screenobjects/base.screen";
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -39,8 +40,8 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.clickSendButton();
     await EmailScreen.enterPassPhrase(wrongPassPhrase);
     await EmailScreen.clickOkButton();
-    await NewMessageScreen.checkError(wrongPassPhraseError);
-    await NewMessageScreen.clickOkButtonOnError();
+    await BaseScreen.checkErrorModal(wrongPassPhraseError);
+    await BaseScreen.clickOkButtonOnError();
     //Set correct pass phrase
     await NewMessageScreen.clickSendButton();
     await EmailScreen.enterPassPhrase(passPhrase);

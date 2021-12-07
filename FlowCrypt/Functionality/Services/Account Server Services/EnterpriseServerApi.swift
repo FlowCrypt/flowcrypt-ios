@@ -32,7 +32,7 @@ extension EnterpriseServerApiError: LocalizedError {
 class EnterpriseServerApi: EnterpriseServerApiType {
 
     static let publicEmailProviderDomains = ["gmail.com", "googlemail.com", "outlook.com"]
-    
+
     private enum Constants {
         /// 404 - Not Found
         static let getToleratedHTTPStatuses = [404]
@@ -52,16 +52,23 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         let clientConfiguration: RawClientConfiguration
     }
 
+    private func constructUrlBase(emailDomain: String) -> String {
+        guard !CommandLine.isDebugBundleWithArgument("--mock-fes-api") else {
+            return "http://127.0.0.1:8001/fes" // mock
+        }
+        return "https://fes.\(emailDomain)" // live
+    }
+
     func getActiveFesUrl(for email: String) async throws -> String? {
         do {
             guard let userDomain = email.recipientDomain,
                   !EnterpriseServerApi.publicEmailProviderDomains.contains(userDomain) else {
                 return nil
             }
-            let urlString = "https://fes.\(userDomain)/"
+            let urlBase = constructUrlBase(emailDomain: userDomain)
             let request = ApiCall.Request(
                 apiName: Constants.apiName,
-                url: "\(urlString)api/",
+                url: "\(urlBase)/api/",
                 timeout: Constants.getActiveFesTimeout,
                 tolerateStatus: Constants.getToleratedHTTPStatuses
             )
@@ -77,14 +84,12 @@ class EnterpriseServerApi: EnterpriseServerApiType {
                 return nil
             }
 
-            return urlString
+            return urlBase
         } catch {
-            if let httpError = error as? HttpErr,
-               let nsError = httpError.error as NSError?,
-               Constants.getToleratedNSErrorCodes.contains(nsError.code) {
-                return nil
+            guard shouldTolerateWhenCallingOpportunistically(error) else {
+                throw error
             }
-            throw error
+            return nil
         }
     }
 
@@ -93,16 +98,13 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             throw EnterpriseServerApiError.emailFormat
         }
 
-        guard try await getActiveFesUrl(for: email) != nil else {
+        guard let fesUrl = try await getActiveFesUrl(for: email) else {
             return .empty
         }
 
-        if EnterpriseServerApi.publicEmailProviderDomains.contains(userDomain) {
-            return .empty
-        }
         let request = ApiCall.Request(
             apiName: Constants.apiName,
-            url: "https://fes.\(userDomain)/api/v1/client-configuration?domain=\(userDomain)"
+            url: "\(fesUrl)/api/v1/client-configuration?domain=\(userDomain)"
         )
         let safeReponse = try await ApiCall.call(request)
 
@@ -119,4 +121,14 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         return clientConfiguration
     }
 
+    private func shouldTolerateWhenCallingOpportunistically(_ error: Error) -> Bool {
+        guard
+            let apiError = error as? ApiError,
+            let nsError = apiError.internalError as NSError?,
+            Constants.getToleratedNSErrorCodes.contains(nsError.code)
+        else {
+            return false
+        }
+        return true
+    }
 }

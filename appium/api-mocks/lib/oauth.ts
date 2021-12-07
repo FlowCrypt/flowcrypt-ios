@@ -1,6 +1,6 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-import { HttpClientErr, Status } from './api';
+import { HttpErr, Status } from './api';
 
 import { Buf } from '../core/buf';
 import { Str } from '../core/common';
@@ -51,18 +51,18 @@ export class OauthMock {
       const id_token = this.generateIdToken(acct);
       return { access_token, expires_in: this.expiresIn, id_token, token_type: 'Bearer' };
     } catch (e) {
-      throw new HttpClientErr('invalid_grant', Status.BAD_REQUEST);
+      throw new HttpErr('invalid_grant', Status.BAD_REQUEST);
     }
   }
 
   public checkAuthorizationHeaderWithAccessToken = (authorization: string | undefined) => {
     if (!authorization) {
-      throw new HttpClientErr('Missing mock bearer authorization header', Status.UNAUTHORIZED);
+      throw new HttpErr('Missing mock bearer authorization header', Status.UNAUTHORIZED);
     }
     const accessToken = authorization.replace(/^Bearer /, '');
     const acct = this.acctByAccessToken[accessToken];
     if (!acct) {
-      throw new HttpClientErr('Invalid mock auth token', Status.UNAUTHORIZED);
+      throw new HttpErr('Invalid mock auth token', Status.UNAUTHORIZED);
     }
     return acct;
   }
@@ -72,12 +72,12 @@ export class OauthMock {
    */
   public checkAuthorizationHeaderWithIdToken = (authorization: string | undefined) => {
     if (!authorization) {
-      throw new HttpClientErr('Missing mock bearer authorization header', Status.UNAUTHORIZED);
+      throw new HttpErr('Missing mock bearer authorization header', Status.UNAUTHORIZED);
     }
     const accessToken = authorization.replace(/^Bearer /, '');
     const acct = this.acctByIdToken[accessToken];
     if (!acct) {
-      throw new HttpClientErr('Invalid idToken token', Status.UNAUTHORIZED);
+      throw new HttpErr('Invalid idToken token', Status.UNAUTHORIZED);
     }
     return acct;
   }
@@ -104,7 +104,7 @@ export class OauthMock {
     if (this.accessTokenByRefreshToken[refreshToken]) {
       return this.accessTokenByRefreshToken[refreshToken];
     }
-    throw new HttpClientErr('Wrong mock refresh token', Status.UNAUTHORIZED);
+    throw new HttpErr('Wrong mock refresh token', Status.UNAUTHORIZED);
   }
 
   private htmlPage = (title: string, content: string) => {

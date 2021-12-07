@@ -11,7 +11,7 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 
 class GmailService: MailServiceProvider {
-    
+
     let mailServiceProviderType = MailServiceProviderType.gmail
     let userService: GoogleUserServiceType
     let backupSearchQueryProvider: GmailBackupSearchQueryProviderType
@@ -55,5 +55,7 @@ extension String {
     static let subject = "subject"
     static let date = "date"
     static let to = "to"
+    static let cc = "cc"
+    static let bcc = "bcc"
     static let identifier = "Message-ID"
 }

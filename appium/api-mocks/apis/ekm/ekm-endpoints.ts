@@ -1,19 +1,29 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-// import { HttpClientErr } from '../lib/api';
+// import { HttpErr } from '../lib/api';
 // import { isPut, isGet } from '../lib/mock-util';
 // import { oauth } from '../lib/oauth';
 // import { Dict } from '../../core/common';
 // import { expect } from 'chai';
 // import { KeyUtil } from '../../core/crypto/key';
 // import { testConstants } from '../../tests/tooling/consts';
-import { HandlersDefinition } from '../../lib/api';
+import { HandlersDefinition, HttpErr } from '../../lib/api';
 import { EkmConfig, MockConfig } from '../../lib/configuration-types';
 
 // tslint:disable:max-line-length
 /* eslint-disable max-len */
 // tslint:disable:no-unused-expression
 /* eslint-disable no-unused-expressions */
+
+export class EkmHttpErr extends HttpErr {
+  public formatted = (): unknown => {
+    return { // follows EKM error response format
+      "code": this.statusCode,
+      "message": `message:${this.message}`,
+      "details": `details:${this.message}`
+    }
+  }
+}
 
 export const MOCK_KM_LAST_INSERTED_KEY: { [acct: string]: { decryptedPrivateKey: string, publicKey: string } } = {}; // accessed from test runners
 
@@ -74,7 +84,7 @@ export const getMockEkmEndpoints = (
   //       if (acctEmail === 'get.error@key-manager-autogen.flowcrypt.test') {
   //         throw new Error('Intentional error for get.error to test client behavior');
   //       }
-  //       throw new HttpClientErr(`Unexpectedly calling mockKeyManagerEndpoints:/keys/private GET with acct ${acctEmail}`);
+  //       throw new HttpErr(`Unexpectedly calling mockKeyManagerEndpoints:/keys/private GET with acct ${acctEmail}`);
   //     }
   //     if (isPut(req)) {
   //       const { decryptedPrivateKey, publicKey } = body as Dict<string>;
@@ -102,7 +112,7 @@ export const getMockEkmEndpoints = (
   //         throw new Error('Intentional error for put.error user to test client behavior');
   //       }
   //       if (acctEmail === 'reject.client.keypair@key-manager-autogen.flowcrypt.test') {
-  //         throw new HttpClientErr(`No key has been generated for ${acctEmail} yet. Please ask your administrator.`, 405);
+  //         throw new HttpErr(`No key has been generated for ${acctEmail} yet. Please ask your administrator.`, 405);
   //       }
   //       if (acctEmail === 'expire@key-manager-keygen-expiration.flowcrypt.test') {
   //         const prv = await KeyUtil.parseMany(decryptedPrivateKey);
@@ -124,9 +134,9 @@ export const getMockEkmEndpoints = (
   //         MOCK_KM_LAST_INSERTED_KEY[acctEmail] = { decryptedPrivateKey, publicKey };
   //         return {};
   //       }
-  //       throw new HttpClientErr(`Unexpectedly calling mockKeyManagerEndpoints:/keys/private PUT with acct ${acctEmail}`);
+  //       throw new HttpErr(`Unexpectedly calling mockKeyManagerEndpoints:/keys/private PUT with acct ${acctEmail}`);
   //     }
-  //     throw new HttpClientErr(`Unknown method: ${req.method}`);
+  //     throw new HttpErr(`Unknown method: ${req.method}`);
   //   }
   // };
 }

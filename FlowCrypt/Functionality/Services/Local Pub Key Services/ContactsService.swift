@@ -23,7 +23,7 @@ protocol ContactsProviderType {
 
 protocol PublicKeyProvider {
     func retrievePubKeys(for email: String) -> [String]
-    func removePubKey(with fingerprint: String, for email: String)
+    func removePubKey(with fingerprint: String, for email: String) throws
 }
 
 // MARK: - PROVIDER
@@ -46,12 +46,12 @@ extension ContactsService: ContactsProviderType {
         let contact = try await localContactsProvider.searchRecipient(with: email)
         guard let contact = contact else {
             let recipient = try await pubLookup.lookup(email: email)
-            localContactsProvider.save(recipient: recipient)
+            try localContactsProvider.save(recipient: recipient)
             return recipient
         }
 
         let recipient = try await pubLookup.lookup(email: email)
-        localContactsProvider.updateKeys(for: recipient)
+        try localContactsProvider.updateKeys(for: recipient)
         return contact
     }
 
@@ -62,12 +62,10 @@ extension ContactsService: ContactsProviderType {
 
 extension ContactsService: PublicKeyProvider {
     func retrievePubKeys(for email: String) -> [String] {
-        let publicKeys = localContactsProvider.retrievePubKeys(for: email)
-        localContactsProvider.updateLastUsedDate(for: email)
-        return publicKeys
+        return localContactsProvider.retrievePubKeys(for: email)
     }
 
-    func removePubKey(with fingerprint: String, for email: String) {
-        localContactsProvider.removePubKey(with: fingerprint, for: email)
+    func removePubKey(with fingerprint: String, for email: String) throws {
+        try localContactsProvider.removePubKey(with: fingerprint, for: email)
     }
 }

@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Combine
 
 enum BackupOption: Int, CaseIterable, Equatable {
     case email, download
@@ -22,7 +21,7 @@ enum BackupOption: Int, CaseIterable, Equatable {
 }
 
 @MainActor
-final class BackupOptionsViewController: ASDKViewController<TableNode> {
+final class BackupOptionsViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
         case email, download, action, info
     }

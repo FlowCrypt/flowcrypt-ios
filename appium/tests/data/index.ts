@@ -38,6 +38,15 @@ export const CommonData = {
     subject: 'Encrypted message with key mismatch',
     message: 'Could not decrypt:',
   },
+  recipientsListEmail: {
+    sender: 'flowcrypt.compatibility@gmail.com',
+    subject: 'CC and BCC test',
+    message: 'Test message for CC and BCC recipients',
+    recipients: 'to Robot, robot+cc, e2e.enterprise.test',
+    to: 'Robot FlowCrypt robot@flowcrypt.com',
+    cc: 'robot+cc@flowcrypt.com',
+    bcc: 'e2e.enterprise.test@flowcrypt.com'
+  },
   encryptedMDCHashMismatchEmail: {
     senderEmail: 'flowcrypt.compatibility@gmail.com',
     subject: 'encrypted - MDC hash mismatch - modification detected - should fail',
@@ -70,13 +79,24 @@ export const CommonData = {
     email: 'revoked@flowcrypt.com'
   },
   errors: {
-    noPublicKey: 'Could not compose message One or more of your recipients are missing a public key (marked in gray). ' +
-      'Please ask them to share it with you, or ask them to also set up FlowCrypt.',
-    wrongPassPhrase: 'Could not compose message This pass phrase did not match your signing private key',
-    expiredPublicKey: 'Could not compose message One or more of your recipients have expired public keys (marked in orange).' +
-      ' Please ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.',
-    revokedPublicKey: 'Could not compose message One or more of your recipients have revoked public keys (marked in red).' +
-      ' Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
+    noPublicKey: 'Could not compose message\n' +
+        '\n' +
+        'One or more of your recipients are missing a public key (marked in gray).\n' +
+        '\n' +
+        'Please ask them to share it with you, or ask them to also set up FlowCrypt.',
+    wrongPassPhrase: 'Could not compose message\n' +
+        '\n' +
+        'This pass phrase did not match your signing private key',
+    expiredPublicKey: 'Could not compose message\n' +
+        '\n' +
+        'One or more of your recipients have expired public keys (marked in orange).\n' +
+        '\n' +
+        'Please ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.',
+    revokedPublicKey: 'Could not compose message\n' +
+        '\n' +
+        'One or more of your recipients have revoked public keys (marked in red).\n' +
+        '\n' +
+        'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'

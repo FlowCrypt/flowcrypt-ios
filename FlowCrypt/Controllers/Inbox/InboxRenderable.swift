@@ -70,17 +70,11 @@ extension InboxRenderable {
         // for now its not exactly clear how titles on other folders should looks like
         // so in scope of this PR we are applying this title presentation only for "sent" folder
         if folderPath == MessageLabelType.sent.value {
-            var emails = thread.messages.compactMap(\.sender).unique()
-            // if we have only one email, it means that it could be "me" and we are not
-            // clearing our own email from that
-            if emails.count > 1 {
-                if let i = emails.firstIndex(of: activeUserEmail) {
-                    emails.remove(at: i)
-                }
-            }
-            let recipients = emails
-                .compactMap { $0.components(separatedBy: "@").first }
-                .joined(separator: ",")
+            let recipients = thread.messages
+                .flatMap(\.allRecipients)
+                .map(\.displayName)
+                .unique()
+                .joined(separator: ", ")
             return "To: \(recipients)"
 
         } else {

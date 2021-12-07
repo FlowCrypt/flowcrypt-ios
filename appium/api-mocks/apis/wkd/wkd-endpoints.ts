@@ -1,12 +1,22 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-import { HandlersDefinition } from '../../lib/api';
+import { HandlersDefinition, HttpErr } from '../../lib/api';
 import { MockConfig, WkdConfig } from '../../lib/configuration-types';
 
 // import { KeyUtil } from '../../core/crypto/key';
 // import { PgpArmor } from '../../core/crypto/pgp/pgp-armor';
 // import { testConstants } from '../../tests/tooling/consts';
 // import { HandlersDefinition } from '../all-apis-mock';
+
+export class WkdHttpErr extends HttpErr {
+  public formatted = (): unknown => {
+    return { // follows WKD error response format
+      "code": this.statusCode,
+      "message": `message:${this.message}`,
+      "details": `details:${this.message}`
+    }
+  }
+}
 
 /**
 * Web Key Directory - distributes private keys to users who own them

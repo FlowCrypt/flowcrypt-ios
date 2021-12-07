@@ -529,7 +529,9 @@ extension SetupImapViewController {
 
     private func handleSuccessfulConnection() {
         hideSpinner()
-        globalRouter.signIn(appContext: self.appContext, route: .other(.session(user)))
+        Task {
+            await globalRouter.signIn(appContext: self.appContext, route: .other(.session(user)))
+        }
     }
 
     private func checkCurrentUser() throws {

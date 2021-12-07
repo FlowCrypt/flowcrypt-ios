@@ -14,9 +14,9 @@ protocol ImapSessionProviderType {
 }
 
 class ImapSessionProvider: ImapSessionProviderType {
-    
+
     private let user: User
-    
+
     init(user: User) {
         self.user = user
     }

@@ -3,9 +3,10 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   NewMessageScreen
-} from '../../screenobjects/all-screens';
+} from '../../../screenobjects/all-screens';
 
-import { CommonData } from '../../data';
+import { CommonData } from '../../../data';
+import BaseScreen from "../../../screenobjects/base.screen";
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -28,9 +29,9 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo(expiredPublicKey, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
 
-    await NewMessageScreen.checkError(expiredPublicKeyError);
+    await BaseScreen.checkErrorModal(expiredPublicKeyError);
 
-    await NewMessageScreen.clickOkButtonOnError();
+    await BaseScreen.clickOkButtonOnError();
     await NewMessageScreen.clickBackButton();
     await MailFolderScreen.checkInboxScreen();
 
@@ -39,6 +40,6 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo(revokedpublicKey, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
 
-    await NewMessageScreen.checkError(revokedPublicKeyError);
+    await BaseScreen.checkErrorModal(revokedPublicKeyError);
   });
 });

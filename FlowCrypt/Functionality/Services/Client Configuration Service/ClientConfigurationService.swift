@@ -37,7 +37,7 @@ extension ClientConfigurationService: ClientConfigurationServiceType {
 //        }
         do {
             let raw = try await server.getClientConfiguration(for: user.email)
-            local.save(for: user, raw: raw)
+            try local.save(for: user, raw: raw)
             return ClientConfiguration(raw: raw)
         } catch {
             guard let raw = local.load(for: user.email) else {
