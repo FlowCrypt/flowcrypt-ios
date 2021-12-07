@@ -120,22 +120,28 @@ final class Version5SchemaMigration {
     }
 
     private func renameKeyInfo(oldObject: MigrationObject) throws {
-        let newObject = migration.create(KeyInfoRealmObject.className())
+        let newObject = migration.create(KeypairRealmObject.className())
 
-        let primitiveProperties: [String] = [
-            "private",
-            "public",
-            "primaryFingerprint",
-            "passphrase",
-            "source",
-            "allFingerprints",
-            "allLongids"
+        let primitiveProperties: [Properties.Keypair] = [
+            Properties.Keypair.private,
+            Properties.Keypair.public,
+            Properties.Keypair.primaryFingerprint,
+            Properties.Keypair.passphrase,
+            Properties.Keypair.source,
+            Properties.Keypair.allFingerprints,
+            Properties.Keypair.allLongids
         ]
         primitiveProperties.forEach {
-            newObject[$0] = oldObject[$0]
+            let property = $0.rawValue
+            newObject[property] = oldObject[property]
         }
 
-        try setUser(oldObject: oldObject, newObject: newObject, propertyName: "user")
+        try setUser(
+            oldObject: oldObject,
+            newObject: newObject,
+            propertyName: Properties.Keypair.user.rawValue
+        )
+        try setKeypairObjectPrimaryKey(newObject)
     }
 
     private func renamePubKeyObject(oldObject: MigrationObject) throws {
@@ -253,5 +259,39 @@ final class Version5SchemaMigration {
         }
 
         newObject[propertyName] = object
+    }
+
+    private func setKeypairObjectPrimaryKey(_ object: MigrationObject) throws {
+        guard
+            let userObject = object[Properties.Keypair.user.rawValue] as? Object,
+            let email = userObject[Properties.User.email.rawValue] as? String,
+            let primaryFingerprint = object[Properties.Keypair.primaryFingerprint.rawValue] as? String
+        else {
+            throw AppErr.unexpected("KeypairRealmObject primary key")
+        }
+
+        object[Properties.Keypair.primaryKey.rawValue] = primaryFingerprint + email
+    }
+}
+
+private enum Properties {}
+
+extension Properties {
+    enum Keypair: String {
+        case primaryKey
+        case primaryFingerprint
+        case `private`
+        case `public`
+        case passphrase
+        case source
+        case user
+        case allFingerprints
+        case allLongids
+    }
+}
+
+extension Properties {
+    enum User: String {
+        case email
     }
 }

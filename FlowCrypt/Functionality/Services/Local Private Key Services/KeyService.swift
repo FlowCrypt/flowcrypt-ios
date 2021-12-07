@@ -61,12 +61,12 @@ final class KeyService: KeyServiceType {
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
         let privateKeys = storage.getKeypairs(by: email)
-            .map { keyInfo -> PrvKeyInfo in
+            .map { keypair -> PrvKeyInfo in
                 let passphrase = storedPassPhrases
                     .filter { $0.value.isNotEmpty }
-                    .first(where: { $0.primaryFingerprintOfAssociatedKey == keyInfo.primaryFingerprint })?
+                    .first(where: { $0.primaryFingerprintOfAssociatedKey == keypair.primaryFingerprint })?
                     .value
-                return PrvKeyInfo(keyInfo: keyInfo, passphrase: passphrase)
+                return PrvKeyInfo(keypair: keypair, passphrase: passphrase)
             }
         return privateKeys
     }
@@ -88,13 +88,13 @@ final class KeyService: KeyServiceType {
             .first(where: { $0.primaryFingerprintOfAssociatedKey == foundKey.primaryFingerprint })?
             .value
 
-        return PrvKeyInfo(keyInfo: foundKey, passphrase: passphrase)
+        return PrvKeyInfo(keypair: foundKey, passphrase: passphrase)
     }
 
-    private func findKeyByUserEmail(keysInfo: [KeyInfo], email: String) async throws -> KeyInfo? {
+    private func findKeyByUserEmail(keysInfo: [Keypair], email: String) async throws -> Keypair? {
         // todo - should be refactored with https://github.com/FlowCrypt/flowcrypt-ios/issues/812
         logger.logDebug("findKeyByUserEmail: found \(keysInfo.count) candidate prvs in storage, searching by:\(email)")
-        var keys: [(KeyInfo, KeyDetails)] = []
+        var keys: [(Keypair, KeyDetails)] = []
         for keyInfo in keysInfo {
             let parsedKeys = try await coreService.parseKeys(
                 armoredOrBinary: keyInfo.`private`.data()
