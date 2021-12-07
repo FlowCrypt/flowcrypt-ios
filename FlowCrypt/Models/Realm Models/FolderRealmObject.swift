@@ -27,9 +27,3 @@ extension FolderRealmObject {
         self.user = UserRealmObject(user)
     }
 }
-
-extension FolderRealmObject: CachedRealmObject {
-    var identifier: String { name }
-
-    var activeUser: UserRealmObject? { user }
-}

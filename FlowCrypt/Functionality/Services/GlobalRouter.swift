@@ -12,7 +12,7 @@ import UIKit
 @MainActor
 protocol GlobalRouterType {
     func proceed()
-    func signIn(appContext: AppContext, route: GlobalRoutingType)
+    func signIn(appContext: AppContext, route: GlobalRoutingType) async
     func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws
     func switchActive(user: User, appContext: AppContext)
     func signOut(appContext: AppContext)
@@ -58,41 +58,44 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func signIn(appContext: AppContext, route: GlobalRoutingType) {
+    func signIn(appContext: AppContext, route: GlobalRoutingType) async {
         logger.logInfo("Sign in with \(route)")
-
-        switch route {
-        case .gmailLogin(let viewController):
-            Task {
-                do {
-                    let googleService = GoogleUserService(
-                        currentUserEmail: appContext.dataService.currentUser?.email,
-                        appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
-                    )
-                    let session = try await googleService.signIn(
-                        in: viewController,
-                        scopes: GeneralConstants.Gmail.mailScope
-                    )
-                    appContext.userAccountService.startSessionFor(session: session)
-                    self.proceed(with: appContext.withSession(session))
-                } catch {
-                    self.handleGmailError(appContext: appContext, error, in: viewController)
-                }
+        do {
+            switch route {
+            case .gmailLogin(let viewController):
+                let googleService = GoogleUserService(
+                    currentUserEmail: appContext.dataService.currentUser?.email,
+                    appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+                )
+                let session = try await googleService.signIn(
+                    in: viewController,
+                    scopes: GeneralConstants.Gmail.mailScope
+                )
+                try appContext.userAccountService.startSessionFor(session: session)
+                proceed(with: appContext.withSession(session))
+            case .other(let session):
+                try appContext.userAccountService.startSessionFor(session: session)
+                proceed(with: appContext.withSession(session))
             }
-        case .other(let session):
-            appContext.userAccountService.startSessionFor(session: session)
-            proceed(with: appContext.withSession(session))
+        } catch {
+            logger.logError("Failed to sign in due to \(error.localizedDescription)")
+            handle(error: error, appContext: appContext)
         }
     }
 
     func signOut(appContext: AppContext) {
-        if let session = appContext.userAccountService.startActiveSessionForNextUser() {
-            logger.logInfo("Start session for another email user \(session)")
-            proceed(with: appContext.withSession(session))
-        } else {
-            logger.logInfo("Sign out")
-            appContext.userAccountService.cleanup()
-            proceed()
+        do {
+            if let session = try appContext.userAccountService.startActiveSessionForNextUser() {
+                logger.logInfo("Start session for another email user \(session)")
+                proceed(with: appContext.withSession(session))
+            } else {
+                logger.logInfo("Sign out")
+                appContext.userAccountService.cleanup()
+                proceed()
+            }
+        } catch {
+            logger.logError("Failed to sign out due to \(error.localizedDescription)")
+            handle(error: error, appContext: appContext)
         }
     }
 
@@ -110,7 +113,7 @@ extension GlobalRouter: GlobalRouterType {
                     in: viewController,
                     scopes: GeneralConstants.Gmail.contactsScope
                 )
-                appContext.userAccountService.startSessionFor(session: session)
+                try appContext.userAccountService.startSessionFor(session: session)
                 // todo? - no need to update context itself with new session?
             } catch {
                 logger.logInfo("Contacts scope failed with error \(error.errorMessage)")
@@ -123,11 +126,16 @@ extension GlobalRouter: GlobalRouterType {
 
     func switchActive(user: User, appContext: AppContext) {
         logger.logInfo("Switching active user \(user)")
-        guard let session = appContext.userAccountService.switchActiveSessionFor(user: user) else {
-            logger.logWarning("Can't switch active user with \(user.email)")
-            return
+        do {
+            guard let session = try appContext.userAccountService.switchActiveSessionFor(user: user) else {
+                logger.logWarning("Can't switch active user with \(user.email)")
+                return
+            }
+            proceed(with: appContext.withSession(session))
+        } catch {
+            logger.logError("Failed to switch active user due to \(error.localizedDescription)")
+            handle(error: error, appContext: appContext)
         }
-        proceed(with: appContext.withSession(session))
     }
 
     @MainActor
@@ -149,13 +157,15 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func handleGmailError(appContext: AppContext, _ error: Error, in viewController: UIViewController) {
-        logger.logInfo("gmail login failed with error \(error.errorMessage)")
+    private func handle(error: Error, appContext: AppContext) {
         if let gmailUserError = error as? GoogleUserServiceError,
            case .userNotAllowedAllNeededScopes = gmailUserError {
-            let navigationController = viewController.navigationController
+            logger.logInfo("gmail login failed with error \(gmailUserError.errorMessage)")
+            let navigationController = keyWindow.rootViewController?.navigationController
             let checkAuthViewController = CheckMailAuthViewController(appContext: appContext)
             navigationController?.pushViewController(checkAuthViewController, animated: true)
+        } else {
+            keyWindow.rootViewController = FatalErrorViewController(error: error)
         }
     }
 }

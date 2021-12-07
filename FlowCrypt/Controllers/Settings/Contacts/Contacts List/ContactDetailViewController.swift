@@ -91,7 +91,11 @@ extension ContactDetailViewController {
 
         recipient.remove(pubKey: keyToRemove)
         if let fingerprint = keyToRemove.fingerprint, fingerprint.isNotEmpty {
-            contactsProvider.removePubKey(with: fingerprint, for: recipient.email)
+            do {
+                try contactsProvider.removePubKey(with: fingerprint, for: recipient.email)
+            } catch {
+                showToast("contact_detail_remove_public_key_error".localizeWithArguments(error.localizedDescription))
+            }
         }
         node.deleteRows(at: [indexPathToRemove], with: .left)
     }

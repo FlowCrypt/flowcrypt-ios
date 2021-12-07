@@ -23,3 +23,27 @@ To run a particular test:
 - `npm run-script test.mock "app setup fails with bad EKM URL"`
 
 To run all tests: `npm run-script test.live.all` or `npm run-script test.mock.all`
+
+## Inspect accessibility identifiers
+ 1. Install `https://github.com/appium/appium-inspector`. Releases `https://github.com/appium/appium-inspector/releases`
+ 2. Download `appium-inspector.dmg`.
+ 3. Before openning package run `xattr -cr appium-inspector.dmg` on downloaded file.
+ 4. Allow access in `System Prefferences -> Privacy Tab -> Accessibility`
+ 5. Use next capabilities for `Appium Inspector`  
+ `
+ {
+ "platformName": "iOS",
+ "iosInstallPause": 5000,
+ "deviceName": "iPhone 13",
+ "app": "*path to already buil app/FlowCrypt.app*",
+ "platformVersion": "15.0",
+ "automationName": "XCUITest",
+ "newCommandTimeout": 10000,
+ "wdaLaunchTimeout": 300000,
+ "wdaConnectionTimeout": 600000,
+ "wdaStartupRetries": 4,
+ "wdaStartupRetryInterval": 120000
+ }
+ `  
+ 6. Remote host - `127.0.0.1`, Port - `4723`, Path - `/wd/hub`
+ 7. Run `Start Session`

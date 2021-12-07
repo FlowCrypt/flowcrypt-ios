@@ -53,18 +53,22 @@ final class FoldersService: FoldersServiceType {
         let fetchedFolders = try await self.remoteFoldersProvider.fetchFolders()
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async {
-                // TODO: - Ticket? - instead of removing all folders remove only
-                // those folders which are in DB and not in remoteFolders
-                self.localFoldersProvider.removeFolders(for: user.email)
+                do {
+                    // TODO: - Ticket? - instead of removing all folders remove only
+                    // those folders which are in DB and not in remoteFolders
+                    try self.localFoldersProvider.removeFolders(for: user.email)
 
-                // save to Realm
-                self.localFoldersProvider.save(folders: fetchedFolders, for: user)
+                    // save to Realm
+                    try self.localFoldersProvider.save(folders: fetchedFolders, for: user)
 
-                // save trash folder path
-                self.saveTrashFolderPath(with: fetchedFolders.map(\.path))
+                    // save trash folder path
+                    self.saveTrashFolderPath(with: fetchedFolders.map(\.path))
 
-                // return folders
-                continuation.resume(returning: fetchedFolders.map(FolderViewModel.init))
+                    // return folders
+                    continuation.resume(returning: fetchedFolders.map(FolderViewModel.init))
+                } catch {
+                    continuation.resume(throwing: error)
+                }
             }
         }
     }
