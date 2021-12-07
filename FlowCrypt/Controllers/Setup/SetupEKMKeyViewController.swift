@@ -33,7 +33,6 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
         appContext: AppContext,
         user: UserId,
         keys: [KeyDetails] = [],
-        router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.keys = keys
@@ -41,7 +40,6 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
             appContext: appContext,
             user: user,
             fetchedKeysCount: keys.count,
-            router: router,
             decorator: decorator
         )
         self.storageMethod = .memory
@@ -87,11 +85,11 @@ extension SetupEKMKeyViewController {
             guard let privateKey = keyDetail.private else {
                 throw CreatePassphraseWithExistingKeyError.noPrivateKey
             }
-            let encryptedPrv = try await self.core.encryptKey(
+            let encryptedPrv = try await Core.shared.encryptKey(
                 armoredPrv: privateKey,
                 passphrase: passPhrase
             )
-            let parsedKey = try await self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
+            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
             try appContext.encryptedStorage.putKeypairs(
                 keyDetails: parsedKey.keyDetails,
                 passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
