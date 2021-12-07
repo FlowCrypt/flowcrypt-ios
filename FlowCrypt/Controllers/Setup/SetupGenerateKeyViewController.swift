@@ -112,7 +112,7 @@ private actor Service {
         )
         try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
 
-        appContext.encryptedStorage.putKeypairs(
+        try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,
             source: .generated,
@@ -124,7 +124,7 @@ private actor Service {
                 value: passPhrase,
                 fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints
             )
-            appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
+            try appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 
         await submitKeyToAttesterAndShowAlertOnFailure(

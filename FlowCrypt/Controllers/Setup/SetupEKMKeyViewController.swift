@@ -92,7 +92,7 @@ extension SetupEKMKeyViewController {
                 passphrase: passPhrase
             )
             let parsedKey = try await self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-            appContext.encryptedStorage.putKeypairs(
+            try appContext.encryptedStorage.putKeypairs(
                 keyDetails: parsedKey.keyDetails,
                 passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
                 source: .ekm,
@@ -102,7 +102,7 @@ extension SetupEKMKeyViewController {
         }
         if self.storageMethod == .memory {
             let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: allFingerprints.unique())
-            appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
+            try appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
         }
     }
 }

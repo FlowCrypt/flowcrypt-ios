@@ -9,8 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-@MainActor
-final class BackupViewController: ASDKViewController<TableNode> {
+final class BackupViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case info, action
     }

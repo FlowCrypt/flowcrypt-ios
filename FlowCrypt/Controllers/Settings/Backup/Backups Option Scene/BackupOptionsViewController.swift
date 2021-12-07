@@ -21,7 +21,7 @@ enum BackupOption: Int, CaseIterable, Equatable {
 }
 
 @MainActor
-final class BackupOptionsViewController: ASDKViewController<TableNode> {
+final class BackupOptionsViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
         case email, download, action, info
     }
