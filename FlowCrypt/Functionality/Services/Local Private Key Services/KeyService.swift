@@ -61,7 +61,7 @@ final class KeyService: KeyServiceType {
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
         let privateKeys = storage.getKeypairs(by: email)
-            .map { keyInfo in
+            .map { keyInfo -> PrvKeyInfo in
                 let passphrase = storedPassPhrases
                     .filter(\.value.isNotEmpty)
                     .first(where: { $0.primaryFingerprintOfAssociatedKey == keyInfo.primaryFingerprint })?
