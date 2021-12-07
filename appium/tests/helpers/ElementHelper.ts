@@ -40,7 +40,7 @@ class ElementHelper {
   }
 
   static checkStaticText = async (element: WebdriverIO.Element, label: string) => {
-    await this.waitElementVisible(element);
+    await element.waitForDisplayed();
     await expect(element).toHaveText(label);
   }
 
