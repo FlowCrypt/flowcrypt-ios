@@ -79,7 +79,7 @@ extension GlobalRouter: GlobalRouterType {
             }
         } catch {
             logger.logError("Failed to sign in due to \(error.localizedDescription)")
-            handle(error: error, appContext: appContext)
+            handleSignInError(error: error, appContext: appContext)
         }
     }
 
@@ -95,7 +95,7 @@ extension GlobalRouter: GlobalRouterType {
             }
         } catch {
             logger.logError("Failed to sign out due to \(error.localizedDescription)")
-            handle(error: error, appContext: appContext)
+            hanleFatalError(error)
         }
     }
 
@@ -134,7 +134,7 @@ extension GlobalRouter: GlobalRouterType {
             proceed(with: appContext.withSession(session))
         } catch {
             logger.logError("Failed to switch active user due to \(error.localizedDescription)")
-            handle(error: error, appContext: appContext)
+            hanleFatalError(error)
         }
     }
 
@@ -157,15 +157,32 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func handle(error: Error, appContext: AppContext) {
-        if let gmailUserError = error as? GoogleUserServiceError,
-           case .userNotAllowedAllNeededScopes = gmailUserError {
-            logger.logInfo("gmail login failed with error \(gmailUserError.errorMessage)")
-            let navigationController = keyWindow.rootViewController?.navigationController
-            let checkAuthViewController = CheckMailAuthViewController(appContext: appContext)
-            navigationController?.pushViewController(checkAuthViewController, animated: true)
-        } else {
-            keyWindow.rootViewController = FatalErrorViewController(error: error)
+    private func handleSignInError(error: Error, appContext: AppContext) {
+        if let gmailUserError = error as? GoogleUserServiceError {
+            logger.logInfo("Gmail login failed with error: \(gmailUserError.errorMessage)")
+
+            if case .cancelledAuthorization = gmailUserError {
+                proceed()
+                return
+            }
+
+            if case .userNotAllowedAllNeededScopes = gmailUserError {
+                let navigationController = keyWindow.rootViewController?.navigationController
+                let checkAuthViewController = CheckMailAuthViewController(appContext: appContext)
+                navigationController?.pushViewController(checkAuthViewController, animated: true)
+                return
+            }
         }
+
+        keyWindow.rootViewController?.showAlert(
+            title: "error".localized,
+            message: error.localizedDescription,
+            onOk: { [weak self] in self?.proceed() }
+        )
+    }
+
+    @MainActor
+    private func hanleFatalError(_ error: Error) {
+        keyWindow.rootViewController = FatalErrorViewController(error: error)
     }
 }
