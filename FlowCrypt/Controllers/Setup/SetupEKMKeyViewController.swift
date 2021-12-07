@@ -82,7 +82,7 @@ extension SetupEKMKeyViewController {
     private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) async throws {
         self.showSpinner()
         try await self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
-        var allFingerprints: [String] = []
+        var allFingerprints: [[String]] = []
         for keyDetail in self.keys {
             guard let privateKey = keyDetail.private else {
                 throw CreatePassphraseWithExistingKeyError.noPrivateKey
@@ -98,11 +98,14 @@ extension SetupEKMKeyViewController {
                 source: .ekm,
                 for: self.user.email
             )
-            allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
+            allFingerprints.append(contentsOf: parsedKey.keyDetails.map(\.fingerprints))
         }
         if self.storageMethod == .memory {
-            let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: allFingerprints.unique())
-            try appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
+            try allFingerprints
+                    .map { PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0) }
+                    .forEach {
+                        try appContext.passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
+                    }
         }
     }
 }
