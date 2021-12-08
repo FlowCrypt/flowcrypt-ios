@@ -47,7 +47,8 @@ extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {
                 SetupTitleNode.Input(
                     title: (self?.text ?? "").attributed(.regular(16)),
                     insets: .side(16),
-                    backgroundColor: .backgroundColor
+                    backgroundColor: .backgroundColor,
+                    accessibilityIdentifier: "publicKey"
                 )
             )
         }
