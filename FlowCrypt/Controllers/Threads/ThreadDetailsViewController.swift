@@ -83,7 +83,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.messageOperationsProvider = appContext.getRequiredMailProvider().messageOperationsProvider
         self.trashFolderProvider = TrashFolderProvider(
             user: user,
-            folderProvider: FoldersService(
+            foldersService: FoldersService(
                 encryptedStorage: appContext.encryptedStorage,
                 remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
             )

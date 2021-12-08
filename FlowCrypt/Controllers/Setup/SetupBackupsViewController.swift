@@ -22,9 +22,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
     private let appContext: AppContext
-    private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
-    private let core: Core
     private let keyMethods: KeyMethodsType
     private let user: UserId
     private let fetchedEncryptedKeys: [KeyDetails]
@@ -45,17 +43,13 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     init(
         appContext: AppContext,
         fetchedEncryptedKeys: [KeyDetails],
-        router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
         user: UserId
     ) {
         self.appContext = appContext
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
-        self.router = router
         self.decorator = decorator
-        self.core = core
         self.keyMethods = keyMethods
         self.user = user
 
@@ -179,11 +173,11 @@ extension SetupBackupsViewController {
     }
 
     func handleBackButtonTap() {
-        router.signOut(appContext: appContext)
+        appContext.globalRouter.signOut(appContext: appContext)
     }
 
     private func moveToMainFlow() {
-        router.proceed()
+        appContext.globalRouter.proceed()
     }
 }
 

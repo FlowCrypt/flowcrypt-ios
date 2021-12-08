@@ -27,8 +27,6 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
 
     let appContext: AppContext
     let decorator: SetupViewDecorator
-    let core: Core = Core.shared
-    let router: GlobalRouterType
     let user: UserId
     let fetchedKeysCount: Int
 
@@ -57,7 +55,6 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         self.appContext = appContext
         self.user = user
         self.fetchedKeysCount = fetchedKeysCount
-        self.router = router
         self.decorator = decorator
         super.init(node: TableNode())
     }
@@ -90,7 +87,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     }
 
     func handleBackButtonTap() {
-        router.signOut(appContext: self.appContext)
+        appContext.globalRouter.signOut(appContext: self.appContext)
     }
 }
 
@@ -130,7 +127,7 @@ extension SetupCreatePassphraseAbstractViewController {
 extension SetupCreatePassphraseAbstractViewController {
 
     func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) async throws {
-        let strength = try await self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
+        let strength = try await Core.shared.zxcvbnStrengthBar(passPhrase: passPhrase)
         guard strength.word.pass else {
             throw CreateKeyError.weakPassPhrase(strength)
         }
@@ -172,7 +169,7 @@ extension SetupCreatePassphraseAbstractViewController {
 
 extension SetupCreatePassphraseAbstractViewController {
     func moveToMainFlow() {
-        router.proceed()
+        appContext.globalRouter.proceed()
     }
 
     private func showChoosingOptions() {

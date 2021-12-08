@@ -13,7 +13,7 @@ protocol UsersMailSessionProvider {
 // MARK: - GmailService
 extension GmailService: UsersMailSessionProvider {
     func renewSession() async throws {
-        try await userService.renewSession()
+        try await gmailUserService.renewSession()
     }
 }
 
