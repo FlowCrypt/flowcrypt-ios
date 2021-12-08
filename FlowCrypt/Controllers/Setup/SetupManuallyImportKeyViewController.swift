@@ -31,7 +31,6 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
     private let appContext: AppContext
     private let decorator: SetupViewDecorator
     private let pasteboard: UIPasteboard
-    private let core: Core
 
     private var userInfoMessage = "" {
         didSet { updateSubtitle() }
@@ -40,13 +39,11 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
     init(
         appContext: AppContext,
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        pasteboard: UIPasteboard = UIPasteboard.general,
-        core: Core = Core.shared
+        pasteboard: UIPasteboard = UIPasteboard.general
     ) {
         self.appContext = appContext
         self.pasteboard = pasteboard
         self.decorator = decorator
-        self.core = core
         super.init(node: TableNode())
     }
 
@@ -170,7 +167,7 @@ extension SetupManuallyImportKeyViewController {
     }
 
     private func parseUserProvided(data keyData: Data) async throws {
-        let keys = try await core.parseKeys(armoredOrBinary: keyData)
+        let keys = try await Core.shared.parseKeys(armoredOrBinary: keyData)
         let privateKey = keys.keyDetails.filter { $0.private != nil }
         let user = appContext.dataService.email ?? "unknown_title".localized
         if privateKey.isEmpty {

@@ -21,7 +21,7 @@ class GmailServiceTest: XCTestCase {
         backupSearchQueryProvider = GmailBackupSearchQueryProviderMock()
         sut = GmailService(
             currentUserEmail: "user@example.test",
-            userService: userService,
+            gmailUserService: userService,
             backupSearchQueryProvider: backupSearchQueryProvider
         )
     }
