@@ -5,7 +5,8 @@ require('dotenv').config({ path: pathWdioConfig.resolve(__dirname, '../.env') })
 
 config.suites = {
   all: [
-    './tests/specs/live/**/*.spec.ts'
+    './tests/specs/live/inbox/*.spec.ts'
+      // './tests/specs/live/**/*.spec.ts'
   ],
   settings: [
     './tests/specs/live/settings/*.spec.ts'
