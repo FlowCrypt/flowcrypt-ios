@@ -114,7 +114,7 @@ final class PassPhraseService: PassPhraseServiceType {
     func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) throws {
         for privateKey in privateKeys {
             let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: privateKey.fingerprints)
-            try savePassPhrase(with: pp, storageMethod: StorageMethod.memory)
+            try savePassPhrase(with: pp, storageMethod: .memory)
         }
     }
 

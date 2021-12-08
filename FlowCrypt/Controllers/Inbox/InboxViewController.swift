@@ -67,7 +67,6 @@ final class InboxViewController: ASDKViewController<ASDisplayNode> {
 
         setupUI()
         setupNavigationBar()
-        fetchAndRenderEmails(nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -127,7 +126,9 @@ extension InboxViewController {
 // MARK: - Helpers
 extension InboxViewController {
     private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        appContext.getRequiredMailProvider().currentMessagesListPagination(from: number, token: state.token)
+        appContext
+            .getRequiredMailProvider()
+            .currentMessagesListPagination(from: number, token: state.token)
     }
 
     private func messagesToLoad() -> Int {
@@ -197,11 +198,11 @@ extension InboxViewController {
     private func loadMore(_ batchContext: ASBatchContext?) {
         guard state.canLoadMore else { return }
 
-        let pagination = currentMessagesListPagination(from: inboxInput.count)
-        state = .fetching
-
         Task {
             do {
+                let pagination = currentMessagesListPagination(from: inboxInput.count)
+                state = .fetching
+
                 let context = try await service.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
@@ -225,7 +226,7 @@ extension InboxViewController {
     private func handleBeginFetching(_ context: ASBatchContext?) {
         switch state {
         case .idle:
-            break
+            fetchAndRenderEmails(context)
         case let .fetched(.byNumber(total)):
             if inboxInput.count != total {
                 loadMore(context)

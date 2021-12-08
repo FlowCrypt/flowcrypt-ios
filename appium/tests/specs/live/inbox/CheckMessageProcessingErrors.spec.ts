@@ -43,8 +43,6 @@ describe('INBOX: ', () => {
     // Checking MDC hash mismatch message
     await MailFolderScreen.searchEmailBySubject(encryptedMDCSubject);
     await MailFolderScreen.clickOnEmailBySubject(encryptedMDCSubject);
-    await EmailScreen.enterPassPhrase();
-    await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(encryptedMDCEmail, encryptedMDCSubject, encryptedMDCText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
