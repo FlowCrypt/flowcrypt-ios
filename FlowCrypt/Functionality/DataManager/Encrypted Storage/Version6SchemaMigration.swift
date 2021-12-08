@@ -9,16 +9,101 @@
 import FlowCryptCommon
 import RealmSwift
 
-final class Version6SchemaMigration {
-    private lazy var logger = Logger.nested(in: Self.self, with: .migration)
+extension SchemaMigration {
+    final class Version6 {
+        private lazy var logger = Logger.nested(in: Self.self, with: .migration)
 
-    private let migration: Migration
+        private let migration: Migration
 
-    init(migration: Migration) {
-        self.migration = migration
-    }
+        private var users: [String: MigrationObject] = [:]
+        private var lastError: Error?
 
-    func perform() {
-        logger.logInfo("Start version 6 migration")
+        init(migration: Migration) {
+            self.migration = migration
+        }
+
+        func perform() {
+            logger.logInfo("Start version 6 migration")
+
+            let objects: [(String, (MigrationObject) throws -> Void)] = [
+                ("UserRealmObject", prepareUserRealmObject),
+                ("KeyInfoRealmObject", renameKeyInfoRealmObject)
+            ]
+            objects.forEach { object in
+                migration.enumerateObjects(ofType: object.0) { oldObject, newObject in
+                    guard
+                        lastError == nil,
+                        let oldObject = oldObject,
+                        newObject == nil
+                    else {
+                        lastError = AppErr.unexpected("Wrong Realm configuration")
+                        return
+                    }
+
+                    do {
+                        try object.1(oldObject)
+                    } catch {
+                        lastError = error
+                    }
+                }
+            }
+
+            let type = "KeyInfoRealmObject"
+            if !migration.deleteData(forType: type) {
+                logger.logWarning("fail to delete data for type \(type)")
+            }
+
+            guard let error = lastError else {
+                logger.logInfo("End version 6 migration")
+                return
+            }
+            logger.logError(error.localizedDescription)
+            fatalError(error.localizedDescription)
+        }
+
+        private func prepareUserRealmObject(oldObject: MigrationObject) throws {
+            guard let email = oldObject[Properties.User.email] as? String else {
+                throw AppErr.unexpected("Wrong UserObject primary key")
+            }
+
+            users[email] = oldObject
+        }
+
+        private func renameKeyInfoRealmObject(oldObject: MigrationObject) throws {
+            let newObject = migration.create(KeypairRealmObject.className())
+
+            let primitiveProperties: [RealmProperty] = [
+                Properties.Keypair.private,
+                Properties.Keypair.public,
+                Properties.Keypair.primaryFingerprint,
+                Properties.Keypair.passphrase,
+                Properties.Keypair.source,
+                Properties.Keypair.allFingerprints,
+                Properties.Keypair.allLongids
+            ]
+            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
+
+            guard
+                let oldUserObject = oldObject[Properties.Keypair.user] as? Object,
+                let email = oldUserObject[Properties.User.email] as? String,
+                let userObject = users[email]
+            else {
+                throw AppErr.unexpected("Wrong UserObject primary key")
+            }
+            newObject[Properties.Keypair.user] = userObject
+
+            guard
+                let userObject = newObject[Properties.Keypair.user] as? Object,
+                let email = userObject[Properties.User.email] as? String,
+                let primaryFingerprint = newObject[Properties.Keypair.primaryFingerprint] as? String
+            else {
+                throw AppErr.unexpected("KeypairRealmObject primary key")
+            }
+
+            newObject[Properties.Keypair.primaryKey] = KeypairRealmObject.createPrimaryKey(
+                primaryFingerprint: primaryFingerprint,
+                email: email
+            )
+        }
     }
 }

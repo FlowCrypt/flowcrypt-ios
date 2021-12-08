@@ -43,6 +43,7 @@
 		2C60AB0C272564D40040D7F2 /* InvalidStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */; };
 		2CAF25322756C37E005C7C7C /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAF25312756C37E005C7C7C /* AppContext.swift */; };
 		2CAF25342756C3A6005C7C7C /* ImapSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAF25332756C3A6005C7C7C /* ImapSessionProvider.swift */; };
+		2CB1BF2127611138008E1898 /* SchemaMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB1BF2027611138008E1898 /* SchemaMigration.swift */; };
 		2CC12C3F273571B80021DDDF /* AttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC12C3E273571B80021DDDF /* AttachmentManager.swift */; };
 		2CC50FAF27440B2C0051629A /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC50FAE27440B2C0051629A /* Session.swift */; };
 		2CC50FB12744167A0051629A /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC50FB02744167A0051629A /* Folder.swift */; };
@@ -458,6 +459,7 @@
 		2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidStorageViewController.swift; sourceTree = "<group>"; };
 		2CAF25312756C37E005C7C7C /* AppContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
 		2CAF25332756C3A6005C7C7C /* ImapSessionProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImapSessionProvider.swift; sourceTree = "<group>"; };
+		2CB1BF2027611138008E1898 /* SchemaMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaMigration.swift; sourceTree = "<group>"; };
 		2CC12C3E273571B80021DDDF /* AttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManager.swift; sourceTree = "<group>"; };
 		2CC50FAE27440B2C0051629A /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		2CC50FB02744167A0051629A /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
@@ -1309,6 +1311,7 @@
 			children = (
 				9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */,
 				9F589F14238C8249007FD759 /* KeyChainService.swift */,
+				2CB1BF2027611138008E1898 /* SchemaMigration.swift */,
 				2C08F6BD273FA7B900EE1610 /* Version5SchemaMigration.swift */,
 				2C2D0B94275FDF6B0052771D /* Version6SchemaMigration.swift */,
 			);
@@ -2723,6 +2726,7 @@
 				5180CB9327357B67001FC7EF /* RawClientConfiguration.swift in Sources */,
 				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,
 				601EEE31272B19D200FE445B /* CheckMailAuthViewController.swift in Sources */,
+				2CB1BF2127611138008E1898 /* SchemaMigration.swift in Sources */,
 				9F5C2A7E257E64D500DE9B4B /* MessageOperationsProvider.swift in Sources */,
 				32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */,
 				32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */,
