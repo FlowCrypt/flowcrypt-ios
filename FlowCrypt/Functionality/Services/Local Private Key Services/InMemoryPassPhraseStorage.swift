@@ -53,14 +53,9 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
                 )
 
                 let timePassed = components.second ?? 0
-
                 let isPassPhraseValid = timePassed < timeoutInSeconds
 
-                if isPassPhraseValid {
-                    return passPhrase
-                } else {
-                    return nil
-                }
+                return isPassPhraseValid ? passPhrase : nil
             }
     }
 }
