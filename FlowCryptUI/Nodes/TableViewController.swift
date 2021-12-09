@@ -33,12 +33,9 @@ public extension UINavigationItem {
         titleLabel.sizeToFit()
         titleView = titleLabel
         
-        let accessibilityIdentifier = "navigationItem\((id ?? ""))"
-            .replacingOccurrences(of: " ", with: "")
-            .capitalized
         titleLabel.isAccessibilityElement = true
         titleLabel.accessibilityTraits = .header
-        titleView?.accessibilityIdentifier = accessibilityIdentifier
+        titleView?.accessibilityIdentifier = "navigationItem\((id ?? "").capitalized)"
         titleView?.isAccessibilityElement = true
         titleView?.accessibilityTraits = .header
         isAccessibilityElement = true
