@@ -4,11 +4,11 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   MENU_ICON: '~menu icn',
-  LOGOUT_BTN: '~Log out',
-  SETTINGS_BTN: '~Settings',
-  INBOX_BTN: '~INBOX',
-  SENT_BTN: '~SENT',
-  TRASH_BTN: '~TRASH',
+  LOGOUT_BTN: '~menuBarItemLog out',
+  SETTINGS_BTN: '~menuBarItemSettings',
+  INBOX_BTN: '~menuBarItemInbox',
+  SENT_BTN: '~menuBarItemSent',
+  TRASH_BTN: '~menuBarItemTrash',
 };
 
 class MenuBarScreen extends BaseScreen {

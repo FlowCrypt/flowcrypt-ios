@@ -32,9 +32,6 @@ final class ClientConfigurationService {
 extension ClientConfigurationService: ClientConfigurationServiceType {
 
     func fetch(for user: User) async throws -> ClientConfiguration {
-//        guard let user = user else {
-//            throw AppErr.noCurrentUser
-//        }
         do {
             let raw = try await server.getClientConfiguration(for: user.email)
             try local.save(for: user, raw: raw)

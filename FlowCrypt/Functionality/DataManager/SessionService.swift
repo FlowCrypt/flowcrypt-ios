@@ -13,7 +13,7 @@ protocol SessionServiceType {
     func startSessionFor(session: SessionType) throws
     func switchActiveSessionFor(user: User) throws -> SessionType?
     func startActiveSessionForNextUser() throws -> SessionType?
-    func cleanupSessions() throws
+    func logOutUsersThatDontHaveAnyKeysSetUp() throws
     func cleanup()
 }
 
@@ -23,14 +23,14 @@ final class SessionService {
 
     private let imap: Imap
     private let googleService: GoogleUserService
-    private let dataService: DataService
+    private let dataService: DataServiceType
 
     private lazy var logger = Logger.nested(Self.self)
 
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler,
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
-        dataService: DataService,
+        dataService: DataServiceType,
         imap: Imap? = nil,
         googleService: GoogleUserService
     ) {
@@ -93,8 +93,7 @@ extension SessionService: SessionServiceType {
         return try switchActiveSession(for: currentUser)
     }
 
-    // todo - rename to "logOutUsersThatDontHaveAnyKeysSetUp"
-    func cleanupSessions() throws {
+    func logOutUsersThatDontHaveAnyKeysSetUp() throws {
         logger.logInfo("Clean up sessions")
         for user in encryptedStorage.getAllUsers() {
             if !encryptedStorage.doesAnyKeypairExist(for: user.email) {
