@@ -16,8 +16,6 @@ const SELECTORS = {
   RETURN_BUTTON: '~Return',
   BACK_BUTTON: '~arrow left c',
   SEND_BUTTON: '~android send',
-  ERROR_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Error"`]',
-  OK_BUTTON: '~OK'
 };
 
 class NewMessageScreen extends BaseScreen {
@@ -63,14 +61,6 @@ class NewMessageScreen extends BaseScreen {
 
   get sendButton() {
     return $(SELECTORS.SEND_BUTTON);
-  }
-
-  get errorHeader() {
-    return $(SELECTORS.ERROR_HEADER)
-  }
-
-  get okButton() {
-    return $(SELECTORS.OK_BUTTON);
   }
 
   setAddRecipient = async (recipient: string) => {
@@ -150,18 +140,6 @@ class NewMessageScreen extends BaseScreen {
 
   clickSendButton = async () => {
     await ElementHelper.waitAndClick(await this.sendButton);
-  }
-
-  checkError = async (errorText: string) => {
-    const message = '-ios class chain:**/XCUIElementTypeAlert/XCUIElementTypeOther/XCUIElementTypeOther/' +
-      'XCUIElementTypeOther[2]/XCUIElementTypeScrollView[1]/XCUIElementTypeOther[1]/XCUIElementTypeStaticText[2]';//it works only with this selector
-    await expect(await this.errorHeader).toBeDisplayed();
-    await expect(await $(message)).toHaveAttribute('value', `${errorText}`);
-    await expect(await this.okButton).toBeDisplayed();
-  }
-
-  clickOkButtonOnError = async () => {
-    await ElementHelper.waitAndClick(await this.okButton)
   }
 }
 

@@ -3,10 +3,10 @@ import TouchHelper from "../helpers/TouchHelper";
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  TRASH_HEADER: '-ios class chain:**/XCUIElementTypeNavigationBar[`name == "TRASH"`]',
-  SENT_HEADER: '-ios class chain:**/XCUIElementTypeNavigationBar[`name == "SENT"`]',
+  TRASH_HEADER: '~Navigationitemtrash',
+  SENT_HEADER: '~Navigationitemsent',
   CREATE_EMAIL_BUTTON: '-ios class chain:**/XCUIElementTypeButton[`label == "+"`]',
-  INBOX_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "INBOX"`]',
+  INBOX_HEADER: '~Navigationiteminbox',
   SEARCH_ICON: '~search icn',
   HELP_ICON: '~help icn',
   SEARCH_FIELD: '~searchAllEmailField'

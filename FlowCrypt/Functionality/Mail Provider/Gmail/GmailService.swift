@@ -13,14 +13,14 @@ import GoogleAPIClientForREST_Gmail
 class GmailService: MailServiceProvider {
 
     let mailServiceProviderType = MailServiceProviderType.gmail
-    let userService: GoogleUserServiceType
+    let gmailUserService: GoogleUserServiceType
     let backupSearchQueryProvider: GmailBackupSearchQueryProviderType
 
     let logger = Logger.nested("GmailService")
     var gmailService: GTLRService {
         let service = GTLRGmailService()
 
-        if userService.authorization == nil {
+        if gmailUserService.authorization == nil {
             logger.logWarning("authorization for current user is nil")
         }
 
@@ -29,7 +29,7 @@ class GmailService: MailServiceProvider {
             let progress = Float(uploaded) / Float(total)
             self?.progressHandler?(progress)
         }
-        service.authorizer = userService.authorization
+        service.authorizer = gmailUserService.authorization
         return service
     }
 
@@ -37,10 +37,10 @@ class GmailService: MailServiceProvider {
 
     init(
         currentUserEmail: String,
-        userService: GoogleUserServiceType,
+        gmailUserService: GoogleUserServiceType,
         backupSearchQueryProvider: GmailBackupSearchQueryProviderType = GmailBackupSearchQueryProvider()
     ) {
-        self.userService = userService
+        self.gmailUserService = gmailUserService
         self.backupSearchQueryProvider = backupSearchQueryProvider
     }
 }

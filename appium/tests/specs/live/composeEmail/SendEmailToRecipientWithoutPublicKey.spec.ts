@@ -6,6 +6,7 @@ import {
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
+import BaseScreen from "../../../screenobjects/base.screen";
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -25,6 +26,6 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo(noPublicKeyRecipient, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
 
-    await NewMessageScreen.checkError(noPublicKeyError);
+    await BaseScreen.checkErrorModal(noPublicKeyError);
   });
 });
