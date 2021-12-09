@@ -20,7 +20,6 @@ public final class AttachmentNode: CellNode {
         var cellIdentifier: String { "attachmentCell\(index)" }
         var titleLabelIdentifier: String { "attachmentTitleLabel\(index)" }
         var deleteButtonIdentifier: String { "attachmentDeleteButton\(index)" }
-        var downloadButtonIdentifier: String { "attachmentDownloadButton\(index)" }
     }
 
     private let titleNode = ASTextNode()

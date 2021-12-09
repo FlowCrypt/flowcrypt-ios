@@ -7,7 +7,8 @@ const SELECTORS = {
   ENTER_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
   OK_BUTTON: '~Ok',
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
-  DOWNLOAD_ATTACHMENT_BUTTON: '~attachmentDownloadButton0',
+  ATTACHMENT_CELL: '~attachmentCell0',
+  ATTACHMENT_TITLE: 'attachmentTitleLabel0',
   REPLY_BUTTON: '~replyButton',
   RECIPIENTS_BUTTON: '~messageRecipientButton',
   RECIPIENTS_TO_LABEL: '~toLabel0',
@@ -44,8 +45,12 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.WRONG_PASS_PHRASE_MESSAGE)
   }
 
-  get downloadAttachmentButton() {
-    return $(SELECTORS.DOWNLOAD_ATTACHMENT_BUTTON);
+  get attachmentCell() {
+    return $(SELECTORS.ATTACHMENT_CELL);
+  }
+
+  get attachmentTitle() {
+    return $(SELECTORS.ATTACHMENT_TITLE);
   }
 
   get replyButton() {
@@ -133,19 +138,13 @@ class EmailScreen extends BaseScreen {
     await (await this.wrongPassPhraseMessage).waitForDisplayed();
   }
 
-  attachmentName = async (name: string) => {
-    const selector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${name}"\`]`;
-    return $(selector);
-  }
-
   checkAttachment = async (name: string) => {
-    await (await this.downloadAttachmentButton).waitForDisplayed();
-    const element = await this.attachmentName(name);
-    await element.waitForDisplayed();
+    await (await this.attachmentCell).waitForDisplayed();
+    await ElementHelper.checkStaticText(await this.attachmentTitle, name);
   }
 
   clickOnDownloadButton = async () => {
-    await ElementHelper.waitAndClick(await this.downloadAttachmentButton);
+    await ElementHelper.waitAndClick(await this.attachmentCell);
   }
 
   clickReplyButton = async () => {
