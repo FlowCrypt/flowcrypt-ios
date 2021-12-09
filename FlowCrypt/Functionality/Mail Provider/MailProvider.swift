@@ -108,7 +108,7 @@ private struct MailServiceProviderFactory {
             Imap(user: user),
             GmailService(
                 currentUserEmail: user.email,
-                userService: GoogleUserService(
+                gmailUserService: GoogleUserService(
                     currentUserEmail: user.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegateGoogleSesssionContainer
                 )
