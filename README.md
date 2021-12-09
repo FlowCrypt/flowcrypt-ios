@@ -34,6 +34,7 @@ See [Appium README](./appium/README.md)
 - UI - [Texture documentation](https://texturegroup.org/docs/getting-started.html)
 - Storage - [Realm](https://github.com/realm)
 - IMAP/SMTP provider - [MailCore](https://github.com/MailCore/mailcore2)
+- icons - use https://developer.apple.com/sf-symbols/
 
 ## Admin - generating .ipa for penetration tester
 
