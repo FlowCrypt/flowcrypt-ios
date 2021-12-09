@@ -42,7 +42,9 @@ extension SchemaMigration {
                         let oldObject = oldObject,
                         newObject == nil
                     else {
-                        lastError = AppErr.unexpected("Wrong Realm configuration")
+                        if lastError == nil {
+                            lastError = AppErr.unexpected("Wrong Realm configuration")
+                        }
                         return
                     }
 

@@ -83,6 +83,7 @@ extension KeypairRealmObject {
     static func createPrimaryKey(primaryFingerprint: String, email: String) -> String {
         var hash = SHA256()
         hash.update(data: primaryFingerprint.data())
+        hash.update(data: Data(count: 1))
         hash.update(data: email.data())
         return hash.finalize()
             .compactMap { String(format: "%02x", $0) }.joined()

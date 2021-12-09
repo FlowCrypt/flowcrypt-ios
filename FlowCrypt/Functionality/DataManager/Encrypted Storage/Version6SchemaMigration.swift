@@ -25,30 +25,44 @@ extension SchemaMigration {
         func perform() {
             logger.logInfo("Start version 6 migration")
 
-            let objects: [(String, (MigrationObject) throws -> Void)] = [
-                ("UserRealmObject", prepareUserRealmObject),
-                ("KeyInfoRealmObject", renameKeyInfoRealmObject)
-            ]
-            objects.forEach { object in
-                migration.enumerateObjects(ofType: object.0) { oldObject, newObject in
-                    guard
-                        lastError == nil,
-                        let oldObject = oldObject,
-                        newObject == nil
-                    else {
+            migration.enumerateObjects(ofType: "UserRealmObject") { _, newObject in
+                guard
+                    lastError == nil,
+                    let newObject = newObject
+                else {
+                    if lastError == nil {
                         lastError = AppErr.unexpected("Wrong Realm configuration")
-                        return
                     }
+                    return
+                }
 
-                    do {
-                        try object.1(oldObject)
-                    } catch {
-                        lastError = error
-                    }
+                do {
+                    try prepareUserRealmObject(newObject)
+                } catch {
+                    lastError = error
                 }
             }
 
             let type = "KeyInfoRealmObject"
+            migration.enumerateObjects(ofType: type) { oldObject, newObject in
+                guard
+                    lastError == nil,
+                    let oldObject = oldObject,
+                    newObject == nil
+                else {
+                    if lastError == nil {
+                        lastError = AppErr.unexpected("Wrong Realm configuration")
+                    }
+                    return
+                }
+
+                do {
+                    try renameKeyInfoRealmObject(oldObject)
+                } catch {
+                    lastError = error
+                }
+            }
+
             if !migration.deleteData(forType: type) {
                 logger.logWarning("fail to delete data for type \(type)")
             }
@@ -61,15 +75,15 @@ extension SchemaMigration {
             fatalError(error.localizedDescription)
         }
 
-        private func prepareUserRealmObject(oldObject: MigrationObject) throws {
-            guard let email = oldObject[Properties.User.email] as? String else {
+        private func prepareUserRealmObject(_ newObject: MigrationObject) throws {
+            guard let email = newObject[Properties.User.email] as? String else {
                 throw AppErr.unexpected("Wrong UserObject primary key")
             }
 
-            users[email] = oldObject
+            users[email] = newObject
         }
 
-        private func renameKeyInfoRealmObject(oldObject: MigrationObject) throws {
+        private func renameKeyInfoRealmObject(_ oldObject: MigrationObject) throws {
             let newObject = migration.create(KeypairRealmObject.className())
 
             let primitiveProperties: [RealmProperty] = [

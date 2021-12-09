@@ -9,32 +9,26 @@
 import RealmSwift
 
 protocol RealmProperty {
-    var propertyKey: String { get }
+    var rawValue: String { get }
 }
 
-enum SchemaMigration {}
-
-extension SchemaMigration {
-    enum Properties {}
+struct SchemaMigration {
+    struct Properties {}
 }
 
 extension Object {
     subscript(property: RealmProperty) -> Any? {
         get {
-            return self[property.propertyKey]
+            return self[property.rawValue]
         }
         set {
-            self[property.propertyKey] = newValue
+            self[property.rawValue] = newValue
         }
     }
 }
 
 extension SchemaMigration.Properties {
     enum User: String, RealmProperty {
-        var propertyKey: String {
-            rawValue
-        }
-
         case email
         case isActive
         case name
@@ -43,10 +37,6 @@ extension SchemaMigration.Properties {
     }
 
     enum Folder: String, RealmProperty {
-        var propertyKey: String {
-            rawValue
-        }
-
         case name
         case path
         case image
@@ -55,10 +45,6 @@ extension SchemaMigration.Properties {
     }
 
     enum ClientConfiguration: String, RealmProperty {
-        var propertyKey: String {
-            rawValue
-        }
-
         case flags
         case customKeyserverUrl
         case keyManagerUrl
@@ -70,10 +56,6 @@ extension SchemaMigration.Properties {
     }
 
     enum PubKey: String, RealmProperty {
-        var propertyKey: String {
-            rawValue
-        }
-
         case primaryFingerprint
         case armored
         case lastSig
@@ -85,10 +67,6 @@ extension SchemaMigration.Properties {
     }
 
     enum Recipient: String, RealmProperty {
-        var propertyKey: String {
-            rawValue
-        }
-
         case email
         case name
         case lastUsed
@@ -96,10 +74,6 @@ extension SchemaMigration.Properties {
     }
 
     enum Session: String, RealmProperty {
-        var propertyKey: String {
-            rawValue
-        }
-
         case hostname
         case port
         case username
@@ -110,10 +84,6 @@ extension SchemaMigration.Properties {
     }
 
     enum Keypair: String, RealmProperty {
-        var propertyKey: String {
-            rawValue
-        }
-
         case primaryKey
         case primaryFingerprint
         case `private`

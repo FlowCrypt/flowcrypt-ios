@@ -148,16 +148,16 @@ extension EncryptedStorage {
             return
         }
 
-        let migrations = supportedSchemas.filter({ $0.version.dbSchemaVersion > oldSchemaVersion })
-        for schema in migrations {
-            switch schema {
-            case .initial:
-                migrationLogger.logInfo("Schema migration not needed for initial schema")
-            case .version5:
-                SchemaMigration.Version5(migration: migration).perform()
-            case .version6:
-                SchemaMigration.Version6(migration: migration).perform()
-            }
+        let schema = supportedSchemas.first(where: { $0.version.dbSchemaVersion > oldSchemaVersion })
+        switch schema {
+        case .initial:
+            migrationLogger.logInfo("Schema migration not needed for initial schema")
+        case .version5:
+            SchemaMigration.Version5(migration: migration).perform()
+        case .version6:
+            SchemaMigration.Version6(migration: migration).perform()
+        default:
+            break
         }
     }
 }
