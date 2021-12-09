@@ -221,7 +221,11 @@ extension MyMenuViewController {
             return
         }
 
-        appContext.globalRouter.switchActive(user: account, appContext: appContext)
+        do {
+            try appContext.globalRouter.switchActive(user: account, appContext: appContext)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 }
 
@@ -298,7 +302,11 @@ extension MyMenuViewController {
             }
             sideMenuController()?.setContentViewController(SettingsViewController(appContext: appContext))
         case .logOut:
-            appContext.globalRouter.signOut(appContext: appContext)
+            do {
+                try appContext.globalRouter.signOut(appContext: appContext)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 
