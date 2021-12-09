@@ -173,7 +173,11 @@ extension SetupBackupsViewController {
     }
 
     func handleBackButtonTap() {
-        appContext.globalRouter.signOut(appContext: appContext)
+        do {
+            try appContext.globalRouter.signOut(appContext: appContext)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 
     private func moveToMainFlow() {
