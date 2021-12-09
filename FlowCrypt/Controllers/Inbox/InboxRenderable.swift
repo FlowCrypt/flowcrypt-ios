@@ -23,6 +23,7 @@ struct InboxRenderable {
     let date: Date
 
     let wrappedType: WrappedType
+
 }
 
 extension InboxRenderable {
@@ -35,6 +36,7 @@ extension InboxRenderable {
 }
 
 extension InboxRenderable {
+
     init(message: Message) {
         self.title = message.sender ?? "message_unknown_sender".localized
         self.messageCount = 1
@@ -45,12 +47,10 @@ extension InboxRenderable {
         self.wrappedType = .message(message)
     }
 
-    init(thread: MessageThread) {
-        let sender = thread.messages.compactMap(\.sender)
-            .compactMap { $0.components(separatedBy: "@").first ?? "" }
-            .unique()
-            .joined(separator: ",")
-        self.title = sender
+    init(thread: MessageThread, folderPath: String, activeUserEmail: String) {
+
+        self.title = InboxRenderable.messageTitle(activeUserEmail: activeUserEmail, with: thread, and: folderPath)
+
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missed_subject".localized
         self.isRead = !thread.messages
@@ -64,5 +64,25 @@ extension InboxRenderable {
         }
         self.date = date ?? Date()
         self.wrappedType = .thread(thread)
+    }
+
+    private static func messageTitle(activeUserEmail: String, with thread: MessageThread, and folderPath: String) -> String {
+        // for now its not exactly clear how titles on other folders should looks like
+        // so in scope of this PR we are applying this title presentation only for "sent" folder
+        if folderPath == MessageLabelType.sent.value {
+            let recipients = thread.messages
+                .flatMap(\.allRecipients)
+                .map(\.displayName)
+                .unique()
+                .joined(separator: ", ")
+            return "To: \(recipients)"
+
+        } else {
+            return thread.messages
+                .compactMap(\.sender)
+                .compactMap { $0.components(separatedBy: "@").first }
+                .unique()
+                .joined(separator: ",")
+        }
     }
 }

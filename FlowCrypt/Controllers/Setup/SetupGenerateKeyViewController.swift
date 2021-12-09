@@ -10,18 +10,6 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
-enum CreateKeyError: Error {
-    case weakPassPhrase(_ strength: CoreRes.ZxcvbnStrengthBar)
-    // Missing user email
-    case missedUserEmail
-    // Missing user name
-    case missedUserName
-    // Pass phrases don't match
-    case doesntMatch
-    // silent abort
-    case conformingPassPhraseError
-}
-
 /**
  * Controller which is responsible for generating a new key during setup
  * - User is sent here from **SetupInitialViewController** in case there are no backups found
@@ -30,40 +18,26 @@ enum CreateKeyError: Error {
  */
 final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewController {
 
-    private let backupService: BackupServiceType
     private let attester: AttesterApiType
     private let service: Service
 
     init(
+        appContext: AppContext,
         user: UserId,
-        backupService: BackupServiceType = BackupService(),
-        core: Core = .shared,
-        router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        attester: AttesterApiType = AttesterApi(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
-        self.backupService = backupService
-        self.attester = attester
+        self.attester = AttesterApi(
+            clientConfiguration: appContext.clientConfigurationService.getSaved(for: user.email)
+        )
         self.service = Service(
+            appContext: appContext,
             user: user,
-            backupService: backupService,
-            core: core,
-            keyStorage: keyStorage,
-            storage: storage,
-            attester: attester,
-            passPhraseService: passPhraseService
+            attester: self.attester
         )
         super.init(
+            appContext: appContext,
             user: user,
-            core: core,
-            router: router,
-            decorator: decorator,
-            storage: storage,
-            keyStorage: keyStorage,
-            passPhraseService: passPhraseService
+            decorator: decorator
         )
     }
 
@@ -100,28 +74,18 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 private actor Service {
     typealias ViewController = SetupCreatePassphraseAbstractViewController
 
+    private let appContext: AppContext
     private let user: UserId
-    private let backupService: BackupServiceType
-    private let core: Core
-    private let keyStorage: KeyStorageType
-    private let storage: DataServiceType
     private let attester: AttesterApiType
-    private let passPhraseService: PassPhraseServiceType
 
-    init(user: UserId,
-         backupService: BackupServiceType,
-         core: Core,
-         keyStorage: KeyStorageType,
-         storage: DataServiceType,
-         attester: AttesterApiType,
-         passPhraseService: PassPhraseServiceType) {
+    init(
+        appContext: AppContext,
+        user: UserId,
+        attester: AttesterApiType
+    ) {
+        self.appContext = appContext
         self.user = user
-        self.backupService = backupService
-        self.core = core
-        self.keyStorage = keyStorage
-        self.storage = storage
         self.attester = attester
-        self.passPhraseService = passPhraseService
     }
 
     func setupAccount(passPhrase: String,
@@ -131,24 +95,26 @@ private actor Service {
 
         try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
-        let encryptedPrv = try await core.generateKey(
+        let encryptedPrv = try await Core.shared.generateKey(
             passphrase: passPhrase,
             variant: .curve25519,
             userIds: [userId]
         )
-        try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
+        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
 
-        keyStorage.addKeys(keyDetails: [encryptedPrv.key],
-                           passPhrase: storageMethod == .persistent ? passPhrase: nil,
-                           source: .generated,
-                           for: user.email)
+        try appContext.encryptedStorage.putKeypairs(
+            keyDetails: [encryptedPrv.key],
+            passPhrase: storageMethod == .persistent ? passPhrase: nil,
+            source: .generated,
+            for: user.email
+        )
 
         if storageMethod == .memory {
             let passPhrase = PassPhrase(
                 value: passPhrase,
                 fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints
             )
-            passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
+            try appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 
         await submitKeyToAttesterAndShowAlertOnFailure(
@@ -173,7 +139,7 @@ private actor Service {
             _ = try await attester.update(
                 email: email,
                 pubkey: publicKey,
-                token: storage.token
+                token: appContext.dataService.token
             )
         } catch {
             let message = "Failed to submit Public Key"
@@ -182,10 +148,10 @@ private actor Service {
     }
 
     private func getUserId() throws -> UserId {
-        guard let email = storage.email, !email.isEmpty else {
+        guard let email = appContext.dataService.email, !email.isEmpty else {
             throw CreateKeyError.missedUserEmail
         }
-        guard let name = storage.email, !name.isEmpty else {
+        guard let name = appContext.dataService.currentUser?.name, !name.isEmpty else {
             throw CreateKeyError.missedUserName
         }
         return UserId(email: email, name: name)

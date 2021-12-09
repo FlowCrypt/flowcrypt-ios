@@ -24,17 +24,14 @@ final class SignInViewController: TableNodeViewController {
         case links, logo, description, gmail, outlook, other
     }
 
-    private let globalRouter: GlobalRouterType
-    private let core: Core
+    private let appContext: AppContext
     private let decorator: SignInViewDecoratorType
 
     init(
-        globalRouter: GlobalRouterType = GlobalRouter(),
-        core: Core = Core.shared,
+        appContext: AppContext,
         decorator: SignInViewDecoratorType = SignInViewDecorator()
     ) {
-        self.globalRouter = globalRouter
-        self.core = core
+        self.appContext = appContext
         self.decorator = decorator
 
         super.init(node: TableNode())
@@ -116,7 +113,9 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 
 extension SignInViewController {
     private func signInWithGmail() {
-        globalRouter.signIn(with: .gmailLogin(self))
+        Task {
+            await appContext.globalRouter.signIn(appContext: appContext, route: .gmailLogin(self))
+        }
     }
 
     private func signInWithOutlook() {
@@ -124,7 +123,7 @@ extension SignInViewController {
     }
 
     private func proceedToOtherProvider() {
-        let setupViewController = SetupImapViewController()
+        let setupViewController = SetupImapViewController(appContext: appContext)
         navigationController?.pushViewController(setupViewController, animated: true)
     }
 

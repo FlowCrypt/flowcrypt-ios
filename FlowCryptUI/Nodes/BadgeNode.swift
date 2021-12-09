@@ -5,7 +5,6 @@
 //  Created by Roma Sosnovsky on 12/11/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
 import AsyncDisplayKit
 
@@ -14,13 +13,16 @@ public final class BadgeNode: ASDisplayNode {
         public let icon: String?
         public let text: NSAttributedString?
         public let color: UIColor?
+        public let textAccessibilityIdentifier: String
 
         public init(icon: String?,
                     text: NSAttributedString?,
-                    color: UIColor?) {
+                    color: UIColor?,
+                    textAccessibilityIdentifier: String) {
             self.icon = icon
             self.text = text
             self.color = color
+            self.textAccessibilityIdentifier = textAccessibilityIdentifier
         }
     }
 
@@ -43,6 +45,7 @@ public final class BadgeNode: ASDisplayNode {
         automaticallyManagesSubnodes = true
 
         textNode.attributedText = input.text
+        textNode.accessibilityIdentifier = input.textAccessibilityIdentifier
         backgroundColor = input.color
         cornerRadius = 4
     }

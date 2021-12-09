@@ -9,6 +9,7 @@
 import Foundation
 
 extension Imap: MessageProvider {
+
     func fetchMsg(
         message: Message,
         folder: String,

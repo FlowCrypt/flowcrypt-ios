@@ -21,14 +21,11 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     }
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
-    private let router: GlobalRouterType
+    private let appContext: AppContext
     private let decorator: SetupViewDecorator
-    private let core: Core
     private let keyMethods: KeyMethodsType
     private let user: UserId
     private let fetchedEncryptedKeys: [KeyDetails]
-    private let keyStorage: KeyStorageType
-    let passPhraseService: PassPhraseServiceType
 
     private var passPhrase: String?
 
@@ -44,23 +41,17 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     }
 
     init(
+        appContext: AppContext,
         fetchedEncryptedKeys: [KeyDetails],
-        router: GlobalRouterType = GlobalRouter(),
-        keyStorage: KeyStorageType = KeyDataStorage(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
-        user: UserId,
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        user: UserId
     ) {
+        self.appContext = appContext
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
-        self.router = router
-        self.keyStorage = keyStorage
         self.decorator = decorator
-        self.core = core
         self.keyMethods = keyMethods
         self.user = user
-        self.passPhraseService = passPhraseService
 
         super.init(node: TableNode())
     }
@@ -143,10 +134,10 @@ extension SetupBackupsViewController {
         if storageMethod == .memory {
             for backup in matchingKeyBackups {
                 let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: backup.fingerprints)
-                passPhraseService.savePassPhrase(with: pp, storageMethod: storageMethod)
+                try appContext.passPhraseService.savePassPhrase(with: pp, storageMethod: storageMethod)
             }
         }
-        keyStorage.addKeys(
+        try appContext.encryptedStorage.putKeypairs(
             keyDetails: Array(matchingKeyBackups),
             passPhrase: storageMethod == .persistent ? passPhrase : nil,
             source: .backup,
@@ -182,11 +173,11 @@ extension SetupBackupsViewController {
     }
 
     func handleBackButtonTap() {
-        router.signOut()
+        appContext.globalRouter.signOut(appContext: appContext)
     }
 
     private func moveToMainFlow() {
-        router.proceed()
+        appContext.globalRouter.proceed()
     }
 }
 

@@ -14,17 +14,14 @@ class PassPhraseStorageTests: XCTestCase {
     var sut: PassPhraseService!
     var encryptedStorage: PassPhraseStorageMock!
     var inMemoryStorage: PassPhraseStorageMock!
-    var emailProvider: EmailProviderMock!
 
     override func setUp() {
-        emailProvider = EmailProviderMock()
         encryptedStorage = PassPhraseStorageMock()
         inMemoryStorage = PassPhraseStorageMock()
 
         sut = PassPhraseService(
             encryptedStorage: encryptedStorage,
-            localStorage: inMemoryStorage,
-            emailProvider: emailProvider
+            inMemoryStorage: inMemoryStorage
         )
     }
 
@@ -110,7 +107,7 @@ class PassPhraseStorageTests: XCTestCase {
         XCTAssertTrue(result.count == 3)
     }
 
-    func testSavePassPhraseInPersistenStorage() {
+    func testSavePassPhraseInPersistenStorage() throws {
         let passPhraseToSave = PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"])
 
         let expectation = XCTestExpectation()
@@ -131,14 +128,14 @@ class PassPhraseStorageTests: XCTestCase {
             }
         }
 
-        sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
+        try sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
         XCTAssertFalse(inMemoryStorage.saveResult != nil )
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
 
-    func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() {
+    func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() throws {
         let passPhraseToSave = PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"])
 
         let expectation = XCTestExpectation()
@@ -151,7 +148,7 @@ class PassPhraseStorageTests: XCTestCase {
             expectation.fulfill()
         }
 
-        sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
+        try sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
         XCTAssertFalse(inMemoryStorage.saveResult != nil )
 

@@ -67,9 +67,8 @@ final class UserContactsProvider {
         return contactsScope.allSatisfy(currentScope.contains)
     }
 
-    init(userService: GoogleUserServiceType & UserServiceType = GoogleUserService()) {
+    init(userService: GoogleUserServiceType & UserServiceType) {
         self.userService = userService
-
         runWarmupQuery()
     }
 

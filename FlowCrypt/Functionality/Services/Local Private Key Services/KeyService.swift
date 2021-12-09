@@ -22,15 +22,15 @@ enum KeyServiceError: Error {
 final class KeyService: KeyServiceType {
 
     let coreService: Core = .shared
-    let storage: KeyStorageType
+    let storage: EncryptedStorageType
     let passPhraseService: PassPhraseServiceType
     let currentUserEmail: () -> (String?)
     let logger: Logger
 
     init(
-        storage: KeyStorageType = KeyDataStorage(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService(),
-        currentUserEmail: @autoclosure @escaping () -> (String?) = DataService.shared.email
+        storage: EncryptedStorageType,
+        passPhraseService: PassPhraseServiceType,
+        currentUserEmail: @escaping () -> (String?)
     ) {
         self.storage = storage
         self.passPhraseService = passPhraseService
@@ -43,9 +43,7 @@ final class KeyService: KeyServiceType {
         guard let email = currentUserEmail() else {
             throw KeyServiceError.missingCurrentUserEmail
         }
-        let privateKeys = storage.keysInfo()
-            .filter { $0.account == email }
-            .map(\.private)
+        let privateKeys = storage.getKeypairs(by: email).map(\.private)
         let parsed = try await coreService.parseKeys(
             armoredOrBinary: privateKeys.joined(separator: "\n").data()
         )
@@ -61,15 +59,11 @@ final class KeyService: KeyServiceType {
             throw KeyServiceError.missingCurrentUserEmail
         }
 
-        let keysInfo = storage.keysInfo()
-            .filter { $0.account == email }
-            .map(KeyInfo.init)
-
         let storedPassPhrases = passPhraseService.getPassPhrases()
-        let privateKeys = keysInfo
+        let privateKeys = storage.getKeypairs(by: email)
             .map { keyInfo -> PrvKeyInfo in
                 let passphrase = storedPassPhrases
-                    .filter { $0.value.isNotEmpty }
+                    .filter(\.value.isNotEmpty)
                     .first(where: { $0.primaryFingerprintOfAssociatedKey == keyInfo.primaryFingerprint })?
                     .value
                 return PrvKeyInfo(keyInfo: keyInfo, passphrase: passphrase)
@@ -83,7 +77,7 @@ final class KeyService: KeyServiceType {
             throw AppErr.noCurrentUser
         }
 
-        let keysInfo = storage.keysInfo().filter { $0.account == email }.map(KeyInfo.init)
+        let keysInfo = storage.getKeypairs(by: email)
         guard let foundKey = try await findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
             return nil
         }

@@ -9,11 +9,17 @@ const SELECTORS = {
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
   DOWNLOAD_ATTACHMENT_BUTTON: '~attachmentDownloadButton0',
   REPLY_BUTTON: '~replyButton',
+  RECIPIENTS_BUTTON: '~messageRecipientButton',
+  RECIPIENTS_TO_LABEL: '~toLabel0',
+  RECIPIENTS_CC_LABEL: '~ccLabel0',
+  RECIPIENTS_BCC_LABEL: '~bccLabel0',
   MENU_BUTTON: '~messageMenuButton',
   FORWARD_BUTTON: '~Forward',
   DELETE_BUTTON: '~Delete',
   CONFIRM_DELETING: '~OK',
-  SENDER_EMAIL: '~senderEmail'
+  SENDER_EMAIL: '~messageSenderLabel',
+  ENCRYPTION_BADGE: '~encryptionBadge',
+  SIGNATURE_BADGE: '~signatureBadge'
 };
 
 
@@ -46,6 +52,22 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.REPLY_BUTTON);
   }
 
+  get recipientsButton() {
+    return $(SELECTORS.RECIPIENTS_BUTTON);
+  }
+
+  get recipientsToLabel() {
+    return $(SELECTORS.RECIPIENTS_TO_LABEL);
+  }
+
+  get recipientsCcLabel() {
+    return $(SELECTORS.RECIPIENTS_CC_LABEL);
+  }
+
+  get recipientsBccLabel() {
+    return $(SELECTORS.RECIPIENTS_BCC_LABEL);
+  }
+
   get menuButton() {
     return $(SELECTORS.MENU_BUTTON);
   }
@@ -63,12 +85,19 @@ class EmailScreen extends BaseScreen {
   }
 
   get senderEmail() {
-      return $(SELECTORS.SENDER_EMAIL);
+    return $(SELECTORS.SENDER_EMAIL);
+  }
+
+  get encryptionBadge() {
+    return $(SELECTORS.ENCRYPTION_BADGE);
+  }
+
+  get signatureBadge() {
+    return $(SELECTORS.SIGNATURE_BADGE);
   }
 
   checkEmailAddress = async (email: string) => {
-      await (await this.senderEmail).waitForDisplayed();
-      await expect(await this.senderEmail).toHaveText(email);
+    await ElementHelper.checkStaticText(await this.senderEmail, email);
   }
 
   checkEmailSubject = async (subject: string) => {
@@ -123,6 +152,10 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.replyButton);
   }
 
+  clickRecipientsButton =async () => {
+    await ElementHelper.waitAndClick(await this.recipientsButton);
+  }
+
   clickMenuButton = async () => {
     await ElementHelper.waitAndClick(await this.menuButton);
   }
@@ -136,7 +169,25 @@ class EmailScreen extends BaseScreen {
   }
 
   confirmDelete = async () => {
-    await ElementHelper.waitAndClick(await this.confirmDeletingButton)
+    await ElementHelper.waitAndClick(await this.confirmDeletingButton);
+  }
+
+  checkRecipientsButton = async (value: string) => {
+    await ElementHelper.checkStaticText(await this.recipientsButton, value);
+  }
+
+  checkRecipientsList = async (to: string, cc: string, bcc: string) => {
+    await ElementHelper.checkStaticText(await this.recipientsToLabel, to);
+    await ElementHelper.checkStaticText(await this.recipientsCcLabel, cc);
+    await ElementHelper.checkStaticText(await this.recipientsBccLabel, bcc);
+  }
+
+  checkEncryptionBadge = async (value: string) => {
+    await ElementHelper.checkStaticText(await this.encryptionBadge, value);
+  }
+
+  checkSignatureBadge = async (value: string) => {
+    await ElementHelper.checkStaticText(await this.signatureBadge, value);
   }
 }
 

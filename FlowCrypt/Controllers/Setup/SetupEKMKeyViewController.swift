@@ -30,25 +30,17 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
     private let keys: [KeyDetails]
 
     init(
+        appContext: AppContext,
         user: UserId,
         keys: [KeyDetails] = [],
-        core: Core = .shared,
-        router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.keys = keys
         super.init(
+            appContext: appContext,
             user: user,
             fetchedKeysCount: keys.count,
-            core: core,
-            router: router,
-            decorator: decorator,
-            storage: storage,
-            keyStorage: keyStorage,
-            passPhraseService: passPhraseService
+            decorator: decorator
         )
         self.storageMethod = .memory
     }
@@ -88,27 +80,34 @@ extension SetupEKMKeyViewController {
     private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) async throws {
         self.showSpinner()
         try await self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
-        var allFingerprints: [String] = []
+        var allFingerprintsOfAllKeys: [[String]] = []
         for keyDetail in self.keys {
             guard let privateKey = keyDetail.private else {
                 throw CreatePassphraseWithExistingKeyError.noPrivateKey
             }
-            let encryptedPrv = try await self.core.encryptKey(
+            let encryptedPrv = try await Core.shared.encryptKey(
                 armoredPrv: privateKey,
                 passphrase: passPhrase
             )
-            let parsedKey = try await self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-            self.keyStorage.addKeys(
+            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
+            try appContext.encryptedStorage.putKeypairs(
                 keyDetails: parsedKey.keyDetails,
                 passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
                 source: .ekm,
                 for: self.user.email
             )
-            allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
+            allFingerprintsOfAllKeys.append(contentsOf: parsedKey.keyDetails.map(\.fingerprints))
         }
         if self.storageMethod == .memory {
-            let passPhrase = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: allFingerprints.unique())
-            self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
+            for allFingerprintsOfOneKey in allFingerprintsOfAllKeys {
+                try appContext.passPhraseService.savePassPhrase(
+                    with: PassPhrase(
+                        value: passPhrase,
+                        fingerprintsOfAssociatedKey: allFingerprintsOfOneKey
+                    ),
+                    storageMethod: storageMethod
+                )
+            }
         }
     }
 }

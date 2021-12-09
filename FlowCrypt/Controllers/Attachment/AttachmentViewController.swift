@@ -75,13 +75,16 @@ final class AttachmentViewController: UIViewController {
                 NavigationBarItemsView.Input(
                     image: UIImage(named: "download")?.tinted(.gray),
                     title: "save".localized,
-                    onTap: { [weak self] in
-                        guard let self = self else { return }
-                        self.attachmentManager.download(self.file)
-                    }
+                    onTap: { [weak self] in self?.downloadAttachment() }
                 )
             ]
         )
+    }
+
+    private func downloadAttachment() {
+        Task {
+            await attachmentManager.download(file)
+        }
     }
 }
 

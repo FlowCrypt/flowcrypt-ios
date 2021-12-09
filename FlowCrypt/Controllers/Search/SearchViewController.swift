@@ -41,16 +41,25 @@ final class SearchViewController: TableNodeViewController {
     // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads
     private let service: ServiceActor
     private var searchTask: DispatchWorkItem?
-
+    private let appContext: AppContext
     private let searchController = UISearchController(searchResultsController: nil)
     private let folderPath: String
     private var searchedExpression: String = ""
+    private let currentUser: User
 
     init(
-        searchProvider: MessageSearchProvider = MailProvider.shared.messageSearchProvider,
+        appContext: AppContext,
+        searchProvider: MessageSearchProvider? = nil,
         folderPath: String
     ) {
-        self.service = ServiceActor(searchProvider: searchProvider)
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("no current user") // todo - use DI
+        }
+        self.currentUser = currentUser
+        self.appContext = appContext
+        self.service = ServiceActor(
+            searchProvider: searchProvider ?? appContext.getRequiredMailProvider().messageSearchProvider
+        )
         self.folderPath = folderPath
         super.init(node: TableNode())
     }
@@ -79,7 +88,10 @@ final class SearchViewController: TableNodeViewController {
 extension SearchViewController {
     private func setupUI() {
         view.backgroundColor = .backgroundColor
+        view.accessibilityIdentifier = "searchViewController"
+
         title = "search_title".localized
+
         node.delegate = self
         node.dataSource = self
     }
@@ -91,7 +103,7 @@ extension SearchViewController {
             $0.hidesNavigationBarDuringPresentation = false
             $0.searchBar.tintColor = .white
             $0.searchBar.setImage(#imageLiteral(resourceName: "search_icn").tinted(.white), for: .search, state: .normal)
-            $0.searchBar.setImage(#imageLiteral(resourceName: "cancel.png").tinted(.white), for: .clear, state: .normal)
+            $0.searchBar.setImage(#imageLiteral(resourceName: "cancel").tinted(.white), for: .clear, state: .normal)
             $0.searchBar.delegate = self
             $0.searchBar.searchTextField.textColor = .white
         }
@@ -108,6 +120,7 @@ extension SearchViewController {
 
 // MARK: - MessageHandlerViewConroller
 extension SearchViewController: MsgListViewController {
+
     // TODO: - ANTON - check
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
         guard let message = message.wrappedMessage else {
@@ -209,7 +222,7 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         guard let message = state.messages[safe: indexPath.row] else { return }
 
         // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
-        open(with: .init(message: message), path: folderPath)
+        open(with: .init(message: message), path: folderPath, appContext: appContext)
     }
 }
 
@@ -244,6 +257,8 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
                 alignment: .left
             )
         searchController.searchBar.searchTextField.textColor = .white
+        searchController.searchBar.searchTextField.accessibilityIdentifier = "searchAllEmailField"
+
     }
 }
 

@@ -6,7 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Combine
 import UIKit
 
 final class BackupService {
@@ -15,9 +14,9 @@ final class BackupService {
     let messageSender: MessageGateway
 
     init(
-        backupProvider: BackupProvider = MailProvider.shared.backupProvider,
+        backupProvider: BackupProvider,
         core: Core = .shared,
-        messageSender: MessageGateway = MailProvider.shared.messageSender
+        messageSender: MessageGateway
     ) {
         self.backupProvider = backupProvider
         self.core = core

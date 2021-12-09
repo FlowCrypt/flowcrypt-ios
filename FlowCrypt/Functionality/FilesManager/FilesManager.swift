@@ -6,7 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Combine
 import UIKit
 
 protocol FileType {
@@ -27,37 +26,52 @@ protocol FilesManagerPresenter {
 }
 
 protocol FilesManagerType {
+    typealias Controller = FilesManagerPresenter & UIDocumentPickerDelegate
+
     func save(file: FileType) async throws -> URL
 
-    @discardableResult
-    func selectFromFilesApp(from viewController: FilesManagerPresenter & UIDocumentPickerDelegate) -> Future<Void, Error>
+    @MainActor
+    func saveToFilesApp(file: FileType, from viewController: Controller) async throws
+
+    @MainActor
+    func selectFromFilesApp(from viewController: Controller) async
 }
 
-class FilesManager: FilesManagerType {
-
+final class FilesManager {
     private let documentsDirectoryURL: URL = {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }()
 
+    private let queue: DispatchQueue = DispatchQueue.global(qos: .background)
+}
+
+extension FilesManager: FilesManagerType {
     func save(file: FileType) async throws -> URL {
         let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
-        try file.data.write(to: url)
-        return url
-    }
-
-    @discardableResult
-    func selectFromFilesApp(
-        from viewController: FilesManagerPresenter & UIDocumentPickerDelegate
-    ) -> Future<Void, Error> {
-        Future<Void, Error> { future in
-            DispatchQueue.main.async {
-                let documentController = UIDocumentPickerViewController(
-                    documentTypes: ["public.data"], in: .import
-                )
-                documentController.delegate = viewController
-                viewController.present(documentController, animated: true, completion: nil)
-                future(.success(()))
+        return try await withCheckedThrowingContinuation { continuation in
+            queue.async {
+                do {
+                    try file.data.write(to: url)
+                    continuation.resume(returning: url)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
             }
         }
+    }
+
+    func saveToFilesApp(file: FileType, from viewController: Controller) async throws {
+        let url = try await save(file: file)
+        let documentController = UIDocumentPickerViewController(forExporting: [url])
+        documentController.delegate = viewController
+        viewController.present(documentController, animated: true, completion: nil)
+    }
+
+    func selectFromFilesApp(from viewController: Controller) async {
+        let documentController = UIDocumentPickerViewController(
+            documentTypes: ["public.data"], in: .import
+        )
+        documentController.delegate = viewController
+        viewController.present(documentController, animated: true, completion: nil)
     }
 }

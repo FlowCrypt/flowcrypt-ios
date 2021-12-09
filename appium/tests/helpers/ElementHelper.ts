@@ -39,6 +39,11 @@ class ElementHelper {
     await ElementHelper.waitAndClick(await this.staticText(label));
   }
 
+  static checkStaticText = async (element: WebdriverIO.Element, label: string) => {
+    await this.waitElementVisible(element);
+    await expect(element).toHaveText(label);
+  }
+
   static doubleClick = async (element: WebdriverIO.Element) => {
     await this.waitElementVisible(element);
     await element.doubleClick();
@@ -47,12 +52,12 @@ class ElementHelper {
   static waitAndClick = async (element: WebdriverIO.Element, delayMs = 50) => {
     await element.waitForDisplayed();
     // stability fix to make sure element is ready for interaction
-    await browser.pause(delayMs)
+    await browser.pause(delayMs);
     await element.click();
   }
 
   static waitClickAndType = async (element: WebdriverIO.Element, text: string) => {
-    await this.waitAndClick(element)
+    await this.waitAndClick(element);
     await element.setValue(text);
   }
 }

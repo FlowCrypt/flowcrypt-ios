@@ -54,9 +54,9 @@ extension PassPhrase {
 
 // MARK: - Pass Phrase Storage
 protocol PassPhraseStorageType {
-    func save(passPhrase: PassPhrase)
-    func update(passPhrase: PassPhrase)
-    func remove(passPhrase: PassPhrase)
+    func save(passPhrase: PassPhrase) throws
+    func update(passPhrase: PassPhrase) throws
+    func remove(passPhrase: PassPhrase) throws
 
     func getPassPhrases() -> [PassPhrase]
 }
@@ -64,49 +64,46 @@ protocol PassPhraseStorageType {
 // MARK: - PassPhraseService
 protocol PassPhraseServiceType {
     func getPassPhrases() -> [PassPhrase]
-    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod)
-    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod)
-    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo])
+    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
+    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
+    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) throws
 }
 
 final class PassPhraseService: PassPhraseServiceType {
     private lazy var logger = Logger.nested(Self.self)
 
-    let currentUserEmail: String?
     let encryptedStorage: PassPhraseStorageType
     let inMemoryStorage: PassPhraseStorageType
 
     init(
-        encryptedStorage: PassPhraseStorageType = EncryptedStorage(),
-        localStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
-        emailProvider: EmailProviderType = DataService.shared
+        encryptedStorage: PassPhraseStorageType,
+        inMemoryStorage: PassPhraseStorageType = InMemoryPassPhraseStorage()
     ) {
         self.encryptedStorage = encryptedStorage
-        self.inMemoryStorage = localStorage
-        self.currentUserEmail = emailProvider.email
+        self.inMemoryStorage = inMemoryStorage
     }
 
-    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {
+    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws {
         logger.logInfo("\(storageMethod): saving passphrase for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
         switch storageMethod {
         case .persistent:
-            encryptedStorage.save(passPhrase: passPhrase)
+            try encryptedStorage.save(passPhrase: passPhrase)
         case .memory:
             if encryptedStorage.getPassPhrases().contains(where: { $0.primaryFingerprintOfAssociatedKey == passPhrase.primaryFingerprintOfAssociatedKey }) {
                 logger.logInfo("\(StorageMethod.persistent): removing pass phrase from for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
-                encryptedStorage.remove(passPhrase: passPhrase)
+                try encryptedStorage.remove(passPhrase: passPhrase)
             }
-            inMemoryStorage.save(passPhrase: passPhrase)
+            try inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
-    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {
+    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws {
         logger.logInfo("\(storageMethod): updating passphrase for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
         switch storageMethod {
         case .persistent:
-            encryptedStorage.update(passPhrase: passPhrase)
+            try encryptedStorage.update(passPhrase: passPhrase)
         case .memory:
-            inMemoryStorage.save(passPhrase: passPhrase)
+            try inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
@@ -114,10 +111,10 @@ final class PassPhraseService: PassPhraseServiceType {
         encryptedStorage.getPassPhrases() + inMemoryStorage.getPassPhrases()
     }
 
-    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) {
+    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) throws {
         for privateKey in privateKeys {
             let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: privateKey.fingerprints)
-            savePassPhrase(with: pp, storageMethod: StorageMethod.memory)
+            try savePassPhrase(with: pp, storageMethod: .memory)
         }
     }
 

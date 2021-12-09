@@ -35,12 +35,12 @@ final class KeyServiceTests: XCTestCase {
             return
         }
         let keys = [
-            try KeyInfoRealmObject(key1, passphrase: nil, source: .generated, user: userObject),
-            try KeyInfoRealmObject(key2, passphrase: nil, source: .generated, user: userObject),
+            try KeyInfo(KeyInfoRealmObject(key1, passphrase: nil, source: .generated, user: userObject)),
+            try KeyInfo(KeyInfoRealmObject(key2, passphrase: nil, source: .generated, user: userObject)),
         ]
 
-        let keyStorage = KeyStorageMock()
-        keyStorage.keysInfoResult = { keys }
+        let keyStorage = EncryptedStorageMock()
+        keyStorage.getKeypairsResult = keys
 
         let passPhraseService = PassPhraseServiceMock()
         passPhraseService.passPhrases = [
@@ -54,7 +54,7 @@ final class KeyServiceTests: XCTestCase {
         let keyService = KeyService(
             storage: keyStorage,
             passPhraseService: passPhraseService,
-            currentUserEmail: "bill@test.com"
+            currentUserEmail: { "bill@test.com" }
         )
 
         // act
@@ -74,16 +74,16 @@ final class KeyServiceTests: XCTestCase {
             return
         }
         let keys = [
-            try KeyInfoRealmObject(key, passphrase: nil, source: .generated, user: userObject)
+            try KeyInfo(KeyInfoRealmObject(key, passphrase: nil, source: .generated, user: userObject))
         ]
 
-        let keyStorage = KeyStorageMock()
-        keyStorage.keysInfoResult = { keys }
+        let keyStorage = EncryptedStorageMock()
+        keyStorage.getKeypairsResult = keys
 
         let keyService = KeyService(
             storage: keyStorage,
             passPhraseService: PassPhraseServiceMock(),
-            currentUserEmail: "bill@test.com"
+            currentUserEmail: { "bill@test.com" }
         )
 
         // act

@@ -23,14 +23,11 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         }
     }
 
+    private let appContext: AppContext
     private let decorator: SetupViewDecorator
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let keysStorage: KeyStorageType
-    private let keyService: KeyServiceType
-    private let router: GlobalRouterType
-    let passPhraseService: PassPhraseServiceType
 
     private var passPhrase: String?
 
@@ -46,23 +43,17 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
     }
 
     init(
+        appContext: AppContext,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(),
-        keysService: KeyStorageType = KeyDataStorage(),
-        router: GlobalRouterType = GlobalRouter(),
-        keyService: KeyServiceType = KeyService(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService(),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
+        self.appContext = appContext
         self.fetchedKeys = fetchedKeys.unique()
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.keysStorage = keysService
-        self.router = router
-        self.keyService = keyService
-        self.passPhraseService = passPhraseService
 
         super.init(node: TableNode())
     }
@@ -233,32 +224,42 @@ extension SetupManuallyEnterPassPhraseViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        let keyDetails = try await keyService.getPrvKeyDetails()
-        importKeys(with: keyDetails, and: passPhrase)
+        let keyDetails = try await appContext.keyService.getPrvKeyDetails()
+        try importKeys(with: keyDetails, and: passPhrase)
     }
 
-    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) {
+    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) throws {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        keysStorage.addKeys(keyDetails: newKeysToAdd, passPhrase: passPhrase, source: .imported, for: email)
-        keysStorage.updateKeys(keyDetails: keysToUpdate, passPhrase: passPhrase, source: .imported, for: email)
+        try appContext.encryptedStorage.putKeypairs(
+            keyDetails: newKeysToAdd,
+            passPhrase: passPhrase,
+            source: .imported,
+            for: email
+        )
+        try appContext.encryptedStorage.putKeypairs(
+            keyDetails: keysToUpdate,
+            passPhrase: passPhrase,
+            source: .imported,
+            for: email
+        )
 
         if storageMethod == .memory {
-            keysToUpdate
+            try keysToUpdate
                 .map {
                     PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
-                    passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
+                    try appContext.passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
                 }
 
-            newKeysToAdd
+            try newKeysToAdd
                 .map {
                     PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
-                    passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
+                    try appContext.passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
                 }
         }
 
@@ -289,6 +290,6 @@ extension SetupManuallyEnterPassPhraseViewController {
     }
 
     private func moveToMainFlow() {
-        router.proceed()
+        appContext.globalRouter.proceed()
     }
 }

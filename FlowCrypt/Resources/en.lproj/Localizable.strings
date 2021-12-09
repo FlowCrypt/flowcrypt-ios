@@ -2,7 +2,7 @@
 "loading_title" = "Loading";
 "downloading_title" = "Downloading";
 "encrypting_title" = "Encrypting...";
-"decrypting_title" = "Decrypting...";
+"processing_title" = "Processing...";
 "sending_title" = "Sending";
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
@@ -16,6 +16,9 @@
 "later" = "Later";
 "forward" = "Forward";
 "save" = "Save";
+"to" = "to";
+"cc" = "cc";
+"bcc" = "bcc";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -27,20 +30,24 @@
 "message_failed_load" = "Failed to load messages";
 "message_compose_secure" = "Compose Secure Message";
 "message_unknown_sender" = "(unknown sender)";
+"message_no_recipients" = "(no recipients)";
 "message_missed_subject" = "No subject";
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
-"message_attachment_saved_with_error" = "Attachment could not be saved.";
+"message_attachment_saved_with_error" = "Attachment could not be saved. %@";
 "message_encrypted" = "encrypted";
 "message_not_encrypted" = "not encrypted";
 "message_signed" = "signed";
+"message_signature_good_mixed" = "signed with mixed keys";
 "message_not_signed" = "not signed";
 "message_missing_pubkey" = "no public key %@";
+"message_signature_partial" = "only partially signed";
 "message_signature_verify_error" = "cannot verify signature: %@";
 "message_bad_signature" = "bad signature";
 "message_signature_pending" = "verifying signature...";
 "message_signature_fail_reason" = "Failed to verify signature due to: %@";
 "message_decrypt_error" = "decrypt error";
+"message_mark_read_error" = "Could not mark message as read: %@";
 
 // ERROR
 "error_fetch_folders" = "Could not fetch folders";
@@ -104,7 +111,7 @@
 "setup_enter" = "Enter your pass phrase";
 "setup_load" = "Load Account";
 "setup_use_another" = "Use Another Account";
-"setup_no_backups" = "No backups found on account: \n";
+"setup_no_backups" = "No backups found on this account";
 "setup_enter_pass_phrase" = "Enter pass phrase";
 "setup_wrong_pass_phrase_retry" = "Wrong pass phrase, please try again";
 "setup_backup_email" = "This email contains a key backup. It will help you access your encrypted messages from other computers (along with your pass phrase). You can safely leave it in your inbox or archive it.\n\nThe key below is protected with pass phrase that only you know. You should make sure to note your pass phrase down.\n\nDO NOT DELETE THIS EMAIL. Write us at human@flowcrypt.com so that we can help.";
@@ -155,8 +162,11 @@
 
 // Contacts
 "contacts_screen_title" = "Contacts";
+"contacts_screen_load_error" = "Failed to load recipients: %@";
+"contacts_screen_remove_error" = "Failed to remove contact: %@";
 "contact_detail_screen_title" = "Public Keys";
 "contact_detail_copy" = "Public Key copied to clipboard";
+"contact_detail_remove_public_key_error" = "Failed to remove public due to: %@";
 "contact_key_detail_screen_title" = "Public Key";
 
 // Contacts keys
@@ -267,6 +277,7 @@
 "invalid_storage_text" = "Your data storage is invalid. You could reset it and start with new one. Check error description below";
 "invalid_storage_reset_button" = "Reset";
 "invalid_storage_reset_error" = "Couldn't remove storage. Please reinstall application";
+"invalid_storage_failed_to_initialize" = "Failed to initialize storage. Please restart your device. If it doesn't help, please reinstall application";
 
 // Attachments details
 "no_preview_avalable" = "No preview available";

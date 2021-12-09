@@ -4,11 +4,11 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   MENU_ICON: '~menu icn',
-  LOGOUT_BTN: '~Log out',
-  SETTINGS_BTN: '~Settings',
-  INBOX_BTN: '~INBOX',
-  SENT_BTN: '~SENT',
-  TRASH_BTN: '~TRASH'
+  LOGOUT_BTN: '~menuBarItemLog out',
+  SETTINGS_BTN: '~menuBarItemSettings',
+  INBOX_BTN: '~menuBarItemInbox',
+  SENT_BTN: '~menuBarItemSent',
+  TRASH_BTN: '~menuBarItemTrash',
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -42,6 +42,7 @@ class MenuBarScreen extends BaseScreen {
 
   clickMenuIcon = async () => {
     await ElementHelper.waitAndClick(await this.menuIcon, 1000);
+    await this.checkMenuBar();
   }
 
   checkUserEmail = async (email: string = CommonData.account.email) => {
@@ -52,6 +53,9 @@ class MenuBarScreen extends BaseScreen {
   checkMenuBar = async () => {
     await ElementHelper.waitElementVisible(await this.logoutButton);
     await ElementHelper.waitElementVisible(await this.settingsButton);
+    await ElementHelper.waitElementVisible(await this.inboxButton);
+    await ElementHelper.waitElementVisible(await this.sentButton);
+    await ElementHelper.waitElementVisible(await this.trashButton);
   }
 
   clickLogout = async () => {
@@ -63,15 +67,15 @@ class MenuBarScreen extends BaseScreen {
   }
 
   clickInboxButton = async () => {
-    await ElementHelper.waitAndClick(await this.inboxButton, 500); // todo - instead wait until loader gone
+    await ElementHelper.waitAndClick(await this.inboxButton);
   }
 
   clickSentButton = async () => {
-    await ElementHelper.waitAndClick(await this.sentButton, 500); // todo - instead wait until loader gone
+    await ElementHelper.waitAndClick(await this.sentButton);
   }
 
   clickTrashButton = async () => {
-    await ElementHelper.waitAndClick(await this.trashButton, 500); // todo - instead wait until loader gone
+    await ElementHelper.waitAndClick(await this.trashButton);
   }
 }
 

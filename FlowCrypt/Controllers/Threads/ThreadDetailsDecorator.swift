@@ -9,30 +9,37 @@
 import FlowCryptUI
 import UIKit
 
-extension ThreadMessageSenderCellNode.Input {
+extension ThreadMessageInfoCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
         let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
+        let recipientPrefix = "to".localized
+        let recipientsList = threadMessage.rawMessage
+                                .allRecipients
+                                .map(\.displayName)
+                                .joined(separator: ", ")
+        let recipientLabel = [recipientPrefix, recipientsList].joined(separator: " ")
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
         let isMessageRead = threadMessage.rawMessage.isMessageRead
 
         let style: NSAttributedString.Style = isMessageRead
-            ? .regular(17)
-            : .bold(17)
+            ? .regular(16)
+            : .bold(16)
 
         let dateColor: UIColor = isMessageRead
             ? .lightGray
             : .main
 
-        let textColor: UIColor = isMessageRead
-            ? .lightGray
-            : .mainTextUnreadColor
-
         self.init(
             encryptionBadge: makeEncryptionBadge(threadMessage),
             signatureBadge: makeSignatureBadge(threadMessage),
-            sender: NSAttributedString.text(from: sender, style: style, color: textColor),
+            sender: NSAttributedString.text(from: sender, style: style, color: .label),
+            recipientLabel: NSAttributedString.text(from: recipientLabel, style: style, color: .secondaryLabel),
+            recipients: threadMessage.rawMessage.recipients.map(\.rawString),
+            ccRecipients: threadMessage.rawMessage.cc.map(\.rawString),
+            bccRecipients: threadMessage.rawMessage.bcc.map(\.rawString),
             date: NSAttributedString.text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,
+            shouldShowRecipientsList: threadMessage.shouldShowRecipientsList,
             buttonColor: .messageButtonColor,
             nodeInsets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 8)
         )
@@ -94,7 +101,8 @@ private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> 
     return BadgeNode.Input(
         icon: icon,
         text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
-        color: color
+        color: color,
+        textAccessibilityIdentifier: "encryptionBadge"
     )
 }
 
@@ -103,16 +111,10 @@ private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> B
         return nil
     }
 
-    let text: String
-    if input.processedMessage?.messageType == .encrypted {
-        text = signature.message
-    } else {
-        text = "message_not_signed".localized
-    }
-
     return BadgeNode.Input(
         icon: signature.icon,
-        text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
-        color: signature.color
+        text: NSAttributedString.text(from: signature.message, style: .regular(12), color: .white),
+        color: signature.color,
+        textAccessibilityIdentifier: "signatureBadge"
     )
 }

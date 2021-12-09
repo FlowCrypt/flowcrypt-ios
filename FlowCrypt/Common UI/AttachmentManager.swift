@@ -7,17 +7,15 @@
 //
 
 import UIKit
-import Combine
 
 @MainActor
 protocol AttachmentManagerType {
-    func download(_ file: FileType)
+    func download(_ file: FileType) async
 }
 
 final class AttachmentManager: NSObject {
     private weak var controller: UIViewController?
     private let filesManager: FilesManagerType
-    private var cancellable = Set<AnyCancellable>()
 
     init(controller: UIViewController,
          filesManager: FilesManagerType) {
@@ -42,26 +40,26 @@ final class AttachmentManager: NSObject {
 
         controller?.present(alert, animated: true)
     }
-}
 
-extension AttachmentManager: AttachmentManagerType {
-    func download(_ file: FileType) {
-        Task {
-            do {
-                let url = try await filesManager.save(file: file)
-                openDocumentsController(from: url)
-            } catch {
-                controller?.showToast(
-                    "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
-                )
-            }
-        }
-    }
-
-    @MainActor func openDocumentsController(from url: URL) {
+    @MainActor
+    private func openDocumentsController(from url: URL) {
         let documentController = UIDocumentPickerViewController(forExporting: [url])
         documentController.delegate = self
         present(documentController, animated: true, completion: nil)
+    }
+}
+
+extension AttachmentManager: AttachmentManagerType {
+
+    func download(_ file: FileType) async {
+        do {
+            let url = try await filesManager.save(file: file)
+            openDocumentsController(from: url)
+        } catch {
+            controller?.showToast(
+                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
+            )
+        }
     }
 }
 

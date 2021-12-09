@@ -16,6 +16,7 @@ import FlowCryptUI
  */
 
 class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
+
     enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle, fetchedKeys
     }
@@ -24,14 +25,10 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         Parts.allCases
     }
 
+    let appContext: AppContext
     let decorator: SetupViewDecorator
-    let core: Core
-    let router: GlobalRouterType
     let user: UserId
     let fetchedKeysCount: Int
-    let storage: DataServiceType
-    let keyStorage: KeyStorageType
-    let passPhraseService: PassPhraseServiceType
 
     var storageMethod: StorageMethod = .persistent {
         didSet {
@@ -49,23 +46,16 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
+        appContext: AppContext,
         user: UserId,
         fetchedKeysCount: Int = 0,
-        core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
+        self.appContext = appContext
         self.user = user
         self.fetchedKeysCount = fetchedKeysCount
-        self.core = core
-        self.router = router
         self.decorator = decorator
-        self.storage = storage
-        self.keyStorage = keyStorage
-        self.passPhraseService = passPhraseService
         super.init(node: TableNode())
     }
 
@@ -97,7 +87,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     }
 
     func handleBackButtonTap() {
-        router.signOut()
+        appContext.globalRouter.signOut(appContext: self.appContext)
     }
 }
 
@@ -137,7 +127,7 @@ extension SetupCreatePassphraseAbstractViewController {
 extension SetupCreatePassphraseAbstractViewController {
 
     func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) async throws {
-        let strength = try await self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
+        let strength = try await Core.shared.zxcvbnStrengthBar(passPhrase: passPhrase)
         guard strength.word.pass else {
             throw CreateKeyError.weakPassPhrase(strength)
         }
@@ -179,7 +169,7 @@ extension SetupCreatePassphraseAbstractViewController {
 
 extension SetupCreatePassphraseAbstractViewController {
     func moveToMainFlow() {
-        router.proceed()
+        appContext.globalRouter.proceed()
     }
 
     private func showChoosingOptions() {

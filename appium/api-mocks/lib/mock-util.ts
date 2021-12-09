@@ -1,7 +1,7 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 import { IncomingMessage } from 'http';
-import { HttpClientErr } from './api';
+import { HttpErr, Status } from './api';
 import * as request from 'request';
 
 export const isGet = (r: IncomingMessage) => r.method === 'GET' || r.method === 'HEAD';
@@ -18,7 +18,7 @@ export const expectContains = (haystack: unknown, needle: string) => {
 
 export const throwIfNotGetMethod = (req: IncomingMessage) => {
   if (req.method !== 'GET') {
-    throw new HttpClientErr('Unsupported method');
+    throw new HttpErr('Unsupported method', Status.BAD_REQUEST);
   }
 }
 
