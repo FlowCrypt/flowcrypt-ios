@@ -14,8 +14,8 @@ protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType) async
     func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws
-    func switchActive(user: User, appContext: AppContext)
-    func signOut(appContext: AppContext)
+    func switchActive(user: User, appContext: AppContext) throws
+    func signOut(appContext: AppContext) throws
 }
 
 enum GlobalRoutingType {
@@ -83,19 +83,14 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func signOut(appContext: AppContext) {
-        do {
-            if let session = try appContext.userAccountService.startActiveSessionForNextUser() {
-                logger.logInfo("Start session for another email user \(session)")
-                proceed(with: appContext.withSession(session))
-            } else {
-                logger.logInfo("Sign out")
-                appContext.userAccountService.cleanup()
-                proceed()
-            }
-        } catch {
-            logger.logError("Failed to sign out due to \(error.localizedDescription)")
-            hanleFatalError(error)
+    func signOut(appContext: AppContext) throws {
+        if let session = try appContext.userAccountService.startActiveSessionForNextUser() {
+            logger.logInfo("Start session for another email user \(session)")
+            proceed(with: appContext.withSession(session))
+        } else {
+            logger.logInfo("Sign out")
+            appContext.userAccountService.cleanup()
+            proceed()
         }
     }
 
@@ -124,18 +119,13 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func switchActive(user: User, appContext: AppContext) {
+    func switchActive(user: User, appContext: AppContext) throws {
         logger.logInfo("Switching active user \(user)")
-        do {
-            guard let session = try appContext.userAccountService.switchActiveSessionFor(user: user) else {
-                logger.logWarning("Can't switch active user with \(user.email)")
-                return
-            }
-            proceed(with: appContext.withSession(session))
-        } catch {
-            logger.logError("Failed to switch active user due to \(error.localizedDescription)")
-            hanleFatalError(error)
+        guard let session = try appContext.userAccountService.switchActiveSessionFor(user: user) else {
+            logger.logWarning("Can't switch active user with \(user.email)")
+            return
         }
+        proceed(with: appContext.withSession(session))
     }
 
     @MainActor
@@ -179,10 +169,5 @@ extension GlobalRouter: GlobalRouterType {
             message: error.localizedDescription,
             onOk: { [weak self] in self?.proceed() }
         )
-    }
-
-    @MainActor
-    private func hanleFatalError(_ error: Error) {
-        keyWindow.rootViewController = FatalErrorViewController(error: error)
     }
 }
