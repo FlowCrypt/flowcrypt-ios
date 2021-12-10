@@ -1,5 +1,5 @@
 //
-//  KeyInfo.swift
+//  Keypair.swift
 //  FlowCrypt
 //
 //  Created by  Ivan Ushakov on 17.11.2021
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct KeyInfo {
+struct Keypair {
     var primaryFingerprint: String
     var `private`: String
     var `public`: String
@@ -22,8 +22,8 @@ struct KeyInfo {
     }
 }
 
-extension KeyInfo {
-    init(_ object: KeyInfoRealmObject) {
+extension Keypair {
+    init(_ object: KeypairRealmObject) {
         self.primaryFingerprint = object.primaryFingerprint
         self.private = object.private
         self.public = object.public

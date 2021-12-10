@@ -205,7 +205,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
         encryptedStorage.getKeypairsResult = [
-            KeyInfo(
+            Keypair(
                 primaryFingerprint: "",
                 private: "",
                 public: "public key",
@@ -243,7 +243,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
         encryptedStorage.getKeypairsResult = [
-            KeyInfo(
+            Keypair(
                 primaryFingerprint: "",
                 private: "",
                 public: "public key",
@@ -281,7 +281,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
         encryptedStorage.getKeypairsResult = [
-            KeyInfo(
+            Keypair(
                 primaryFingerprint: "",
                 private: "",
                 public: "public key",
@@ -331,7 +331,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: allKeyDetails)
         }
         encryptedStorage.getKeypairsResult = [
-            KeyInfo(
+            Keypair(
                 primaryFingerprint: "",
                 private: "",
                 public: "public key",
@@ -385,7 +385,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testValidateMessageInputWithoutOneRecipientPubKey() async throws {
         encryptedStorage.getKeypairsResult = [
-            KeyInfo(
+            Keypair(
                 primaryFingerprint: "",
                 private: "",
                 public: "public key",
@@ -424,7 +424,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testSuccessfulMessageValidation() async throws {
         encryptedStorage.getKeypairsResult = [
-            KeyInfo(
+            Keypair(
                 primaryFingerprint: "",
                 private: "",
                 public: "public key",
