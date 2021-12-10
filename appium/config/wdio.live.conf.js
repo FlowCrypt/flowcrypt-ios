@@ -12,6 +12,12 @@ config.suites = {
   ],
   inbox: [
     './tests/specs/live/inbox/*.spec.ts'
+  ],
+  compose: [
+      './tests/specs/live/composeEmail/*.spec.ts'
+  ],
+  login: [
+      './tests/specs/live/login/*.spec.ts'
   ]
 };
 
