@@ -143,7 +143,7 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.checkStaticText(await this.attachmentTitle, name);
   }
 
-  clickOnDownloadButton = async () => {
+  clickOnAttachmentCell = async () => {
     await ElementHelper.waitAndClick(await this.attachmentCell);
   }
 
