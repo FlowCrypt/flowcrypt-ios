@@ -87,7 +87,11 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     }
 
     func handleBackButtonTap() {
-        appContext.globalRouter.signOut(appContext: self.appContext)
+        do {
+            try appContext.globalRouter.signOut(appContext: self.appContext)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 }
 
