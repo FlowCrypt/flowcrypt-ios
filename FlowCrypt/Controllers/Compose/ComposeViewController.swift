@@ -67,6 +67,10 @@ final class ComposeViewController: TableNodeViewController {
     private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
 
+    private var topContentInset: CGFloat {
+        navigationController?.navigationBar.frame.maxY ?? 0
+    }
+
     init(
         appContext: AppContext,
         notificationCenter: NotificationCenter = .default,
@@ -157,6 +161,12 @@ final class ComposeViewController: TableNodeViewController {
         setupSearch()
 
         evaluateIfNeeded()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        node.contentInset.top = topContentInset
     }
 
     deinit {
@@ -287,6 +297,7 @@ extension ComposeViewController {
         node.do {
             $0.delegate = self
             $0.dataSource = self
+            $0.view.contentInsetAdjustmentBehavior = .never
             $0.view.keyboardDismissMode = .interactive
         }
     }
@@ -358,11 +369,12 @@ extension ComposeViewController {
     }
 
     private func adjustForKeyboard(height: CGFloat) {
-        let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 8, right: 0)
-        node.contentInset = insets
+        node.contentInset.bottom = height + 8
 
-        guard let textView = node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first?.textView.textView else { return }
-        guard let selectedRange = textView.selectedTextRange else { return }
+        guard let textView = node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first?.textView.textView,
+              let selectedRange = textView.selectedTextRange
+        else { return }
+
         let rect = textView.caretRect(for: selectedRange.start)
         node.view.scrollRectToVisible(rect, animated: true)
     }
@@ -504,7 +516,12 @@ extension ComposeViewController {
 
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in _: ASTableNode) -> Int {
-        3
+        switch state {
+        case .main:
+            return contextToSend.attachments.isEmpty ? 2 : 3
+        case .searchEmails:
+            return 3
+        }
     }
 
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
@@ -608,13 +625,14 @@ extension ComposeViewController {
     private func textNode() -> ASCellNode {
         let styledQuote = decorator.styledQuote(with: input)
         let height = max(decorator.frame(for: styledQuote).height, 40)
-
         return TextViewCellNode(
             decorator.styledTextViewInput(with: height)
         ) { [weak self] event in
             switch event {
             case .editingChanged(let text), .didEndEditing(let text):
                 self?.contextToSend.message = text?.string
+            case .heightChanged(let textView):
+                self?.ensureCursorVisible(textView: textView)
             case .didBeginEditing:
                 break
             }
@@ -630,6 +648,20 @@ extension ComposeViewController {
             } else {
                 $0.textView.attributedText = messageText
             }
+        }
+    }
+
+    private func ensureCursorVisible(textView: UITextView) {
+        guard let range = textView.selectedTextRange else { return }
+
+        let cursorRect = textView.caretRect(for: range.start)
+
+        var rectToMakeVisible = textView.convert(cursorRect, to: node.view)
+        rectToMakeVisible.origin.y -= cursorRect.height
+        rectToMakeVisible.size.height *= 3
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { // fix for animation lag
+            self.node.view.scrollRectToVisible(rectToMakeVisible, animated: true)
         }
     }
 

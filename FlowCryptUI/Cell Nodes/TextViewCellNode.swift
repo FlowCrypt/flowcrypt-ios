@@ -30,6 +30,7 @@ public final class TextViewCellNode: CellNode {
         case didEndEditing(NSAttributedString?)
         case didBeginEditing(NSAttributedString?)
         case editingChanged(NSAttributedString?)
+        case heightChanged(UITextView)
     }
 
     public typealias TextViewAction = (TextViewActionType) -> Void
@@ -45,6 +46,7 @@ public final class TextViewCellNode: CellNode {
         self.action = action
         height = input.preferredHeight
         super.init()
+
         textView.delegate = self
         textView.attributedPlaceholderText = input.placeholder
         textView.typingAttributes = [
@@ -54,8 +56,12 @@ public final class TextViewCellNode: CellNode {
     }
     
     private func setHeight(_ height: CGFloat) {
+        let shouldAnimate = self.height < height
+
         self.height = height
         setNeedsLayout()
+        
+        if shouldAnimate { action?(.heightChanged(textView.textView)) }
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
