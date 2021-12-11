@@ -31,7 +31,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfoRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
 
@@ -56,7 +56,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfoRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
 
@@ -79,7 +79,7 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfoRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
 
@@ -105,7 +105,7 @@ class KeyInfoTests: XCTestCase {
             revoked: false
         )
 
-        let key = try KeyInfoRealmObject(keyDetail, passphrase: "123", source: .backup, user: user)
+        let key = try KeypairRealmObject(keyDetail, passphrase: "123", source: .backup, user: user)
 
         XCTAssertTrue(key.private == "private")
         XCTAssertTrue(key.public == "public")

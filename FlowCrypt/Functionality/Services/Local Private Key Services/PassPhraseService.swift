@@ -44,11 +44,11 @@ struct PassPhrase: Codable, Hashable, Equatable {
 }
 
 extension PassPhrase {
-    init?(keyInfo: KeyInfoRealmObject) {
-        guard let passphrase = keyInfo.passphrase else { return nil }
+    init?(keypair: KeypairRealmObject) {
+        guard let passphrase = keypair.passphrase else { return nil }
 
         self.init(value: passphrase,
-                  fingerprintsOfAssociatedKey: Array(keyInfo.allFingerprints))
+                  fingerprintsOfAssociatedKey: Array(keypair.allFingerprints))
     }
 }
 
