@@ -21,4 +21,19 @@ extension Bundle {
         return FlowCryptBundleType(rawValue: bundleIdentifier) ?? .debug
     }
     
+    static func isDebugBundleWithArgument(_ argument: String) -> Bool {
+        guard Bundle.flowCryptBundleType == .debug else { return false }
+        return CommandLine.arguments.contains(argument)
+    }
+    
+    static func isEnterprise() -> Bool {
+        if flowCryptBundleType == .enterprise {
+            return true // for production
+        }
+        if isDebugBundleWithArgument("--enterprise") {
+            return true // for ui tests of enterprise functionality
+        }
+        return false
+    }
+    
 }

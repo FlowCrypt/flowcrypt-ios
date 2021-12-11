@@ -32,7 +32,7 @@ final class AttesterApi: AttesterApiType {
     }
 
     private func constructUrlBase() -> String {
-        guard !CommandLine.isDebugBundleWithArgument("--mock-attester-api") else {
+        guard !Bundle.isDebugBundleWithArgument("--mock-attester-api") else {
             return "http://127.0.0.1:8001/attester" // mock
         }
         return "https://flowcrypt.com/attester" // live
