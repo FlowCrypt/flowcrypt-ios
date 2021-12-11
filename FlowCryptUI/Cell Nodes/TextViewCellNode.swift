@@ -14,15 +14,18 @@ public final class TextViewCellNode: CellNode {
         var placeholder: NSAttributedString
         var preferredHeight: CGFloat
         let textColor: UIColor
+        let accessibilityIdentifier: String?
 
         public init(
             placeholder: NSAttributedString,
             preferredHeight: CGFloat,
-            textColor: UIColor
+            textColor: UIColor,
+            accessibilityIdentifier: String? = nil
         ) {
             self.placeholder = placeholder
             self.preferredHeight = preferredHeight
             self.textColor = textColor
+            self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 
@@ -53,6 +56,7 @@ public final class TextViewCellNode: CellNode {
             NSAttributedString.Key.font.rawValue: NSAttributedString.Style.regular(17).font,
             NSAttributedString.Key.foregroundColor.rawValue: input.textColor,
         ]
+        accessibilityIdentifier = input.accessibilityIdentifier
     }
     
     private func setHeight(_ height: CGFloat) {

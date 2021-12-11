@@ -67,6 +67,7 @@ final class ComposeViewController: TableNodeViewController {
     private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
 
+    private var didLayoutSubviews = false
     private var topContentInset: CGFloat {
         navigationController?.navigationBar.frame.maxY ?? 0
     }
@@ -166,6 +167,9 @@ final class ComposeViewController: TableNodeViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        guard !didLayoutSubviews else { return }
+
+        didLayoutSubviews = true
         node.contentInset.top = topContentInset
     }
 
@@ -516,12 +520,7 @@ extension ComposeViewController {
 
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in _: ASTableNode) -> Int {
-        switch state {
-        case .main:
-            return contextToSend.attachments.isEmpty ? 2 : 3
-        case .searchEmails:
-            return 3
-        }
+        3
     }
 
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
@@ -599,7 +598,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 extension ComposeViewController {
     private func subjectNode() -> ASCellNode {
         TextFieldCellNode(
-            input: decorator.styledTextFieldInput(with: "compose_subject".localized)
+            input: decorator.styledTextFieldInput(
+                with: "compose_subject".localized,
+                accessibilityIdentifier: "subjectTextField"
+            )
         ) { [weak self] event in
             switch event {
             case .editingChanged(let text), .didEndEditing(let text):
@@ -626,15 +628,19 @@ extension ComposeViewController {
         let styledQuote = decorator.styledQuote(with: input)
         let height = max(decorator.frame(for: styledQuote).height, 40)
         return TextViewCellNode(
-            decorator.styledTextViewInput(with: height)
+            decorator.styledTextViewInput(
+                with: height,
+                accessibilityIdentifier: "messageTextView"
+            )
         ) { [weak self] event in
+            guard let self = self else { return }
             switch event {
-            case .editingChanged(let text), .didEndEditing(let text):
-                self?.contextToSend.message = text?.string
-            case .heightChanged(let textView):
-                self?.ensureCursorVisible(textView: textView)
             case .didBeginEditing:
                 break
+            case .editingChanged(let text), .didEndEditing(let text):
+                self.contextToSend.message = text?.string
+            case .heightChanged(let textView):
+                self.ensureCursorVisible(textView: textView)
             }
         }
         .then {
@@ -677,7 +683,10 @@ extension ComposeViewController {
 
     private func recipientInput() -> TextFieldCellNode {
         TextFieldCellNode(
-            input: decorator.styledTextFieldInput(with: "compose_recipient".localized, keyboardType: .emailAddress)
+            input: decorator.styledTextFieldInput(
+                with: "compose_recipient".localized,
+                keyboardType: .emailAddress,
+                accessibilityIdentifier: "recipientTextField")
         ) { [weak self] action in
             self?.handleTextFieldAction(with: action)
         }
@@ -984,13 +993,11 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
-        node.reloadSections([1, 2], with: .automatic)
-
         switch state {
         case .main:
-            node.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            node.reloadData()
         case .searchEmails:
-            break
+            node.reloadSections([1, 2], with: .automatic)
         }
     }
 }
