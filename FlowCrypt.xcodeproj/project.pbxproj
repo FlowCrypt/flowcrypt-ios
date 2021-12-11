@@ -111,6 +111,7 @@
 		5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBB23A4329000EC495E /* PublicKeyDetailViewController.swift */; };
 		5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */; };
 		5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBF23A43B0800EC495E /* KeyDetailInfoViewDecorator.swift */; };
+		606FE33A2745AA2E009DA039 /* AttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606FE3392745AA2E009DA039 /* AttachmentViewController.swift */; };
 		601EEE31272B19D200FE445B /* CheckMailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */; };
 		7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
@@ -533,6 +534,7 @@
 		5ADEDCBD23A4363700EC495E /* KeyDetailInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewController.swift; sourceTree = "<group>"; };
 		5ADEDCBF23A43B0800EC495E /* KeyDetailInfoViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailInfoViewDecorator.swift; sourceTree = "<group>"; };
 		5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTextCellNode.swift; sourceTree = "<group>"; };
+		606FE3392745AA2E009DA039 /* AttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentViewController.swift; sourceTree = "<group>"; };
 		601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMailAuthViewController.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
@@ -1126,6 +1128,14 @@
 			path = CheckMailAuth;
 			sourceTree = "<group>";
 		};
+		606FE3362745AA11009DA039 /* Attachment */ = {
+			isa = PBXGroup;
+			children = (
+				606FE3392745AA2E009DA039 /* AttachmentViewController.swift */,
+			);
+			path = Attachment;
+			sourceTree = "<group>";
+		};
 		9F0C3C1F23191F2000299985 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -1707,6 +1717,7 @@
 		C132B9C51EC2DCAB00763715 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				606FE3362745AA11009DA039 /* Attachment */,
 				601EEE32272B1A5800FE445B /* CheckMailAuth */,
 				04B472911ECE29F600B8266F /* SideMenu */,
 				D2FF6969243115FE007182F0 /* SetupImap */,
@@ -2704,6 +2715,7 @@
 				9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
+				606FE33A2745AA2E009DA039 /* AttachmentViewController.swift in Sources */,
 				21489B78267CB42400BDE4AC /* LocalClientConfiguration.swift in Sources */,
 				9FF0671C25520D9D00FCC9E6 /* MailProvider.swift in Sources */,
 				9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */,

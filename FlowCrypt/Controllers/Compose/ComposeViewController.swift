@@ -562,19 +562,27 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        guard case let .searchEmails(emails) = state else { return }
-
-        switch indexPath.section {
-        case 1:
-            let selectedEmail = emails[safe: indexPath.row]
-            handleEndEditingAction(with: selectedEmail)
-        case 2:
-            askForContactsPermission()
-        default:
-            break
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        if case let .searchEmails(emails) = state {
+            switch indexPath.section {
+            case 1:
+                let selectedEmail = emails[safe: indexPath.row]
+                handleEndEditingAction(with: selectedEmail)
+            case 2:
+                askForContactsPermission()
+            default:
+                break
+            }
+        } else {
+            if tableNode.nodeForRow(at: indexPath) is AttachmentNode {
+                let controller = AttachmentViewController(
+                    file: contextToSend.attachments[indexPath.row],
+                    shouldShowDownloadButton: false
+                )
+                navigationController?.pushViewController(controller, animated: true )
+            }
         }
-    }
+     }
 }
 
 // MARK: - Nodes

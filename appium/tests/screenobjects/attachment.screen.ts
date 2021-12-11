@@ -2,26 +2,26 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  CANCEL_BTN: '~Cancel',
+  BACK_BTN: '~arrow left c'
 };
 
 class AttachmentScreen extends BaseScreen {
   constructor() {
-    super(SELECTORS.CANCEL_BTN);
+    super(SELECTORS.BACK_BTN);
   }
 
-  get cancelButton() {
-    return $(SELECTORS.CANCEL_BTN);
+  get backButton() {
+    return $(SELECTORS.BACK_BTN);
   }
 
   checkDownloadPopUp = async (name: string) => {
-    await (await this.cancelButton).waitForDisplayed();
+    await (await this.backButton).waitForDisplayed();
     const attachment = `-ios class chain:**/XCUIElementTypeNavigationBar[\`name == "com_apple_DocumentManager_Service.DOCServiceTargetSelectionBrowserView"\`]/XCUIElementTypeButton/XCUIElementTypeStaticText`;//it works only with this selector
     expect(await $(attachment)).toHaveAttribute('value', `${name}`);
   }
 
-  clickOnCancelButton = async () => {
-    await ElementHelper.waitAndClick(await this.cancelButton);
+  clickBackButton = async () => {
+    await ElementHelper.waitAndClick(await this.backButton);
   }
 }
 
