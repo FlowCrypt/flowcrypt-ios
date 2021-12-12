@@ -56,7 +56,10 @@ public final class TextViewCellNode: CellNode {
             NSAttributedString.Key.font.rawValue: NSAttributedString.Style.regular(17).font,
             NSAttributedString.Key.foregroundColor.rawValue: input.textColor,
         ]
-        accessibilityIdentifier = input.accessibilityIdentifier
+
+        DispatchQueue.main.async {
+            self.textView.textView.accessibilityIdentifier = input.accessibilityIdentifier
+        }
     }
     
     private func setHeight(_ height: CGFloat) {
