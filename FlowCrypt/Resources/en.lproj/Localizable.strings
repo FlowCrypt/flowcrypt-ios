@@ -4,6 +4,7 @@
 "encrypting_title" = "Encrypting...";
 "processing_title" = "Processing...";
 "sending_title" = "Sending";
+"validating_title" = "Validating";
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
 "ok" = "Ok";
@@ -82,6 +83,7 @@
 "compose_quote_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
 "compose_forward_successful" = "Message forwarded successfully";
 "compose_encrypted_sent" = "Encrypted message sent";
+"compose_message_sent" = "Message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
 "compose_recipient" = "Add Recipient";
