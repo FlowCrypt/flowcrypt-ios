@@ -14,17 +14,20 @@ extension RecipientEmailsCellNode {
         public struct StateContext {
             let backgroundColor, borderColor, textColor: UIColor
             let image: UIImage?
+            let accessibilityIdentifier: String?
 
             public init(
                 backgroundColor: UIColor,
                 borderColor: UIColor,
                 textColor: UIColor,
-                image: UIImage?
+                image: UIImage?,
+                accessibilityIdentifier: String?
             ) {
                 self.backgroundColor = backgroundColor
                 self.borderColor = borderColor
                 self.textColor = textColor
                 self.image = image
+                self.accessibilityIdentifier = accessibilityIdentifier
             }
         }
 
@@ -66,6 +69,10 @@ extension RecipientEmailsCellNode {
 
             public var stateImage: UIImage? {
                 stateContext.image
+            }
+            
+            public var accessibilityIdentifier: String? {
+                stateContext.accessibilityIdentifier
             }
 
             public var isSelected: Bool {

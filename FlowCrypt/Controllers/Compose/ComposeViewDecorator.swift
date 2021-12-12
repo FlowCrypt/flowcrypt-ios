@@ -142,7 +142,8 @@ extension ComposeViewDecorator {
             backgroundColor: .titleNodeBackgroundColor,
             borderColor: .borderColor,
             textColor: .mainTextColor,
-            image: #imageLiteral(resourceName: "retry")
+            image: #imageLiteral(resourceName: "retry"),
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -151,7 +152,8 @@ extension ComposeViewDecorator {
             backgroundColor: .gray,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -160,7 +162,8 @@ extension ComposeViewDecorator {
             backgroundColor: .main,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "green"
         )
     }
 
@@ -169,7 +172,8 @@ extension ComposeViewDecorator {
             backgroundColor: .warningColor,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "orange"
         )
     }
 
@@ -178,7 +182,8 @@ extension ComposeViewDecorator {
             backgroundColor: .errorColor,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "red"
         )
     }
 
@@ -187,7 +192,8 @@ extension ComposeViewDecorator {
             backgroundColor: .titleNodeBackgroundColorSelected,
             borderColor: .borderColorSelected,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: nil
         )
     }
 
@@ -196,7 +202,8 @@ extension ComposeViewDecorator {
             backgroundColor: .red,
             borderColor: .borderColorSelected,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "red"
         )
     }
 
@@ -205,7 +212,8 @@ extension ComposeViewDecorator {
             backgroundColor: .gray,
             borderColor: .red,
             textColor: .white,
-            image: #imageLiteral(resourceName: "cancel")
+            image: #imageLiteral(resourceName: "cancel"),
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -214,7 +222,8 @@ extension ComposeViewDecorator {
             backgroundColor: .red,
             borderColor: .borderColor,
             textColor: .white,
-            image: #imageLiteral(resourceName: "retry")
+            image: #imageLiteral(resourceName: "retry"),
+            accessibilityIdentifier: "red"
         )
     }
 }
