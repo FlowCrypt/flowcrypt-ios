@@ -730,3 +730,15 @@ ava.default('verify signed message with detached signature by providing it corre
   expect(parsedDecryptData.verifyRes.match).equals(true);
   t.pass();
 });
+
+ava.default('verify not integrity protected message', async t => {
+  const { keys, pubKeys } = getKeypairs('new-key');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-not-integrity-protected')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('not integrity protected - should show a warning and not decrypt automatically');
+
+  const blocks = decryptData.toString().split('\n').map(block => JSON.parse(block));
+  expect(blocks[1].decryptErr.error.type).equals('no_mdc');
+
+  t.pass();
+});
