@@ -190,18 +190,17 @@ final class ComposeViewController: TableNodeViewController {
     private func updateSpinner(with state: ComposeMessageService.State) {
         switch state {
         case .progressChanged(let progress):
-            showProgressHUD(
-                progress: progress,
-                label: state.message ?? "\(progress)"
-            )
-        case .messageSent:
-            showProgressHUDWithCustomImage(
-                imageName: "checkmark.circle",
-                label: "compose_sent".localized
-            )
+            if progress < 1 {
+                showProgressHUD(
+                    progress: progress,
+                    label: state.message ?? "\(progress)"
+                )
+            } else {
+                showIndeterminateHUD(with: "sending_title".localized)
+            }
         case .startComposing, .validatingMessage:
             showIndeterminateHUD(with: state.message ?? "")
-        case .idle:
+        case .idle, .messageSent:
             hideSpinner()
         }
     }
