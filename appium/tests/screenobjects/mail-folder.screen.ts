@@ -5,7 +5,7 @@ import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
   TRASH_HEADER: '~navigationItemTrash',
   SENT_HEADER: '~navigationItemSent',
-  CREATE_EMAIL_BUTTON: '~composeMessageButton',
+  CREATE_EMAIL_BUTTON: '~aid-compose-message-button',
   INBOX_HEADER: '~navigationItemInbox',
   SEARCH_ICON: '~search icn',
   HELP_ICON: '~help icn',
