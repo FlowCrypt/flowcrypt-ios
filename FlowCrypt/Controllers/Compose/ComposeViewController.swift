@@ -67,6 +67,11 @@ final class ComposeViewController: TableNodeViewController {
     private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
 
+    private var didLayoutSubviews = false
+    private var topContentInset: CGFloat {
+        navigationController?.navigationBar.frame.maxY ?? 0
+    }
+
     init(
         appContext: AppContext,
         notificationCenter: NotificationCenter = .default,
@@ -159,6 +164,15 @@ final class ComposeViewController: TableNodeViewController {
         evaluateIfNeeded()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard !didLayoutSubviews else { return }
+
+        didLayoutSubviews = true
+        node.contentInset.top = topContentInset
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -190,18 +204,17 @@ final class ComposeViewController: TableNodeViewController {
     private func updateSpinner(with state: ComposeMessageService.State) {
         switch state {
         case .progressChanged(let progress):
-            showProgressHUD(
-                progress: progress,
-                label: state.message ?? "\(progress)"
-            )
-        case .messageSent:
-            showProgressHUDWithCustomImage(
-                imageName: "checkmark.circle",
-                label: "compose_sent".localized
-            )
+            if progress < 1 {
+                showProgressHUD(
+                    progress: progress,
+                    label: state.message ?? "\(progress)"
+                )
+            } else {
+                showIndeterminateHUD(with: "sending_title".localized)
+            }
         case .startComposing, .validatingMessage:
             showIndeterminateHUD(with: state.message ?? "")
-        case .idle:
+        case .idle, .messageSent:
             hideSpinner()
         }
     }
@@ -287,6 +300,7 @@ extension ComposeViewController {
         node.do {
             $0.delegate = self
             $0.dataSource = self
+            $0.view.contentInsetAdjustmentBehavior = .never
             $0.view.keyboardDismissMode = .interactive
         }
     }
@@ -358,11 +372,12 @@ extension ComposeViewController {
     }
 
     private func adjustForKeyboard(height: CGFloat) {
-        let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 8, right: 0)
-        node.contentInset = insets
+        node.contentInset.bottom = height + 8
 
-        guard let textView = node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first?.textView.textView else { return }
-        guard let selectedRange = textView.selectedTextRange else { return }
+        guard let textView = node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first?.textView.textView,
+              let selectedRange = textView.selectedTextRange
+        else { return }
+
         let rect = textView.caretRect(for: selectedRange.start)
         node.view.scrollRectToVisible(rect, animated: true)
     }
@@ -590,7 +605,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 extension ComposeViewController {
     private func subjectNode() -> ASCellNode {
         TextFieldCellNode(
-            input: decorator.styledTextFieldInput(with: "compose_subject".localized)
+            input: decorator.styledTextFieldInput(
+                with: "compose_subject".localized,
+                accessibilityIdentifier: "subjectTextField"
+            )
         ) { [weak self] event in
             switch event {
             case .editingChanged(let text), .didEndEditing(let text):
@@ -616,15 +634,20 @@ extension ComposeViewController {
     private func textNode() -> ASCellNode {
         let styledQuote = decorator.styledQuote(with: input)
         let height = max(decorator.frame(for: styledQuote).height, 40)
-
         return TextViewCellNode(
-            decorator.styledTextViewInput(with: height)
+            decorator.styledTextViewInput(
+                with: height,
+                accessibilityIdentifier: "messageTextView"
+            )
         ) { [weak self] event in
+            guard let self = self else { return }
             switch event {
-            case .editingChanged(let text), .didEndEditing(let text):
-                self?.contextToSend.message = text?.string
             case .didBeginEditing:
                 break
+            case .editingChanged(let text), .didEndEditing(let text):
+                self.contextToSend.message = text?.string
+            case .heightChanged(let textView):
+                self.ensureCursorVisible(textView: textView)
             }
         }
         .then {
@@ -641,6 +664,20 @@ extension ComposeViewController {
         }
     }
 
+    private func ensureCursorVisible(textView: UITextView) {
+        guard let range = textView.selectedTextRange else { return }
+
+        let cursorRect = textView.caretRect(for: range.start)
+
+        var rectToMakeVisible = textView.convert(cursorRect, to: node.view)
+        rectToMakeVisible.origin.y -= cursorRect.height
+        rectToMakeVisible.size.height *= 3
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { // fix for animation lag
+            self.node.view.scrollRectToVisible(rectToMakeVisible, animated: true)
+        }
+    }
+
     private func recipientsNode() -> RecipientEmailsCellNode {
         RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
             .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
@@ -653,7 +690,10 @@ extension ComposeViewController {
 
     private func recipientInput() -> TextFieldCellNode {
         TextFieldCellNode(
-            input: decorator.styledTextFieldInput(with: "compose_recipient".localized, keyboardType: .emailAddress)
+            input: decorator.styledTextFieldInput(
+                with: "compose_recipient".localized,
+                keyboardType: .emailAddress,
+                accessibilityIdentifier: "recipientTextField")
         ) { [weak self] action in
             self?.handleTextFieldAction(with: action)
         }
@@ -960,13 +1000,11 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
-        node.reloadSections([1, 2], with: .automatic)
-
         switch state {
         case .main:
-            node.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            node.reloadData()
         case .searchEmails:
-            break
+            node.reloadSections([1, 2], with: .automatic)
         }
     }
 }

@@ -2,9 +2,9 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  ADD_RECIPIENT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Add Recipient"`]',
-  SUBJECT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Subject"`]',
-  COMPOSE_SECURITY_MESSAGE: '-ios predicate string:type == "XCUIElementTypeTextView"',
+  ADD_RECIPIENT_FIELD: '~recipientTextField',
+  SUBJECT_FIELD: '~subjectTextField',
+  COMPOSE_SECURITY_MESSAGE: '~messageTextView',
   RECIPIENTS_LIST: '~recipientsList',
   ADDED_RECIPIENT: '-ios class chain:**/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther' +
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
@@ -109,6 +109,10 @@ class NewMessageScreen extends BaseScreen {
       await this.checkAddedAttachment(attachmentName);
     }
   };
+
+  checkRecipientsTextFieldIsInvisible = async () => {
+    await ElementHelper.waitElementInvisible(await this.addRecipientField);
+  }
 
   checkEmptyRecipientsList = async () => {
     const list = await this.recipientsList;
