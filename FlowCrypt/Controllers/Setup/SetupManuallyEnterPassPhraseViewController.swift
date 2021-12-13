@@ -28,7 +28,6 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let router: GlobalRouterType
 
     private var passPhrase: String?
 
@@ -47,7 +46,6 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         appContext: AppContext,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(),
-        router: GlobalRouterType = GlobalRouter(),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
@@ -56,7 +54,6 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.router = router
 
         super.init(node: TableNode())
     }
@@ -293,6 +290,6 @@ extension SetupManuallyEnterPassPhraseViewController {
     }
 
     private func moveToMainFlow() {
-        router.proceed()
+        appContext.globalRouter.proceed()
     }
 }

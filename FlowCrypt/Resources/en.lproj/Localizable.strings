@@ -15,6 +15,7 @@
 "allow" = "Allow";
 "later" = "Later";
 "forward" = "Forward";
+"save" = "Save";
 "to" = "to";
 "cc" = "cc";
 "bcc" = "bcc";
@@ -278,6 +279,5 @@
 "invalid_storage_reset_error" = "Couldn't remove storage. Please reinstall application";
 "invalid_storage_failed_to_initialize" = "Failed to initialize storage. Please restart your device. If it doesn't help, please reinstall application";
 
-// Fatal error view controller
-"fatal_error_screen_title" = "Error";
-"fatal_error_screen_text" = "Not possible to continue due to fatal error. Please try to restart application. If it doesn't help, please reinstall application";
+// Attachments details
+"no_preview_avalable" = "No preview available";

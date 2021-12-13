@@ -24,8 +24,6 @@ final class SetupImapViewController: TableNodeViewController {
     private var state: State = .idle
     private var selectedSection: Section?
 
-    private let globalRouter: GlobalRouterType
-
     private let appContext: AppContext
     private let decorator: SetupImapViewDecorator
     private let sessionCredentials: SessionCredentialsProvider
@@ -34,13 +32,11 @@ final class SetupImapViewController: TableNodeViewController {
 
     init(
         appContext: AppContext,
-        globalRouter: GlobalRouterType = GlobalRouter(),
         decorator: SetupImapViewDecorator = SetupImapViewDecorator(),
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
         imap: Imap = Imap(user: User.empty)
     ) {
         self.appContext = appContext
-        self.globalRouter = globalRouter
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials
         self.imap = imap
@@ -530,7 +526,7 @@ extension SetupImapViewController {
     private func handleSuccessfulConnection() {
         hideSpinner()
         Task {
-            await globalRouter.signIn(appContext: self.appContext, route: .other(.session(user)))
+            await appContext.globalRouter.signIn(appContext: self.appContext, route: .other(.session(user)))
         }
     }
 

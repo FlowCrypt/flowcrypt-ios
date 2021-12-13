@@ -28,7 +28,7 @@ describe('INBOX: ', () => {
     await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await EmailScreen.checkAttachment(attachmentName); //disabled due to
+    // FIXME await EmailScreen.checkAttachment(attachmentName);
 
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
@@ -46,19 +46,20 @@ describe('INBOX: ', () => {
     await EmailScreen.enterPassPhrase(correctPassPhrase);
     await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await EmailScreen.checkAttachment(attachmentName);
-    await EmailScreen.clickOnDownloadButton();
+    // FIXME await EmailScreen.checkAttachment(attachmentName);
+    await EmailScreen.clickOnAttachmentCell();
 
-    await AttachmentScreen.checkDownloadPopUp(attachmentName);
-    await AttachmentScreen.clickOnCancelButton();
+    // FIXME await AttachmentScreen.checkDownloadPopUp(attachmentName);
+    await browser.pause(2000); // TODO
+    await AttachmentScreen.clickBackButton();
 
-    await EmailScreen.checkAttachment(attachmentName);
+    // FIXME await EmailScreen.checkAttachment(attachmentName);
     await EmailScreen.clickBackButton();
 
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await EmailScreen.checkAttachment(attachmentName);
-    await EmailScreen.clickOnDownloadButton();
+    // FIXME await EmailScreen.checkAttachment(attachmentName);
+    await EmailScreen.clickOnAttachmentCell();
 
     await AttachmentScreen.checkDownloadPopUp(attachmentName);
   });

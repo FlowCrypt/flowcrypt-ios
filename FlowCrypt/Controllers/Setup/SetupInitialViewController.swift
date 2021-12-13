@@ -53,7 +53,6 @@ final class SetupInitialViewController: TableNodeViewController {
 
     private let service: ServiceActor
     private let user: UserId
-    private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let emailKeyManagerApi: EmailKeyManagerApiType
@@ -64,14 +63,12 @@ final class SetupInitialViewController: TableNodeViewController {
     init(
         appContext: AppContext,
         user: UserId,
-        router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
         emailKeyManagerApi: EmailKeyManagerApiType? = nil
     ) {
         self.appContext = appContext
         self.user = user
         self.service = ServiceActor(backupService: appContext.getBackupService())
-        self.router = router
         self.decorator = decorator
         let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
         self.emailKeyManagerApi = emailKeyManagerApi ?? EmailKeyManagerApi(clientConfiguration: clientConfiguration)
@@ -134,8 +131,12 @@ extension SetupInitialViewController {
         }
     }
 
-    private func handleOtherAccount() {
-        router.signOut(appContext: appContext)
+    private func signOut() {
+        do {
+            try appContext.globalRouter.signOut(appContext: appContext)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 
     private func handle(error: Error) {
@@ -151,8 +152,7 @@ extension SetupInitialViewController {
             state = .searchingKeyBackupsInInbox
         case .inconsistentClientConfiguration(let error):
             showAlert(message: error.description) { [weak self] in
-                guard let self = self else { return }
-                self.router.signOut(appContext: self.appContext)
+                self?.signOut()
             }
         }
     }
@@ -171,14 +171,12 @@ extension SetupInitialViewController {
                             self?.state = .fetchingKeysFromEKM
                         },
                         onOk: { [weak self] in
-                            guard let self = self else { return }
-                            self.router.signOut(appContext: self.appContext)
+                            self?.signOut()
                         }
                     )
                 case .keysAreNotDecrypted:
                     showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: { [weak self] in
-                        guard let self = self else { return }
-                        self.router.signOut(appContext: self.appContext)
+                        self?.signOut()
                     })
                 }
             } catch {
@@ -279,7 +277,7 @@ extension SetupInitialViewController {
             }
         case .anotherAccount:
             return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
-                self?.handleOtherAccount()
+                self?.signOut()
             }
         }
     }

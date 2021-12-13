@@ -15,17 +15,20 @@ public final class InfoCellNode: CellNode {
         let image: UIImage?
         let insets: UIEdgeInsets
         let backgroundColor: UIColor?
+        let accessibilityIdentifier: String?
 
         public init(
             attributedText: NSAttributedString,
             image: UIImage?,
             insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
-            backgroundColor: UIColor? = nil
+            backgroundColor: UIColor? = nil,
+            accessibilityIdentifier: String? = nil
         ) {
             self.attributedText = attributedText
             self.image = image
             self.insets = insets
             self.backgroundColor = backgroundColor
+            self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 
@@ -37,9 +40,12 @@ public final class InfoCellNode: CellNode {
         self.input = input
         super.init()
         self.textNode.attributedText = input?.attributedText
+        self.textNode.isAccessibilityElement = true
+        self.textNode.accessibilityIdentifier = input?.accessibilityIdentifier
+        
         self.imageNode.image = input?.image
         self.automaticallyManagesSubnodes = true
-
+        
         if let backgroundColor = input?.backgroundColor {
             self.backgroundColor = backgroundColor
         }
