@@ -29,6 +29,7 @@ config.capabilities = [
     platformVersion: '15.0',
     automationName: 'XCUITest',
     app: join(process.cwd(), './FlowCrypt.app'),
+    simpleIsVisibleCheck: true,
     newCommandTimeout: 10000,
     wdaLaunchTimeout: 300000,
     wdaConnectionTimeout: 600000,

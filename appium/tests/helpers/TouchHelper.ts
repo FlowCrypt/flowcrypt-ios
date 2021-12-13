@@ -40,7 +40,7 @@ class TouchHelper {
     // this wait can be later replaced by waiting for loader to go away before scrolling
     await browser.pause(1000); // make sure contents are loaded first, so we don't scroll too early
     for(let i = 0; i < 15; i++) {
-      if (await (await element).isDisplayed()) {
+      if (await element.isDisplayed()) {
         return;
       }
       await driver.touchPerform([

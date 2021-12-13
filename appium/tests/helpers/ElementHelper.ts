@@ -50,7 +50,7 @@ class ElementHelper {
   }
 
   static waitAndClick = async (element: WebdriverIO.Element, delayMs = 50) => {
-    await element.waitForDisplayed();
+    await this.waitElementVisible(element);
     // stability fix to make sure element is ready for interaction
     await browser.pause(delayMs);
     await element.click();
