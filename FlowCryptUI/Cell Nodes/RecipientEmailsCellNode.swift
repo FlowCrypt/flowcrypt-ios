@@ -44,6 +44,10 @@ final public class RecipientEmailsCellNode: CellNode {
         collectionNode.dataSource = self
         collectionNode.delegate = self
 
+        DispatchQueue.main.async {
+            self.collectionNode.view.contentInsetAdjustmentBehavior = .never
+        }
+
         automaticallyManagesSubnodes = true
     }
 

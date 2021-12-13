@@ -21,7 +21,7 @@ struct ComposeViewDecorator {
     let recipientInvalidEmailState: RecipientState = .invalidEmail(invalidEmailStateContext)
     let recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
 
-    func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
+    func styledTextViewInput(with height: CGFloat, accessibilityIdentifier: String? = nil) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
             placeholder: "message_compose_secure".localized.attributed(
                 .regular(17),
@@ -29,11 +29,14 @@ struct ComposeViewDecorator {
                 alignment: .left
             ),
             preferredHeight: height,
-            textColor: .mainTextColor
+            textColor: .mainTextColor,
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 
-    func styledTextFieldInput(with text: String, keyboardType: UIKeyboardType = .default) -> TextFieldCellNode.Input {
+    func styledTextFieldInput(with text: String,
+                              keyboardType: UIKeyboardType = .default,
+                              accessibilityIdentifier: String? = nil) -> TextFieldCellNode.Input {
         TextFieldCellNode.Input(
             placeholder: text.localized.attributed(
                 .regular(17),
@@ -45,7 +48,8 @@ struct ComposeViewDecorator {
             textAlignment: .left,
             height: 40,
             width: UIScreen.main.bounds.width,
-            keyboardType: keyboardType
+            keyboardType: keyboardType,
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 

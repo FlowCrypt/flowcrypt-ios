@@ -16,7 +16,7 @@ export const CommonData = {
     name: 'Demo'
   },
   recipient: {
-      email: 'robot@flowcrypt.com',
+    email: 'robot@flowcrypt.com',
   },
   bundleId: {
     id: 'com.flowcrypt.as.ios.debug',
@@ -33,6 +33,9 @@ export const CommonData = {
   simpleEmail: {
     subject: 'Test 1',
     message: 'Test email',
+  },
+  longEmail: {
+    message: '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nText'
   },
   keyMismatchEmail: {
     subject: 'Encrypted message with key mismatch',
@@ -80,23 +83,23 @@ export const CommonData = {
   },
   errors: {
     noPublicKey: 'Could not compose message\n' +
-        '\n' +
-        'One or more of your recipients are missing a public key (marked in gray).\n' +
-        '\n' +
-        'Please ask them to share it with you, or ask them to also set up FlowCrypt.',
+      '\n' +
+      'One or more of your recipients are missing a public key (marked in gray).\n' +
+      '\n' +
+      'Please ask them to share it with you, or ask them to also set up FlowCrypt.',
     wrongPassPhrase: 'Could not compose message\n' +
-        '\n' +
-        'This pass phrase did not match your signing private key',
+      '\n' +
+      'This pass phrase did not match your signing private key',
     expiredPublicKey: 'Could not compose message\n' +
-        '\n' +
-        'One or more of your recipients have expired public keys (marked in orange).\n' +
-        '\n' +
-        'Please ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.',
+      '\n' +
+      'One or more of your recipients have expired public keys (marked in orange).\n' +
+      '\n' +
+      'Please ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.',
     revokedPublicKey: 'Could not compose message\n' +
-        '\n' +
-        'One or more of your recipients have revoked public keys (marked in red).\n' +
-        '\n' +
-        'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
+      '\n' +
+      'One or more of your recipients have revoked public keys (marked in red).\n' +
+      '\n' +
+      'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
