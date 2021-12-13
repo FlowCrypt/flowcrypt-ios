@@ -193,7 +193,7 @@ extension ComposeViewDecorator {
             borderColor: .borderColorSelected,
             textColor: .white,
             image: nil,
-            accessibilityIdentifier: nil
+            accessibilityIdentifier: "gray"
         )
     }
 

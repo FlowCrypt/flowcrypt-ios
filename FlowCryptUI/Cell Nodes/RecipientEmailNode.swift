@@ -37,7 +37,7 @@ final class RecipientEmailNode: CellNode {
         titleNode.attributedText = "  ".attributed() + input.recipient.email + "  ".attributed()
         titleNode.backgroundColor = input.recipient.state.backgroundColor
         if let accessibilityIdentifier = input.recipient.state.accessibilityIdentifier {
-            titleNode.accessibilityIdentifier = "to-\(index)-\(accessibilityIdentifier)"
+            titleNode.accessibilityIdentifier = "aid-to-\(index)-\(accessibilityIdentifier)"
         }
         titleNode.isAccessibilityElement = true
 
