@@ -8,7 +8,7 @@ const SELECTORS = {
   OK_BUTTON: '~Ok',
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
   ATTACHMENT_CELL: '~attachmentCell0',
-  ATTACHMENT_TITLE: 'attachmentTitleLabel0',
+  ATTACHMENT_TITLE: '~attachmentTitleLabel0',
   REPLY_BUTTON: '~replyButton',
   RECIPIENTS_BUTTON: '~messageRecipientButton',
   RECIPIENTS_TO_LABEL: '~toLabel0',
