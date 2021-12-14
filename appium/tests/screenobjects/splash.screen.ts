@@ -104,6 +104,10 @@ class SplashScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.continueButton);
   }
 
+  clickCancelButton = async () => {
+    await ElementHelper.waitAndClick(await this.cancelButton);
+  }
+
   changeLanguage = async (language = '‪English (United States)‬') => {
     await ElementHelper.waitAndClick(await this.languageDropdown, 500);
     const selector = `~${language}`;

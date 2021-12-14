@@ -24,7 +24,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     init(
         appContext: AppContext,
         user: UserId,
-        router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.attester = AttesterApi(
@@ -33,14 +32,11 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         self.service = Service(
             appContext: appContext,
             user: user,
-            backupService: appContext.getBackupService(),
-            core: Core.shared,
             attester: self.attester
         )
         super.init(
             appContext: appContext,
             user: user,
-            router: router,
             decorator: decorator
         )
     }
@@ -80,21 +76,15 @@ private actor Service {
 
     private let appContext: AppContext
     private let user: UserId
-    private let backupService: BackupServiceType
-    private let core: Core
     private let attester: AttesterApiType
 
     init(
         appContext: AppContext,
         user: UserId,
-        backupService: BackupServiceType,
-        core: Core,
         attester: AttesterApiType
     ) {
         self.appContext = appContext
         self.user = user
-        self.backupService = backupService
-        self.core = core
         self.attester = attester
     }
 
@@ -105,12 +95,12 @@ private actor Service {
 
         try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
-        let encryptedPrv = try await core.generateKey(
+        let encryptedPrv = try await Core.shared.generateKey(
             passphrase: passPhrase,
             variant: .curve25519,
             userIds: [userId]
         )
-        try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
+        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
 
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],

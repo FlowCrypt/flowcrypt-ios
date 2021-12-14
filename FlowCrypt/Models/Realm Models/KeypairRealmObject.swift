@@ -4,6 +4,7 @@
 
 import Foundation
 import RealmSwift
+import CryptoKit
 
 enum KeySource: String {
     case backup
@@ -19,8 +20,9 @@ enum KeyInfoError: Error {
     case missingPrimaryFingerprint
 }
 
-final class KeyInfoRealmObject: Object {
-    @Persisted(primaryKey: true) var primaryFingerprint: String
+final class KeypairRealmObject: Object {
+    @Persisted(primaryKey: true) var primaryKey: String
+    @Persisted var primaryFingerprint: String
     @Persisted var `private`: String
     @Persisted var `public`: String
     @Persisted var passphrase: String?
@@ -38,7 +40,7 @@ final class KeyInfoRealmObject: Object {
     }
 }
 
-extension KeyInfoRealmObject {
+extension KeypairRealmObject {
     convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
 
@@ -61,6 +63,7 @@ extension KeyInfoRealmObject {
             throw KeyInfoError.missingPrimaryFingerprint
         }
 
+        self.primaryKey = primaryFingerprint + user.email
         self.primaryFingerprint = primaryFingerprint
         self.passphrase = passphrase
         self.source = source.rawValue
@@ -68,10 +71,21 @@ extension KeyInfoRealmObject {
     }
 }
 
-extension KeyInfoRealmObject {
+extension KeypairRealmObject {
     /// associated user email
     var account: String {
         guard let email = user?.email else { fatalError() }
         return email
+    }
+}
+
+extension KeypairRealmObject {
+    static func createPrimaryKey(primaryFingerprint: String, email: String) -> String {
+        var hash = SHA256()
+        hash.update(data: primaryFingerprint.data())
+        hash.update(data: Data(count: 1)) // null byte
+        hash.update(data: email.data())
+        return hash.finalize()
+            .compactMap { String(format: "%02x", $0) }.joined()
     }
 }

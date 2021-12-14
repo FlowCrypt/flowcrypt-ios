@@ -12,6 +12,12 @@ config.suites = {
   ],
   inbox: [
     './tests/specs/live/inbox/*.spec.ts'
+  ],
+  compose: [
+      './tests/specs/live/composeEmail/*.spec.ts'
+  ],
+  login: [
+      './tests/specs/live/login/*.spec.ts'
   ]
 };
 
@@ -23,6 +29,7 @@ config.capabilities = [
     platformVersion: '15.0',
     automationName: 'XCUITest',
     app: join(process.cwd(), './FlowCrypt.app'),
+    simpleIsVisibleCheck: true,
     newCommandTimeout: 10000,
     wdaLaunchTimeout: 300000,
     wdaConnectionTimeout: 600000,

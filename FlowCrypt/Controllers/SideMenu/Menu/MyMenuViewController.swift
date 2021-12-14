@@ -45,7 +45,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     private let appContext: AppContext
     private let foldersService: FoldersServiceType
-    private let router: GlobalRouterType
     private let decorator: MyMenuViewDecoratorType
 
     private var folders: [FolderViewModel] = []
@@ -68,7 +67,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         appContext: AppContext,
-        globalRouter: GlobalRouterType = GlobalRouter(),
         decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
@@ -78,7 +76,6 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         self.currentUser = currentUser
         self.appContext = appContext
         self.foldersService = appContext.getFoldersService()
-        self.router = globalRouter
         self.decorator = decorator
         self.tableNode = tableNode
         super.init(node: ASDisplayNode())
@@ -224,7 +221,11 @@ extension MyMenuViewController {
             return
         }
 
-        router.switchActive(user: account, appContext: appContext)
+        do {
+            try appContext.globalRouter.switchActive(user: account, appContext: appContext)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 }
 
@@ -301,7 +302,11 @@ extension MyMenuViewController {
             }
             sideMenuController()?.setContentViewController(SettingsViewController(appContext: appContext))
         case .logOut:
-            router.signOut(appContext: appContext)
+            do {
+                try appContext.globalRouter.signOut(appContext: appContext)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 

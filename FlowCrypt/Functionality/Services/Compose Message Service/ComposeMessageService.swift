@@ -208,13 +208,13 @@ extension ComposeMessageService {
             case .idle:
                 return nil
             case .validatingMessage:
-                return "Validating"
+                return "validating_title".localized
             case .startComposing:
-                return "Encrypting"
+                return "encrypting_title".localized
             case .progressChanged:
-                return "Uploading"
+                return "compose_uploading".localized
             case .messageSent:
-                return "Message sent"
+                return "compose_message_sent".localized
             }
         }
 

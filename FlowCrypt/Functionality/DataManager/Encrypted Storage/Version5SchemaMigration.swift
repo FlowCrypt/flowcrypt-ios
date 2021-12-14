@@ -9,249 +9,261 @@
 import FlowCryptCommon
 import RealmSwift
 
-final class Version5SchemaMigration {
-    private lazy var logger = Logger.nested(in: Self.self, with: .migration)
+extension SchemaMigration {
+    final class Version5 {
+        private lazy var logger = Logger.nested(in: Self.self, with: .migration)
 
-    private let migration: Migration
+        private let migration: Migration
 
-    private var newUsers: [String: MigrationObject] = [:]
-    private var newPubKeys: [String: MigrationObject] = [:]
+        private var newUsers: [String: MigrationObject] = [:]
+        private var newPubKeys: [String: MigrationObject] = [:]
 
-    private var lastError: Error?
+        private var lastError: Error?
 
-    init(migration: Migration) {
-        self.migration = migration
-    }
+        init(migration: Migration) {
+            self.migration = migration
+        }
 
-    func perform() {
-        logger.logInfo("Start version 5 migration")
+        func perform() {
+            logger.logInfo("Start version 5 migration")
 
-        let objects: [(String, (MigrationObject) throws -> Void)] = [
-            ("UserObject", renameUserObject),
-            ("FolderObject", renameFolderObject),
-            ("ClientConfigurationObject", renameClientConfigurationObject),
-            ("KeyInfo", renameKeyInfo),
-            ("PubKeyObject", renamePubKeyObject),
-            ("RecipientObject", renameRecipientObject)
-        ]
-        objects.forEach { object in
-            migration.enumerateObjects(ofType: object.0) { oldObject, newObject in
-                guard
-                    lastError == nil,
-                    let oldObject = oldObject,
-                    newObject == nil
-                else {
-                    lastError = AppErr.unexpected("Wrong Realm configuration")
-                    return
-                }
+            let objects: [(String, (MigrationObject) throws -> Void)] = [
+                ("UserObject", renameUserObject),
+                ("FolderObject", renameFolderObject),
+                ("ClientConfigurationObject", renameClientConfigurationObject),
+                ("KeyInfo", renameKeyInfo),
+                ("PubKeyObject", renamePubKeyObject),
+                ("RecipientObject", renameRecipientObject)
+            ]
+            objects.forEach { object in
+                migration.enumerateObjects(ofType: object.0) { oldObject, newObject in
+                    guard
+                        lastError == nil,
+                        let oldObject = oldObject,
+                        newObject == nil
+                    else {
+                        if lastError == nil {
+                            lastError = AppErr.unexpected("Wrong Realm configuration")
+                        }
+                        return
+                    }
 
-                do {
-                    try object.1(oldObject)
-                } catch {
-                    lastError = error
+                    do {
+                        try object.1(oldObject)
+                    } catch {
+                        lastError = error
+                    }
                 }
             }
+
+            removeOldObjects()
+
+            guard let error = lastError else {
+                logger.logInfo("End version 5 migration")
+                return
+            }
+            logger.logError(error.localizedDescription)
+            fatalError(error.localizedDescription)
         }
 
-        removeOldObjects()
+        private func renameUserObject(oldObject: MigrationObject) throws {
+            let newObject = migration.create(UserRealmObject.className())
 
-        guard let error = lastError else {
-            logger.logInfo("End version 5 migration")
-            return
-        }
-        logger.logError(error.localizedDescription)
-        fatalError(error.localizedDescription)
-    }
+            let primitiveProperties: [RealmProperty] = [
+                Properties.User.isActive,
+                Properties.User.name,
+                Properties.User.email
+            ]
+            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
 
-    private func renameUserObject(oldObject: MigrationObject) throws {
-        let newObject = migration.create(UserRealmObject.className())
+            setSession(oldObject: oldObject, newObject: newObject, property: Properties.User.imap)
+            setSession(oldObject: oldObject, newObject: newObject, property: Properties.User.smtp)
 
-        let primitiveProperties: [String] = [
-            "isActive",
-            "name",
-            "email"
-        ]
-        primitiveProperties.forEach {
-            newObject[$0] = oldObject[$0]
+            guard let primaryKey = oldObject[Properties.User.email] as? String else {
+                throw AppErr.unexpected("Wrong UserObject primary key")
+            }
+            newUsers[primaryKey] = newObject
         }
 
-        setSession(oldObject: oldObject, newObject: newObject, propertyName: "imap")
-        setSession(oldObject: oldObject, newObject: newObject, propertyName: "smtp")
+        private func renameFolderObject(oldObject: MigrationObject) throws {
+            let newObject = migration.create(FolderRealmObject.className())
 
-        guard let primaryKey = oldObject["email"] as? String else {
-            throw AppErr.unexpected("Wrong UserObject primary key")
-        }
-        newUsers[primaryKey] = newObject
-    }
+            let primitiveProperties: [RealmProperty] = [
+                Properties.Folder.name,
+                Properties.Folder.path,
+                Properties.Folder.image,
+                Properties.Folder.itemType
+            ]
+            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
 
-    private func renameFolderObject(oldObject: MigrationObject) throws {
-        let newObject = migration.create(FolderRealmObject.className())
-
-        let primitiveProperties: [String] = [
-            "name",
-            "path",
-            "image",
-            "itemType"
-        ]
-        primitiveProperties.forEach {
-            newObject[$0] = oldObject[$0]
+            try setUser(oldObject: oldObject, newObject: newObject, property: Properties.Folder.user)
         }
 
-        try setUser(oldObject: oldObject, newObject: newObject, propertyName: "user")
-    }
+        private func renameClientConfigurationObject(oldObject: MigrationObject) throws {
+            let newObject = migration.create(ClientConfigurationRealmObject.className())
 
-    private func renameClientConfigurationObject(oldObject: MigrationObject) throws {
-        let newObject = migration.create(ClientConfigurationRealmObject.className())
+            let primitiveProperties: [RealmProperty] = [
+                Properties.ClientConfiguration.flags,
+                Properties.ClientConfiguration.customKeyserverUrl,
+                Properties.ClientConfiguration.keyManagerUrl,
+                Properties.ClientConfiguration.disallowAttesterSearchForDomains,
+                Properties.ClientConfiguration.enforceKeygenAlgo,
+                Properties.ClientConfiguration.enforceKeygenExpireMonths,
+                Properties.ClientConfiguration.userEmail
+            ]
+            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
 
-        let primitiveProperties: [String] = [
-            "flags",
-            "customKeyserverUrl",
-            "keyManagerUrl",
-            "disallowAttesterSearchForDomains",
-            "enforceKeygenAlgo",
-            "enforceKeygenExpireMonths",
-            "userEmail"
-        ]
-        primitiveProperties.forEach {
-            newObject[$0] = oldObject[$0]
+            try setUser(oldObject: oldObject, newObject: newObject, property: Properties.ClientConfiguration.user)
         }
 
-        try setUser(oldObject: oldObject, newObject: newObject, propertyName: "user")
-    }
+        private func renameKeyInfo(oldObject: MigrationObject) throws {
+            let newObject = migration.create(KeypairRealmObject.className())
 
-    private func renameKeyInfo(oldObject: MigrationObject) throws {
-        let newObject = migration.create(KeyInfoRealmObject.className())
+            let primitiveProperties: [RealmProperty] = [
+                Properties.Keypair.private,
+                Properties.Keypair.public,
+                Properties.Keypair.primaryFingerprint,
+                Properties.Keypair.passphrase,
+                Properties.Keypair.source,
+                Properties.Keypair.allFingerprints,
+                Properties.Keypair.allLongids
+            ]
+            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
 
-        let primitiveProperties: [String] = [
-            "private",
-            "public",
-            "primaryFingerprint",
-            "passphrase",
-            "source",
-            "allFingerprints",
-            "allLongids"
-        ]
-        primitiveProperties.forEach {
-            newObject[$0] = oldObject[$0]
+            try setUser(
+                oldObject: oldObject,
+                newObject: newObject,
+                property: Properties.Keypair.user
+            )
+            try setKeypairObjectPrimaryKey(newObject)
         }
 
-        try setUser(oldObject: oldObject, newObject: newObject, propertyName: "user")
-    }
+        private func renamePubKeyObject(oldObject: MigrationObject) throws {
+            let newObject = migration.create(PubKeyRealmObject.className())
 
-    private func renamePubKeyObject(oldObject: MigrationObject) throws {
-        let newObject = migration.create(PubKeyRealmObject.className())
+            let primitiveProperties: [RealmProperty] = [
+                Properties.PubKey.primaryFingerprint,
+                Properties.PubKey.armored,
+                Properties.PubKey.lastSig,
+                Properties.PubKey.lastChecked,
+                Properties.PubKey.expiresOn,
+                Properties.PubKey.longids,
+                Properties.PubKey.fingerprints,
+                Properties.PubKey.created
+            ]
+            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
 
-        let primitiveProperties: [String] = [
-            "primaryFingerprint",
-            "armored",
-            "lastSig",
-            "lastChecked",
-            "expiresOn",
-            "longids",
-            "fingerprints",
-            "created"
-        ]
-        primitiveProperties.forEach {
-            newObject[$0] = oldObject[$0]
-        }
-
-        guard let primaryKey = oldObject["primaryFingerprint"] as? String else {
-            throw AppErr.unexpected("Wrong PubKeyObject primary key")
-        }
-        newPubKeys[primaryKey] = newObject
-    }
-
-    private func renameRecipientObject(oldObject: MigrationObject) throws {
-        let newObject = migration.create(RecipientRealmObject.className())
-
-        let primitiveProperties: [String] = [
-            "email",
-            "name",
-            "lastUsed"
-        ]
-        primitiveProperties.forEach {
-            newObject[$0] = oldObject[$0]
-        }
-
-        guard let oldPubKeys = oldObject["pubKeys"] as? List<MigrationObject> else {
-            throw AppErr.unexpected("Wrong RecipientObject pubKeys property")
-        }
-
-        let keys: [MigrationObject] = try oldPubKeys.map({
-            guard
-                let primaryKey = $0["primaryFingerprint"] as? String,
-                let object = newPubKeys[primaryKey]
-            else {
+            guard let primaryKey = oldObject[Properties.PubKey.primaryFingerprint] as? String else {
                 throw AppErr.unexpected("Wrong PubKeyObject primary key")
             }
-            return object
-        })
-
-        guard let newPubKeys = newObject["pubKeys"] as? List<MigrationObject> else {
-            throw AppErr.unexpected("Wrong RecipientRealmObject pubKeys property")
-        }
-        newPubKeys.append(objectsIn: keys)
-    }
-
-    private func removeOldObjects() {
-        guard lastError == nil else {
-            return
+            newPubKeys[primaryKey] = newObject
         }
 
-        [
-            "ClientConfigurationObject",
-            "FolderObject",
-            "KeyInfo",
-            "UserObject",
-            "SessionObject",
-            "RecipientObject",
-            "PubKeyObject"
-        ].forEach {
-            if !migration.deleteData(forType: $0) {
-                logger.logWarning("fail to delete data for type \($0)")
+        private func renameRecipientObject(oldObject: MigrationObject) throws {
+            let newObject = migration.create(RecipientRealmObject.className())
+
+            let primitiveProperties: [RealmProperty] = [
+                Properties.Recipient.email,
+                Properties.Recipient.name,
+                Properties.Recipient.lastUsed
+            ]
+            primitiveProperties.forEach {
+                newObject[$0] = oldObject[$0]
+            }
+
+            guard let oldPubKeys = oldObject[Properties.Recipient.pubKeys] as? List<MigrationObject> else {
+                throw AppErr.unexpected("Wrong RecipientObject pubKeys property")
+            }
+
+            let keys: [MigrationObject] = try oldPubKeys.map({
+                guard
+                    let primaryKey = $0[Properties.PubKey.primaryFingerprint] as? String,
+                    let object = newPubKeys[primaryKey]
+                else {
+                    throw AppErr.unexpected("Wrong PubKeyObject primary key")
+                }
+                return object
+            })
+
+            guard let newPubKeys = newObject[Properties.Recipient.pubKeys] as? List<MigrationObject> else {
+                throw AppErr.unexpected("Wrong RecipientRealmObject pubKeys property")
+            }
+            newPubKeys.append(objectsIn: keys)
+        }
+
+        private func removeOldObjects() {
+            guard lastError == nil else {
+                return
+            }
+
+            [
+                "ClientConfigurationObject",
+                "FolderObject",
+                "KeyInfo",
+                "UserObject",
+                "SessionObject",
+                "RecipientObject",
+                "PubKeyObject"
+            ].forEach {
+                if !migration.deleteData(forType: $0) {
+                    logger.logWarning("fail to delete data for type \($0)")
+                }
             }
         }
-    }
 
-    private func setSession(oldObject: MigrationObject, newObject: MigrationObject, propertyName: String) {
-        guard let oldSessionObject = oldObject[propertyName] as? Object else {
-            return
+        private func setSession(oldObject: MigrationObject, newObject: MigrationObject, property: RealmProperty) {
+            guard let oldSessionObject = oldObject[property] as? Object else {
+                return
+            }
+
+            newObject[property] = renameSessionObject(oldObject: oldSessionObject)
         }
 
-        newObject[propertyName] = renameSessionObject(oldObject: oldSessionObject)
-    }
+        private func renameSessionObject(oldObject: Object) -> MigrationObject {
+            let newObject = migration.create(SessionRealmObject.className())
 
-    private func renameSessionObject(oldObject: Object) -> MigrationObject {
-        let newObject = migration.create(SessionRealmObject.className())
+            let primitiveProperties: [RealmProperty] = [
+                Properties.Session.hostname,
+                Properties.Session.port,
+                Properties.Session.username,
+                Properties.Session.password,
+                Properties.Session.oAuth2Token,
+                Properties.Session.connectionType,
+                Properties.Session.email
+            ]
+            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
 
-        let primitiveProperties: [String] = [
-            "hostname",
-            "port",
-            "username",
-            "password",
-            "oAuth2Token",
-            "connectionType",
-            "email"
-        ]
-        primitiveProperties.forEach {
-            newObject[$0] = oldObject[$0]
+            return newObject
         }
 
-        return newObject
-    }
+        private func setUser(oldObject: MigrationObject, newObject: MigrationObject, property: RealmProperty) throws {
+            guard let oldUserObject = oldObject[property] as? Object else {
+                return
+            }
 
-    private func setUser(oldObject: MigrationObject, newObject: MigrationObject, propertyName: String) throws {
-        guard let oldUserObject = oldObject[propertyName] as? Object else {
-            return
+            guard
+                let primaryKey = oldUserObject[Properties.User.email] as? String,
+                let object = newUsers[primaryKey]
+            else {
+                throw AppErr.unexpected("Wrong UserObject primary key")
+            }
+
+            newObject[property] = object
         }
 
-        guard
-            let primaryKey = oldUserObject["email"] as? String,
-            let object = newUsers[primaryKey]
-        else {
-            throw AppErr.unexpected("Wrong UserObject primary key")
-        }
+        private func setKeypairObjectPrimaryKey(_ object: MigrationObject) throws {
+            guard
+                let userObject = object[Properties.Keypair.user] as? Object,
+                let email = userObject[Properties.User.email] as? String,
+                let primaryFingerprint = object[Properties.Keypair.primaryFingerprint] as? String
+            else {
+                throw AppErr.unexpected("KeypairRealmObject primary key")
+            }
 
-        newObject[propertyName] = object
+            object[Properties.Keypair.primaryKey] = KeypairRealmObject.createPrimaryKey(
+                primaryFingerprint: primaryFingerprint,
+                email: email
+            )
+        }
     }
 }
