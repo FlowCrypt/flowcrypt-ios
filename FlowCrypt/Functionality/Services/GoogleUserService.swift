@@ -42,6 +42,20 @@ struct GoogleUser: Codable {
     let picture: URL?
 }
 
+struct IdToken: Codable {
+    let exp: Int
+}
+
+extension IdToken {
+    var isExpired: Bool {
+        Double(exp) < Date().timeIntervalSince1970
+    }
+}
+
+enum TokenError: Error {
+    case missingToken, invalidJWTFormat, invalidBase64EncodedData
+}
+
 protocol GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
     func renewSession() async throws
@@ -123,20 +137,6 @@ extension GoogleUserService: UserServiceType {
                 }
             }
             self.appDelegateGoogleSessionContainer?.googleAuthSession = googleDelegateSess
-        }
-    }
-
-    func performTokenRefresh() async throws -> (accessToken: String, idToken: String) {
-        return try await withCheckedThrowingContinuation { continuation in
-            authorization?.authState.setNeedsTokenRefresh()
-            authorization?.authState.performAction { accessToken, idToken, error in
-                guard let accessToken = accessToken, let idToken = idToken else {
-                    let tokenError = error ?? AppErr.unexpected("Shouldn't happen because received nil error and nil token")
-                    return continuation.resume(throwing: tokenError)
-                }
-                let result = (accessToken, idToken)
-                return continuation.resume(with: .success(result))
-            }
         }
     }
 
@@ -240,6 +240,55 @@ extension GoogleUserService {
               allowedScopes.isNotEmpty
         else { return scopes }
         return scopes.filter { !allowedScopes.contains($0.value) }
+    }
+}
+
+// MARK: - Tokens
+extension GoogleUserService {
+    func getIdToken() async throws -> String {
+        guard let idToken = idToken else { throw(TokenError.missingToken) }
+
+        let decodedToken = try decode(idToken: idToken)
+
+        guard !decodedToken.isExpired else {
+            let (_, updatedToken) = try await performTokenRefresh()
+            return updatedToken
+        }
+
+        return idToken
+    }
+
+    func decode(idToken: String) throws -> IdToken {
+        let components = idToken.components(separatedBy: ".")
+
+        guard components.count == 3 else { throw(TokenError.invalidJWTFormat) }
+
+        var decodedString = components[1]
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+
+        while decodedString.utf16.count % 4 != 0 {
+            decodedString += "="
+        }
+
+        guard let decodedData = Data(base64Encoded: decodedString)
+        else { throw(TokenError.invalidBase64EncodedData) }
+        
+        return try JSONDecoder().decode(IdToken.self, from: decodedData)
+    }
+
+    func performTokenRefresh() async throws -> (accessToken: String, idToken: String) {
+        return try await withCheckedThrowingContinuation { continuation in
+            authorization?.authState.setNeedsTokenRefresh()
+            authorization?.authState.performAction { accessToken, idToken, error in
+                guard let accessToken = accessToken, let idToken = idToken else {
+                    let tokenError = error ?? AppErr.unexpected("Shouldn't happen because received nil error and nil token")
+                    return continuation.resume(throwing: tokenError)
+                }
+                let result = (accessToken, idToken)
+                return continuation.resume(with: .success(result))
+            }
+        }
     }
 }
 
