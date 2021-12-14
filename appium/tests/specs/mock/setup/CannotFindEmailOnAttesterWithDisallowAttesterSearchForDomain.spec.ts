@@ -9,7 +9,7 @@ import NewMessageScreen from "../../../screenobjects/new-message.screen";
 
 describe('SETUP: ', () => {
 
-    it('Cannot find email on attester', async () => {
+    it('cannot find email on attester with disallow_attester_search_for_domains=*', async () => {
 
         const mockApi = new MockApi();
 
@@ -24,6 +24,7 @@ describe('SETUP: ', () => {
             await MailFolderScreen.checkInboxScreen();
             await MailFolderScreen.clickCreateEmail();
             await NewMessageScreen.setAddRecipient('available.on@attester.test');
+            await NewMessageScreen.checkAddedRecipientColor('available.on@attester.test', 0, 'gray');
         });
     });
 });

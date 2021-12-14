@@ -124,7 +124,13 @@ class NewMessageScreen extends BaseScreen {
     const addedRecipientEl = await this.addedRecipientEmail;
     const value = await addedRecipientEl.getValue();
     expect(value).toEqual(`  ${recipient}  `);
-  };
+  }
+
+  checkAddedRecipientColor = async (recipient: string, order: number, color: string) => {
+    const addedRecipientEl = await $(`~aid-to-${order}-${color}`);
+    const name = await addedRecipientEl.getValue();
+    expect(name).toEqual(`  ${recipient}  `);
+  }
 
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();
