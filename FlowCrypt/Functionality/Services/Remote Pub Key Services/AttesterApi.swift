@@ -37,7 +37,7 @@ final class AttesterApi: AttesterApiType {
         }
         return "https://flowcrypt.com/attester" // live
     }
-    
+
     private func pubUrl(email: String) -> String {
         let normalizedEmail = email
             .lowercased()

@@ -73,16 +73,16 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
+    private var tokenResponse: OIDTokenResponse? {
+        authorization?.authState.lastTokenResponse
+    }
+
     var userToken: String? {
-        authorization?.authState
-            .lastTokenResponse?
-            .accessToken
+        tokenResponse?.accessToken
     }
 
     var idToken: String? {
-        authorization?.authState
-            .lastTokenResponse?
-            .idToken
+        tokenResponse?.idToken
     }
 
     var authorization: GTMAppAuthFetcherAuthorization? {
@@ -110,7 +110,7 @@ extension GoogleUserService: UserServiceType {
                         let error = self.parseSignInError(authError)
                         return continuation.resume(throwing: error)
                     } else {
-                        let error = AppErr.unexpected("Shouldn't happen because received non nil error and non nil authState")
+                        let error = AppErr.unexpected("Shouldn't happen because received nil error and nil authState")
                         return continuation.resume(throwing: error)
                     }
                 }
@@ -123,6 +123,20 @@ extension GoogleUserService: UserServiceType {
                 }
             }
             self.appDelegateGoogleSessionContainer?.googleAuthSession = googleDelegateSess
+        }
+    }
+
+    func performTokenRefresh() async throws -> (accessToken: String, idToken: String) {
+        return try await withCheckedThrowingContinuation { continuation in
+            authorization?.authState.setNeedsTokenRefresh()
+            authorization?.authState.performAction { accessToken, idToken, error in
+                guard let accessToken = accessToken, let idToken = idToken else {
+                    let tokenError = error ?? AppErr.unexpected("Shouldn't happen because received nil error and nil token")
+                    return continuation.resume(throwing: tokenError)
+                }
+                let result = (accessToken, idToken)
+                return continuation.resume(with: .success(result))
+            }
         }
     }
 
