@@ -91,12 +91,12 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         authorization?.authState.lastTokenResponse
     }
 
-    var userToken: String? {
-        tokenResponse?.accessToken
+    private var idToken: String? {
+        tokenResponse?.idToken
     }
 
-    var idToken: String? {
-        tokenResponse?.idToken
+    var userToken: String? {
+        tokenResponse?.accessToken
     }
 
     var authorization: GTMAppAuthFetcherAuthorization? {
@@ -258,7 +258,7 @@ extension GoogleUserService {
         return idToken
     }
 
-    func decode(idToken: String) throws -> IdToken {
+    private func decode(idToken: String) throws -> IdToken {
         let components = idToken.components(separatedBy: ".")
 
         guard components.count == 3 else { throw(TokenError.invalidJWTFormat) }
@@ -273,11 +273,11 @@ extension GoogleUserService {
 
         guard let decodedData = Data(base64Encoded: decodedString)
         else { throw(TokenError.invalidBase64EncodedData) }
-        
+
         return try JSONDecoder().decode(IdToken.self, from: decodedData)
     }
 
-    func performTokenRefresh() async throws -> (accessToken: String, idToken: String) {
+    private func performTokenRefresh() async throws -> (accessToken: String, idToken: String) {
         return try await withCheckedThrowingContinuation { continuation in
             authorization?.authState.setNeedsTokenRefresh()
             authorization?.authState.performAction { accessToken, idToken, error in
