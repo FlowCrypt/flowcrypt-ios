@@ -74,12 +74,12 @@ class MailFolderScreen extends BaseScreen {
   }
 
   clickCreateEmail = async () => {
-    await browser.pause(2000); // todo: loading inbox. Fix this: wait until loader gone
-    if (await (await this.createEmailButton).isDisplayed() !== true) {
-      await TouchHelper.scrollDownToElement(await this.createEmailButton);
-      await (await this.createEmailButton).waitForDisplayed();
+    const elem = await this.createEmailButton;
+    if ((await elem.isDisplayed()) !== true) {
+      await TouchHelper.scrollDownToElement(elem);
+      await elem.waitForDisplayed();
     }
-    await ElementHelper.waitAndClick(await this.createEmailButton, 1000); // delay needed on M1
+    await ElementHelper.waitAndClick(elem);
   }
 
   clickOnUserEmail = async (email: string) => {

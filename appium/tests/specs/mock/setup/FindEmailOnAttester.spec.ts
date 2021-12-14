@@ -11,9 +11,17 @@ describe('SETUP: ', () => {
 
   it('can find email on attester', async () => {
     const mockApi = new MockApi();
-    mockApi.fesConfig = { clientConfiguration: {flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT",
-                "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"], key_manager_url: "https://ekm.flowcrypt.com"}};
-    mockApi.attesterConfig = { servedPubkeys: {'available.on@attester.test': attesterPublicKeySamples.valid}};
+    mockApi.fesConfig = {
+      clientConfiguration: {
+        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
+        key_manager_url: "https://ekm.flowcrypt.com"
+      }
+    };
+    mockApi.attesterConfig = {
+        servedPubkeys: {
+            'available.on@attester.test': attesterPublicKeySamples.valid
+        }
+    };
     await mockApi.withMockedApis(async () => {
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();

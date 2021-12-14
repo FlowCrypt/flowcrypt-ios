@@ -9,7 +9,11 @@ describe('SETUP: ', () => {
 
   it('app setup fails with bad EKM URL', async () => {
     const mockApi = new MockApi();
-    mockApi.fesConfig = { clientConfiguration: { key_manager_url: 'INTENTIONAL BAD URL' } };
+    mockApi.fesConfig = {
+      clientConfiguration: {
+        key_manager_url: 'INTENTIONAL BAD URL'
+      }
+    };
     await mockApi.withMockedApis(async () => {
       await SplashScreen.login();
       await BaseScreen.checkErrorModal('Please check if key manager url set correctly');
