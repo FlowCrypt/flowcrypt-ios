@@ -52,8 +52,17 @@ extension IdToken {
     }
 }
 
-enum TokenError: Error {
+enum IdTokenError: Error, CustomStringConvertible {
     case missingToken, invalidJWTFormat, invalidBase64EncodedData
+
+    var description: String {
+        switch self {
+        case .missingToken:
+            return "id_token_missing_error_description".localized
+        case .invalidJWTFormat, .invalidBase64EncodedData:
+            return "id_token_invalid_error_description".localized
+        }
+    }
 }
 
 protocol GoogleUserServiceType {
@@ -95,7 +104,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         tokenResponse?.idToken
     }
 
-    var userToken: String? {
+    var accessToken: String? {
         tokenResponse?.accessToken
     }
 
@@ -245,8 +254,8 @@ extension GoogleUserService {
 
 // MARK: - Tokens
 extension GoogleUserService {
-    func getIdToken() async throws -> String {
-        guard let idToken = idToken else { throw(TokenError.missingToken) }
+    func getCachedOrRefreshedIdToken() async throws -> String {
+        guard let idToken = idToken else { throw(IdTokenError.missingToken) }
 
         let decodedToken = try decode(idToken: idToken)
 
@@ -261,7 +270,7 @@ extension GoogleUserService {
     private func decode(idToken: String) throws -> IdToken {
         let components = idToken.components(separatedBy: ".")
 
-        guard components.count == 3 else { throw(TokenError.invalidJWTFormat) }
+        guard components.count == 3 else { throw(IdTokenError.invalidJWTFormat) }
 
         var decodedString = components[1]
             .replacingOccurrences(of: "-", with: "+")
@@ -272,7 +281,7 @@ extension GoogleUserService {
         }
 
         guard let decodedData = Data(base64Encoded: decodedString)
-        else { throw(TokenError.invalidBase64EncodedData) }
+        else { throw(IdTokenError.invalidBase64EncodedData) }
 
         return try JSONDecoder().decode(IdToken.self, from: decodedData)
     }
