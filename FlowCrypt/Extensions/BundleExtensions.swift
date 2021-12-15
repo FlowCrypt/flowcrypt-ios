@@ -5,7 +5,7 @@
 //  Created by Tom on 03.12.2021
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
+
 import Foundation
 
 enum FlowCryptBundleType: String {
@@ -20,5 +20,5 @@ extension Bundle {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return .debug }
         return FlowCryptBundleType(rawValue: bundleIdentifier) ?? .debug
     }
-    
+
 }

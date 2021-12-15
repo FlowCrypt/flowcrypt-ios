@@ -108,7 +108,9 @@ final class KeyService: KeyServiceType {
             logger.logDebug("findKeyByUserEmail: found key \(primaryEmailMatch.1.primaryFingerprint) by primary email match")
             return primaryEmailMatch.0
         }
-        if let alternativeEmailMatch = keys.first(where: { $0.1.pgpUserEmails.map { $0.lowercased() }.contains(email.lowercased()) == true }) {
+        if let alternativeEmailMatch = keys.first(where: {
+            $0.1.pgpUserEmails.map { $0.lowercased() }.contains(email.lowercased()) == true
+        }) {
             logger.logDebug("findKeyByUserEmail: found key \(alternativeEmailMatch.1.primaryFingerprint) by alternative email match")
             return alternativeEmailMatch.0
         }

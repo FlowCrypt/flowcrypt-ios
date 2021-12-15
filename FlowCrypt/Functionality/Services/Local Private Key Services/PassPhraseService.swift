@@ -89,8 +89,10 @@ final class PassPhraseService: PassPhraseServiceType {
         case .persistent:
             try encryptedStorage.save(passPhrase: passPhrase)
         case .memory:
-            if encryptedStorage.getPassPhrases().contains(where: { $0.primaryFingerprintOfAssociatedKey == passPhrase.primaryFingerprintOfAssociatedKey }) {
-                logger.logInfo("\(StorageMethod.persistent): removing pass phrase from for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
+            let storedPassPhrases = encryptedStorage.getPassPhrases()
+            let fingerprint = passPhrase.primaryFingerprintOfAssociatedKey
+            if storedPassPhrases.contains(where: { $0.primaryFingerprintOfAssociatedKey == fingerprint }) {
+                logger.logInfo("\(StorageMethod.persistent): removing pass phrase for key \(fingerprint)")
                 try encryptedStorage.remove(passPhrase: passPhrase)
             }
             try inMemoryStorage.save(passPhrase: passPhrase)

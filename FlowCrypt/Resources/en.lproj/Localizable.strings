@@ -248,8 +248,9 @@
 "organisational_rules_ekm_keys_are_not_decrypted_error" = "Received private keys are not fully decrypted. Please try login flow again";
 "organisational_wrong_email_error" = "Not a valid email %@";
 
-// Email key manager api error
-"emai_keymanager_api_no_google_id_token_error_description" = "There is no Google ID token were found while getting client configuration";
+// Google id token errors
+"id_token_missing_error_description" = "There is no Google ID token was found while getting client configuration";
+"id_token_invalid_error_description" = "There is no valid Google ID token was found while getting client configuration";
 
 // Gmail Service errors
 "gmail_service_failed_to_parse_data_error_message" = "Failed to parse Gmail data";
