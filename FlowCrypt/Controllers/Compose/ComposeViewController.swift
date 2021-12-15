@@ -280,18 +280,21 @@ extension ComposeViewController {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "help_icn"),
-                    action: (self, #selector(handleInfoTap))
-                ),
+                    image: UIImage(named: "help_icn")
+                ) { [weak self] in
+                    self?.handleInfoTap()
+                },
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "paperclip"),
-                    action: (self, #selector(handleAttachTap))
-                ),
+                    image: UIImage(named: "paperclip")
+                ) { [weak self] in
+                    self?.handleAttachTap()
+                },
                 NavigationBarItemsView.Input(
                     image: UIImage(named: "android-send"),
-                    action: (self, #selector(handleSendTap)),
-                    accessibilityLabel: "send"
-                )
+                    accessibilityIdentifier: "send"
+                ) { [weak self] in
+                    self?.handleSendTap()
+                }
             ]
         )
     }
@@ -386,15 +389,15 @@ extension ComposeViewController {
 // MARK: - Handle actions
 
 extension ComposeViewController {
-    @objc private func handleInfoTap() {
+    private func handleInfoTap() {
         showToast("Please email us at human@flowcrypt.com for help")
     }
 
-    @objc private func handleAttachTap() {
+    private func handleAttachTap() {
         openAttachmentsInputSourcesSheet()
     }
 
-    @objc private func handleSendTap() {
+    private func handleSendTap() {
         Task {
             do {
                 let key = try await prepareSigningKey()

@@ -3,8 +3,8 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-icon',
-  SAVE_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Save"`]',
-  CANCEL_BTN: '~Cancel',
+  SAVE_BTN: '~aid-save-attachment-to-device',
+  CANCEL_BTN: '~Cancel1',
 };
 
 class AttachmentScreen extends BaseScreen {

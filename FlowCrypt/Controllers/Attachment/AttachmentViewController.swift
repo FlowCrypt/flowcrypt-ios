@@ -75,6 +75,7 @@ final class AttachmentViewController: UIViewController {
                 NavigationBarItemsView.Input(
                     image: UIImage(named: "download")?.tinted(.gray),
                     title: "save".localized,
+                    accessibilityIdentifier: "aid-save-attachment-to-device",
                     onTap: { [weak self] in self?.downloadAttachment() }
                 )
             ]
