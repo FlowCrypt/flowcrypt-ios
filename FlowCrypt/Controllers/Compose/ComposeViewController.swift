@@ -31,12 +31,12 @@ final class ComposeViewController: TableNodeViewController {
         case main, searchEmails([String])
     }
 
-    private enum RecipientParts: Int, CaseIterable {
+    private enum RecipientPart: Int, CaseIterable {
         case recipient, recipientsInput, recipientDivider
     }
 
-    private enum ComposeParts: Int, CaseIterable {
-        case subject, subjectDivider, text
+    private enum ComposePart: Int, CaseIterable {
+        case subject, subjectDivider, password, text
     }
 
     private let appContext: AppContext
@@ -63,6 +63,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private var state: State = .main
     private var shouldEvaluateRecipientInput = true
+    private var shouldShowMessagePassword = true
 
     private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
@@ -525,13 +526,13 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         switch (state, section) {
         case (.main, 0):
-            return RecipientParts.allCases.count
+            return RecipientPart.allCases.count
         case (.main, 1):
-            return ComposeParts.allCases.count
+            return ComposePart.allCases.count
         case (.main, 2):
             return contextToSend.attachments.count
         case (.searchEmails, 0):
-            return RecipientParts.allCases.count
+            return RecipientPart.allCases.count
         case let (.searchEmails(emails), 1):
             return emails.isNotEmpty ? emails.count : 1
         case (.searchEmails, 2):
@@ -548,17 +549,18 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
             switch (self.state, indexPath.section) {
             case (_, 0):
-                guard let part = RecipientParts(rawValue: indexPath.row) else { return ASCellNode() }
+                guard let part = RecipientPart(rawValue: indexPath.row) else { return ASCellNode() }
                 switch part {
                 case .recipientDivider: return DividerCellNode()
                 case .recipientsInput: return self.recipientInput()
                 case .recipient: return self.recipientsNode()
                 }
             case (.main, 1):
-                guard let composePart = ComposeParts(rawValue: indexPath.row) else { return ASCellNode() }
+                guard let composePart = ComposePart(rawValue: indexPath.row) else { return ASCellNode() }
                 switch composePart {
                 case .subject: return self.subjectNode()
                 case .text: return self.textNode()
+                case .password: return self.passwordNode()
                 case .subjectDivider: return DividerCellNode()
                 }
             case (.main, 2):
@@ -597,7 +599,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 navigationController?.pushViewController(controller, animated: true )
             }
         }
-     }
+    }
 }
 
 // MARK: - Nodes
@@ -629,6 +631,12 @@ extension ComposeViewController {
         .then {
             $0.attributedText = decorator.styledTitle(with: contextToSend.subject)
         }
+    }
+
+    private func passwordNode() -> ASCellNode {
+        MessagePasswordCellNode(
+            "Tap to add password for recipients who don't have encryption set up.".attributed(.regular(14), color: .white)
+        )
     }
 
     private func textNode() -> ASCellNode {
@@ -747,11 +755,11 @@ extension ComposeViewController {
 // MARK: - Recipients Input
 extension ComposeViewController {
     private var textField: TextFieldNode? {
-        (node.nodeForRow(at: IndexPath(row: RecipientParts.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
+        (node.nodeForRow(at: IndexPath(row: RecipientPart.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
     }
 
     private var recipientsIndexPath: IndexPath {
-        IndexPath(row: RecipientParts.recipient.rawValue, section: 0)
+        IndexPath(row: RecipientPart.recipient.rawValue, section: 0)
     }
 
     private var recipients: [ComposeMessageRecipient] {
@@ -760,7 +768,7 @@ extension ComposeViewController {
 
     private func shouldChange(with textField: UITextField, and character: String) -> Bool {
         func nextResponder() {
-            guard let node = node.visibleNodes[safe: ComposeParts.subject.rawValue] as? TextFieldCellNode else { return }
+            guard let node = node.visibleNodes[safe: ComposePart.subject.rawValue] as? TextFieldCellNode else { return }
             node.becomeFirstResponder()
         }
 

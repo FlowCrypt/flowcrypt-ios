@@ -17,6 +17,7 @@ struct ComposeMessageContext: Equatable {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []
     var subject: String?
+    var password: String?
     var attachments: [MessageAttachment] = []
 }
 
@@ -123,7 +124,8 @@ final class ComposeMessageService {
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
             pubKeys: [myPubKey] + allRecipientPubs,
-            signingPrv: signingPrv
+            signingPrv: signingPrv,
+            password: contextToSend.password
         )
     }
 

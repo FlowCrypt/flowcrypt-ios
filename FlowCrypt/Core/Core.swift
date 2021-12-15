@@ -183,7 +183,8 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": msg.pubKeys,
-            "signingPrv": signingPrv
+            "signingPrv": signingPrv,
+            "pwd": msg.password
         ], data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
