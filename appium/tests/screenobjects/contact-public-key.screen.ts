@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BTN: '~arrow left c',
+  BACK_BTN: '~aid-back-icon',
   KEY: '~Key',
   PUBLIC_KEY: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
   FINGERPRINT_VALUE: '~fingerprintValue',

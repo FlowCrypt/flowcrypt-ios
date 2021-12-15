@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BTN: '~arrow left c',
+  BACK_BTN: '~aid-back-icon',
   SAVE_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Save"`]',
   CANCEL_BTN: '~Cancel',
 };

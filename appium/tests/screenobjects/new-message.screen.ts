@@ -14,7 +14,7 @@ const SELECTORS = {
   ATTACHMENT_NAME_LABEL: '~attachmentTitleLabel0',
   DELETE_ATTACHMENT_BUTTON: '~attachmentDeleteButton0',
   RETURN_BUTTON: '~Return',
-  BACK_BUTTON: '~arrow left c',
+  BACK_BUTTON: '~aid-back-icon',
   SEND_BUTTON: '~android send',
 };
 

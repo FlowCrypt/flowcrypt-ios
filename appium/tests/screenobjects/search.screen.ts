@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BUTTON: '~arrow left c',
+  BACK_BUTTON: '~aid-back-icon',
   SCREEN: '~searchViewController',
   SEARCH_FIELD: '~searchAllEmailField'
 };
