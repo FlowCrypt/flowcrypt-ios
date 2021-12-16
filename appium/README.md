@@ -25,13 +25,16 @@ To run a particular test:
 
 To run all tests: `npm run-script test.live.all` or `npm run-script test.mock.all`
 
+## Building app for testing
+For debugging purposes instead of running `bundle exec fastlane build` you can copy `FlowCrypt.app` from `/DerivedData/FlowCrypt-.../Build/Products/Debug-iphonesimulator` (In Xcode open `Products` folder -> `FlowCrypt` -> `Show in Finder`) to appium folder. 
+
 ## Write and debug tests
 Tips for debugging:
-- For debugging purposes instead of running `bundle exec fastlane build` you can copy `FlowCrypt.app` from `/DerivedData/FlowCrypt-.../Build/Products/Debug-iphonesimulator` (In Xcode open `Products` folder -> `FlowCrypt` -> `Show in Finder`) to appium folder. 
 - Remove contents of `appium/tmp` before test execution. 
 - Execute tests and check `appium/tmp` for troubleshooting.
 - You can change log level to debug/error inside `appium/config/wdio.shared.conf.js`. `logLevel: 'debug'`.
 - You can inspect accessibility identifiers of ui elements with `appium-inspector`.
+- if appium doesn't even start simulator where it used to work, try deleting node_modules folder and running `npm install`. Also check your nodejs version is 16 with `node --version`
 
 ## Inspect accessibility identifiers
  1. Install `https://github.com/appium/appium-inspector`. Releases `https://github.com/appium/appium-inspector/releases`

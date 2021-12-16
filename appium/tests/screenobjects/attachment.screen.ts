@@ -4,7 +4,7 @@ import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
   BACK_BTN: '~aid-back-icon',
   SAVE_BTN: '~aid-save-attachment-to-device',
-  CANCEL_BTN: '~Cancel',
+  CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController 
 };
 
 class AttachmentScreen extends BaseScreen {
