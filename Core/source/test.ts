@@ -103,7 +103,7 @@ orig message
 
 ava.default('composeEmail format:plain with attachment', async t => {
   const content = 'hello\nwrld';
-  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64')}] };
+  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{ name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(composeEmailJson);
   const plainMimeStr = plainMimeMsg.toString();
@@ -267,7 +267,7 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
 ava.default('composeEmail format:encrypt-inline with attachment', async t => {
   const content = 'hello\nwrld';
   const { pubKeys } = getKeypairs('rsa1');
-  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj', atts: [{name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
+  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj', atts: [{ name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(encryptJson);
   const encryptedMimeStr = encryptedMimeMsg.toString();
@@ -731,8 +731,8 @@ ava.default('verify signed message with detached signature by providing it corre
   t.pass();
 });
 
-ava.default('verify not integrity protected message', async t => {
-  const { keys, pubKeys } = getKeypairs('new-key');
+ava.default.only('verify not integrity protected message', async t => {
+  const { keys, pubKeys } = getKeypairs('flowcrypt.compatibility');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-not-integrity-protected')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('not integrity protected - should show a warning and not decrypt automatically');
