@@ -9,10 +9,11 @@
 5. restart terminal
 6. `nvm install 16` - installs NodeJS 16 and sets it as default
 7. `cd ~/git/flowcrypt-ios/appium && npm install`
+8. Convenience IDE for Appium - Visual Studio Code
 
 ## Building app for testing
 
-Run this in `flowcrypt-ios` folder: `bundle exec fastlane build`. This will produce folder `appium/FlowCrypt.app` that contains the built app.
+Run this in `flowcrypt-ios` folder: `bundle exec fastlane build`. This will produce folder `appium/FlowCrypt.app` that contains the built app.  
 
 ## Run tests
 
@@ -24,10 +25,18 @@ To run a particular test:
 
 To run all tests: `npm run-script test.live.all` or `npm run-script test.mock.all`
 
+## Write and debug tests
+Tips for debugging:
+- For debugging purposes instead of running `bundle exec fastlane build` you can copy `FlowCrypt.app` from `/DerivedData/FlowCrypt-.../Build/Products/Debug-iphonesimulator` (In Xcode open `Products` folder -> `FlowCrypt` -> `Show in Finder`) to appium folder. 
+- Remove contents of `appium/tmp` before test execution. 
+- Execute tests and check `appium/tmp` for troubleshooting.
+- You can change log level to debug/error inside `appium/config/wdio.shared.conf.js`. `logLevel: 'debug'`.
+- You can inspect accessibility identifiers of ui elements with `appium-inspector`.
+
 ## Inspect accessibility identifiers
  1. Install `https://github.com/appium/appium-inspector`. Releases `https://github.com/appium/appium-inspector/releases`
  2. Download `appium-inspector.dmg`.
- 3. Before openning package run `xattr -cr appium-inspector.dmg` on downloaded file.
+ 3. Before opening package run `xattr -cr appium-inspector.dmg` on downloaded file.
  4. Allow access in `System Prefferences -> Privacy Tab -> Accessibility`
  5. Use next capabilities for `Appium Inspector`  
  `

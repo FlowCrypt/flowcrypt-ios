@@ -4,7 +4,7 @@ import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
   BACK_BTN: '~aid-back-icon',
   SAVE_BTN: '~aid-save-attachment-to-device',
-  CANCEL_BTN: '~Cancel1',
+  CANCEL_BTN: '~Cancel',
 };
 
 class AttachmentScreen extends BaseScreen {
