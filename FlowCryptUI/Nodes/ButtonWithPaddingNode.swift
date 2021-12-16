@@ -1,5 +1,5 @@
 //
-//  TextWithPaddingNode.swift
+//  ButtonWithPaddingNode.swift
 //  FlowCryptUI
 //
 //  Created by Roma Sosnovsky on 15/12/21
@@ -8,22 +8,23 @@
 
 import AsyncDisplayKit
 
-public final class TextWithPaddingNode: ASDisplayNode {
+public final class ButtonWithPaddingNode: ASDisplayNode {
     private let insets: UIEdgeInsets
-    private let textNode = ASTextNode2()
+    private let buttonNode = ASTextNode2()
 
     public init(
         text: NSAttributedString?,
         insets: UIEdgeInsets,
         backgroundColor: UIColor? = nil,
-        cornerRadius: CGFloat = 0
+        cornerRadius: CGFloat = 0,
+        action: (() -> Void)?
     ) {
         self.insets = insets
 
         super.init()
 
         automaticallyManagesSubnodes = true
-        textNode.attributedText = text
+        buttonNode.attributedText = text
 
         self.backgroundColor = backgroundColor
         self.cornerRadius = cornerRadius
@@ -32,7 +33,7 @@ public final class TextWithPaddingNode: ASDisplayNode {
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
-            child: textNode
+            child: buttonNode
         )
     }
 }

@@ -98,6 +98,28 @@ struct ComposeViewDecorator {
         return (text + message).attributed(.regular(17))
     }
 
+    func styledEmptyPasswordInput() -> MessagePasswordCellNode.Input {
+        .init(
+            text: "compose_password_placeholder".localized.attributed(
+                .regular(14),
+                color: .warningColor
+            ),
+            color: .warningColor,
+            image: UIImage(systemName: "lock")?.tinted(.warningColor)
+        )
+    }
+
+    func styledFilledPasswordInput() -> MessagePasswordCellNode.Input {
+        .init(
+            text: "compose_password_set_message".localized.attributed(
+                .regular(14),
+                color: .main
+            ),
+            color: .main,
+            image: UIImage(systemName: "checkmark.circle")?.tinted(.main)
+        )
+    }
+
     func frame(for string: NSAttributedString,
                insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)) -> CGRect {
         let width = UIScreen.main.bounds.width - insets.left - insets.right

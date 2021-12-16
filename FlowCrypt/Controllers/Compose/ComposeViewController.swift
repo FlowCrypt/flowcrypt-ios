@@ -27,16 +27,16 @@ final class ComposeViewController: TableNodeViewController {
         static let endTypingCharacters = [",", " ", "\n", ";"]
     }
 
-    enum State {
+    enum State: Equatable {
         case main, searchEmails([String])
     }
 
     private enum RecipientPart: Int, CaseIterable {
-        case recipient, recipientsInput, recipientDivider
+        case list, input, password, divider
     }
 
     private enum ComposePart: Int, CaseIterable {
-        case subject, subjectDivider, password, text
+        case subject, subjectDivider, text
     }
 
     private let appContext: AppContext
@@ -63,7 +63,6 @@ final class ComposeViewController: TableNodeViewController {
 
     private var state: State = .main
     private var shouldEvaluateRecipientInput = true
-    private var shouldShowMessagePassword = true
 
     private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
@@ -71,6 +70,19 @@ final class ComposeViewController: TableNodeViewController {
     private var didLayoutSubviews = false
     private var topContentInset: CGFloat {
         navigationController?.navigationBar.frame.maxY ?? 0
+    }
+
+    private var recipientParts: [RecipientPart] {
+        RecipientPart.allCases
+        // TODO:
+//        contextToSend.hasRecipientsWithoutPubKeys && state == .main
+//        ? RecipientPart.allCases
+//        : RecipientPart.allCases.filter { $0 != .password }
+    }
+
+    private var hasPassword: Bool {
+        guard let password = contextToSend.password else { return false }
+        return password.isNotEmpty
     }
 
     init(
@@ -526,13 +538,13 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         switch (state, section) {
         case (.main, 0):
-            return RecipientPart.allCases.count
+            return recipientParts.count
         case (.main, 1):
             return ComposePart.allCases.count
         case (.main, 2):
             return contextToSend.attachments.count
         case (.searchEmails, 0):
-            return RecipientPart.allCases.count
+            return recipientParts.count
         case let (.searchEmails(emails), 1):
             return emails.isNotEmpty ? emails.count : 1
         case (.searchEmails, 2):
@@ -549,18 +561,17 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
             switch (self.state, indexPath.section) {
             case (_, 0):
-                guard let part = RecipientPart(rawValue: indexPath.row) else { return ASCellNode() }
-                switch part {
-                case .recipientDivider: return DividerCellNode()
-                case .recipientsInput: return self.recipientInput()
-                case .recipient: return self.recipientsNode()
+                switch self.recipientParts[indexPath.row] {
+                case .divider: return DividerCellNode()
+                case .input: return self.recipientInput()
+                case .list: return self.recipientsNode()
+                case .password: return self.passwordNode()
                 }
             case (.main, 1):
-                guard let composePart = ComposePart(rawValue: indexPath.row) else { return ASCellNode() }
-                switch composePart {
+                guard let part = ComposePart(rawValue: indexPath.row) else { return ASCellNode() }
+                switch part {
                 case .subject: return self.subjectNode()
                 case .text: return self.textNode()
-                case .password: return self.passwordNode()
                 case .subjectDivider: return DividerCellNode()
                 }
             case (.main, 2):
@@ -634,8 +645,13 @@ extension ComposeViewController {
     }
 
     private func passwordNode() -> ASCellNode {
-        MessagePasswordCellNode(
-            "Tap to add password for recipients who don't have encryption set up.".attributed(.regular(14), color: .white)
+        let input = hasPassword
+        ? decorator.styledFilledPasswordInput()
+        : decorator.styledEmptyPasswordInput()
+
+        return MessagePasswordCellNode(
+            input: input,
+            enterMessagePassword: { [weak self] in self?.updateMessagePassword() }
         )
     }
 
@@ -755,11 +771,11 @@ extension ComposeViewController {
 // MARK: - Recipients Input
 extension ComposeViewController {
     private var textField: TextFieldNode? {
-        (node.nodeForRow(at: IndexPath(row: RecipientPart.recipientsInput.rawValue, section: 0)) as? TextFieldCellNode)?.textField
+        (node.nodeForRow(at: IndexPath(row: RecipientPart.input.rawValue, section: 0)) as? TextFieldCellNode)?.textField
     }
 
     private var recipientsIndexPath: IndexPath {
-        IndexPath(row: RecipientPart.recipient.rawValue, section: 0)
+        IndexPath(row: RecipientPart.list.rawValue, section: 0)
     }
 
     private var recipients: [ComposeMessageRecipient] {
@@ -963,7 +979,7 @@ extension ComposeViewController {
 
         guard let recipientIndex = index else { return }
         contextToSend.recipients[recipientIndex].state = state
-        node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        node.reloadSections(IndexSet(integer: 0), with: .automatic)
     }
 
     private func handleRecipientSelection(with indexPath: IndexPath) {
@@ -999,6 +1015,36 @@ extension ComposeViewController {
                 contextToSend.recipients.remove(at: indexPath.row)
                 node.reloadRows(at: [recipientsIndexPath], with: .fade)
             }
+        }
+    }
+
+    private func updateMessagePassword() {
+        Task {
+            contextToSend.password = await awaitMessagePasswordEntry()
+        }
+    }
+
+    private func awaitMessagePasswordEntry() async -> String? {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
+            let alert = UIAlertController(
+                title: "compose_password_modal_title".localized,
+                message: "compose_password_modal_message".localized,
+                preferredStyle: .alert
+            )
+
+            alert.addTextField { [weak self] textField in
+                textField.text = self?.contextToSend.password
+                textField.accessibilityLabel = "messagePasswordTextField"
+            }
+
+            alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel) { _ in
+                return continuation.resume(returning: nil)
+            })
+            alert.addAction(UIAlertAction(title: "set".localized, style: .default) { [weak alert] _ in
+                return continuation.resume(returning: alert?.textFields?[0].text)
+            })
+
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }

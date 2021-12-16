@@ -21,6 +21,15 @@ struct ComposeMessageContext: Equatable {
     var attachments: [MessageAttachment] = []
 }
 
+extension ComposeMessageContext {
+    var hasRecipientsWithoutPubKeys: Bool {
+        recipients.first(where: {
+            if case .keyNotFound = $0.state { return true }
+            return false
+        }) != nil
+    }
+}
+
 struct ComposeMessageRecipient: Equatable {
     let email: String
     var state: RecipientState
