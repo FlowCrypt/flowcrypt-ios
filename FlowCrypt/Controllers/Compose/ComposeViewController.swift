@@ -291,7 +291,7 @@ extension ComposeViewController {
                 },
                 NavigationBarItemsView.Input(
                     image: UIImage(named: "android-send"),
-                    accessibilityIdentifier: "send"
+                    accessibilityId: "send"
                 ) { [weak self] in
                     self?.handleSendTap()
                 }
