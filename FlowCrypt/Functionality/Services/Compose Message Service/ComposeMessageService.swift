@@ -177,7 +177,7 @@ final class ComposeMessageService {
         logger.logDebug("validate recipients: \(recipients)")
         logger.logDebug("validate recipient keyStates: \(recipients.map(\.keyState))")
 
-        let domainsWithPasswordSupport = ["gmail.com", "flowcrypt.com"] // TODO:
+        let domainsWithPasswordSupport = ["flowcrypt.com"]
 
         guard withMessagePassword || !hasRecipientsWithoutPubKey(withPasswordSupport: true) else {
             throw MessageValidationError.needsMessagePassword

@@ -114,7 +114,8 @@ final class FlowCryptCoreTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: nil,
-            signingPrv: nil
+            signingPrv: nil,
+            password: nil
         )
         let r = try await core.composeEmail(msg: msg, fmt: .plain)
         let mime = String(data: r.mimeEncoded, encoding: .utf8)!
@@ -135,7 +136,8 @@ final class FlowCryptCoreTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: [TestData.k0.pub, TestData.k1.pub],
-            signingPrv: nil
+            signingPrv: nil,
+            password: nil
         )
         let r = try await self.core.composeEmail(msg: msg, fmt: .encryptInline)
         let mime = String(data: r.mimeEncoded, encoding: .utf8)!
@@ -161,7 +163,8 @@ final class FlowCryptCoreTests: XCTestCase {
             subject: "subj", replyToMimeMsg: nil,
             atts: [attachment],
             pubKeys: [TestData.k0.pub, TestData.k1.pub],
-            signingPrv: nil
+            signingPrv: nil,
+            password: nil
         )
         let r = try await core.composeEmail(msg: msg, fmt: .encryptInline)
         let mime = String(data: r.mimeEncoded, encoding: .utf8)!
@@ -191,7 +194,8 @@ final class FlowCryptCoreTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: [k.public],
-            signingPrv: nil
+            signingPrv: nil,
+            password: nil
         )
         let mime = try await core.composeEmail(msg: msg, fmt: .encryptInline)
         let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase, fingerprints: k.fingerprints)]

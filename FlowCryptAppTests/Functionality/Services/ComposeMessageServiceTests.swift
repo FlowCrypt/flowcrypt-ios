@@ -21,6 +21,15 @@ class ComposeMessageServiceTests: XCTestCase {
         ComposeMessageRecipient(email: "test3@gmail.com", state: recipientIdleState)
     ]
     let validKeyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: nil)
+    let keypair = Keypair(
+        primaryFingerprint: "",
+        private: "",
+        public: "public key",
+        passphrase: nil,
+        source: "",
+        allFingerprints: [],
+        allLongids: []
+    )
 
     var core = CoreComposeMessageMock()
     var encryptedStorage = EncryptedStorageMock()
@@ -204,17 +213,7 @@ class ComposeMessageServiceTests: XCTestCase {
     }
 
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
-        encryptedStorage.getKeypairsResult = [
-            Keypair(
-                primaryFingerprint: "",
-                private: "",
-                public: "public key",
-                passphrase: nil,
-                source: "",
-                allFingerprints: [],
-                allLongids: []
-            )
-        ]
+        encryptedStorage.getKeypairsResult = [keypair]
         recipients.forEach { recipient in
             contactsService.retrievePubKeysResult = { _ in
                 []
@@ -242,17 +241,7 @@ class ComposeMessageServiceTests: XCTestCase {
             let keyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: Int(Date().timeIntervalSince1970 - 60))
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
-        encryptedStorage.getKeypairsResult = [
-            Keypair(
-                primaryFingerprint: "",
-                private: "",
-                public: "public key",
-                passphrase: nil,
-                source: "",
-                allFingerprints: [],
-                allLongids: []
-            )
-        ]
+        encryptedStorage.getKeypairsResult = [keypair]
         recipients.forEach { recipient in
             contactsService.retrievePubKeysResult = { _ in
                 ["pubKey"]
@@ -280,17 +269,7 @@ class ComposeMessageServiceTests: XCTestCase {
             let keyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: nil, revoked: true)
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
-        encryptedStorage.getKeypairsResult = [
-            Keypair(
-                primaryFingerprint: "",
-                private: "",
-                public: "public key",
-                passphrase: nil,
-                source: "",
-                allFingerprints: [],
-                allLongids: []
-            )
-        ]
+        encryptedStorage.getKeypairsResult = [keypair]
         recipients.forEach { recipient in
             contactsService.retrievePubKeysResult = { _ in
                 ["pubKey"]
@@ -330,17 +309,7 @@ class ComposeMessageServiceTests: XCTestCase {
             }
             return CoreRes.ParseKeys(format: .armored, keyDetails: allKeyDetails)
         }
-        encryptedStorage.getKeypairsResult = [
-            Keypair(
-                primaryFingerprint: "",
-                private: "",
-                public: "public key",
-                passphrase: nil,
-                source: "",
-                allFingerprints: [],
-                allLongids: []
-            )
-        ]
+        encryptedStorage.getKeypairsResult = [keypair]
         recipients.forEach { recipient in
             contactsService.retrievePubKeysResult = { _ in
                 ["revoked", "expired", "valid"]
@@ -377,24 +346,15 @@ class ComposeMessageServiceTests: XCTestCase {
                 "valid",
                 "valid"
             ],
-            signingPrv: nil)
+            signingPrv: nil,
+            password: nil)
 
         XCTAssertNotNil(result)
         XCTAssertEqual(result, expected)
     }
 
     func testValidateMessageInputWithoutOneRecipientPubKey() async throws {
-        encryptedStorage.getKeypairsResult = [
-            Keypair(
-                primaryFingerprint: "",
-                private: "",
-                public: "public key",
-                passphrase: nil,
-                source: "",
-                allFingerprints: [],
-                allLongids: []
-            )
-        ]
+        encryptedStorage.getKeypairsResult = [keypair]
         let recWithoutPubKey = recipients[0].email
         recipients.forEach { _ in
             contactsService.retrievePubKeysResult = { recipient in
@@ -422,18 +382,64 @@ class ComposeMessageServiceTests: XCTestCase {
         }
     }
 
-    func testSuccessfulMessageValidation() async throws {
-        encryptedStorage.getKeypairsResult = [
-            Keypair(
-                primaryFingerprint: "",
-                private: "",
-                public: "public key",
-                passphrase: nil,
-                source: "",
-                allFingerprints: [],
-                allLongids: []
+    func testValidateMessageInputWithMessagePasswordSupport() async throws {
+        encryptedStorage.getKeypairsResult = [keypair]
+        contactsService.retrievePubKeysResult = { _ in return [] }
+
+        let message = "some message"
+        let subject = "Some subject"
+        let password = "123"
+        let email = "some@gmail.com"
+        let recipient = ComposeMessageRecipient(
+            email: "robot@flowcrypt.com",
+            state: recipientIdleState
+        )
+
+        do {
+            _ = try await sut.validateAndProduceSendableMsg(
+                input: ComposeMessageInput(type: .idle),
+                contextToSend: ComposeMessageContext(
+                    message: message,
+                    recipients: [recipient],
+                    subject: subject
+                ),
+                email: email,
+                signingPrv: nil
             )
-        ]
+            XCTFail("expected to throw above")
+        } catch {
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.needsMessagePassword)
+        }
+
+        let result = try? await sut.validateAndProduceSendableMsg(
+            input: ComposeMessageInput(type: .idle),
+            contextToSend: ComposeMessageContext(
+                message: message,
+                recipients: [recipient],
+                subject: subject,
+                password: password
+            ),
+            email: email,
+            signingPrv: nil
+        )
+        let expected = SendableMsg(
+            text: message,
+            to: [recipient.email],
+            cc: [],
+            bcc: [],
+            from: email,
+            subject: subject,
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: ["public key"],
+            signingPrv: nil,
+            password: password)
+
+        XCTAssertEqual(result, expected)
+    }
+
+    func testSuccessfulMessageValidation() async throws {
+        encryptedStorage.getKeypairsResult = [keypair]
         recipients.enumerated().forEach { element, index in
             contactsService.retrievePubKeysResult = { recipient in
                 ["pubKey"]
@@ -470,7 +476,8 @@ class ComposeMessageServiceTests: XCTestCase {
                 "pubKey",
                 "pubKey"
             ],
-            signingPrv: nil)
+            signingPrv: nil,
+            password: nil)
 
         XCTAssertNotNil(result)
         XCTAssertEqual(result, expected)
