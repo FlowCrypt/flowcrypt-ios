@@ -14,7 +14,7 @@ const SELECTORS = {
   ATTACHMENT_NAME_LABEL: '~aid-attachment-title-label-0',
   DELETE_ATTACHMENT_BUTTON: '~aid-attachment-delete-button-0',
   RETURN_BUTTON: '~Return',
-  BACK_BUTTON: '~aid-back-icon',
+  BACK_BUTTON: '~aid-back-button',
   SEND_BUTTON: '~aid-compose-send',
 };
 

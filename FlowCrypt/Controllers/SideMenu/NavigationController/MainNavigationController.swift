@@ -85,7 +85,7 @@ extension UIBarButtonItem {
         NavigationBarActionButton(
             UIImage(named: "arrow-left-c"),
             action: action,
-            accessibilityIdentifier: "aid-back-icon"
+            accessibilityIdentifier: "aid-back-button"
         )
     }
 }

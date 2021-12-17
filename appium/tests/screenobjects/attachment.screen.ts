@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BTN: '~aid-back-icon',
+  BACK_BTN: '~aid-back-button',
   SAVE_BTN: '~aid-save-attachment-to-device',
   CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController 
 };

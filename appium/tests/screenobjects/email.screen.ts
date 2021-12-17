@@ -3,7 +3,7 @@ import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BTN: '~aid-back-icon',
+  BACK_BTN: '~aid-back-button',
   ENTER_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
   OK_BUTTON: '~Ok',
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
