@@ -18,7 +18,8 @@ config.suites = {
   ],
   login: [
       './tests/specs/live/login/*.spec.ts'
-  ]
+  ],
+  update: ['./tests/specs/live/update/*.spec.ts']
 };
 
 config.capabilities = [

@@ -96,6 +96,11 @@ class ContactPublicKeyScreen extends BaseScreen {
   clickOnFingerPrint = async () => {
     await ElementHelper.waitAndClick(await this.fingerPrintValue);
   }
+
+  clickBackButton = async () => {
+    await ElementHelper.waitAndClick(await this.backButton);
+  }
+
 }
 
 export default new ContactPublicKeyScreen();
