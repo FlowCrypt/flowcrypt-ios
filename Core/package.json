@@ -37,7 +37,7 @@
     "_updateCoreLib": "mkdir source/lib && cd source/lib && LIBD='../../../flowcrypt-browser/extension/lib' && cp -r $LIBD/emailjs . && cp $LIBD/openpgp.js . && cp $LIBD/iso-*.js . && cp $LIBD/zxcvbn.js .",
     "donateCore": "rm -rf ../flowcrypt-browser/extension/js/common/core && cp -r source/core ../flowcrypt-browser/extension/js/common/core"
   },
-  "author": "FlowCrypt a.s.",
+  "author": "FlowCrypt a. s.",
   "license": "SEE LICENSE IN <LICENSE>",
   "private": true,
   "homepage": "https://flowcrypt.com"

@@ -118,7 +118,7 @@ export class Endpoints {
           decryptRes.message = undefined;
           sequentialProcessedBlocks.push({
             type: 'decryptErr',
-            content: decryptRes.error.type === DecryptErrTypes.noMdc ? decryptRes.content! : rawBlock.content,
+            content: decryptRes.error.type === DecryptErrTypes.noMdc ? decryptRes.content!.toUtfStr() : rawBlock.content.toString(),
             decryptErr: decryptRes,
             complete: true
           });
@@ -150,6 +150,10 @@ export class Endpoints {
         // no longer used below, only gets passed to be serialized as JSON - later consumed by iOS or Android app
         block.attMeta.data = Buf.fromUint8(block.attMeta.data).toBase64Str() as any as Uint8Array;
       }
+      if (block.decryptErr?.content instanceof Buf) {
+        // cannot pass a Buf using a json, converting to String before it gets serialized
+        block.decryptErr.content = block.decryptErr.content.toUtfStr() as any as Buf;
+      }
       if (block.type === 'decryptedHtml' || block.type === 'decryptedText' || block.type === 'decryptedAtt') {
         replyType = 'encrypted';
       }
@@ -167,7 +171,7 @@ export class Endpoints {
               complete: true,
               decryptErr: {
                 success: false,
-                error: { type: 'format' as DecryptErrTypes, message: 'Badly formatted public key' },
+                error: { type: DecryptErrTypes.format, message: 'Badly formatted public key' },
                 longids: { message: [], matching: [], chosen: [], needPassphrase: [] }
               }
             });
@@ -204,7 +208,7 @@ export class Endpoints {
     return fmtRes({ timestamp: String(Date.parse(dateStr) || -1) });
   }
 
-  public zxcvbnStrengthBar = async (uncheckedReq: any) : Promise<EndpointRes> => {
+  public zxcvbnStrengthBar = async (uncheckedReq: any): Promise<EndpointRes> => {
     const r = ValidateInput.zxcvbnStrengthBar(uncheckedReq);
     if (r.purpose === 'passphrase') {
       if (typeof r.guesses === 'number') { // the host has a port of zxcvbn and already knows amount of guesses per password
@@ -224,7 +228,7 @@ export class Endpoints {
     }
   }
 
-  public gmailBackupSearch = async (uncheckedReq: any) : Promise<EndpointRes> => {
+  public gmailBackupSearch = async (uncheckedReq: any): Promise<EndpointRes> => {
     const { acctEmail } = ValidateInput.gmailBackupSearch(uncheckedReq);
     return fmtRes({ query: gmailBackupSearchQuery(acctEmail) });
   }
@@ -289,8 +293,7 @@ export class Endpoints {
 }
 
 export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Promise<OpenPGP.key.Key | undefined> => {
-  if (!req.signingPrv)
-  {
+  if (!req.signingPrv) {
     return undefined;
   }
   const key = await readArmoredKeyOrThrow(req.signingPrv.private);

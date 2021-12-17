@@ -211,8 +211,9 @@ final class MessageService {
             signature = nil
         } else if let decryptErrBlock = firstDecryptErrBlock {
             // message failed to decrypt or process
-            let rawMsg = decryptErrBlock.content
             let err = decryptErrBlock.decryptErr?.error
+            let hideContent = err?.type == .badMdc || err?.type == .noMdc
+            let rawMsg = hideContent ? "(content hidden for security)" : decryptErrBlock.content
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
             signature = nil
