@@ -73,16 +73,9 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private var recipientParts: [RecipientPart] {
-        RecipientPart.allCases
-        // TODO:
-//        contextToSend.hasRecipientsWithoutPubKeys && state == .main
-//        ? RecipientPart.allCases
-//        : RecipientPart.allCases.filter { $0 != .password }
-    }
-
-    private var hasPassword: Bool {
-        guard let password = contextToSend.password else { return false }
-        return password.isNotEmpty
+        contextToSend.hasRecipientsWithoutPubKeys && state == .main
+        ? RecipientPart.allCases
+        : RecipientPart.allCases.filter { $0 != .password }
     }
 
     init(
@@ -518,7 +511,12 @@ extension ComposeViewController {
 
         let hideSpinnerAnimationDuration: TimeInterval = 1
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
-            self?.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+            switch error {
+            case MessageValidationError.needsMessagePassword:
+                self?.setMessagePassword()
+            default:
+                self?.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+            }
         }
     }
 
@@ -648,13 +646,13 @@ extension ComposeViewController {
     }
 
     private func passwordNode() -> ASCellNode {
-        let input = hasPassword
+        let input = contextToSend.hasPassword
         ? decorator.styledFilledPasswordInput()
         : decorator.styledEmptyPasswordInput()
 
         return MessagePasswordCellNode(
             input: input,
-            enterMessagePassword: { [weak self] in self?.updateMessagePassword() }
+            setMessagePassword: { [weak self] in self?.setMessagePassword() }
         )
     }
 
@@ -779,6 +777,10 @@ extension ComposeViewController {
 
     private var recipientsIndexPath: IndexPath {
         IndexPath(row: RecipientPart.list.rawValue, section: 0)
+    }
+
+    private var passwordIndexPath: IndexPath {
+        IndexPath(row: RecipientPart.password.rawValue, section: 0)
     }
 
     private var recipients: [ComposeMessageRecipient] {
@@ -1021,9 +1023,10 @@ extension ComposeViewController {
         }
     }
 
-    private func updateMessagePassword() {
+    private func setMessagePassword() {
         Task {
             contextToSend.password = await awaitMessagePasswordEntry()
+            node.reloadRows(at: [passwordIndexPath], with: .automatic)
         }
     }
 
@@ -1036,12 +1039,13 @@ extension ComposeViewController {
             )
 
             alert.addTextField { [weak self] textField in
+                textField.isSecureTextEntry = true
                 textField.text = self?.contextToSend.password
                 textField.accessibilityLabel = "messagePasswordTextField"
             }
 
-            alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel) { _ in
-                return continuation.resume(returning: nil)
+            alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel) { [weak self] _ in
+                return continuation.resume(returning: self?.contextToSend.password)
             })
             alert.addAction(UIAlertAction(title: "set".localized, style: .default) { [weak alert] _ in
                 return continuation.resume(returning: alert?.textFields?[0].text)

@@ -27,12 +27,12 @@ public final class MessagePasswordCellNode: CellNode {
     private let input: Input
 
     private let buttonNode = ASButtonNode()
-    private let enterMessagePassword: (() -> Void)?
+    private let setMessagePassword: (() -> Void)?
 
     public init(input: Input,
-                enterMessagePassword: (() -> Void)?) {
+                setMessagePassword: (() -> Void)?) {
         self.input = input
-        self.enterMessagePassword = enterMessagePassword
+        self.setMessagePassword = setMessagePassword
 
         super.init()
 
@@ -42,25 +42,38 @@ public final class MessagePasswordCellNode: CellNode {
     }
 
     private func setupButtonNode() {
+        buttonNode.contentEdgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+        buttonNode.borderColor = input.color.cgColor
+        buttonNode.borderWidth = 1
+        buttonNode.cornerRadius = 6
+        buttonNode.contentHorizontalAlignment = .left
+        
         buttonNode.setAttributedTitle(input.text, for: .normal)
         buttonNode.setImage(input.image, for: .normal)
         buttonNode.addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        buttonNode.contentEdgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
-        buttonNode.borderColor = input.color.cgColor
-        buttonNode.borderWidth = 1
-        buttonNode.cornerRadius = 6
-        buttonNode.style.flexGrow = 1.0
+        buttonNode.style.flexShrink = 1.0
+
+        let spacer = ASLayoutSpec()
+        spacer.style.flexGrow = 1.0
+
+        let spec = ASStackLayoutSpec(
+            direction: .horizontal,
+            spacing: 4,
+            justifyContent: .start,
+            alignItems: .start,
+            children: [buttonNode, spacer]
+        )
 
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
-            child: buttonNode
+            child: spec
         )
     }
 
     @objc private func onButtonTap() {
-        enterMessagePassword?()
+        setMessagePassword?()
     }
 }

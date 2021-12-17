@@ -22,6 +22,13 @@ struct ComposeMessageContext: Equatable {
 }
 
 extension ComposeMessageContext {
+    var hasPassword: Bool {
+        guard let password = password else { return false }
+        return password.isNotEmpty
+    }
+}
+
+extension ComposeMessageContext {
     var hasRecipientsWithoutPubKeys: Bool {
         recipients.first(where: {
             if case .keyNotFound = $0.state { return true }
@@ -119,7 +126,11 @@ final class ComposeMessageService {
                 ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
                 : []
 
-        let allRecipientPubs = try await getPubKeys(for: recipients)
+        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
+        let validPubKeys = try validate(
+            recipients: recipientsWithPubKeys,
+            withMessagePassword: contextToSend.hasPassword
+        )
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
 
@@ -132,37 +143,57 @@ final class ComposeMessageService {
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
-            pubKeys: [myPubKey] + allRecipientPubs,
+            pubKeys: [myPubKey] + validPubKeys,
             signingPrv: signingPrv,
             password: contextToSend.password
         )
     }
 
-    private func getPubKeys(for recipients: [ComposeMessageRecipient]) async throws -> [String] {
+    private func getRecipientKeys(for recipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
         var recipientsWithKeys: [RecipientWithSortedPubKeys] = []
         for recipient in recipients {
             let armoredPubkeys = contactsService.retrievePubKeys(for: recipient.email).joined(separator: "\n")
             let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
             recipientsWithKeys.append(RecipientWithSortedPubKeys(email: recipient.email, keyDetails: parsed.keyDetails))
         }
-        return try validate(recipients: recipientsWithKeys)
+        return recipientsWithKeys
     }
 
-    private func validate(recipients: [RecipientWithSortedPubKeys]) throws -> [String] {
+    private func validate(recipients: [RecipientWithSortedPubKeys], withMessagePassword: Bool) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.first(where: { $0.keyState == keyState }) != nil
         }
+
+        func hasRecipientsWithoutPubKey(withPasswordSupport: Bool) -> Bool {
+            recipients
+                .filter { $0.keyState == .empty }
+                .first(where: {
+                    guard let domain = $0.email.recipientDomain else { return !withPasswordSupport }
+                    let supportsPassword = domainsWithPasswordSupport.containsCaseInsensitive(domain)
+                    return withPasswordSupport ? supportsPassword : !supportsPassword
+                }) != nil
+        }
+
         logger.logDebug("validate recipients: \(recipients)")
-        logger.logDebug("validate recipient keyStates: \(recipients.map { $0.keyState })")
-        guard !contains(keyState: .empty) else {
+        logger.logDebug("validate recipient keyStates: \(recipients.map(\.keyState))")
+
+        let domainsWithPasswordSupport = ["gmail.com", "flowcrypt.com"] // TODO:
+
+        guard withMessagePassword || !hasRecipientsWithoutPubKey(withPasswordSupport: true) else {
+            throw MessageValidationError.needsMessagePassword
+        }
+
+        guard !hasRecipientsWithoutPubKey(withPasswordSupport: false) else {
             throw MessageValidationError.noPubRecipients
         }
+
         guard !contains(keyState: .expired) else {
             throw MessageValidationError.expiredKeyRecipients
         }
         guard !contains(keyState: .revoked) else {
             throw MessageValidationError.revokedKeyRecipients
         }
+
         return recipients.flatMap(\.activePubKeys).map(\.armored)
     }
 

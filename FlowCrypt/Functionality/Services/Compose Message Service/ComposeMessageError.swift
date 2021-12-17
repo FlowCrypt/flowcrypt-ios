@@ -14,6 +14,7 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     case emptyMessage
     case missedPublicKey
     case noPubRecipients
+    case needsMessagePassword
     case revokedKeyRecipients
     case expiredKeyRecipients
     case invalidEmailRecipient
@@ -31,6 +32,8 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
             return "compose_no_pub_sender".localized
         case .noPubRecipients:
             return "compose_recipient_no_pub".localized
+        case .needsMessagePassword:
+            return ""
         case .revokedKeyRecipients:
             return "compose_recipient_revoked".localized
         case .expiredKeyRecipients:

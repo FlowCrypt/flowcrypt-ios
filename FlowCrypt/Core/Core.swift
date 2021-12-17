@@ -248,7 +248,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         ])
 
         while callbackResults[callbackId] == nil {
-            await Task.sleep(1_000_000) // 1ms
+            try await Task.sleep(nanoseconds: 1_000_000) // 1ms
         }
 
         guard
