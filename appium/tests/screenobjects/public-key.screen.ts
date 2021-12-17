@@ -1,7 +1,7 @@
 import BaseScreen from './base.screen';
 
 const SELECTORS = {
-  BACK_BTN: '~arrow left c',
+  BACK_BTN: '~aid-back-button',
   PUBLIC_KEY_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Public key"`]',
   PUBLIC_KEY: '~publicKey',
 };

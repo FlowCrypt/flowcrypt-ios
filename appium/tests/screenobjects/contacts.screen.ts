@@ -3,7 +3,7 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   CONTACTS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Contacts"`]',
-  BACK_BUTTON: '~arrow left c',
+  BACK_BUTTON: '~aid-back-button',
   EMPTY_CONTACTS_LIST: '~Empty list',
 };
 

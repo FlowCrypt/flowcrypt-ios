@@ -3,24 +3,24 @@ import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BTN: '~arrow left c',
+  BACK_BTN: '~aid-back-button',
   ENTER_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
   OK_BUTTON: '~Ok',
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
-  ATTACHMENT_CELL: '~attachmentCell0',
-  ATTACHMENT_TITLE: '~attachmentTitleLabel0',
-  REPLY_BUTTON: '~replyButton',
-  RECIPIENTS_BUTTON: '~messageRecipientButton',
+  ATTACHMENT_CELL: '~aid-attachment-cell-0',
+  ATTACHMENT_TITLE: '~aid-attachment-title-label-0',
+  REPLY_BUTTON: '~aid-reply-button',
+  RECIPIENTS_BUTTON: '~aid-message-recipients-tappable-area',
   RECIPIENTS_TO_LABEL: '~toLabel0',
   RECIPIENTS_CC_LABEL: '~ccLabel0',
   RECIPIENTS_BCC_LABEL: '~bccLabel0',
-  MENU_BUTTON: '~messageMenuButton',
+  MENU_BUTTON: '~aid-message-menu-button',
   FORWARD_BUTTON: '~Forward',
   DELETE_BUTTON: '~Delete',
   CONFIRM_DELETING: '~OK',
-  SENDER_EMAIL: '~messageSenderLabel',
-  ENCRYPTION_BADGE: '~encryptionBadge',
-  SIGNATURE_BADGE: '~signatureBadge'
+  SENDER_EMAIL: '~aid-message-sender-label',
+  ENCRYPTION_BADGE: '~aid-encryption-badge',
+  SIGNATURE_BADGE: '~aid-signature-badge'
 };
 
 

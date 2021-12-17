@@ -2,9 +2,9 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BTN: '~arrow left c',
-  SAVE_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Save"`]',
-  CANCEL_BTN: '~Cancel',
+  BACK_BTN: '~aid-back-button',
+  SAVE_BTN: '~aid-save-attachment-to-device',
+  CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController 
 };
 
 class AttachmentScreen extends BaseScreen {

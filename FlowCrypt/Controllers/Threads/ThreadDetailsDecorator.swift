@@ -102,7 +102,7 @@ private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> 
         icon: icon,
         text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
         color: color,
-        textAccessibilityIdentifier: "encryptionBadge"
+        textAccessibilityIdentifier: "aid-encryption-badge"
     )
 }
 
@@ -115,6 +115,6 @@ private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> B
         icon: signature.icon,
         text: NSAttributedString.text(from: signature.message, style: .regular(12), color: .white),
         color: signature.color,
-        textAccessibilityIdentifier: "signatureBadge"
+        textAccessibilityIdentifier: "aid-signature-badge"
     )
 }

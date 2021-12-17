@@ -10,12 +10,12 @@ const SELECTORS = {
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
-  ATTACHMENT_CELL: '~attachmentCell0',
-  ATTACHMENT_NAME_LABEL: '~attachmentTitleLabel0',
-  DELETE_ATTACHMENT_BUTTON: '~attachmentDeleteButton0',
+  ATTACHMENT_CELL: '~aid-attachment-cell-0',
+  ATTACHMENT_NAME_LABEL: '~aid-attachment-title-label-0',
+  DELETE_ATTACHMENT_BUTTON: '~aid-attachment-delete-button-0',
   RETURN_BUTTON: '~Return',
-  BACK_BUTTON: '~arrow left c',
-  SEND_BUTTON: '~android send',
+  BACK_BUTTON: '~aid-back-button',
+  SEND_BUTTON: '~aid-compose-send',
 };
 
 class NewMessageScreen extends BaseScreen {
