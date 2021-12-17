@@ -20,7 +20,6 @@ final class ViewController: TableNodeViewController {
     }
 
     private lazy var composeButton = ComposeButtonNode { [weak self] in
-        print("Tapped")
     }
 
     init() {

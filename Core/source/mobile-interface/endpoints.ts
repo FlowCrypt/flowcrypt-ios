@@ -195,12 +195,13 @@ export class Endpoints {
 
   public decryptFile = async (uncheckedReq: any, data: Buffers, verificationPubkeys?: string[]): Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
-    const decryptedMeta = await PgpMsg.decrypt({ kisWithPp, encryptedData: Buf.concat(data), msgPwd, verificationPubkeys });
-    if (!decryptedMeta.success) {
-      decryptedMeta.message = undefined;
-      return fmtRes(decryptedMeta);
+    const decryptRes = await PgpMsg.decrypt({ kisWithPp, encryptedData: Buf.concat(data), msgPwd, verificationPubkeys });
+    if (!decryptRes.success) {
+      decryptRes.message = undefined;
+      decryptRes.content = undefined;
+      return fmtRes({ decryptErr: decryptRes });
     }
-    return fmtRes({ success: true, name: decryptedMeta.filename || '' }, decryptedMeta.content);
+    return fmtRes({ decryptSuccess: { name: decryptRes.filename || '' } }, decryptRes.content);
   }
 
   public parseDateStr = async (uncheckedReq: any): Promise<EndpointRes> => {

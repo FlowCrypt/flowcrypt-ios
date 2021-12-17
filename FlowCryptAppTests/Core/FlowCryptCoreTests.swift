@@ -220,7 +220,7 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(decryptErrBlock.type, MsgBlock.BlockType.decryptErr)
         XCTAssertNotNil(decryptErrBlock.decryptErr)
         let e = decryptErrBlock.decryptErr!
-        XCTAssertEqual(e.error.type, MsgBlock.DecryptErr.ErrorType.keyMismatch)
+        XCTAssertEqual(e.error.type, DecryptErr.ErrorType.keyMismatch)
     }
 
     func testEncryptFile() async throws {
@@ -260,9 +260,9 @@ final class FlowCryptCoreTests: XCTestCase {
         )
 
         // Then
-        XCTAssertTrue(decrypted.content == fileData)
-        XCTAssertTrue(decrypted.content.toStr() == fileData.toStr())
-        XCTAssertTrue(decrypted.name == initialFileName)
+        XCTAssertTrue(decrypted.decryptSuccess!.data == fileData)
+        XCTAssertTrue(decrypted.decryptSuccess!.data.toStr() == fileData.toStr())
+        XCTAssertTrue(decrypted.decryptSuccess!.name == initialFileName)
     }
 
     func testDecryptNotEncryptedFile() async throws {
@@ -289,17 +289,14 @@ final class FlowCryptCoreTests: XCTestCase {
         ]
 
         // When
-        do {
-            _ = try await core.decryptFile(
-                encrypted: fileData,
-                keys: keys,
-                msgPwd: nil
-            )
-            XCTFail("Should have thrown above")
-        } catch let CoreError.format(message) {
-            // Then
-            XCTAssertNotNil(message.range(of: "Error: Error during parsing"))
-        }
+        let decryptRes = try await core.decryptFile(
+            encrypted: fileData,
+            keys: keys,
+            msgPwd: nil
+        )
+
+        // Then
+        XCTAssertEqual(decryptRes.decryptErr?.error.type, DecryptErr.ErrorType.format)
     }
 
     func testDecryptWithNoKeys() async throws {
@@ -317,24 +314,17 @@ final class FlowCryptCoreTests: XCTestCase {
             userIds: [UserId(email: email, name: "End to end")]
         )
         let k = generateKeyRes.key
-
-        // When
-        do {
-            let encrypted = try await core.encryptFile(
-                pubKeys: [k.public],
-                fileData: fileData,
-                name: initialFileName
-            )
-            _ = try await core.decryptFile(
-                encrypted: encrypted.encryptedFile,
-                keys: [],
-                msgPwd: nil
-            )
-            XCTFail("Should have thrown above")
-        } catch let CoreError.keyMismatch(message) {
-            // Then
-            XCTAssertNotNil(message.range(of: "Missing appropriate key"))
-        }
+        let encrypted = try await core.encryptFile(
+            pubKeys: [k.public],
+            fileData: fileData,
+            name: initialFileName
+        )
+        let decryptResult = try await core.decryptFile(
+            encrypted: encrypted.encryptedFile,
+            keys: [],
+            msgPwd: nil
+        )
+        XCTAssertEqual(decryptResult.decryptErr!.error.type, DecryptErr.ErrorType.keyMismatch)
     }
 
     func testDecryptEncryptedFile() async throws {
@@ -374,8 +364,8 @@ final class FlowCryptCoreTests: XCTestCase {
         )
 
         // Then
-        XCTAssertEqual(decrypted.name, initialFileName)
-        XCTAssertEqual(decrypted.content.count, fileData.count)
+        XCTAssertEqual(decrypted.decryptSuccess!.name, initialFileName)
+        XCTAssertEqual(decrypted.decryptSuccess!.data.count, fileData.count)
     }
 
     func testException() async throws {

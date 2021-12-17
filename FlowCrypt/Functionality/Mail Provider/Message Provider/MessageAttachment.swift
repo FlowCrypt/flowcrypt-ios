@@ -9,7 +9,7 @@
 import Photos
 import UIKit
 
-struct MessageAttachment: Equatable, FileType {
+struct MessageAttachment: FileType, Equatable {
     let name: String
     let data: Data
 }
