@@ -753,7 +753,7 @@ ava.default('verify signed message with detached signature by providing it corre
   t.pass();
 });
 
-ava.default('throw on not integrity protected message', async t => {
+ava.default('decryptErr for not integrity protected message', async t => {
   const { keys, pubKeys } = getKeypairs('flowcrypt.compatibility');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-not-integrity-protected')]));
   expect(decryptJson.replyType).equals('plain');
