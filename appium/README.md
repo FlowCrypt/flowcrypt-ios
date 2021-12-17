@@ -9,7 +9,7 @@
 5. restart terminal
 6. `nvm install 16` - installs NodeJS 16 and sets it as default
 7. `cd ~/git/flowcrypt-ios/appium && npm install`
-8. use Visual Studio Code IDE for editting appium tests - be sure to upen it using `File` -> `Open Workspace from File` -> `Core/flowcrypt-mobile-core.code-workspace` (don't simply open the project as a folder, because advanced IDE functionality will be missing)
+8. use Visual Studio Code IDE for editting appium tests - be sure to open it using `File` -> `Open Workspace from File` -> `Core/flowcrypt-mobile-core.code-workspace` (don't simply open the project as a folder, because advanced IDE functionality will be missing)
 
 ## Building app for testing
 
@@ -26,7 +26,8 @@ To run a particular test:
 To run all tests: `npm run-script test.live.all` or `npm run-script test.mock.all`
 
 ## Building app for testing
-For debugging purposes instead of running `bundle exec fastlane build` you can copy `FlowCrypt.app` from `/DerivedData/FlowCrypt-.../Build/Products/Debug-iphonesimulator` (In Xcode open `Products` folder -> `FlowCrypt` -> `Show in Finder`) to appium folder. 
+- For debugging purposes instead of running `bundle exec fastlane build` you can copy `FlowCrypt.app` from `/DerivedData/FlowCrypt-.../Build/Products/Debug-iphonesimulator`.
+- Or from Xcode open `Products` folder -> tap on `FlowCrypt` -> `Show in Finder`. Copy `FlowCrypt.app` to `appium` folder.
 
 ## Write and debug tests
 Tips for debugging:
