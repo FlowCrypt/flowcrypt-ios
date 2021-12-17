@@ -152,14 +152,18 @@ final class MessageService {
             folder: folder,
             progressHandler: progressHandler
         )
-        return try await decryptAndProcessMessage(mime: rawMimeData,
-                                                  sender: input.sender,
-                                                  onlyLocalKeys: onlyLocalKeys)
+        return try await decryptAndProcessMessage(
+            mime: rawMimeData,
+            sender: input.sender,
+            onlyLocalKeys: onlyLocalKeys
+        )
     }
 
-    func decryptAndProcessMessage(mime rawMimeData: Data,
-                                  sender: String?,
-                                  onlyLocalKeys: Bool) async throws -> ProcessedMessage {
+    func decryptAndProcessMessage(
+        mime rawMimeData: Data,
+        sender: String?,
+        onlyLocalKeys: Bool
+    ) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
@@ -176,10 +180,12 @@ final class MessageService {
             throw MessageServiceError.missingPassPhrase(rawMimeData)
         }
 
-        return try await processMessage(rawMimeData: rawMimeData,
-                                        sender: sender,
-                                        with: decrypted,
-                                        keys: keys)
+        return try await processMessage(
+            rawMimeData: rawMimeData,
+            sender: sender,
+            with: decrypted,
+            keys: keys
+        )
     }
 
     private func processMessage(
@@ -188,8 +194,8 @@ final class MessageService {
         with decrypted: CoreRes.ParseDecryptMsg,
         keys: [PrvKeyInfo]
     ) async throws -> ProcessedMessage {
-        let decryptErrBlocks = decrypted.blocks
-            .filter { $0.decryptErr != nil }
+        let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
+        let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
         let attachments: [MessageAttachment] = try await getAttachments(
             blocks: decrypted.blocks,
             keys: keys
@@ -198,13 +204,20 @@ final class MessageService {
         let text: String
         let signature: ProcessedMessage.MessageSignature?
 
-        if let decryptErrBlock = decryptErrBlocks.first {
+        if let firstBlockParseErr = firstBlockParseErr {
+            // Swift failed to parse one of the MsgBlock returned from TypeScript Core
+            text = "Internal error: could not parse MsgBlock\n\n\(firstBlockParseErr.content)"
+            messageType = .error(.other)
+            signature = nil
+        } else if let decryptErrBlock = firstDecryptErrBlock {
+            // message failed to decrypt or process
             let rawMsg = decryptErrBlock.content
             let err = decryptErrBlock.decryptErr?.error
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
             signature = nil
         } else {
+            // decrypt / process success
             text = decrypted.text
             messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
             signature = await evaluateSignatureVerificationResult(
