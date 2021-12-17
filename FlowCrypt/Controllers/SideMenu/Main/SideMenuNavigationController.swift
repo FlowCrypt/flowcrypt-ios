@@ -161,7 +161,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
         case 0:
             navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn"), action: nil, accessibilityIdentifier: "menu")
         default:
-            navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c"), action: nil)
+            navigationButton = .defaultBackButton()
         }
 
         navigationItem.hidesBackButton = true
@@ -182,7 +182,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             sideMenu?.allowPanGesture = false
             sideMenu?.allowLeftSwipe = false
             interactivePopGestureRecognizer?.isEnabled = true
-            navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
+            navigationButton = .defaultBackButton { [weak self] in
                 guard let self = self else { return }
                 if let viewController = self.viewControllers.compactMap({ $0 as? NavigationChildController }).last {
                     viewController.handleBackButtonTap()
