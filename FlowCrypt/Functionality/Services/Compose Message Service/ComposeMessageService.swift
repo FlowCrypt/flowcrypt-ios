@@ -13,39 +13,6 @@ import FlowCryptCommon
 
 typealias RecipientState = RecipientEmailsCellNode.Input.State
 
-struct ComposeMessageContext: Equatable {
-    var message: String?
-    var recipients: [ComposeMessageRecipient] = []
-    var subject: String?
-    var password: String?
-    var attachments: [MessageAttachment] = []
-}
-
-extension ComposeMessageContext {
-    var hasPassword: Bool {
-        guard let password = password else { return false }
-        return password.isNotEmpty
-    }
-}
-
-extension ComposeMessageContext {
-    var hasRecipientsWithoutPubKeys: Bool {
-        recipients.first(where: {
-            if case .keyNotFound = $0.state { return true }
-            return false
-        }) != nil
-    }
-}
-
-struct ComposeMessageRecipient: Equatable {
-    let email: String
-    var state: RecipientState
-
-    static func == (lhs: ComposeMessageRecipient, rhs: ComposeMessageRecipient) -> Bool {
-        return lhs.email == rhs.email
-    }
-}
-
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
 }
@@ -169,8 +136,8 @@ final class ComposeMessageService {
                 .filter { $0.keyState == .empty }
                 .first(where: {
                     guard let domain = $0.email.recipientDomain else { return !withPasswordSupport }
-                    let supportsPassword = domainsWithPasswordSupport.containsCaseInsensitive(domain)
-                    return withPasswordSupport ? supportsPassword : !supportsPassword
+                    let supportsPassword = domainsWithPasswordSupport.contains(domain)
+                    return withPasswordSupport == supportsPassword
                 }) != nil
         }
 
@@ -233,38 +200,6 @@ final class ComposeMessageService {
             onStateChanged?(.messageSent)
         } catch {
             throw ComposeMessageError.gatewayError(error)
-        }
-    }
-}
-
-extension ComposeMessageService {
-    enum State {
-        case idle
-        case validatingMessage
-        case startComposing
-        case progressChanged(Float)
-        case messageSent
-
-        var message: String? {
-            switch self {
-            case .idle:
-                return nil
-            case .validatingMessage:
-                return "validating_title".localized
-            case .startComposing:
-                return "encrypting_title".localized
-            case .progressChanged:
-                return "compose_uploading".localized
-            case .messageSent:
-                return "compose_message_sent".localized
-            }
-        }
-
-        var progress: Float? {
-            guard case .progressChanged(let progress) = self else {
-                return nil
-            }
-            return progress
         }
     }
 }
