@@ -15,7 +15,6 @@ import FlowCryptCommon
 @MainActor
 final class AttachmentViewController: UIViewController {
 
-    private lazy var webView = WKWebView()
     private let file: FileType
     private let shouldShowDownloadButton: Bool
 
@@ -24,6 +23,20 @@ final class AttachmentViewController: UIViewController {
         controller: self,
         filesManager: filesManager
     )
+
+    private lazy var webView: WKWebView = {
+        let preferences = WKWebpagePreferences()
+        preferences.allowsContentJavaScript = false
+
+        let configuration = WKWebViewConfiguration()
+        configuration.defaultWebpagePreferences = preferences
+
+        let view = WKWebView(frame: .zero, configuration: configuration)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.navigationDelegate = self
+        view.backgroundColor = .backgroundColor
+        return view
+    }()
 
     private let errorLabel: UILabel = {
         let label = UILabel()
@@ -35,6 +48,21 @@ final class AttachmentViewController: UIViewController {
         label.font = .systemFont(ofSize: 12)
         return label
     }()
+
+    private var encodedContentRules: String {
+        """
+        [{
+            "trigger": {
+                "url-filter": ".*"
+            },
+            "action": {
+                "type": "block"
+            }
+        }]
+        """
+    }
+
+    private var isNavigated = false
 
     init(
         file: FileType,
@@ -55,16 +83,20 @@ final class AttachmentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        addWebView()
+        setupUI()
         showSpinner()
         title = file.name
-        do {
-            try load()
-        } catch {
-            Logger.logError("error previewing file: \(error)")
-            // todo - exact error should be surfaced to user?
-            errorLabel.isHidden = false
-            hideSpinner()
+
+        Task {
+            do {
+                try await setContentRules()
+                try load()
+            } catch {
+                Logger.logError("error previewing file: \(error)")
+                // todo - exact error should be surfaced to user?
+                errorLabel.isHidden = false
+                hideSpinner()
+            }
         }
     }
 
@@ -99,9 +131,31 @@ extension AttachmentViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         hideSpinner()
     }
+
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        guard
+            navigationAction.request.url?.scheme == "data",
+            !isNavigated
+        else { return .cancel }
+
+        isNavigated = true
+        return .allow
+    }
 }
 
 private extension AttachmentViewController {
+
+    private func setContentRules() async throws {
+        guard let list = try await WKContentRuleListStore.default().compileContentRuleList(
+            forIdentifier: "blockRules",
+            encodedContentRuleList: encodedContentRules
+        ) else {
+            throw AppErr.general("Could not produce a data URL to preview this file")
+        }
+
+        webView.configuration.userContentController.removeAllContentRuleLists()
+        webView.configuration.userContentController.add(list)
+    }
 
     private func load() throws {
         guard let url = URL(string: "data:\(file.name.mimeType);base64,\(file.data.base64EncodedString())") else {
@@ -110,11 +164,7 @@ private extension AttachmentViewController {
         webView.load(URLRequest(url: url))
     }
 
-    private func addWebView() {
-        webView.backgroundColor = .backgroundColor
-        webView.navigationDelegate = self
-        webView.translatesAutoresizingMaskIntoConstraints = false
-
+    private func setupUI() {
         view.addSubview(webView)
         webView.addSubview(errorLabel)
 
