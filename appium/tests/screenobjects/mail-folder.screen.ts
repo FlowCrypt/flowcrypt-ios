@@ -96,13 +96,6 @@ class MailFolderScreen extends BaseScreen {
   clickSearchButton = async () => {
     await ElementHelper.waitAndClick(await this.searchIcon, 1000); // delay needed on M1
   }
-
-  searchEmailBySubject = async (subject: string) => {
-    await this.clickSearchButton();
-    await (await this.searchField).setValue(`subject: '${subject}'`);
-    const selector = `~${subject}`;
-    await expect(await $(selector)).toBeDisplayed();
-  }
 }
 
 export default new MailFolderScreen();

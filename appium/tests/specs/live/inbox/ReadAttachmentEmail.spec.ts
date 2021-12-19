@@ -25,8 +25,8 @@ describe('INBOX: ', () => {
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
-    await MailFolderScreen.searchEmailBySubject(emailSubject);
-    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.clickSearchButton();
+    await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     await EmailScreen.checkAttachment(attachmentName);
 
@@ -34,8 +34,8 @@ describe('INBOX: ', () => {
     await driver.activateApp(bundleId);
 
     await MailFolderScreen.checkInboxScreen();
-    await MailFolderScreen.searchEmailBySubject(emailSubject);
-    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.clickSearchButton();
+    await SearchScreen.searchAndClickEmailBySubject(emailSubject);
 
     //try to see encrypted message with wrong pass phrase
     await EmailScreen.enterPassPhrase(wrongPassPhrase);
