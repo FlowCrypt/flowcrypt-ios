@@ -15,7 +15,7 @@ const SELECTORS = {
   BACK_BUTTON: '~aid-back-button',
 };
 
-class KeysScreen extends BaseScreen {
+class OldAppScreen extends BaseScreen {
   constructor() {
     super(SELECTORS.KEYS_HEADER);
   }
@@ -97,4 +97,4 @@ class KeysScreen extends BaseScreen {
   }
 }
 
-export default new KeysScreen();
+export default new OldAppScreen();

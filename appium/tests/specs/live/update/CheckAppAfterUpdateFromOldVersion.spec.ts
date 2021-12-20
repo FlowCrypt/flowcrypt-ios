@@ -71,7 +71,6 @@ describe('UPDATE: ', () => {
     //run new app
     await driver.activateApp(bundleId);
 
-
     await MailFolderScreen.checkInboxScreen();
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.checkUserEmail();
