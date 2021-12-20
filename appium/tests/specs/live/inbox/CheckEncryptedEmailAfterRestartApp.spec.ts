@@ -2,7 +2,8 @@ import {
   SplashScreen,
   SetupKeyScreen,
   MailFolderScreen,
-  EmailScreen
+  EmailScreen,
+  SearchScreen
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';

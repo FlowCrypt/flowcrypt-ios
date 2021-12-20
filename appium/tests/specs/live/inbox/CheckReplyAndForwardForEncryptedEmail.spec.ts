@@ -3,7 +3,8 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen,
-  NewMessageScreen
+  NewMessageScreen,
+  SearchScreen
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
