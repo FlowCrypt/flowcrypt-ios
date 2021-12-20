@@ -23,6 +23,7 @@ public final class NavigationBarActionButton: UIBarButtonItem {
             $0.frame.size = Constants.buttonSize
             $0.addTarget(self, action: #selector(tap), for: .touchUpInside)
             $0.accessibilityIdentifier = accessibilityIdentifier
+            $0.isAccessibilityElement = true
         }
     }
 

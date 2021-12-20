@@ -116,8 +116,8 @@ extension InboxViewController {
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                NavigationBarItemsView.Input(image: UIImage(named: "help_icn"), action: (self, #selector(handleInfoTap))),
-                NavigationBarItemsView.Input(image: UIImage(named: "search_icn"), action: (self, #selector(handleSearchTap)))
+                NavigationBarItemsView.Input(image: UIImage(named: "help_icn")) { [weak self] in self?.handleInfoTap() },
+                NavigationBarItemsView.Input(image: UIImage(named: "search_icn")) { [weak self] in self?.handleSearchTap() }
             ]
         )
     }
@@ -317,12 +317,12 @@ extension InboxViewController {
 
 // MARK: - Action handlers
 extension InboxViewController {
-    @objc private func handleInfoTap() {
+    private func handleInfoTap() {
         #warning("ToDo")
         showToast("Email us at human@flowcrypt.com")
     }
 
-    @objc private func handleSearchTap() {
+    private func handleSearchTap() {
         let viewController = SearchViewController(appContext: appContext, folderPath: viewModel.path)
         navigationController?.pushViewController(viewController, animated: false)
     }

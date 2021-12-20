@@ -4,6 +4,7 @@
 "encrypting_title" = "Encrypting...";
 "processing_title" = "Processing...";
 "sending_title" = "Sending";
+"validating_title" = "Validating";
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
 "ok" = "Ok";
@@ -15,6 +16,7 @@
 "allow" = "Allow";
 "later" = "Later";
 "forward" = "Forward";
+"save" = "Save";
 "to" = "to";
 "cc" = "cc";
 "bcc" = "bcc";
@@ -81,6 +83,7 @@
 "compose_quote_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
 "compose_forward_successful" = "Message forwarded successfully";
 "compose_encrypted_sent" = "Encrypted message sent";
+"compose_message_sent" = "Message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
 "compose_recipient" = "Add Recipient";
@@ -245,8 +248,9 @@
 "organisational_rules_ekm_keys_are_not_decrypted_error" = "Received private keys are not fully decrypted. Please try login flow again";
 "organisational_wrong_email_error" = "Not a valid email %@";
 
-// Email key manager api error
-"emai_keymanager_api_no_google_id_token_error_description" = "There is no Google ID token were found while getting client configuration";
+// Google id token errors
+"id_token_missing_error_description" = "There is no Google ID token was found while getting client configuration";
+"id_token_invalid_error_description" = "There is no valid Google ID token was found while getting client configuration";
 
 // Gmail Service errors
 "gmail_service_failed_to_parse_data_error_message" = "Failed to parse Gmail data";
@@ -278,6 +282,5 @@
 "invalid_storage_reset_error" = "Couldn't remove storage. Please reinstall application";
 "invalid_storage_failed_to_initialize" = "Failed to initialize storage. Please restart your device. If it doesn't help, please reinstall application";
 
-// Fatal error view controller
-"fatal_error_screen_title" = "Error";
-"fatal_error_screen_text" = "Not possible to continue due to fatal error. Please try to restart application. If it doesn't help, please reinstall application";
+// Attachments details
+"no_preview_avalable" = "No preview available";

@@ -61,12 +61,12 @@ final class KeyService: KeyServiceType {
 
         let storedPassPhrases = passPhraseService.getPassPhrases()
         let privateKeys = storage.getKeypairs(by: email)
-            .map { keyInfo -> PrvKeyInfo in
+            .map { keypair -> PrvKeyInfo in
                 let passphrase = storedPassPhrases
                     .filter(\.value.isNotEmpty)
-                    .first(where: { $0.primaryFingerprintOfAssociatedKey == keyInfo.primaryFingerprint })?
+                    .first(where: { $0.primaryFingerprintOfAssociatedKey == keypair.primaryFingerprint })?
                     .value
-                return PrvKeyInfo(keyInfo: keyInfo, passphrase: passphrase)
+                return PrvKeyInfo(keypair: keypair, passphrase: passphrase)
             }
         return privateKeys
     }
@@ -88,13 +88,13 @@ final class KeyService: KeyServiceType {
             .first(where: { $0.primaryFingerprintOfAssociatedKey == foundKey.primaryFingerprint })?
             .value
 
-        return PrvKeyInfo(keyInfo: foundKey, passphrase: passphrase)
+        return PrvKeyInfo(keypair: foundKey, passphrase: passphrase)
     }
 
-    private func findKeyByUserEmail(keysInfo: [KeyInfo], email: String) async throws -> KeyInfo? {
+    private func findKeyByUserEmail(keysInfo: [Keypair], email: String) async throws -> Keypair? {
         // todo - should be refactored with https://github.com/FlowCrypt/flowcrypt-ios/issues/812
         logger.logDebug("findKeyByUserEmail: found \(keysInfo.count) candidate prvs in storage, searching by:\(email)")
-        var keys: [(KeyInfo, KeyDetails)] = []
+        var keys: [(Keypair, KeyDetails)] = []
         for keyInfo in keysInfo {
             let parsedKeys = try await coreService.parseKeys(
                 armoredOrBinary: keyInfo.`private`.data()
@@ -102,14 +102,15 @@ final class KeyService: KeyServiceType {
             guard let parsedKey = parsedKeys.keyDetails.first else {
                 throw KeyServiceError.parsingError
             }
-//            logger.logDebug("findKeyByUserEmail: PrvKeyInfo from storage has primary fingerprint \(keyInfo.primaryFingerprint) vs parsed key \(parsedKey.primaryFingerprint) and has emails \(parsedKey.pgpUserEmails)")
             keys.append((keyInfo, parsedKey))
         }
         if let primaryEmailMatch = keys.first(where: { $0.1.pgpUserEmails.first?.lowercased() == email.lowercased() }) {
             logger.logDebug("findKeyByUserEmail: found key \(primaryEmailMatch.1.primaryFingerprint) by primary email match")
             return primaryEmailMatch.0
         }
-        if let alternativeEmailMatch = keys.first(where: { $0.1.pgpUserEmails.map { $0.lowercased() }.contains(email.lowercased()) == true }) {
+        if let alternativeEmailMatch = keys.first(where: {
+            $0.1.pgpUserEmails.map { $0.lowercased() }.contains(email.lowercased()) == true
+        }) {
             logger.logDebug("findKeyByUserEmail: found key \(alternativeEmailMatch.1.primaryFingerprint) by alternative email match")
             return alternativeEmailMatch.0
         }

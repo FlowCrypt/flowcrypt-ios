@@ -102,7 +102,7 @@ extension DataService: DataServiceType {
             return GoogleUserService(
                 currentUserEmail: currentUser?.email,
                 appDelegateGoogleSessionContainer: nil // needed only when signing in/out
-            ).userToken
+            ).accessToken
         default:
             return nil
         }

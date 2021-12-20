@@ -28,7 +28,7 @@ describe('INBOX: ', () => {
     await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await EmailScreen.checkAttachment(attachmentName); //disabled due to
+    await EmailScreen.checkAttachment(attachmentName);
 
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
@@ -47,10 +47,15 @@ describe('INBOX: ', () => {
     await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     await EmailScreen.checkAttachment(attachmentName);
-    await EmailScreen.clickOnDownloadButton();
+    await EmailScreen.clickOnAttachmentCell();
+    await AttachmentScreen.checkAttachment(attachmentName);
+
+    await AttachmentScreen.clickSaveButton();
 
     await AttachmentScreen.checkDownloadPopUp(attachmentName);
-    await AttachmentScreen.clickOnCancelButton();
+    await AttachmentScreen.clickCancelButton();
+    await AttachmentScreen.checkAttachment(attachmentName);
+    await AttachmentScreen.clickBackButton();
 
     await EmailScreen.checkAttachment(attachmentName);
     await EmailScreen.clickBackButton();
@@ -58,8 +63,11 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     await EmailScreen.checkAttachment(attachmentName);
-    await EmailScreen.clickOnDownloadButton();
+    await EmailScreen.clickOnAttachmentCell();
 
+    await AttachmentScreen.checkAttachment(attachmentName);
+
+    await AttachmentScreen.clickSaveButton();
     await AttachmentScreen.checkDownloadPopUp(attachmentName);
   });
 });

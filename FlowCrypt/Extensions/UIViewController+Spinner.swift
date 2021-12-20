@@ -72,7 +72,7 @@ extension UIViewController {
         currentProgressHUD.mode = .customView
         currentProgressHUD.label.text = label
     }
-    
+
     @MainActor
     func showIndeterminateHUD(with title: String) {
         self.currentProgressHUD.mode = .indeterminate

@@ -2,16 +2,26 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  CANCEL_BTN: '~Cancel',
+  BACK_BTN: '~aid-back-button',
+  SAVE_BTN: '~aid-save-attachment-to-device',
+  CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController 
 };
 
 class AttachmentScreen extends BaseScreen {
   constructor() {
-    super(SELECTORS.CANCEL_BTN);
+    super(SELECTORS.BACK_BTN);
+  }
+
+  get backButton() {
+    return $(SELECTORS.BACK_BTN);
+  }
+
+  get saveButton() {
+    return $(SELECTORS.SAVE_BTN);
   }
 
   get cancelButton() {
-    return $(SELECTORS.CANCEL_BTN);
+    return $(SELECTORS.CANCEL_BTN)
   }
 
   checkDownloadPopUp = async (name: string) => {
@@ -20,8 +30,23 @@ class AttachmentScreen extends BaseScreen {
     expect(await $(attachment)).toHaveAttribute('value', `${name}`);
   }
 
-  clickOnCancelButton = async () => {
+  clickBackButton = async () => {
+    await ElementHelper.waitAndClick(await this.backButton);
+  }
+
+  clickCancelButton = async () => {
     await ElementHelper.waitAndClick(await this.cancelButton);
+  }
+
+  checkAttachment = async (name: string) => {
+    await (await this.backButton).waitForDisplayed();
+    const attachmentHeader = `-ios class chain:**/XCUIElementTypeNavigationBar[\`name == "${name}"\`]`;
+    expect(await $(attachmentHeader)).toBeDisplayed();
+    await (await this.saveButton).waitForDisplayed();
+  }
+
+  clickSaveButton = async () => {
+    await ElementHelper.waitAndClick(await this.saveButton);
   }
 }
 
