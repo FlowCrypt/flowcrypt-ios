@@ -11,7 +11,7 @@ import PublicKeyScreen from './public-key.screen';
 import AttachmentScreen from './attachment.screen';
 import MailFolderScreen from './mail-folder.screen';
 import SearchScreen from './search.screen';
-import OldAppScreen from './old-app.screen';
+import OldVersionAppScreen from './old-version-app.screen';
 
 export {
   SplashScreen,
@@ -27,5 +27,5 @@ export {
   ContactPublicKeyScreen,
   MailFolderScreen,
   SearchScreen,
-  OldAppScreen
+  OldVersionAppScreen
 };

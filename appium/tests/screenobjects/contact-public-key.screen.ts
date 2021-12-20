@@ -70,7 +70,6 @@ class ContactPublicKeyScreen extends BaseScreen {
   }
 
   checkPublicKeyNotEmpty = async () => {
-    await (await this.backButton).waitForDisplayed();
     await (await this.key).waitForDisplayed();
     const pubkeyEl = await this.publicKey;
     await pubkeyEl.waitForExist();
@@ -78,7 +77,6 @@ class ContactPublicKeyScreen extends BaseScreen {
   }
 
   checkPublicKeyDetailsNotEmpty = async () => {
-    await (await this.backButton).waitForDisplayed();
     await (await this.fingerPrintLabel).waitForDisplayed();
     expect(await (await this.fingerPrintValue).getAttribute('value')).toBeTruthy();
     await (await this.createdLabel).waitForDisplayed();

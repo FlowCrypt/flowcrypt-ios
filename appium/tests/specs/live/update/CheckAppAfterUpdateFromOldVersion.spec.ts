@@ -4,7 +4,7 @@ import {
     MenuBarScreen,
     MailFolderScreen,
     EmailScreen,
-    SearchScreen,
+    OldVersionAppScreen,
     SettingsScreen,
     KeysScreen,
     PublicKeyScreen,
@@ -42,10 +42,10 @@ describe('UPDATE: ', () => {
 
     await MailFolderScreen.searchEmailBySubject(emailSubject);
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await EmailScreen.clickBackButton();
+    await OldVersionAppScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await OldVersionAppScreen.clickBackButton();
 
-    await SearchScreen.clickBackButton();
+    await OldVersionAppScreen.clickBackButton();
 
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.checkMenuBar();
