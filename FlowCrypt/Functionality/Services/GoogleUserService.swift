@@ -42,6 +42,29 @@ struct GoogleUser: Codable {
     let picture: URL?
 }
 
+struct IdToken: Codable {
+    let exp: Int
+}
+
+extension IdToken {
+    var isExpired: Bool {
+        Double(exp) < Date().timeIntervalSince1970
+    }
+}
+
+enum IdTokenError: Error, CustomStringConvertible {
+    case missingToken, invalidJWTFormat, invalidBase64EncodedData
+
+    var description: String {
+        switch self {
+        case .missingToken:
+            return "id_token_missing_error_description".localized
+        case .invalidJWTFormat, .invalidBase64EncodedData:
+            return "id_token_invalid_error_description".localized
+        }
+    }
+}
+
 protocol GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
     func renewSession() async throws
@@ -73,16 +96,16 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
-    var userToken: String? {
-        authorization?.authState
-            .lastTokenResponse?
-            .accessToken
+    private var tokenResponse: OIDTokenResponse? {
+        authorization?.authState.lastTokenResponse
     }
 
-    var idToken: String? {
-        authorization?.authState
-            .lastTokenResponse?
-            .idToken
+    private var idToken: String? {
+        tokenResponse?.idToken
+    }
+
+    var accessToken: String? {
+        tokenResponse?.accessToken
     }
 
     var authorization: GTMAppAuthFetcherAuthorization? {
@@ -110,7 +133,7 @@ extension GoogleUserService: UserServiceType {
                         let error = self.parseSignInError(authError)
                         return continuation.resume(throwing: error)
                     } else {
-                        let error = AppErr.unexpected("Shouldn't happen because received non nil error and non nil authState")
+                        let error = AppErr.unexpected("Shouldn't happen because received nil error and nil authState")
                         return continuation.resume(throwing: error)
                     }
                 }
@@ -226,6 +249,55 @@ extension GoogleUserService {
               allowedScopes.isNotEmpty
         else { return scopes }
         return scopes.filter { !allowedScopes.contains($0.value) }
+    }
+}
+
+// MARK: - Tokens
+extension GoogleUserService {
+    func getCachedOrRefreshedIdToken() async throws -> String {
+        guard let idToken = idToken else { throw(IdTokenError.missingToken) }
+
+        let decodedToken = try decode(idToken: idToken)
+
+        guard !decodedToken.isExpired else {
+            let (_, updatedToken) = try await performTokenRefresh()
+            return updatedToken
+        }
+
+        return idToken
+    }
+
+    private func decode(idToken: String) throws -> IdToken {
+        let components = idToken.components(separatedBy: ".")
+
+        guard components.count == 3 else { throw(IdTokenError.invalidJWTFormat) }
+
+        var decodedString = components[1]
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+
+        while decodedString.utf16.count % 4 != 0 {
+            decodedString += "="
+        }
+
+        guard let decodedData = Data(base64Encoded: decodedString)
+        else { throw(IdTokenError.invalidBase64EncodedData) }
+
+        return try JSONDecoder().decode(IdToken.self, from: decodedData)
+    }
+
+    private func performTokenRefresh() async throws -> (accessToken: String, idToken: String) {
+        return try await withCheckedThrowingContinuation { continuation in
+            authorization?.authState.setNeedsTokenRefresh()
+            authorization?.authState.performAction { accessToken, idToken, error in
+                guard let accessToken = accessToken, let idToken = idToken else {
+                    let tokenError = error ?? AppErr.unexpected("Shouldn't happen because received nil error and nil token")
+                    return continuation.resume(throwing: tokenError)
+                }
+                let result = (accessToken, idToken)
+                return continuation.resume(with: .success(result))
+            }
+        }
     }
 }
 

@@ -157,10 +157,20 @@ extension SetupInitialViewController {
         }
     }
 
+    private func getIdToken() async throws -> String {
+        let googleService = GoogleUserService(
+            currentUserEmail: user.email,
+            appDelegateGoogleSessionContainer: nil
+        )
+
+        return try await googleService.getCachedOrRefreshedIdToken()
+    }
+
     private func fetchKeysFromEKM() {
         Task {
             do {
-                let result = try await emailKeyManagerApi.getPrivateKeys(currentUserEmail: user.email)
+                let idToken = try await getIdToken()
+                let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 switch result {
                 case .success(keys: let keys):
                     proceedToSetupWithEKMKeys(keys: keys)
@@ -183,7 +193,7 @@ extension SetupInitialViewController {
                 if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
                     return
                 }
-                showAlert(message: error.localizedDescription, onOk: { [weak self] in
+                showAlert(message: error.errorMessage, onOk: { [weak self] in
                     self?.state = .decidingIfEKMshouldBeUsed
                 })
             }

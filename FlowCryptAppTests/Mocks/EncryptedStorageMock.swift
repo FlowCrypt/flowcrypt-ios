@@ -33,8 +33,8 @@ final class EncryptedStorageMock: EncryptedStorageType {
     func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
     }
 
-    var getKeypairsResult: [KeyInfo] = []
-    func getKeypairs(by email: String) -> [KeyInfo] {
+    var getKeypairsResult: [Keypair] = []
+    func getKeypairs(by email: String) -> [Keypair] {
         getKeypairsResult
     }
 

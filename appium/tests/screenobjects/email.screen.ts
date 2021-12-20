@@ -3,23 +3,24 @@ import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BTN: '~arrow left c',
+  BACK_BTN: '~aid-back-button',
   ENTER_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
   OK_BUTTON: '~Ok',
   WRONG_PASS_PHRASE_MESSAGE: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
-  DOWNLOAD_ATTACHMENT_BUTTON: '~attachmentDownloadButton0',
-  REPLY_BUTTON: '~replyButton',
-  RECIPIENTS_BUTTON: '~messageRecipientButton',
+  ATTACHMENT_CELL: '~aid-attachment-cell-0',
+  ATTACHMENT_TITLE: '~aid-attachment-title-label-0',
+  REPLY_BUTTON: '~aid-reply-button',
+  RECIPIENTS_BUTTON: '~aid-message-recipients-tappable-area',
   RECIPIENTS_TO_LABEL: '~toLabel0',
   RECIPIENTS_CC_LABEL: '~ccLabel0',
   RECIPIENTS_BCC_LABEL: '~bccLabel0',
-  MENU_BUTTON: '~messageMenuButton',
+  MENU_BUTTON: '~aid-message-menu-button',
   FORWARD_BUTTON: '~Forward',
   DELETE_BUTTON: '~Delete',
   CONFIRM_DELETING: '~OK',
-  SENDER_EMAIL: '~messageSenderLabel',
-  ENCRYPTION_BADGE: '~encryptionBadge',
-  SIGNATURE_BADGE: '~signatureBadge'
+  SENDER_EMAIL: '~aid-message-sender-label',
+  ENCRYPTION_BADGE: '~aid-encryption-badge',
+  SIGNATURE_BADGE: '~aid-signature-badge'
 };
 
 
@@ -44,8 +45,12 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.WRONG_PASS_PHRASE_MESSAGE)
   }
 
-  get downloadAttachmentButton() {
-    return $(SELECTORS.DOWNLOAD_ATTACHMENT_BUTTON);
+  get attachmentCell() {
+    return $(SELECTORS.ATTACHMENT_CELL);
+  }
+
+  get attachmentTitle() {
+    return $(SELECTORS.ATTACHMENT_TITLE);
   }
 
   get replyButton() {
@@ -133,19 +138,13 @@ class EmailScreen extends BaseScreen {
     await (await this.wrongPassPhraseMessage).waitForDisplayed();
   }
 
-  attachmentName = async (name: string) => {
-    const selector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${name}"\`]`;
-    return $(selector);
-  }
-
   checkAttachment = async (name: string) => {
-    await (await this.downloadAttachmentButton).waitForDisplayed();
-    const element = await this.attachmentName(name);
-    await element.waitForDisplayed();
+    await (await this.attachmentCell).waitForDisplayed();
+    await ElementHelper.checkStaticText(await this.attachmentTitle, name);
   }
 
-  clickOnDownloadButton = async () => {
-    await ElementHelper.waitAndClick(await this.downloadAttachmentButton);
+  clickOnAttachmentCell = async () => {
+    await ElementHelper.waitAndClick(await this.attachmentCell);
   }
 
   clickReplyButton = async () => {

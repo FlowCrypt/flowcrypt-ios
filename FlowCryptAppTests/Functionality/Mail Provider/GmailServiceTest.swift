@@ -46,7 +46,7 @@ class GmailServiceTest: XCTestCase {
 class GoogleUserServiceMock: GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization?
     func renewSession() async throws {
-        await Task.sleep(1_000_000_000)
+        try await Task.sleep(nanoseconds: 1_000_000_000)
     }
 }
 

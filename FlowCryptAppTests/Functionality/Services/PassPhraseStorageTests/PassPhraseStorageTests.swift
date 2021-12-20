@@ -156,14 +156,14 @@ class PassPhraseStorageTests: XCTestCase {
     }
 }
 
-extension KeyInfoRealmObject {
+extension KeypairRealmObject {
     // extend with more parameters if needed
     static func mock(
         with publicValue: String,
         account: String = "",
         longid: String
-    ) -> KeyInfoRealmObject {
-        try! KeyInfoRealmObject(
+    ) -> KeypairRealmObject {
+        try! KeypairRealmObject(
             KeyDetails(
                 public: publicValue,
                 private: "private",

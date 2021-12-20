@@ -2,20 +2,20 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  ADD_RECIPIENT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Add Recipient"`]',
-  SUBJECT_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`value == "Subject"`]',
-  COMPOSE_SECURITY_MESSAGE: '-ios predicate string:type == "XCUIElementTypeTextView"',
+  ADD_RECIPIENT_FIELD: '~recipientTextField',
+  SUBJECT_FIELD: '~subjectTextField',
+  COMPOSE_SECURITY_MESSAGE: '~messageTextView',
   RECIPIENTS_LIST: '~recipientsList',
   ADDED_RECIPIENT: '-ios class chain:**/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther' +
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
-  ATTACHMENT_CELL: '~attachmentCell0',
-  ATTACHMENT_NAME_LABEL: '~attachmentTitleLabel0',
-  DELETE_ATTACHMENT_BUTTON: '~attachmentDeleteButton0',
+  ATTACHMENT_CELL: '~aid-attachment-cell-0',
+  ATTACHMENT_NAME_LABEL: '~aid-attachment-title-label-0',
+  DELETE_ATTACHMENT_BUTTON: '~aid-attachment-delete-button-0',
   RETURN_BUTTON: '~Return',
-  BACK_BUTTON: '~arrow left c',
-  SEND_BUTTON: '~android send',
+  BACK_BUTTON: '~aid-back-button',
+  SEND_BUTTON: '~aid-compose-send',
 };
 
 class NewMessageScreen extends BaseScreen {
@@ -110,6 +110,10 @@ class NewMessageScreen extends BaseScreen {
     }
   };
 
+  checkRecipientsTextFieldIsInvisible = async () => {
+    await ElementHelper.waitElementInvisible(await this.addRecipientField);
+  }
+
   checkEmptyRecipientsList = async () => {
     const list = await this.recipientsList;
     const listText = await list.getText();
@@ -120,7 +124,13 @@ class NewMessageScreen extends BaseScreen {
     const addedRecipientEl = await this.addedRecipientEmail;
     const value = await addedRecipientEl.getValue();
     expect(value).toEqual(`  ${recipient}  `);
-  };
+  }
+
+  checkAddedRecipientColor = async (recipient: string, order: number, color: string) => {
+    const addedRecipientEl = await $(`~aid-to-${order}-${color}`);
+    const name = await addedRecipientEl.getValue();
+    expect(name).toEqual(`  ${recipient}  `);
+  }
 
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();

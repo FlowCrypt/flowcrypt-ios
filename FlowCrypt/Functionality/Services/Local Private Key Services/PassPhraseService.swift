@@ -44,11 +44,11 @@ struct PassPhrase: Codable, Hashable, Equatable {
 }
 
 extension PassPhrase {
-    init?(keyInfo: KeyInfoRealmObject) {
-        guard let passphrase = keyInfo.passphrase else { return nil }
+    init?(keypair: KeypairRealmObject) {
+        guard let passphrase = keypair.passphrase else { return nil }
 
         self.init(value: passphrase,
-                  fingerprintsOfAssociatedKey: Array(keyInfo.allFingerprints))
+                  fingerprintsOfAssociatedKey: Array(keypair.allFingerprints))
     }
 }
 
@@ -89,8 +89,10 @@ final class PassPhraseService: PassPhraseServiceType {
         case .persistent:
             try encryptedStorage.save(passPhrase: passPhrase)
         case .memory:
-            if encryptedStorage.getPassPhrases().contains(where: { $0.primaryFingerprintOfAssociatedKey == passPhrase.primaryFingerprintOfAssociatedKey }) {
-                logger.logInfo("\(StorageMethod.persistent): removing pass phrase from for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
+            let storedPassPhrases = encryptedStorage.getPassPhrases()
+            let fingerprint = passPhrase.primaryFingerprintOfAssociatedKey
+            if storedPassPhrases.contains(where: { $0.primaryFingerprintOfAssociatedKey == fingerprint }) {
+                logger.logInfo("\(StorageMethod.persistent): removing pass phrase for key \(fingerprint)")
                 try encryptedStorage.remove(passPhrase: passPhrase)
             }
             try inMemoryStorage.save(passPhrase: passPhrase)

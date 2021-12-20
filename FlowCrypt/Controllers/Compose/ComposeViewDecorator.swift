@@ -21,7 +21,7 @@ struct ComposeViewDecorator {
     let recipientInvalidEmailState: RecipientState = .invalidEmail(invalidEmailStateContext)
     let recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
 
-    func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
+    func styledTextViewInput(with height: CGFloat, accessibilityIdentifier: String? = nil) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
             placeholder: "message_compose_secure".localized.attributed(
                 .regular(17),
@@ -29,11 +29,14 @@ struct ComposeViewDecorator {
                 alignment: .left
             ),
             preferredHeight: height,
-            textColor: .mainTextColor
+            textColor: .mainTextColor,
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 
-    func styledTextFieldInput(with text: String, keyboardType: UIKeyboardType = .default) -> TextFieldCellNode.Input {
+    func styledTextFieldInput(with text: String,
+                              keyboardType: UIKeyboardType = .default,
+                              accessibilityIdentifier: String? = nil) -> TextFieldCellNode.Input {
         TextFieldCellNode.Input(
             placeholder: text.localized.attributed(
                 .regular(17),
@@ -45,7 +48,8 @@ struct ComposeViewDecorator {
             textAlignment: .left,
             height: 40,
             width: UIScreen.main.bounds.width,
-            keyboardType: keyboardType
+            keyboardType: keyboardType,
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 
@@ -142,7 +146,8 @@ extension ComposeViewDecorator {
             backgroundColor: .titleNodeBackgroundColor,
             borderColor: .borderColor,
             textColor: .mainTextColor,
-            image: #imageLiteral(resourceName: "retry")
+            image: #imageLiteral(resourceName: "retry"),
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -151,7 +156,8 @@ extension ComposeViewDecorator {
             backgroundColor: .gray,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -160,7 +166,8 @@ extension ComposeViewDecorator {
             backgroundColor: .main,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "green"
         )
     }
 
@@ -169,7 +176,8 @@ extension ComposeViewDecorator {
             backgroundColor: .warningColor,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "orange"
         )
     }
 
@@ -178,7 +186,8 @@ extension ComposeViewDecorator {
             backgroundColor: .errorColor,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "red"
         )
     }
 
@@ -187,7 +196,8 @@ extension ComposeViewDecorator {
             backgroundColor: .titleNodeBackgroundColorSelected,
             borderColor: .borderColorSelected,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -196,7 +206,8 @@ extension ComposeViewDecorator {
             backgroundColor: .red,
             borderColor: .borderColorSelected,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "red"
         )
     }
 
@@ -205,7 +216,8 @@ extension ComposeViewDecorator {
             backgroundColor: .gray,
             borderColor: .red,
             textColor: .white,
-            image: #imageLiteral(resourceName: "cancel")
+            image: #imageLiteral(resourceName: "cancel"),
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -214,7 +226,8 @@ extension ComposeViewDecorator {
             backgroundColor: .red,
             borderColor: .borderColor,
             textColor: .white,
-            image: #imageLiteral(resourceName: "retry")
+            image: #imageLiteral(resourceName: "retry"),
+            accessibilityIdentifier: "red"
         )
     }
 }

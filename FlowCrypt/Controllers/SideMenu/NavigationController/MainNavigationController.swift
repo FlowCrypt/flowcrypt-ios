@@ -30,13 +30,12 @@ extension MainNavigationController: UINavigationControllerDelegate {
             return
         }
 
-        viewController.navigationItem.leftBarButtonItem = NavigationBarActionButton(UIImage(named: "arrow-left-c"), action: nil)
+        viewController.navigationItem.leftBarButtonItem = .defaultBackButton()
     }
 
     func navigationController(_: UINavigationController, didShow viewController: UIViewController, animated _: Bool) {
         guard shouldShowBackButton(for: viewController) else { return }
-
-        let navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
+        viewController.navigationItem.leftBarButtonItem = .defaultBackButton { [weak self] in
             guard let self = self else { return }
             if let viewController = self.viewControllers.compactMap({ $0 as? NavigationChildController }).last {
                 viewController.handleBackButtonTap()
@@ -44,8 +43,6 @@ extension MainNavigationController: UINavigationControllerDelegate {
                 self.popViewController(animated: true)
             }
         }
-
-        viewController.navigationItem.leftBarButtonItem = navigationButton
     }
 
     private func shouldShowBackButton(for viewController: UIViewController) -> Bool {
@@ -80,5 +77,15 @@ extension UINavigationController {
             $0.tintColor = .white
             $0.titleTextAttributes = [.foregroundColor: UIColor.white]
         }
+    }
+}
+
+extension UIBarButtonItem {
+    static func defaultBackButton(with action: (() -> Void)? = nil) -> NavigationBarActionButton {
+        NavigationBarActionButton(
+            UIImage(named: "arrow-left-c"),
+            action: action,
+            accessibilityIdentifier: "aid-back-button"
+        )
     }
 }

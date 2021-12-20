@@ -10,7 +10,7 @@ import UIKit
 
 @MainActor
 protocol AttachmentManagerType {
-    func open(_ attachment: MessageAttachment) async
+    func download(_ file: FileType) async
 }
 
 final class AttachmentManager: NSObject {
@@ -40,15 +40,24 @@ final class AttachmentManager: NSObject {
 
         controller?.present(alert, animated: true)
     }
+
+    @MainActor
+    private func openDocumentsController(from url: URL) {
+        let documentController = UIDocumentPickerViewController(forExporting: [url])
+        documentController.delegate = self
+        present(documentController, animated: true, completion: nil)
+    }
 }
 
 extension AttachmentManager: AttachmentManagerType {
-    func open(_ attachment: MessageAttachment) async {
+
+    func download(_ file: FileType) async {
         do {
-            try await filesManager.saveToFilesApp(file: attachment, from: self)
+            let url = try await filesManager.save(file: file)
+            openDocumentsController(from: url)
         } catch {
             controller?.showToast(
-                "message_attachment_saved_with_error".localizeWithArguments(error.localizedDescription)
+                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
             )
         }
     }
