@@ -9,14 +9,9 @@ struct CoreRes {
     struct Version: Decodable {
         let app_version: String
     }
-
+    
     struct ComposeEmail {
         let mimeEncoded: Data
-    }
-
-    struct ParseDecryptMsgWithoutBlocks: Decodable {
-        let replyType: ReplyType
-        let text: String
     }
 
     struct ParseDecryptMsg {
@@ -46,14 +41,6 @@ struct CoreRes {
 
     struct GenerateKey: Decodable {
         let key: KeyDetails
-    }
-    
-    struct DecryptFileWithoutData: Decodable {
-        let decryptSuccess: DecryptSuccess?
-        let decryptErr: DecryptErr?
-        struct DecryptSuccess: Decodable {
-            let name: String
-        }
     }
         
     struct DecryptFile {
@@ -107,11 +94,11 @@ struct CoreRes {
         let word: WordDetails
         let time: String
     }
+}
 
-    enum ReplyType: String, Decodable {
-        case encrypted
-        case plain
-    }
+enum ReplyType: String, Decodable {
+    case encrypted
+    case plain
 }
 
 enum MsgFmt: String {

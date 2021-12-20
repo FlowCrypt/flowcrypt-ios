@@ -77,12 +77,19 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     
     // MARK: Files
     public func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) async throws -> CoreRes.DecryptFile {
+        struct DecryptFileRaw: Decodable {
+            let decryptSuccess: DecryptSuccess?
+            let decryptErr: DecryptErr?
+            struct DecryptSuccess: Decodable {
+                let name: String
+            }
+        }
         let json: [String : Any?]? = [
             "keys": try keys.map { try $0.toJsonEncodedDict() },
             "msgPwd": msgPwd
         ]
         let decrypted = try await call("decryptFile", jsonDict: json, data: encrypted)
-        let decryptFileRes = try decrypted.json.decodeJson(as: CoreRes.DecryptFileWithoutData.self)
+        let decryptFileRes = try decrypted.json.decodeJson(as: DecryptFileRaw.self)
         if let decryptErr = decryptFileRes.decryptErr {
             return CoreRes.DecryptFile(
                 decryptSuccess: nil,
@@ -122,6 +129,10 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         isEmail: Bool,
         verificationPubKeys: [String]
     ) async throws -> CoreRes.ParseDecryptMsg {
+        struct ParseDecryptMsgRaw: Decodable {
+            let replyType: ReplyType
+            let text: String
+        }
         let json: [String : Any?]? = [
             "keys": try keys.map { try $0.toJsonEncodedDict() },
             "isEmail": isEmail,
@@ -133,8 +144,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             jsonDict: json,
             data: encrypted
         )
-        let meta = try parsed.json
-            .decodeJson(as: CoreRes.ParseDecryptMsgWithoutBlocks.self)
+        let meta = try parsed.json.decodeJson(as: ParseDecryptMsgRaw.self)
 
         let blocks = parsed.data
             .split(separator: 10) // newline separated block jsons, one json per line
@@ -247,7 +257,12 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         }
         let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
         if let error = error {
-            logger.logError("------ js err -------\nCore \(endpoint):\n\(error.error.message)\n\(error.error.stack ?? "no stack")\n------- end js err -----")
+            logger.logError("""
+            ------ js err -------
+            Core \(endpoint): \(error.error.message)
+            \(error.error.stack ?? "no stack")
+            ------- end js err -----
+            """)
             throw CoreError.exception(error.error.message + "\n" + (error.error.stack ?? "no stack"))
         }
         return RawRes(json: resJsonData, data: Data(result.1))
