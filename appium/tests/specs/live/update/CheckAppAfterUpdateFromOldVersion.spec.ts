@@ -15,7 +15,7 @@ import {CommonData} from "../../../data";
 
 describe('UPDATE: ', () => {
 
-  it('user should be able to check encrypted email, contacts', async () => {
+  it('user should be able to check encrypted email, contacts after update app from old version', async () => {
 
     const oldAppPath = CommonData.appPath.old;
     const newAppPath = CommonData.appPath.new;

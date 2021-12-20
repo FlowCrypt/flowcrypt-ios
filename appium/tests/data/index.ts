@@ -1,4 +1,4 @@
-const { join } = require('path');
+import * as path from 'path';
 
 export const CommonData = {
   account: {
@@ -107,7 +107,7 @@ export const CommonData = {
     badgeText: 'decrypt error'
   },
   appPath: {
-    old: join(process.cwd(), './FlowCryptOld.app'),
-    new: join(process.cwd(), './FlowCrypt.app')
+    old: path.join(process.cwd(), './FlowCryptOld.app'),
+    new: path.join(process.cwd(), './FlowCrypt.app')
   }
 };
