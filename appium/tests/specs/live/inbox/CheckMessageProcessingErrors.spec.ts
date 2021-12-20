@@ -41,8 +41,8 @@ describe('INBOX: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     // Checking MDC hash mismatch message
-    await MailFolderScreen.searchEmailBySubject(encryptedMDCSubject);
-    await MailFolderScreen.clickOnEmailBySubject(encryptedMDCSubject);
+    await MailFolderScreen.clickSearchButton();
+    await SearchScreen.searchAndClickEmailBySubject(encryptedMDCSubject);
     await EmailScreen.checkOpenedEmail(encryptedMDCEmail, encryptedMDCSubject, encryptedMDCText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
@@ -51,8 +51,8 @@ describe('INBOX: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     // Checking message encrypted for another public key
-    await MailFolderScreen.searchEmailBySubject(encryptedForAnotherPublicKeySubject);
-    await MailFolderScreen.clickOnEmailBySubject(encryptedForAnotherPublicKeySubject);
+    await MailFolderScreen.clickSearchButton();
+    await SearchScreen.searchAndClickEmailBySubject(encryptedForAnotherPublicKeySubject);
     await EmailScreen.checkOpenedEmail(encryptedForAnotherPublicKeyEmail, encryptedForAnotherPublicKeySubject, encryptedForAnotherPublicKeyText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
@@ -61,8 +61,8 @@ describe('INBOX: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     // Checking wrong checksum message
-    await MailFolderScreen.searchEmailBySubject(wrongChecksumSubject);
-    await MailFolderScreen.clickOnEmailBySubject(wrongChecksumSubject);
+    await MailFolderScreen.clickSearchButton();
+    await SearchScreen.searchAndClickEmailBySubject(wrongChecksumSubject);
     await EmailScreen.checkOpenedEmail(wrongChecksumEmail, wrongChecksumSubject, wrongChecksumText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
