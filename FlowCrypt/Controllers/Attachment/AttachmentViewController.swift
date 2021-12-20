@@ -15,6 +15,8 @@ import FlowCryptCommon
 @MainActor
 final class AttachmentViewController: UIViewController {
 
+    private lazy var logger = Logger.nested(Self.self)
+
     private let file: FileType
     private let shouldShowDownloadButton: Bool
 
@@ -35,6 +37,7 @@ final class AttachmentViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.navigationDelegate = self
         view.backgroundColor = .backgroundColor
+        view.allowsLinkPreview = false
         return view
     }()
 
@@ -92,7 +95,7 @@ final class AttachmentViewController: UIViewController {
                 try await setContentRules()
                 try load()
             } catch {
-                Logger.logError("error previewing file: \(error)")
+                logger.logError("Preview Failed due to \(error.localizedDescription)")
                 // todo - exact error should be surfaced to user?
                 errorLabel.isHidden = false
                 hideSpinner()
@@ -150,7 +153,7 @@ private extension AttachmentViewController {
             forIdentifier: "blockRules",
             encodedContentRuleList: encodedContentRules
         ) else {
-            throw AppErr.general("Could not produce a data URL to preview this file")
+            throw AppErr.general("Could not produce a content rule list")
         }
 
         webView.configuration.userContentController.removeAllContentRuleLists()
@@ -158,9 +161,11 @@ private extension AttachmentViewController {
     }
 
     private func load() throws {
+        let encoderTrace = Trace(id: "base64 encoding")
         guard let url = URL(string: "data:\(file.name.mimeType);base64,\(file.data.base64EncodedString())") else {
             throw AppErr.general("Could not produce a data URL to preview this file")
         }
+        logger.logDebug("base64 encoding time is \(encoderTrace.finish())")
         webView.load(URLRequest(url: url))
     }
 
