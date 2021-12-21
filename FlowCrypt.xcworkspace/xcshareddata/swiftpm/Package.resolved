@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/google/GoogleSignIn-iOS",
         "state": {
           "branch": null,
-          "revision": "27bc94f5e1bd1f3b12ba5abb2230dd77dd143f1e",
-          "version": "6.0.2"
+          "revision": "60ca2bfd218ccb194a746a79b41d9d50eb7e3af0",
+          "version": "6.1.0"
         }
       },
       {
@@ -87,8 +87,8 @@
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
           "branch": null,
-          "revision": "f483fa0a52f6d49897d133a827510a35e21183c1",
-          "version": "10.20.1"
+          "revision": "e83cc9f28e8bccd477b6b81cee521c02239d2773",
+          "version": "10.20.2"
         }
       },
       {

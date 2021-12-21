@@ -2,7 +2,8 @@ import {
   SplashScreen,
   SetupKeyScreen,
   MailFolderScreen,
-  EmailScreen
+  EmailScreen,
+  SearchScreen
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -19,8 +20,8 @@ describe('INBOX: ', () => {
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
-    await MailFolderScreen.searchEmailBySubject(emailSubject);
-    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
+    await MailFolderScreen.clickSearchButton();
+    await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
   });
 });
