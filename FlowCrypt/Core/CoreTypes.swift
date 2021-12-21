@@ -9,14 +9,9 @@ struct CoreRes {
     struct Version: Decodable {
         let app_version: String
     }
-
+    
     struct ComposeEmail {
         let mimeEncoded: Data
-    }
-
-    struct ParseDecryptMsgWithoutBlocks: Decodable {
-        let replyType: ReplyType
-        let text: String
     }
 
     struct ParseDecryptMsg {
@@ -47,18 +42,18 @@ struct CoreRes {
     struct GenerateKey: Decodable {
         let key: KeyDetails
     }
-    
-    struct DecryptFile: Decodable {
-        let name: String
-        let content: Data
+        
+    struct DecryptFile {
+        let decryptSuccess: DecryptSuccess?
+        let decryptErr: DecryptErr?
+        struct DecryptSuccess {
+            let name: String
+            let data: Data
+        }
     }
     
     struct EncryptFile: Decodable {
         let encryptedFile: Data
-    }
-    
-    struct DecryptFileMeta: Decodable {
-        let name: String
     }
 
     struct Error: Decodable {
@@ -99,11 +94,11 @@ struct CoreRes {
         let word: WordDetails
         let time: String
     }
+}
 
-    enum ReplyType: String, Decodable {
-        case encrypted
-        case plain
-    }
+enum ReplyType: String, Decodable {
+    case encrypted
+    case plain
 }
 
 enum MsgFmt: String {
@@ -142,6 +137,36 @@ struct SendableMsg: Equatable {
     let signingPrv: PrvKeyInfo?
 }
 
+struct DecryptErr: Decodable {
+    let error: Error
+    let longids: Longids
+    let content: String?
+    let isEncrypted: Bool?
+
+    struct Error: Decodable {
+        let type: ErrorType
+        let message: String
+    }
+
+    struct Longids: Decodable {
+        let message: [String]
+        let matching: [String]
+        let chosen: [String]
+        let needPassphrase: [String]
+    }
+
+    enum ErrorType: String, Decodable {
+        case keyMismatch = "key_mismatch"
+        case usePassword = "use_password"
+        case wrongPwd = "wrong_password"
+        case noMdc = "no_mdc"
+        case badMdc = "bad_mdc"
+        case needPassphrase = "need_passphrase"
+        case format
+        case other
+    }
+}
+
 struct MsgBlock: Decodable {
     static func blockParseErr(with content: String) -> MsgBlock {
         MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil, attMeta: nil, verifyRes: nil)
@@ -153,38 +178,6 @@ struct MsgBlock: Decodable {
     let keyDetails: KeyDetails? // always present in publicKey BlockType
     let attMeta: AttMeta? // always present in plainAtt, encryptedAtt, decryptedAtt, encryptedAttLink
     let verifyRes: VerifyRes?
-
-    // let signature: String? // possibly not neded in Swift
-
-    struct DecryptErr: Decodable {
-        let error: Error
-        let longids: Longids
-        let content: String?
-        let isEncrypted: Bool?
-
-        struct Error: Decodable {
-            let type: ErrorType
-            let message: String
-        }
-
-        struct Longids: Decodable {
-            let message: [String]
-            let matching: [String]
-            let chosen: [String]
-            let needPassphrase: [String]
-        }
-
-        enum ErrorType: String, Decodable {
-            case keyMismatch = "key_mismatch"
-            case usePassword = "use_password"
-            case wrongPwd = "wrong_password"
-            case noMdc = "no_mdc"
-            case badMdc = "bad_mdc"
-            case needPassphrase = "need_passphrase"
-            case format
-            case other
-        }
-    }
 
     struct AttMeta: Decodable {
         let name: String

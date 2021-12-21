@@ -237,9 +237,11 @@ extension ThreadDetailsViewController {
                 )
                 if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
-                    retryVerifyingSignatureWithRemotelyFetchedKeys(message: message,
-                                                                   folder: thread.path,
-                                                                   indexPath: indexPath)
+                    retryVerifyingSignatureWithRemotelyFetchedKeys(
+                        message: message,
+                        folder: thread.path,
+                        indexPath: indexPath
+                    )
                 }
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {
@@ -333,7 +335,8 @@ extension ThreadDetailsViewController {
                     let processedMessage = try await messageService.decryptAndProcessMessage(
                         mime: rawMimeData,
                         sender: sender,
-                        onlyLocalKeys: false)
+                        onlyLocalKeys: false
+                    )
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
                     handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)

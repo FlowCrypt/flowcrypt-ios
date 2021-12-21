@@ -18,7 +18,7 @@ enum MessageFetchState {
 // MARK: - ProcessedMessage
 struct ProcessedMessage {
     enum MessageType: Hashable {
-        case error(MsgBlock.DecryptErr.ErrorType), encrypted, plain
+        case error(DecryptErr.ErrorType), encrypted, plain
     }
 
     enum MessageSignature: Hashable {
@@ -152,14 +152,18 @@ final class MessageService {
             folder: folder,
             progressHandler: progressHandler
         )
-        return try await decryptAndProcessMessage(mime: rawMimeData,
-                                                  sender: input.sender,
-                                                  onlyLocalKeys: onlyLocalKeys)
+        return try await decryptAndProcessMessage(
+            mime: rawMimeData,
+            sender: input.sender,
+            onlyLocalKeys: onlyLocalKeys
+        )
     }
 
-    func decryptAndProcessMessage(mime rawMimeData: Data,
-                                  sender: String?,
-                                  onlyLocalKeys: Bool) async throws -> ProcessedMessage {
+    func decryptAndProcessMessage(
+        mime rawMimeData: Data,
+        sender: String?,
+        onlyLocalKeys: Bool
+    ) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
@@ -176,10 +180,12 @@ final class MessageService {
             throw MessageServiceError.missingPassPhrase(rawMimeData)
         }
 
-        return try await processMessage(rawMimeData: rawMimeData,
-                                        sender: sender,
-                                        with: decrypted,
-                                        keys: keys)
+        return try await processMessage(
+            rawMimeData: rawMimeData,
+            sender: sender,
+            with: decrypted,
+            keys: keys
+        )
     }
 
     private func processMessage(
@@ -188,8 +194,8 @@ final class MessageService {
         with decrypted: CoreRes.ParseDecryptMsg,
         keys: [PrvKeyInfo]
     ) async throws -> ProcessedMessage {
-        let decryptErrBlocks = decrypted.blocks
-            .filter { $0.decryptErr != nil }
+        let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
+        let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
         let attachments: [MessageAttachment] = try await getAttachments(
             blocks: decrypted.blocks,
             keys: keys
@@ -198,15 +204,23 @@ final class MessageService {
         let text: String
         let signature: ProcessedMessage.MessageSignature?
 
-        if let decryptErrBlock = decryptErrBlocks.first {
-            let rawMsg = decryptErrBlock.content
+        if let firstBlockParseErr = firstBlockParseErr {
+            // Swift failed to parse one of the MsgBlock returned from TypeScript Core
+            text = "Internal error: could not parse MsgBlock. Please report this error to us.\n\n\(firstBlockParseErr.content)"
+            messageType = .error(.other)
+            signature = nil
+        } else if let decryptErrBlock = firstDecryptErrBlock {
+            // message failed to decrypt or process
             let err = decryptErrBlock.decryptErr?.error
+            let hideContent = err?.type == .badMdc || err?.type == .noMdc
+            let rawMsg = hideContent ? "(content hidden for security)" : decryptErrBlock.content
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
             signature = nil
         } else {
+            // decrypt / process success
             text = decrypted.text
-            messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
+            messageType = decrypted.replyType == ReplyType.encrypted ? .encrypted : .plain
             signature = await evaluateSignatureVerificationResult(
                 signature: decrypted.blocks.first?.verifyRes
             )
@@ -230,17 +244,41 @@ final class MessageService {
         var attachments: [MessageAttachment] = []
         for block in attachmentBlocks {
             guard let meta = block.attMeta else { continue }
-
             let attachment: MessageAttachment
             if block.type == .encryptedAtt { // decrypt
-                let decrypted = try await core.decryptFile(encrypted: meta.data, keys: keys, msgPwd: nil)
-                attachment = MessageAttachment(name: decrypted.name,
-                                               data: decrypted.content)
+                // todo - this is decrypting attachments too early
+                //   there is no need to decrypt attachments when rendering message,
+                //   since user may never tap them.
+                //   Instead decrypt them when actually tapped.
+                let decrypted = try await core.decryptFile(
+                    encrypted: meta.data,
+                    keys: keys,
+                    msgPwd: nil
+                )
+                if let decryptSuccess = decrypted.decryptSuccess {
+                    attachment = MessageAttachment(
+                        name: decryptSuccess.name,
+                        data: decryptSuccess.data
+                    )
+                } else if let decryptErr = decrypted.decryptErr {
+                    // todo - once above todo is done and we are decrypting
+                    //   at the time of tapping an attachment, render error modal
+                    // if user confirms the modal, they can download the original msg
+                    // then can remove the warning
+                    logger.logWarning("attachment could not be decrypted due to error: \(decryptErr.error.type) - \(decryptErr.error.message)")
+                    attachment = MessageAttachment(
+                        name: meta.name,
+                        data: meta.data
+                    )
+                } else {
+                    throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
+                }
             } else {
-                attachment = MessageAttachment(name: meta.name,
-                                               data: meta.data)
+                attachment = MessageAttachment(
+                    name: meta.name,
+                    data: meta.data
+                )
             }
-
             attachments.append(attachment)
         }
 
@@ -289,12 +327,5 @@ extension MessageService {
         guard signature.mixed != true else { return .goodMixed }
 
         return .good
-    }
-}
-
-private extension MessageAttachment {
-    init(block: MsgBlock) {
-        self.name = block.attMeta?.name ?? "Attachment"
-        self.data = block.attMeta?.data ?? Data()
     }
 }
