@@ -197,7 +197,7 @@ final class FlowCryptCoreTests: XCTestCase {
         let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase, fingerprints: k.fingerprints)]
         let decrypted = try await core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true, verificationPubKeys: [])
         XCTAssertEqual(decrypted.text, text)
-        XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.encrypted)
+        XCTAssertEqual(decrypted.replyType, ReplyType.encrypted)
         XCTAssertEqual(decrypted.blocks.count, 1)
         let b = decrypted.blocks[0]
         XCTAssertNil(b.keyDetails) // should only be present on pubkey blocks
@@ -211,7 +211,7 @@ final class FlowCryptCoreTests: XCTestCase {
         let r = try await core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false, verificationPubKeys: [])
         let decrypted = r
         XCTAssertEqual(decrypted.text, "")
-        XCTAssertEqual(decrypted.replyType, CoreRes.ReplyType.plain) // replies to errors should be plain
+        XCTAssertEqual(decrypted.replyType, ReplyType.plain) // replies to errors should be plain
         XCTAssertEqual(decrypted.blocks.count, 2)
         let contentBlock = decrypted.blocks[0]
         XCTAssertEqual(contentBlock.type, MsgBlock.BlockType.plainHtml)

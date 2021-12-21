@@ -220,7 +220,7 @@ final class MessageService {
         } else {
             // decrypt / process success
             text = decrypted.text
-            messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
+            messageType = decrypted.replyType == ReplyType.encrypted ? .encrypted : .plain
             signature = await evaluateSignatureVerificationResult(
                 signature: decrypted.blocks.first?.verifyRes
             )
