@@ -1041,7 +1041,7 @@ extension ComposeViewController {
             alert.addTextField { [weak self] textField in
                 textField.isSecureTextEntry = true
                 textField.text = self?.contextToSend.password
-                textField.accessibilityLabel = "messagePasswordTextField"
+                textField.accessibilityLabel = "aid-message-password-textfield"
             }
 
             alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel) { [weak self] _ in

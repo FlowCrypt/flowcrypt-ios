@@ -37,6 +37,7 @@ public final class MessagePasswordCellNode: CellNode {
         super.init()
 
         automaticallyManagesSubnodes = true
+        accessibilityIdentifier = "aid-message-password-cell"
 
         setupButtonNode()
     }

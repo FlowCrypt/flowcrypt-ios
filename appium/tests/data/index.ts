@@ -73,7 +73,10 @@ export const CommonData = {
     signatureBadgeText: 'not signed'
   },
   recipientWithoutPublicKey: {
-    email: 'no.publickey@flowcrypt.com'
+    email: 'no.publickey@flowcrypt.com',
+    password: '123456',
+    modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password`,
+    passwordAddedMessage: 'Web portal password added',
   },
   recipientWithExpiredPublicKey: {
     email: 'expired@flowcrypt.com'

@@ -6,7 +6,6 @@ import {
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
-import BaseScreen from "../../../screenobjects/base.screen";
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -15,7 +14,8 @@ describe('COMPOSE EMAIL: ', () => {
     const noPublicKeyRecipient = CommonData.recipientWithoutPublicKey.email;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
-    const noPublicKeyError = CommonData.errors.noPublicKey;
+    const emailPassword = CommonData.recipientWithoutPublicKey.password;
+    const modalMessage = CommonData.recipientWithoutPublicKey.modalMessage;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
@@ -26,6 +26,12 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo(noPublicKeyRecipient, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
 
-    await BaseScreen.checkErrorModal(noPublicKeyError);
+    await NewMessageScreen.checkModalText(modalMessage);
+    await NewMessageScreen.clickCancelButton();
+    await NewMessageScreen.checkPasswordCell("Tap to add password for recipients who don't have encryption set up.");
+
+    await NewMessageScreen.clickPasswordCell();
+    await NewMessageScreen.setMessagePassword(emailPassword);
+    await NewMessageScreen.checkPasswordCell("Web portal password added");
   });
 });
