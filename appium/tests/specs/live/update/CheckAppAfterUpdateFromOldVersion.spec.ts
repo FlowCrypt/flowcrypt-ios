@@ -41,6 +41,7 @@ describe('UPDATE: ', () => {
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
+    await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await OldVersionAppScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     await OldVersionAppScreen.clickBackButton();
@@ -118,6 +119,7 @@ describe('UPDATE: ', () => {
     await MenuBarScreen.clickInboxButton();
     await MailFolderScreen.checkInboxScreen();
 
+    await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await EmailScreen.enterPassPhrase(correctPassPhrase);
     await EmailScreen.clickOkButton();
