@@ -337,7 +337,6 @@
 		D2CCD1FA247C50DA00D21F9C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */; };
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
 		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */; };
-		D2CDC3CF2402D4AD002B045F /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */; };
 		D2CDC3D22402D4DA002B045F /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */; };
 		D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
 		D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */; };
@@ -467,7 +466,6 @@
 		2CC12C3E273571B80021DDDF /* AttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManager.swift; sourceTree = "<group>"; };
 		2CC50FAE27440B2C0051629A /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		2CC50FB02744167A0051629A /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
-		32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		32DCA377D22F4D67A8FA05EB /* Imap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Imap.swift; sourceTree = "<group>"; };
@@ -1892,7 +1890,6 @@
 				A37A1CF523C6254F001CF774 /* IntExtensions.swift */,
 				32DCABF1508B0C08DEDE2059 /* DispatchTimeExtension.swift */,
 				9F8277952373732000E19C07 /* UIImageExtensions.swift */,
-				32DCA058652FD4616FB04FB6 /* SequenceExtensions.swift */,
 				32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				D271774D24255F1100BDA9A9 /* UIColorExtensions.swift */,
@@ -2840,7 +2837,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2531F462402C62D007E5198 /* CollectionExtensions.swift in Sources */,
-				D2CDC3CF2402D4AD002B045F /* SequenceExtensions.swift in Sources */,
 				D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */,
 				D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */,
 				D2CDC3CE2402CDB4002B045F /* DispatchTimeExtension.swift in Sources */,

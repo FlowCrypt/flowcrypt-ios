@@ -103,7 +103,7 @@ orig message
 
 ava.default('composeEmail format:plain with attachment', async t => {
   const content = 'hello\nwrld';
-  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64')}] };
+  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{ name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(composeEmailJson);
   const plainMimeStr = plainMimeMsg.toString();
@@ -267,7 +267,7 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
 ava.default('composeEmail format:encrypt-inline with attachment', async t => {
   const content = 'hello\nwrld';
   const { pubKeys } = getKeypairs('rsa1');
-  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj', atts: [{name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
+  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj', atts: [{ name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(encryptJson);
   const encryptedMimeStr = encryptedMimeMsg.toString();
@@ -287,7 +287,7 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired' && na
     expectEmptyJson(encryptJson);
     expectData(encryptedFile);
     const { data: decryptedContent, json: decryptJson } = parseResponse(await endpoints.decryptFile({ keys }, [encryptedFile]));
-    expect(decryptJson).to.deep.equal({ success: true, name });
+    expect(decryptJson).to.deep.equal({ decryptSuccess: { name } });
     expectData(decryptedContent, 'binary', content);
     t.pass();
   });
@@ -538,7 +538,7 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-Text
   t.pass();
 });
 
-ava.default('parseDecryptMsg - decryptErr', async t => {
+ava.default('parseDecryptMsg - decryptErr wrong key when dencrypting content', async t => {
   const { keys } = getKeypairs('rsa2'); // intentional key mismatch
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')]));
   expectData(blocks, 'msgBlocks', [{
@@ -561,6 +561,28 @@ ava.default('parseDecryptMsg - decryptErr', async t => {
     "complete": true
   }]);
   expect(decryptJson).to.deep.equal({ text: '', replyType: 'plain' });
+  t.pass();
+});
+
+ava.default('decryptFile - decryptErr wrong key when decrypting attachment', async t => {
+  const jsonReq = { keys: getKeypairs('rsa2').keys }; // intentional key mismatch
+  const { json: decryptJson } = parseResponse(await endpoints.decryptFile(jsonReq, [await getCompatAsset('direct-encrypted-key-mismatch-file')]));
+  expect(decryptJson).to.deep.equal({
+    "decryptErr": {
+      "success": false,
+      "error": {
+        "type": "key_mismatch",
+        "message": "Missing appropriate key"
+      },
+      "longids": {
+        "message": ["305F81A9AED12035"],
+        "matching": [],
+        "chosen": [],
+        "needPassphrase": []
+      },
+      "isEncrypted": true
+    }
+  });
   t.pass();
 });
 
@@ -728,5 +750,15 @@ ava.default('verify signed message with detached signature by providing it corre
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).equals(true);
+  t.pass();
+});
+
+ava.default('decryptErr for not integrity protected message', async t => {
+  const { keys, pubKeys } = getKeypairs('flowcrypt.compatibility');
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-not-integrity-protected')]));
+  expect(decryptJson.replyType).equals('plain');
+  expect(decryptJson.subject).equals('not integrity protected - should show a warning and not decrypt automatically');
+  const blocks = decryptData.toString().split('\n').map(block => JSON.parse(block));
+  expect(blocks[1].decryptErr.error.type).equals('no_mdc');
   t.pass();
 });
