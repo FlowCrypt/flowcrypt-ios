@@ -9,7 +9,8 @@ import {
     KeysScreen,
     PublicKeyScreen,
     ContactScreen,
-    ContactPublicKeyScreen
+    ContactPublicKeyScreen,
+    SearchScreen
 } from '../../../screenobjects/all-screens';
 import {CommonData} from "../../../data";
 
@@ -40,8 +41,7 @@ describe('UPDATE: ', () => {
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
-    await MailFolderScreen.searchEmailBySubject(emailSubject);
-    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
+    await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await OldVersionAppScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
     await OldVersionAppScreen.clickBackButton();
 
@@ -118,8 +118,7 @@ describe('UPDATE: ', () => {
     await MenuBarScreen.clickInboxButton();
     await MailFolderScreen.checkInboxScreen();
 
-    await MailFolderScreen.searchEmailBySubject(emailSubject);
-    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
+    await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await EmailScreen.enterPassPhrase(correctPassPhrase);
     await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
