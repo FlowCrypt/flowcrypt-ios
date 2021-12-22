@@ -37,7 +37,6 @@ public final class MessagePasswordCellNode: CellNode {
         super.init()
 
         automaticallyManagesSubnodes = true
-        accessibilityIdentifier = "aid-message-password-cell"
 
         setupButtonNode()
     }
@@ -48,6 +47,7 @@ public final class MessagePasswordCellNode: CellNode {
         buttonNode.borderWidth = 1
         buttonNode.cornerRadius = 6
         buttonNode.contentHorizontalAlignment = .left
+        buttonNode.accessibilityIdentifier = "aid-message-password-cell"
         
         buttonNode.setAttributedTitle(input.text, for: .normal)
         buttonNode.setImage(input.image, for: .normal)

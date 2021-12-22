@@ -16,6 +16,8 @@ describe('COMPOSE EMAIL: ', () => {
     const emailText = CommonData.simpleEmail.message;
     const emailPassword = CommonData.recipientWithoutPublicKey.password;
     const modalMessage = CommonData.recipientWithoutPublicKey.modalMessage;
+    const emptyPasswordMessage = CommonData.recipientWithoutPublicKey.emptyPasswordMessage;
+    const addedPasswordMessage = CommonData.recipientWithoutPublicKey.addedPasswordMessage;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
@@ -28,10 +30,10 @@ describe('COMPOSE EMAIL: ', () => {
 
     await NewMessageScreen.checkModalText(modalMessage);
     await NewMessageScreen.clickCancelButton();
-    await NewMessageScreen.checkPasswordCell("Tap to add password for recipients who don't have encryption set up.");
+    await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);
 
     await NewMessageScreen.clickPasswordCell();
     await NewMessageScreen.setMessagePassword(emailPassword);
-    await NewMessageScreen.checkPasswordCell("Web portal password added");
+    await NewMessageScreen.checkPasswordCell(addedPasswordMessage);
   });
 });

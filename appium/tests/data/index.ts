@@ -75,8 +75,9 @@ export const CommonData = {
   recipientWithoutPublicKey: {
     email: 'no.publickey@flowcrypt.com',
     password: '123456',
-    modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password`,
-    passwordAddedMessage: 'Web portal password added',
+    modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)`,
+    emptyPasswordMessage: 'Tap to add password for recipients who don\'t have encryption set up.',
+    addedPasswordMessage: 'Web portal password added',
   },
   recipientWithExpiredPublicKey: {
     email: 'expired@flowcrypt.com'
