@@ -40,7 +40,7 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.clickSendButton();
     await EmailScreen.enterPassPhrase(wrongPassPhrase);
     await EmailScreen.clickOkButton();
-    await BaseScreen.checkErrorModal(wrongPassPhraseError);
+    await BaseScreen.checkModalMessage(wrongPassPhraseError);
     await BaseScreen.clickOkButtonOnError();
     //Set correct pass phrase
     await NewMessageScreen.clickSendButton();

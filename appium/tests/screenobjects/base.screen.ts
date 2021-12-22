@@ -7,7 +7,7 @@ const SELECTORS = {
   OK_BUTTON: '~OK',
   ERROR_FES_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Startup Error"`]',
   RETRY_BUTTON: '~Retry',
-  CURRENT_ERROR: '-ios predicate string:type == "XCUIElementTypeAlert"'
+  CURRENT_MODAL: '-ios predicate string:type == "XCUIElementTypeAlert"'
 };
 
 export default class BaseScreen {
@@ -22,7 +22,7 @@ export default class BaseScreen {
   }
 
   static get currentModal() {
-    return $(SELECTORS.CURRENT_ERROR);
+    return $(SELECTORS.CURRENT_MODAL);
   }
 
   waitForScreen = async (isShown = true) => {
@@ -32,10 +32,10 @@ export default class BaseScreen {
     });
   }
 
-  static checkErrorModal = async (errorText: string) => {
+  static checkModalMessage = async (message: string) => {
     await expect(await this.currentModal).toBeDisplayed();
     const alertText = await driver.getAlertText();
-    await expect(alertText).toEqual(errorText);
+    await expect(alertText).toEqual(message);
   }
 
   static clickOkButtonOnError = async () => {

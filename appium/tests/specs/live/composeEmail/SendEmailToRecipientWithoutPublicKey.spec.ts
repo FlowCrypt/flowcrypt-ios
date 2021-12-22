@@ -26,6 +26,6 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo(noPublicKeyRecipient, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
 
-    await BaseScreen.checkErrorModal(noPublicKeyError);
+    await BaseScreen.checkModalMessage(noPublicKeyError);
   });
 });
