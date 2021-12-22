@@ -116,7 +116,6 @@ class EmailScreen extends BaseScreen {
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
-    await (await this.backButton).waitForDisplayed();
     await this.checkEmailAddress(email);
     await this.checkEmailSubject(subject);
     await this.checkEmailText(text);
