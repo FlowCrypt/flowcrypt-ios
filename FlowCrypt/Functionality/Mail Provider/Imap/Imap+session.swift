@@ -13,22 +13,18 @@ import MailCore
 extension Imap {
 
     func setupSession() {
-        guard
-            let imapSession = imapSessionProvider.imapSession(),
-            let smtpSession = imapSessionProvider.smtpSession()
-        else { return }
-        logger.logInfo("Creating a new IMAP session")
-        let newImapSession = MCOIMAPSession(session: imapSession)
-        imapSess = newImapSession.log()
-        logger.logInfo("Creating a new SMTP session")
-        let newSmtpSession = MCOSMTPSession(session: smtpSession)
-        smtpSess = newSmtpSession.log()
+        guard let imapSession = imapSess, let smtpSession = smtpSess else {
+            logger.logError("No IMAP session")
+            return
+        }
+        imapSession.startLogging()
+        smtpSession.startLogging()
     }
 
     func connectSmtp(session: SMTPSession) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             MCOSMTPSession(session: session)
-                .log()
+                .startLogging()
                 .loginOperation()?
                 .start { error in
                     if let error = error {
@@ -43,7 +39,7 @@ extension Imap {
     func connectImap(session: IMAPSession) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             MCOIMAPSession(session: session)
-                .log()
+                .startLogging()
                 .connectOperation()?
                 .start { error in
                     if let error = error {
@@ -64,13 +60,12 @@ extension Imap {
                 self?.logger.logInfo("disconnect with duration \(start.finish())")
             }
         }
-        imapSess = nil
-        smtpSess = nil // smtp session has no disconnect method
     }
 }
 
 extension MCOIMAPSession {
-    func log() -> Self {
+    @discardableResult
+    func startLogging() -> Self {
         connectionLogger = { _, type, data in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
             Logger.nested("IMAP").logInfo("\(type):\(string)")
@@ -80,7 +75,8 @@ extension MCOIMAPSession {
 }
 
 extension MCOSMTPSession {
-    func log() -> Self {
+    @discardableResult
+    func startLogging() -> Self {
         connectionLogger = { _, type, data in
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
             Logger.nested("SMTP").logInfo("\(type):\(string)")
