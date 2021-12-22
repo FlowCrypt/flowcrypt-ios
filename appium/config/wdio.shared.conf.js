@@ -27,6 +27,9 @@ exports.config = {
     'spec',
     ['junit', {
       outputDir: './tmp/test-results',
+      outputFileFormat: function (options) {
+        return `wdio-${options.cid}.xml`
+      }
     }],
     [video, {
       saveAllVideos: false,       // If true, also saves videos for successful test cases
