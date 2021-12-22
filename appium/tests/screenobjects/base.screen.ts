@@ -6,7 +6,8 @@ const SELECTORS = {
   ERROR_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Error"`]',
   OK_BUTTON: '~OK',
   ERROR_FES_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Startup Error"`]',
-  RETRY_BUTTON: '~Retry'
+  RETRY_BUTTON: '~Retry',
+  CURRENT_ERROR: '-ios predicate string:type == "XCUIElementTypeAlert"'
 };
 
 export default class BaseScreen {
@@ -16,20 +17,12 @@ export default class BaseScreen {
     this.locator = selector;
   }
 
-  static get errorHeader() {
-    return $(SELECTORS.ERROR_HEADER)
-  }
-
-  static get errorFESHeader() {
-    return $(SELECTORS.ERROR_FES_HEADER)
-  }
-
   static get okButton() {
     return $(SELECTORS.OK_BUTTON);
   }
 
-  static get retryButton() {
-    return $(SELECTORS.RETRY_BUTTON)
+  static get currentModal() {
+    return $(SELECTORS.CURRENT_ERROR);
   }
 
   waitForScreen = async (isShown = true) => {
@@ -40,19 +33,9 @@ export default class BaseScreen {
   }
 
   static checkErrorModal = async (errorText: string) => {
-    const message = '-ios class chain:**/XCUIElementTypeAlert/XCUIElementTypeOther/XCUIElementTypeOther/' +
-      'XCUIElementTypeOther[2]/XCUIElementTypeScrollView[1]/XCUIElementTypeOther[1]/XCUIElementTypeStaticText[2]';//it works only with this selector
-    await expect(await this.errorHeader).toBeDisplayed();
-    expect(await (await $(message)).getAttribute('value')).toContain(errorText);
-    await expect(await this.okButton).toBeDisplayed();
-  }
-
-  static checkErrorModalForFES = async (errorText: string) => {
-    const message = '-ios class chain:**/XCUIElementTypeAlert/XCUIElementTypeOther/XCUIElementTypeOther/' +
-        'XCUIElementTypeOther[2]/XCUIElementTypeScrollView[1]/XCUIElementTypeOther[1]/XCUIElementTypeStaticText[2]';//it works only with this selector
-    await expect(await this.errorFESHeader).toBeDisplayed();
-    expect(await (await $(message)).getAttribute('value')).toContain(errorText);
-    await expect(await this.retryButton).toBeDisplayed();
+    await expect(await this.currentModal).toBeDisplayed();
+    const alertText = await driver.getAlertText();
+    await expect(alertText).toEqual(errorText);
   }
 
   static clickOkButtonOnError = async () => {
