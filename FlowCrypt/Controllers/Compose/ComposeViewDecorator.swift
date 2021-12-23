@@ -134,21 +134,21 @@ struct ComposeViewDecorator {
 extension UIColor {
     static var titleNodeBackgroundColorSelected: UIColor {
         colorFor(
-            darkStyle: .lightGray,
-            lightStyle: .black.withAlphaComponent(0.1)
+            darkStyle: lightGray,
+            lightStyle: black.withAlphaComponent(0.1)
         )
     }
 
     static var titleNodeBackgroundColor: UIColor {
         colorFor(
-            darkStyle: .darkGray.withAlphaComponent(0.5),
-            lightStyle: .white.withAlphaComponent(0.9)
+            darkStyle: darkGray.withAlphaComponent(0.5),
+            lightStyle: white.withAlphaComponent(0.9)
         )
     }
 
     static var borderColorSelected: UIColor {
         colorFor(
-            darkStyle: .white.withAlphaComponent(0.5),
+            darkStyle: white.withAlphaComponent(0.5),
             lightStyle: black.withAlphaComponent(0.4)
         )
     }

@@ -14,9 +14,11 @@ describe('COMPOSE EMAIL: ', () => {
 
     const recipientWithPasswordSupport = CommonData.recipientWithoutPublicKey.emailWithPasswordSupport;
     const recipientWithoutPasswordSupport = CommonData.recipientWithoutPublicKey.emailWithoutPasswordSupport;
+
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const emailPassword = CommonData.recipientWithoutPublicKey.password;
+
     const noPubKeyErrorMessage = CommonData.errors.noPublicKey;
     const passwordModalMessage = CommonData.recipientWithoutPublicKey.modalMessage;
     const emptyPasswordMessage = CommonData.recipientWithoutPublicKey.emptyPasswordMessage;

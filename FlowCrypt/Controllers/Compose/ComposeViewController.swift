@@ -27,7 +27,7 @@ final class ComposeViewController: TableNodeViewController {
         static let endTypingCharacters = [",", " ", "\n", ";"]
     }
 
-    enum State: Equatable {
+    enum State {
         case main, searchEmails([String])
     }
 
@@ -1022,12 +1022,12 @@ extension ComposeViewController {
 
     private func setMessagePassword() {
         Task {
-            contextToSend.password = await awaitMessagePasswordEntry()
+            contextToSend.password = await enterMessagePassword()
             node.reloadSections([Section.password.rawValue], with: .automatic)
         }
     }
 
-    private func awaitMessagePasswordEntry() async -> String? {
+    private func enterMessagePassword() async -> String? {
         return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
             let alert = UIAlertController(
                 title: "compose_password_modal_title".localized,
