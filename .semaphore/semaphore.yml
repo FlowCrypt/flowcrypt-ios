@@ -47,6 +47,7 @@ blocks:
         always:
           commands:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
+            - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
         on_fail:
           commands:
             - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
@@ -73,3 +74,9 @@ blocks:
           commands:
             - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
             - bundle exec fastlane test
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
