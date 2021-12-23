@@ -11,7 +11,8 @@ const SELECTORS = {
   SHOW_KEY_DETAILS_BUTTON: '~Show key details',
   COPY_TO_CLIPBOARD_BUTTON: '~Copy to clipboard',
   SHARE_BUTTON: '~Share',
-  SHOW_PRIVATE_KEY_BUTTON: '~Show private key'
+  SHOW_PRIVATE_KEY_BUTTON: '~Show private key',
+  BACK_BUTTON: '~aid-back-button',
 };
 
 class KeysScreen extends BaseScreen {
@@ -59,6 +60,10 @@ class KeysScreen extends BaseScreen {
     return $(SELECTORS.COPY_TO_CLIPBOARD_BUTTON);
   }
 
+  get backButton() {
+    return $(SELECTORS.BACK_BUTTON)
+  }
+
   checkKeysScreen = async () => {
     //will add value verification for key later, need to create Api request for get key value
     await (await this.keysHeader).waitForDisplayed();
@@ -85,6 +90,10 @@ class KeysScreen extends BaseScreen {
 
   clickOnShowPublicKey = async () => {
     await ElementHelper.waitAndClick(await this.showPublicKeyButton);
+  }
+
+  clickBackButton = async () => {
+    await this.backButton.click();
   }
 }
 
