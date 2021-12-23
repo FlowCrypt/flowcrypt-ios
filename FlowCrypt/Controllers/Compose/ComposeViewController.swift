@@ -328,14 +328,14 @@ extension ComposeViewController {
         search
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()
-            .compactMap { [weak self] in
-                guard $0.isNotEmpty else {
-                    self?.updateState(with: .main)
-                    return nil
-                }
-                return $0
+            .map { [weak self] query -> String in
+                if query.isEmpty { self?.updateState(with: .main) }
+                return query
             }
-            .sink(receiveValue: { [weak self] in self?.searchEmail(with: $0) })
+            .sink(receiveValue: { [weak self] in
+                guard $0.isNotEmpty else { return }
+                self?.searchEmail(with: $0)
+            })
             .store(in: &cancellable)
     }
 }
@@ -544,7 +544,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (.main, Section.attachments.rawValue):
             return contextToSend.attachments.count
         case let (.searchEmails(emails), 1):
-            return emails.isNotEmpty ? emails.count : 1
+            return emails.isNotEmpty ? emails.count + 1 : 2
         case (.searchEmails, 2):
             return cloudContactProvider.isContactsScopeEnabled ? 0 : 2
         default:
@@ -579,8 +579,9 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 }
                 return self.attachmentNode(for: indexPath.row)
             case let (.searchEmails(emails), 1):
+                guard indexPath.row > 0 else { return DividerCellNode() }
                 guard emails.isNotEmpty else { return self.noSearchResultsNode() }
-                return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row]))
+                return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row-1]))
             case (.searchEmails, 2):
                 return indexPath.row == 0 ? DividerCellNode() : self.enableGoogleContactsNode()
             default:
@@ -861,6 +862,7 @@ extension ComposeViewController {
         // reset textfield
         textField?.reset()
         node.view.keyboardDismissMode = .interactive
+        search.send("")
 
         updateState(with: .main)
     }
@@ -892,12 +894,7 @@ extension ComposeViewController {
     }
 
     private func handleEditingChanged(with text: String?) {
-        guard let text = text, text.isNotEmpty else {
-            search.send("")
-            return
-        }
-
-        search.send(text)
+        search.send(text ?? "")
     }
 
     private func handleDidBeginEditing() {
