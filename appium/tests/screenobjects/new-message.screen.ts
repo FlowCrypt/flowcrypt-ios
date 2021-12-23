@@ -190,12 +190,6 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.cancelButton);
   }
 
-  checkModalText = async (message: string) => {
-    await ElementHelper.waitElementVisible(await this.currentModal);
-    const alertText = await driver.getAlertText();
-    expect(alertText).toEqual(message);
-  }
-
   checkPasswordCell = async (text: string) => {
     await ElementHelper.checkStaticText(await this.passwordCell, text);
   }

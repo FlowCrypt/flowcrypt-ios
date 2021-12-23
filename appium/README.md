@@ -12,11 +12,13 @@
 8. use Visual Studio Code IDE for editting appium tests - be sure to open it using `File` -> `Open Workspace from File` -> `Core/flowcrypt-mobile-core.code-workspace` (don't simply open the project as a folder, because advanced IDE functionality will be missing)
 
 ## Building app for testing
-1. Manually compile build from the current code:
+#### Option 1
 - run `bundle exec fastlane build` in `flowcrypt-ios` folder
-- it will produce `appium/FlowCrypt.app` for testing
-2. Use the latest simulator build:
-- copy `FlowCrypt.app` from `/DerivedData/FlowCrypt-.../Build/Products/Debug-iphonesimulator` (In Xcode open Products folder -> FlowCrypt -> Show in Finder).
+- this will build `FlowCrypt.app` app and move it to `appium` folder.
+
+#### Option 2
+- build app with Xcode
+- copy `FlowCrypt.app` from `/DerivedData/FlowCrypt-.../Build/Products/Debug-iphonesimulator` *(In Xcode open Products folder -> FlowCrypt -> Show in Finder)*.
 
 ## Run tests
 

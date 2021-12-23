@@ -111,6 +111,14 @@ public final class TextFieldNode: ASDisplayNode {
             }
         }
     }
+    
+    public var autocapitalizationType: UITextAutocapitalizationType = .sentences {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.autocapitalizationType = self.autocapitalizationType
+            }
+        }
+    }
 
     var shouldReturn: ShouldReturnAction?
 

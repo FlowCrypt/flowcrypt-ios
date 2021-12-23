@@ -30,7 +30,7 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.composeEmail(recipientWithoutPasswordSupport, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(recipientWithoutPasswordSupport, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
-    await NewMessageScreen.checkModalText(noPubKeyErrorMessage);
+    await BaseScreen.checkModalMessage(noPubKeyErrorMessage);
     await BaseScreen.clickOkButtonOnError();
     await NewMessageScreen.clickBackButton();
 
@@ -38,7 +38,7 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.composeEmail(recipientWithPasswordSupport, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo(recipientWithPasswordSupport, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
-    await NewMessageScreen.checkModalText(passwordModalMessage);
+    await BaseScreen.checkModalMessage(passwordModalMessage);
     await NewMessageScreen.clickCancelButton();
     await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);
 
