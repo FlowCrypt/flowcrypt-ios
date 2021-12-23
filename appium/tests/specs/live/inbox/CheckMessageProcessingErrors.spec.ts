@@ -29,12 +29,16 @@ describe('INBOX: ', () => {
     const wrongChecksumEmail = CommonData.wrongChecksumEmail.senderEmail;
     const wrongChecksumText = CommonData.wrongChecksumEmail.message;
 
-    //  Const for not integrity protected message BUG:https://github.com/FlowCrypt/flowcrypt-ios/issues/1144
-    // const notIntegrityProtectedSubject = CommonData.notIntegrityProtected.subject;
-    // // const notIntegrityProtectedEmail = CommonData.notIntegrityProtected.senderEmail;
-    // // const notIntegrityProtectedText = CommonData.notIntegrityProtected.message;
-    // const notIntegrityProtectedEncryptionBadge = CommonData.notIntegrityProtected.encryptionBadgeText;
-    // const notIntegrityProtectedSignatureBadge = CommonData.notIntegrityProtected.signatureBadgeText;
+    const notIntegrityProtectedSubject = CommonData.notIntegrityProtected.subject;
+    const notIntegrityProtectedEmail = CommonData.notIntegrityProtected.senderEmail;
+    const notIntegrityProtectedText = CommonData.notIntegrityProtected.message;
+
+    const keyMismatchUnexpectedlySugject = CommonData.keyMismatchUnexpectedly.subject;
+    const keyMismatchUnexpectedlyEmail = CommonData.keyMismatchUnexpectedly.senderEmail;
+    const keyMismatchUnexpectedlyText = CommonData.keyMismatchUnexpectedly.message;
+    const keyMismatchUnexpectedlyEncryptedBadge = CommonData.keyMismatchUnexpectedly.encryptedBadgeText;
+    const keyMismatchUnexpectedlySignatureBadge= CommonData.keyMismatchUnexpectedly.signatureBadgeText;
+    const firstAttachmentName = CommonData.keyMismatchUnexpectedly.firstAttachmentName;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
@@ -66,16 +70,28 @@ describe('INBOX: ', () => {
     await EmailScreen.checkOpenedEmail(wrongChecksumEmail, wrongChecksumSubject, wrongChecksumText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
-    // Checking integrity protected message BUG:https://github.com/FlowCrypt/flowcrypt-ios/issues/1144
+    // Checking integrity protected message
+    await EmailScreen.clickBackButton();
+    await SearchScreen.clickBackButton();
+    await MailFolderScreen.checkInboxScreen();
+    await MailFolderScreen.clickSearchButton();
 
-    // await EmailScreen.clickBackButton();
-    // await SearchScreen.clickBackButton();
-    // await MailFolderScreen.checkInboxScreen();
+    await SearchScreen.searchAndClickEmailBySubject(notIntegrityProtectedSubject);
+    await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
+    await EmailScreen.checkOpenedEmail(notIntegrityProtectedEmail, notIntegrityProtectedSubject, notIntegrityProtectedText);
+    await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
-    // await MailFolderScreen.searchEmailBySubject(notIntegrityProtectedSubject);
-    // await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
-    // // await EmailScreen.checkOpenedEmail(notIntegrityProtectedEmail, notIntegrityProtectedSubject, notIntegrityProtectedText);
-    // await EmailScreen.checkEncryptionBadge(notIntegrityProtectedEncryptionBadge);
-    // await EmailScreen.checkSignatureBadge(notIntegrityProtectedSignatureBadge);
+    // Checking key mismatch unexpectedly produces a modal message
+    await EmailScreen.clickBackButton();
+    await SearchScreen.clickBackButton();
+    await MailFolderScreen.checkInboxScreen();
+    await MailFolderScreen.clickSearchButton();
+
+    await SearchScreen.searchAndClickEmailBySubject(keyMismatchUnexpectedlySugject);
+    await MailFolderScreen.clickOnEmailBySubject(keyMismatchUnexpectedlySugject);
+    await EmailScreen.checkOpenedEmail(keyMismatchUnexpectedlyEmail, keyMismatchUnexpectedlySugject, keyMismatchUnexpectedlyText);
+    await EmailScreen.checkEncryptionBadge(keyMismatchUnexpectedlyEncryptedBadge);
+    await EmailScreen.checkSignatureBadge(keyMismatchUnexpectedlySignatureBadge);
+    await EmailScreen.checkAttachment(firstAttachmentName);
   });
 });
