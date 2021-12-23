@@ -22,10 +22,17 @@ extension ComposeMessageContext {
         return password.isNotEmpty
     }
 
-    var hasRecipientsWithoutPubKeys: Bool {
-        recipients.first(where: {
-            if case .keyNotFound = $0.state { return true }
-            return false
-        }) != nil
+    func hasRecipientsWithoutPubKey(withPasswordSupport: Bool) -> Bool {
+        recipients
+            .filter {
+                if case .keyNotFound = $0.state { return true }
+                return false
+            }
+            .first(where: {
+                guard let domain = $0.email.recipientDomain else { return !withPasswordSupport }
+                let domainsWithPasswordSupport = ["flowcrypt.com"]
+                let supportsPassword = domainsWithPasswordSupport.contains(domain)
+                return withPasswordSupport == supportsPassword
+            }) != nil
     }
 }

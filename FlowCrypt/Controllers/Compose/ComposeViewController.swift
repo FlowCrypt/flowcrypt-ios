@@ -538,7 +538,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (_, Section.recipient.rawValue):
             return RecipientPart.allCases.count
         case (.main, Section.password.rawValue):
-            return contextToSend.hasRecipientsWithoutPubKeys ? 1 : 0
+            return contextToSend.hasRecipientsWithoutPubKey(withPasswordSupport: true) ? 1 : 0
         case (.main, Section.compose.rawValue):
             return ComposePart.allCases.count
         case (.main, Section.attachments.rawValue):

@@ -6,16 +6,19 @@ import {
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
+import BaseScreen from '../../../screenobjects/base.screen';
 
 describe('COMPOSE EMAIL: ', () => {
 
   it('sending message to user without public key produces modal', async () => {
 
-    const noPublicKeyRecipient = CommonData.recipientWithoutPublicKey.email;
+    const recipientWithPasswordSupport = CommonData.recipientWithoutPublicKey.emailWithPasswordSupport;
+    const recipientWithoutPasswordSupport = CommonData.recipientWithoutPublicKey.emailWithoutPasswordSupport;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const emailPassword = CommonData.recipientWithoutPublicKey.password;
-    const modalMessage = CommonData.recipientWithoutPublicKey.modalMessage;
+    const noPubKeyErrorMessage = CommonData.errors.noPublicKey;
+    const passwordModalMessage = CommonData.recipientWithoutPublicKey.modalMessage;
     const emptyPasswordMessage = CommonData.recipientWithoutPublicKey.emptyPasswordMessage;
     const addedPasswordMessage = CommonData.recipientWithoutPublicKey.addedPasswordMessage;
 
@@ -24,11 +27,18 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickCreateEmail();
-    await NewMessageScreen.composeEmail(noPublicKeyRecipient, emailSubject, emailText);
-    await NewMessageScreen.checkFilledComposeEmailInfo(noPublicKeyRecipient, emailSubject, emailText);
+    await NewMessageScreen.composeEmail(recipientWithoutPasswordSupport, emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo(recipientWithoutPasswordSupport, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
+    await NewMessageScreen.checkModalText(noPubKeyErrorMessage);
+    await BaseScreen.clickOkButtonOnError();
+    await NewMessageScreen.clickBackButton();
 
-    await NewMessageScreen.checkModalText(modalMessage);
+    await MailFolderScreen.clickCreateEmail();
+    await NewMessageScreen.composeEmail(recipientWithPasswordSupport, emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo(recipientWithPasswordSupport, emailSubject, emailText);
+    await NewMessageScreen.clickSendButton();
+    await NewMessageScreen.checkModalText(passwordModalMessage);
     await NewMessageScreen.clickCancelButton();
     await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);
 
