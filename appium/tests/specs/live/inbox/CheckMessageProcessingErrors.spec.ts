@@ -29,18 +29,22 @@ describe('INBOX: ', () => {
     const wrongChecksumEmail = CommonData.wrongChecksumEmail.senderEmail;
     const wrongChecksumText = CommonData.wrongChecksumEmail.message;
 
-    //  Const for not integrity protected message BUG:https://github.com/FlowCrypt/flowcrypt-ios/issues/1144
-    // const notIntegrityProtectedSubject = CommonData.notIntegrityProtected.subject;
-    // // const notIntegrityProtectedEmail = CommonData.notIntegrityProtected.senderEmail;
-    // // const notIntegrityProtectedText = CommonData.notIntegrityProtected.message;
-    // const notIntegrityProtectedEncryptionBadge = CommonData.notIntegrityProtected.encryptionBadgeText;
-    // const notIntegrityProtectedSignatureBadge = CommonData.notIntegrityProtected.signatureBadgeText;
+    const notIntegrityProtectedSubject = CommonData.notIntegrityProtected.subject;
+    const notIntegrityProtectedEmail = CommonData.notIntegrityProtected.senderEmail;
+    const notIntegrityProtectedText = CommonData.notIntegrityProtected.message;
+
+    const keyMismatchSubject = CommonData.keyMismatch.subject;
+    const keyMismatchEmail = CommonData.keyMismatch.senderEmail;
+    const keyMismatchText = CommonData.keyMismatch.message;
+    const keyMismatchEncryptedBadge = CommonData.keyMismatch.encryptedBadgeText;
+    const keyMismatchSignatureBadge= CommonData.keyMismatch.signatureBadgeText;
+    const firstAttachmentName = CommonData.keyMismatch.firstAttachmentName;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
-    // Checking MDC hash mismatch message
+    // Checking error for MDC hash mismatch message
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(encryptedMDCSubject);
     await EmailScreen.checkOpenedEmail(encryptedMDCEmail, encryptedMDCSubject, encryptedMDCText);
@@ -50,7 +54,7 @@ describe('INBOX: ', () => {
     await SearchScreen.clickBackButton();
     await MailFolderScreen.checkInboxScreen();
 
-    // Checking message encrypted for another public key
+    // Checking error message encrypted for another public key
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(encryptedForAnotherPublicKeySubject);
     await EmailScreen.checkOpenedEmail(encryptedForAnotherPublicKeyEmail, encryptedForAnotherPublicKeySubject, encryptedForAnotherPublicKeyText);
@@ -60,22 +64,34 @@ describe('INBOX: ', () => {
     await SearchScreen.clickBackButton();
     await MailFolderScreen.checkInboxScreen();
 
-    // Checking wrong checksum message
+    // Checking error for wrong checksum message
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(wrongChecksumSubject);
     await EmailScreen.checkOpenedEmail(wrongChecksumEmail, wrongChecksumSubject, wrongChecksumText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
-    // Checking integrity protected message BUG:https://github.com/FlowCrypt/flowcrypt-ios/issues/1144
+    // Checking error for integrity protected message
+    await EmailScreen.clickBackButton();
+    await SearchScreen.clickBackButton();
+    await MailFolderScreen.checkInboxScreen();
+    await MailFolderScreen.clickSearchButton();
 
-    // await EmailScreen.clickBackButton();
-    // await SearchScreen.clickBackButton();
-    // await MailFolderScreen.checkInboxScreen();
+    await SearchScreen.searchAndClickEmailBySubject(notIntegrityProtectedSubject);
+    await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
+    await EmailScreen.checkOpenedEmail(notIntegrityProtectedEmail, notIntegrityProtectedSubject, notIntegrityProtectedText);
+    await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
-    // await MailFolderScreen.searchEmailBySubject(notIntegrityProtectedSubject);
-    // await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
-    // // await EmailScreen.checkOpenedEmail(notIntegrityProtectedEmail, notIntegrityProtectedSubject, notIntegrityProtectedText);
-    // await EmailScreen.checkEncryptionBadge(notIntegrityProtectedEncryptionBadge);
-    // await EmailScreen.checkSignatureBadge(notIntegrityProtectedSignatureBadge);
+    // Checking if message body is rendered with key mismatch
+    await EmailScreen.clickBackButton();
+    await SearchScreen.clickBackButton();
+    await MailFolderScreen.checkInboxScreen();
+    await MailFolderScreen.clickSearchButton();
+
+    await SearchScreen.searchAndClickEmailBySubject(keyMismatchSubject);
+    await MailFolderScreen.clickOnEmailBySubject(keyMismatchSubject);
+    await EmailScreen.checkOpenedEmail(keyMismatchEmail, keyMismatchSubject, keyMismatchText);
+    await EmailScreen.checkEncryptionBadge(keyMismatchEncryptedBadge);
+    await EmailScreen.checkSignatureBadge(keyMismatchSignatureBadge);
+    await EmailScreen.checkAttachment(firstAttachmentName);
   });
 });
