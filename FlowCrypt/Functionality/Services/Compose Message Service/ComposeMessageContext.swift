@@ -12,8 +12,15 @@ struct ComposeMessageContext: Equatable {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []
     var subject: String?
-    var messagePassword: String?
     var attachments: [MessageAttachment] = []
+    var messagePassword: String? {
+        get {
+            (_messagePassword ?? "").isNotEmpty ? _messagePassword : nil
+        }
+        set { _messagePassword = newValue }
+    }
+
+    private var _messagePassword: String?
 }
 
 extension ComposeMessageContext {
