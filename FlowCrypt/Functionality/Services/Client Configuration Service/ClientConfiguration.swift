@@ -128,7 +128,7 @@ class ClientConfiguration {
             return false
         }
 
-        guard let recipientDomain = recipient.emailDomain else {
+        guard let recipientDomain = recipient.emailParts?.domain else {
             throw AppErr.general("organisational_wrong_email_error".localizeWithArguments(recipient))
         }
         return !disallowedDomains.contains(recipientDomain)

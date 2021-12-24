@@ -58,7 +58,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let email: String
     private var isMessagePasswordSupported: Bool {
-        guard let domain = email.emailDomain else { return false }
+        guard let domain = email.emailParts?.domain else { return false }
         let senderDomainsWithMessagePasswordSupport = ["flowcrypt.com"]
         return senderDomainsWithMessagePasswordSupport.contains(domain)
     }

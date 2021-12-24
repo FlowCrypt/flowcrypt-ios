@@ -117,7 +117,7 @@ final class ComposeMessageService {
     }
 
     private func isMessagePasswordSupported(for email: String) -> Bool {
-        guard let senderDomain = email.emailDomain else { return false }
+        guard let senderDomain = email.emailParts?.domain else { return false }
         let senderDomainsWithMessagePasswordSupport = ["flowcrypt.com"]
         return senderDomainsWithMessagePasswordSupport.contains(senderDomain)
     }
