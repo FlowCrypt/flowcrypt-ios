@@ -81,8 +81,7 @@ export const CommonData = {
     firstAttachmentName: 'Screenshot_20180422_125217.png.asc'
   },
   recipientWithoutPublicKey: {
-    emailWithoutPasswordSupport: 'some@gmail.com',
-    emailWithPasswordSupport: 'no.publickey@flowcrypt.com',
+    email: 'no.publickey@flowcrypt.com',
     password: '123456',
     modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)`,
     emptyPasswordMessage: 'Tap to add password for recipients who don\'t have encryption set up.',

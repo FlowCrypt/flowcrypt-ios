@@ -57,6 +57,11 @@ final class ComposeViewController: TableNodeViewController {
     private let clientConfiguration: ClientConfiguration
 
     private let email: String
+    private var isMessagePasswordSupported: Bool {
+        guard let domain = email.emailDomain else { return false }
+        let senderDomainsWithMessagePasswordSupport = ["flowcrypt.com"]
+        return senderDomainsWithMessagePasswordSupport.contains(domain)
+    }
 
     private let search = PassthroughSubject<String, Never>()
     private var cancellable = Set<AnyCancellable>()
@@ -508,11 +513,12 @@ extension ComposeViewController {
 
         let hideSpinnerAnimationDuration: TimeInterval = 1
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
-            switch error {
-            case MessageValidationError.needsMessagePassword:
-                self?.setMessagePassword()
-            default:
-                self?.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+            guard let self = self else { return }
+
+            if case MessageValidationError.missedPublicKey = error, self.isMessagePasswordSupported {
+                self.setMessagePassword()
+            } else {
+                self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
             }
         }
     }
@@ -538,7 +544,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (_, Section.recipient.rawValue):
             return RecipientPart.allCases.count
         case (.main, Section.password.rawValue):
-            return contextToSend.hasRecipientsWithoutPubKey(withPasswordSupport: true) ? 1 : 0
+            return isMessagePasswordSupported && contextToSend.hasRecipientsWithoutPubKey ? 1 : 0
         case (.main, Section.compose.rawValue):
             return ComposePart.allCases.count
         case (.main, Section.attachments.rawValue):
@@ -565,7 +571,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 case .list: return self.recipientsNode()
                 }
             case (.main, Section.password.rawValue):
-                return self.passwordNode()
+                return self.messagePasswordNode()
             case (.main, Section.compose.rawValue):
                 guard let part = ComposePart(rawValue: indexPath.row) else { return ASCellNode() }
                 switch part {
@@ -642,10 +648,10 @@ extension ComposeViewController {
         }
     }
 
-    private func passwordNode() -> ASCellNode {
-        let input = contextToSend.hasPassword
-        ? decorator.styledFilledPasswordInput()
-        : decorator.styledEmptyPasswordInput()
+    private func messagePasswordNode() -> ASCellNode {
+        let input = contextToSend.hasMessagePassword
+        ? decorator.styledFilledMessagePasswordInput()
+        : decorator.styledEmptyMessagePasswordInput()
 
         return MessagePasswordCellNode(
             input: input,
@@ -1022,7 +1028,7 @@ extension ComposeViewController {
 
     private func setMessagePassword() {
         Task {
-            contextToSend.password = await enterMessagePassword()
+            contextToSend.messagePassword = await enterMessagePassword()
             node.reloadSections([Section.password.rawValue], with: .automatic)
         }
     }
@@ -1037,12 +1043,12 @@ extension ComposeViewController {
 
             alert.addTextField { [weak self] textField in
                 textField.isSecureTextEntry = true
-                textField.text = self?.contextToSend.password
+                textField.text = self?.contextToSend.messagePassword
                 textField.accessibilityLabel = "aid-message-password-textfield"
             }
 
             alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel) { [weak self] _ in
-                return continuation.resume(returning: self?.contextToSend.password)
+                return continuation.resume(returning: self?.contextToSend.messagePassword)
             })
             alert.addAction(UIAlertAction(title: "set".localized, style: .default) { [weak alert] _ in
                 return continuation.resume(returning: alert?.textFields?[0].text)

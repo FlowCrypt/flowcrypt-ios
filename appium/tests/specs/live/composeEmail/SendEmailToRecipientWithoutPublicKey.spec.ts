@@ -10,16 +10,13 @@ import BaseScreen from '../../../screenobjects/base.screen';
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('sending message to user without public key produces modal', async () => {
+  it('sending message to user without public key produces password modal', async () => {
 
-    const recipientWithPasswordSupport = CommonData.recipientWithoutPublicKey.emailWithPasswordSupport;
-    const recipientWithoutPasswordSupport = CommonData.recipientWithoutPublicKey.emailWithoutPasswordSupport;
-
+    const recipient = CommonData.recipientWithoutPublicKey.email;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const emailPassword = CommonData.recipientWithoutPublicKey.password;
 
-    const noPubKeyErrorMessage = CommonData.errors.noPublicKey;
     const passwordModalMessage = CommonData.recipientWithoutPublicKey.modalMessage;
     const emptyPasswordMessage = CommonData.recipientWithoutPublicKey.emptyPasswordMessage;
     const addedPasswordMessage = CommonData.recipientWithoutPublicKey.addedPasswordMessage;
@@ -29,16 +26,8 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickCreateEmail();
-    await NewMessageScreen.composeEmail(recipientWithoutPasswordSupport, emailSubject, emailText);
-    await NewMessageScreen.checkFilledComposeEmailInfo(recipientWithoutPasswordSupport, emailSubject, emailText);
-    await NewMessageScreen.clickSendButton();
-    await BaseScreen.checkModalMessage(noPubKeyErrorMessage);
-    await BaseScreen.clickOkButtonOnError();
-    await NewMessageScreen.clickBackButton();
-
-    await MailFolderScreen.clickCreateEmail();
-    await NewMessageScreen.composeEmail(recipientWithPasswordSupport, emailSubject, emailText);
-    await NewMessageScreen.checkFilledComposeEmailInfo(recipientWithPasswordSupport, emailSubject, emailText);
+    await NewMessageScreen.composeEmail(recipient, emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo(recipient, emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
     await BaseScreen.checkModalMessage(passwordModalMessage);
     await NewMessageScreen.clickCancelButton();

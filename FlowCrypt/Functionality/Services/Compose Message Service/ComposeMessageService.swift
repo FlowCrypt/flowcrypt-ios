@@ -96,7 +96,7 @@ final class ComposeMessageService {
         let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
         let validPubKeys = try validate(
             recipients: recipientsWithPubKeys,
-            withMessagePassword: contextToSend.hasPassword
+            hasMessagePassword: contextToSend.hasMessagePassword
         )
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
@@ -112,8 +112,14 @@ final class ComposeMessageService {
             atts: sendableAttachments,
             pubKeys: [myPubKey] + validPubKeys,
             signingPrv: signingPrv,
-            password: contextToSend.password
+            password: contextToSend.messagePassword
         )
+    }
+
+    private func isMessagePasswordSupported(for email: String) -> Bool {
+        guard let senderDomain = email.emailDomain else { return false }
+        let senderDomainsWithMessagePasswordSupport = ["flowcrypt.com"]
+        return senderDomainsWithMessagePasswordSupport.contains(senderDomain)
     }
 
     private func getRecipientKeys(for recipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
@@ -126,31 +132,16 @@ final class ComposeMessageService {
         return recipientsWithKeys
     }
 
-    private func validate(recipients: [RecipientWithSortedPubKeys], withMessagePassword: Bool) throws -> [String] {
+    private func validate(recipients: [RecipientWithSortedPubKeys],
+                          hasMessagePassword: Bool) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.first(where: { $0.keyState == keyState }) != nil
-        }
-
-        func hasRecipientsWithoutPubKey(withPasswordSupport: Bool) -> Bool {
-            recipients
-                .filter { $0.keyState == .empty }
-                .first(where: {
-                    guard let domain = $0.email.recipientDomain else { return !withPasswordSupport }
-                    let supportsPassword = domainsWithPasswordSupport.contains(domain)
-                    return withPasswordSupport == supportsPassword
-                }) != nil
         }
 
         logger.logDebug("validate recipients: \(recipients)")
         logger.logDebug("validate recipient keyStates: \(recipients.map(\.keyState))")
 
-        let domainsWithPasswordSupport = ["flowcrypt.com"]
-
-        guard withMessagePassword || !hasRecipientsWithoutPubKey(withPasswordSupport: true) else {
-            throw MessageValidationError.needsMessagePassword
-        }
-
-        guard !hasRecipientsWithoutPubKey(withPasswordSupport: false) else {
+        guard hasMessagePassword || !contains(keyState: .empty) else {
             throw MessageValidationError.noPubRecipients
         }
 

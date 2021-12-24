@@ -12,27 +12,19 @@ struct ComposeMessageContext: Equatable {
     var message: String?
     var recipients: [ComposeMessageRecipient] = []
     var subject: String?
-    var password: String?
+    var messagePassword: String?
     var attachments: [MessageAttachment] = []
 }
 
 extension ComposeMessageContext {
-    var hasPassword: Bool {
-        guard let password = password else { return false }
-        return password.isNotEmpty
+    var hasMessagePassword: Bool {
+        (messagePassword ?? "").isNotEmpty
     }
 
-    func hasRecipientsWithoutPubKey(withPasswordSupport: Bool) -> Bool {
-        recipients
-            .filter {
-                if case .keyNotFound = $0.state { return true }
-                return false
-            }
-            .first(where: {
-                guard let domain = $0.email.recipientDomain else { return !withPasswordSupport }
-                let domainsWithPasswordSupport = ["flowcrypt.com"]
-                let supportsPassword = domainsWithPasswordSupport.contains(domain)
-                return withPasswordSupport == supportsPassword
-            }) != nil
+    var hasRecipientsWithoutPubKey: Bool {
+        recipients.first {
+            if case .keyNotFound = $0.state { return true }
+            return false
+        } != nil
     }
 }

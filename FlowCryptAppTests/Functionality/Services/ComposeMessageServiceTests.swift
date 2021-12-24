@@ -382,62 +382,6 @@ class ComposeMessageServiceTests: XCTestCase {
         }
     }
 
-    func testValidateMessageInputWithMessagePasswordSupport() async throws {
-        encryptedStorage.getKeypairsResult = [keypair]
-        contactsService.retrievePubKeysResult = { _ in return [] }
-
-        let message = "some message"
-        let subject = "Some subject"
-        let password = "123"
-        let email = "some@gmail.com"
-        let recipient = ComposeMessageRecipient(
-            email: "robot@flowcrypt.com",
-            state: recipientIdleState
-        )
-
-        do {
-            _ = try await sut.validateAndProduceSendableMsg(
-                input: ComposeMessageInput(type: .idle),
-                contextToSend: ComposeMessageContext(
-                    message: message,
-                    recipients: [recipient],
-                    subject: subject
-                ),
-                email: email,
-                signingPrv: nil
-            )
-            XCTFail("expected to throw above")
-        } catch {
-            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.needsMessagePassword)
-        }
-
-        let result = try? await sut.validateAndProduceSendableMsg(
-            input: ComposeMessageInput(type: .idle),
-            contextToSend: ComposeMessageContext(
-                message: message,
-                recipients: [recipient],
-                subject: subject,
-                password: password
-            ),
-            email: email,
-            signingPrv: nil
-        )
-        let expected = SendableMsg(
-            text: message,
-            to: [recipient.email],
-            cc: [],
-            bcc: [],
-            from: email,
-            subject: subject,
-            replyToMimeMsg: nil,
-            atts: [],
-            pubKeys: ["public key"],
-            signingPrv: nil,
-            password: password)
-
-        XCTAssertEqual(result, expected)
-    }
-
     func testSuccessfulMessageValidation() async throws {
         encryptedStorage.getKeypairsResult = [keypair]
         recipients.enumerated().forEach { element, index in
