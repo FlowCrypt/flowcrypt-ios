@@ -75,6 +75,7 @@ final class ComposeViewController: TableNodeViewController {
     private weak var saveDraftTimer: Timer?
     private var composedLatestDraft: ComposedDraft?
 
+    private var messagePasswordAlertController: UIAlertController?
     private var didLayoutSubviews = false
     private var topContentInset: CGFloat {
         navigationController?.navigationBar.frame.maxY ?? 0
@@ -1035,27 +1036,42 @@ extension ComposeViewController {
 
     private func enterMessagePassword() async -> String? {
         return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
-            let alert = UIAlertController(
-                title: "compose_password_modal_title".localized,
-                message: "compose_password_modal_message".localized,
-                preferredStyle: .alert
-            )
-
-            alert.addTextField { [weak self] textField in
-                textField.isSecureTextEntry = true
-                textField.text = self?.contextToSend.messagePassword
-                textField.accessibilityLabel = "aid-message-password-textfield"
-            }
-
-            alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel) { [weak self] _ in
-                return continuation.resume(returning: self?.contextToSend.messagePassword)
-            })
-            alert.addAction(UIAlertAction(title: "set".localized, style: .default) { [weak alert] _ in
-                return continuation.resume(returning: alert?.textFields?[0].text)
-            })
-
-            self.present(alert, animated: true, completion: nil)
+            self.messagePasswordAlertController = createMessagePasswordAlert(continuation: continuation)
+            self.present(self.messagePasswordAlertController!, animated: true, completion: nil)
         }
+    }
+
+    private func createMessagePasswordAlert(continuation: CheckedContinuation<String?, Never>) -> UIAlertController {
+        let alert = UIAlertController(
+            title: "compose_password_modal_title".localized,
+            message: "compose_password_modal_message".localized,
+            preferredStyle: .alert
+        )
+
+        alert.addTextField { [weak self] in
+            guard let self = self else { return }
+            $0.isSecureTextEntry = true
+            $0.text = self.contextToSend.messagePassword
+            $0.accessibilityLabel = "aid-message-password-textfield"
+            $0.addTarget(self, action: #selector(self.messagePasswordTextFieldDidChange), for: .editingChanged)
+        }
+
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in
+            return continuation.resume(returning: self.contextToSend.messagePassword)
+        }
+        alert.addAction(cancelAction)
+
+        let setAction = UIAlertAction(title: "set".localized, style: .default) { _ in
+            return continuation.resume(returning: alert.textFields?[0].text)
+        }
+        setAction.isEnabled = contextToSend.hasMessagePassword
+        alert.addAction(setAction)
+
+        return alert
+    }
+
+    @objc private func messagePasswordTextFieldDidChange(_ sender: UITextField) {
+        messagePasswordAlertController?.actions[1].isEnabled = (sender.text ?? "").isNotEmpty
     }
 }
 

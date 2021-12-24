@@ -25,7 +25,7 @@ struct ComposeMessageContext: Equatable {
 
 extension ComposeMessageContext {
     var hasMessagePassword: Bool {
-        (messagePassword ?? "").isNotEmpty
+        messagePassword != nil
     }
 
     var hasRecipientsWithoutPubKey: Bool {
