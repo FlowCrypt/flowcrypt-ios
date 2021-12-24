@@ -95,15 +95,17 @@ class NewMessageScreen extends BaseScreen {
 
   setAddRecipient = async (recipient: string) => {
     await (await this.addRecipientField).setValue(recipient);
-    await browser.pause(2000);
+    await browser.pause(500);
     await (await $(SELECTORS.RETURN_BUTTON)).click()
   };
 
   setSubject = async (subject: string) => {
+    await browser.pause(500);
     await ElementHelper.waitClickAndType(await this.subjectField, subject);
   };
 
   setComposeSecurityMessage = async (message: string) => {
+    await browser.pause(500);
     await (await this.composeSecurityMessage).setValue(message);
   };
 
@@ -119,6 +121,7 @@ class NewMessageScreen extends BaseScreen {
   };
 
   setAddRecipientByName = async (name: string, email: string) => {
+    await browser.pause(500); // stability fix for transition animation
     await (await this.addRecipientField).setValue(name);
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };

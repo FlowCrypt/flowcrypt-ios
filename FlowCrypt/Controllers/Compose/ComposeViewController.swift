@@ -515,7 +515,7 @@ extension ComposeViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
             guard let self = self else { return }
 
-            if case MessageValidationError.missedPublicKey = error, self.isMessagePasswordSupported {
+            if case MessageValidationError.noPubRecipients = error, self.isMessagePasswordSupported {
                 self.setMessagePassword()
             } else {
                 self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
@@ -600,7 +600,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         if case let .searchEmails(emails) = state {
             switch indexPath.section {
             case 1:
-                let selectedEmail = emails[safe: indexPath.row]
+                let selectedEmail = emails[safe: indexPath.row-1]
                 handleEndEditingAction(with: selectedEmail)
             case 2:
                 askForContactsPermission()
