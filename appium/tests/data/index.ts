@@ -72,7 +72,7 @@ export const CommonData = {
     message: 'Message is missing integrity checks (MDC). The sender should update their outdated software and resend.',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
   },
-  keyMismatchUnexpectedly: {
+  keyMismatch: {
     subject: 'key mismatch unexpectedly produces a modal',
     message: 'Here are the images for testing compatibility.',
     senderEmail: 'sunitnandi834@gmail.com',
