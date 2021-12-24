@@ -69,10 +69,16 @@ export const CommonData = {
   },
   notIntegrityProtected: {
     subject: 'not integrity protected - should show a warning and not decrypt automatically',
-    message: '',
+    message: 'Message is missing integrity checks (MDC). The sender should update their outdated software and resend.',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
-    encryptionBadgeText: 'not encrypted',
-    signatureBadgeText: 'not signed'
+  },
+  keyMismatch: {
+    subject: 'key mismatch unexpectedly produces a modal',
+    message: 'Here are the images for testing compatibility.',
+    senderEmail: 'sunitnandi834@gmail.com',
+    encryptedBadgeText: 'encrypted',
+    signatureBadgeText: 'not signed',
+    firstAttachmentName: 'Screenshot_20180422_125217.png.asc'
   },
   recipientWithoutPublicKey: {
     emailWithoutPasswordSupport: 'some@gmail.com',
