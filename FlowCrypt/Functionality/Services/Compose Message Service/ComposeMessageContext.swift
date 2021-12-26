@@ -29,9 +29,11 @@ extension ComposeMessageContext {
     }
 
     var hasRecipientsWithoutPubKey: Bool {
-        recipients.first {
-            if case .keyNotFound = $0.state { return true }
-            return false
-        } != nil
+        recipients.first { $0.keyState == .empty } != nil
+    }
+
+    var hasMessagePasswordIfNeeded: Bool {
+        guard hasRecipientsWithoutPubKey else { return true }
+        return hasMessagePassword
     }
 }

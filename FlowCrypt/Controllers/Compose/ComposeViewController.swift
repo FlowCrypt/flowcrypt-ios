@@ -409,6 +409,10 @@ extension ComposeViewController {
     private func handleSendTap() {
         Task {
             do {
+                guard contextToSend.hasMessagePasswordIfNeeded else {
+                    throw MessageValidationError.noPubRecipients
+                }
+
                 let key = try await prepareSigningKey()
                 try await sendMessage(key)
             } catch {
@@ -922,7 +926,7 @@ extension ComposeViewController {
 
     private func evaluate(recipient: ComposeMessageRecipient) {
         guard recipient.email.isValidEmail else {
-            handleEvaluation(for: recipient, with: self.decorator.recipientInvalidEmailState)
+            handleEvaluation(for: recipient, with: self.decorator.recipientInvalidEmailState, keyState: nil)
             return
         }
 
@@ -930,7 +934,7 @@ extension ComposeViewController {
             do {
                 let contact = try await service.searchContact(with: recipient.email)
                 let state = getRecipientState(from: contact)
-                handleEvaluation(for: recipient, with: state)
+                handleEvaluation(for: recipient, with: state, keyState: contact.keyState)
             } catch {
                 handleEvaluation(error: error, with: recipient)
             }
@@ -950,9 +954,12 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEvaluation(for recipient: ComposeMessageRecipient, with state: RecipientState) {
+    private func handleEvaluation(for recipient: ComposeMessageRecipient,
+                                  with state: RecipientState,
+                                  keyState: PubKeyState?) {
         updateRecipientWithNew(
             state: state,
+            keyState: keyState,
             for: .left(recipient)
         )
     }
@@ -969,11 +976,14 @@ extension ComposeViewController {
 
         updateRecipientWithNew(
             state: recipientState,
+            keyState: nil,
             for: .left(recipient)
         )
     }
 
-    private func updateRecipientWithNew(state: RecipientState, for context: Either<ComposeMessageRecipient, IndexPath>) {
+    private func updateRecipientWithNew(state: RecipientState,
+                                        keyState: PubKeyState?,
+                                        for context: Either<ComposeMessageRecipient, IndexPath>) {
         let index: Int? = {
             switch context {
             case let .left(recipient):
@@ -985,6 +995,7 @@ extension ComposeViewController {
 
         guard let recipientIndex = index else { return }
         contextToSend.recipients[recipientIndex].state = state
+        contextToSend.recipients[recipientIndex].keyState = keyState
 
         node.reloadSections([Section.password.rawValue], with: .automatic)
         node.reloadRows(at: [recipientsIndexPath], with: .automatic)
@@ -1018,7 +1029,9 @@ extension ComposeViewController {
             break
         case let .error(_, isRetryError):
             if isRetryError {
-                updateRecipientWithNew(state: decorator.recipientIdleState, for: .right(indexPath))
+                updateRecipientWithNew(state: decorator.recipientIdleState,
+                                       keyState: nil,
+                                       for: .right(indexPath))
                 evaluate(recipient: recipient)
             } else {
                 contextToSend.recipients.remove(at: indexPath.row)

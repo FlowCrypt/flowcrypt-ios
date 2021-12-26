@@ -11,6 +11,7 @@ import Foundation
 struct ComposeMessageRecipient {
     let email: String
     var state: RecipientState
+    var keyState: PubKeyState?
 }
 
 extension ComposeMessageRecipient: Equatable {
