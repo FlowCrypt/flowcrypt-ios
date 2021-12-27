@@ -57,7 +57,7 @@ extension URLSession {
     }
 }
 
-enum HTTPMetod: String {
+enum HTTPMethod: String {
     case put = "PUT"
     case get = "GET"
     case post = "POST"
@@ -71,7 +71,7 @@ struct URLHeader {
 extension URLRequest {
     static func urlRequest(
         with url: URL,
-        method: HTTPMetod = .get,
+        method: HTTPMethod = .get,
         body: Data? = nil,
         headers: [URLHeader] = []
     ) -> URLRequest {

@@ -72,7 +72,7 @@ extension AttesterApi {
 
     @discardableResult
     func update(email: String, pubkey: String, token: String?) async throws -> String {
-        let httpMethod: HTTPMetod
+        let httpMethod: HTTPMethod
         let headers: [URLHeader]
         if let value = token {
             httpMethod = .post
