@@ -24,6 +24,21 @@ struct ComposeMessageContext: Equatable {
 }
 
 extension ComposeMessageContext {
+    init(message: String? = nil,
+         recipients: [ComposeMessageRecipient] = [],
+         subject: String? = nil,
+         attachments: [MessageAttachment] = [],
+         messagePassword: String? = nil
+    ) {
+        self.message = message
+        self.recipients = recipients
+        self.subject = subject
+        self.attachments = attachments
+        self.messagePassword = messagePassword
+    }
+}
+
+extension ComposeMessageContext {
     var hasMessagePassword: Bool {
         messagePassword != nil
     }

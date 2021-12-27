@@ -33,6 +33,14 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.clickCancelButton();
     await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);
 
+    await NewMessageScreen.deleteAddedRecipient(0, 'gray');
+
+    await NewMessageScreen.setAddRecipient(recipient);
+    await NewMessageScreen.clickSendButton();
+    await BaseScreen.checkModalMessage(passwordModalMessage);
+    await NewMessageScreen.clickCancelButton();
+    await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);
+
     await NewMessageScreen.clickPasswordCell();
     await NewMessageScreen.setMessagePassword(emailPassword);
     await NewMessageScreen.checkPasswordCell(addedPasswordMessage);

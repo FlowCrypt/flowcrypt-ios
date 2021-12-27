@@ -165,6 +165,12 @@ class NewMessageScreen extends BaseScreen {
     expect(name).toEqual(`  ${recipient}  `);
   }
 
+  deleteAddedRecipient = async (order: number, color: string) => {
+    const addedRecipientEl = await $(`~aid-to-${order}-${color}`);
+    await ElementHelper.waitAndClick(addedRecipientEl);
+    await driver.sendKeys(['\b']); // backspace
+  }
+
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();
     const label = await this.attachmentNameLabel;

@@ -887,7 +887,8 @@ extension ComposeViewController {
         guard selectedRecipients.isEmpty else {
             // remove selected recipients
             contextToSend.recipients = recipients.filter { !$0.state.isSelected }
-            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+            node.reloadSections([Section.recipient.rawValue, Section.password.rawValue],
+                                with: .automatic)
             return
         }
 
