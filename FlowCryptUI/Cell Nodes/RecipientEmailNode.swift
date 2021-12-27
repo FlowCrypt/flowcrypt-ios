@@ -57,8 +57,8 @@ final class RecipientEmailNode: CellNode {
                 break
             }
         }
-        imageNode.addTarget(self, action: #selector(handleTap(_:)), forControlEvents: .touchUpInside)
-        titleNode.addTarget(self, action: #selector(handleTap(_:)), forControlEvents: .touchUpInside)
+        imageNode.addTarget(self, action: #selector(handleTap), forControlEvents: .touchUpInside)
+        titleNode.addTarget(self, action: #selector(handleTap), forControlEvents: .touchUpInside)
     }
 
     @objc private func handleTap(_ sender: ASDisplayNode) {

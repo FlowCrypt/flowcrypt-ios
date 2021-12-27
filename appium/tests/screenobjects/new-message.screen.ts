@@ -10,12 +10,18 @@ const SELECTORS = {
     '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
     '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
     '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
+  PASSWORD_CELL: '~aid-message-password-cell',
   ATTACHMENT_CELL: '~aid-attachment-cell-0',
   ATTACHMENT_NAME_LABEL: '~aid-attachment-title-label-0',
   DELETE_ATTACHMENT_BUTTON: '~aid-attachment-delete-button-0',
   RETURN_BUTTON: '~Return',
+  SET_PASSWORD_BUTTON: '~Set',
+  CANCEL_BUTTON: '~Cancel',
   BACK_BUTTON: '~aid-back-button',
   SEND_BUTTON: '~aid-compose-send',
+  MESSAGE_PASSWORD_MODAL: '~aid-message-password-modal',
+  MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
+  ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'"
 };
 
 class NewMessageScreen extends BaseScreen {
@@ -63,17 +69,43 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.SEND_BUTTON);
   }
 
+  get passwordCell() {
+    return $(SELECTORS.PASSWORD_CELL);
+  }
+
+  get passwordModal() {
+    return $(SELECTORS.MESSAGE_PASSWORD_MODAL);
+  }
+
+  get currentModal() {
+    return $(SELECTORS.ALERT);
+  }
+
+  get passwordTextField() {
+    return $(SELECTORS.MESSAGE_PASSWORD_TEXTFIELD);
+  }
+
+  get setPasswordButton() {
+    return $(SELECTORS.SET_PASSWORD_BUTTON);
+  }
+
+  get cancelButton() {
+    return $(SELECTORS.CANCEL_BUTTON);
+  }
+
   setAddRecipient = async (recipient: string) => {
     await (await this.addRecipientField).setValue(recipient);
-    await browser.pause(2000);
+    await browser.pause(500);
     await (await $(SELECTORS.RETURN_BUTTON)).click()
   };
 
   setSubject = async (subject: string) => {
+    await browser.pause(500);
     await ElementHelper.waitClickAndType(await this.subjectField, subject);
   };
 
   setComposeSecurityMessage = async (message: string) => {
+    await browser.pause(500);
     await (await this.composeSecurityMessage).setValue(message);
   };
 
@@ -89,6 +121,7 @@ class NewMessageScreen extends BaseScreen {
   };
 
   setAddRecipientByName = async (name: string, email: string) => {
+    await browser.pause(500); // stability fix for transition animation
     await (await this.addRecipientField).setValue(name);
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
@@ -132,6 +165,12 @@ class NewMessageScreen extends BaseScreen {
     expect(name).toEqual(`  ${recipient}  `);
   }
 
+  deleteAddedRecipient = async (order: number, color: string) => {
+    const addedRecipientEl = await $(`~aid-to-${order}-${color}`);
+    await ElementHelper.waitAndClick(addedRecipientEl);
+    await driver.sendKeys(['\b']); // backspace
+  }
+
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();
     const label = await this.attachmentNameLabel;
@@ -150,6 +189,27 @@ class NewMessageScreen extends BaseScreen {
 
   clickSendButton = async () => {
     await ElementHelper.waitAndClick(await this.sendButton);
+  }
+
+  clickSetPasswordButton = async () => {
+    await ElementHelper.waitAndClick(await this.setPasswordButton);
+  }
+
+  clickCancelButton = async () => {
+    await ElementHelper.waitAndClick(await this.cancelButton);
+  }
+
+  checkPasswordCell = async (text: string) => {
+    await ElementHelper.checkStaticText(await this.passwordCell, text);
+  }
+
+  clickPasswordCell = async () => {
+    await ElementHelper.waitAndClick(await this.passwordCell);
+  }
+
+  setMessagePassword = async (password: string) => {
+    await (await this.passwordTextField).setValue(password);
+    await this.clickSetPasswordButton();
   }
 }
 

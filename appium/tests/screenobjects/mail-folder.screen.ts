@@ -74,6 +74,7 @@ class MailFolderScreen extends BaseScreen {
   }
 
   clickCreateEmail = async () => {
+    await browser.pause(500);
     const elem = await this.createEmailButton;
     if ((await elem.isDisplayed()) !== true) {
       await TouchHelper.scrollDownToElement(elem);

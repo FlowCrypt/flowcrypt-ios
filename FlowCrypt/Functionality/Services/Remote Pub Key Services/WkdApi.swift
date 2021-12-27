@@ -42,7 +42,8 @@ class WkdApi: WkdApiType {
 
     func lookup(email: String) async throws -> [KeyDetails] {
         guard
-            !EnterpriseServerApi.publicEmailProviderDomains.contains(email.recipientDomain ?? ""),
+            let domain = email.emailParts?.domain,
+            !EnterpriseServerApi.publicEmailProviderDomains.contains(domain),
             let advancedUrl = urlConstructor.construct(from: email, method: .advanced),
             let directUrl = urlConstructor.construct(from: email, method: .direct)
         else {
