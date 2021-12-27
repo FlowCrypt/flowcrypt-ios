@@ -62,7 +62,7 @@ struct ComposeViewDecorator {
         InfoCellNode.Input(
             attributedText: email.attributed(
                 .medium(17),
-                color: UIColor.mainTextColor.withAlphaComponent(0.8),
+                color: .mainTextColor.withAlphaComponent(0.8),
                 alignment: .left
             ),
             image: nil,
@@ -98,10 +98,36 @@ struct ComposeViewDecorator {
         return (text + message).attributed(.regular(17))
     }
 
+    func styledEmptyMessagePasswordInput() -> MessagePasswordCellNode.Input {
+        messagePasswordInput(
+            text: "compose_password_placeholder".localized,
+            color: .warningColor,
+            imageName: "lock"
+        )
+    }
+
+    func styledFilledMessagePasswordInput() -> MessagePasswordCellNode.Input {
+        messagePasswordInput(
+            text: "compose_password_set_message".localized,
+            color: .main,
+            imageName: "checkmark.circle"
+        )
+    }
+
+    private func messagePasswordInput(text: String,
+                                      color: UIColor,
+                                      imageName: String) -> MessagePasswordCellNode.Input {
+        .init(
+            text: text.attributed(.regular(14), color: color),
+            color: color,
+            image: UIImage(systemName: imageName)?.tinted(color)
+        )
+    }
+
     func frame(for string: NSAttributedString,
                insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)) -> CGRect {
         let width = UIScreen.main.bounds.width - insets.left - insets.right
-        let maxSize = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
+        let maxSize = CGSize(width: width, height: .greatestFiniteMagnitude)
         return string.boundingRect(with: maxSize,
                                    options: [.usesLineFragmentOrigin, .usesFontLeading],
                                    context: nil)
@@ -111,30 +137,30 @@ struct ComposeViewDecorator {
 // MARK: - Color
 extension UIColor {
     static var titleNodeBackgroundColorSelected: UIColor {
-        UIColor.colorFor(
-            darkStyle: UIColor.lightGray,
-            lightStyle: UIColor.black.withAlphaComponent(0.1)
+        colorFor(
+            darkStyle: lightGray,
+            lightStyle: black.withAlphaComponent(0.1)
         )
     }
 
     static var titleNodeBackgroundColor: UIColor {
-        UIColor.colorFor(
-            darkStyle: UIColor.darkGray.withAlphaComponent(0.5),
-            lightStyle: UIColor.white.withAlphaComponent(0.9)
+        colorFor(
+            darkStyle: darkGray.withAlphaComponent(0.5),
+            lightStyle: white.withAlphaComponent(0.9)
         )
     }
 
     static var borderColorSelected: UIColor {
-        UIColor.colorFor(
-            darkStyle: UIColor.white.withAlphaComponent(0.5),
+        colorFor(
+            darkStyle: white.withAlphaComponent(0.5),
             lightStyle: black.withAlphaComponent(0.4)
         )
     }
 
     static var borderColor: UIColor {
-        UIColor.colorFor(
-            darkStyle: UIColor.white.withAlphaComponent(0.5),
-            lightStyle: UIColor.black.withAlphaComponent(0.3)
+        colorFor(
+            darkStyle: white.withAlphaComponent(0.5),
+            lightStyle: black.withAlphaComponent(0.3)
         )
     }
 }

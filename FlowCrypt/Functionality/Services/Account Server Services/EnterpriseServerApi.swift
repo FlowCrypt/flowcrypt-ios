@@ -61,7 +61,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
     func getActiveFesUrl(for email: String) async throws -> String? {
         do {
-            guard let userDomain = email.recipientDomain,
+            guard let userDomain = email.emailParts?.domain,
                   !EnterpriseServerApi.publicEmailProviderDomains.contains(userDomain) else {
                 return nil
             }
@@ -94,7 +94,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     }
 
     func getClientConfiguration(for email: String) async throws -> RawClientConfiguration {
-        guard let userDomain = email.recipientDomain else {
+        guard let userDomain = email.emailParts?.domain else {
             throw EnterpriseServerApiError.emailFormat
         }
 

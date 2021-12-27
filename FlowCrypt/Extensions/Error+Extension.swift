@@ -12,7 +12,7 @@ extension Error {
     var errorMessage: String {
         switch self {
         case let self as CustomStringConvertible:
-            return self.description
+            return String(describing: self)
         default:
             return localizedDescription
         }

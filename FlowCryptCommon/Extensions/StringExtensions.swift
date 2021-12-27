@@ -61,27 +61,9 @@ public extension NSAttributedString {
 
 // MARK: Email parsing
 public extension String {
-    var userAndRecipientDomain: (user: String, domain: String)? {
+    var emailParts: (username: String, domain: String)? {
         let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
+        guard parts.count == 2 else { return nil }
         return (String(parts[0]), String(parts[1]))
-    }
-    
-    var userEmail: String? {
-        let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
-        return String(parts[0])
-    }
-    
-    var recipientDomain: String? {
-        let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
-        return String(parts[1])
     }
 }
