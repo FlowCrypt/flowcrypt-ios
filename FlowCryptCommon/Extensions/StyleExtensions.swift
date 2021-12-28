@@ -53,15 +53,6 @@ public extension String {
     }
 }
 
-public extension UIColor {
-    static var textColor: UIColor {
-        UIColor.colorFor(
-            darkStyle: .white,
-            lightStyle: .black
-        )
-    }
-}
-
 public extension NSAttributedString {
     func mutable() -> NSMutableAttributedString {
         return NSMutableAttributedString(attributedString: self)

@@ -47,7 +47,11 @@ public extension String {
     }
     
     var deletingPathExtension: String {
-        return NSString(string: self).deletingPathExtension as String
+        NSString(string: self).deletingPathExtension as String
+    }
+
+    func capitalizingFirstLetter() -> String {
+        prefix(1).uppercased() + self.lowercased().dropFirst()
     }
 }
 
@@ -61,6 +65,12 @@ public extension NSAttributedString {
 
 // MARK: Email parsing
 public extension String {
+    var isValidEmail: Bool {
+        let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
+        return emailPredicate.evaluate(with: self)
+    }
+    
     var userAndRecipientDomain: (user: String, domain: String)? {
         let parts = self.split(separator: "@")
         if parts.count != 2 {

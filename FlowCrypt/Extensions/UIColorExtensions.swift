@@ -9,15 +9,18 @@
 import UIKit
 
 // Uncomment for FlowCrypt application
-extension UIColor {
+public extension UIColor {
     static var main: UIColor {
         UIColor(r: 36, g: 156, b: 6, alpha: 1)
     }
 
     static var textColor: UIColor {
-        UIColor(r: 57, g: 57, b: 57, alpha: 1)
+        UIColor.colorFor(
+            darkStyle: .white,
+            lightStyle: .black
+        )
     }
-
+    
     static var warningColor: UIColor {
         UIColor(r: 194, g: 126, b: 35)
     }
@@ -77,37 +80,11 @@ extension UIColor {
     }
 }
 
-// Uncomment for FlowCryptUIApplication
-// extension UIColor {
-//    static var main: UIColor {
-//        .green
-//    }
-//
-//    static var textColor: UIColor {
-//        .darkGray
-//    }
-//
-//    static var mainTextColor: UIColor {
-//        .black
-//    }
-//
-//    static var backgroundColor: UIColor {
-//        .white
-//    }
-//
-//    static var dividerColor: UIColor {
-//        .black
-//    }
-//
-//    static var mainTextUnreadColor: UIColor {
-//        .black
-//    }
-//
-//    static var activityIndicatorColor: UIColor {
-//        .black
-//    }
-//
-//    static var blueColor: UIColor {
-//        .blue
-//    }
-// }
+public extension UIColor {
+    static func colorFor(darkStyle: UIColor, lightStyle: UIColor) -> UIColor {
+        switch UITraitCollection.current.userInterfaceStyle {
+        case .dark: return darkStyle
+        default: return lightStyle
+        }
+    }
+}

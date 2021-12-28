@@ -71,3 +71,28 @@ extension AppErr {
         }
     }
 }
+
+extension UIViewController {
+    private func errorToUserFriendlyString(error: Error, title: String) -> String? {
+        // todo - more intelligent handling of HttpErr
+        do {
+            throw error
+        } catch let AppErr.user(userErr) {
+            // if this is AppErr.user, show only the content of the message to the user, not info about the exception
+            return "\(title)\n\n\(userErr)"
+        } catch AppErr.silentAbort { // don't show any alert
+            return nil
+        } catch {
+            return "\(title)\n\n\(error)"
+        }
+    }
+
+    func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
+        guard let formatted = errorToUserFriendlyString(error: error, title: message) else {
+            hideSpinner()
+            onOk?()
+            return // silent abort
+        }
+        showAlert(message: formatted, onOk: onOk)
+    }
+}
