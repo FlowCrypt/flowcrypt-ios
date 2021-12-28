@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Error {
+public extension Error {
     var errorMessage: String {
         switch self {
         case let self as CustomStringConvertible:

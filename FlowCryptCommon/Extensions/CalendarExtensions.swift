@@ -9,8 +9,7 @@
 import Foundation
 
 public extension Calendar {
-    
     func isDateInCurrentYear(_ date: Date) -> Bool {
-        return self.isDate(date, equalTo: Date(), toGranularity: .year)
+        self.isDate(date, equalTo: Date(), toGranularity: .year)
     }
 }

@@ -6,6 +6,7 @@
 import AppAuth
 import UIKit
 import GTMAppAuth
+import FlowCryptCommon
 
 class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssionContainer {
     var blurViewController: BlurViewController?

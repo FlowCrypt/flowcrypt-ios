@@ -7,6 +7,7 @@
 //
 
 import MailCore
+import FlowCryptCommon
 
 protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) async throws -> String?
