@@ -8,11 +8,9 @@
 
 import Foundation
 
-extension CommandLine {
-
+public extension CommandLine {
     static func isDebugBundleWithArgument(_ argument: String) -> Bool {
         guard Bundle.flowCryptBundleType == .debug else { return false }
         return CommandLine.arguments.contains(argument)
     }
-
 }

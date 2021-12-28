@@ -13,3 +13,11 @@ public extension Calendar {
         self.isDate(date, equalTo: Date(), toGranularity: .year)
     }
 }
+
+public extension Bundle {
+    
+    static var flowCryptBundleTypeExtension: String {
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return "aaa" }
+        return bundleIdentifier ?? "N?A"
+    }
+}
