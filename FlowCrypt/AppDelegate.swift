@@ -8,6 +8,7 @@ import UIKit
 import GTMAppAuth
 import FlowCryptCommon
 
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssionContainer {
     var blurViewController: BlurViewController?
     var googleAuthSession: OIDExternalUserAgentSession?
