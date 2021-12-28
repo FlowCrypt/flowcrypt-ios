@@ -135,6 +135,7 @@ struct SendableMsg: Equatable {
     let atts: [Attachment]
     let pubKeys: [String]?
     let signingPrv: PrvKeyInfo?
+    let password: String?
 }
 
 struct DecryptErr: Decodable {

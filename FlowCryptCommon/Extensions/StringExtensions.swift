@@ -94,4 +94,10 @@ public extension String {
         }
         return String(parts[1])
     }
+    
+    var emailParts: (username: String, domain: String)? {
+        let parts = self.split(separator: "@")
+        guard parts.count == 2 else { return nil }
+        return (String(parts[0]), String(parts[1]))
+    }
 }
