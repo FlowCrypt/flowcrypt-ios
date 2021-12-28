@@ -77,14 +77,11 @@
 		51B4AE5327144E590001F33B /* PubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE5227144E590001F33B /* PubKey.swift */; };
 		51B9EE6F27567B520080B2D5 /* MessageRecipientsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */; };
 		51C0C1EF271982A1000C9738 /* MailCore in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1EE271982A1000C9738 /* MailCore */; };
-		51C0C1F2271987DB000C9738 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1F1271987DB000C9738 /* Toast */; };
 		51DA5BD62721AB07001C4359 /* PubKeyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD52721AB07001C4359 /* PubKeyState.swift */; };
 		51DA5BDA2722C82E001C4359 /* RecipientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD92722C82E001C4359 /* RecipientTests.swift */; };
 		51DAD9BD273E7DD20076CBA7 /* BadgeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */; };
 		51DE2FEE2714DA0400916222 /* ContactKeyCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DE2FED2714DA0400916222 /* ContactKeyCellNode.swift */; };
 		51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */; };
-		51E13F15270F92F200F287CA /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F14270F92F200F287CA /* BigInt */; };
-		51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F17270F934C00F287CA /* MBProgressHUD */; };
 		51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 51E1673C270DAFF900D27C52 /* Localizable.stringsdict */; };
 		51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */; };
 		51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16748270F303100D27C52 /* GoogleSignIn */; };
@@ -792,16 +789,13 @@
 			files = (
 				D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */,
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
-				51E13F15270F92F200F287CA /* BigInt in Frameworks */,
 				51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */,
 				51E1675D270F36A400D27C52 /* Realm in Frameworks */,
 				51C0C1EF271982A1000C9738 /* MailCore in Frameworks */,
 				51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */,
-				51E13F18270F934C00F287CA /* MBProgressHUD in Frameworks */,
 				5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
-				51C0C1F2271987DB000C9738 /* Toast in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2161,11 +2155,8 @@
 				51E1675C270F36A400D27C52 /* Realm */,
 				51E1675E270F36A400D27C52 /* RealmSwift */,
 				51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */,
-				51E13F14270F92F200F287CA /* BigInt */,
-				51E13F17270F934C00F287CA /* MBProgressHUD */,
 				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
 				51C0C1EE271982A1000C9738 /* MailCore */,
-				51C0C1F1271987DB000C9738 /* Toast */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -3816,25 +3807,10 @@
 			package = 51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */;
 			productName = MailCore;
 		};
-		51C0C1F1271987DB000C9738 /* Toast */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */;
-			productName = Toast;
-		};
 		51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */;
 			productName = IDZSwiftCommonCrypto;
-		};
-		51E13F14270F92F200F287CA /* BigInt */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51E13F13270F92F100F287CA /* XCRemoteSwiftPackageReference "BigInt" */;
-			productName = BigInt;
-		};
-		51E13F17270F934C00F287CA /* MBProgressHUD */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
-			productName = MBProgressHUD;
 		};
 		51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */ = {
 			isa = XCSwiftPackageProductDependency;
