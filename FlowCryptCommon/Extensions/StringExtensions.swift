@@ -71,30 +71,6 @@ public extension String {
         return emailPredicate.evaluate(with: self)
     }
     
-    var userAndRecipientDomain: (user: String, domain: String)? {
-        let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
-        return (String(parts[0]), String(parts[1]))
-    }
-    
-    var userEmail: String? {
-        let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
-        return String(parts[0])
-    }
-    
-    var recipientDomain: String? {
-        let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
-        return String(parts[1])
-    }
-    
     var emailParts: (username: String, domain: String)? {
         let parts = self.split(separator: "@")
         guard parts.count == 2 else { return nil }
