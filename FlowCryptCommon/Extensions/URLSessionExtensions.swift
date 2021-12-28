@@ -2,29 +2,39 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import FlowCryptCommon
 import Foundation
 
-struct HttpRes {
-    let status: Int
-    let data: Data
-}
-
-struct HttpErr: Error {
-    let status: Int
-    let data: Data?
-    let error: Error?
-}
-
-private func toString(_ trace: Trace) -> String {
-    let result = trace.result()
-    if result < 1.0 {
-        return "ms:\(Int(1000 * result))"
+public struct HttpRes {
+    public let status: Int
+    public let data: Data
+    
+    public init(status: Int, data: Data) {
+        self.status = status
+        self.data = data
     }
-    return "s:\(Int(result))"
 }
 
-extension URLSession {
+public struct HttpErr: Error {
+    public let status: Int
+    public let data: Data?
+    public let error: Error?
+    
+    public init(status: Int, data: Data?, error: Error?) {
+        self.status = status
+        self.data = data
+        self.error = error
+    }
+}
+
+public enum HTTPMethod: String {
+    case put = "PUT"
+    case get = "GET"
+    case post = "POST"
+}
+
+public extension URLSession {
+    static let generalError = -1
+    
     func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
         let trace = Trace(id: "call")
 
@@ -38,7 +48,7 @@ extension URLSession {
         }
 
         let res = response as? HTTPURLResponse
-        let status = res?.statusCode ?? GeneralConstants.Global.generalError
+        let status = res?.statusCode ?? Self.generalError
         let urlMethod = urlRequest.httpMethod ?? "GET"
         let urlString = urlRequest.url?.stringWithFilteredTokens ?? "??"
         let headers = urlRequest.headersWithFilteredTokens
@@ -55,20 +65,27 @@ extension URLSession {
             throw HttpErr(status: status, data: data, error: requestError)
         }
     }
+    
+    private func toString(_ trace: Trace) -> String {
+        let result = trace.result()
+        if result < 1.0 {
+            return "ms:\(Int(1000 * result))"
+        }
+        return "s:\(Int(result))"
+    }
 }
 
-enum HTTPMethod: String {
-    case put = "PUT"
-    case get = "GET"
-    case post = "POST"
-}
-
-struct URLHeader {
+public struct URLHeader {
+    public init(value: String, httpHeaderField: String) {
+        self.value = value
+        self.httpHeaderField = httpHeaderField
+    }
+    
     let value: String
     let httpHeaderField: String
 }
 
-extension URLRequest {
+public extension URLRequest {
     static func urlRequest(
         with url: URL,
         method: HTTPMethod = .get,

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FlowCryptCommon
 
 protocol EmailKeyManagerApiType {
     func getPrivateKeys(idToken: String) async throws -> EmailKeyManagerApiResult

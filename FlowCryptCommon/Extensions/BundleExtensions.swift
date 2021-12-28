@@ -9,9 +9,9 @@
 import Foundation
 
 enum FlowCryptBundleType: String {
-    case debug = "com.flowcrypt.as.ios.debug",
-         consumer = "com.flowcrypt.as.ios.consumer",
-         enterprise = "com.flowcrypt.as.ios.enterprise"
+    case debug = "com.flowcrypt.as.ios.debug"
+    case consumer = "com.flowcrypt.as.ios.consumer"
+    case enterprise = "com.flowcrypt.as.ios.enterprise"
 }
 
 extension Bundle {

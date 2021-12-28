@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import FlowCryptCommon
 
 protocol AttesterApiType {
     func lookup(email: String) async throws -> [KeyDetails]

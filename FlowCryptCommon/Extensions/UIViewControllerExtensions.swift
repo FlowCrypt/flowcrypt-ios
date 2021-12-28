@@ -8,10 +8,11 @@
 
 import Toast
 import UIKit
+import MBProgressHUD
 
-typealias ShowToastCompletion = (Bool) -> Void
+public typealias ShowToastCompletion = (Bool) -> Void
 
-extension UIViewController {
+public extension UIViewController {
     /// Showing toast on root controller
     ///
     /// - Parameters:
@@ -47,30 +48,7 @@ extension UIViewController {
     }
 }
 
-extension UIViewController {
-    private func errorToUserFriendlyString(error: Error, title: String) -> String? {
-        // todo - more intelligent handling of HttpErr
-        do {
-            throw error
-        } catch let AppErr.user(userErr) {
-            // if this is AppErr.user, show only the content of the message to the user, not info about the exception
-            return "\(title)\n\n\(userErr)"
-        } catch AppErr.silentAbort { // don't show any alert
-            return nil
-        } catch {
-            return "\(title)\n\n\(error)"
-        }
-    }
-
-    func showAlert(error: Error, message: String, onOk: (() -> Void)? = nil) {
-        guard let formatted = errorToUserFriendlyString(error: error, title: message) else {
-            hideSpinner()
-            onOk?()
-            return // silent abort
-        }
-        showAlert(message: formatted, onOk: onOk)
-    }
-
+public extension UIViewController {
     @MainActor
     func showAlert(title: String? = "error".localized, message: String, onOk: (() -> Void)? = nil) {
         self.view.hideAllToasts()
@@ -100,7 +78,7 @@ extension UIViewController {
     }
 }
 
-extension UINavigationController {
+public extension UINavigationController {
     func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
         pushViewController(viewController, animated: animated)
 
@@ -123,5 +101,77 @@ extension UINavigationController {
         } else {
             completion()
         }
+    }
+}
+
+// MARK: - MBProgressHUD
+public extension UIViewController {
+    var currentProgressHUD: MBProgressHUD {
+        MBProgressHUD.forView(view) ?? MBProgressHUD.showAdded(to: view, animated: true)
+    }
+
+    @MainActor
+    func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
+        guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
+            // hud is already shown
+            return
+        }
+        self.view.isUserInteractionEnabled = isUserInteractionEnabled
+
+        let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
+        spinner.label.text = message
+        spinner.isUserInteractionEnabled = isUserInteractionEnabled
+        spinner.accessibilityIdentifier = "loadingSpinner"
+    }
+
+    @MainActor
+    func updateSpinner(
+        label: String = "compose_uploading".localized,
+        progress: Float? = nil,
+        systemImageName: String? = nil
+    ) {
+        if let progress = progress {
+            if progress >= 1, let imageName = systemImageName {
+                self.updateSpinner(
+                    label: "compose_sent".localized,
+                    systemImageName: imageName)
+            } else {
+                self.showProgressHUD(progress: progress, label: label)
+            }
+        } else {
+            showIndeterminateHUD(with: label)
+        }
+    }
+
+    @MainActor
+    func hideSpinner() {
+        self.view.subviews
+            .compactMap { $0 as? MBProgressHUD }
+            .forEach { $0.hide(animated: true) }
+        self.view.isUserInteractionEnabled = true
+    }
+
+    @MainActor
+    func showProgressHUD(progress: Float, label: String) {
+        let percent = Int(progress * 100)
+        currentProgressHUD.label.text = "\(label) \(percent)%"
+        currentProgressHUD.progress = progress
+        currentProgressHUD.mode = .annularDeterminate
+    }
+
+    @MainActor
+    func showProgressHUDWithCustomImage(imageName: String, label: String) {
+        let configuration = UIImage.SymbolConfiguration(pointSize: 36)
+        let imageView = UIImageView(image: .init(systemName: imageName, withConfiguration: configuration))
+        currentProgressHUD.minSize = CGSize(width: 150, height: 90)
+        currentProgressHUD.customView = imageView
+        currentProgressHUD.mode = .customView
+        currentProgressHUD.label.text = label
+    }
+
+    @MainActor
+    func showIndeterminateHUD(with title: String) {
+        self.currentProgressHUD.mode = .indeterminate
+        self.currentProgressHUD.label.text = title
     }
 }
