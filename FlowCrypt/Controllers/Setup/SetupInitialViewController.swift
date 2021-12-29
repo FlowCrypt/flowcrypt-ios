@@ -36,7 +36,7 @@ final class SetupInitialViewController: TableNodeViewController {
             case .searchingKeyBackupsInInbox:
                 return 2
             case .error:
-                return 3
+                return 4
             case .noKeyBackupsInInbox:
                 return Parts.allCases.count
             }
@@ -306,7 +306,7 @@ extension SetupInitialViewController {
             return TextCellNode(
                 input: .init(
                     backgroundColor: .backgroundColor,
-                    title: error.localizedDescription,
+                    title: error.errorMessage,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200)
                 )
@@ -314,6 +314,10 @@ extension SetupInitialViewController {
         case 2:
             return ButtonCellNode(input: .retry) { [weak self] in
                 self?.state = .searchingKeyBackupsInInbox
+            }
+        case 3:
+            return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
+                self?.signOut()
             }
         default:
             return ASCellNode()
@@ -332,6 +336,7 @@ extension SetupInitialViewController {
         let viewController = SetupGenerateKeyViewController(appContext: appContext, user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
+
     private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {
         let viewController = SetupEKMKeyViewController(appContext: appContext, user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)

@@ -290,3 +290,8 @@
 
 // Attachments details
 "no_preview_avalable" = "No preview available";
+
+// ImapError
+"imap_error_no_session" = "Session isn't established";
+"imap_error_provider" = "Provider error %@";
+"imap_error_msg_info" = "Can't parse message without \"%@\"";
