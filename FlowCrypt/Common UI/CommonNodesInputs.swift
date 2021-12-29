@@ -10,39 +10,45 @@ import FlowCryptUI
 import UIKit
 
 extension TextCellNode {
-    static let loading: TextCellNode = .init(
-        input: .init(
-            backgroundColor: .backgroundColor,
-            title: "loading_title".localized + "...",
-            withSpinner: true,
-            size: CGSize(width: 44, height: 44)
+    static var loading: TextCellNode {
+        .init(
+            input: .init(
+                backgroundColor: .backgroundColor,
+                title: "loading_title".localized + "...",
+                withSpinner: true,
+                size: CGSize(width: 44, height: 44)
+            )
         )
-    )
+    }
 }
 
 extension ButtonCellNode.Input {
-    static let retry: ButtonCellNode.Input = .init(
-        title: "retry_title"
-            .localized
-            .attributed(.bold(16), color: .white, alignment: .center),
-        insets: UIEdgeInsets(top: 16, left: 24, bottom: 8, right: 24),
-        color: .main
-    )
+    static var retry: ButtonCellNode.Input {
+        .init(
+            title: "retry_title"
+                .localized
+                .attributed(.bold(16), color: .white, alignment: .center),
+            insets: UIEdgeInsets(top: 16, left: 24, bottom: 8, right: 24),
+            color: .main
+        )
+    }
 
-    static let chooseAnotherAccount: ButtonCellNode.Input = .init(
-        title: "setup_use_another"
-            .localized
-            .attributed(
-                .regular(15),
-                color: UIColor.colorFor(
-                    darkStyle: .white,
-                    lightStyle: .blueColor
+    static var chooseAnotherAccount: ButtonCellNode.Input {
+        .init(
+            title: "setup_use_another"
+                .localized
+                .attributed(
+                    .regular(15),
+                    color: UIColor.colorFor(
+                        darkStyle: .white,
+                        lightStyle: .blueColor
+                    ),
+                    alignment: .center
                 ),
-                alignment: .center
-            ),
-        insets: .side(8),
-        color: .backgroundColor
-    )
+            insets: .side(8),
+            color: .backgroundColor
+        )
+    }
 }
 
 extension CheckBoxTextNode.Input {

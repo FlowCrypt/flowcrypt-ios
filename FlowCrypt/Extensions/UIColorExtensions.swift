@@ -20,7 +20,7 @@ public extension UIColor {
             lightStyle: .black
         )
     }
-    
+
     static var warningColor: UIColor {
         UIColor(r: 194, g: 126, b: 35)
     }
