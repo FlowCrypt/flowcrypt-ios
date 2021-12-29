@@ -20,13 +20,13 @@ struct MessageUploadRequest {
         append(details: details)
         append(content: content)
 
-        httpBody.append("--\(boundary)--")
+        httpBody.append("--\(boundary)--\(lineSeparator)")
     }
 
     func append(details: String) {
         httpBody.append("--\(boundary)\(lineSeparator)")
         httpBody.append("Content-Disposition: form-data; name=\"details\"\(lineSeparator)")
-        httpBody.append("Content-Type: application/json; charset=utf-8\(lineSeparator)")
+        httpBody.append("Content-Type: application/json; charset=utf-8\(lineSeparator)\(lineSeparator)")
         httpBody.append(details)
         httpBody.append(lineSeparator)
     }
@@ -34,7 +34,7 @@ struct MessageUploadRequest {
     func append(content: Data) {
         httpBody.append("--\(boundary)\(lineSeparator)")
         httpBody.append("Content-Disposition: form-data; name=\"content\"; filename=\"content\"\(lineSeparator)")
-        httpBody.append("Content-Type: application/octet-stream\(lineSeparator)")
+        httpBody.append("Content-Type: \"application/octet-stream\"\(lineSeparator)\(lineSeparator)")
         httpBody.append(content)
         httpBody.append(lineSeparator)
     }
