@@ -63,6 +63,8 @@ extension GlobalRouter: GlobalRouterType {
         do {
             switch route {
             case .gmailLogin(let viewController):
+                viewController.showSpinner()
+                
                 let googleService = GoogleUserService(
                     currentUserEmail: appContext.dataService.currentUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
@@ -72,12 +74,16 @@ extension GlobalRouter: GlobalRouterType {
                     scopes: GeneralConstants.Gmail.mailScope
                 )
                 try appContext.userAccountService.startSessionFor(session: session)
+                viewController.hideSpinner()
                 proceed(with: appContext.withSession(session))
             case .other(let session):
                 try appContext.userAccountService.startSessionFor(session: session)
                 proceed(with: appContext.withSession(session))
             }
         } catch {
+            if case .gmailLogin(let viewController) = route {
+                viewController.hideSpinner()
+            }
             logger.logError("Failed to sign in due to \(error.localizedDescription)")
             handleSignInError(error: error, appContext: appContext)
         }
