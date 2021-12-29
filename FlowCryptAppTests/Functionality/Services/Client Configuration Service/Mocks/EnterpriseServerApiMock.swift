@@ -53,4 +53,9 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
         getClientConfigurationForCurrentUserCount += 1
         return try getClientConfigurationForCurrentUserCall()
     }
+
+    func upload(message: Data, sender: String, to: [String], cc: [String], bcc: [String]) async throws -> String {
+        // TODO
+        return ""
+    }
 }

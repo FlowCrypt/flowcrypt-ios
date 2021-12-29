@@ -12,7 +12,7 @@ import FlowCryptCommon
 protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) async throws -> String?
     func getClientConfiguration(for email: String) async throws -> RawClientConfiguration
-    func uploadMessage(for email: String) async throws -> String
+    func upload(message: Data, sender: String, to: [String], cc: [String], bcc: [String]) async throws -> String
 }
 
 /// server run by individual enterprise customers, serves client configuration
@@ -109,14 +109,15 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         return response.clientConfiguration
     }
 
-    func uploadMessage(from sender: String,
-                       to: [String],
-                       cc: [String],
-                       bcc: [String]
+    func upload(message: Data,
+                sender: String,
+                to: [String],
+                cc: [String],
+                bcc: [String]
     ) async throws -> String {
         let replyToken = try await getReplyToken(for: sender)
 
-        let request = MessageUploadRequest(
+        let uploadRequest = MessageUploadDetails(
             associateReplyToken: replyToken,
             from: sender,
             to: to,
@@ -124,9 +125,25 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             bcc: bcc
         )
 
+        let boundary = UUID().uuidString
+
+        let body = MessageUploadRequest(
+            boundary: boundary,
+            details: uploadRequest.jsonString,
+            content: message
+        ).httpBody
+
+        let contentTypeHeader = URLHeader(
+            value: "multipart/form-data; boundary=\(boundary)",
+            httpHeaderField: "Content-Type"
+        )
+
         let response: MessageUploadResponse = try await performRequest(
             email: sender,
-            url: "/api/v1/message"
+            url: "/api/v1/message",
+            headers: [contentTypeHeader],
+            method: .post,
+            body: body as Data
         )
 
         return response.url
@@ -165,20 +182,23 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     private func performRequest<T: Decodable>(
         email: String,
         url: String,
-        method: HTTPMethod = .post
+        headers: [URLHeader] = [],
+        method: HTTPMethod = .post,
+        body: Data? = nil
     ) async throws -> T {
         guard let fesUrl = try await getActiveFesUrl(for: email) else {
             throw EnterpriseServerApiError.noActiveFesUrl
         }
 
         let idToken = try await getIdToken(email: email)
-        let authorizationHeader = URLHeader(value: "Bearer: \(idToken)", httpHeaderField: "Authorization")
+        let authorizationHeader = URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")
 
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: "\(fesUrl)\(url)",
             method: method,
-            headers: [authorizationHeader]
+            body: body,
+            headers: [authorizationHeader] + headers
         )
 
         let safeResponse = try await ApiCall.call(request)

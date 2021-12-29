@@ -1043,7 +1043,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		51B0C772272AB5FD00124663 /* TestExtensions */ = {
 		51B0C772272AB5FD00124663 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
