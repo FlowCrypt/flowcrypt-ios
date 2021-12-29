@@ -13,3 +13,16 @@ enum ImapError: Error {
     case providerError(Error)
     case missedMessageInfo(String)
 }
+
+extension ImapError: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .noSession:
+            return "imap_error_no_session".localized
+        case .providerError(let error):
+            return "imap_error_provider".localizeWithArguments(error.localizedDescription)
+        case .missedMessageInfo(let message):
+            return "imap_error_msg_info".localizeWithArguments(message)
+        }
+    }
+}
