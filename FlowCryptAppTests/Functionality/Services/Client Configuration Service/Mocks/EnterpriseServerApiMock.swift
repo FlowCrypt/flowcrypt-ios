@@ -55,7 +55,6 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
     }
 
     func upload(message: Data, sender: String, to: [String], cc: [String], bcc: [String]) async throws -> String {
-        // TODO
         return ""
     }
 }

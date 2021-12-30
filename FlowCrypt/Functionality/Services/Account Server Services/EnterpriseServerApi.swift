@@ -48,6 +48,14 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         let url: String
     }
 
+    private struct MessageUploadDetails: Encodable {
+        let associateReplyToken: String
+        let from: String
+        let to: [String]
+        let cc: [String]
+        let bcc: [String]
+    }
+
     private lazy var decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -117,24 +125,29 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     ) async throws -> String {
         let replyToken = try await getReplyToken(for: sender)
 
-        let uploadRequest = MessageUploadDetails(
+        let detailsData = try MessageUploadDetails(
             associateReplyToken: replyToken,
             from: sender,
             to: to,
             cc: cc,
             bcc: bcc
+        ).toJsonData()
+
+        let detailsDataItem = MultipartDataItem(
+            data: detailsData,
+            name: "details",
+            contentType: "application/json"
+        )
+        let contentDataItem = MultipartDataItem(
+            data: message,
+            name: "content",
+            contentType: "application/octet-stream"
         )
 
-        let boundary = UUID().uuidString
-
-        let body = MessageUploadRequest(
-            boundary: boundary,
-            details: uploadRequest.jsonString,
-            content: message
-        ).httpBody
+        let request = MultipartDataRequest(items: [detailsDataItem, contentDataItem])
 
         let contentTypeHeader = URLHeader(
-            value: "multipart/form-data; boundary=\(boundary)",
+            value: "multipart/form-data; boundary=\(request.boundary)",
             httpHeaderField: "Content-Type"
         )
 
@@ -143,7 +156,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             url: "/api/v1/message",
             headers: [contentTypeHeader],
             method: .post,
-            body: body as Data
+            body: request.httpBody as Data
         )
 
         return response.url
