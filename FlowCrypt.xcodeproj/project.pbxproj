@@ -157,6 +157,7 @@
 		9F5F504326FA6C7500294FA2 /* EnterpriseServerApiMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F504226FA6C7500294FA2 /* EnterpriseServerApiMock.swift */; };
 		9F5F504A26FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F504926FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift */; };
 		9F5FAF6D271DCDAF00B8762B /* MessageActionsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */; };
+		9F65B0B7277DF2AD005CD19C /* Imap+ThreadOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65B0B6277DF2AD005CD19C /* Imap+ThreadOperations.swift */; };
 		9F67998B277B222B00AFE5BE /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 9F67998A277B222B00AFE5BE /* BigInt */; };
 		9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E20275AA417007B8802 /* BundleExtensions.swift */; };
 		9F67998D277B3E4D00AFE5BE /* CommandLineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */; };
@@ -601,6 +602,7 @@
 		9F5F504226FA6C7500294FA2 /* EnterpriseServerApiMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApiMock.swift; sourceTree = "<group>"; };
 		9F5F504926FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationProviderMock.swift; sourceTree = "<group>"; };
 		9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionsHandler.swift; sourceTree = "<group>"; };
+		9F65B0B6277DF2AD005CD19C /* Imap+ThreadOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+ThreadOperations.swift"; sourceTree = "<group>"; };
 		9F696292236091DD003712E1 /* SignInImageNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInImageNode.swift; sourceTree = "<group>"; };
 		9F696294236091F4003712E1 /* SignInDescriptionNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInDescriptionNode.swift; sourceTree = "<group>"; };
 		9F6EE1542597399D0059BA51 /* BackupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupProvider.swift; sourceTree = "<group>"; };
@@ -1433,6 +1435,7 @@
 			children = (
 				9F88391827270A1A00669B56 /* MessagesThreadOperationsProvider.swift */,
 				9F883915272709E200669B56 /* MessagesThreadProvider.swift */,
+				9F65B0B6277DF2AD005CD19C /* Imap+ThreadOperations.swift */,
 			);
 			path = Threads;
 			sourceTree = "<group>";
@@ -2558,6 +2561,7 @@
 				51B4AE5327144E590001F33B /* PubKey.swift in Sources */,
 				21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
+				9F65B0B7277DF2AD005CD19C /* Imap+ThreadOperations.swift in Sources */,
 				9F5FAF6D271DCDAF00B8762B /* MessageActionsHandler.swift in Sources */,
 				9F976592267E19880058419D /* TestData.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,

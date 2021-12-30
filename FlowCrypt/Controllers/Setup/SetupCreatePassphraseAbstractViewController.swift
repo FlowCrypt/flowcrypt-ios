@@ -15,6 +15,7 @@ import FlowCryptUI
  * - Has not to have an instance!
  */
 
+@MainActor
 class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
 
     enum Parts: Int, CaseIterable {

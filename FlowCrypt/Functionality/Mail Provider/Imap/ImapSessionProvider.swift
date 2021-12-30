@@ -23,7 +23,6 @@ class ImapSessionProvider: ImapSessionProviderType {
 
     func imapSession() -> IMAPSession? {
         guard let imapSession = IMAPSession(user: self.user) else {
-            assertionFailure("couldn't create IMAP Session with this parameters")
             return nil
         }
         return imapSession
