@@ -15,6 +15,19 @@
 		0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
 		049E607827FDEC610089EE2A /* FlowcryptTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607727FDEC610089EE2A /* FlowcryptTimer.swift */; };
 		049E607927FDECDB0089EE2A /* FlowcryptTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607727FDEC610089EE2A /* FlowcryptTimer.swift */; };
+		049E605927FDB6310089EE2A /* ComposeViewController+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */; };
+		049E605B27FDB6BE0089EE2A /* ComposeViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */; };
+		049E605D27FDB7D10089EE2A /* ComposeViewController+Nodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */; };
+		049E605F27FDB8500089EE2A /* ComposeViewController+MessageSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605E27FDB8500089EE2A /* ComposeViewController+MessageSend.swift */; };
+		049E606127FDB9370089EE2A /* ComposeViewController+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606027FDB9370089EE2A /* ComposeViewController+Setup.swift */; };
+		049E606327FDB9C70089EE2A /* ComposeViewController+Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606227FDB9C70089EE2A /* ComposeViewController+Keyboard.swift */; };
+		049E606527FDBA9F0089EE2A /* ComposeViewController+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606427FDBA9F0089EE2A /* ComposeViewController+State.swift */; };
+		049E606727FDBAEF0089EE2A /* ComposeViewController+RecipientInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606627FDBAEF0089EE2A /* ComposeViewController+RecipientInput.swift */; };
+		049E606927FDBB2D0089EE2A /* ComposeViewController+RecipientPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606827FDBB2D0089EE2A /* ComposeViewController+RecipientPopup.swift */; };
+		049E606D27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606C27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift */; };
+		049E606F27FDBBD50089EE2A /* ComposeViewController+Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */; };
+		049E607127FDBC690089EE2A /* ComposeViewController+Drafts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */; };
+		049E607427FDBDBE0089EE2A /* ComposeViewController+TapActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */; };
 		04A1724A27F2FD2F00B79559 /* GoogleUserService+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */; };
 		04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
@@ -441,6 +454,19 @@
 		0443C85D27F4A6D700A432AA /* Task+Retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+Retry.swift"; sourceTree = "<group>"; };
 		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
 		049E607727FDEC610089EE2A /* FlowcryptTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowcryptTimer.swift; sourceTree = "<group>"; };
+		049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Attachment.swift"; sourceTree = "<group>"; };
+		049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+TableView.swift"; sourceTree = "<group>"; };
+		049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Nodes.swift"; sourceTree = "<group>"; };
+		049E605E27FDB8500089EE2A /* ComposeViewController+MessageSend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+MessageSend.swift"; sourceTree = "<group>"; };
+		049E606027FDB9370089EE2A /* ComposeViewController+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Setup.swift"; sourceTree = "<group>"; };
+		049E606227FDB9C70089EE2A /* ComposeViewController+Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Keyboard.swift"; sourceTree = "<group>"; };
+		049E606427FDBA9F0089EE2A /* ComposeViewController+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+State.swift"; sourceTree = "<group>"; };
+		049E606627FDBAEF0089EE2A /* ComposeViewController+RecipientInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+RecipientInput.swift"; sourceTree = "<group>"; };
+		049E606827FDBB2D0089EE2A /* ComposeViewController+RecipientPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+RecipientPopup.swift"; sourceTree = "<group>"; };
+		049E606C27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+ActionHandling.swift"; sourceTree = "<group>"; };
+		049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Picker.swift"; sourceTree = "<group>"; };
+		049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Drafts.swift"; sourceTree = "<group>"; };
+		049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+TapActions.swift"; sourceTree = "<group>"; };
 		04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GoogleUserService+Contacts.swift"; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeypairRealmObject.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuViewController.swift; sourceTree = "<group>"; };
@@ -886,6 +912,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		049E607227FDBCC30089EE2A /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */,
+				049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */,
+				049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */,
+				049E605E27FDB8500089EE2A /* ComposeViewController+MessageSend.swift */,
+				049E606027FDB9370089EE2A /* ComposeViewController+Setup.swift */,
+				049E606227FDB9C70089EE2A /* ComposeViewController+Keyboard.swift */,
+				049E606427FDBA9F0089EE2A /* ComposeViewController+State.swift */,
+				049E606627FDBAEF0089EE2A /* ComposeViewController+RecipientInput.swift */,
+				049E606827FDBB2D0089EE2A /* ComposeViewController+RecipientPopup.swift */,
+				049E606C27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift */,
+				049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */,
+				049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */,
+				049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		04B4728A1ECE29D200B8266F /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -901,6 +947,7 @@
 			isa = PBXGroup;
 			children = (
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
+				049E607227FDBCC30089EE2A /* Extensions */,
 				D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */,
 				9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */,
 				042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */,
@@ -2630,12 +2677,14 @@
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
 				51B4AE5327144E590001F33B /* PubKey.swift in Sources */,
 				21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */,
+				049E605927FDB6310089EE2A /* ComposeViewController+Attachment.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				9F65B0B7277DF2AD005CD19C /* Imap+ThreadOperations.swift in Sources */,
 				9F5FAF6D271DCDAF00B8762B /* MessageActionsHandler.swift in Sources */,
 				9F976592267E19880058419D /* TestData.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				2C08F6BE273FA7B900EE1610 /* Version5SchemaMigration.swift in Sources */,
+				049E607127FDBC690089EE2A /* ComposeViewController+Drafts.swift in Sources */,
 				5A39F441239EF17F001F4607 /* LegalViewDecorator.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
@@ -2646,6 +2695,7 @@
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
 				D20D3C752520AB9A00D4AA9A /* BackupService.swift in Sources */,
 				514C34DB276CE19C00FCAB79 /* ComposeMessageContext.swift in Sources */,
+				049E607427FDBDBE0089EE2A /* ComposeViewController+TapActions.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupBackupsViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */,
@@ -2690,13 +2740,16 @@
 				9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */,
 				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
 				D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */,
+				049E605F27FDB8500089EE2A /* ComposeViewController+MessageSend.swift in Sources */,
 				9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */,
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
+				049E606F27FDBBD50089EE2A /* ComposeViewController+Picker.swift in Sources */,
 				9FB22CDD25715CF50026EE64 /* GmailServiceError.swift in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
 				9F416428266575DC00106194 /* BackupServiceType.swift in Sources */,
 				2CC12C3F273571B80021DDDF /* AttachmentManager.swift in Sources */,
 				5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */,
+				049E605D27FDB7D10089EE2A /* ComposeViewController+Nodes.swift in Sources */,
 				9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9FF0673325520DE400FCC9E6 /* GmailService+send.swift in Sources */,
@@ -2708,10 +2761,12 @@
 				D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */,
 				D2E26F6324F1698100612AF1 /* ContactsListViewController.swift in Sources */,
 				9F53CB7B2555E1E300C0157A /* GmailService+folders.swift in Sources */,
+				049E606527FDBA9F0089EE2A /* ComposeViewController+State.swift in Sources */,
 				9F79228826696B0200DA3D80 /* PassPhraseService.swift in Sources */,
 				D2E26F6624F169B400612AF1 /* ContactsListDecorator.swift in Sources */,
 				D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */,
 				9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */,
+				049E605B27FDB6BE0089EE2A /* ComposeViewController+TableView.swift in Sources */,
 				9FD364862381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift in Sources */,
 				D212D35D24C1AACF00035991 /* PrvKeyInfo.swift in Sources */,
 				9F23EA50237217140017DFED /* ComposeViewDecorator.swift in Sources */,
@@ -2738,6 +2793,7 @@
 				9F7ECCA9272C47DB008A1770 /* InboxRenderable.swift in Sources */,
 				042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */,
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
+				049E606327FDB9C70089EE2A /* ComposeViewController+Keyboard.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
 				5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */,
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
@@ -2748,6 +2804,7 @@
 				9FAFD75D2714A06400321FA4 /* InboxProviders.swift in Sources */,
 				2C141B2C274572D50038A3F8 /* Recipient.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
+				049E606D27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift in Sources */,
 				2155E9EF26E3628C008FB033 /* Refreshable.swift in Sources */,
 				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
 				0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */,
@@ -2756,6 +2813,7 @@
 				9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
 				D2F41371243CC76F0066AFB5 /* SessionRealmObject.swift in Sources */,
+				049E606127FDB9370089EE2A /* ComposeViewController+Setup.swift in Sources */,
 				9F9362192573D10E0009912F /* Imap+Message.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
 				9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */,
@@ -2774,6 +2832,7 @@
 				5180CB9527357BB0001FC7EF /* WkdApi.swift in Sources */,
 				D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */,
 				9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */,
+				049E606927FDBB2D0089EE2A /* ComposeViewController+RecipientPopup.swift in Sources */,
 				9FAFD75B2713880400321FA4 /* InboxViewController+Factory.swift in Sources */,
 				9FF0671025520D7100FCC9E6 /* MessageGateway.swift in Sources */,
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
@@ -2795,6 +2854,7 @@
 				32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */,
 				9FC411352595EA94001180A8 /* Imap+Search.swift in Sources */,
 				9FC4114C25961CEA001180A8 /* MailServiceProviderType.swift in Sources */,
+				049E606727FDBAEF0089EE2A /* ComposeViewController+RecipientInput.swift in Sources */,
 				D2F6D1332433753100DB4065 /* IMAPConnectionParameters.swift in Sources */,
 				9F003DB625EA92BC00EB38C0 /* LogOutHandler.swift in Sources */,
 				0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */,
