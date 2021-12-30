@@ -47,8 +47,8 @@ struct IdToken: Codable {
 }
 
 extension IdToken {
-    var isExpired: Bool {
-        Double(exp) < Date().timeIntervalSince1970
+    var expiryDuration: Double {
+        Date(timeIntervalSince1970: Double(exp)).timeIntervalSinceNow
     }
 }
 
@@ -254,12 +254,12 @@ extension GoogleUserService {
 
 // MARK: - Tokens
 extension GoogleUserService {
-    func getCachedOrRefreshedIdToken() async throws -> String {
+    func getCachedOrRefreshedIdToken(minExpiryDuration: Double = 0) async throws -> String {
         guard let idToken = idToken else { throw(IdTokenError.missingToken) }
 
         let decodedToken = try decode(idToken: idToken)
 
-        guard !decodedToken.isExpired else {
+        guard decodedToken.expiryDuration > minExpiryDuration else {
             let (_, updatedToken) = try await performTokenRefresh()
             return updatedToken
         }
