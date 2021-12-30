@@ -37,10 +37,12 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     private func openMsg(appContext: AppContext, with message: Message, path: String) {
-        let thread = MessageThread(identifier: message.threadId,
-                                   snippet: nil,
-                                   path: path,
-                                   messages: [message])
+        let thread = MessageThread(
+            identifier: message.threadId,
+            snippet: nil,
+            path: path,
+            messages: [message]
+        )
         openThread(with: thread, appContext: appContext)
     }
 
