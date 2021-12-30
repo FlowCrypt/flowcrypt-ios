@@ -416,26 +416,17 @@ final class FlowCryptCoreTests: XCTestCase {
     }
 
     func testCalculationTimes() async throws {
-        let passphrase = "test passphrase"
-        let generateKeyRes = try await core.generateKey(
-            passphrase: passphrase,
-            variant: KeyVariant.rsa4096,
-            userIds: [UserId(email: "test@example.com", name: "Test user")]
-        )
-        let keyInfo = generateKeyRes.key
-        XCTAssertNotNil(keyInfo.private)
-
         let timer = TestTimer()
 
         // Test decrypt key
         timer.start()
-        let decryptKeyRes = try await core.decryptKey(armoredPrv: keyInfo.private!, passphrase: passphrase)
+        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.prv, passphrase: TestData.k3rsa4096.passphrase)
         timer.stop()
         XCTAssertLessThan(timer.durationMs, 1000)
 
         // Test encrypt key
         timer.start()
-        let _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: passphrase)
+        let _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: TestData.k3rsa4096.passphrase)
         timer.stop()
         XCTAssertLessThan(timer.durationMs, 1000)
 
@@ -443,10 +434,10 @@ final class FlowCryptCoreTests: XCTestCase {
         timer.start()
         let keys = [
             PrvKeyInfo(
-                private: keyInfo.private!,
-                longid: keyInfo.ids[0].longid,
-                passphrase: passphrase,
-                fingerprints: keyInfo.fingerprints
+                private: TestData.k3rsa4096.prv,
+                longid: TestData.k3rsa4096.longid,
+                passphrase: TestData.k3rsa4096.passphrase,
+                fingerprints: TestData.k3rsa4096.fingerprints
             )
         ]
         let encrypted = try await core.encrypt(
