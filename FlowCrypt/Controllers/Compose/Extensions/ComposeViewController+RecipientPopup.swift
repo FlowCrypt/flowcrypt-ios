@@ -39,6 +39,19 @@ extension ComposeViewController: UIPopoverPresentationControllerDelegate {
     ) -> UIModalPresentationStyle {
         return .none
     }
+
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        guard let popoverVC = presentationController.presentedViewController as? ComposeRecipientPopupViewController else {
+            return
+        }
+        let recipients = contextToSend.recipients(type: popoverVC.type)
+        let selectedRecipients = recipients.filter { $0.state.isSelected }
+        // Deselect previous selected receipients
+        for recipient in selectedRecipients {
+            contextToSend.update(recipient: recipient.email, type: popoverVC.type, state: decorator.recipientIdleState)
+            evaluate(recipient: recipient)
+        }
+    }
 }
 
 extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
