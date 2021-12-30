@@ -54,7 +54,11 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
         return try getClientConfigurationForCurrentUserCall()
     }
 
-    func upload(message: Data, sender: String, to: [String], cc: [String], bcc: [String]) async throws -> String {
+    func getReplyToken(for email: String) async throws -> String {
+        return ""
+    }
+
+    func upload(message: Data, details: MessageUploadDetails) async throws -> String {
         return ""
     }
 }

@@ -12,7 +12,8 @@ import FlowCryptCommon
 protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) async throws -> String?
     func getClientConfiguration(for email: String) async throws -> RawClientConfiguration
-    func upload(message: Data, sender: String, to: [String], cc: [String], bcc: [String]) async throws -> String
+    func getReplyToken(for email: String) async throws -> String
+    func upload(message: Data, details: MessageUploadDetails) async throws -> String
 }
 
 /// server run by individual enterprise customers, serves client configuration
@@ -46,14 +47,6 @@ class EnterpriseServerApi: EnterpriseServerApiType {
 
     private struct MessageUploadResponse: Decodable {
         let url: String
-    }
-
-    private struct MessageUploadDetails: Encodable {
-        let associateReplyToken: String
-        let from: String
-        let to: [String]
-        let cc: [String]
-        let bcc: [String]
     }
 
     private lazy var decoder: JSONDecoder = {
@@ -111,27 +104,24 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         let response: ClientConfigurationResponse = try await performRequest(
             email: email,
             url: "/api/v1/client-configuration?domain=\(userDomain)",
-            method: .get
+            method: .get,
+            withAuthorization: false
         )
 
         return response.clientConfiguration
     }
 
-    func upload(message: Data,
-                sender: String,
-                to: [String],
-                cc: [String],
-                bcc: [String]
-    ) async throws -> String {
-        let replyToken = try await getReplyToken(for: sender)
+    func getReplyToken(for email: String) async throws -> String {
+        let response: MessageReplyTokenResponse = try await performRequest(
+            email: email,
+            url: "/api/v1/message/new-reply-token"
+        )
 
-        let detailsData = try MessageUploadDetails(
-            associateReplyToken: replyToken,
-            from: sender,
-            to: to,
-            cc: cc,
-            bcc: bcc
-        ).toJsonData()
+        return response.replyToken
+    }
+
+    func upload(message: Data, details: MessageUploadDetails) async throws -> String {
+        let detailsData = try details.toJsonData()
 
         let detailsDataItem = MultipartDataItem(
             data: detailsData,
@@ -152,7 +142,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         )
 
         let response: MessageUploadResponse = try await performRequest(
-            email: sender,
+            email: details.from,
             url: "/api/v1/message",
             headers: [contentTypeHeader],
             method: .post,
@@ -172,15 +162,6 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         return try await googleService.getCachedOrRefreshedIdToken()
     }
 
-    private func getReplyToken(for email: String) async throws -> String {
-        let response: MessageReplyTokenResponse = try await performRequest(
-            email: email,
-            url: "/api/v1/message/new-reply-token"
-        )
-
-        return response.replyToken
-    }
-
     private func shouldTolerateWhenCallingOpportunistically(_ error: Error) -> Bool {
         guard
             let apiError = error as? ApiError,
@@ -197,21 +178,26 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         url: String,
         headers: [URLHeader] = [],
         method: HTTPMethod = .post,
-        body: Data? = nil
+        body: Data? = nil,
+        withAuthorization: Bool = true
     ) async throws -> T {
         guard let fesUrl = try await getActiveFesUrl(for: email) else {
             throw EnterpriseServerApiError.noActiveFesUrl
         }
 
-        let idToken = try await getIdToken(email: email)
-        let authorizationHeader = URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")
+        if withAuthorization {
+            let idToken = try await getIdToken(email: email)
+            let authorizationHeader = URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")
+            var headers = headers
+            headers.append(authorizationHeader)
+        }
 
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: "\(fesUrl)\(url)",
             method: method,
             body: body,
-            headers: [authorizationHeader] + headers
+            headers: headers
         )
 
         let safeResponse = try await ApiCall.call(request)
