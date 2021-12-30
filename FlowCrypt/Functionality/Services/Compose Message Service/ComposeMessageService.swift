@@ -24,7 +24,6 @@ final class ComposeMessageService {
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
-    private let enterpriseServer: EnterpriseServerApiType
     private lazy var logger: Logger = Logger.nested(Self.self)
 
     init(
@@ -33,8 +32,7 @@ final class ComposeMessageService {
         messageGateway: MessageGateway,
         draftGateway: DraftGateway? = nil,
         contactsService: ContactsServiceType? = nil,
-        core: CoreComposeMessageType & KeyParser = Core.shared,
-        enterpriseServer: EnterpriseServerApiType = EnterpriseServerApi()
+        core: CoreComposeMessageType & KeyParser = Core.shared
     ) {
         self.messageGateway = messageGateway
         self.draftGateway = draftGateway
@@ -44,7 +42,6 @@ final class ComposeMessageService {
             clientConfiguration: clientConfiguration
         )
         self.core = core
-        self.enterpriseServer = enterpriseServer
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
