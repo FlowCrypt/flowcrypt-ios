@@ -425,19 +425,19 @@ final class FlowCryptCoreTests: XCTestCase {
         let keyInfo = generateKeyRes.key
         XCTAssertNotNil(keyInfo.private)
 
-        let timer = FlowcryptTimer()
+        let timer = TestTimer()
 
         // Test decrypt key
         timer.start()
         let decryptKeyRes = try await core.decryptKey(armoredPrv: keyInfo.private!, passphrase: passphrase)
         timer.stop()
-        XCTAssertLessThan(timer.duration, 1)
+        XCTAssertLessThan(timer.durationMs, 1000)
 
         // Test encrypt key
         timer.start()
         let _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: passphrase)
         timer.stop()
-        XCTAssertLessThan(timer.duration, 1)
+        XCTAssertLessThan(timer.durationMs, 1000)
 
         // Test encrypt message
         timer.start()
@@ -455,7 +455,7 @@ final class FlowCryptCoreTests: XCTestCase {
             password: nil
         )
         timer.stop()
-        XCTAssertLessThan(timer.duration, 1)
+        XCTAssertLessThan(timer.durationMs, 1000)
 
         // Test decrypt msg
         timer.start()
@@ -467,7 +467,7 @@ final class FlowCryptCoreTests: XCTestCase {
             verificationPubKeys: [TestData.k3rsa4096.pub]
         )
         timer.stop()
-        XCTAssertLessThan(timer.duration, 1)
+        XCTAssertLessThan(timer.durationMs, 1000)
 
         // Test sign message
         timer.start()
@@ -489,7 +489,7 @@ final class FlowCryptCoreTests: XCTestCase {
         let _ = try await core.composeEmail(msg: msg, fmt: .encryptInline)
         timer.stop()
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/1478#issuecomment-1090299132
-        XCTAssertLessThan(timer.duration, 60) // TODO: change value to 1 when above issue is fixed
+        XCTAssertLessThan(timer.durationMs, 60 * 1000) // TODO: change value to 1 when above issue is fixed
     }
 
     func testDecryptEncryptedFile() async throws {

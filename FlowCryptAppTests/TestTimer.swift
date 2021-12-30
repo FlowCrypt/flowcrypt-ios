@@ -1,5 +1,5 @@
 //
-//  FlowcryptTimer.swift
+//  TestTimer.swift
 //  FlowCryptCommon
 //
 //  Created by Ioan Moldovan on 4/6/22
@@ -8,7 +8,7 @@
 
 import CoreFoundation
 
-class FlowcryptTimer {
+class TestTimer {
 
     private var startTime: CFAbsoluteTime?
     private var endTime: CFAbsoluteTime?
@@ -21,9 +21,9 @@ class FlowcryptTimer {
         endTime = CFAbsoluteTimeGetCurrent()
     }
 
-    var duration: CFAbsoluteTime {
+    var durationMs: Double {
         if let startTime = startTime, let endTime = endTime {
-            return endTime - startTime
+            return (endTime - startTime) * 1000
         }
         return 0
     }

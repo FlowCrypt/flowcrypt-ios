@@ -13,8 +13,6 @@
 		042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */; };
 		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
 		0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
-		049E607827FDEC610089EE2A /* FlowcryptTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607727FDEC610089EE2A /* FlowcryptTimer.swift */; };
-		049E607927FDECDB0089EE2A /* FlowcryptTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607727FDEC610089EE2A /* FlowcryptTimer.swift */; };
 		049E605927FDB6310089EE2A /* ComposeViewController+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */; };
 		049E605B27FDB6BE0089EE2A /* ComposeViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */; };
 		049E605D27FDB7D10089EE2A /* ComposeViewController+Nodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */; };
@@ -28,6 +26,7 @@
 		049E606F27FDBBD50089EE2A /* ComposeViewController+Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */; };
 		049E607127FDBC690089EE2A /* ComposeViewController+Drafts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */; };
 		049E607427FDBDBE0089EE2A /* ComposeViewController+TapActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */; };
+		049E607927FDECDB0089EE2A /* TestTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607727FDEC610089EE2A /* TestTimer.swift */; };
 		04A1724A27F2FD2F00B79559 /* GoogleUserService+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */; };
 		04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
@@ -453,7 +452,6 @@
 		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		0443C85D27F4A6D700A432AA /* Task+Retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+Retry.swift"; sourceTree = "<group>"; };
 		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
-		049E607727FDEC610089EE2A /* FlowcryptTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowcryptTimer.swift; sourceTree = "<group>"; };
 		049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Attachment.swift"; sourceTree = "<group>"; };
 		049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+TableView.swift"; sourceTree = "<group>"; };
 		049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Nodes.swift"; sourceTree = "<group>"; };
@@ -467,6 +465,7 @@
 		049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Picker.swift"; sourceTree = "<group>"; };
 		049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Drafts.swift"; sourceTree = "<group>"; };
 		049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+TapActions.swift"; sourceTree = "<group>"; };
+		049E607727FDEC610089EE2A /* TestTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestTimer.swift; sourceTree = "<group>"; };
 		04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GoogleUserService+Contacts.swift"; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeypairRealmObject.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuViewController.swift; sourceTree = "<group>"; };
@@ -1302,6 +1301,7 @@
 				9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */,
 				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				A3DAD60722E4588800F2C4CD /* TestData.swift */,
+				049E607727FDEC610089EE2A /* TestTimer.swift */,
 				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 				D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */,
 				9F2AC5CA267BE99E00F6149B /* Info.plist */,
@@ -1960,7 +1960,6 @@
 				9F72E866263ECE2A0039CF81 /* Trace.swift */,
 				9F8220D426336626004B2009 /* Logger.swift */,
 				9F3861A127A18AAF00851419 /* .swiftformat */,
-				049E607727FDEC610089EE2A /* FlowcryptTimer.swift */,
 			);
 			path = FlowCryptCommon;
 			sourceTree = "<group>";
@@ -2626,7 +2625,7 @@
 				9F6F3C3526ADFA27005BD9C6 /* ComposeMessageServiceTests.swift in Sources */,
 				9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */,
 				9F976584267E194F0058419D /* TestData.swift in Sources */,
-				049E607927FDECDB0089EE2A /* FlowcryptTimer.swift in Sources */,
+				049E607927FDECDB0089EE2A /* TestTimer.swift in Sources */,
 				9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */,
 				9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */,
 				51B0C774272AB61000124663 /* StringTestExtension.swift in Sources */,
@@ -2986,7 +2985,6 @@
 				9FD5052927889D8200FAA82F /* UIAlertControllerExtensions.swift in Sources */,
 				9F8076D927762515008E5874 /* BigIntExtensions.swift in Sources */,
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
-				049E607827FDEC610089EE2A /* FlowcryptTimer.swift in Sources */,
 				D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */,
 				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
