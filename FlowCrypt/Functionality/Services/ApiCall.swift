@@ -15,7 +15,7 @@ extension ApiCall {
     struct Request {
         var apiName: String
         var url: String
-        var method: HTTPMetod = .get
+        var method: HTTPMethod = .get
         var body: Data?
         var headers: [URLHeader] = []
         var timeout: TimeInterval = 60.0

@@ -12,20 +12,8 @@ import FlowCryptCommon
 protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) async throws -> String?
     func getClientConfiguration(for email: String) async throws -> RawClientConfiguration
-}
-
-enum EnterpriseServerApiError: Error {
-    case parse
-    case emailFormat
-}
-
-extension EnterpriseServerApiError: LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case .parse: return "organisational_rules_parse_error_description".localized
-        case .emailFormat: return "organisational_rules_email_format_error_description".localized
-        }
-    }
+    func getReplyToken(for email: String) async throws -> String
+    func upload(message: Data, details: MessageUploadDetails) async throws -> String
 }
 
 /// server run by individual enterprise customers, serves client configuration
@@ -37,7 +25,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     private enum Constants {
         /// 404 - Not Found
         static let getToleratedHTTPStatuses = [404]
-        /// -1001 - request timed out, -1003 - сannot resolve host, -1004 - can't conenct to hosts,
+        /// -1001 - request timed out, -1003 - сannot resolve host, -1004 - can't connect to hosts,
         /// -1005 - network connection lost, -1006 - dns lookup failed, -1007 - too many redirects
         /// -1008 - resource unavailable
         static let getToleratedNSErrorCodes = [-1001, -1003, -1004, -1005, -1006, -1007, -1008]
@@ -52,6 +40,20 @@ class EnterpriseServerApi: EnterpriseServerApiType {
     private struct ClientConfigurationResponse: Codable {
         let clientConfiguration: RawClientConfiguration
     }
+
+    private struct MessageReplyTokenResponse: Decodable {
+        let replyToken: String
+    }
+
+    private struct MessageUploadResponse: Decodable {
+        let url: String
+    }
+
+    private lazy var decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return decoder
+    }()
 
     private func constructUrlBase(emailDomain: String) -> String {
         guard !CommandLine.isDebugBundleWithArgument("--mock-fes-api") else {
@@ -99,27 +101,65 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             throw EnterpriseServerApiError.emailFormat
         }
 
-        guard let fesUrl = try await getActiveFesUrl(for: email) else {
-            return .empty
-        }
-
-        let request = ApiCall.Request(
-            apiName: Constants.apiName,
-            url: "\(fesUrl)/api/v1/client-configuration?domain=\(userDomain)"
+        let response: ClientConfigurationResponse = try await performRequest(
+            email: email,
+            url: "/api/v1/client-configuration?domain=\(userDomain)",
+            method: .get,
+            withAuthorization: false
         )
-        let safeReponse = try await ApiCall.call(request)
 
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return response.clientConfiguration
+    }
 
-        guard let clientConfiguration = (try? decoder.decode(
-                ClientConfigurationResponse.self,
-                from: safeReponse.data
-              ))?.clientConfiguration
-        else {
-            throw EnterpriseServerApiError.parse
-        }
-        return clientConfiguration
+    func getReplyToken(for email: String) async throws -> String {
+        let response: MessageReplyTokenResponse = try await performRequest(
+            email: email,
+            url: "/api/v1/message/new-reply-token"
+        )
+
+        return response.replyToken
+    }
+
+    func upload(message: Data, details: MessageUploadDetails) async throws -> String {
+        let detailsData = try details.toJsonData()
+
+        let detailsDataItem = MultipartDataItem(
+            data: detailsData,
+            name: "details",
+            contentType: "application/json"
+        )
+        let contentDataItem = MultipartDataItem(
+            data: message,
+            name: "content",
+            contentType: "application/octet-stream"
+        )
+
+        let request = MultipartDataRequest(items: [detailsDataItem, contentDataItem])
+
+        let contentTypeHeader = URLHeader(
+            value: "multipart/form-data; boundary=\(request.boundary)",
+            httpHeaderField: "Content-Type"
+        )
+
+        let response: MessageUploadResponse = try await performRequest(
+            email: details.from,
+            url: "/api/v1/message",
+            headers: [contentTypeHeader],
+            method: .post,
+            body: request.httpBody as Data
+        )
+
+        return response.url
+    }
+
+    // MARK: - Helpers
+    private func getIdToken(email: String) async throws -> String {
+        let googleService = GoogleUserService(
+            currentUserEmail: email,
+            appDelegateGoogleSessionContainer: nil
+        )
+
+        return try await googleService.getCachedOrRefreshedIdToken()
     }
 
     private func shouldTolerateWhenCallingOpportunistically(_ error: Error) -> Bool {
@@ -131,5 +171,40 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             return false
         }
         return true
+    }
+
+    private func performRequest<T: Decodable>(
+        email: String,
+        url: String,
+        headers: [URLHeader] = [],
+        method: HTTPMethod = .post,
+        body: Data? = nil,
+        withAuthorization: Bool = true
+    ) async throws -> T {
+        guard let fesUrl = try await getActiveFesUrl(for: email) else {
+            throw EnterpriseServerApiError.noActiveFesUrl
+        }
+
+        if withAuthorization {
+            let idToken = try await getIdToken(email: email)
+            let authorizationHeader = URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")
+            var headers = headers
+            headers.append(authorizationHeader)
+        }
+
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: "\(fesUrl)\(url)",
+            method: method,
+            body: body,
+            headers: headers
+        )
+
+        let safeResponse = try await ApiCall.call(request)
+
+        guard let data = try? decoder.decode(T.self, from: safeResponse.data)
+        else { throw EnterpriseServerApiError.parse }
+
+        return data
     }
 }

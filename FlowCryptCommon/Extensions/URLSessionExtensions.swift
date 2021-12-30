@@ -26,7 +26,7 @@ public struct HttpErr: Error {
     }
 }
 
-public enum HTTPMetod: String {
+public enum HTTPMethod: String {
     case put = "PUT"
     case get = "GET"
     case post = "POST"
@@ -88,7 +88,7 @@ public struct URLHeader {
 public extension URLRequest {
     static func urlRequest(
         with url: URL,
-        method: HTTPMetod = .get,
+        method: HTTPMethod = .get,
         body: Data? = nil,
         headers: [URLHeader] = []
     ) -> URLRequest {

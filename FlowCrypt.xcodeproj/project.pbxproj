@@ -69,9 +69,12 @@
 		514C34DB276CE19C00FCAB79 /* ComposeMessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */; };
 		514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */; };
 		514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */; };
+		5152F196277E5AED00BE8A5B /* MessageUploadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */; };
 		5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5168FB0A274F94D300131072 /* MessageAttachment.swift */; };
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
+		517C2E302779F90700FECF32 /* MultipartDataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517C2E2F2779F90700FECF32 /* MultipartDataRequest.swift */; };
+		517C2E33277A0C6300FECF32 /* EnterpriseServerApiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517C2E32277A0C6300FECF32 /* EnterpriseServerApiError.swift */; };
 		5180CB9127356D48001FC7EF /* MessageSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5180CB9027356D48001FC7EF /* MessageSubjectNode.swift */; };
 		5180CB9327357B67001FC7EF /* RawClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5180CB9227357B67001FC7EF /* RawClientConfiguration.swift */; };
 		5180CB9527357BB0001FC7EF /* WkdApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5180CB9427357BB0001FC7EF /* WkdApi.swift */; };
@@ -494,9 +497,12 @@
 		514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageContext.swift; sourceTree = "<group>"; };
 		514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageRecipient.swift; sourceTree = "<group>"; };
 		514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeMessageService+State.swift"; sourceTree = "<group>"; };
+		5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageUploadDetails.swift; sourceTree = "<group>"; };
 		5168FB0A274F94D300131072 /* MessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAttachment.swift; sourceTree = "<group>"; };
 		51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfoTests.swift; sourceTree = "<group>"; };
 		51775C38270C7D2400D7C944 /* StorageMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMethod.swift; sourceTree = "<group>"; };
+		517C2E2F2779F90700FECF32 /* MultipartDataRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartDataRequest.swift; sourceTree = "<group>"; };
+		517C2E32277A0C6300FECF32 /* EnterpriseServerApiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApiError.swift; sourceTree = "<group>"; };
 		5180CB9027356D48001FC7EF /* MessageSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSubjectNode.swift; sourceTree = "<group>"; };
 		5180CB9227357B67001FC7EF /* RawClientConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawClientConfiguration.swift; sourceTree = "<group>"; };
 		5180CB9427357BB0001FC7EF /* WkdApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WkdApi.swift; sourceTree = "<group>"; };
@@ -1013,6 +1019,16 @@
 				D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */,
 			);
 			path = SignIn;
+			sourceTree = "<group>";
+		};
+		517C2E312779F91300FECF32 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				517C2E32277A0C6300FECF32 /* EnterpriseServerApiError.swift */,
+				5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */,
+				517C2E2F2779F90700FECF32 /* MultipartDataRequest.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		51B0C772272AB5FD00124663 /* Extensions */ = {
@@ -1629,6 +1645,7 @@
 			children = (
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */,
+				517C2E312779F91300FECF32 /* Models */,
 			);
 			path = "Account Server Services";
 			sourceTree = "<group>";
@@ -2573,6 +2590,7 @@
 				D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */,
 				D2891AC424C62446008918E3 /* ErrorHandler.swift in Sources */,
 				51938DC1274CC291007AD57B /* MessageQuoteType.swift in Sources */,
+				5152F196277E5AED00BE8A5B /* MessageUploadDetails.swift in Sources */,
 				9F41FA2F253B7624003B970D /* BackupSelectKeyDecorator.swift in Sources */,
 				D227C0E8250538A90070F805 /* FoldersService.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
@@ -2692,6 +2710,7 @@
 				9FF0671025520D7100FCC9E6 /* MessageGateway.swift in Sources */,
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				51B4AE51271444580001F33B /* PubKeyRealmObject.swift in Sources */,
+				517C2E302779F90700FECF32 /* MultipartDataRequest.swift in Sources */,
 				9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */,
 				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
 				9FA405C7265AEBA50084D133 /* SetupGenerateKeyViewController.swift in Sources */,
@@ -2700,6 +2719,7 @@
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
 				606FE33A2745AA2E009DA039 /* AttachmentViewController.swift in Sources */,
 				21489B78267CB42400BDE4AC /* LocalClientConfiguration.swift in Sources */,
+				517C2E33277A0C6300FECF32 /* EnterpriseServerApiError.swift in Sources */,
 				9FF0671C25520D9D00FCC9E6 /* MailProvider.swift in Sources */,
 				9FE743072347AA54005E2DBB /* MainNavigationController.swift in Sources */,
 				9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */,

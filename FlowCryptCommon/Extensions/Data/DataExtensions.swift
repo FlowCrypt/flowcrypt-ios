@@ -21,6 +21,13 @@ public extension Data {
     }
 }
 
+public extension NSMutableData {
+    func append(_ string: String) {
+        guard let data = string.data(using: .utf8) else { return }
+        self.append(data)
+    }
+}
+
 extension String {
     init(data: Data) {
         self = String(decoding: data, as: UTF8.self)
