@@ -11,7 +11,7 @@ export namespace NodeRequest {
   type Attachment = { name: string; type: string; base64: string };
   interface composeEmailBase { text: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] };
   export interface composeEmailPlain extends composeEmailBase { format: 'plain' };
-  export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo | undefined };
+  export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo | undefined, pwd?: string };
 
   export type generateKey = { passphrase: string, variant: 'rsa2048' | 'rsa4096' | 'curve25519', userIds: { name: string, email: string }[] };
   export type composeEmail = composeEmailPlain | composeEmailEncrypted;
@@ -50,7 +50,7 @@ export class ValidateInput {
     if (!hasProp(v, 'atts', 'Attachment[]?')) {
       throw new Error('Wrong atts structure for NodeRequest.composeEmail, need: {name, type, base64}');
     }
-    if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?') && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
+    if ((hasProp(v, 'pwd', 'string' || (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?')) && v.pubKeys.length)) && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
       return v as NodeRequest.composeEmailEncrypted;
     }
     if (!v.pubKeys && v.format === 'plain') {

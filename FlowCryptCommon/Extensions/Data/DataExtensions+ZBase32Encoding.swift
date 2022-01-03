@@ -1,5 +1,5 @@
 //
-//  DataExntensions+Encoding.swift
+//  DataExtensions+Encoding.swift
 //  FlowCryptCommon
 //
 //  Created by Yevhen Kyivskyi on 17.05.2021.

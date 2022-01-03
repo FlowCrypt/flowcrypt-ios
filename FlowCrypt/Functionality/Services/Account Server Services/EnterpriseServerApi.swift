@@ -185,10 +185,10 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             throw EnterpriseServerApiError.noActiveFesUrl
         }
 
+        var headers = headers
         if withAuthorization {
             let idToken = try await getIdToken(email: email)
             let authorizationHeader = URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")
-            var headers = headers
             headers.append(authorizationHeader)
         }
 

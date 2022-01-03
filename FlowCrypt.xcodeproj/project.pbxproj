@@ -29,7 +29,7 @@
 		21C7DF09266C0D8F00C44800 /* EnterpriseServerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */; };
 		21CE25E62650070300ADFF4B /* WkdUrlConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */; };
 		21EA3B592656611D00691848 /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* ClientConfiguration.swift */; };
-		21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */; };
+		21F836B62652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift */; };
 		2C03CC16275BB53400887EEB /* EnterpriseServerApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C03CC15275BB53400887EEB /* EnterpriseServerApiTests.swift */; };
 		2C08F6BE273FA7B900EE1610 /* Version5SchemaMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C08F6BD273FA7B900EE1610 /* Version5SchemaMigration.swift */; };
 		2C124DB42728809100A2EFA6 /* ApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C124DB32728809100A2EFA6 /* ApiCall.swift */; };
@@ -341,7 +341,7 @@
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
 		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtensions.swift */; };
 		D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
-		D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */; };
+		D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */; };
 		D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */; };
 		D2CDC3D824047066002B045F /* RecipientEmailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */; };
 		D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; };
@@ -444,7 +444,7 @@
 		21EA3B2E26565B7400691848 /* client_configuraion.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion.json; sourceTree = "<group>"; };
 		21EA3B3526565B8100691848 /* client_configuraion_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_empty.json; sourceTree = "<group>"; };
 		21EA3B3C26565B9800691848 /* client_configuraion_partly_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_partly_empty.json; sourceTree = "<group>"; };
-		21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataExntensions+ZBase32Encoding.swift"; sourceTree = "<group>"; };
+		21F836B52652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataExtensions+ZBase32Encoding.swift"; sourceTree = "<group>"; };
 		21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZBase32EncodingTests.swift; sourceTree = "<group>"; };
 		21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructorTests.swift; sourceTree = "<group>"; };
 		2C03CC15275BB53400887EEB /* EnterpriseServerApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApiTests.swift; sourceTree = "<group>"; };
@@ -466,7 +466,7 @@
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		32DCA377D22F4D67A8FA05EB /* Imap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Imap.swift; sourceTree = "<group>"; };
-		32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableExntensions.swift; sourceTree = "<group>"; };
+		32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableExtensions.swift; sourceTree = "<group>"; };
 		32DCA4B11D4531B3B04D01D1 /* AppErr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppErr.swift; sourceTree = "<group>"; };
 		32DCA55C094E9745AA1FD210 /* Imap+msg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Imap+msg.swift"; sourceTree = "<group>"; };
 		32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIVIewExtensions.swift; sourceTree = "<group>"; };
@@ -949,7 +949,7 @@
 			isa = PBXGroup;
 			children = (
 				32DCAEFF16F5D91A35791730 /* DataExtensions.swift */,
-				21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */,
+				21F836B52652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1871,7 +1871,7 @@
 				D2D27B78248A8694007346FA /* BigIntExtensions.swift */,
 				E26D5E20275AA417007B8802 /* BundleExtensions.swift */,
 				21C7DEFB26669A3700C44800 /* CalendarExtensions.swift */,
-				32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */,
+				32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */,
 				D2531F452402C62D007E5198 /* CollectionExtensions.swift */,
 				E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */,
 				9F0C3C2723194E8500299985 /* CommonExtensions.swift */,
@@ -2833,7 +2833,7 @@
 				9F67998D277B3E4D00AFE5BE /* CommandLineExtensions.swift in Sources */,
 				9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */,
 				D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */,
-				21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */,
+				21F836B62652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift in Sources */,
 				D29AFFF6240939AE00C1387D /* Then.swift in Sources */,
 				9FBD69EE27775086002FC602 /* ErrorExtensions.swift in Sources */,
 				9F6F5F6C26A2F66B00C625C7 /* Logger.swift in Sources */,
@@ -2849,7 +2849,7 @@
 				21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */,
 				9F8076D927762515008E5874 /* BigIntExtensions.swift in Sources */,
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
-				D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */,
+				D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
 				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,
 				D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */,

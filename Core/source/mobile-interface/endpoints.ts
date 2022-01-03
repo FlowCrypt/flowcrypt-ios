@@ -65,7 +65,7 @@ export class Endpoints {
         encryptedAtts.push(new Att({ name: `${att.name}.pgp`, type: 'application/pgp-encrypted', data: encryptedAtt.message.packets.write() }))
       }
       const signingPrv = await getSigningPrv(req);
-      const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
+      const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv, pwd: req.pwd, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted.data }, mimeHeaders, encryptedAtts)));
     } else {
       throw new Error(`Unknown format: ${req.format}`);
