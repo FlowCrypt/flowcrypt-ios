@@ -159,6 +159,7 @@
 		9F5F504A26FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F504926FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift */; };
 		9F5FAF6D271DCDAF00B8762B /* MessageActionsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */; };
 		9F65B0B7277DF2AD005CD19C /* Imap+ThreadOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65B0B6277DF2AD005CD19C /* Imap+ThreadOperations.swift */; };
+		9F65B0B9278346F8005CD19C /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65B0B8278346F8005CD19C /* Device.swift */; };
 		9F67998B277B222B00AFE5BE /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 9F67998A277B222B00AFE5BE /* BigInt */; };
 		9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E20275AA417007B8802 /* BundleExtensions.swift */; };
 		9F67998D277B3E4D00AFE5BE /* CommandLineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */; };
@@ -605,6 +606,7 @@
 		9F5F504926FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationProviderMock.swift; sourceTree = "<group>"; };
 		9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionsHandler.swift; sourceTree = "<group>"; };
 		9F65B0B6277DF2AD005CD19C /* Imap+ThreadOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+ThreadOperations.swift"; sourceTree = "<group>"; };
+		9F65B0B8278346F8005CD19C /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		9F696292236091DD003712E1 /* SignInImageNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInImageNode.swift; sourceTree = "<group>"; };
 		9F696294236091F4003712E1 /* SignInDescriptionNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInDescriptionNode.swift; sourceTree = "<group>"; };
 		9F6EE1542597399D0059BA51 /* BackupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupProvider.swift; sourceTree = "<group>"; };
@@ -1797,6 +1799,7 @@
 				D2A1D3D223FD9AE600D626D6 /* Nodes */,
 				D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */,
 				D28655972424D0BC0066F52E /* Views */,
+				9F65B0B8278346F8005CD19C /* Device.swift */,
 			);
 			path = FlowCryptUI;
 			sourceTree = "<group>";
@@ -2796,6 +2799,7 @@
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
 				D2E26F7224F26FFF00612AF1 /* ContactUserCellNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
+				9F65B0B9278346F8005CD19C /* Device.swift in Sources */,
 				D28A1CBD2525C141003B760B /* CheckBoxTextNode.swift in Sources */,
 				D2A9CA3B242619A400E1D898 /* SignInImageNode.swift in Sources */,
 				D211CE7223FC35AC00D1CE38 /* TextFieldNode.swift in Sources */,

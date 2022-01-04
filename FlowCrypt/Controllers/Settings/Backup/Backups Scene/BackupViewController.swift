@@ -35,14 +35,14 @@ final class BackupViewController: TableNodeViewController {
     }
 
     private let appContext: AppContext
-    private let decorator: BackupViewDecoratorType
+    private let decorator: BackupViewDecorator
     private let service: ServiceActor
     private let userId: UserId
     private var state: State = .idle { didSet { updateState() } }
 
     init(
         appContext: AppContext,
-        decorator: BackupViewDecoratorType = BackupViewDecorator(),
+        decorator: BackupViewDecorator = BackupViewDecorator(),
         userId: UserId
     ) {
         self.appContext = appContext
@@ -122,8 +122,7 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
                 )
             case .action:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: self.state),
-                    insets: self.decorator.buttonInsets
+                    title: self.decorator.buttonTitle(for: self.state)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     self?.proceedToBackupOptionsScreen()

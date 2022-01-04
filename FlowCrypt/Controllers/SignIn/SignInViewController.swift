@@ -5,6 +5,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
+import UIKit
 
 /**
  * Sign in controller
@@ -74,8 +75,6 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        let imageHeight = tableNode.bounds.size.height * 0.2
-
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
@@ -85,7 +84,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
                     self?.handle(option: appLink)
                 }
             case .logo:
-                return SignInImageNode(self.decorator.logo, height: imageHeight)
+                return SignInImageNode(self.decorator.logo)
             case .description:
                 return SignInDescriptionNode(self.decorator.description)
             case .gmail:
