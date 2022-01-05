@@ -497,11 +497,13 @@ extension ComposeViewController {
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
         try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
+
         let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
             input: self.input,
             contextToSend: self.contextToSend,
             email: self.email,
-            signingPrv: signingKey
+            signingPrv: signingKey,
+            isMessagePasswordSupported: isMessagePasswordSupported
         )
         UIApplication.shared.isIdleTimerDisabled = true
         try await service.encryptAndSend(

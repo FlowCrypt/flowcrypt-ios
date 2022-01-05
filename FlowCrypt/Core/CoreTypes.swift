@@ -136,6 +136,7 @@ struct SendableMsg: Equatable {
     let pubKeys: [String]?
     let signingPrv: PrvKeyInfo?
     let password: String?
+    let replyToken: String?
 }
 
 struct DecryptErr: Decodable {

@@ -63,7 +63,8 @@ extension BackupService: BackupServiceType {
             atts: attachments,
             pubKeys: nil,
             signingPrv: nil,
-            password: nil)
+            password: nil,
+            replyToken: nil)
 
         let t = try await core.composeEmail(msg: message, fmt: .plain)
         try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil),

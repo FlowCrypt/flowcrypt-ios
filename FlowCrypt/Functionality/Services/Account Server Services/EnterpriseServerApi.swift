@@ -186,6 +186,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         }
 
         var headers = headers
+        
         if withAuthorization {
             let idToken = try await getIdToken(email: email)
             let authorizationHeader = URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")

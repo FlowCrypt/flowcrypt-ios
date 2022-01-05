@@ -16,9 +16,4 @@ public extension Encodable {
         }
         return dictionary
     }
-
-    func toJsonString() throws -> String? {
-        let data = try self.toJsonData()
-        return String(data: data, encoding: .utf8)
-    }
 }
