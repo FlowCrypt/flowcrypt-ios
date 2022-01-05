@@ -75,13 +75,21 @@ extension ExtensionTests {
 
 // MARK: - Calendar
 extension ExtensionTests {
-    func test_calendar_date_formatting() {
+    func test_calendar_date_formatting() throws {
         // 18:34
         let sameDayDate = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
-        // Jan 24
-        let sameYearDate = Date(timeIntervalSince1970: 1611506052)
+
+        let today = Date()
+        let year = Calendar.current.dateComponents([.year], from: today).year
+        let sameYearDate = try XCTUnwrap(DateComponents(
+            calendar: .current,
+            timeZone: .current,
+            year: year,
+            month: 1,
+            day: 24
+        ).date)
         // Jan 24, 2020
         let otherYearDate = Date(timeIntervalSince1970: 1579883652)
 
