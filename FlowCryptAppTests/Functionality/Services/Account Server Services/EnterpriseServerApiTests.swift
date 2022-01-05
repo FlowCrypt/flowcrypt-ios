@@ -21,4 +21,15 @@ final class EnterpriseServerApiTests: XCTestCase {
         // assert
         XCTAssertNil(result)
     }
+
+    func testGetClientConfigurationWithoutActiveFesUrl() async throws {
+        // arrange
+        let service = EnterpriseServerApi()
+
+        // act
+        let result = try await service.getClientConfiguration(for: "user@gmail.com")
+
+        // assert
+        XCTAssertEqual(result, .empty)
+    }
 }
