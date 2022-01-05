@@ -163,8 +163,7 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                 }
             case .enterPhrase:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .passPhraseContinue),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .passPhraseContinue)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     guard let self = self else { return }

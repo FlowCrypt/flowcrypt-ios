@@ -12,9 +12,8 @@ import UIKit
 
 struct SetupViewInsets {
     let titleInset = UIEdgeInsets(top: 64, left: 16, bottom: 64, right: 16)
-    let subTitleInset = UIEdgeInsets(top: 0, left: 16, bottom: 24, right: 16)
-    let buttonInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
-    let dividerInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
+    let subTitleInset = UIEdgeInsets.deviceSpecificInsets(top: 8, bottom: 24)
+    let dividerInsets = UIEdgeInsets.deviceSpecificInsets(top: 0, bottom: 0)
 }
 
 struct SetupViewDecorator {
@@ -145,6 +144,6 @@ extension TextFieldCellNode.Input {
             isSecureTextEntry: true,
             textInsets: 0,
             textAlignment: .center,
-            insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+            insets: .deviceSpecificInsets(top: 0, bottom: 0)
     )
 }

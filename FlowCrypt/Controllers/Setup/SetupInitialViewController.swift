@@ -271,16 +271,14 @@ extension SetupInitialViewController {
             )
         case .createKey:
             let input = ButtonCellNode.Input(
-                title: self.decorator.buttonTitle(for: .createKey),
-                insets: self.decorator.insets.buttonInsets
+                title: self.decorator.buttonTitle(for: .createKey)
             )
             return ButtonCellNode(input: input) { [weak self] in
                 self?.proceedToCreatingNewKey()
             }
         case .importKey:
             let input = ButtonCellNode.Input(
-                title: self.decorator.buttonTitle(for: .importKey),
-                insets: self.decorator.insets.buttonInsets
+                title: self.decorator.buttonTitle(for: .importKey)
             )
             return ButtonCellNode(input: input) { [weak self] in
                 self?.proceedToKeyImport()

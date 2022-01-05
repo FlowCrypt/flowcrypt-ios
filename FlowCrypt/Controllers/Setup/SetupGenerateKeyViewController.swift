@@ -88,9 +88,11 @@ private actor Service {
         self.attester = attester
     }
 
-    func setupAccount(passPhrase: String,
-                      storageMethod: StorageMethod,
-                      viewController: ViewController) async throws {
+    func setupAccount(
+        passPhrase: String,
+        storageMethod: StorageMethod,
+        viewController: ViewController
+    ) async throws {
         let userId = try getUserId()
 
         try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)

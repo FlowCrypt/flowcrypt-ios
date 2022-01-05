@@ -16,7 +16,7 @@ public final class ButtonCellNode: CellNode {
 
         public init(
             title: NSAttributedString,
-            insets: UIEdgeInsets,
+            insets: UIEdgeInsets = .buttonInsets,
             color: UIColor? = nil
         ) {
             self.title = title
@@ -47,7 +47,7 @@ public final class ButtonCellNode: CellNode {
         self.insets = input.insets
         buttonColor = input.color
         super.init()
-        button.cornerRadius = 5
+        button.cornerRadius = 8
         button.backgroundColor = input.color ?? .main
         button.style.preferredSize.height = 50
         button.setAttributedTitle(input.title, for: .normal)

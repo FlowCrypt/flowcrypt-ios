@@ -159,6 +159,7 @@
 		9F5F504A26FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F504926FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift */; };
 		9F5FAF6D271DCDAF00B8762B /* MessageActionsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */; };
 		9F65B0B7277DF2AD005CD19C /* Imap+ThreadOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65B0B6277DF2AD005CD19C /* Imap+ThreadOperations.swift */; };
+		9F65B0B9278346F8005CD19C /* UIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65B0B8278346F8005CD19C /* UIConstants.swift */; };
 		9F67998B277B222B00AFE5BE /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 9F67998A277B222B00AFE5BE /* BigInt */; };
 		9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E20275AA417007B8802 /* BundleExtensions.swift */; };
 		9F67998D277B3E4D00AFE5BE /* CommandLineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */; };
@@ -241,6 +242,7 @@
 		9FC413442683C912004C0A69 /* GmailServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC413432683C912004C0A69 /* GmailServiceTest.swift */; };
 		9FC7EBAA266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EBA9266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift */; };
 		9FD364862381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD364852381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift */; };
+		9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD505262785C2CD00FAA82F /* UIDeviceExtensions.swift */; };
 		9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */; };
 		9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */; };
 		9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B39F2565B0CD00D6D086 /* Message.swift */; };
@@ -607,6 +609,7 @@
 		9F5F504926FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationProviderMock.swift; sourceTree = "<group>"; };
 		9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionsHandler.swift; sourceTree = "<group>"; };
 		9F65B0B6277DF2AD005CD19C /* Imap+ThreadOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+ThreadOperations.swift"; sourceTree = "<group>"; };
+		9F65B0B8278346F8005CD19C /* UIConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIConstants.swift; sourceTree = "<group>"; };
 		9F696292236091DD003712E1 /* SignInImageNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInImageNode.swift; sourceTree = "<group>"; };
 		9F696294236091F4003712E1 /* SignInDescriptionNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInDescriptionNode.swift; sourceTree = "<group>"; };
 		9F6EE1542597399D0059BA51 /* BackupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupProvider.swift; sourceTree = "<group>"; };
@@ -679,6 +682,7 @@
 		9FD22A1B230FE7D0005067A6 /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
 		9FD364852381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupManuallyEnterPassPhraseViewController.swift; sourceTree = "<group>"; };
+		9FD505262785C2CD00FAA82F /* UIDeviceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtensions.swift; sourceTree = "<group>"; };
 		9FDF3637235A0B3100614596 /* InfoCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoCellNode.swift; sourceTree = "<group>"; };
 		9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesListProvider.swift; sourceTree = "<group>"; };
 		9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+MessagesList.swift"; sourceTree = "<group>"; };
@@ -1807,6 +1811,7 @@
 				D2A1D3D223FD9AE600D626D6 /* Nodes */,
 				D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */,
 				D28655972424D0BC0066F52E /* Views */,
+				9F65B0B8278346F8005CD19C /* UIConstants.swift */,
 			);
 			path = FlowCryptUI;
 			sourceTree = "<group>";
@@ -1895,6 +1900,7 @@
 				2196A21F2684B9BE001B9E00 /* URLExtensions.swift */,
 				518389C92726D8F700131B2C /* UIApplicationExtensions.swift */,
 				9F31AB9D232BF2A600CF87EA /* UIColorExtensions.swift */,
+				9FD505262785C2CD00FAA82F /* UIDeviceExtensions.swift */,
 				9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */,
 				32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */,
 				9F8277952373732000E19C07 /* UIImageExtensions.swift */,
@@ -2806,6 +2812,7 @@
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
 				D2E26F7224F26FFF00612AF1 /* ContactUserCellNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
+				9F65B0B9278346F8005CD19C /* UIConstants.swift in Sources */,
 				D28A1CBD2525C141003B760B /* CheckBoxTextNode.swift in Sources */,
 				D2A9CA3B242619A400E1D898 /* SignInImageNode.swift in Sources */,
 				D211CE7223FC35AC00D1CE38 /* TextFieldNode.swift in Sources */,
@@ -2860,6 +2867,7 @@
 				9F8076D927762515008E5874 /* BigIntExtensions.swift in Sources */,
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
 				D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */,
+				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
 				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,
 				D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */,

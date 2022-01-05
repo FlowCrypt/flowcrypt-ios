@@ -16,8 +16,6 @@ struct SetupImapViewDecorator {
             .attributed(.bold(20), color: .white, alignment: .center)
     }
 
-    let connectButtonInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 10)
-
     private var titleColor: UIColor {
         .colorFor(
             darkStyle: .white,
