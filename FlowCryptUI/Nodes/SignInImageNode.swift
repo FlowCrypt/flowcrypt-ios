@@ -12,8 +12,10 @@ import UIKit
 
 public final class SignInImageNode: CellNode {
     private let imageNode = ASImageNode()
+    private let imageHeight: CGFloat
 
-    public init(_ image: UIImage?) {
+    public init(_ image: UIImage?, imageHeight: CGFloat) {
+        self.imageHeight = imageHeight
         super.init()
         imageNode.image = image
         imageNode.contentMode = .scaleAspectFit
@@ -22,7 +24,9 @@ public final class SignInImageNode: CellNode {
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(
+        imageNode.style.preferredSize.height = imageHeight
+        
+        return ASInsetLayoutSpec(
             insets: .deviceSpecificInsets(
                 top: UIDevice.isIphone ? 8 : 32,
                 bottom: 0
