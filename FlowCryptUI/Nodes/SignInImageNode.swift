@@ -8,6 +8,7 @@
 
 import AsyncDisplayKit
 import CoreServices
+import UIKit
 
 public final class SignInImageNode: CellNode {
     private let imageNode = ASImageNode()
@@ -23,7 +24,7 @@ public final class SignInImageNode: CellNode {
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: .deviceSpecificInsets(
-                top: Device.isIphone ? 0 : 32,
+                top: UIDevice.isIphone ? 8 : 32,
                 bottom: 0
             ),
             child: imageNode
